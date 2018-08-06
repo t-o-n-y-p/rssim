@@ -68,6 +68,8 @@ class Train(GameObject):
                                 k.route_config.trail_points[len(k.route_config.trail_points) - 1][0]:
                             k.route_config.busy = False
                             self.train_route.busy_routes.remove(k)
+                            k.route_config.opened = False
+                            self.train_route.opened_routes.remove(k)
 
                 if self.direction == c.RIGHT:
                     for k in self.train_route.busy_routes:
@@ -75,6 +77,8 @@ class Train(GameObject):
                                 k.route_config.trail_points[len(k.route_config.trail_points) - 1][0]:
                             k.route_config.busy = False
                             self.train_route.busy_routes.remove(k)
+                            k.route_config.opened = False
+                            self.train_route.opened_routes.remove(k)
 
                 self.train_route.set_next_stop_point(self.carts_position[0][0])
                 if self.carts_position[0][0] == self.train_route.next_stop_point:

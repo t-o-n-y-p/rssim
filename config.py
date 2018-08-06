@@ -67,6 +67,7 @@ PENDING_BOARDING = 'pending_boarding'
 BOARDING_IN_PROGRESS = 'boarding_in_progress'
 BOARDING_COMPLETE = 'boarding_complete'
 
+# keys below are not used at the moment
 
 text_color = colors.YELLOW1
 

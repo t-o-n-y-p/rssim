@@ -8,6 +8,7 @@ class TrainRoute(GameObject):
         self.track_number = track_number
         self.base_routes = base_routes
         self.busy_routes = []
+        self.opened_routes = []
         self.route_type = route_type
         self.opened = False
         self.last_opened_by = None
@@ -32,7 +33,6 @@ class TrainRoute(GameObject):
         if len(self.base_routes) > 0:
             if self.base_routes[0].route_config.start_point:
                 self.start_point = self.trail_points.index(self.base_routes[0].route_config.start_point)
-        # self.trail_points = tuple(self.trail_points)
 
         for j in self.base_routes:
             if j.route_config.exit_signal:
@@ -72,16 +72,18 @@ class TrainRoute(GameObject):
         self.opened = True
         self.last_opened_by = train_id
         self.busy_routes.clear()
+        self.opened_routes.clear()
         for i in self.base_routes:
             i.route_config.opened = True
             i.last_opened_by = train_id
             i.route_config.busy = True
             i.last_entered_by = train_id
             self.busy_routes.append(i)
+            self.opened_routes.append(i)
 
     def close_train_route(self):
         self.opened = False
-        for i in self.base_routes:
+        for i in self.opened_routes:
             i.route_config.opened = False
 
         for i in self.busy_routes:

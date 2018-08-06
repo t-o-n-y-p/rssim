@@ -10,8 +10,11 @@ class Track(GameObject):
         self.override = False
 
     def update(self, game_paused):
+        # if game is paused, track status should not be updated
+        # if track settings are overridden, we do nothing too
         if not game_paused and not self.override:
             busy_1 = False
+            # if any of 4 base routes are busy, all track will become busy
             for i in self.base_routes:
                 busy_1 = busy_1 or i.route_config.busy
                 if i.route_config.busy:
