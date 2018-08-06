@@ -8,7 +8,7 @@ class GameObject:
     def draw(self, surface, base_offset):
         pass
 
-    # simply pass this to be overridden by each object: "game_stopped" restrict objects that can be updated
+    # simply pass this to be overridden by each object: "game_stopped" restricts objects that can be updated
     # after user paused the game
     def update(self, game_paused):
         pass

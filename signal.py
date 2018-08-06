@@ -9,12 +9,12 @@ class Signal(GameObject):
         super().__init__()
         self.placement = placement
         self.flip_needed = flip_needed
-        self.state = 0
-        self.image = (pygame.image.load(c.signal_image_path[0]).convert_alpha(),
-                      pygame.image.load(c.signal_image_path[1]).convert_alpha())
+        self.state = c.signal_flags[0]
+        self.image = {c.signal_flags[0]: pygame.image.load(c.signal_image_path[0]).convert_alpha(),
+                      c.signal_flags[1]: pygame.image.load(c.signal_image_path[1]).convert_alpha()}
         if self.flip_needed:
-            self.image = (pygame.transform.flip(self.image[0], True, False),
-                          pygame.transform.flip(self.image[1], True, False))
+            self.image = {c.signal_flags[0]: pygame.transform.flip(self.image[c.signal_flags[0]], True, False),
+                          c.signal_flags[1]: pygame.transform.flip(self.image[c.signal_flags[1]], True, False)}
 
         self.base_route_busy_list = []
         self.base_route_opened_list = []
@@ -37,14 +37,14 @@ class Signal(GameObject):
                     opened_by.append(i.last_opened_by)
 
             if not opened_logical:
-                self.state = 0
+                self.state = c.signal_flags[0]
             else:
                 for i in self.base_route_busy_list:
                     if i not in self.base_route_opened_list:
                         busy_logical = busy_logical or i.route_config.busy
 
                 if busy_logical:
-                    self.state = 0
+                    self.state = c.signal_flags[0]
                 else:
                     for i in self.base_route_exit_list:
                         exit_logical = exit_logical or i.route_config.busy
@@ -52,6 +52,6 @@ class Signal(GameObject):
                             is_busy_by = i.last_entered_by
 
                     if exit_logical and is_busy_by in opened_by:
-                        self.state = 1
+                        self.state = c.signal_flags[1]
                     else:
-                        self.state = 0
+                        self.state = c.signal_flags[0]

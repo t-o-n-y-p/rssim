@@ -24,6 +24,7 @@ class Game:
 
     def update(self):
         for o in self.objects:
+            # some objects should be updated even after game is paused
             o.update(self.game_paused)
 
     def draw(self):

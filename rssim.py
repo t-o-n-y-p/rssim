@@ -113,8 +113,8 @@ class RSSim(Game):
 
                 self.train_routes[i][m] = TrainRoute(base_routes_in_train_route, i, m)
 
-            self.train_routes[i][c.train_route_flags[6]] = TrainRoute(
-                [self.base_routes[i]['left_entry_platform_base_route']], i, c.train_route_flags[6])
+            # self.train_routes[i][c.train_route_flags[6]] = TrainRoute(
+            #     [self.base_routes[i]['left_entry_platform_base_route']], i, c.train_route_flags[6])
 
         for i in range(2):
             for n in self.base_routes[i].keys():

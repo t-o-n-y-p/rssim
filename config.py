@@ -14,13 +14,14 @@ bottom_bar_height = 50
 
 frame_rate = 60
 
-base_route_flags = ('left_entry_base_route', 'left_exit_base_route', 'right_entry_base_route', 'right_exit_base_route',
+LEFT_ENTRY_BASE_ROUTE = 'left_entry_base_route'
+base_route_flags = (LEFT_ENTRY_BASE_ROUTE, 'left_exit_base_route', 'right_entry_base_route', 'right_exit_base_route',
                     'left_entry_platform_base_route', 'right_entry_platform_base_route',
                     'right_exit_platform_base_route', 'left_exit_platform_base_route')
 train_route_flags = ('left_entry', 'right_exit',
                      'right_entry', 'left_exit',
                      'left_approaching', 'right_approaching', 'boarding')
-signal_flags = (0, 1)
+signal_flags = ('red', 'green')
 signal_image_path = ('img/signal_red.png', 'img/signal_green.png')
 
 train_creation_timeout = frame_rate*10

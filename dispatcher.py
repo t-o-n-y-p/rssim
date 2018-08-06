@@ -8,11 +8,13 @@ from train import Train
 class Dispatcher(GameObject):
     def __init__(self):
         super().__init__()
+        # time to wait since main entry was left by previous train before creating new one
         self.train_timer = [0, 0]
         self.trains = []
         self.train_routes = []
         self.tracks = []
-        self.train_counter = 0
+        # next train ID
+        self.train_counter = 1
 
     def update(self, game_paused):
         if not game_paused:
@@ -83,13 +85,13 @@ class Dispatcher(GameObject):
                         if carts in range(r.supported_carts[0], r.supported_carts[1] + 1) and not r.opened and not \
                                 self.tracks[j - 1].busy:
                             route_for_new_train = self.train_routes[j][c.train_route_flags[i * 2]]
-                            self.train_counter += 1
                             new_train = Train(carts, route_for_new_train, c.train_state_flags[2], i, self.train_counter)
+                            self.train_counter += 1
 
                     if route_for_new_train is None:
                         route_for_new_train = self.train_routes[0][c.train_route_flags[i + 4]]
-                        self.train_counter += 1
                         new_train = Train(carts, route_for_new_train, c.train_state_flags[1], i, self.train_counter)
+                        self.train_counter += 1
 
                     self.trains.append(new_train)
 
