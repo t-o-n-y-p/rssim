@@ -29,10 +29,7 @@ class Dispatcher(GameObject):
                         i.state = c.train_state_flags[4]
 
                     if i.boarding_time in range(11) and i.train_route is None:
-                        track = i.track_number
-                        direction = i.direction
-                        # i.complete_train_route()
-                        i.assign_new_train_route(self.train_routes[track][c.train_route_flags[1 + direction * 2]],
+                        i.assign_new_train_route(self.train_routes[i.track_number][c.EXIT_TRAIN_ROUTE[i.direction]],
                                                  i.train_id)
 
                 if len(i.carts_position) > 0:
@@ -48,10 +45,10 @@ class Dispatcher(GameObject):
                 if i.state == c.train_state_flags[1]:
                     route_for_new_train = None
                     for j in (1,):
-                        r = self.train_routes[j][c.train_route_flags[i.direction * 2]]
+                        r = self.train_routes[j][c.ENTRY_TRAIN_ROUTE[i.direction]]
                         if i.carts in range(r.supported_carts[0], r.supported_carts[1] + 1) and not r.opened and not \
                                 self.tracks[j - 1].busy:
-                            route_for_new_train = self.train_routes[j][c.train_route_flags[i.direction * 2]]
+                            route_for_new_train = self.train_routes[j][c.ENTRY_TRAIN_ROUTE[i.direction]]
                             self.tracks[j - 1].busy = True
                             self.tracks[j - 1].last_entered_by = i.train_id
 
@@ -70,26 +67,26 @@ class Dispatcher(GameObject):
                     q3.update(game_paused)
 
     def create_new_trains(self):
-        for i in range(2):
-            entry_busy = self.train_routes[0][c.train_route_flags[i + 4]].base_routes[0].route_config.busy
+        for i in (c.LEFT, c.RIGHT):
+            entry_busy = self.train_routes[0][c.APPROACHING_TRAIN_ROUTE[i]].base_routes[0].route_config.busy
             if not entry_busy:
                 self.train_timer[i] += 1
-                if self.train_timer[i] == c.train_creation_timeout * (i + 1):
+                if self.train_timer[i] == c.train_creation_timeout[i]:
                     self.train_timer[i] = 0
                     new_train = None
                     random.seed()
                     carts = random.choice(range(2, 3))
                     route_for_new_train = None
                     for j in (1,):
-                        r = self.train_routes[j][c.train_route_flags[i * 2]]
+                        r = self.train_routes[j][c.ENTRY_TRAIN_ROUTE[i]]
                         if carts in range(r.supported_carts[0], r.supported_carts[1] + 1) and not r.opened and not \
                                 self.tracks[j - 1].busy:
-                            route_for_new_train = self.train_routes[j][c.train_route_flags[i * 2]]
+                            route_for_new_train = self.train_routes[j][c.ENTRY_TRAIN_ROUTE[i]]
                             new_train = Train(carts, route_for_new_train, c.train_state_flags[2], i, self.train_counter)
                             self.train_counter += 1
 
                     if route_for_new_train is None:
-                        route_for_new_train = self.train_routes[0][c.train_route_flags[i + 4]]
+                        route_for_new_train = self.train_routes[0][c.APPROACHING_TRAIN_ROUTE[i]]
                         new_train = Train(carts, route_for_new_train, c.train_state_flags[1], i, self.train_counter)
                         self.train_counter += 1
 

@@ -90,35 +90,39 @@ class RSSim(Game):
             self.signals[0][c.RIGHT_ENTRY_BASE_ROUTE].base_route_busy_list \
                 .append(self.base_routes[i][c.RIGHT_EXIT_BASE_ROUTE])
 
-        base_routes_in_train_route = [self.base_routes[0]['{}_base_route'.format(c.train_route_flags[0])]]
-        self.train_routes[0][c.train_route_flags[4]] = \
-            TrainRoute(base_routes_in_train_route, 0, c.train_route_flags[4])
-        base_routes_in_train_route = [self.base_routes[0]['{}_base_route'.format(c.train_route_flags[2])]]
-        self.train_routes[0][c.train_route_flags[5]] = \
-            TrainRoute(base_routes_in_train_route, 0, c.train_route_flags[5])
+        base_routes_in_train_route = [self.base_routes[0]['{}_base_route'.format(c.ENTRY_TRAIN_ROUTE[c.LEFT])]]
+        self.train_routes[0][c.APPROACHING_TRAIN_ROUTE[c.LEFT]] = \
+            TrainRoute(base_routes_in_train_route, 0, c.APPROACHING_TRAIN_ROUTE[c.LEFT])
+        base_routes_in_train_route = [self.base_routes[0]['{}_base_route'.format(c.ENTRY_TRAIN_ROUTE[c.RIGHT])]]
+        self.train_routes[0][c.APPROACHING_TRAIN_ROUTE[c.RIGHT]] = \
+            TrainRoute(base_routes_in_train_route, 0, c.APPROACHING_TRAIN_ROUTE[c.RIGHT])
 
         for i in range(1, 2):
             self.train_routes.append({})
-            base_routes_in_track = [self.base_routes[i]['left_entry_platform_base_route'],
-                                    self.base_routes[i]['right_entry_platform_base_route'],
-                                    self.base_routes[i]['left_exit_platform_base_route'],
-                                    self.base_routes[i]['right_exit_platform_base_route']]
+            base_routes_in_track = [self.base_routes[i][c.LEFT_ENTRY_PLATFORM_BASE_ROUTE],
+                                    self.base_routes[i][c.RIGHT_ENTRY_PLATFORM_BASE_ROUTE],
+                                    self.base_routes[i][c.LEFT_EXIT_PLATFORM_BASE_ROUTE],
+                                    self.base_routes[i][c.RIGHT_EXIT_PLATFORM_BASE_ROUTE]]
             new_track = Track()
             new_track.base_routes = base_routes_in_track
             self.tracks.append(new_track)
-            for k in (c.train_route_flags[0], c.train_route_flags[2]):
-                base_routes_in_train_route = [self.base_routes[0]['{}_base_route'.format(k)],
-                                              self.base_routes[i]['{}_base_route'.format(k)],
-                                              self.base_routes[i]['{}_platform_base_route'.format(k)]]
+            for k in c.ENTRY_TRAIN_ROUTE:
+                base_routes_in_train_route = [
+                    self.base_routes[0]['{}_base_route'.format(c.ENTRY_TRAIN_ROUTE[k])],
+                    self.base_routes[i]['{}_base_route'.format(c.ENTRY_TRAIN_ROUTE[k])],
+                    self.base_routes[i]['{}_platform_base_route'.format(c.ENTRY_TRAIN_ROUTE[k])]]
 
-                self.train_routes[i][k] = TrainRoute(base_routes_in_train_route, i, k)
+                self.train_routes[i][c.ENTRY_TRAIN_ROUTE[k]] = \
+                    TrainRoute(base_routes_in_train_route, i, c.ENTRY_TRAIN_ROUTE[k])
 
-            for m in (c.train_route_flags[1], c.train_route_flags[3]):
-                base_routes_in_train_route = [self.base_routes[i]['{}_platform_base_route'.format(m)],
-                                              self.base_routes[i]['{}_base_route'.format(m)],
-                                              self.base_routes[0]['{}_base_route'.format(m)]]
+            for m in c.EXIT_TRAIN_ROUTE:
+                base_routes_in_train_route = [
+                    self.base_routes[i]['{}_platform_base_route'.format(c.EXIT_TRAIN_ROUTE[m])],
+                    self.base_routes[i]['{}_base_route'.format(c.EXIT_TRAIN_ROUTE[m])],
+                    self.base_routes[0]['{}_base_route'.format(c.EXIT_TRAIN_ROUTE[m])]]
 
-                self.train_routes[i][m] = TrainRoute(base_routes_in_train_route, i, m)
+                self.train_routes[i][c.EXIT_TRAIN_ROUTE[m]] = \
+                    TrainRoute(base_routes_in_train_route, i, c.EXIT_TRAIN_ROUTE[m])
 
         for i in range(2):
             for n in self.base_routes[i].keys():

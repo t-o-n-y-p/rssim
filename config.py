@@ -23,13 +23,19 @@ RIGHT_ENTRY_PLATFORM_BASE_ROUTE = 'right_entry_platform_base_route'
 RIGHT_EXIT_PLATFORM_BASE_ROUTE = 'right_exit_platform_base_route'
 LEFT_EXIT_PLATFORM_BASE_ROUTE = 'left_exit_platform_base_route'
 
-train_route_flags = ('left_entry', 'right_exit',
-                     'right_entry', 'left_exit',
-                     'left_approaching', 'right_approaching')
+LEFT = 0
+RIGHT = 1
+ENTRY_TRAIN_ROUTE = {LEFT: 'left_entry', RIGHT: 'right_entry'}
+EXIT_TRAIN_ROUTE = {LEFT: 'right_exit', RIGHT: 'left_exit'}
+APPROACHING_TRAIN_ROUTE = {LEFT: 'left_approaching', RIGHT: 'right_approaching'}
+
+train_route_flags = (ENTRY_TRAIN_ROUTE[LEFT], EXIT_TRAIN_ROUTE[LEFT],
+                     ENTRY_TRAIN_ROUTE[RIGHT], EXIT_TRAIN_ROUTE[RIGHT],
+                     APPROACHING_TRAIN_ROUTE[LEFT], APPROACHING_TRAIN_ROUTE[RIGHT])
 signal_flags = ('red', 'green')
 signal_image_path = ('img/signal_red.png', 'img/signal_green.png')
 
-train_creation_timeout = frame_rate*10
+train_creation_timeout = {LEFT: frame_rate*10, RIGHT: frame_rate*20}
 train_cart_image_path = ('img/cart_red.png', 'img/cart_green.png', 'img/cart_blue.png')
 train_maximum_speed = 5
 train_deceleration_factor = 50

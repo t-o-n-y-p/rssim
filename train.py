@@ -54,7 +54,7 @@ class Train(GameObject):
     def update(self, game_paused):
         if not game_paused:
             if self.state not in (c.train_state_flags[3]):
-                if self.train_route.route_type in (c.train_route_flags[0], c.train_route_flags[2]):
+                if self.train_route.route_type in (c.ENTRY_TRAIN_ROUTE[c.LEFT], c.ENTRY_TRAIN_ROUTE[c.RIGHT]):
                     self.track_number = self.train_route.track_number
 
                 if self.direction == 0:
