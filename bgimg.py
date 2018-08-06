@@ -1,9 +1,7 @@
 import pygame
-from pygame.rect import Rect
 
-from game_object import GameObject
-from text_object import TextObject
 import config as c
+from game_object import GameObject
 
 
 class BgImg(GameObject):
@@ -19,4 +17,3 @@ class BgImg(GameObject):
                 surface.blit(self.image, (base_offset[0] + i*c.background_tile_resolution[0],
                                           base_offset[1] + j*c.background_tile_resolution[1]))
         surface.blit(self.bottom_bar_surface, (0, c.screen_resolution[1] - c.bottom_bar_height))
-

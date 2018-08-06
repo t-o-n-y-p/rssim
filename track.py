@@ -1,9 +1,4 @@
-import pygame
-from pygame.rect import Rect
-
 from game_object import GameObject
-from text_object import TextObject
-import config as c
 
 
 class Track(GameObject):
@@ -23,4 +18,3 @@ class Track(GameObject):
                     self.last_entered_by = i.last_entered_by
 
             self.busy = busy_1
-

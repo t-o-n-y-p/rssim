@@ -1,21 +1,15 @@
-import random
-from datetime import datetime, timedelta
-import os
-import time
-import pygame
 import sys
-from pygame.rect import Rect
+
+import pygame
+
 import config as c
-from button import Button
-from game import Game
-from bgimg import BgImg
 from base_route import BaseRoute
-from train_route import TrainRoute
-from signal import Signal
+from bgimg import BgImg
 from dispatcher import Dispatcher
+from game import Game
+from signal import Signal
 from track import Track
-from text_object import TextObject
-import colors
+from train_route import TrainRoute
 
 
 class RSSim(Game):

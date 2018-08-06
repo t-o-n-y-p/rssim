@@ -33,7 +33,7 @@ train_state_flags = ('pass-through', 'approaching',
 left_to_right_direction = 0
 right_to_left_direction = 1
 
-"""
+
 text_color = colors.YELLOW1
 
 font_name = 'Arial'
@@ -43,4 +43,3 @@ button_text_color = colors.WHITE,
 button_normal_back_color = colors.INDIANRED1
 button_hover_back_color = colors.INDIANRED2
 button_pressed_back_color = colors.INDIANRED3
-"""

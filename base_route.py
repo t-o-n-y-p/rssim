@@ -18,13 +18,13 @@ class BaseRoute(GameObject):
         if not self.route_config.locked:
             width = self.image.get_width()
             height = self.image.get_height()
-            if self.route_type == c.base_route_flags[0]: #or self.route_type == c.base_route_flags[1]:
+            if self.route_type == c.base_route_flags[0]:
                 surface.blit(self.image, tuple((base_offset[0],
                                                 base_offset[1] + (c.map_resolution[1] - height) // 2)))
-            elif self.route_type == c.base_route_flags[2]: #or self.route_type == c.base_route_flags[3]:
+            elif self.route_type == c.base_route_flags[2]:
                 surface.blit(self.image, tuple((base_offset[0] + c.map_resolution[0] - width,
                                                 base_offset[1] + (c.map_resolution[1] - height) // 2)))
-            elif self.route_type == c.base_route_flags[4]: #or self.route_type == c.base_route_flags[5]:
+            elif self.route_type == c.base_route_flags[4]:
                 surface.blit(self.image, tuple((base_offset[0] + (c.map_resolution[0] - width) // 2,
                                                 base_offset[1] + (c.map_resolution[1] - height) // 2)))
 
