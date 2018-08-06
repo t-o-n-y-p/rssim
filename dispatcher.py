@@ -28,7 +28,7 @@ class Dispatcher(GameObject):
                     self.tracks[i.track_number - 1].override = False
                     i.state = c.train_state_flags[4]
 
-                if i.boarding_time in range(11):
+                if i.boarding_time in range(11) and not i.train_route:
                     track = i.track_number
                     direction = i.direction
                     # i.complete_train_route()
