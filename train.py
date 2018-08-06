@@ -51,41 +51,42 @@ class Train(GameObject):
 
         self.carts_position_abs.clear()
 
-    def update(self):
-        if self.state not in (c.train_state_flags[3]):
-            if self.train_route.route_type in (c.train_route_flags[0], c.train_route_flags[2]):
-                self.track_number = self.train_route.track_number
+    def update(self, game_paused):
+        if not game_paused:
+            if self.state not in (c.train_state_flags[3]):
+                if self.train_route.route_type in (c.train_route_flags[0], c.train_route_flags[2]):
+                    self.track_number = self.train_route.track_number
 
-            if self.direction == 0:
-                for k in self.train_route.busy_routes:
-                    if self.train_route.trail_points[self.carts_position[len(self.carts_position) - 1][1]][0] > \
-                            k.route_config.trail_points[len(k.route_config.trail_points) - 1][0]:
-                        k.route_config.busy = False
-                        self.train_route.busy_routes.remove(k)
+                if self.direction == 0:
+                    for k in self.train_route.busy_routes:
+                        if self.train_route.trail_points[self.carts_position[len(self.carts_position) - 1][1]][0] > \
+                                k.route_config.trail_points[len(k.route_config.trail_points) - 1][0]:
+                            k.route_config.busy = False
+                            self.train_route.busy_routes.remove(k)
 
-            if self.direction == 1:
-                for k in self.train_route.busy_routes:
-                    if self.train_route.trail_points[self.carts_position[len(self.carts_position) - 1][1]][0] < \
-                            k.route_config.trail_points[len(k.route_config.trail_points) - 1][0]:
-                        k.route_config.busy = False
-                        self.train_route.busy_routes.remove(k)
+                if self.direction == 1:
+                    for k in self.train_route.busy_routes:
+                        if self.train_route.trail_points[self.carts_position[len(self.carts_position) - 1][1]][0] < \
+                                k.route_config.trail_points[len(k.route_config.trail_points) - 1][0]:
+                            k.route_config.busy = False
+                            self.train_route.busy_routes.remove(k)
 
-            self.train_route.set_next_stop_point(self.carts_position[0][0])
-            if self.carts_position[0][0] == self.train_route.next_stop_point:
-                self.speed = 0
-            elif self.train_route.next_stop_point - self.carts_position[0][0] \
-                    <= self.speed * c.train_deceleration_factor:
-                self.speed -= 1
-                if self.speed < 1:
-                    self.speed = 1
-            else:
-                # refactor later for train to accelerate slower
-                if self.speed < c.train_maximum_speed:
-                    self.speed += 1
+                self.train_route.set_next_stop_point(self.carts_position[0][0])
+                if self.carts_position[0][0] == self.train_route.next_stop_point:
+                    self.speed = 0
+                elif self.train_route.next_stop_point - self.carts_position[0][0] \
+                        <= self.speed * c.train_deceleration_factor:
+                    self.speed -= 1
+                    if self.speed < 1:
+                        self.speed = 1
+                else:
+                    # refactor later for train to accelerate slower
+                    if self.speed < c.train_maximum_speed:
+                        self.speed += 1
 
-        for i in self.carts_position:
-            i[0] += self.speed
-            i[1] += self.speed
+            for i in self.carts_position:
+                i[0] += self.speed
+                i[1] += self.speed
 
     def draw(self, surface, base_offset):
         if len(self.carts_position_abs) > 0:

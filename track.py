@@ -9,8 +9,8 @@ class Track(GameObject):
         self.last_entered_by = None
         self.override = False
 
-    def update(self):
-        if not self.override:
+    def update(self, game_paused):
+        if not game_paused and not self.override:
             busy_1 = False
             for i in self.base_routes:
                 busy_1 = busy_1 or i.route_config.busy

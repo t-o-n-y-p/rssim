@@ -34,7 +34,7 @@ class RSSim(Game):
             self.base_routes[0][j] = BaseRoute(0, j)
             placement = self.base_routes[0][j].route_config.exit_signal_placement
             flip_needed = self.base_routes[0][j].route_config.flip_needed
-            if placement:
+            if placement is not None:
                 self.signals[0][j] = Signal(placement, flip_needed)
 
         for j in (c.base_route_flags[0], c.base_route_flags[1], c.base_route_flags[2], c.base_route_flags[3]):
@@ -48,7 +48,7 @@ class RSSim(Game):
                 self.base_routes[i][k] = BaseRoute(i, k)
                 placement = self.base_routes[i][k].route_config.exit_signal_placement
                 flip_needed = self.base_routes[i][k].route_config.flip_needed
-                if placement and k in (c.base_route_flags[6], c.base_route_flags[7]):
+                if placement is not None and k in (c.base_route_flags[6], c.base_route_flags[7]):
                     self.signals[i][k] = Signal(placement, flip_needed)
 
         for i in range(1, 2):
@@ -58,8 +58,6 @@ class RSSim(Game):
             self.base_routes[i][c.base_route_flags[5]].route_config.exit_signal = self.signals[i][c.base_route_flags[7]]
             self.signals[i][c.base_route_flags[6]].base_route_exit_list\
                 .append(self.base_routes[i][c.base_route_flags[6]])
-            # self.signals[i][c.base_route_flags[6]].base_route_exit_list\
-            #     .append(self.base_routes[i][c.base_route_flags[4]])
             self.signals[i][c.base_route_flags[6]].base_route_opened_list \
                 .append(self.base_routes[i][c.base_route_flags[3]])
             self.signals[i][c.base_route_flags[7]].base_route_exit_list\

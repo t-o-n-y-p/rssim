@@ -24,33 +24,34 @@ class Signal(GameObject):
         signal_position = (base_offset[0] + self.placement[0], base_offset[1] + self.placement[1])
         surface.blit(self.image[self.state], signal_position)
 
-    def update(self):
-        busy_logical = False
-        opened_logical = False
-        opened_by = []
-        is_busy_by = None
-        exit_logical = False
-        for i in self.base_route_opened_list:
-            opened_logical = opened_logical or i.route_config.opened
-            if i.route_config.opened:
-                opened_by.append(i.last_opened_by)
+    def update(self, game_paused):
+        if not game_paused:
+            busy_logical = False
+            opened_logical = False
+            opened_by = []
+            is_busy_by = None
+            exit_logical = False
+            for i in self.base_route_opened_list:
+                opened_logical = opened_logical or i.route_config.opened
+                if i.route_config.opened:
+                    opened_by.append(i.last_opened_by)
 
-        if not opened_logical:
-            self.state = 0
-        else:
-            for i in self.base_route_busy_list:
-                if i not in self.base_route_opened_list:
-                    busy_logical = busy_logical or i.route_config.busy
-
-            if busy_logical:
+            if not opened_logical:
                 self.state = 0
             else:
-                for i in self.base_route_exit_list:
-                    exit_logical = exit_logical or i.route_config.busy
-                    if i.route_config.busy:
-                        is_busy_by = i.last_entered_by
+                for i in self.base_route_busy_list:
+                    if i not in self.base_route_opened_list:
+                        busy_logical = busy_logical or i.route_config.busy
 
-                if exit_logical and is_busy_by in opened_by:
-                    self.state = 1
-                else:
+                if busy_logical:
                     self.state = 0
+                else:
+                    for i in self.base_route_exit_list:
+                        exit_logical = exit_logical or i.route_config.busy
+                        if i.route_config.busy:
+                            is_busy_by = i.last_entered_by
+
+                    if exit_logical and is_busy_by in opened_by:
+                        self.state = 1
+                    else:
+                        self.state = 0

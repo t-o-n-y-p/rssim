@@ -28,5 +28,6 @@ class BaseRoute(GameObject):
                 surface.blit(self.image, tuple((base_offset[0] + (c.map_resolution[0] - width) // 2,
                                                 base_offset[1] + (c.map_resolution[1] - height) // 2)))
 
-    def update(self):
-        self.route_config.update_config(self.route_config)
+    def update(self, game_paused):
+        if not game_paused:
+            self.route_config.update_config(self.route_config)

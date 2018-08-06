@@ -87,9 +87,10 @@ class TrainRoute(GameObject):
         for i in self.busy_routes:
             i.route_config.busy = False
 
-    def update(self):
-        self.active_stop_points = []
-        index = list(range(len(self.signals)))
-        for i in index:
-            if self.signals[i].state == c.signal_flags[0] and len(self.stop_points) > 0:
-                self.active_stop_points.append(self.stop_points[i])
+    def update(self, game_paused):
+        if not game_paused:
+            self.active_stop_points = []
+            index = list(range(len(self.signals)))
+            for i in index:
+                if self.signals[i].state == c.signal_flags[0] and len(self.stop_points) > 0:
+                    self.active_stop_points.append(self.stop_points[i])
