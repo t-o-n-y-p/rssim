@@ -92,5 +92,5 @@ class TrainRoute(GameObject):
             self.active_stop_points = []
             index = list(range(len(self.signals)))
             for i in index:
-                if self.signals[i].state == c.signal_flags[0] and len(self.stop_points) > 0:
+                if self.signals[i].state == c.RED_SIGNAL and len(self.stop_points) > 0:
                     self.active_stop_points.append(self.stop_points[i])

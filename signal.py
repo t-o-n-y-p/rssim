@@ -9,12 +9,12 @@ class Signal(GameObject):
         super().__init__()
         self.placement = placement
         self.flip_needed = flip_needed
-        self.state = c.signal_flags[0]
-        self.image = {c.signal_flags[0]: pygame.image.load(c.signal_image_path[0]).convert_alpha(),
-                      c.signal_flags[1]: pygame.image.load(c.signal_image_path[1]).convert_alpha()}
+        self.state = c.RED_SIGNAL
+        self.image = {c.RED_SIGNAL: pygame.image.load(c.signal_image_path[c.RED_SIGNAL]).convert_alpha(),
+                      c.GREEN_SIGNAL: pygame.image.load(c.signal_image_path[c.GREEN_SIGNAL]).convert_alpha()}
         if self.flip_needed:
-            self.image = {c.signal_flags[0]: pygame.transform.flip(self.image[c.signal_flags[0]], True, False),
-                          c.signal_flags[1]: pygame.transform.flip(self.image[c.signal_flags[1]], True, False)}
+            self.image = {c.RED_SIGNAL: pygame.transform.flip(self.image[c.RED_SIGNAL], True, False),
+                          c.GREEN_SIGNAL: pygame.transform.flip(self.image[c.GREEN_SIGNAL], True, False)}
 
         self.base_route_busy_list = []
         self.base_route_opened_list = []
@@ -37,7 +37,7 @@ class Signal(GameObject):
                     opened_by.append(i.last_opened_by)
 
             if not opened_logical:
-                self.state = c.signal_flags[0]
+                self.state = c.RED_SIGNAL
             else:
                 for i in self.base_route_busy_list:
                     if i not in self.base_route_opened_list or \
@@ -46,13 +46,13 @@ class Signal(GameObject):
                         busy_logical = busy_logical or i.route_config.busy
 
                 if busy_logical:
-                    self.state = c.signal_flags[0]
+                    self.state = c.RED_SIGNAL
                 else:
                     exit_logical = exit_logical or self.base_route_exit.route_config.busy
                     if self.base_route_exit.route_config.busy:
                         is_busy_by = self.base_route_exit.last_entered_by
 
                     if exit_logical and is_busy_by in opened_by:
-                        self.state = c.signal_flags[1]
+                        self.state = c.GREEN_SIGNAL
                     else:
-                        self.state = c.signal_flags[0]
+                        self.state = c.RED_SIGNAL

@@ -29,21 +29,21 @@ ENTRY_TRAIN_ROUTE = {LEFT: 'left_entry', RIGHT: 'right_entry'}
 EXIT_TRAIN_ROUTE = {LEFT: 'right_exit', RIGHT: 'left_exit'}
 APPROACHING_TRAIN_ROUTE = {LEFT: 'left_approaching', RIGHT: 'right_approaching'}
 
-train_route_flags = (ENTRY_TRAIN_ROUTE[LEFT], EXIT_TRAIN_ROUTE[LEFT],
-                     ENTRY_TRAIN_ROUTE[RIGHT], EXIT_TRAIN_ROUTE[RIGHT],
-                     APPROACHING_TRAIN_ROUTE[LEFT], APPROACHING_TRAIN_ROUTE[RIGHT])
-signal_flags = ('red', 'green')
-signal_image_path = ('img/signal_red.png', 'img/signal_green.png')
+RED_SIGNAL = 'red'
+GREEN_SIGNAL = 'green'
+signal_image_path = {RED_SIGNAL: 'img/signal_red.png', GREEN_SIGNAL: 'img/signal_green.png'}
 
 train_creation_timeout = {LEFT: frame_rate*10, RIGHT: frame_rate*20}
 train_cart_image_path = ('img/cart_red.png', 'img/cart_green.png', 'img/cart_blue.png')
 train_maximum_speed = 5
 train_deceleration_factor = 50
 train_acceleration_factor = 8
-train_state_flags = ('pass-through', 'approaching',
-                     'pending_boarding', 'boarding_in_progress', 'boarding_complete')
-left_to_right_direction = 0
-right_to_left_direction = 1
+
+PASS_THROUGH = 'pass-through'
+APPROACHING = 'approaching'
+PENDING_BOARDING = 'pending_boarding'
+BOARDING_IN_PROGRESS = 'boarding_in_progress'
+BOARDING_COMPLETE = 'boarding_complete'
 
 
 text_color = colors.YELLOW1
