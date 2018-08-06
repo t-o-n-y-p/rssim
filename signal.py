@@ -18,7 +18,7 @@ class Signal(GameObject):
 
         self.base_route_busy_list = []
         self.base_route_opened_list = []
-        self.base_route_exit_list = []
+        self.base_route_exit = None
 
     def draw(self, surface, base_offset):
         signal_position = (base_offset[0] + self.placement[0], base_offset[1] + self.placement[1])
@@ -40,16 +40,17 @@ class Signal(GameObject):
                 self.state = c.signal_flags[0]
             else:
                 for i in self.base_route_busy_list:
-                    if i not in self.base_route_opened_list:
+                    if i not in self.base_route_opened_list or \
+                            (i in self.base_route_opened_list and
+                             i.last_opened_by != self.base_route_exit.last_opened_by):
                         busy_logical = busy_logical or i.route_config.busy
 
                 if busy_logical:
                     self.state = c.signal_flags[0]
                 else:
-                    for i in self.base_route_exit_list:
-                        exit_logical = exit_logical or i.route_config.busy
-                        if i.route_config.busy:
-                            is_busy_by = i.last_entered_by
+                    exit_logical = exit_logical or self.base_route_exit.route_config.busy
+                    if self.base_route_exit.route_config.busy:
+                        is_busy_by = self.base_route_exit.last_entered_by
 
                     if exit_logical and is_busy_by in opened_by:
                         self.state = c.signal_flags[1]

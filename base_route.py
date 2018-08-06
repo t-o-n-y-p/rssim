@@ -21,15 +21,15 @@ class BaseRoute(GameObject):
             width = self.image.get_width()
             height = self.image.get_height()
             # entry routes are left-aligned
-            if self.route_type == c.base_route_flags[0]:
+            if self.route_type == c.LEFT_ENTRY_BASE_ROUTE:
                 surface.blit(self.image, tuple((base_offset[0],
                                                 base_offset[1] + (c.map_resolution[1] - height) // 2)))
             # exit routes are right-aligned
-            elif self.route_type == c.base_route_flags[2]:
+            elif self.route_type == c.RIGHT_ENTRY_BASE_ROUTE:
                 surface.blit(self.image, tuple((base_offset[0] + c.map_resolution[0] - width,
                                                 base_offset[1] + (c.map_resolution[1] - height) // 2)))
             # platform routes are centralized
-            elif self.route_type == c.base_route_flags[4]:
+            elif self.route_type == c.LEFT_ENTRY_PLATFORM_BASE_ROUTE:
                 surface.blit(self.image, tuple((base_offset[0] + (c.map_resolution[0] - width) // 2,
                                                 base_offset[1] + (c.map_resolution[1] - height) // 2)))
 

@@ -30,58 +30,65 @@ class RSSim(Game):
 
     def create_infrastructure(self):
         sys.path.append('./base_route_cfg')
-        for j in (c.base_route_flags[0], c.base_route_flags[1], c.base_route_flags[2], c.base_route_flags[3]):
+        for j in (c.LEFT_ENTRY_BASE_ROUTE, c.LEFT_EXIT_BASE_ROUTE, c.RIGHT_ENTRY_BASE_ROUTE, c.RIGHT_EXIT_BASE_ROUTE):
             self.base_routes[0][j] = BaseRoute(0, j)
             placement = self.base_routes[0][j].route_config.exit_signal_placement
             flip_needed = self.base_routes[0][j].route_config.flip_needed
             if placement is not None:
                 self.signals[0][j] = Signal(placement, flip_needed)
 
-        for j in (c.base_route_flags[0], c.base_route_flags[1], c.base_route_flags[2], c.base_route_flags[3]):
+        for j in (c.LEFT_ENTRY_BASE_ROUTE, c.LEFT_EXIT_BASE_ROUTE, c.RIGHT_ENTRY_BASE_ROUTE, c.RIGHT_EXIT_BASE_ROUTE):
             self.base_routes[0][j].route_config.exit_signal = self.signals[0][j]
-            self.signals[0][j].base_route_exit_list.append(self.base_routes[0][j])
+            self.signals[0][j].base_route_exit = self.base_routes[0][j]
 
         for i in range(1, 2):
             self.base_routes.append({})
             self.signals.append({})
-            for k in c.base_route_flags:
+            for k in (c.LEFT_ENTRY_BASE_ROUTE, c.LEFT_EXIT_BASE_ROUTE,
+                      c.RIGHT_ENTRY_BASE_ROUTE, c.RIGHT_EXIT_BASE_ROUTE,
+                      c.LEFT_ENTRY_PLATFORM_BASE_ROUTE, c.RIGHT_ENTRY_PLATFORM_BASE_ROUTE,
+                      c.RIGHT_EXIT_PLATFORM_BASE_ROUTE, c.LEFT_EXIT_PLATFORM_BASE_ROUTE):
                 self.base_routes[i][k] = BaseRoute(i, k)
                 placement = self.base_routes[i][k].route_config.exit_signal_placement
                 flip_needed = self.base_routes[i][k].route_config.flip_needed
-                if placement is not None and k in (c.base_route_flags[6], c.base_route_flags[7]):
+                if placement is not None and k in (c.RIGHT_EXIT_PLATFORM_BASE_ROUTE, c.LEFT_EXIT_PLATFORM_BASE_ROUTE):
                     self.signals[i][k] = Signal(placement, flip_needed)
 
         for i in range(1, 2):
-            self.base_routes[i][c.base_route_flags[6]].route_config.exit_signal = self.signals[i][c.base_route_flags[6]]
-            self.base_routes[i][c.base_route_flags[4]].route_config.exit_signal = self.signals[i][c.base_route_flags[6]]
-            self.base_routes[i][c.base_route_flags[7]].route_config.exit_signal = self.signals[i][c.base_route_flags[7]]
-            self.base_routes[i][c.base_route_flags[5]].route_config.exit_signal = self.signals[i][c.base_route_flags[7]]
-            self.signals[i][c.base_route_flags[6]].base_route_exit_list\
-                .append(self.base_routes[i][c.base_route_flags[6]])
-            self.signals[i][c.base_route_flags[6]].base_route_opened_list \
-                .append(self.base_routes[i][c.base_route_flags[3]])
-            self.signals[i][c.base_route_flags[7]].base_route_exit_list\
-                .append(self.base_routes[i][c.base_route_flags[7]])
-            self.signals[i][c.base_route_flags[7]].base_route_exit_list\
-                .append(self.base_routes[i][c.base_route_flags[5]])
-            self.signals[i][c.base_route_flags[7]].base_route_opened_list\
-                .append(self.base_routes[i][c.base_route_flags[1]])
-            self.signals[0][c.base_route_flags[0]].base_route_opened_list\
-                .append(self.base_routes[i][c.base_route_flags[0]])
-            self.signals[0][c.base_route_flags[0]].base_route_opened_list\
-                .append(self.base_routes[i][c.base_route_flags[4]])
-            self.signals[0][c.base_route_flags[2]].base_route_opened_list\
-                .append(self.base_routes[i][c.base_route_flags[2]])
-            self.signals[0][c.base_route_flags[2]].base_route_opened_list\
-                .append(self.base_routes[i][c.base_route_flags[5]])
-            self.signals[0][c.base_route_flags[0]].base_route_busy_list\
-                .append(self.base_routes[i][c.base_route_flags[0]])
-            self.signals[0][c.base_route_flags[2]].base_route_busy_list\
-                .append(self.base_routes[i][c.base_route_flags[2]])
-            self.signals[0][c.base_route_flags[0]].base_route_busy_list\
-                .append(self.base_routes[i][c.base_route_flags[1]])
-            self.signals[0][c.base_route_flags[2]].base_route_busy_list\
-                .append(self.base_routes[i][c.base_route_flags[3]])
+            self.base_routes[i][c.RIGHT_EXIT_PLATFORM_BASE_ROUTE].route_config.exit_signal = \
+                self.signals[i][c.RIGHT_EXIT_PLATFORM_BASE_ROUTE]
+            self.base_routes[i][c.LEFT_ENTRY_PLATFORM_BASE_ROUTE].route_config.exit_signal = \
+                self.signals[i][c.RIGHT_EXIT_PLATFORM_BASE_ROUTE]
+            self.base_routes[i][c.LEFT_EXIT_PLATFORM_BASE_ROUTE].route_config.exit_signal = \
+                self.signals[i][c.LEFT_EXIT_PLATFORM_BASE_ROUTE]
+            self.base_routes[i][c.RIGHT_ENTRY_PLATFORM_BASE_ROUTE].route_config.exit_signal = \
+                self.signals[i][c.LEFT_EXIT_PLATFORM_BASE_ROUTE]
+
+            self.signals[i][c.RIGHT_EXIT_PLATFORM_BASE_ROUTE].base_route_exit = \
+                self.base_routes[i][c.RIGHT_EXIT_PLATFORM_BASE_ROUTE]
+            self.signals[i][c.RIGHT_EXIT_PLATFORM_BASE_ROUTE].base_route_opened_list \
+                .append(self.base_routes[i][c.RIGHT_EXIT_BASE_ROUTE])
+            self.signals[i][c.LEFT_EXIT_PLATFORM_BASE_ROUTE].base_route_exit = \
+                self.base_routes[i][c.LEFT_EXIT_PLATFORM_BASE_ROUTE]
+            self.signals[i][c.LEFT_EXIT_PLATFORM_BASE_ROUTE].base_route_opened_list \
+                .append(self.base_routes[i][c.LEFT_EXIT_BASE_ROUTE])
+
+            self.signals[0][c.LEFT_ENTRY_BASE_ROUTE].base_route_opened_list \
+                .append(self.base_routes[i][c.LEFT_ENTRY_BASE_ROUTE])
+            self.signals[0][c.LEFT_ENTRY_BASE_ROUTE].base_route_opened_list \
+                .append(self.base_routes[i][c.LEFT_ENTRY_PLATFORM_BASE_ROUTE])
+            self.signals[0][c.RIGHT_ENTRY_BASE_ROUTE].base_route_opened_list \
+                .append(self.base_routes[i][c.RIGHT_ENTRY_BASE_ROUTE])
+            self.signals[0][c.RIGHT_ENTRY_BASE_ROUTE].base_route_opened_list \
+                .append(self.base_routes[i][c.RIGHT_ENTRY_PLATFORM_BASE_ROUTE])
+            self.signals[0][c.LEFT_ENTRY_BASE_ROUTE].base_route_busy_list \
+                .append(self.base_routes[i][c.LEFT_ENTRY_BASE_ROUTE])
+            self.signals[0][c.RIGHT_ENTRY_BASE_ROUTE].base_route_busy_list \
+                .append(self.base_routes[i][c.RIGHT_ENTRY_BASE_ROUTE])
+            self.signals[0][c.LEFT_ENTRY_BASE_ROUTE].base_route_busy_list \
+                .append(self.base_routes[i][c.LEFT_EXIT_BASE_ROUTE])
+            self.signals[0][c.RIGHT_ENTRY_BASE_ROUTE].base_route_busy_list \
+                .append(self.base_routes[i][c.RIGHT_EXIT_BASE_ROUTE])
 
         base_routes_in_train_route = [self.base_routes[0]['{}_base_route'.format(c.train_route_flags[0])]]
         self.train_routes[0][c.train_route_flags[4]] = \
@@ -112,9 +119,6 @@ class RSSim(Game):
                                               self.base_routes[0]['{}_base_route'.format(m)]]
 
                 self.train_routes[i][m] = TrainRoute(base_routes_in_train_route, i, m)
-
-            # self.train_routes[i][c.train_route_flags[6]] = TrainRoute(
-            #     [self.base_routes[i]['left_entry_platform_base_route']], i, c.train_route_flags[6])
 
         for i in range(2):
             for n in self.base_routes[i].keys():
