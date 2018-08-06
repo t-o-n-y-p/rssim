@@ -7,8 +7,11 @@ import config as c
 class Signal(GameObject):
     def __init__(self, placement, flip_needed):
         super().__init__()
+        # where to place signal on map
         self.placement = placement
+        # for left-directed routes we need to flip signal (its default image is for right-directed routes)
         self.flip_needed = flip_needed
+        # by default all signals are red, just like IRL :)
         self.state = c.RED_SIGNAL
         self.image = {c.RED_SIGNAL: pygame.image.load(c.signal_image_path[c.RED_SIGNAL]).convert_alpha(),
                       c.GREEN_SIGNAL: pygame.image.load(c.signal_image_path[c.GREEN_SIGNAL]).convert_alpha()}
@@ -22,7 +25,10 @@ class Signal(GameObject):
 
     def draw(self, surface, base_offset):
         signal_position = (base_offset[0] + self.placement[0], base_offset[1] + self.placement[1])
-        surface.blit(self.image[self.state], signal_position)
+        # reserved for future transition between states,
+        # for now there are only 2 states: pure red and pure green
+        if self.state in (c.RED_SIGNAL, c.GREEN_SIGNAL):
+            surface.blit(self.image[self.state], signal_position)
 
     def update(self, game_paused):
         if not game_paused:
@@ -36,6 +42,8 @@ class Signal(GameObject):
                 if i.route_config.opened:
                     opened_by.append(i.last_opened_by)
 
+            # if no single route is opened, signal should be red indeed;
+            # if something is opened, we check busy route list
             if not opened_logical:
                 self.state = c.RED_SIGNAL
             else:
@@ -45,6 +53,9 @@ class Signal(GameObject):
                              i.last_opened_by != self.base_route_exit.last_opened_by):
                         busy_logical = busy_logical or i.route_config.busy
 
+                # if some route behind the signal is busy not by train
+                # which is located before the signal, it should be red indeed;
+                # if not, let's check if train before the signal has passed it
                 if busy_logical:
                     self.state = c.RED_SIGNAL
                 else:
@@ -52,6 +63,7 @@ class Signal(GameObject):
                     if self.base_route_exit.route_config.busy:
                         is_busy_by = self.base_route_exit.last_entered_by
 
+                    # if train has passed signal, turn it red
                     if exit_logical and is_busy_by in opened_by:
                         self.state = c.GREEN_SIGNAL
                     else:
