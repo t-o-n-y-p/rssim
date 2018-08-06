@@ -71,7 +71,7 @@ class Dispatcher(GameObject):
             entry_busy = self.train_routes[0][c.APPROACHING_TRAIN_ROUTE[i]].base_routes[0].route_config.busy
             if not entry_busy:
                 self.train_timer[i] += 1
-                if self.train_timer[i] == c.train_creation_timeout[i]:
+                if self.train_timer[i] >= c.train_creation_timeout[i]:
                     self.train_timer[i] = 0
                     new_train = None
                     random.seed()

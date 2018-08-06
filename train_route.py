@@ -41,10 +41,10 @@ class TrainRoute(GameObject):
     def set_next_stop_point(self, first_cart_position):
         index = len(self.active_stop_points)
         if index == 1:
-            if first_cart_position < self.active_stop_points[0]:
+            if first_cart_position <= self.active_stop_points[0]:
                 self.next_stop_point = self.active_stop_points[0]
         elif index > 1:
-            if first_cart_position < self.active_stop_points[0]:
+            if first_cart_position <= self.active_stop_points[0]:
                 self.next_stop_point = self.active_stop_points[0]
             else:
                 for i in range(index-1):

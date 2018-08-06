@@ -14,8 +14,10 @@ class Train(GameObject):
         self.carts = carts
         self.direction = direction
         self.train_id = train_id
-        self.boarding_time = self.carts * 2
+        self.boarding_time = self.carts * 40
         self.speed = c.train_maximum_speed
+        self.speed_state = c.MOVE
+        self.speed_factor_position = c.train_acceleration_factor_length - 1
         self.state = state
         self.train_route = train_route
         self.train_route.open_train_route(self.train_id)
@@ -53,18 +55,21 @@ class Train(GameObject):
 
     def update(self, game_paused):
         if not game_paused:
-            if self.state not in c.BOARDING_IN_PROGRESS:
+            if self.state in c.BOARDING_IN_PROGRESS:
+                self.speed = 0
+                self.speed_factor_position = 0
+            else:
                 if self.train_route.route_type in (c.ENTRY_TRAIN_ROUTE[c.LEFT], c.ENTRY_TRAIN_ROUTE[c.RIGHT]):
                     self.track_number = self.train_route.track_number
 
-                if self.direction == 0:
+                if self.direction == c.LEFT:
                     for k in self.train_route.busy_routes:
                         if self.train_route.trail_points[self.carts_position[len(self.carts_position) - 1][1]][0] > \
                                 k.route_config.trail_points[len(k.route_config.trail_points) - 1][0]:
                             k.route_config.busy = False
                             self.train_route.busy_routes.remove(k)
 
-                if self.direction == 1:
+                if self.direction == c.RIGHT:
                     for k in self.train_route.busy_routes:
                         if self.train_route.trail_points[self.carts_position[len(self.carts_position) - 1][1]][0] < \
                                 k.route_config.trail_points[len(k.route_config.trail_points) - 1][0]:
@@ -73,20 +78,37 @@ class Train(GameObject):
 
                 self.train_route.set_next_stop_point(self.carts_position[0][0])
                 if self.carts_position[0][0] == self.train_route.next_stop_point:
-                    self.speed = 0
+                    self.speed_state = c.STOP
                 elif self.train_route.next_stop_point - self.carts_position[0][0] \
-                        <= self.speed * c.train_deceleration_factor:
-                    self.speed -= 1
-                    if self.speed < 1:
-                        self.speed = 1
+                        <= c.train_braking_distance:
+                    self.speed_state = c.DECELERATE
                 else:
-                    # refactor later for train to accelerate slower
-                    if self.speed < c.train_maximum_speed:
-                        self.speed += 1
+                    if self.speed_state != c.MOVE:
+                        self.speed_state = c.ACCELERATE
 
-            for i in self.carts_position:
-                i[0] += self.speed
-                i[1] += self.speed
+                if self.speed_state == c.ACCELERATE:
+                    if self.speed_factor_position == c.train_acceleration_factor_length - 1:
+                        self.speed_state = c.MOVE
+                    else:
+                        self.speed = c.train_acceleration_factor[self.speed_factor_position + 1] - \
+                                     c.train_acceleration_factor[self.speed_factor_position]
+                        self.speed_factor_position += 1
+
+                if self.speed_state == c.MOVE:
+                    self.speed = c.train_maximum_speed
+
+                if self.speed_state == c.DECELERATE:
+                    self.speed_factor_position -= 1
+                    self.speed = c.train_acceleration_factor[self.speed_factor_position + 1] - \
+                                 c.train_acceleration_factor[self.speed_factor_position]
+
+                if self.speed_state == c.STOP:
+                    self.speed = 0
+                    self.speed_factor_position = 0
+
+                for i in self.carts_position:
+                    i[0] += self.speed
+                    i[1] += self.speed
 
     def draw(self, surface, base_offset):
         if len(self.carts_position_abs) > 0:
