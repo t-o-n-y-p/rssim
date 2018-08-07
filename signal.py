@@ -20,6 +20,7 @@ class Signal(GameObject):
                           c.GREEN_SIGNAL: pygame.transform.flip(self.image[c.GREEN_SIGNAL], True, False)}
 
         self.base_route_busy_list = []
+        self.base_route_busy_extended_list = []
         self.base_route_opened_list = []
         self.base_route_exit = None
 
@@ -32,7 +33,9 @@ class Signal(GameObject):
 
     def update(self, game_paused):
         if not game_paused:
+            approaching_track = None
             busy_logical = False
+            busy_extended_logical = False
             opened_logical = False
             opened_by = []
             is_busy_by = None
@@ -52,19 +55,30 @@ class Signal(GameObject):
                             (i in self.base_route_opened_list and
                              i.last_opened_by != self.base_route_exit.last_opened_by):
                         busy_logical = busy_logical or i.route_config.busy
+                    else:
+                        approaching_track = i.track_number
 
                 # if some route behind the signal is busy not by train
                 # which is located before the signal, it should be red indeed;
-                # if not, let's check if train before the signal has passed it
+                # if not, let's check if there are any busy_extended routes busy (it they even exist)
                 if busy_logical:
                     self.state = c.RED_SIGNAL
                 else:
-                    exit_logical = exit_logical or self.base_route_exit.route_config.busy
-                    if self.base_route_exit.route_config.busy:
-                        is_busy_by = self.base_route_exit.last_entered_by
-
-                    # if train has passed signal, turn it red
-                    if exit_logical and is_busy_by in opened_by:
-                        self.state = c.GREEN_SIGNAL
-                    else:
+                    if len(self.base_route_busy_extended_list) > 0:
+                        for i in self.base_route_busy_extended_list:
+                            if i.track_number % 2 == approaching_track % 2:
+                                busy_extended_logical = busy_extended_logical or i.route_config.busy
+                    # if busy_extended routes are not busy too, we can open the signal,
+                    # but we need to close signal back once our train has passed it
+                    if busy_extended_logical:
                         self.state = c.RED_SIGNAL
+                    else:
+                        exit_logical = exit_logical or self.base_route_exit.route_config.busy
+                        if self.base_route_exit.route_config.busy:
+                            is_busy_by = self.base_route_exit.last_entered_by
+
+                        # if train has passed signal, turn it red
+                        if exit_logical and is_busy_by in opened_by:
+                            self.state = c.GREEN_SIGNAL
+                        else:
+                            self.state = c.RED_SIGNAL

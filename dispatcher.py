@@ -109,7 +109,10 @@ class Dispatcher(GameObject):
                     new_train = None
                     # randomly choose number of carts for train
                     random.seed()
-                    carts = random.choice(range(6, 21))
+                    if i == c.LEFT:
+                        carts = random.choice(range(19, 21))
+                    else:
+                        carts = random.choice(range(6, 8))
                     # if some compatible track is available, we open route for new train
                     route_for_new_train = None
                     for j in range(c.first_priority_tracks[i][0],

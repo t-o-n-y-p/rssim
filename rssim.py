@@ -95,6 +95,20 @@ class RSSim(Game):
                 self.signals[i][c.LEFT_EXIT_PLATFORM_BASE_ROUTE].base_route_busy_list \
                     .append(self.base_routes[q][c.LEFT_EXIT_BASE_ROUTE])
 
+            # for first priority track exit routes,
+            # busy list includes same track entries from other side
+            if i in range(c.first_priority_tracks[c.LEFT][0],
+                          c.first_priority_tracks[c.LEFT][1],
+                          c.first_priority_tracks[c.LEFT][2]):
+                self.signals[i][c.RIGHT_EXIT_PLATFORM_BASE_ROUTE].base_route_busy_list \
+                    .append(self.base_routes[i][c.RIGHT_ENTRY_BASE_ROUTE])
+
+            if i in range(c.first_priority_tracks[c.RIGHT][0],
+                          c.first_priority_tracks[c.RIGHT][1],
+                          c.first_priority_tracks[c.RIGHT][2]):
+                self.signals[i][c.LEFT_EXIT_PLATFORM_BASE_ROUTE].base_route_busy_list \
+                    .append(self.base_routes[i][c.LEFT_ENTRY_BASE_ROUTE])
+
             # for main entry signals, opened list includes all entry base routes
             self.signals[0][c.LEFT_ENTRY_BASE_ROUTE].base_route_opened_list \
                 .append(self.base_routes[i][c.LEFT_ENTRY_BASE_ROUTE])
@@ -105,18 +119,30 @@ class RSSim(Game):
                 .append(self.base_routes[i][c.LEFT_ENTRY_BASE_ROUTE])
             self.signals[0][c.RIGHT_ENTRY_BASE_ROUTE].base_route_busy_list \
                 .append(self.base_routes[i][c.RIGHT_ENTRY_BASE_ROUTE])
-            # odd and even routes should not block each other
-            # if they do not interfere
-            for u in range(c.first_priority_tracks[0][0],
-                           c.first_priority_tracks[0][1],
-                           c.first_priority_tracks[0][2]):
+            # for main entry signals, busy list includes all first priority exit base routes,
+            # and busy_extended list includes all second priority exit base routes
+            for u in range(c.first_priority_tracks[c.LEFT][0],
+                           c.first_priority_tracks[c.LEFT][1],
+                           c.first_priority_tracks[c.LEFT][2]):
                 self.signals[0][c.LEFT_ENTRY_BASE_ROUTE].base_route_busy_list \
                     .append(self.base_routes[u][c.LEFT_EXIT_BASE_ROUTE])
 
-            for v in range(c.first_priority_tracks[1][0],
-                           c.first_priority_tracks[1][1],
-                           c.first_priority_tracks[1][2]):
+            for u in range(c.second_priority_tracks[c.LEFT][0],
+                           c.second_priority_tracks[c.LEFT][1],
+                           c.second_priority_tracks[c.LEFT][2]):
+                self.signals[0][c.LEFT_ENTRY_BASE_ROUTE].base_route_busy_extended_list \
+                    .append(self.base_routes[u][c.LEFT_EXIT_BASE_ROUTE])
+
+            for v in range(c.first_priority_tracks[c.RIGHT][0],
+                           c.first_priority_tracks[c.RIGHT][1],
+                           c.first_priority_tracks[c.RIGHT][2]):
                 self.signals[0][c.RIGHT_ENTRY_BASE_ROUTE].base_route_busy_list \
+                    .append(self.base_routes[v][c.RIGHT_EXIT_BASE_ROUTE])
+
+            for v in range(c.second_priority_tracks[c.RIGHT][0],
+                           c.second_priority_tracks[c.RIGHT][1],
+                           c.second_priority_tracks[c.RIGHT][2]):
+                self.signals[0][c.RIGHT_ENTRY_BASE_ROUTE].base_route_busy_extended_list \
                     .append(self.base_routes[v][c.RIGHT_EXIT_BASE_ROUTE])
 
         # ------ TRAIN ROUTES AND TRACKS ------
