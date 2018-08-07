@@ -53,7 +53,7 @@ class Dispatcher(GameObject):
                 # train is in approaching state if all tracks are busy,
                 # so we wait for any compatible track to be available for this train
                 if i.state == c.APPROACHING:
-                    for j in (1,):
+                    for j in range(1, c.tracks_ready + 1):
                         r = self.train_routes[j][c.ENTRY_TRAIN_ROUTE[i.direction]]
                         # if compatible track is finally available,
                         # we open entry route for our train and leave loop
@@ -92,7 +92,7 @@ class Dispatcher(GameObject):
                     carts = random.choice(range(2, 3))
                     # if some compatible track is available, we open route for new train
                     route_for_new_train = None
-                    for j in (1,):
+                    for j in range(1, c.tracks_ready + 1):
                         r = self.train_routes[j][c.ENTRY_TRAIN_ROUTE[i]]
                         if carts in range(r.supported_carts[0], r.supported_carts[1] + 1) and not r.opened and not \
                                 self.tracks[j - 1].busy:

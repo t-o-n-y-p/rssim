@@ -50,7 +50,7 @@ class RSSim(Game):
             self.signals[0][j].base_route_exit = self.base_routes[0][j]
 
         # create all other base routes and signals for platform routes
-        for i in range(1, 2):
+        for i in range(1, c.tracks_ready + 1):
             self.base_routes.append({})
             self.signals.append({})
             for k in (c.LEFT_ENTRY_BASE_ROUTE, c.LEFT_EXIT_BASE_ROUTE,
@@ -63,7 +63,7 @@ class RSSim(Game):
                 if placement is not None and k in (c.RIGHT_EXIT_PLATFORM_BASE_ROUTE, c.LEFT_EXIT_PLATFORM_BASE_ROUTE):
                     self.signals[i][k] = Signal(placement, flip_needed)
 
-        for i in range(1, 2):
+        for i in range(1, c.tracks_ready + 1):
             # associate platform base route with its signal
             self.base_routes[i][c.RIGHT_EXIT_PLATFORM_BASE_ROUTE].route_config.exit_signal = \
                 self.signals[i][c.RIGHT_EXIT_PLATFORM_BASE_ROUTE]
@@ -80,13 +80,21 @@ class RSSim(Game):
                 self.base_routes[i][c.LEFT_EXIT_PLATFORM_BASE_ROUTE]
 
         # fill opened and busy route lists for signals
-        for i in range(1, 2):
+        for i in range(1, c.tracks_ready + 1):
             # for every platform signal, opened list includes exit base route
             # which begins behind the signal
             self.signals[i][c.RIGHT_EXIT_PLATFORM_BASE_ROUTE].base_route_opened_list \
                 .append(self.base_routes[i][c.RIGHT_EXIT_BASE_ROUTE])
             self.signals[i][c.LEFT_EXIT_PLATFORM_BASE_ROUTE].base_route_opened_list \
                 .append(self.base_routes[i][c.LEFT_EXIT_BASE_ROUTE])
+            # for every platform signal, busy list includes all exit base routes
+            # located on the same side
+            for q in range(1, c.tracks_ready + 1):
+                self.signals[i][c.RIGHT_EXIT_PLATFORM_BASE_ROUTE].base_route_busy_list \
+                    .append(self.base_routes[q][c.RIGHT_EXIT_BASE_ROUTE])
+                self.signals[i][c.LEFT_EXIT_PLATFORM_BASE_ROUTE].base_route_busy_list \
+                    .append(self.base_routes[q][c.LEFT_EXIT_BASE_ROUTE])
+
             # for main entry signals, opened list includes all entry base routes
             self.signals[0][c.LEFT_ENTRY_BASE_ROUTE].base_route_opened_list \
                 .append(self.base_routes[i][c.LEFT_ENTRY_BASE_ROUTE])
@@ -113,7 +121,7 @@ class RSSim(Game):
         self.train_routes[0][c.APPROACHING_TRAIN_ROUTE[c.RIGHT]] = \
             TrainRoute(base_routes_in_train_route, 0, c.APPROACHING_TRAIN_ROUTE[c.RIGHT])
 
-        for i in range(1, 2):
+        for i in range(1, c.tracks_ready + 1):
             self.train_routes.append({})
             # create track object
             # it includes all 4 base routes
@@ -148,7 +156,7 @@ class RSSim(Game):
 
         # ------ SORT THIS OUT ------
         # base routes and signals are added to generic objects list
-        for i in range(2):
+        for i in range(c.tracks_ready + 1):
             for n in self.base_routes[i].keys():
                 self.objects.append(self.base_routes[i][n])
 
@@ -157,12 +165,12 @@ class RSSim(Game):
 
         # train routes and tracks are added to dispatcher which we create right now
         train_dispatcher = Dispatcher()
-        for i in range(2):
+        for i in range(c.tracks_ready + 1):
             train_dispatcher.train_routes.append({})
             for p in self.train_routes[i].keys():
                 train_dispatcher.train_routes[i].update({p: self.train_routes[i][p]})
 
-        for i in range(1, ):
+        for i in range(c.tracks_ready):
             train_dispatcher.tracks.append(self.tracks[i])
 
         # now we add dispatcher itself to generic objects list
