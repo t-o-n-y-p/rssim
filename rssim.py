@@ -101,20 +101,28 @@ class RSSim(Game):
             if i in range(c.first_priority_tracks[c.LEFT][0],
                           c.first_priority_tracks[c.LEFT][1],
                           c.first_priority_tracks[c.LEFT][2]):
-                self.signals[i][c.RIGHT_EXIT_PLATFORM_BASE_ROUTE].base_route_busy_list \
-                    .append(self.base_routes[i][c.RIGHT_ENTRY_BASE_ROUTE])
-                for d in range(1, c.tracks_ready + 1):
+                for d1 in range(c.first_priority_tracks[c.LEFT][0],
+                                c.first_priority_tracks[c.LEFT][1],
+                                c.first_priority_tracks[c.LEFT][2]):
+                    self.signals[i][c.RIGHT_EXIT_PLATFORM_BASE_ROUTE].base_route_busy_list \
+                        .append(self.base_routes[d1][c.RIGHT_ENTRY_BASE_ROUTE])
+
+                for d2 in range(1, c.tracks_ready + 1):
                     self.signals[i][c.LEFT_EXIT_PLATFORM_BASE_ROUTE].base_route_busy_list \
-                        .append(self.base_routes[d][c.LEFT_ENTRY_BASE_ROUTE])
+                        .append(self.base_routes[d2][c.LEFT_ENTRY_BASE_ROUTE])
 
             if i in range(c.first_priority_tracks[c.RIGHT][0],
                           c.first_priority_tracks[c.RIGHT][1],
                           c.first_priority_tracks[c.RIGHT][2]):
-                self.signals[i][c.LEFT_EXIT_PLATFORM_BASE_ROUTE].base_route_busy_list \
-                    .append(self.base_routes[i][c.LEFT_ENTRY_BASE_ROUTE])
-                for e in range(1, c.tracks_ready + 1):
+                for e1 in range(c.first_priority_tracks[c.RIGHT][0],
+                                c.first_priority_tracks[c.RIGHT][1],
+                                c.first_priority_tracks[c.RIGHT][2]):
+                    self.signals[i][c.LEFT_EXIT_PLATFORM_BASE_ROUTE].base_route_busy_list \
+                        .append(self.base_routes[e1][c.LEFT_ENTRY_BASE_ROUTE])
+
+                for e2 in range(1, c.tracks_ready + 1):
                     self.signals[i][c.RIGHT_EXIT_PLATFORM_BASE_ROUTE].base_route_busy_list \
-                        .append(self.base_routes[e][c.RIGHT_ENTRY_BASE_ROUTE])
+                        .append(self.base_routes[e2][c.RIGHT_ENTRY_BASE_ROUTE])
 
             # for main entry signals, opened list includes all entry base routes
             self.signals[0][c.LEFT_ENTRY_BASE_ROUTE].base_route_opened_list \
