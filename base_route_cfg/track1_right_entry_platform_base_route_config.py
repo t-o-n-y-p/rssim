@@ -1,4 +1,4 @@
-image_path = 'img/track1_route.png'
+image_path = None
 locked = False
 busy = False
 opened = False

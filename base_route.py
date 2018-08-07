@@ -14,10 +14,13 @@ class BaseRoute(GameObject):
         # last_opened_by and last_entered_by are used by signals to determine if next route is opened by the same train
         self.last_opened_by = None
         self.last_entered_by = None
-        self.image = pygame.image.load(self.route_config.image_path).convert_alpha()
+        if self.route_config.image_path is not None:
+            self.image = pygame.image.load(self.route_config.image_path).convert_alpha()
+        else:
+            self.image = None
 
     def draw(self, surface, base_offset):
-        if not self.route_config.locked:
+        if not self.route_config.locked and self.image is not None:
             width = self.image.get_width()
             height = self.image.get_height()
             # entry routes are left-aligned
