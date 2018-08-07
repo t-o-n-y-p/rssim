@@ -35,7 +35,7 @@ RED_SIGNAL = 'red'
 GREEN_SIGNAL = 'green'
 signal_image_path = {RED_SIGNAL: 'img/signal_red.png', GREEN_SIGNAL: 'img/signal_green.png'}
 
-train_creation_timeout = {LEFT: frame_rate*0, RIGHT: frame_rate*1000000000}
+train_creation_timeout = {LEFT: frame_rate*0, RIGHT: frame_rate*2}
 train_cart_image_path = ('img/cart_red.png', 'img/cart_green.png', 'img/cart_blue.png')
 train_acceleration_factor = (0, 0, 0, 0, 0, 1, 1, 1, 1, 1, 2, 2, 2, 2, 3, 3, 3, 3, 4, 4, 4, 5, 5, 5, 6, 6, 6, 7, 7,
                              8, 8, 8, 9, 9, 10, 10, 10, 11, 11, 12, 12, 13, 13, 14, 14, 15, 15, 16, 16, 17, 17, 18,
@@ -57,6 +57,9 @@ train_acceleration_factor_length = len(train_acceleration_factor)
 train_maximum_speed = train_acceleration_factor[train_acceleration_factor_length - 1] - \
                       train_acceleration_factor[train_acceleration_factor_length - 2]
 train_braking_distance = train_acceleration_factor[train_acceleration_factor_length - 1]
+
+first_priority_tracks = ((tracks_ready - (tracks_ready % 2), 0, -2), (tracks_ready + (tracks_ready % 2) - 1, 0, -2))
+second_priority_tracks = ((tracks_ready + (tracks_ready % 2) - 1, 0, -2), (tracks_ready - (tracks_ready % 2), 0, -2))
 
 MOVE = 'normal'
 ACCELERATE = 'accelerate'

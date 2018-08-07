@@ -53,7 +53,10 @@ class Dispatcher(GameObject):
                 # train is in approaching state if all tracks are busy,
                 # so we wait for any compatible track to be available for this train
                 if i.state == c.APPROACHING:
-                    for j in range(1, c.tracks_ready + 1):
+                    route_for_new_train = None
+                    for j in range(c.first_priority_tracks[i.direction][0],
+                                   c.first_priority_tracks[i.direction][1],
+                                   c.first_priority_tracks[i.direction][2]):
                         r = self.train_routes[j][c.ENTRY_TRAIN_ROUTE[i.direction]]
                         # if compatible track is finally available,
                         # we open entry route for our train and leave loop
@@ -66,6 +69,23 @@ class Dispatcher(GameObject):
                             i.complete_train_route()
                             i.assign_new_train_route(route_for_new_train, i.train_id)
                             break
+
+                    if route_for_new_train is None:
+                        for j in range(c.second_priority_tracks[i.direction][0],
+                                       c.second_priority_tracks[i.direction][1],
+                                       c.second_priority_tracks[i.direction][2]):
+                            r = self.train_routes[j][c.ENTRY_TRAIN_ROUTE[i.direction]]
+                            # if compatible track is finally available,
+                            # we open entry route for our train and leave loop
+                            if i.carts in range(r.supported_carts[0], r.supported_carts[1] + 1) and not r.opened and not \
+                                    self.tracks[j - 1].busy:
+                                route_for_new_train = self.train_routes[j][c.ENTRY_TRAIN_ROUTE[i.direction]]
+                                self.tracks[j - 1].busy = True
+                                self.tracks[j - 1].last_entered_by = i.train_id
+                                i.state = c.PENDING_BOARDING
+                                i.complete_train_route()
+                                i.assign_new_train_route(route_for_new_train, i.train_id)
+                                break
 
             # it's time to check if we can spawn more trains
             self.create_new_trains()
@@ -89,10 +109,12 @@ class Dispatcher(GameObject):
                     new_train = None
                     # randomly choose number of carts for train
                     random.seed()
-                    carts = random.choice(range(2, 3))
+                    carts = random.choice(range(6, 21))
                     # if some compatible track is available, we open route for new train
                     route_for_new_train = None
-                    for j in range(1, c.tracks_ready + 1):
+                    for j in range(c.first_priority_tracks[i][0],
+                                   c.first_priority_tracks[i][1],
+                                   c.first_priority_tracks[i][2]):
                         r = self.train_routes[j][c.ENTRY_TRAIN_ROUTE[i]]
                         if carts in range(r.supported_carts[0], r.supported_carts[1] + 1) and not r.opened and not \
                                 self.tracks[j - 1].busy:
@@ -100,6 +122,18 @@ class Dispatcher(GameObject):
                             new_train = Train(carts, route_for_new_train, c.PENDING_BOARDING, i, self.train_counter)
                             self.train_counter += 1
                             break
+
+                    if route_for_new_train is None:
+                        for j in range(c.second_priority_tracks[i][0],
+                                       c.second_priority_tracks[i][1],
+                                       c.second_priority_tracks[i][2]):
+                            r = self.train_routes[j][c.ENTRY_TRAIN_ROUTE[i]]
+                            if carts in range(r.supported_carts[0], r.supported_carts[1] + 1) and not r.opened and not \
+                                    self.tracks[j - 1].busy:
+                                route_for_new_train = self.train_routes[j][c.ENTRY_TRAIN_ROUTE[i]]
+                                new_train = Train(carts, route_for_new_train, c.PENDING_BOARDING, i, self.train_counter)
+                                self.train_counter += 1
+                                break
 
                     # if compatible route is not available, we open basic entry route
                     # so our train can wait for some track to be available

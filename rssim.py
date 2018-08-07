@@ -105,12 +105,19 @@ class RSSim(Game):
                 .append(self.base_routes[i][c.LEFT_ENTRY_BASE_ROUTE])
             self.signals[0][c.RIGHT_ENTRY_BASE_ROUTE].base_route_busy_list \
                 .append(self.base_routes[i][c.RIGHT_ENTRY_BASE_ROUTE])
-            # so far odd and even routes block each other,
-            # it is a known limitation for now and should not be removed
-            self.signals[0][c.RIGHT_ENTRY_BASE_ROUTE].base_route_busy_list \
-                .append(self.base_routes[i][c.RIGHT_EXIT_BASE_ROUTE])
-            self.signals[0][c.LEFT_ENTRY_BASE_ROUTE].base_route_busy_list \
-                .append(self.base_routes[i][c.LEFT_EXIT_BASE_ROUTE])
+            # odd and even routes should not block each other
+            # if they do not interfere
+            for u in range(c.first_priority_tracks[0][0],
+                           c.first_priority_tracks[0][1],
+                           c.first_priority_tracks[0][2]):
+                self.signals[0][c.LEFT_ENTRY_BASE_ROUTE].base_route_busy_list \
+                    .append(self.base_routes[u][c.LEFT_EXIT_BASE_ROUTE])
+
+            for v in range(c.first_priority_tracks[1][0],
+                           c.first_priority_tracks[1][1],
+                           c.first_priority_tracks[1][2]):
+                self.signals[0][c.RIGHT_ENTRY_BASE_ROUTE].base_route_busy_list \
+                    .append(self.base_routes[v][c.RIGHT_EXIT_BASE_ROUTE])
 
         # ------ TRAIN ROUTES AND TRACKS ------
         # create basic entry train routes for trains which cannot find available track
