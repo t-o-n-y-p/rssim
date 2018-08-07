@@ -99,6 +99,7 @@ class Dispatcher(GameObject):
                             route_for_new_train = self.train_routes[j][c.ENTRY_TRAIN_ROUTE[i]]
                             new_train = Train(carts, route_for_new_train, c.PENDING_BOARDING, i, self.train_counter)
                             self.train_counter += 1
+                            break
 
                     # if compatible route is not available, we open basic entry route
                     # so our train can wait for some track to be available
