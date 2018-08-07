@@ -1,7 +1,7 @@
 import colors
 
 
-tracks_ready = 2
+tracks_ready = 3
 screen_resolution = (1200, 600)
 background_image = 'img/green-grass-background.jpg'
 background_tile_resolution = (1200, 1200)
@@ -35,7 +35,7 @@ RED_SIGNAL = 'red'
 GREEN_SIGNAL = 'green'
 signal_image_path = {RED_SIGNAL: 'img/signal_red.png', GREEN_SIGNAL: 'img/signal_green.png'}
 
-train_creation_timeout = {LEFT: frame_rate*0, RIGHT: frame_rate*30}
+train_creation_timeout = {LEFT: frame_rate*30, RIGHT: frame_rate*0}
 train_cart_image_path = ('img/cart_red.png', 'img/cart_green.png', 'img/cart_blue.png')
 train_acceleration_factor = (0, 0, 0, 0, 0, 1, 1, 1, 1, 1, 2, 2, 2, 2, 3, 3, 3, 3, 4, 4, 4, 5, 5, 5, 6, 6, 6, 7, 7,
                              8, 8, 8, 9, 9, 10, 10, 10, 11, 11, 12, 12, 13, 13, 14, 14, 15, 15, 16, 16, 17, 17, 18,

@@ -28,7 +28,7 @@ class Dispatcher(GameObject):
                     self.tracks[i.track_number - 1].last_entered_by = i.train_id
                     i.boarding_time -= 1
                     # when boarding time is expired, boarding is complete, and we unlock track settings
-                    if i.boarding_time == 0:
+                    if i.boarding_time <= 0:
                         self.tracks[i.track_number - 1].override = False
                         i.state = c.BOARDING_COMPLETE
 
@@ -109,10 +109,11 @@ class Dispatcher(GameObject):
                     new_train = None
                     # randomly choose number of carts for train
                     random.seed()
-                    if i == c.LEFT:
-                        carts = random.choice(range(19, 21))
-                    else:
-                        carts = random.choice(range(6, 8))
+                    carts = random.choice(range(12, 21))
+                    # if i == c.LEFT:
+                    #     carts = random.choice(range(19, 21))
+                    # else:
+                    #     carts = random.choice(range(12, 14))
                     # if some compatible track is available, we open route for new train
                     route_for_new_train = None
                     for j in range(c.first_priority_tracks[i][0],
