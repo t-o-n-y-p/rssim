@@ -14,11 +14,11 @@ class Signal(GameObject):
         self.flip_needed = flip_needed
         # by default all signals are red, just like IRL :)
         self.state = c.RED_SIGNAL
+        self.base_image = pygame.image.load(c.signal_image_base_path).convert_alpha()
         self.image = {c.RED_SIGNAL: pygame.image.load(c.signal_image_path[c.RED_SIGNAL]).convert_alpha(),
                       c.GREEN_SIGNAL: pygame.image.load(c.signal_image_path[c.GREEN_SIGNAL]).convert_alpha()}
         if self.flip_needed:
-            self.image = {c.RED_SIGNAL: pygame.transform.flip(self.image[c.RED_SIGNAL], True, False),
-                          c.GREEN_SIGNAL: pygame.transform.flip(self.image[c.GREEN_SIGNAL], True, False)}
+            self.base_image = pygame.transform.flip(self.base_image, True, False)
 
         self.base_route_busy_list = []
         self.base_route_busy_additional_list = []
@@ -31,8 +31,8 @@ class Signal(GameObject):
             signal_position = (base_offset[0] + self.placement[0], base_offset[1] + self.placement[1])
             # reserved for future transition between states,
             # for now there are only 2 states: pure red and pure green
-            if self.state in (c.RED_SIGNAL, c.GREEN_SIGNAL):
-                surface.blit(self.image[self.state], signal_position)
+            surface.blit(self.image[self.state], signal_position)
+            surface.blit(self.base_image, signal_position)
 
     def update(self, game_paused):
         if not game_paused:
@@ -85,4 +85,3 @@ class Signal(GameObject):
                                 if i.route_config.opened and i.last_opened_by == self.base_route_exit.last_opened_by:
                                     i.route_config.busy = True
                                     i.last_entered_by = self.base_route_exit.last_opened_by
-
