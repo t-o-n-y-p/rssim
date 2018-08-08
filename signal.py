@@ -37,7 +37,7 @@ class Signal(GameObject):
     def update(self, game_paused):
         if not game_paused:
             approaching_track = None
-            busy_logical = None
+            busy_logical = False
             busy_extended_logical = False
             opened_by = []
 
