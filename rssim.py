@@ -46,8 +46,9 @@ class RSSim(Game):
             self.base_routes[0][j] = BaseRoute(0, j)
             placement = self.base_routes[0][j].route_config.exit_signal_placement
             flip_needed = self.base_routes[0][j].route_config.flip_needed
+            invisible = self.base_routes[0][j].route_config.invisible_signal
             if placement is not None:
-                self.signals[0][j] = Signal(placement, flip_needed)
+                self.signals[0][j] = Signal(placement, flip_needed, invisible)
 
         self.logger.info('track 0 base routes and signals created')
         for j in (c.LEFT_ENTRY_BASE_ROUTE, c.LEFT_EXIT_BASE_ROUTE, c.RIGHT_ENTRY_BASE_ROUTE, c.RIGHT_EXIT_BASE_ROUTE):
@@ -68,8 +69,9 @@ class RSSim(Game):
                 self.base_routes[i][k] = BaseRoute(i, k)
                 placement = self.base_routes[i][k].route_config.exit_signal_placement
                 flip_needed = self.base_routes[i][k].route_config.flip_needed
+                invisible = self.base_routes[i][k].route_config.invisible_signal
                 if placement is not None and k in (c.RIGHT_EXIT_PLATFORM_BASE_ROUTE, c.LEFT_EXIT_PLATFORM_BASE_ROUTE):
-                    self.signals[i][k] = Signal(placement, flip_needed)
+                    self.signals[i][k] = Signal(placement, flip_needed, invisible)
 
             self.logger.info('track {} base routes and signals created'.format(i))
 
@@ -108,7 +110,7 @@ class RSSim(Game):
                     .append(self.base_routes[q][c.LEFT_EXIT_BASE_ROUTE])
 
             # for first priority track exit routes,
-            # busy list includes same track entries from other side
+            # busy_additional list includes same track entries from other side
             # and all entries from the same side
             if i in range(c.first_priority_tracks[c.LEFT][0],
                           c.first_priority_tracks[c.LEFT][1],
@@ -116,11 +118,11 @@ class RSSim(Game):
                 for d1 in range(c.first_priority_tracks[c.LEFT][0],
                                 c.first_priority_tracks[c.LEFT][1],
                                 c.first_priority_tracks[c.LEFT][2]):
-                    self.signals[i][c.RIGHT_EXIT_PLATFORM_BASE_ROUTE].base_route_busy_list \
+                    self.signals[i][c.RIGHT_EXIT_PLATFORM_BASE_ROUTE].base_route_busy_additional_list \
                         .append(self.base_routes[d1][c.RIGHT_ENTRY_BASE_ROUTE])
 
                 for d2 in range(1, c.tracks_ready + 1):
-                    self.signals[i][c.LEFT_EXIT_PLATFORM_BASE_ROUTE].base_route_busy_list \
+                    self.signals[i][c.LEFT_EXIT_PLATFORM_BASE_ROUTE].base_route_busy_additional_list \
                         .append(self.base_routes[d2][c.LEFT_ENTRY_BASE_ROUTE])
 
             if i in range(c.first_priority_tracks[c.RIGHT][0],
@@ -129,11 +131,11 @@ class RSSim(Game):
                 for e1 in range(c.first_priority_tracks[c.RIGHT][0],
                                 c.first_priority_tracks[c.RIGHT][1],
                                 c.first_priority_tracks[c.RIGHT][2]):
-                    self.signals[i][c.LEFT_EXIT_PLATFORM_BASE_ROUTE].base_route_busy_list \
+                    self.signals[i][c.LEFT_EXIT_PLATFORM_BASE_ROUTE].base_route_busy_additional_list \
                         .append(self.base_routes[e1][c.LEFT_ENTRY_BASE_ROUTE])
 
                 for e2 in range(1, c.tracks_ready + 1):
-                    self.signals[i][c.RIGHT_EXIT_PLATFORM_BASE_ROUTE].base_route_busy_list \
+                    self.signals[i][c.RIGHT_EXIT_PLATFORM_BASE_ROUTE].base_route_busy_additional_list \
                         .append(self.base_routes[e2][c.RIGHT_ENTRY_BASE_ROUTE])
 
             self.logger.info('busy list set up for track {} signals'.format(i))
@@ -147,12 +149,12 @@ class RSSim(Game):
                 .append(self.base_routes[i][c.LEFT_ENTRY_BASE_ROUTE])
             self.signals[0][c.RIGHT_ENTRY_BASE_ROUTE].base_route_busy_list \
                 .append(self.base_routes[i][c.RIGHT_ENTRY_BASE_ROUTE])
-            # for main entry signals, busy list includes all first priority exit base routes,
+            # for main entry signals, busy_additional list includes all first priority exit base routes,
             # and busy_extended list includes all second priority exit base routes
             for u in range(c.first_priority_tracks[c.LEFT][0],
                            c.first_priority_tracks[c.LEFT][1],
                            c.first_priority_tracks[c.LEFT][2]):
-                self.signals[0][c.LEFT_ENTRY_BASE_ROUTE].base_route_busy_list \
+                self.signals[0][c.LEFT_ENTRY_BASE_ROUTE].base_route_busy_additional_list \
                     .append(self.base_routes[u][c.LEFT_EXIT_BASE_ROUTE])
 
             for u in range(c.second_priority_tracks[c.LEFT][0],
@@ -164,7 +166,7 @@ class RSSim(Game):
             for v in range(c.first_priority_tracks[c.RIGHT][0],
                            c.first_priority_tracks[c.RIGHT][1],
                            c.first_priority_tracks[c.RIGHT][2]):
-                self.signals[0][c.RIGHT_ENTRY_BASE_ROUTE].base_route_busy_list \
+                self.signals[0][c.RIGHT_ENTRY_BASE_ROUTE].base_route_busy_additional_list \
                     .append(self.base_routes[v][c.RIGHT_EXIT_BASE_ROUTE])
 
             for v in range(c.second_priority_tracks[c.RIGHT][0],

@@ -78,17 +78,17 @@ class TrainRoute(GameObject):
         self.set_next_stop_point(0)
 
     def open_train_route(self, train_id):
-        # open route and all base routes included and make it all busy;
+        # open route and all base routes included;
         # remember which train opens it
         self.opened = True
         self.last_opened_by = train_id
+        self.base_routes[0].route_config.busy = True
+        self.base_routes[0].last_entered_by = train_id
         self.busy_routes.clear()
         self.opened_routes.clear()
         for i in self.base_routes:
             i.route_config.opened = True
             i.last_opened_by = train_id
-            i.route_config.busy = True
-            i.last_entered_by = train_id
             self.busy_routes.append(i)
             self.opened_routes.append(i)
 

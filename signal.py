@@ -5,8 +5,9 @@ import config as c
 
 
 class Signal(GameObject):
-    def __init__(self, placement, flip_needed):
+    def __init__(self, placement, flip_needed, invisible):
         super().__init__()
+        self.invisible = invisible
         # where to place signal on map
         self.placement = placement
         # for left-directed routes we need to flip signal (its default image is for right-directed routes)
@@ -20,65 +21,68 @@ class Signal(GameObject):
                           c.GREEN_SIGNAL: pygame.transform.flip(self.image[c.GREEN_SIGNAL], True, False)}
 
         self.base_route_busy_list = []
+        self.base_route_busy_additional_list = []
         self.base_route_busy_extended_list = []
         self.base_route_opened_list = []
         self.base_route_exit = None
 
     def draw(self, surface, base_offset):
-        signal_position = (base_offset[0] + self.placement[0], base_offset[1] + self.placement[1])
-        # reserved for future transition between states,
-        # for now there are only 2 states: pure red and pure green
-        if self.state in (c.RED_SIGNAL, c.GREEN_SIGNAL):
-            surface.blit(self.image[self.state], signal_position)
+        if not self.invisible:
+            signal_position = (base_offset[0] + self.placement[0], base_offset[1] + self.placement[1])
+            # reserved for future transition between states,
+            # for now there are only 2 states: pure red and pure green
+            if self.state in (c.RED_SIGNAL, c.GREEN_SIGNAL):
+                surface.blit(self.image[self.state], signal_position)
 
     def update(self, game_paused):
         if not game_paused:
             approaching_track = None
-            busy_logical = False
+            busy_logical = None
             busy_extended_logical = False
-            opened_logical = False
             opened_by = []
-            is_busy_by = None
-            exit_logical = False
-            for i in self.base_route_opened_list:
-                opened_logical = opened_logical or i.route_config.opened
-                if i.route_config.opened:
-                    opened_by.append(i.last_opened_by)
 
-            # if no single route is opened, signal should be red indeed;
-            # if something is opened, we check busy route list
-            if not opened_logical:
+            if not self.base_route_exit.route_config.opened:
                 self.state = c.RED_SIGNAL
             else:
-                for i in self.base_route_busy_list:
-                    if i not in self.base_route_opened_list or \
-                            (i in self.base_route_opened_list and
-                             i.last_opened_by != self.base_route_exit.last_opened_by):
-                        busy_logical = busy_logical or i.route_config.busy
-                    else:
-                        approaching_track = i.track_number
+                for i in self.base_route_opened_list:
+                    if i.route_config.opened:
+                        opened_by.append(i.last_opened_by)
 
-                # if some route behind the signal is busy not by train
-                # which is located before the signal, it should be red indeed;
-                # if not, let's check if there are any busy_extended routes busy (it they even exist)
-                if busy_logical:
+                if self.base_route_exit.last_opened_by not in opened_by:
                     self.state = c.RED_SIGNAL
                 else:
-                    if len(self.base_route_busy_extended_list) > 0:
-                        for i in self.base_route_busy_extended_list:
-                            if i.track_number % 2 == approaching_track % 2:
-                                busy_extended_logical = busy_extended_logical or i.route_config.busy
-                    # if busy_extended routes are not busy too, we can open the signal,
-                    # but we need to close signal back once our train has passed it
-                    if busy_extended_logical:
+                    for i in self.base_route_busy_list:
+                        if not (i.route_config.opened and i.last_opened_by == self.base_route_exit.last_opened_by):
+                            busy_logical = busy_logical or i.route_config.busy
+
+                    for j in self.base_route_busy_additional_list:
+                        busy_logical = busy_logical or j.route_config.busy
+
+                    if busy_logical:
                         self.state = c.RED_SIGNAL
                     else:
-                        exit_logical = exit_logical or self.base_route_exit.route_config.busy
-                        if self.base_route_exit.route_config.busy:
-                            is_busy_by = self.base_route_exit.last_entered_by
+                        if len(self.base_route_busy_extended_list) > 0:
+                            for i in self.base_route_opened_list:
+                                if i.route_config.opened and i.last_opened_by == self.base_route_exit.last_opened_by:
+                                    approaching_track = i.track_number
 
-                        # if train has passed signal, turn it red
-                        if exit_logical and is_busy_by in opened_by:
-                            self.state = c.GREEN_SIGNAL
+                            for j in self.base_route_busy_extended_list:
+                                if j.track_number % 2 == approaching_track % 2:
+                                    busy_extended_logical = busy_extended_logical or j.route_config.busy
+
+                            if busy_extended_logical:
+                                self.state = c.RED_SIGNAL
+                            else:
+                                self.state = c.GREEN_SIGNAL
+                                for i in self.base_route_opened_list:
+                                    if i.route_config.opened and \
+                                            i.last_opened_by == self.base_route_exit.last_opened_by:
+                                        i.route_config.busy = True
+                                        i.last_entered_by = self.base_route_exit.last_opened_by
                         else:
-                            self.state = c.RED_SIGNAL
+                            self.state = c.GREEN_SIGNAL
+                            for i in self.base_route_opened_list:
+                                if i.route_config.opened and i.last_opened_by == self.base_route_exit.last_opened_by:
+                                    i.route_config.busy = True
+                                    i.last_entered_by = self.base_route_exit.last_opened_by
+

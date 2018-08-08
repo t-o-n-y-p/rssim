@@ -10,12 +10,13 @@ from game_object import GameObject
 class Train(GameObject):
     def __init__(self, carts, train_route, state, direction, train_id):
         super().__init__()
+        self.priority = 0
         self.track_number = None
         self.carts = carts
         self.direction = direction
         self.train_id = train_id
         # default stoppage time for now
-        self.boarding_time = self.carts * 40
+        self.boarding_time = self.carts * 300
         # all trains are created with maximum speed,
         # not accelerating and not decelerating
         self.speed = c.train_maximum_speed
@@ -72,6 +73,13 @@ class Train(GameObject):
 
     def update(self, game_paused):
         if not game_paused:
+            if self.carts < 11:
+                self.priority += 3
+            elif self.carts < 16:
+                self.priority += 2
+            elif self.carts < 21:
+                self.priority += 1
+
             # while boarding is in progress, train does not move indeed
             if self.state in c.BOARDING_IN_PROGRESS:
                 self.speed = 0

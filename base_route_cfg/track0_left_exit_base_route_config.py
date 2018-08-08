@@ -17,6 +17,7 @@ start_point = None
 exit_signal = None
 exit_signal_placement = (-5888, 1730)
 flip_needed = False
+invisible_signal = False
 
 
 def put_route_under_construction(self):
