@@ -1,7 +1,10 @@
+import logs_config as log_c
+
+
 class GameObject:
     # simply pass this to be overridden by each object
     def __init__(self):
-        pass
+        self.fh = log_c.fh
 
     # simply pass this to be overridden by each object: "surface" is generic game screen, "base_offset" stands for
     # top left corner of entire map (it can be moved)

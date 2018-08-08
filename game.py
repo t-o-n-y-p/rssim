@@ -1,12 +1,18 @@
 import pygame
 import sys
 import colors
+import logs_config as log_c
+import logging
 
 from collections import defaultdict
 
 
 class Game:
     def __init__(self, caption, screen_resolution, frame_rate, base_offset):
+        self.fh = log_c.fh
+        self.base_logger = logging.getLogger('game')
+        self.base_logger.setLevel(logging.DEBUG)
+        self.base_logger.addHandler(self.fh)
         # since map can be moved, all objects should also be moved, that's why we need base offset here
         self.base_offset = base_offset
         self.frame_rate = frame_rate
@@ -49,8 +55,10 @@ class Game:
 
     def run(self):
         while True:
+            self.base_logger.info('frame begins')
             self.handle_events()
             self.update()
             self.draw()
             pygame.display.update()
+            self.base_logger.info('frame ends')
             self.clock.tick(self.frame_rate)

@@ -1,12 +1,17 @@
 import importlib
 import pygame
 import config as c
+import logging
+
 from game_object import GameObject
 
 
 class BaseRoute(GameObject):
     def __init__(self, track_number, route_type):
         super().__init__()
+        self.logger = logging.getLogger('base_route {} {}'.format(route_type, track_number))
+        self.logger.setLevel(logging.DEBUG)
+        self.logger.addHandler(self.fh)
         # import config based on track number and route type
         self.route_config = importlib.import_module('track{}_{}_config'.format(track_number, route_type))
         self.route_type = route_type

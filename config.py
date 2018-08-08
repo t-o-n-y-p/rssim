@@ -1,6 +1,5 @@
 import colors
 
-
 tracks_ready = 3
 screen_resolution = (1200, 600)
 background_image = 'img/green-grass-background.jpg'
