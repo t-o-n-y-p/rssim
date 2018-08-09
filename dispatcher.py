@@ -87,7 +87,7 @@ class Dispatcher(GameObject):
                         # we open entry route for our train and leave loop
                         if i.carts in range(r.supported_carts[0], r.supported_carts[1] + 1) and not r.opened and not \
                                 self.tracks[j - 1].busy:
-                            route_for_new_train = self.train_routes[j][c.ENTRY_TRAIN_ROUTE[i.direction]]
+                            route_for_new_train = r
                             self.tracks[j - 1].override = True
                             self.tracks[j - 1].busy = True
                             self.tracks[j - 1].last_entered_by = i.train_id
@@ -111,7 +111,7 @@ class Dispatcher(GameObject):
                             # we open entry route for our train and leave loop
                             if i.carts in range(r.supported_carts[0], r.supported_carts[1] + 1) and not r.opened and not \
                                     self.tracks[j - 1].busy:
-                                route_for_new_train = self.train_routes[j][c.ENTRY_TRAIN_ROUTE[i.direction]]
+                                route_for_new_train = r
                                 self.tracks[j - 1].override = True
                                 self.tracks[j - 1].busy = True
                                 self.tracks[j - 1].last_entered_by = i.train_id
@@ -175,7 +175,7 @@ class Dispatcher(GameObject):
                     self.train_timer[i] = 0
                     # randomly choose number of carts for train
                     random.seed()
-                    carts = random.choice(range(2, 14))
+                    carts = random.choice(range(6, 21))
                     if carts < self.supported_carts[0]:
                         route_for_new_train = self.train_routes[0][c.APPROACHING_TRAIN_ROUTE[i]]
                         new_train = Train(carts, route_for_new_train, c.APPROACHING_PASS_THROUGH,
