@@ -10,13 +10,10 @@ from game_object import GameObject
 class Train(GameObject):
     def __init__(self, carts, train_route, state, direction, train_id):
         super().__init__()
-        self.priority = 0
         self.track_number = None
         self.carts = carts
         self.direction = direction
         self.train_id = train_id
-        # default stoppage time for now
-        self.boarding_time = self.carts * 300
         # all trains are created with maximum speed,
         # not accelerating and not decelerating
         self.speed = c.train_maximum_speed
@@ -26,6 +23,12 @@ class Train(GameObject):
         # by default train has far right position for this
         self.speed_factor_position = c.train_acceleration_factor_length - 1
         self.state = state
+        if self.state == c.APPROACHING_PASS_THROUGH:
+            self.priority = 10000000
+            self.boarding_time = 1
+        else:
+            self.priority = 0
+            self.boarding_time = self.carts * 300
         self.train_route = train_route
         # initialize train route
         self.train_route.open_train_route(self.train_id)

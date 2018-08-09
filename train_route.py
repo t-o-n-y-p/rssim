@@ -24,8 +24,10 @@ class TrainRoute(GameObject):
         self.destination_point = None
         self.supported_carts = [0, 0]
         self.signals = []
+        self.locked = False
         # number of supported carts is decided below
         for j in self.base_routes:
+            self.locked = self.locked or j.route_config.locked
             if j.route_config.supported_carts[0] > self.supported_carts[0]:
                 self.supported_carts[0] = j.route_config.supported_carts[0]
 

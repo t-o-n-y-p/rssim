@@ -35,7 +35,7 @@ GREEN_SIGNAL = 'green'
 signal_image_base_path = 'img/signal_base.png'
 signal_image_path = {RED_SIGNAL: 'img/signal_red.png', GREEN_SIGNAL: 'img/signal_green.png'}
 
-train_creation_timeout = {LEFT: frame_rate*10, RIGHT: frame_rate*15}
+train_creation_timeout = {LEFT: frame_rate*0, RIGHT: frame_rate*10000000}
 train_cart_image_path = ('img/cart_red.png', 'img/cart_green.png', 'img/cart_blue.png', 'img/cart_purple.png',
                          'img/cart_yellow.png', 'img/cart_cyan.png', 'img/cart_orange.png', 'img/cart_pink.png')
 train_acceleration_factor = (0, 0, 0, 0, 0, 1, 1, 1, 1, 1, 2, 2, 2, 2, 3, 3, 3, 3, 4, 4, 4, 5, 5, 5, 6, 6, 6, 7, 7,
@@ -59,8 +59,9 @@ train_maximum_speed = train_acceleration_factor[train_acceleration_factor_length
                       train_acceleration_factor[train_acceleration_factor_length - 2]
 train_braking_distance = train_acceleration_factor[train_acceleration_factor_length - 1]
 
-first_priority_tracks = ((tracks_ready - (tracks_ready % 2), 0, -2), (tracks_ready + (tracks_ready % 2) - 1, 0, -2))
-second_priority_tracks = ((tracks_ready + (tracks_ready % 2) - 1, 0, -2), (tracks_ready - (tracks_ready % 2), 0, -2))
+first_priority_tracks = ((tracks_ready - (tracks_ready % 2), 2, -2), (tracks_ready + (tracks_ready % 2) - 1, 1, -2))
+second_priority_tracks = ((tracks_ready + (tracks_ready % 2) - 1, 1, -2), (tracks_ready - (tracks_ready % 2), 2, -2))
+pass_through_priority_tracks = ((2, 0, -1), (1, 3, 1))
 
 MOVE = 'normal'
 ACCELERATE = 'accelerate'
@@ -69,6 +70,7 @@ STOP = 'stop'
 
 PASS_THROUGH = 'pass-through'
 APPROACHING = 'approaching'
+APPROACHING_PASS_THROUGH = 'approaching_pass_through'
 PENDING_BOARDING = 'pending_boarding'
 BOARDING_IN_PROGRESS = 'boarding_in_progress'
 BOARDING_COMPLETE = 'boarding_complete'
