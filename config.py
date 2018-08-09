@@ -1,8 +1,8 @@
 import colors
 
-tracks_ready = 3
+tracks_ready = 4
 screen_resolution = (1200, 600)
-background_image = 'img/green-grass-background.jpg'
+background_image = 'img/stones-background.jpg'
 background_tile_resolution = (1200, 1200)
 number_of_background_tiles = (7, 3)
 map_resolution = (background_tile_resolution[0] * number_of_background_tiles[0],
