@@ -50,7 +50,7 @@ class Train(GameObject):
         # each cart position is based on front and back chassis position
         for i in range(self.carts):
             self.carts_position.append([self.train_route.start_point - i * 251,
-                                        self.train_route.start_point - i * 251 - 179])
+                                        self.train_route.start_point - i * 251 - 178])
 
     def complete_train_route(self):
         # when train reaches route destination point,

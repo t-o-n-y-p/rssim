@@ -34,7 +34,6 @@ class Game:
             o.update(self.game_paused)
 
     def draw(self):
-        self.surface.fill(colors.BLACK)
         for o in self.objects:
             o.draw(self.surface, self.base_offset)
 
