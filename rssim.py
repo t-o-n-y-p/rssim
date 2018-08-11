@@ -11,6 +11,7 @@ from game import Game
 from signal import Signal
 from track import Track
 from train_route import TrainRoute
+from button import Button
 
 
 class RSSim(Game):
@@ -28,6 +29,7 @@ class RSSim(Game):
         self.create_bg_img()
         # we create routes, signals and dispatcher and link them to each other correctly
         self.create_infrastructure()
+        self.create_buttons()
         # this allows user to drag map
         self.mouse_handlers.append(self.handle_mouse_drag)
 
@@ -250,6 +252,17 @@ class RSSim(Game):
         # now we add dispatcher itself to generic objects list
         self.objects.append(train_dispatcher)
         self.logger.info('dispatcher appended')
+
+    def create_buttons(self):
+        def pause_game(button):
+            self.game_paused = True
+
+        def resume_game(button):
+            self.game_paused = False
+
+        stop_button = Button((600, 555), 'Pause', 'Resume', pause_game, resume_game)
+        self.mouse_handlers.append(stop_button.handle_mouse_event)
+        self.objects.append(stop_button)
 
     def handle_mouse_drag(self, event_type, pos):
         movement = pygame.mouse.get_rel()
