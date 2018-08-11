@@ -17,7 +17,9 @@ class BaseRoute(GameObject):
         # import config based on track number and route type
         self.route_config = {}
         self.config = configparser.RawConfigParser()
-        self.config.read('base_route_cfg/track{}_{}.ini'.format(self.track_number, self.route_type))
+        self.config.read('base_route_cfg/track{}/track{}_{}.ini'.format(self.track_number,
+                                                                        self.track_number,
+                                                                        self.route_type))
         self.parse_route_config()
         # last_opened_by and last_entered_by are used by signals to determine if next route is opened by the same train
         self.last_opened_by = None
