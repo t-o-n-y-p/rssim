@@ -5,6 +5,7 @@ from operator import attrgetter
 import config as c
 from game_object import GameObject
 from train import Train
+import configparser
 
 
 class Dispatcher(GameObject):
@@ -14,13 +15,80 @@ class Dispatcher(GameObject):
         self.logger.setLevel(logging.DEBUG)
         self.logger.addHandler(self.fh)
         # timer since main entry was left by previous train before creating new one
-        self.train_timer = [0, 0]
+        self.train_timer = []
         self.trains = []
+        self.train_ids = []
         self.train_routes = []
         self.tracks = []
         # next train ID, used by signals to distinguish trains
-        self.train_counter = 1
-        self.supported_carts = [20, 20]
+        self.train_counter = None
+        self.supported_carts = []
+        self.config = None
+        self.read_dispatcher_state()
+
+    def read_dispatcher_state(self):
+        self.config = configparser.RawConfigParser()
+        self.config.read('cfg/dispatcher/config.ini')
+        train_timer_parsed = self.config['user_data']['train_timer'].split(',')
+        self.train_timer = [int(train_timer_parsed[0]), int(train_timer_parsed[1])]
+        self.train_counter = self.config['user_data'].getint('train_counter')
+        supported_carts_parsed = self.config['user_data']['supported_carts'].split(',')
+        self.supported_carts = [int(supported_carts_parsed[0]), int(supported_carts_parsed[1])]
+
+        if self.config['user_data']['train_ids'] == 'None':
+            self.trains = []
+            self.train_ids = []
+        else:
+            train_ids_parsed = self.config['user_data']['train_ids'].split(',')
+            for i in range(len(train_ids_parsed)):
+                train_ids_parsed[i] = int(train_ids_parsed[i])
+
+            self.train_ids = train_ids_parsed
+            for i in self.train_ids:
+                train_config = configparser.RawConfigParser()
+                train_config.read('cfg/trains/train{}.ini'.format(i))
+                train_carts = train_config['user_data'].getint('carts')
+                train_route_track_number = train_config['user_data'].getint('train_route_track_number')
+                train_route_type = train_config['user_data']['train_route_type']
+                train_state = train_config['user_data']['state']
+                train_direction = train_config['user_data'].getint('direction')
+                saved_train = Train(train_carts, self.train_routes[train_route_track_number][train_route_type],
+                                    train_state, train_direction, i)
+                if train_config['user_data']['track_number'] == 'None':
+                    saved_train.track_number = None
+                else:
+                    saved_train.track_number = train_config['user_data'].getint('track_number')
+
+                saved_train.speed = train_config['user_data'].getint('speed')
+                saved_train.speed_state = train_config['user_data']['speed_state']
+                saved_train.speed_factor_position = train_config['user_data'].getint('speed_factor_position')
+                saved_train.priority = train_config['user_data'].getint('priority')
+                saved_train.boarding_time = train_config['user_data'].getint('boarding_time')
+                if train_config['user_data']['carts_position'] == 'None':
+                    saved_train.carts_position = []
+                else:
+                    carts_position_parsed = train_config['user_data']['carts_position'].split('|')
+                    for j in range(len(carts_position_parsed)):
+                        carts_position_parsed[j] = carts_position_parsed[j].split(',')
+                        carts_position_parsed[j] = [int(carts_position_parsed[j][0]), int(carts_position_parsed[j][1])]
+
+                    saved_train.carts_position = carts_position_parsed
+
+                if train_config['user_data']['carts_position_abs'] == 'None':
+                    saved_train.carts_position_abs = []
+                else:
+                    carts_position_abs_parsed = train_config['user_data']['carts_position_abs'].split('|')
+                    for j in range(len(carts_position_abs_parsed)):
+                        carts_position_abs_parsed[j] = carts_position_abs_parsed[j].split(',')
+                        for k in range(len(carts_position_abs_parsed[j])):
+                            carts_position_abs_parsed[j][k] = carts_position_abs_parsed[j][k].split('-')
+                            carts_position_abs_parsed[j][k] = (int(carts_position_abs_parsed[j][k][0]),
+                                                               int(carts_position_abs_parsed[j][k][1]))
+
+                    saved_train.carts_position_abs = carts_position_abs_parsed
+
+                saved_train.config = train_config
+                self.trains.append(saved_train)
 
     def update(self, game_paused):
         # if game is paused, dispatcher does not work
@@ -109,8 +177,8 @@ class Dispatcher(GameObject):
                             r = self.train_routes[j][c.ENTRY_TRAIN_ROUTE[i.direction]]
                             # if compatible track is finally available,
                             # we open entry route for our train and leave loop
-                            if i.carts in range(r.supported_carts[0], r.supported_carts[1] + 1) and not r.opened and not \
-                                    self.tracks[j - 1].busy:
+                            if i.carts in range(r.supported_carts[0], r.supported_carts[1] + 1) and not r.opened and \
+                                    not self.tracks[j - 1].busy:
                                 route_for_new_train = r
                                 self.tracks[j - 1].override = True
                                 self.tracks[j - 1].busy = True
@@ -180,6 +248,10 @@ class Dispatcher(GameObject):
                         route_for_new_train = self.train_routes[0][c.APPROACHING_TRAIN_ROUTE[i]]
                         new_train = Train(carts, route_for_new_train, c.APPROACHING_PASS_THROUGH,
                                           i, self.train_counter)
+                        self.train_ids.append(self.train_counter)
+                        new_train.train_route.open_train_route(new_train.train_id)
+                        new_train.train_route.set_stop_points(new_train.carts)
+                        new_train.init_train_position()
                         self.logger.info('train created. id {}, track {}, route = {}, status = {}'
                                          .format(new_train.train_id, new_train.train_route.track_number,
                                                  new_train.train_route.route_type, new_train.state))
@@ -187,6 +259,10 @@ class Dispatcher(GameObject):
                     else:
                         route_for_new_train = self.train_routes[0][c.APPROACHING_TRAIN_ROUTE[i]]
                         new_train = Train(carts, route_for_new_train, c.APPROACHING, i, self.train_counter)
+                        self.train_ids.append(self.train_counter)
+                        new_train.train_route.open_train_route(new_train.train_id)
+                        new_train.train_route.set_stop_points(new_train.carts)
+                        new_train.init_train_position()
                         self.logger.info('train created. id {}, track {}, route = {}, status = {}'
                                          .format(new_train.train_id, new_train.train_route.track_number,
                                                  new_train.train_route.route_type, new_train.state))

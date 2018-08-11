@@ -1,5 +1,5 @@
 import math
-import random
+import configparser
 
 import pygame
 
@@ -10,6 +10,7 @@ from game_object import GameObject
 class Train(GameObject):
     def __init__(self, carts, train_route, state, direction, train_id):
         super().__init__()
+        self.config = None
         self.track_number = None
         self.carts = carts
         self.direction = direction
@@ -30,11 +31,6 @@ class Train(GameObject):
             self.priority = 0
             self.boarding_time = self.carts * 300
         self.train_route = train_route
-        # initialize train route
-        self.train_route.open_train_route(self.train_id)
-        self.train_route.set_stop_points(self.carts)
-        # randomly choose cart color
-        random.seed()
         self.cart_images = [pygame.image.load('{}_head.png'.format(c.train_cart_image_path)).convert_alpha(), ]
         for i in range(1, self.carts - 1):
             self.cart_images.append(pygame.image.load('{}_mid.png'.format(c.train_cart_image_path)).convert_alpha())
@@ -46,7 +42,6 @@ class Train(GameObject):
         # when train route is not assigned, we use carts_position_abs list;
         # it contains absolute carts position on the map
         self.carts_position_abs = []
-        self.init_train_position()
 
     def init_train_position(self):
         # each cart position is based on front and back chassis position
