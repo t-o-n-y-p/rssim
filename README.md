@@ -11,3 +11,7 @@ rssim.exe build (python setup.py build) also requires:
 cx_Freeze 5.1.1 with py3.7 fix
 
 -------------------------------------------
+
+New features:
+- updated artwork
+- route, signal and track settings are read from .ini files
