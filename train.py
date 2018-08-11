@@ -35,9 +35,11 @@ class Train(GameObject):
         self.train_route.set_stop_points(self.carts)
         # randomly choose cart color
         random.seed()
-        self.train_cart_image = pygame.image.load(c.train_cart_image_path[
-                                                      random.choice(range(len(c.train_cart_image_path)))
-                                                  ]).convert_alpha()
+        self.cart_images = [pygame.image.load('{}_head.png'.format(c.train_cart_image_path)).convert_alpha(), ]
+        for i in range(1, self.carts - 1):
+            self.cart_images.append(pygame.image.load('{}_mid.png'.format(c.train_cart_image_path)).convert_alpha())
+
+        self.cart_images.append(pygame.image.load('{}_tail.png'.format(c.train_cart_image_path)).convert_alpha())
         # when train route is assigned, we use carts_position list;
         # it contains relative carts position based on route trail points
         self.carts_position = []
@@ -167,26 +169,30 @@ class Train(GameObject):
         # calculate middle point and axis,
         # but for relative position we need to convert it to absolute positions
         if len(self.carts_position_abs) > 0:
-            for i in self.carts_position_abs:
-                point_one = float(i[1][1] - i[0][1])
-                point_two = float(i[0][0] - i[1][0])
+            for i in range(len(self.carts_position_abs)):
+                point_one = float(self.carts_position_abs[i][1][1] - self.carts_position_abs[i][0][1])
+                point_two = float(self.carts_position_abs[i][0][0] - self.carts_position_abs[i][1][0])
                 axis = math.atan2(point_one, point_two) * float(180) / math.pi
-                new_cart = pygame.transform.rotate(self.train_cart_image, axis)
+                new_cart = pygame.transform.rotate(self.cart_images[i], axis)
                 new_size = new_cart.get_size()
                 surface.blit(new_cart,
-                             (round((i[1][0] + i[0][0]) // 2 -
+                             (round((self.carts_position_abs[i][1][0] + self.carts_position_abs[i][0][0]) // 2 -
                                     new_size[0] // 2 + base_offset[0]),
-                              round((i[0][1] + i[1][1]) // 2 -
+                              round((self.carts_position_abs[i][0][1] + self.carts_position_abs[i][1][1]) // 2 -
                                     new_size[1] // 2 + base_offset[1])))
         else:
-            for i in self.carts_position:
-                point_one = float(self.train_route.trail_points[i[1]][1] - self.train_route.trail_points[i[0]][1])
-                point_two = float(self.train_route.trail_points[i[0]][0] - self.train_route.trail_points[i[1]][0])
+            for i in range(len(self.carts_position)):
+                point_one = float(self.train_route.trail_points[self.carts_position[i][1]][1] -
+                                  self.train_route.trail_points[self.carts_position[i][0]][1])
+                point_two = float(self.train_route.trail_points[self.carts_position[i][0]][0] -
+                                  self.train_route.trail_points[self.carts_position[i][1]][0])
                 axis = math.atan2(point_one, point_two) * float(180) / math.pi
-                new_cart = pygame.transform.rotate(self.train_cart_image, axis)
+                new_cart = pygame.transform.rotate(self.cart_images[i], axis)
                 new_size = new_cart.get_size()
                 surface.blit(new_cart,
-                             (round((self.train_route.trail_points[i[0]][0] + self.train_route.trail_points[i[1]][0])
+                             (round((self.train_route.trail_points[self.carts_position[i][0]][0] +
+                                     self.train_route.trail_points[self.carts_position[i][1]][0])
                                     // 2 - new_size[0] // 2 + base_offset[0]),
-                              round((self.train_route.trail_points[i[1]][1] + self.train_route.trail_points[i[0]][1])
+                              round((self.train_route.trail_points[self.carts_position[i][1]][1] +
+                                     self.train_route.trail_points[self.carts_position[i][0]][1])
                                     // 2 - new_size[1] // 2 + base_offset[1])))
