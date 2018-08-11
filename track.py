@@ -16,8 +16,8 @@ class Track(GameObject):
             busy_1 = False
             # if any of 4 base routes are busy, all track will become busy
             for i in self.base_routes:
-                busy_1 = busy_1 or i.route_config.busy
-                if i.route_config.busy:
-                    self.last_entered_by = i.last_entered_by
+                busy_1 = busy_1 or i.route_config['busy']
+                if i.route_config['busy']:
+                    self.last_entered_by = i.route_config['last_entered_by']
 
             self.busy = busy_1

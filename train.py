@@ -96,20 +96,20 @@ class Train(GameObject):
                 if self.direction == c.LEFT:
                     for k in self.train_route.busy_routes:
                         if self.train_route.trail_points[self.carts_position[len(self.carts_position) - 1][1]][0] > \
-                                k.route_config.trail_points[len(k.route_config.trail_points) - 1][0]:
-                            k.route_config.busy = False
+                                k.route_config['trail_points'][len(k.route_config['trail_points']) - 1][0]:
+                            k.route_config['busy'] = False
                             self.train_route.busy_routes.remove(k)
-                            k.route_config.opened = False
+                            k.route_config['opened'] = False
                             self.train_route.opened_routes.remove(k)
 
                 # base route is not busy and not opened as soon as back chassis of last cart leaves it
                 if self.direction == c.RIGHT:
                     for k in self.train_route.busy_routes:
                         if self.train_route.trail_points[self.carts_position[len(self.carts_position) - 1][1]][0] < \
-                                k.route_config.trail_points[len(k.route_config.trail_points) - 1][0]:
-                            k.route_config.busy = False
+                                k.route_config['trail_points'][len(k.route_config['trail_points']) - 1][0]:
+                            k.route_config['busy'] = False
                             self.train_route.busy_routes.remove(k)
-                            k.route_config.opened = False
+                            k.route_config['opened'] = False
                             self.train_route.opened_routes.remove(k)
 
                 # stop point is updated based on signal state

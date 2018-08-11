@@ -1,6 +1,6 @@
 import colors
 
-tracks_ready = 4
+tracks_ready = 2
 screen_resolution = (1200, 600)
 background_image = 'img/stones-background.jpg'
 background_tile_resolution = (1200, 1200)

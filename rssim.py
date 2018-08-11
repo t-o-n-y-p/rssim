@@ -44,16 +44,16 @@ class RSSim(Game):
         # create main entry and main exit base routes and signals for them
         for j in (c.LEFT_ENTRY_BASE_ROUTE, c.LEFT_EXIT_BASE_ROUTE, c.RIGHT_ENTRY_BASE_ROUTE, c.RIGHT_EXIT_BASE_ROUTE):
             self.base_routes[0][j] = BaseRoute(0, j)
-            placement = self.base_routes[0][j].route_config.exit_signal_placement
-            flip_needed = self.base_routes[0][j].route_config.flip_needed
-            invisible = self.base_routes[0][j].route_config.invisible_signal
+            placement = self.base_routes[0][j].route_config['exit_signal_placement']
+            flip_needed = self.base_routes[0][j].route_config['flip_needed']
+            invisible = self.base_routes[0][j].route_config['invisible_signal']
             if placement is not None:
                 self.signals[0][j] = Signal(placement, flip_needed, invisible)
 
         self.logger.info('track 0 base routes and signals created')
         for j in (c.LEFT_ENTRY_BASE_ROUTE, c.LEFT_EXIT_BASE_ROUTE, c.RIGHT_ENTRY_BASE_ROUTE, c.RIGHT_EXIT_BASE_ROUTE):
             # associate main entry/exit base route with its signal
-            self.base_routes[0][j].route_config.exit_signal = self.signals[0][j]
+            self.base_routes[0][j].route_config['exit_signal'] = self.signals[0][j]
             # for every signal, exit route is the route which ends with this signal
             self.signals[0][j].base_route_exit = self.base_routes[0][j]
 
@@ -67,9 +67,9 @@ class RSSim(Game):
                       c.LEFT_ENTRY_PLATFORM_BASE_ROUTE, c.RIGHT_ENTRY_PLATFORM_BASE_ROUTE,
                       c.RIGHT_EXIT_PLATFORM_BASE_ROUTE, c.LEFT_EXIT_PLATFORM_BASE_ROUTE):
                 self.base_routes[i][k] = BaseRoute(i, k)
-                placement = self.base_routes[i][k].route_config.exit_signal_placement
-                flip_needed = self.base_routes[i][k].route_config.flip_needed
-                invisible = self.base_routes[i][k].route_config.invisible_signal
+                placement = self.base_routes[i][k].route_config['exit_signal_placement']
+                flip_needed = self.base_routes[i][k].route_config['flip_needed']
+                invisible = self.base_routes[i][k].route_config['invisible_signal']
                 if placement is not None and k in (c.RIGHT_EXIT_PLATFORM_BASE_ROUTE, c.LEFT_EXIT_PLATFORM_BASE_ROUTE):
                     self.signals[i][k] = Signal(placement, flip_needed, invisible)
 
@@ -77,13 +77,13 @@ class RSSim(Game):
 
         for i in range(1, c.tracks_ready + 1):
             # associate platform base route with its signal
-            self.base_routes[i][c.RIGHT_EXIT_PLATFORM_BASE_ROUTE].route_config.exit_signal = \
+            self.base_routes[i][c.RIGHT_EXIT_PLATFORM_BASE_ROUTE].route_config['exit_signal'] = \
                 self.signals[i][c.RIGHT_EXIT_PLATFORM_BASE_ROUTE]
-            self.base_routes[i][c.LEFT_ENTRY_PLATFORM_BASE_ROUTE].route_config.exit_signal = \
+            self.base_routes[i][c.LEFT_ENTRY_PLATFORM_BASE_ROUTE].route_config['exit_signal'] = \
                 self.signals[i][c.RIGHT_EXIT_PLATFORM_BASE_ROUTE]
-            self.base_routes[i][c.LEFT_EXIT_PLATFORM_BASE_ROUTE].route_config.exit_signal = \
+            self.base_routes[i][c.LEFT_EXIT_PLATFORM_BASE_ROUTE].route_config['exit_signal'] = \
                 self.signals[i][c.LEFT_EXIT_PLATFORM_BASE_ROUTE]
-            self.base_routes[i][c.RIGHT_ENTRY_PLATFORM_BASE_ROUTE].route_config.exit_signal = \
+            self.base_routes[i][c.RIGHT_ENTRY_PLATFORM_BASE_ROUTE].route_config['exit_signal'] = \
                 self.signals[i][c.LEFT_EXIT_PLATFORM_BASE_ROUTE]
             # for every signal, exit route is the route which ends with this signal
             self.signals[i][c.RIGHT_EXIT_PLATFORM_BASE_ROUTE].base_route_exit = \

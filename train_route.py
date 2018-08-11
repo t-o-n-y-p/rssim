@@ -27,26 +27,26 @@ class TrainRoute(GameObject):
         self.locked = False
         # number of supported carts is decided below
         for j in self.base_routes:
-            self.locked = self.locked or j.route_config.locked
-            if j.route_config.supported_carts[0] > self.supported_carts[0]:
-                self.supported_carts[0] = j.route_config.supported_carts[0]
+            self.locked = self.locked or j.route_config['locked']
+            if j.route_config['supported_carts'][0] > self.supported_carts[0]:
+                self.supported_carts[0] = j.route_config['supported_carts'][0]
 
-            if j.route_config.supported_carts[1] > self.supported_carts[1]:
-                self.supported_carts[1] = j.route_config.supported_carts[1]
+            if j.route_config['supported_carts'][1] > self.supported_carts[1]:
+                self.supported_carts[1] = j.route_config['supported_carts'][1]
 
         # merge trail points of all base routes into single route
         for i in self.base_routes:
-            self.trail_points.extend(list(i.route_config.trail_points))
+            self.trail_points.extend(list(i.route_config['trail_points']))
 
         # get start point for entire route if it exists
         if len(self.base_routes) > 0:
-            if self.base_routes[0].route_config.start_point:
-                self.start_point = self.trail_points.index(self.base_routes[0].route_config.start_point)
+            if self.base_routes[0].route_config['start_point']:
+                self.start_point = self.trail_points.index(self.base_routes[0].route_config['start_point'])
 
         # get all signals along the way
         for j in self.base_routes:
-            if j.route_config.exit_signal:
-                self.signals.append(j.route_config.exit_signal)
+            if j.route_config['exit_signal'] is not None:
+                self.signals.append(j.route_config['exit_signal'])
 
     def set_next_stop_point(self, first_cart_position):
         # update single stop point which is closest to the first chassis of the train
@@ -67,8 +67,8 @@ class TrainRoute(GameObject):
         self.active_stop_points = []
         self.destination_point = None
         for j in self.base_routes:
-            if j.route_config.stop_point:
-                self.stop_points.append(self.trail_points.index(j.route_config.stop_point[carts]))
+            if j.route_config['stop_point'] is not None:
+                self.stop_points.append(self.trail_points.index(j.route_config['stop_point'][carts]))
 
         if len(self.stop_points) > 0:
             for i in self.stop_points:
@@ -84,13 +84,13 @@ class TrainRoute(GameObject):
         # remember which train opens it
         self.opened = True
         self.last_opened_by = train_id
-        self.base_routes[0].route_config.busy = True
-        self.base_routes[0].last_entered_by = train_id
+        self.base_routes[0].route_config['busy'] = True
+        self.base_routes[0].route_config['last_entered_by'] = train_id
         self.busy_routes.clear()
         self.opened_routes.clear()
         for i in self.base_routes:
-            i.route_config.opened = True
-            i.last_opened_by = train_id
+            i.route_config['opened'] = True
+            i.route_config['last_opened_by'] = train_id
             self.busy_routes.append(i)
             self.opened_routes.append(i)
 
@@ -98,10 +98,10 @@ class TrainRoute(GameObject):
         # fully unlock entire route and remaining base routes
         self.opened = False
         for i in self.opened_routes:
-            i.route_config.opened = False
+            i.route_config['opened'] = False
 
         for i in self.busy_routes:
-            i.route_config.busy = False
+            i.route_config['busy'] = False
 
     def update(self, game_paused):
         if not game_paused:

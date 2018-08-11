@@ -167,7 +167,7 @@ class Dispatcher(GameObject):
 
     def create_new_trains(self):
         for i in (c.LEFT, c.RIGHT):
-            entry_busy = self.train_routes[0][c.APPROACHING_TRAIN_ROUTE[i]].base_routes[0].route_config.busy
+            entry_busy = self.train_routes[0][c.APPROACHING_TRAIN_ROUTE[i]].base_routes[0].route_config['busy']
             # we wait until main entry is free
             if not entry_busy:
                 self.train_timer[i] += 1
@@ -175,7 +175,7 @@ class Dispatcher(GameObject):
                     self.train_timer[i] = 0
                     # randomly choose number of carts for train
                     random.seed()
-                    carts = random.choice(range(6, 21))
+                    carts = random.choice(range(6, 20))
                     if carts < self.supported_carts[0]:
                         route_for_new_train = self.train_routes[0][c.APPROACHING_TRAIN_ROUTE[i]]
                         new_train = Train(carts, route_for_new_train, c.APPROACHING_PASS_THROUGH,
