@@ -1,10 +1,12 @@
 import config as c
 from game_object import GameObject
+import configparser
 
 
 class TrainRoute(GameObject):
     def __init__(self, base_routes, track_number, route_type):
         super().__init__()
+        self.config = None
         self.track_number = track_number
         self.base_routes = base_routes
         # while train moves, some pieces of train route become free
@@ -48,6 +50,59 @@ class TrainRoute(GameObject):
             if j.route_config['exit_signal'] is not None:
                 self.signals.append(j.route_config['exit_signal'])
 
+        self.read_train_route_state()
+
+    def read_train_route_state(self):
+        self.config = configparser.RawConfigParser()
+        self.config.read('train_route_cfg/track{}_{}.ini'.format(self.track_number, self.route_type))
+        if self.config['user_data']['busy_routes'] == 'None':
+            self.busy_routes = []
+        else:
+            busy_routes_parsed = self.config['user_data']['busy_routes'].split(',')
+            for i in range(len(busy_routes_parsed)):
+                busy_routes_parsed[i] = int(busy_routes_parsed[i])
+
+            self.busy_routes = busy_routes_parsed
+
+        if self.config['user_data']['opened_routes'] == 'None':
+            self.opened_routes = []
+        else:
+            opened_routes_parsed = self.config['user_data']['opened_routes'].split(',')
+            for i in range(len(opened_routes_parsed)):
+                opened_routes_parsed[i] = int(opened_routes_parsed[i])
+
+            self.opened_routes = opened_routes_parsed
+
+        self.opened = self.config['user_data'].getboolean('opened')
+        self.last_opened_by = self.config['user_data'].getint('last_opened_by')
+        if self.config['user_data']['stop_points'] == 'None':
+            self.stop_points = []
+        else:
+            stop_points_parsed = self.config['user_data']['stop_points'].split(',')
+            for i in range(len(stop_points_parsed)):
+                stop_points_parsed[i] = int(stop_points_parsed[i])
+
+            self.stop_points = stop_points_parsed
+
+        if self.config['user_data']['active_stop_points'] == 'None':
+            self.active_stop_points = []
+        else:
+            active_stop_points_parsed = self.config['user_data']['active_stop_points'].split(',')
+            for i in range(len(active_stop_points_parsed)):
+                active_stop_points_parsed[i] = int(active_stop_points_parsed[i])
+
+            self.active_stop_points = active_stop_points_parsed
+
+        if self.config['user_data']['destination_point'] == 'None':
+            self.destination_point = None
+        else:
+            self.destination_point = self.config['user_data'].getint('destination_point')
+
+        if self.config['user_data']['next_stop_point'] == 'None':
+            self.next_stop_point = None
+        else:
+            self.next_stop_point = self.config['user_data'].getint('next_stop_point')
+
     def set_next_stop_point(self, first_cart_position):
         # update single stop point which is closest to the first chassis of the train
         index = len(self.active_stop_points)
@@ -88,9 +143,9 @@ class TrainRoute(GameObject):
         self.base_routes[0].route_config['last_entered_by'] = train_id
         self.busy_routes.clear()
         self.opened_routes.clear()
-        for i in self.base_routes:
-            i.route_config['opened'] = True
-            i.route_config['last_opened_by'] = train_id
+        for i in range(len(self.base_routes)):
+            self.base_routes[i].route_config['opened'] = True
+            self.base_routes[i].route_config['last_opened_by'] = train_id
             self.busy_routes.append(i)
             self.opened_routes.append(i)
 
@@ -98,10 +153,10 @@ class TrainRoute(GameObject):
         # fully unlock entire route and remaining base routes
         self.opened = False
         for i in self.opened_routes:
-            i.route_config['opened'] = False
+            self.base_routes[i].route_config['opened'] = False
 
         for i in self.busy_routes:
-            i.route_config['busy'] = False
+            self.base_routes[i].route_config['busy'] = False
 
     def update(self, game_paused):
         if not game_paused:
