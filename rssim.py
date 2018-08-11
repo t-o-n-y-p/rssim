@@ -197,8 +197,7 @@ class RSSim(Game):
                                     self.base_routes[i][c.RIGHT_ENTRY_PLATFORM_BASE_ROUTE],
                                     self.base_routes[i][c.LEFT_EXIT_PLATFORM_BASE_ROUTE],
                                     self.base_routes[i][c.RIGHT_EXIT_PLATFORM_BASE_ROUTE]]
-            new_track = Track()
-            new_track.base_routes = base_routes_in_track
+            new_track = Track(i, base_routes_in_track)
             self.tracks.append(new_track)
             self.logger.info('track {} created'.format(i))
             # create entry train route

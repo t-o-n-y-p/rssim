@@ -9,6 +9,7 @@ from game_object import GameObject
 class BaseRoute(GameObject):
     def __init__(self, track_number, route_type):
         super().__init__()
+        self.config = None
         self.logger = logging.getLogger('base_route {} {}'.format(route_type, track_number))
         self.logger.setLevel(logging.DEBUG)
         self.logger.addHandler(self.fh)
@@ -16,10 +17,6 @@ class BaseRoute(GameObject):
         self.track_number = track_number
         # import config based on track number and route type
         self.route_config = {}
-        self.config = configparser.RawConfigParser()
-        self.config.read('base_route_cfg/track{}/track{}_{}.ini'.format(self.track_number,
-                                                                        self.track_number,
-                                                                        self.route_type))
         self.parse_route_config()
         if self.route_config['image_path'] is not None:
             self.image = pygame.image.load(self.route_config['image_path']).convert_alpha()
@@ -27,6 +24,10 @@ class BaseRoute(GameObject):
             self.image = None
 
     def parse_route_config(self):
+        self.config = configparser.RawConfigParser()
+        self.config.read('base_route_cfg/track{}/track{}_{}.ini'.format(self.track_number,
+                                                                        self.track_number,
+                                                                        self.route_type))
         # parse user-related config
         self.route_config['locked'] = self.config['user_data'].getboolean('locked')
         self.route_config['busy'] = self.config['user_data'].getboolean('busy')
