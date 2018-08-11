@@ -15,7 +15,7 @@ class Track(GameObject):
 
     def read_track_state(self):
         self.config = configparser.RawConfigParser()
-        self.config.read('tracks_cfg/track{}.ini'.format(self.track_number))
+        self.config.read('cfg/tracks/track{}.ini'.format(self.track_number))
         self.busy = self.config['user_data'].getboolean('busy')
         self.last_entered_by = self.config['user_data'].getint('last_entered_by')
         self.override = self.config['user_data'].getboolean('override')

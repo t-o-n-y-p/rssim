@@ -25,7 +25,7 @@ class BaseRoute(GameObject):
 
     def parse_route_config(self):
         self.config = configparser.RawConfigParser()
-        self.config.read('base_route_cfg/track{}/track{}_{}.ini'.format(self.track_number,
+        self.config.read('cfg/base_route/track{}/track{}_{}.ini'.format(self.track_number,
                                                                         self.track_number,
                                                                         self.route_type))
         # parse user-related config

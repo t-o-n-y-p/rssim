@@ -54,7 +54,7 @@ class TrainRoute(GameObject):
 
     def read_train_route_state(self):
         self.config = configparser.RawConfigParser()
-        self.config.read('train_route_cfg/track{}_{}.ini'.format(self.track_number, self.route_type))
+        self.config.read('cfg/train_route/track{}_{}.ini'.format(self.track_number, self.route_type))
         if self.config['user_data']['busy_routes'] == 'None':
             self.busy_routes = []
         else:

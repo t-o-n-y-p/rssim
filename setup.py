@@ -2,7 +2,7 @@ from cx_Freeze import setup, Executable
 
 executables = [Executable('rssim.py')]
 
-include_files = ['img', 'base_route_cfg']
+include_files = ['img', 'cfg']
 
 options = {
     'build_exe': {
@@ -13,6 +13,6 @@ options = {
 
 setup(name='Railway Station Simulator',
       version='0.0.1',
-      description='first_prototype',
+      description='Railway Station Simulator',
       executables=executables,
       options=options)

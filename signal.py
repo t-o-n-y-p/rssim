@@ -37,7 +37,7 @@ class Signal(GameObject):
 
     def read_signal_state(self, track_number, route_type):
         self.config = configparser.RawConfigParser()
-        self.config.read('signals_cfg/track{}/track{}_{}.ini'.format(track_number,
+        self.config.read('cfg/signals/track{}/track{}_{}.ini'.format(track_number,
                                                                      track_number,
                                                                      route_type))
         self.state = self.config['user_data']['state']
