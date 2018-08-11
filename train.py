@@ -24,7 +24,7 @@ class Train(GameObject):
         self.speed_factor_position = c.train_acceleration_factor_length - 1
         self.state = state
         if self.state == c.APPROACHING_PASS_THROUGH:
-            self.priority = 10000000
+            self.priority = 100000000
             self.boarding_time = 1
         else:
             self.priority = 0

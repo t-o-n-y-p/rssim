@@ -21,9 +21,6 @@ class BaseRoute(GameObject):
                                                                         self.track_number,
                                                                         self.route_type))
         self.parse_route_config()
-        # last_opened_by and last_entered_by are used by signals to determine if next route is opened by the same train
-        self.last_opened_by = None
-        self.last_entered_by = None
         if self.route_config['image_path'] is not None:
             self.image = pygame.image.load(self.route_config['image_path']).convert_alpha()
         else:
