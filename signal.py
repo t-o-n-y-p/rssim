@@ -1,19 +1,20 @@
-import pygame
-
+import configparser
 from game_object import GameObject
+import pygame
 import config as c
 
 
 class Signal(GameObject):
     def __init__(self, placement, flip_needed, invisible):
         super().__init__()
+        self.config = None
         self.invisible = invisible
         # where to place signal on map
         self.placement = placement
         # for left-directed routes we need to flip signal (its default image is for right-directed routes)
         self.flip_needed = flip_needed
-        # by default all signals are red, just like IRL :)
-        self.state = c.RED_SIGNAL
+        # initialize signal state
+        self.state = None
         self.base_image = pygame.image.load(c.signal_image_base_path).convert_alpha()
         self.image = {c.RED_SIGNAL: pygame.image.load(c.signal_image_path[c.RED_SIGNAL]).convert_alpha(),
                       c.GREEN_SIGNAL: pygame.image.load(c.signal_image_path[c.GREEN_SIGNAL]).convert_alpha()}
@@ -33,6 +34,13 @@ class Signal(GameObject):
             # for now there are only 2 states: pure red and pure green
             surface.blit(self.image[self.state], signal_position)
             surface.blit(self.base_image, signal_position)
+
+    def read_signal_state(self, track_number, route_type):
+        self.config = configparser.RawConfigParser()
+        self.config.read('signals_cfg/track{}/track{}_{}.ini'.format(track_number,
+                                                                     track_number,
+                                                                     route_type))
+        self.state = self.config['user_data']['state']
 
     def update(self, game_paused):
         if not game_paused:

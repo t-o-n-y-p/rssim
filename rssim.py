@@ -38,8 +38,6 @@ class RSSim(Game):
         self.logger.info('background image object appended')
 
     def create_infrastructure(self):
-        # allow base routes to have access to its config files
-        sys.path.append('./base_route_cfg')
         # ------ BASE ROUTES AND SIGNALS ------
         # create main entry and main exit base routes and signals for them
         for j in (c.LEFT_ENTRY_BASE_ROUTE, c.LEFT_EXIT_BASE_ROUTE, c.RIGHT_ENTRY_BASE_ROUTE, c.RIGHT_EXIT_BASE_ROUTE):
@@ -49,6 +47,7 @@ class RSSim(Game):
             invisible = self.base_routes[0][j].route_config['invisible_signal']
             if placement is not None:
                 self.signals[0][j] = Signal(placement, flip_needed, invisible)
+                self.signals[0][j].read_signal_state(0, j)
 
         self.logger.info('track 0 base routes and signals created')
         for j in (c.LEFT_ENTRY_BASE_ROUTE, c.LEFT_EXIT_BASE_ROUTE, c.RIGHT_ENTRY_BASE_ROUTE, c.RIGHT_EXIT_BASE_ROUTE):
@@ -72,6 +71,7 @@ class RSSim(Game):
                 invisible = self.base_routes[i][k].route_config['invisible_signal']
                 if placement is not None and k in (c.RIGHT_EXIT_PLATFORM_BASE_ROUTE, c.LEFT_EXIT_PLATFORM_BASE_ROUTE):
                     self.signals[i][k] = Signal(placement, flip_needed, invisible)
+                    self.signals[i][k].read_signal_state(i, k)
 
             self.logger.info('track {} base routes and signals created'.format(i))
 
