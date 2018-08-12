@@ -9,10 +9,10 @@ class Junction(GameObject):
         self.straight_track = straight_track
         self.side_track = side_track
         self.direction = direction
-        self.dependencies = []
+        self.dependency = None
         self.busy = False
+        self.force_busy = False
         self.last_entered_by = 0
-        self.busy_from_dependencies = False
         self.trail_points = {self.straight_track: (), self.side_track: ()}
         self.config = None
         self.read_state()
@@ -31,22 +31,22 @@ class Junction(GameObject):
                                                                                   self.direction))
 
         self.busy = self.config['user_data'].getboolean('busy')
+        self.force_busy = self.config['user_data'].getboolean('force_busy')
         self.last_entered_by = self.config['user_data'].getint('last_entered_by')
-        self.busy_from_dependencies = self.config['user_data'].getboolean('busy_from_dependencies')
         straight_trail_points_parsed = self.config['junction_config']['straight_trail_points'].split('|')
         for i in range(len(straight_trail_points_parsed)):
             straight_trail_points_parsed[i] = straight_trail_points_parsed[i].split(',')
             straight_trail_points_parsed[i] = (int(straight_trail_points_parsed[i][0]),
                                                int(straight_trail_points_parsed[i][1]))
 
-        self.straight_trail_points = tuple(straight_trail_points_parsed)
+        self.trail_points[self.straight_track] = tuple(straight_trail_points_parsed)
         side_trail_points_parsed = self.config['junction_config']['side_trail_points'].split('|')
         for i in range(len(side_trail_points_parsed)):
             side_trail_points_parsed[i] = side_trail_points_parsed[i].split(',')
             side_trail_points_parsed[i] = (int(side_trail_points_parsed[i][0]),
                                            int(side_trail_points_parsed[i][1]))
 
-        self.side_trail_points = tuple(side_trail_points_parsed)
+        self.trail_points[self.side_track] = tuple(side_trail_points_parsed)
 
     def save_state(self):
         if not os.path.exists('user_cfg'):
@@ -56,8 +56,8 @@ class Junction(GameObject):
             os.mkdir('user_cfg/junctions')
 
         self.config['user_data']['busy'] = str(self.busy)
+        self.config['user_data']['force_busy'] = str(self.force_busy)
         self.config['user_data']['last_entered_by'] = str(self.last_entered_by)
-        self.config['user_data']['busy_from_dependencies'] = str(self.busy_from_dependencies)
 
         with open('user_cfg/junctions/junction_{}_{}_{}.ini'.format(
                 self.straight_track, self.side_track, self.direction), 'w') as configfile:
@@ -65,7 +65,5 @@ class Junction(GameObject):
 
     def update(self, game_paused):
         if not game_paused:
-            self.busy_from_dependencies = False
-            for i in self.dependencies:
-                self.busy_from_dependencies = self.busy_from_dependencies or i.busy
+            self.busy = self.force_busy or self.dependency.force_busy
 
