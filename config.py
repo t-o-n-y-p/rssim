@@ -12,6 +12,7 @@ base_offset_upper_left_limit = (screen_resolution[0] - map_resolution[0],
 base_offset_lower_right_limit = (0, 0)
 base_offset = (base_offset_upper_left_limit[0] // 2, base_offset_upper_left_limit[1] // 2)
 bottom_bar_height = 50
+bottom_bar_width = 1000
 
 frame_rate = 60
 

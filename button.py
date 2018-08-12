@@ -21,7 +21,7 @@ class Button(GameObject):
         self.position = position
         self.text = text
         for i in range(len(on_click)):
-            self.text_objects.append(TextObject((self.position[0] + 27, self.position[1] + 8), text[i],
+            self.text_objects.append(TextObject((self.position[0] + 50, self.position[1] + 20), text[i],
                                                 c.button_text_color, c.font_size))
 
         self.text_object_actual = self.text_objects[0]

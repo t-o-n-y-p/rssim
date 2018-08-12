@@ -8,7 +8,7 @@ class BottomBar(GameObject):
     def __init__(self):
         super().__init__()
         # create bottom bar for buttons
-        self.bottom_bar_surface = pygame.Surface((c.screen_resolution[0], c.bottom_bar_height), pygame.SRCALPHA)
+        self.bottom_bar_surface = pygame.Surface((c.bottom_bar_width, c.bottom_bar_height), pygame.SRCALPHA)
         self.bottom_bar_surface.fill(c.colors.BLACKOPACITY75)
 
     def draw(self, surface, base_offset):

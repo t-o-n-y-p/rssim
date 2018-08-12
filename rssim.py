@@ -13,6 +13,8 @@ from track import Track
 from train_route import TrainRoute
 from button import Button
 from bottom_bar import BottomBar
+from ingame_time import IngameTime
+from onboarding_tips import OnboardingTips
 
 
 class RSSim(Game):
@@ -30,6 +32,8 @@ class RSSim(Game):
         self.create_bg_img()
         # we create routes, signals and dispatcher and link them to each other correctly
         self.create_infrastructure()
+        self.saved_onboarding_tip = None
+        self.create_onboarding_tips()
         self.create_buttons()
         # this allows user to drag map
         self.mouse_handlers.append(self.handle_mouse_drag)
@@ -255,7 +259,12 @@ class RSSim(Game):
         self.objects.append(self.dispatcher)
         self.logger.info('dispatcher appended')
 
+    def create_onboarding_tips(self):
+        self.saved_onboarding_tip = OnboardingTips('img/game_saved.png')
+        self.objects.append(self.saved_onboarding_tip)
+
     def create_buttons(self):
+
         def pause_game(button):
             self.game_paused = True
 
@@ -266,9 +275,12 @@ class RSSim(Game):
             for i in self.objects:
                 i.save_state()
 
+            self.saved_onboarding_tip.condition_met = True
+
+        self.objects.append(IngameTime())
         self.objects.append(BottomBar())
-        stop_button = Button((600, 555), ['Pause', 'Resume'], [pause_game, resume_game], False)
-        save_button = Button((750, 555), ['Save', ], [save_game, ], True)
+        stop_button = Button((890, 555), ['Pause', 'Resume'], [pause_game, resume_game], False)
+        save_button = Button((780, 555), ['Save', ], [save_game, ], True)
         self.mouse_handlers.append(stop_button.handle_mouse_event)
         self.mouse_handlers.append(save_button.handle_mouse_event)
         self.objects.append(stop_button)
