@@ -20,7 +20,7 @@ class IngameTime(GameObject):
         self.minute = None
         self.day_text = TextObject((c.screen_resolution[0] - 100, c.screen_resolution[1] - 70),
                                    'Day {}'.format(self.day),
-                                   c.colors.RED2, 20)
+                                   c.colors.RED3, 18)
         self.read_state()
 
     def read_state(self):
