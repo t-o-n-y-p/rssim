@@ -75,14 +75,18 @@ PENDING_BOARDING = 'pending_boarding'
 BOARDING_IN_PROGRESS = 'boarding_in_progress'
 BOARDING_COMPLETE = 'boarding_complete'
 
-# keys below are not used at the moment
+LEFT_ENTRY_JUNCTION = 'left_entry_junction'
+LEFT_EXIT_JUNCTION = 'left_exit_junction'
+RIGHT_ENTRY_JUNCTION = 'right_entry_junction'
+RIGHT_EXIT_JUNCTION = 'right_exit_junction'
 
-text_color = colors.YELLOW1
+LEFT_ENTRY_CROSSOVER = 'left_entry_crossover'
+LEFT_EXIT_CROSSOVER = 'left_exit_crossover'
+
+LEFT_ENTRY_DIAMOND_CROSSOVER = 'left_entry_diamond_crossover'
+LEFT_EXIT_DIAMOND_CROSSOVER = 'left_exit_diamond_crossover'
 
 font_name = 'Arial'
 font_size = 20
 
 button_text_color = colors.WHITE,
-button_normal_back_color = colors.INDIANRED1
-button_hover_back_color = colors.INDIANRED2
-button_pressed_back_color = colors.INDIANRED3

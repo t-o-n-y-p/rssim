@@ -129,6 +129,6 @@ class BaseRoute(GameObject):
             # unlock routes (not available at the moment)
             if self.route_config['under_construction']:
                 self.route_config['construction_time'] -= 1
-                if self.route_config['construction_time'] == 0:
+                if self.route_config['construction_time'] <= 0:
                     self.route_config['locked'] = False
                     self.route_config['under_construction'] = False
