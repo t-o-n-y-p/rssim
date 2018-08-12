@@ -1,5 +1,6 @@
 from game_object import GameObject
 import configparser
+import os
 
 
 class Track(GameObject):
@@ -11,14 +12,32 @@ class Track(GameObject):
         self.busy = False
         self.last_entered_by = None
         self.override = False
-        self.read_track_state()
+        self.read_state()
 
-    def read_track_state(self):
+    def read_state(self):
         self.config = configparser.RawConfigParser()
-        self.config.read('cfg/tracks/track{}.ini'.format(self.track_number))
+        if os.path.exists('user_cfg/tracks/track{}.ini'.format(self.track_number)):
+            self.config.read('user_cfg/tracks/track{}.ini'.format(self.track_number))
+        else:
+            self.config.read('default_cfg/tracks/track{}.ini'.format(self.track_number))
+
         self.busy = self.config['user_data'].getboolean('busy')
         self.last_entered_by = self.config['user_data'].getint('last_entered_by')
         self.override = self.config['user_data'].getboolean('override')
+
+    def save_state(self):
+        if not os.path.exists('user_cfg'):
+            os.mkdir('user_cfg')
+
+        if not os.path.exists('user_cfg/tracks'):
+            os.mkdir('user_cfg/tracks')
+
+        self.config['user_data']['busy'] = str(self.busy)
+        self.config['user_data']['last_entered_by'] = str(self.last_entered_by)
+        self.config['user_data']['override'] = str(self.override)
+
+        with open('user_cfg/tracks/track{}.ini'.format(self.track_number), 'w') as configfile:
+            self.config.write(configfile)
 
     def update(self, game_paused):
         # if game is paused, track status should not be updated

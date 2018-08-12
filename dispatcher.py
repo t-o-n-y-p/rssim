@@ -6,6 +6,7 @@ import config as c
 from game_object import GameObject
 from train import Train
 import configparser
+import os
 
 
 class Dispatcher(GameObject):
@@ -24,11 +25,14 @@ class Dispatcher(GameObject):
         self.train_counter = None
         self.supported_carts = []
         self.config = None
-        self.read_dispatcher_state()
 
-    def read_dispatcher_state(self):
+    def read_state(self):
         self.config = configparser.RawConfigParser()
-        self.config.read('cfg/dispatcher/config.ini')
+        if os.path.exists('user_cfg/dispatcher/config.ini'):
+            self.config.read('user_cfg/dispatcher/config.ini')
+        else:
+            self.config.read('default_cfg/dispatcher/config.ini')
+
         train_timer_parsed = self.config['user_data']['train_timer'].split(',')
         self.train_timer = [int(train_timer_parsed[0]), int(train_timer_parsed[1])]
         self.train_counter = self.config['user_data'].getint('train_counter')
@@ -46,14 +50,27 @@ class Dispatcher(GameObject):
             self.train_ids = train_ids_parsed
             for i in self.train_ids:
                 train_config = configparser.RawConfigParser()
-                train_config.read('cfg/trains/train{}.ini'.format(i))
+                train_config.read('user_cfg/trains/train{}.ini'.format(i))
                 train_carts = train_config['user_data'].getint('carts')
-                train_route_track_number = train_config['user_data'].getint('train_route_track_number')
-                train_route_type = train_config['user_data']['train_route_type']
+                if train_config['user_data']['train_route_track_number'] == 'None':
+                    train_route_track_number = None
+                else:
+                    train_route_track_number = train_config['user_data'].getint('train_route_track_number')
+
+                if train_config['user_data']['train_route_type'] == 'None':
+                    train_route_type = None
+                else:
+                    train_route_type = train_config['user_data']['train_route_type']
+
                 train_state = train_config['user_data']['state']
                 train_direction = train_config['user_data'].getint('direction')
-                saved_train = Train(train_carts, self.train_routes[train_route_track_number][train_route_type],
-                                    train_state, train_direction, i)
+                if train_route_track_number is not None and train_route_type is not None:
+                    saved_train = Train(train_carts, self.train_routes[train_route_track_number][train_route_type],
+                                        train_state, train_direction, i)
+                else:
+                    saved_train = Train(train_carts, None,
+                                        train_state, train_direction, i)
+
                 if train_config['user_data']['track_number'] == 'None':
                     saved_train.track_number = None
                 else:
@@ -89,6 +106,40 @@ class Dispatcher(GameObject):
 
                 saved_train.config = train_config
                 self.trains.append(saved_train)
+
+    def save_state(self):
+        if not os.path.exists('user_cfg'):
+            os.mkdir('user_cfg')
+
+        if not os.path.exists('user_cfg/dispatcher'):
+            os.mkdir('user_cfg/dispatcher')
+
+        self.config['user_data']['train_timer'] = str(self.train_timer[0])+','+str(self.train_timer[1])
+        if len(self.train_ids) == 0:
+            self.config['user_data']['train_ids'] = 'None'
+        else:
+            combined_string = ''
+            for i in self.train_ids:
+                combined_string += '{},'.format(i)
+
+            combined_string = combined_string[0:len(combined_string)-1]
+            self.config['user_data']['train_ids'] = combined_string
+
+        self.config['user_data']['train_counter'] = str(self.train_counter)
+        self.config['user_data']['supported_carts'] = str(self.supported_carts[0])+','+str(self.supported_carts[1])
+
+        with open('user_cfg/dispatcher/config.ini', 'w') as configfile:
+            self.config.write(configfile)
+
+        for i in self.trains:
+            i.save_state()
+
+        for i in self.tracks:
+            i.save_state()
+
+        for i in range(len(self.train_routes)):
+            for j in self.train_routes[i]:
+                self.train_routes[i][j].save_state()
 
     def update(self, game_paused):
         # if game is paused, dispatcher does not work

@@ -12,6 +12,7 @@ from signal import Signal
 from track import Track
 from train_route import TrainRoute
 from button import Button
+from bottom_bar import BottomBar
 
 
 class RSSim(Game):
@@ -48,8 +49,8 @@ class RSSim(Game):
             flip_needed = self.base_routes[0][j].route_config['flip_needed']
             invisible = self.base_routes[0][j].route_config['invisible_signal']
             if placement is not None:
-                self.signals[0][j] = Signal(placement, flip_needed, invisible)
-                self.signals[0][j].read_signal_state(0, j)
+                self.signals[0][j] = Signal(placement, flip_needed, invisible, 0, j)
+                self.signals[0][j].read_state()
 
         self.logger.info('track 0 base routes and signals created')
         for j in (c.LEFT_ENTRY_BASE_ROUTE, c.LEFT_EXIT_BASE_ROUTE, c.RIGHT_ENTRY_BASE_ROUTE, c.RIGHT_EXIT_BASE_ROUTE):
@@ -72,8 +73,8 @@ class RSSim(Game):
                 flip_needed = self.base_routes[i][k].route_config['flip_needed']
                 invisible = self.base_routes[i][k].route_config['invisible_signal']
                 if placement is not None and k in (c.RIGHT_EXIT_PLATFORM_BASE_ROUTE, c.LEFT_EXIT_PLATFORM_BASE_ROUTE):
-                    self.signals[i][k] = Signal(placement, flip_needed, invisible)
-                    self.signals[i][k].read_signal_state(i, k)
+                    self.signals[i][k] = Signal(placement, flip_needed, invisible, i, k)
+                    self.signals[i][k].read_state()
 
             self.logger.info('track {} base routes and signals created'.format(i))
 
@@ -237,20 +238,21 @@ class RSSim(Game):
 
         self.logger.info('base routes and signals appended')
         # train routes and tracks are added to dispatcher which we create right now
-        train_dispatcher = Dispatcher()
+        self.dispatcher = Dispatcher()
         self.logger.info('dispatcher created')
         for i in range(c.tracks_ready + 1):
-            train_dispatcher.train_routes.append({})
+            self.dispatcher.train_routes.append({})
             for p in self.train_routes[i].keys():
-                train_dispatcher.train_routes[i].update({p: self.train_routes[i][p]})
+                self.dispatcher.train_routes[i].update({p: self.train_routes[i][p]})
 
         self.logger.info('train routes appended to dispatcher')
         for i in range(c.tracks_ready):
-            train_dispatcher.tracks.append(self.tracks[i])
+            self.dispatcher.tracks.append(self.tracks[i])
 
         self.logger.info('tracks appended to dispatcher')
         # now we add dispatcher itself to generic objects list
-        self.objects.append(train_dispatcher)
+        self.dispatcher.read_state()
+        self.objects.append(self.dispatcher)
         self.logger.info('dispatcher appended')
 
     def create_buttons(self):
@@ -260,13 +262,22 @@ class RSSim(Game):
         def resume_game(button):
             self.game_paused = False
 
-        stop_button = Button((600, 555), 'Pause', 'Resume', pause_game, resume_game)
+        def save_game(button):
+            for i in self.objects:
+                i.save_state()
+
+        self.objects.append(BottomBar())
+        stop_button = Button((600, 555), ['Pause', 'Resume'], [pause_game, resume_game], False)
+        save_button = Button((750, 555), ['Save', ], [save_game, ], True)
         self.mouse_handlers.append(stop_button.handle_mouse_event)
+        self.mouse_handlers.append(save_button.handle_mouse_event)
         self.objects.append(stop_button)
+        self.objects.append(save_button)
 
     def handle_mouse_drag(self, event_type, pos):
         movement = pygame.mouse.get_rel()
-        if event_type == pygame.MOUSEMOTION and pygame.mouse.get_pressed()[0]:
+        if event_type == pygame.MOUSEMOTION and pygame.mouse.get_pressed()[0] and \
+                pos[1] < c.screen_resolution[1] - c.bottom_bar_height:
             # if left mouse button is pressed and user moves mouse, we move entire map with all its content
             self.base_offset = (self.base_offset[0] + movement[0], self.base_offset[1] + movement[1])
             # but not beyond limits

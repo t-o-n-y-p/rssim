@@ -1,6 +1,7 @@
 import config as c
 from game_object import GameObject
 import configparser
+import os
 
 
 class TrainRoute(GameObject):
@@ -50,11 +51,15 @@ class TrainRoute(GameObject):
             if j.route_config['exit_signal'] is not None:
                 self.signals.append(j.route_config['exit_signal'])
 
-        self.read_train_route_state()
+        self.read_state()
 
-    def read_train_route_state(self):
+    def read_state(self):
         self.config = configparser.RawConfigParser()
-        self.config.read('cfg/train_route/track{}_{}.ini'.format(self.track_number, self.route_type))
+        if os.path.exists('user_cfg/train_route/track{}_{}.ini'.format(self.track_number, self.route_type)):
+            self.config.read('user_cfg/train_route/track{}_{}.ini'.format(self.track_number, self.route_type))
+        else:
+            self.config.read('default_cfg/train_route/track{}_{}.ini'.format(self.track_number, self.route_type))
+
         if self.config['user_data']['busy_routes'] == 'None':
             self.busy_routes = []
         else:
@@ -102,6 +107,69 @@ class TrainRoute(GameObject):
             self.next_stop_point = None
         else:
             self.next_stop_point = self.config['user_data'].getint('next_stop_point')
+
+    def save_state(self):
+        if not os.path.exists('user_cfg'):
+            os.mkdir('user_cfg')
+
+        if not os.path.exists('user_cfg/train_route'):
+            os.mkdir('user_cfg/train_route')
+
+        if len(self.busy_routes) == 0:
+            self.config['user_data']['busy_routes'] = 'None'
+        else:
+            combined_string = ''
+            for i in self.busy_routes:
+                combined_string += '{},'.format(i)
+
+            combined_string = combined_string[0:len(combined_string)-1]
+            self.config['user_data']['busy_routes'] = combined_string
+
+        if len(self.opened_routes) == 0:
+            self.config['user_data']['opened_routes'] = 'None'
+        else:
+            combined_string = ''
+            for i in self.opened_routes:
+                combined_string += '{},'.format(i)
+
+            combined_string = combined_string[0:len(combined_string)-1]
+            self.config['user_data']['opened_routes'] = combined_string
+
+        self.config['user_data']['opened'] = str(self.opened)
+        self.config['user_data']['last_opened_by'] = str(self.last_opened_by)
+
+        if len(self.stop_points) == 0:
+            self.config['user_data']['stop_points'] = 'None'
+        else:
+            combined_string = ''
+            for i in self.stop_points:
+                combined_string += '{},'.format(i)
+
+            combined_string = combined_string[0:len(combined_string)-1]
+            self.config['user_data']['stop_points'] = combined_string
+
+        if len(self.active_stop_points) == 0:
+            self.config['user_data']['active_stop_points'] = 'None'
+        else:
+            combined_string = ''
+            for i in self.active_stop_points:
+                combined_string += '{},'.format(i)
+
+            combined_string = combined_string[0:len(combined_string)-1]
+            self.config['user_data']['active_stop_points'] = combined_string
+
+        if self.destination_point is None:
+            self.config['user_data']['destination_point'] = 'None'
+        else:
+            self.config['user_data']['destination_point'] = str(self.destination_point)
+
+        if self.next_stop_point is None:
+            self.config['user_data']['next_stop_point'] = 'None'
+        else:
+            self.config['user_data']['next_stop_point'] = str(self.next_stop_point)
+
+        with open('user_cfg/train_route/track{}_{}.ini'.format(self.track_number, self.route_type), 'w') as configfile:
+            self.config.write(configfile)
 
     def set_next_stop_point(self, first_cart_position):
         # update single stop point which is closest to the first chassis of the train

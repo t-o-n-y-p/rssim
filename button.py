@@ -6,26 +6,36 @@ import config as c
 
 
 class Button(GameObject):
-    def __init__(self, position, text1, text2, on_click_1=lambda x: None, on_click_2=lambda y: None):
+    def __init__(self, position, text, on_click, draw_only_if_game_paused):
         super().__init__()
+        self.draw_only_if_game_paused = draw_only_if_game_paused
+        self.allowed_to_be_drawn = False
         self.state = 'normal'
-        self.on_click_1 = on_click_1
-        self.on_click_2 = on_click_2
-        self.on_click_actual = on_click_1
+        self.text_objects = []
+        self.on_click = on_click
+        self.on_click_actual = self.on_click[0]
         self.image = {'normal': pygame.image.load('img/button_normal.png').convert_alpha(),
                       'hover': pygame.image.load('img/button_hover.png').convert_alpha(),
                       'pressed': pygame.image.load('img/button_pressed.png').convert_alpha()}
 
         self.position = position
-        self.text_object_1 = TextObject((self.position[0] + 27, self.position[1] + 8), text1,
-                                        c.button_text_color, c.font_size)
-        self.text_object_2 = TextObject((self.position[0] + 27, self.position[1] + 8), text2,
-                                        c.button_text_color, c.font_size)
-        self.text_object_actual = self.text_object_1
+        self.text = text
+        for i in range(len(on_click)):
+            self.text_objects.append(TextObject((self.position[0] + 27, self.position[1] + 8), text[i],
+                                                c.button_text_color, c.font_size))
+
+        self.text_object_actual = self.text_objects[0]
 
     def draw(self, surface, base_offset):
-        surface.blit(self.image[self.state], self.position)
-        self.text_object_actual.draw(surface)
+        if self.allowed_to_be_drawn:
+            surface.blit(self.image[self.state], self.position)
+            self.text_object_actual.draw(surface)
+
+    def update(self, game_paused):
+        if not game_paused and self.draw_only_if_game_paused:
+            self.allowed_to_be_drawn = False
+        else:
+            self.allowed_to_be_drawn = True
 
     def handle_mouse_event(self, event_type, pos):
         if event_type == pygame.MOUSEMOTION:
@@ -52,12 +62,12 @@ class Button(GameObject):
         if self.state == 'pressed':
             self.on_click_actual(self)
             self.state = 'hover'
-            if self.on_click_actual == self.on_click_1:
-                self.on_click_actual = self.on_click_2
+            if self.on_click_actual == self.on_click[0] and len(self.on_click) == 2:
+                self.on_click_actual = self.on_click[1]
             else:
-                self.on_click_actual = self.on_click_1
+                self.on_click_actual = self.on_click[0]
 
-            if self.text_object_actual == self.text_object_1:
-                self.text_object_actual = self.text_object_2
+            if self.text_object_actual == self.text_objects[0] and len(self.text_objects) == 2:
+                self.text_object_actual = self.text_objects[1]
             else:
-                self.text_object_actual = self.text_object_1
+                self.text_object_actual = self.text_objects[0]

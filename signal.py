@@ -2,11 +2,14 @@ import configparser
 from game_object import GameObject
 import pygame
 import config as c
+import os
 
 
 class Signal(GameObject):
-    def __init__(self, placement, flip_needed, invisible):
+    def __init__(self, placement, flip_needed, invisible, track_number, route_type):
         super().__init__()
+        self.track_number = track_number
+        self.route_type = route_type
         self.config = None
         self.invisible = invisible
         # where to place signal on map
@@ -35,12 +38,36 @@ class Signal(GameObject):
             surface.blit(self.image[self.state], signal_position)
             surface.blit(self.base_image, signal_position)
 
-    def read_signal_state(self, track_number, route_type):
+    def read_state(self):
         self.config = configparser.RawConfigParser()
-        self.config.read('cfg/signals/track{}/track{}_{}.ini'.format(track_number,
-                                                                     track_number,
-                                                                     route_type))
+        if os.path.exists('user_cfg/signals/track{}/track{}_{}.ini'.format(self.track_number,
+                                                                           self.track_number,
+                                                                           self.route_type)):
+            self.config.read('user_cfg/signals/track{}/track{}_{}.ini'.format(self.track_number,
+                                                                              self.track_number,
+                                                                              self.route_type))
+        else:
+            self.config.read('default_cfg/signals/track{}/track{}_{}.ini'.format(self.track_number,
+                                                                                 self.track_number,
+                                                                                 self.route_type))
+
         self.state = self.config['user_data']['state']
+
+    def save_state(self):
+        if not os.path.exists('user_cfg'):
+            os.mkdir('user_cfg')
+
+        if not os.path.exists('user_cfg/signals'):
+            os.mkdir('user_cfg/signals')
+
+        if not os.path.exists('user_cfg/signals/track{}'.format(self.track_number)):
+            os.mkdir('user_cfg/signals/track{}'.format(self.track_number))
+
+        self.config['user_data']['state'] = self.state
+
+        with open('user_cfg/signals/track{}/track{}_{}.ini'.format(
+                self.track_number, self.track_number, self.route_type), 'w') as configfile:
+            self.config.write(configfile)
 
     def update(self, game_paused):
         if not game_paused:

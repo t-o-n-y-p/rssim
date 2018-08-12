@@ -1,6 +1,6 @@
 import math
 import configparser
-
+import os
 import pygame
 
 import config as c
@@ -42,6 +42,64 @@ class Train(GameObject):
         # when train route is not assigned, we use carts_position_abs list;
         # it contains absolute carts position on the map
         self.carts_position_abs = []
+
+    def save_state(self):
+        if not os.path.exists('user_cfg'):
+            os.mkdir('user_cfg')
+
+        if not os.path.exists('user_cfg/trains'):
+            os.mkdir('user_cfg/trains')
+
+        if self.config is None:
+            self.config = configparser.RawConfigParser()
+            self.config['user_data'] = {}
+
+        self.config['user_data']['carts'] = str(self.carts)
+        if self.train_route is not None:
+            self.config['user_data']['train_route_track_number'] = str(self.train_route.track_number)
+            self.config['user_data']['train_route_type'] = str(self.train_route.route_type)
+        else:
+            self.config['user_data']['train_route_track_number'] = 'None'
+            self.config['user_data']['train_route_type'] = 'None'
+
+        self.config['user_data']['state'] = self.state
+        self.config['user_data']['direction'] = str(self.direction)
+        if self.track_number is not None:
+            self.config['user_data']['track_number'] = str(self.track_number)
+        else:
+            self.config['user_data']['track_number'] = 'None'
+
+        self.config['user_data']['speed'] = str(self.speed)
+        self.config['user_data']['speed_state'] = self.speed_state
+        self.config['user_data']['speed_factor_position'] = str(self.speed_factor_position)
+        self.config['user_data']['priority'] = str(self.priority)
+        self.config['user_data']['boarding_time'] = str(self.boarding_time)
+        if len(self.carts_position) == 0:
+            self.config['user_data']['carts_position'] = 'None'
+        else:
+            combined_string = ''
+            for i in self.carts_position:
+                combined_string += '{},{}|'.format(i[0], i[1])
+
+            combined_string = combined_string[0:len(combined_string)-1]
+            self.config['user_data']['carts_position'] = combined_string
+
+        if len(self.carts_position_abs) == 0:
+            self.config['user_data']['carts_position_abs'] = 'None'
+        else:
+            combined_string = ''
+            for i in self.carts_position_abs:
+                for j in i:
+                    combined_string += '{}-{},'.format(j[0], j[1])
+
+                combined_string = combined_string[0:len(combined_string)-1]
+                combined_string += '|'
+
+            combined_string = combined_string[0:len(combined_string)-1]
+            self.config['user_data']['carts_position_abs'] = combined_string
+
+        with open('user_cfg/trains/train{}.ini'.format(self.train_id), 'w') as configfile:
+            self.config.write(configfile)
 
     def init_train_position(self):
         # each cart position is based on front and back chassis position

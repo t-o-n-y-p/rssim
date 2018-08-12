@@ -2,6 +2,7 @@ import configparser
 import pygame
 import config as c
 import logging
+import os
 
 from game_object import GameObject
 
@@ -17,17 +18,24 @@ class BaseRoute(GameObject):
         self.track_number = track_number
         # import config based on track number and route type
         self.route_config = {}
-        self.parse_route_config()
+        self.read_state()
         if self.route_config['image_path'] is not None:
             self.image = pygame.image.load(self.route_config['image_path']).convert_alpha()
         else:
             self.image = None
 
-    def parse_route_config(self):
+    def read_state(self):
         self.config = configparser.RawConfigParser()
-        self.config.read('cfg/base_route/track{}/track{}_{}.ini'.format(self.track_number,
-                                                                        self.track_number,
-                                                                        self.route_type))
+        if os.path.exists('user_cfg/base_route/track{}/track{}_{}.ini'.format(self.track_number,
+                                                                              self.track_number,
+                                                                              self.route_type)):
+            self.config.read('user_cfg/base_route/track{}/track{}_{}.ini'.format(self.track_number,
+                                                                                 self.track_number,
+                                                                                 self.route_type))
+        else:
+            self.config.read('default_cfg/base_route/track{}/track{}_{}.ini'.format(self.track_number,
+                                                                                    self.track_number,
+                                                                                    self.route_type))
         # parse user-related config
         self.route_config['locked'] = self.config['user_data'].getboolean('locked')
         self.route_config['busy'] = self.config['user_data'].getboolean('busy')
@@ -76,6 +84,28 @@ class BaseRoute(GameObject):
 
         self.route_config['flip_needed'] = self.config['route_config'].getboolean('flip_needed')
         self.route_config['invisible_signal'] = self.config['route_config'].getboolean('invisible_signal')
+
+    def save_state(self):
+        if not os.path.exists('user_cfg'):
+            os.mkdir('user_cfg')
+
+        if not os.path.exists('user_cfg/base_route'):
+            os.mkdir('user_cfg/base_route')
+
+        if not os.path.exists('user_cfg/base_route/track{}'.format(self.track_number)):
+            os.mkdir('user_cfg/base_route/track{}'.format(self.track_number))
+
+        self.config['user_data']['locked'] = str(self.route_config['locked'])
+        self.config['user_data']['busy'] = str(self.route_config['busy'])
+        self.config['user_data']['opened'] = str(self.route_config['opened'])
+        self.config['user_data']['under_construction'] = str(self.route_config['under_construction'])
+        self.config['user_data']['construction_time'] = str(self.route_config['construction_time'])
+        self.config['user_data']['last_opened_by'] = str(self.route_config['last_opened_by'])
+        self.config['user_data']['last_entered_by'] = str(self.route_config['last_entered_by'])
+
+        with open('user_cfg/base_route/track{}/track{}_{}.ini'.format(
+                self.track_number, self.track_number, self.route_type), 'w') as configfile:
+            self.config.write(configfile)
 
     def draw(self, surface, base_offset):
         if not self.route_config['locked'] and self.image is not None:
