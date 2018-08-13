@@ -1,6 +1,7 @@
 import math
 import configparser
 import os
+from multiprocessing import Pool
 
 import pygame
 
@@ -222,53 +223,81 @@ class Train(GameObject):
         # calculate middle point and axis,
         # but for relative position we need to convert it to absolute positions
         if len(self.carts_position_abs) > 0:
+            """""
+            threaded_drawing_args = []
             for i in range(len(self.carts_position_abs)):
-                point_one = float(self.carts_position_abs[i][1][1] - self.carts_position_abs[i][0][1])
-                point_two = float(self.carts_position_abs[i][0][0] - self.carts_position_abs[i][1][0])
-                if round(point_one, 0) == 0:
-                    x = (self.carts_position_abs[i][0][0] + self.carts_position_abs[i][1][0]) // 2
-                    y = self.carts_position_abs[i][0][1]
-                    if round(point_two, 0) > 0:
-                        surface.blit(self.cart_images[i], (x - self.cart_images[i].get_width() // 2 + base_offset[0],
-                                                           y - self.cart_images[i].get_height() // 2 + base_offset[1]))
-                    else:
-                        new_cart = pygame.transform.flip(self.cart_images[i], True, False)
-                        surface.blit(new_cart, (x - self.cart_images[i].get_width() // 2 + base_offset[0],
-                                                y - self.cart_images[i].get_height() // 2 + base_offset[1]))
-                else:
-                    axis = math.atan2(point_one, point_two) * float(180) / math.pi
-                    new_cart = pygame.transform.rotate(self.cart_images[i], axis)
-                    new_size = new_cart.get_size()
-                    surface.blit(new_cart,
-                                 (round((self.carts_position_abs[i][1][0] + self.carts_position_abs[i][0][0]) // 2
-                                        - new_size[0] // 2 + base_offset[0]),
-                                  round((self.carts_position_abs[i][0][1] + self.carts_position_abs[i][1][1]) // 2
-                                        - new_size[1] // 2 + base_offset[1])))
+                threaded_drawing_args.append((i, surface, base_offset))
+
+            with Pool(8) as p:
+                p.starmap(self.draw_single_cart_abs, threaded_drawing_args)
+            """""
+            for i in range(len(self.carts_position_abs)):
+                self.draw_single_cart_abs(i, surface, base_offset)
         else:
+            """""
+            threaded_drawing_args = []
             for i in range(len(self.carts_position)):
-                point_one = float(self.train_route.trail_points[self.carts_position[i][1]][1]
-                                  - self.train_route.trail_points[self.carts_position[i][0]][1])
-                point_two = float(self.train_route.trail_points[self.carts_position[i][0]][0]
-                                  - self.train_route.trail_points[self.carts_position[i][1]][0])
-                if round(point_one, 0) == 0:
-                    x = (self.train_route.trail_points[self.carts_position[i][0]][0]
-                         + self.train_route.trail_points[self.carts_position[i][1]][0]) // 2
-                    y = self.train_route.trail_points[self.carts_position[i][0]][1]
-                    if round(point_two, 0) > 0:
-                        surface.blit(self.cart_images[i], (x - self.cart_images[i].get_width() // 2 + base_offset[0],
-                                                           y - self.cart_images[i].get_height() // 2 + base_offset[1]))
-                    else:
-                        new_cart = pygame.transform.flip(self.cart_images[i], True, False)
-                        surface.blit(new_cart, (x - self.cart_images[i].get_width() // 2 + base_offset[0],
-                                                y - self.cart_images[i].get_height() // 2 + base_offset[1]))
-                else:
-                    axis = math.atan2(point_one, point_two) * float(180) / math.pi
-                    new_cart = pygame.transform.rotate(self.cart_images[i], axis)
-                    new_size = new_cart.get_size()
-                    surface.blit(new_cart,
-                                 (round((self.train_route.trail_points[self.carts_position[i][0]][0]
-                                         + self.train_route.trail_points[self.carts_position[i][1]][0])
-                                        // 2 - new_size[0] // 2 + base_offset[0]),
-                                  round((self.train_route.trail_points[self.carts_position[i][1]][1]
-                                         + self.train_route.trail_points[self.carts_position[i][0]][1])
-                                        // 2 - new_size[1] // 2 + base_offset[1])))
+                threaded_drawing_args.append((i, surface, base_offset))
+
+            with Pool(8) as p:
+                p.starmap(self.draw_single_cart, threaded_drawing_args)
+            """""
+            for i in range(len(self.carts_position)):
+                self.draw_single_cart(i, surface, base_offset)
+
+    def draw_single_cart(self, cart_number, surface, base_offset):
+        point_one = float(self.train_route.trail_points[self.carts_position[cart_number][1]][1]
+                          - self.train_route.trail_points[self.carts_position[cart_number][0]][1])
+        point_two = float(self.train_route.trail_points[self.carts_position[cart_number][0]][0]
+                          - self.train_route.trail_points[self.carts_position[cart_number][1]][0])
+        if round(point_one, 0) == 0:
+            x = (self.train_route.trail_points[self.carts_position[cart_number][0]][0]
+                 + self.train_route.trail_points[self.carts_position[cart_number][1]][0]) // 2
+            y = self.train_route.trail_points[self.carts_position[cart_number][0]][1]
+            if round(point_two, 0) > 0:
+                surface.blit(self.cart_images[cart_number], (x - self.cart_images[cart_number].get_width() // 2
+                                                             + base_offset[0],
+                                                             y - self.cart_images[cart_number].get_height() // 2
+                                                             + base_offset[1]))
+            else:
+                new_cart = pygame.transform.flip(self.cart_images[cart_number], True, False)
+                surface.blit(new_cart, (x - self.cart_images[cart_number].get_width() // 2 + base_offset[0],
+                                        y - self.cart_images[cart_number].get_height() // 2 + base_offset[1]))
+        else:
+            axis = math.atan2(point_one, point_two) * float(180) / math.pi
+            new_cart = pygame.transform.rotate(self.cart_images[cart_number], axis)
+            new_size = new_cart.get_size()
+            surface.blit(new_cart,
+                         (round((self.train_route.trail_points[self.carts_position[cart_number][0]][0]
+                                 + self.train_route.trail_points[self.carts_position[cart_number][1]][0])
+                                // 2 - new_size[0] // 2 + base_offset[0]),
+                          round((self.train_route.trail_points[self.carts_position[cart_number][1]][1]
+                                 + self.train_route.trail_points[self.carts_position[cart_number][0]][1])
+                                // 2 - new_size[1] // 2 + base_offset[1])))
+
+    def draw_single_cart_abs(self, cart_number, surface, base_offset):
+        point_one = float(self.carts_position_abs[cart_number][1][1] - self.carts_position_abs[cart_number][0][1])
+        point_two = float(self.carts_position_abs[cart_number][0][0] - self.carts_position_abs[cart_number][1][0])
+        if round(point_one, 0) == 0:
+            x = (self.carts_position_abs[cart_number][0][0] + self.carts_position_abs[cart_number][1][0]) // 2
+            y = self.carts_position_abs[cart_number][0][1]
+            if round(point_two, 0) > 0:
+                surface.blit(self.cart_images[cart_number], (x - self.cart_images[cart_number].get_width() // 2
+                                                             + base_offset[0],
+                                                             y - self.cart_images[cart_number].get_height() // 2
+                                                             + base_offset[1]))
+            else:
+                new_cart = pygame.transform.flip(self.cart_images[cart_number], True, False)
+                surface.blit(new_cart, (x - self.cart_images[cart_number].get_width() // 2 + base_offset[0],
+                                        y - self.cart_images[cart_number].get_height() // 2 + base_offset[1]))
+        else:
+            axis = math.atan2(point_one, point_two) * float(180) / math.pi
+            new_cart = pygame.transform.rotate(self.cart_images[cart_number], axis)
+            new_size = new_cart.get_size()
+            surface.blit(new_cart,
+                         (round((self.carts_position_abs[cart_number][1][0]
+                                 + self.carts_position_abs[cart_number][0][0]) // 2
+                                - new_size[0] // 2 + base_offset[0]),
+                          round((self.carts_position_abs[cart_number][0][1]
+                                 + self.carts_position_abs[cart_number][1][1]) // 2
+                                - new_size[1] // 2 + base_offset[1])))
