@@ -1,8 +1,10 @@
 import configparser
-from game_object import GameObject
-import pygame
-import config as c
 import os
+
+import pygame
+
+import config as c
+from game_object import GameObject
 
 
 class Signal(GameObject):
@@ -87,8 +89,8 @@ class Signal(GameObject):
                     self.state = c.RED_SIGNAL
                 else:
                     for i in self.base_route_busy_list:
-                        if not (i.route_config['opened'] and i.route_config['last_opened_by'] ==
-                                self.base_route_exit.route_config['last_opened_by']):
+                        if not (i.route_config['opened'] and i.route_config['last_opened_by']
+                                == self.base_route_exit.route_config['last_opened_by']):
                             busy_logical = busy_logical or i.route_config['busy']
 
                     for j in self.base_route_busy_additional_list:
@@ -99,8 +101,8 @@ class Signal(GameObject):
                     else:
                         if len(self.base_route_busy_extended_list) > 0:
                             for i in self.base_route_opened_list:
-                                if i.route_config['opened'] and i.route_config['last_opened_by'] == \
-                                        self.base_route_exit.route_config['last_opened_by']:
+                                if i.route_config['opened'] and i.route_config['last_opened_by'] \
+                                        == self.base_route_exit.route_config['last_opened_by']:
                                     approaching_track = i.track_number
 
                             for j in self.base_route_busy_extended_list:
@@ -112,16 +114,16 @@ class Signal(GameObject):
                             else:
                                 self.state = c.GREEN_SIGNAL
                                 for i in self.base_route_opened_list:
-                                    if i.route_config['opened'] and i.route_config['last_opened_by'] == \
-                                            self.base_route_exit.route_config['last_opened_by']:
+                                    if i.route_config['opened'] and i.route_config['last_opened_by'] \
+                                            == self.base_route_exit.route_config['last_opened_by']:
                                         i.route_config['busy'] = True
                                         i.route_config['last_entered_by'] = \
                                             self.base_route_exit.route_config['last_opened_by']
                         else:
                             self.state = c.GREEN_SIGNAL
                             for i in self.base_route_opened_list:
-                                if i.route_config['opened'] and i.route_config['last_opened_by'] == \
-                                        self.base_route_exit.route_config['last_opened_by']:
+                                if i.route_config['opened'] and i.route_config['last_opened_by'] \
+                                        == self.base_route_exit.route_config['last_opened_by']:
                                     i.route_config['busy'] = True
                                     i.route_config['last_entered_by'] = \
                                         self.base_route_exit.route_config['last_opened_by']

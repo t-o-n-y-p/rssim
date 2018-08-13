@@ -1,6 +1,7 @@
 import math
 import configparser
 import os
+
 import pygame
 
 import config as c
@@ -150,9 +151,9 @@ class Train(GameObject):
                 # base route is not busy and not opened as soon as back chassis of last cart leaves it
                 if self.direction == c.LEFT:
                     for k in self.train_route.busy_routes:
-                        if self.train_route.trail_points[self.carts_position[len(self.carts_position) - 1][1]][0] > \
-                                self.train_route.base_routes[k].route_config['trail_points'][
-                                    len(self.train_route.base_routes[k].route_config['trail_points']) - 1][0]:
+                        if self.train_route.trail_points[self.carts_position[len(self.carts_position) - 1][1]][0] \
+                                > self.train_route.base_routes[k].route_config['trail_points'][
+                            len(self.train_route.base_routes[k].route_config['trail_points']) - 1][0]:
                             self.train_route.base_routes[k].route_config['busy'] = False
                             self.train_route.busy_routes.remove(k)
                             self.train_route.base_routes[k].route_config['opened'] = False
@@ -161,9 +162,9 @@ class Train(GameObject):
                 # base route is not busy and not opened as soon as back chassis of last cart leaves it
                 if self.direction == c.RIGHT:
                     for k in self.train_route.busy_routes:
-                        if self.train_route.trail_points[self.carts_position[len(self.carts_position) - 1][1]][0] < \
-                                self.train_route.base_routes[k].route_config['trail_points'][
-                                    len(self.train_route.base_routes[k].route_config['trail_points']) - 1][0]:
+                        if self.train_route.trail_points[self.carts_position[len(self.carts_position) - 1][1]][0] \
+                                < self.train_route.base_routes[k].route_config['trail_points'][
+                            len(self.train_route.base_routes[k].route_config['trail_points']) - 1][0]:
                             self.train_route.base_routes[k].route_config['busy'] = False
                             self.train_route.busy_routes.remove(k)
                             self.train_route.base_routes[k].route_config['opened'] = False
@@ -175,8 +176,7 @@ class Train(GameObject):
                 if self.carts_position[0][0] == self.train_route.next_stop_point:
                     self.speed_state = c.STOP
                 # if it is time to decelerate train, do this;
-                elif self.train_route.next_stop_point - self.carts_position[0][0] \
-                        <= c.train_braking_distance:
+                elif self.train_route.next_stop_point - self.carts_position[0][0] <= c.train_braking_distance:
                     self.speed_state = c.DECELERATE
                 # if there is some free track space ahead and train is not at maximum speed,
                 # accelerate
@@ -191,8 +191,8 @@ class Train(GameObject):
                     if self.speed_factor_position == c.train_acceleration_factor_length - 1:
                         self.speed_state = c.MOVE
                     else:
-                        self.speed = c.train_acceleration_factor[self.speed_factor_position + 1] - \
-                                     c.train_acceleration_factor[self.speed_factor_position]
+                        self.speed = c.train_acceleration_factor[self.speed_factor_position + 1] \
+                                     - c.train_acceleration_factor[self.speed_factor_position]
                         self.speed_factor_position += 1
 
                 # just stay at maximum speed here
@@ -204,8 +204,8 @@ class Train(GameObject):
                 # difference between next and current shifts indicates how much to move the train
                 if self.speed_state == c.DECELERATE:
                     self.speed_factor_position -= 1
-                    self.speed = c.train_acceleration_factor[self.speed_factor_position + 1] - \
-                                 c.train_acceleration_factor[self.speed_factor_position]
+                    self.speed = c.train_acceleration_factor[self.speed_factor_position + 1] \
+                                 - c.train_acceleration_factor[self.speed_factor_position]
 
                 # just stay sill here
                 if self.speed_state == c.STOP:
@@ -240,19 +240,19 @@ class Train(GameObject):
                     new_cart = pygame.transform.rotate(self.cart_images[i], axis)
                     new_size = new_cart.get_size()
                     surface.blit(new_cart,
-                                 (round((self.carts_position_abs[i][1][0] + self.carts_position_abs[i][0][0]) // 2 -
-                                        new_size[0] // 2 + base_offset[0]),
-                                  round((self.carts_position_abs[i][0][1] + self.carts_position_abs[i][1][1]) // 2 -
-                                        new_size[1] // 2 + base_offset[1])))
+                                 (round((self.carts_position_abs[i][1][0] + self.carts_position_abs[i][0][0]) // 2
+                                        - new_size[0] // 2 + base_offset[0]),
+                                  round((self.carts_position_abs[i][0][1] + self.carts_position_abs[i][1][1]) // 2
+                                        - new_size[1] // 2 + base_offset[1])))
         else:
             for i in range(len(self.carts_position)):
-                point_one = float(self.train_route.trail_points[self.carts_position[i][1]][1] -
-                                  self.train_route.trail_points[self.carts_position[i][0]][1])
-                point_two = float(self.train_route.trail_points[self.carts_position[i][0]][0] -
-                                  self.train_route.trail_points[self.carts_position[i][1]][0])
+                point_one = float(self.train_route.trail_points[self.carts_position[i][1]][1]
+                                  - self.train_route.trail_points[self.carts_position[i][0]][1])
+                point_two = float(self.train_route.trail_points[self.carts_position[i][0]][0]
+                                  - self.train_route.trail_points[self.carts_position[i][1]][0])
                 if round(point_one, 0) == 0:
-                    x = (self.train_route.trail_points[self.carts_position[i][0]][0] +
-                         self.train_route.trail_points[self.carts_position[i][1]][0]) // 2
+                    x = (self.train_route.trail_points[self.carts_position[i][0]][0]
+                         + self.train_route.trail_points[self.carts_position[i][1]][0]) // 2
                     y = self.train_route.trail_points[self.carts_position[i][0]][1]
                     if round(point_two, 0) > 0:
                         surface.blit(self.cart_images[i], (x - self.cart_images[i].get_width() // 2 + base_offset[0],
@@ -266,9 +266,9 @@ class Train(GameObject):
                     new_cart = pygame.transform.rotate(self.cart_images[i], axis)
                     new_size = new_cart.get_size()
                     surface.blit(new_cart,
-                                 (round((self.train_route.trail_points[self.carts_position[i][0]][0] +
-                                         self.train_route.trail_points[self.carts_position[i][1]][0])
+                                 (round((self.train_route.trail_points[self.carts_position[i][0]][0]
+                                         + self.train_route.trail_points[self.carts_position[i][1]][0])
                                         // 2 - new_size[0] // 2 + base_offset[0]),
-                                  round((self.train_route.trail_points[self.carts_position[i][1]][1] +
-                                         self.train_route.trail_points[self.carts_position[i][0]][1])
+                                  round((self.train_route.trail_points[self.carts_position[i][1]][1]
+                                         + self.train_route.trail_points[self.carts_position[i][0]][1])
                                         // 2 - new_size[1] // 2 + base_offset[1])))

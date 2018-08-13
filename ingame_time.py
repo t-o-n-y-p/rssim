@@ -1,13 +1,14 @@
-import logs_config as log_c
 import configparser
-from game_object import GameObject
 import os
+
 import pygame
+
 import config as c
 from text_object import TextObject
+from game_object import GameObject
 
 
-class IngameTime(GameObject):
+class InGameTime(GameObject):
     def __init__(self):
         super().__init__()
         self.clock_face_image = pygame.image.load('img/clock_face.png').convert_alpha()

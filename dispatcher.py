@@ -1,3 +1,5 @@
+import configparser
+import os
 import random
 import logging
 from operator import attrgetter
@@ -5,8 +7,6 @@ from operator import attrgetter
 import config as c
 from game_object import GameObject
 from train import Train
-import configparser
-import os
 
 
 class Dispatcher(GameObject):
@@ -68,8 +68,7 @@ class Dispatcher(GameObject):
                     saved_train = Train(train_carts, self.train_routes[train_route_track_number][train_route_type],
                                         train_state, train_direction, i)
                 else:
-                    saved_train = Train(train_carts, None,
-                                        train_state, train_direction, i)
+                    saved_train = Train(train_carts, None, train_state, train_direction, i)
 
                 if train_config['user_data']['track_number'] == 'None':
                     saved_train.track_number = None
@@ -146,8 +145,8 @@ class Dispatcher(GameObject):
         if not game_paused:
             for z1 in range(len(self.train_routes)):
                 for z2 in self.train_routes[z1]:
-                    if self.train_routes[z1][z2].supported_carts[0] in range(1, self.supported_carts[0]) and \
-                            not self.train_routes[z1][z2].locked:
+                    if self.train_routes[z1][z2].supported_carts[0] in range(1, self.supported_carts[0]) \
+                            and not self.train_routes[z1][z2].locked:
                         self.supported_carts[0] = self.train_routes[z1][z2].supported_carts[0]
 
             self.trains = sorted(self.trains, key=attrgetter('priority'), reverse=True)
@@ -204,8 +203,8 @@ class Dispatcher(GameObject):
                         r = self.train_routes[j][c.ENTRY_TRAIN_ROUTE[i.direction]]
                         # if compatible track is finally available,
                         # we open entry route for our train and leave loop
-                        if i.carts in range(r.supported_carts[0], r.supported_carts[1] + 1) and not r.opened and not \
-                                self.tracks[j - 1].busy:
+                        if i.carts in range(r.supported_carts[0], r.supported_carts[1] + 1) and not r.opened \
+                                and not self.tracks[j - 1].busy:
                             route_for_new_train = r
                             self.tracks[j - 1].override = True
                             self.tracks[j - 1].busy = True
@@ -228,8 +227,8 @@ class Dispatcher(GameObject):
                             r = self.train_routes[j][c.ENTRY_TRAIN_ROUTE[i.direction]]
                             # if compatible track is finally available,
                             # we open entry route for our train and leave loop
-                            if i.carts in range(r.supported_carts[0], r.supported_carts[1] + 1) and not r.opened and \
-                                    not self.tracks[j - 1].busy:
+                            if i.carts in range(r.supported_carts[0], r.supported_carts[1] + 1) and not r.opened \
+                                    and not self.tracks[j - 1].busy:
                                 route_for_new_train = r
                                 self.tracks[j - 1].override = True
                                 self.tracks[j - 1].busy = True

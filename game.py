@@ -1,10 +1,10 @@
-import pygame
 import sys
-import colors
-import logs_config as log_c
 import logging
-
 from collections import defaultdict
+
+import pygame
+
+import logs_config as log_c
 
 
 class Game:

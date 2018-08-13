@@ -1,6 +1,7 @@
-from game_object import GameObject
 import configparser
 import os
+
+from game_object import GameObject
 
 
 class Crossover(GameObject):
@@ -39,12 +40,12 @@ class Crossover(GameObject):
         self.busy[self.straight_track_1][self.straight_track_1] = self.config['user_data'].getboolean('busy_1_1')
         self.busy[self.straight_track_1][self.straight_track_2] = self.config['user_data'].getboolean('busy_1_2')
         self.busy[self.straight_track_2][self.straight_track_2] = self.config['user_data'].getboolean('busy_2_2')
-        self.force_busy[self.straight_track_1][self.straight_track_1] = \
-            self.config['user_data'].getboolean('force_busy_1_1')
-        self.force_busy[self.straight_track_1][self.straight_track_2] = \
-            self.config['user_data'].getboolean('force_busy_1_2')
-        self.force_busy[self.straight_track_2][self.straight_track_2] = \
-            self.config['user_data'].getboolean('force_busy_2_2')
+        self.force_busy[self.straight_track_1][self.straight_track_1] \
+            = self.config['user_data'].getboolean('force_busy_1_1')
+        self.force_busy[self.straight_track_1][self.straight_track_2] \
+            = self.config['user_data'].getboolean('force_busy_1_2')
+        self.force_busy[self.straight_track_2][self.straight_track_2] \
+            = self.config['user_data'].getboolean('force_busy_2_2')
         self.last_entered_by = self.config['user_data'].getint('last_entered_by')
         trail_points_parsed = self.config['crossover_config']['trail_points_1_1'].split('|')
         for i in range(len(trail_points_parsed)):
@@ -75,14 +76,14 @@ class Crossover(GameObject):
         if not os.path.exists('user_cfg/crossovers'):
             os.mkdir('user_cfg/crossovers')
 
-        self.config['user_data']['busy'] = str(self.busy[self.straight_track_1][self.straight_track_1]) + ',' + \
-                                           str(self.busy[self.straight_track_1][self.straight_track_2]) + ',' + \
-                                           str(self.busy[self.straight_track_2][self.straight_track_2])
-        self.config['user_data']['force_busy'] = str(self.force_busy[self.straight_track_1][self.straight_track_1]) + \
-                                                 ',' + \
-                                                 str(self.force_busy[self.straight_track_1][self.straight_track_2]) + \
-                                                 ',' + \
-                                                 str(self.force_busy[self.straight_track_2][self.straight_track_2])
+        self.config['user_data']['busy'] = str(self.busy[self.straight_track_1][self.straight_track_1]) + ',' \
+                                           + str(self.busy[self.straight_track_1][self.straight_track_2]) + ',' \
+                                           + str(self.busy[self.straight_track_2][self.straight_track_2])
+        self.config['user_data']['force_busy'] = str(self.force_busy[self.straight_track_1][self.straight_track_1]) \
+                                                 + ',' \
+                                                 + str(self.force_busy[self.straight_track_1][self.straight_track_2]) \
+                                                 + ',' \
+                                                 + str(self.force_busy[self.straight_track_2][self.straight_track_2])
         self.config['user_data']['last_entered_by'] = str(self.last_entered_by)
 
         with open('user_cfg/crossovers/crossover_{}_{}_{}.ini'.format(self.straight_track_1,
@@ -92,20 +93,20 @@ class Crossover(GameObject):
 
     def update(self, game_paused):
         if not game_paused:
-            self.busy[self.straight_track_1][self.straight_track_1] = \
-                self.force_busy[self.straight_track_1][self.straight_track_1] or \
-                self.force_busy[self.straight_track_1][self.straight_track_2] or \
-                self.dependency.force_busy[self.dependency.straight_track_1][self.dependency.straight_track_2] or \
-                self.dependency.force_busy[self.dependency.straight_track_2][self.dependency.straight_track_2]
-            self.busy[self.straight_track_1][self.straight_track_2] = \
-                self.force_busy[self.straight_track_1][self.straight_track_1] or \
-                self.force_busy[self.straight_track_1][self.straight_track_2] or \
-                self.force_busy[self.straight_track_2][self.straight_track_2] or \
-                self.dependency.force_busy[self.dependency.straight_track_1][self.dependency.straight_track_1] or \
-                self.dependency.force_busy[self.dependency.straight_track_1][self.dependency.straight_track_2] or \
-                self.dependency.force_busy[self.dependency.straight_track_2][self.dependency.straight_track_2]
-            self.busy[self.straight_track_2][self.straight_track_2] = \
-                self.force_busy[self.straight_track_2][self.straight_track_2] or \
-                self.force_busy[self.straight_track_1][self.straight_track_2] or \
-                self.dependency.force_busy[self.dependency.straight_track_1][self.dependency.straight_track_2] or \
-                self.dependency.force_busy[self.dependency.straight_track_1][self.dependency.straight_track_1]
+            self.busy[self.straight_track_1][self.straight_track_1] \
+                = self.force_busy[self.straight_track_1][self.straight_track_1] \
+                or self.force_busy[self.straight_track_1][self.straight_track_2] \
+                or self.dependency.force_busy[self.dependency.straight_track_1][self.dependency.straight_track_2] \
+                or self.dependency.force_busy[self.dependency.straight_track_2][self.dependency.straight_track_2]
+            self.busy[self.straight_track_1][self.straight_track_2] \
+                = self.force_busy[self.straight_track_1][self.straight_track_1] \
+                or self.force_busy[self.straight_track_1][self.straight_track_2] \
+                or self.force_busy[self.straight_track_2][self.straight_track_2] \
+                or self.dependency.force_busy[self.dependency.straight_track_1][self.dependency.straight_track_1] \
+                or self.dependency.force_busy[self.dependency.straight_track_1][self.dependency.straight_track_2] \
+                or self.dependency.force_busy[self.dependency.straight_track_2][self.dependency.straight_track_2]
+            self.busy[self.straight_track_2][self.straight_track_2] \
+                = self.force_busy[self.straight_track_2][self.straight_track_2] \
+                or self.force_busy[self.straight_track_1][self.straight_track_2] \
+                or self.dependency.force_busy[self.dependency.straight_track_1][self.dependency.straight_track_2] \
+                or self.dependency.force_busy[self.dependency.straight_track_1][self.dependency.straight_track_1]

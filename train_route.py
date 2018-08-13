@@ -1,7 +1,8 @@
-import config as c
-from game_object import GameObject
 import configparser
 import os
+
+import config as c
+from game_object import GameObject
 
 
 class TrainRoute(GameObject):

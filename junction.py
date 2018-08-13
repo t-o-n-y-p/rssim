@@ -1,6 +1,7 @@
-from game_object import GameObject
 import configparser
 import os
+
+from game_object import GameObject
 
 
 class Junction(GameObject):

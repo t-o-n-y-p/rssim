@@ -1,10 +1,11 @@
 import configparser
-import pygame
-import config as c
 import logging
 import os
 
+import pygame
+
 from game_object import GameObject
+import config as c
 
 
 class BaseRoute(GameObject):

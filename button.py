@@ -46,16 +46,16 @@ class Button(GameObject):
             self.handle_mouse_up(pos)
 
     def handle_mouse_move(self, pos):
-        if pos[0] in range(self.position[0], self.position[0] + 100) and \
-                pos[1] in range(self.position[1], self.position[1] + 40):
+        if pos[0] in range(self.position[0], self.position[0] + 100) \
+                and pos[1] in range(self.position[1], self.position[1] + 40):
             if self.state != 'pressed':
                 self.state = 'hover'
         else:
             self.state = 'normal'
 
     def handle_mouse_down(self, pos):
-        if pos[0] in range(self.position[0], self.position[0] + 100) and \
-                pos[1] in range(self.position[1], self.position[1] + 40):
+        if pos[0] in range(self.position[0], self.position[0] + 100) \
+                and pos[1] in range(self.position[1], self.position[1] + 40):
             self.state = 'pressed'
 
     def handle_mouse_up(self, pos):

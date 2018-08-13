@@ -1,5 +1,6 @@
 from cx_Freeze import setup, Executable
 
+
 executables = [Executable('rssim.py')]
 
 include_files = ['img', 'default_cfg']

@@ -1,4 +1,3 @@
-import sys
 import logging
 
 import pygame
@@ -13,7 +12,7 @@ from track import Track
 from train_route import TrainRoute
 from button import Button
 from bottom_bar import BottomBar
-from ingame_time import IngameTime
+from ingame_time import InGameTime
 from onboarding_tips import OnboardingTips
 
 
@@ -277,7 +276,7 @@ class RSSim(Game):
 
             self.saved_onboarding_tip.condition_met = True
 
-        self.objects.append(IngameTime())
+        self.objects.append(InGameTime())
         self.objects.append(BottomBar())
         stop_button = Button((890, 555), ['Pause', 'Resume'], [pause_game, resume_game], False)
         save_button = Button((780, 555), ['Save', ], [save_game, ], True)
