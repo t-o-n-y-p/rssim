@@ -5,6 +5,8 @@ import os
 import pygame
 
 from game_object import GameObject
+from railroad_switch import RailroadSwitch
+from crossover import Crossover
 import config as c
 
 
@@ -19,6 +21,9 @@ class BaseRoute(GameObject):
         self.track_number = track_number
         # import config based on track number and route type
         self.route_config = {}
+        self.junctions = []
+        self.checkpoints = []
+        self.junction_position = []
         self.read_state()
         if self.route_config['image_path'] is not None:
             self.image = pygame.image.load(self.route_config['image_path']).convert_alpha()
@@ -107,6 +112,30 @@ class BaseRoute(GameObject):
         with open('user_cfg/base_route/track{}/track{}_{}.ini'.format(
                 self.track_number, self.track_number, self.route_type), 'w') as configfile:
             self.config.write(configfile)
+
+    def enter_base_route(self, train_id):
+        self.checkpoints = []
+        if len(self.junctions) > 0:
+            trail_length_counter = 0
+            for i in range(len(self.junctions)):
+                if type(self.junctions[i]) == RailroadSwitch:
+                    self.junctions[i].force_busy = True
+                    self.junctions[i].last_entered_by = train_id
+                    trail_length_counter += len(self.junctions[i].trail_points[self.junction_position[i]])
+                    self.checkpoints.append(trail_length_counter)
+                elif type(self.junctions[i]) == Crossover:
+                    self.junctions[i].force_busy[self.junction_position[i][0]][self.junction_position[i][1]] = True
+                    self.junctions[i].last_entered_by[self.junction_position[i][0]][self.junction_position[i][1]] \
+                        = train_id
+                    trail_length_counter += len(
+                        self.junctions[i].trail_points[self.junction_position[i][0]][self.junction_position[i][1]])
+                    self.checkpoints.append(trail_length_counter)
+
+        else:
+            self.checkpoints.append(len(self.route_config['trail_points']))
+
+        self.route_config['busy'] = True
+        self.route_config['last_entered_by'] = train_id
 
     def draw(self, surface, base_offset):
         if not self.route_config['locked'] and self.image is not None:

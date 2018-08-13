@@ -17,7 +17,9 @@ class Crossover(GameObject):
         self.force_busy = {self.straight_track_1: {self.straight_track_1: False,
                                                    self.straight_track_2: False},
                            self.straight_track_2: {self.straight_track_2: False}}
-        self.last_entered_by = 0
+        self.last_entered_by = {self.straight_track_1: {self.straight_track_1: 0,
+                                                        self.straight_track_2: 0},
+                                self.straight_track_2: {self.straight_track_2: 0}}
         self.trail_points = {self.straight_track_1: {self.straight_track_1: (),
                                                      self.straight_track_2: ()},
                              self.straight_track_2: {self.straight_track_2: ()}}
@@ -97,7 +99,7 @@ class Crossover(GameObject):
                 = self.force_busy[self.straight_track_1][self.straight_track_1] \
                 or self.force_busy[self.straight_track_1][self.straight_track_2] \
                 or self.dependency.force_busy[self.dependency.straight_track_1][self.dependency.straight_track_2] \
-                or self.dependency.force_busy[self.dependency.straight_track_2][self.dependency.straight_track_2]
+                or self.dependency.force_busy[self.dependency.straight_track_1][self.dependency.straight_track_1]
             self.busy[self.straight_track_1][self.straight_track_2] \
                 = self.force_busy[self.straight_track_1][self.straight_track_1] \
                 or self.force_busy[self.straight_track_1][self.straight_track_2] \

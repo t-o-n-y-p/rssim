@@ -116,14 +116,10 @@ class Signal(GameObject):
                                 for i in self.base_route_opened_list:
                                     if i.route_config['opened'] and i.route_config['last_opened_by'] \
                                             == self.base_route_exit.route_config['last_opened_by']:
-                                        i.route_config['busy'] = True
-                                        i.route_config['last_entered_by'] = \
-                                            self.base_route_exit.route_config['last_opened_by']
+                                        i.enter_base_route(self.base_route_exit.route_config['last_opened_by'])
                         else:
                             self.state = c.GREEN_SIGNAL
                             for i in self.base_route_opened_list:
                                 if i.route_config['opened'] and i.route_config['last_opened_by'] \
                                         == self.base_route_exit.route_config['last_opened_by']:
-                                    i.route_config['busy'] = True
-                                    i.route_config['last_entered_by'] = \
-                                        self.base_route_exit.route_config['last_opened_by']
+                                    i.enter_base_route(self.base_route_exit.route_config['last_opened_by'])

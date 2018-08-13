@@ -153,7 +153,7 @@ class Train(GameObject):
                     for k in self.train_route.busy_routes:
                         if self.train_route.trail_points[self.carts_position[len(self.carts_position) - 1][1]][0] \
                                 > self.train_route.base_routes[k].route_config['trail_points'][
-                            len(self.train_route.base_routes[k].route_config['trail_points']) - 1][0]:
+                                    len(self.train_route.base_routes[k].route_config['trail_points']) - 1][0]:
                             self.train_route.base_routes[k].route_config['busy'] = False
                             self.train_route.busy_routes.remove(k)
                             self.train_route.base_routes[k].route_config['opened'] = False
@@ -164,7 +164,7 @@ class Train(GameObject):
                     for k in self.train_route.busy_routes:
                         if self.train_route.trail_points[self.carts_position[len(self.carts_position) - 1][1]][0] \
                                 < self.train_route.base_routes[k].route_config['trail_points'][
-                            len(self.train_route.base_routes[k].route_config['trail_points']) - 1][0]:
+                                    len(self.train_route.base_routes[k].route_config['trail_points']) - 1][0]:
                             self.train_route.base_routes[k].route_config['busy'] = False
                             self.train_route.busy_routes.remove(k)
                             self.train_route.base_routes[k].route_config['opened'] = False
