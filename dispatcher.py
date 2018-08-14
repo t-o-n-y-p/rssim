@@ -280,8 +280,8 @@ class Dispatcher(GameObject):
                     q4.train_route.update(game_paused)
                 for q3 in range(len(self.tracks)):
                     self.tracks[q3].update(game_paused)
-                    self.logger.info('track {} busy = {}'.format(q3 + 1, self.tracks[q3].busy))
-                    self.logger.info('track {} last entered by {}'.format(q3 + 1, self.tracks[q3].last_entered_by))
+                    # self.logger.info('track {} busy = {}'.format(q3 + 1, self.tracks[q3].busy))
+                    # self.logger.info('track {} last entered by {}'.format(q3 + 1, self.tracks[q3].last_entered_by))
 
     def create_new_trains(self):
         for i in (c.LEFT, c.RIGHT):

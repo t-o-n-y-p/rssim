@@ -1,12 +1,16 @@
+import logging
 import math
 import configparser
 import os
-from multiprocessing import Pool
+import concurrent.futures
+import time
 
 import pygame
 
 import config as c
 from game_object import GameObject
+from railroad_switch import RailroadSwitch
+from crossover import Crossover
 
 
 class Train(GameObject):
@@ -17,6 +21,9 @@ class Train(GameObject):
         self.carts = carts
         self.direction = direction
         self.train_id = train_id
+        self.logger = logging.getLogger('train {}'.format(self.train_id))
+        self.logger.setLevel(logging.DEBUG)
+        self.logger.addHandler(self.fh)
         # all trains are created with maximum speed,
         # not accelerating and not decelerating
         self.speed = c.train_maximum_speed
@@ -152,24 +159,74 @@ class Train(GameObject):
                 # base route is not busy and not opened as soon as back chassis of last cart leaves it
                 if self.direction == c.LEFT:
                     for k in self.train_route.busy_routes:
-                        if self.train_route.trail_points[self.carts_position[len(self.carts_position) - 1][1]][0] \
-                                > self.train_route.base_routes[k].route_config['trail_points'][
-                                    len(self.train_route.base_routes[k].route_config['trail_points']) - 1][0]:
-                            self.train_route.base_routes[k].route_config['busy'] = False
-                            self.train_route.busy_routes.remove(k)
-                            self.train_route.base_routes[k].route_config['opened'] = False
-                            self.train_route.opened_routes.remove(k)
+                        if len(self.train_route.base_routes[k].checkpoints) > 0:
+                            next_checkpoint_index = self.train_route.base_routes[k].checkpoints.count(0)
+                            k2 = self.train_route.base_routes[k].checkpoints[next_checkpoint_index]
+                            if self.train_route.trail_points[self.carts_position[len(self.carts_position) - 1][1]][0] \
+                                    > self.train_route.base_routes[k].route_config['trail_points'][k2][0]:
+                                if len(self.train_route.base_routes[k].checkpoints) == 1:
+                                    self.train_route.base_routes[k].checkpoints.clear()
+                                    self.train_route.base_routes[k].route_config['busy'] = False
+                                    self.train_route.busy_routes.remove(k)
+                                    self.train_route.base_routes[k].route_config['opened'] = False
+                                    self.train_route.opened_routes.remove(k)
+                                else:
+                                    self.train_route.base_routes[k].checkpoints[next_checkpoint_index] = 0
+                                    if type(self.train_route.base_routes[k].junctions[next_checkpoint_index]) \
+                                            == type(RailroadSwitch):
+                                        self.train_route.base_routes[k].junctions[next_checkpoint_index].force_busy \
+                                            = False
+                                    elif type(self.train_route.base_routes[k].junctions[next_checkpoint_index]) \
+                                            == type(Crossover):
+                                        self.train_route.base_routes[k].junctions[next_checkpoint_index].force_busy[
+                                            self.train_route.base_routes[k].junction_position[next_checkpoint_index][0]
+                                        ][
+                                            self.train_route.base_routes[k].junction_position[next_checkpoint_index][1]
+                                        ] = False
+
+                                    if self.train_route.base_routes[k].checkpoints.count(0) \
+                                            == len(self.train_route.base_routes[k].checkpoints):
+                                        self.train_route.base_routes[k].checkpoints.clear()
+                                        self.train_route.base_routes[k].route_config['busy'] = False
+                                        self.train_route.busy_routes.remove(k)
+                                        self.train_route.base_routes[k].route_config['opened'] = False
+                                        self.train_route.opened_routes.remove(k)
 
                 # base route is not busy and not opened as soon as back chassis of last cart leaves it
                 if self.direction == c.RIGHT:
                     for k in self.train_route.busy_routes:
-                        if self.train_route.trail_points[self.carts_position[len(self.carts_position) - 1][1]][0] \
-                                < self.train_route.base_routes[k].route_config['trail_points'][
-                                    len(self.train_route.base_routes[k].route_config['trail_points']) - 1][0]:
-                            self.train_route.base_routes[k].route_config['busy'] = False
-                            self.train_route.busy_routes.remove(k)
-                            self.train_route.base_routes[k].route_config['opened'] = False
-                            self.train_route.opened_routes.remove(k)
+                        if len(self.train_route.base_routes[k].checkpoints) > 0:
+                            next_checkpoint_index = self.train_route.base_routes[k].checkpoints.count(0)
+                            k2 = self.train_route.base_routes[k].checkpoints[next_checkpoint_index]
+                            if self.train_route.trail_points[self.carts_position[len(self.carts_position) - 1][1]][0] \
+                                    < self.train_route.base_routes[k].route_config['trail_points'][k2][0]:
+                                if len(self.train_route.base_routes[k].checkpoints) == 1:
+                                    self.train_route.base_routes[k].checkpoints.clear()
+                                    self.train_route.base_routes[k].route_config['busy'] = False
+                                    self.train_route.busy_routes.remove(k)
+                                    self.train_route.base_routes[k].route_config['opened'] = False
+                                    self.train_route.opened_routes.remove(k)
+                                else:
+                                    self.train_route.base_routes[k].checkpoints[next_checkpoint_index] = 0
+                                    if type(self.train_route.base_routes[k].junctions[next_checkpoint_index]) \
+                                            == type(RailroadSwitch):
+                                        self.train_route.base_routes[k].junctions[next_checkpoint_index].force_busy \
+                                            = False
+                                    elif type(self.train_route.base_routes[k].junctions[next_checkpoint_index]) \
+                                            == type(Crossover):
+                                        self.train_route.base_routes[k].junctions[next_checkpoint_index].force_busy[
+                                            self.train_route.base_routes[k].junction_position[next_checkpoint_index][0]
+                                        ][
+                                            self.train_route.base_routes[k].junction_position[next_checkpoint_index][1]
+                                        ] = False
+
+                                    if self.train_route.base_routes[k].checkpoints.count(0) \
+                                            == len(self.train_route.base_routes[k].checkpoints):
+                                        self.train_route.base_routes[k].checkpoints.clear()
+                                        self.train_route.base_routes[k].route_config['busy'] = False
+                                        self.train_route.busy_routes.remove(k)
+                                        self.train_route.base_routes[k].route_config['opened'] = False
+                                        self.train_route.opened_routes.remove(k)
 
                 # stop point is updated based on signal state
                 self.train_route.set_next_stop_point(self.carts_position[0][0])
@@ -223,27 +280,20 @@ class Train(GameObject):
         # calculate middle point and axis,
         # but for relative position we need to convert it to absolute positions
         if len(self.carts_position_abs) > 0:
-            """""
-            threaded_drawing_args = []
-            for i in range(len(self.carts_position_abs)):
-                threaded_drawing_args.append((i, surface, base_offset))
-
-            with Pool(8) as p:
-                p.starmap(self.draw_single_cart_abs, threaded_drawing_args)
-            """""
+            # draw_timer = time.time_ns()
             for i in range(len(self.carts_position_abs)):
                 self.draw_single_cart_abs(i, surface, base_offset)
-        else:
-            """""
-            threaded_drawing_args = []
-            for i in range(len(self.carts_position)):
-                threaded_drawing_args.append((i, surface, base_offset))
 
-            with Pool(8) as p:
-                p.starmap(self.draw_single_cart, threaded_drawing_args)
-            """""
+            # self.logger.info('drawing train {} took {} ns'.format(self.train_id, time.time_ns() - draw_timer))
+        else:
+            # draw_timer = time.time_ns()
+            # with concurrent.futures.ThreadPoolExecutor(max_workers=3) as executor:
+            #     carts_drawer = {executor.submit(self.draw_single_cart, i, surface, base_offset):
+            #                     i for i in list(range(len(self.carts_position)))}
             for i in range(len(self.carts_position)):
                 self.draw_single_cart(i, surface, base_offset)
+
+            # self.logger.info('drawing train {} took {} ns'.format(self.train_id, time.time_ns() - draw_timer))
 
     def draw_single_cart(self, cart_number, surface, base_offset):
         point_one = float(self.train_route.trail_points[self.carts_position[cart_number][1]][1]

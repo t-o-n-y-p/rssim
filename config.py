@@ -36,7 +36,7 @@ GREEN_SIGNAL = 'green'
 signal_image_base_path = 'img/signal_base.png'
 signal_image_path = {RED_SIGNAL: 'img/signal_red.png', GREEN_SIGNAL: 'img/signal_green.png'}
 
-train_creation_timeout = {LEFT: frame_rate*10, RIGHT: frame_rate*15}
+train_creation_timeout = {LEFT: frame_rate*10, RIGHT: frame_rate*10}
 train_cart_image_path = 'img/cart_red'
 train_acceleration_factor = (0, 0, 0, 0, 0, 1, 1, 1, 1, 1, 2, 2, 2, 2, 3, 3, 3, 3, 4, 4, 4, 5, 5, 5, 6, 6, 6, 7, 7,
                              8, 8, 8, 9, 9, 10, 10, 10, 11, 11, 12, 12, 13, 13, 14, 14, 15, 15, 16, 16, 17, 17, 18,
@@ -75,18 +75,17 @@ PENDING_BOARDING = 'pending_boarding'
 BOARDING_IN_PROGRESS = 'boarding_in_progress'
 BOARDING_COMPLETE = 'boarding_complete'
 
-LEFT_ENTRY_JUNCTION = 'left_entry_junction'
-LEFT_EXIT_JUNCTION = 'left_exit_junction'
-RIGHT_ENTRY_JUNCTION = 'right_entry_junction'
-RIGHT_EXIT_JUNCTION = 'right_exit_junction'
+LEFT_ENTRY_RAILROAD_SWITCH = 'left_entry_railroad_switch'
+LEFT_EXIT_RAILROAD_SWITCH = 'left_exit_railroad_switch'
+RIGHT_ENTRY_RAILROAD_SWITCH = 'right_entry_railroad_switch'
+RIGHT_EXIT_RAILROAD_SWITCH = 'right_exit_railroad_switch'
 
 LEFT_ENTRY_CROSSOVER = 'left_entry_crossover'
 LEFT_EXIT_CROSSOVER = 'left_exit_crossover'
-
-LEFT_ENTRY_DIAMOND_CROSSOVER = 'left_entry_diamond_crossover'
-LEFT_EXIT_DIAMOND_CROSSOVER = 'left_exit_diamond_crossover'
+RIGHT_ENTRY_CROSSOVER = 'right_entry_crossover'
+RIGHT_EXIT_CROSSOVER = 'right_exit_crossover'
 
 font_name = 'Arial'
 font_size = 20
 
-button_text_color = colors.WHITE,
+button_text_color = colors.WHITE

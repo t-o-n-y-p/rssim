@@ -116,14 +116,14 @@ class BaseRoute(GameObject):
     def enter_base_route(self, train_id):
         self.checkpoints = []
         if len(self.junctions) > 0:
-            trail_length_counter = 0
+            trail_length_counter = -1
             for i in range(len(self.junctions)):
-                if type(self.junctions[i]) == RailroadSwitch:
+                if type(self.junctions[i]) == type(RailroadSwitch):
                     self.junctions[i].force_busy = True
                     self.junctions[i].last_entered_by = train_id
                     trail_length_counter += len(self.junctions[i].trail_points[self.junction_position[i]])
                     self.checkpoints.append(trail_length_counter)
-                elif type(self.junctions[i]) == Crossover:
+                elif type(self.junctions[i]) == type(Crossover):
                     self.junctions[i].force_busy[self.junction_position[i][0]][self.junction_position[i][1]] = True
                     self.junctions[i].last_entered_by[self.junction_position[i][0]][self.junction_position[i][1]] \
                         = train_id
@@ -132,7 +132,7 @@ class BaseRoute(GameObject):
                     self.checkpoints.append(trail_length_counter)
 
         else:
-            self.checkpoints.append(len(self.route_config['trail_points']))
+            self.checkpoints.append(len(self.route_config['trail_points']) - 1)
 
         self.route_config['busy'] = True
         self.route_config['last_entered_by'] = train_id

@@ -206,12 +206,11 @@ class TrainRoute(GameObject):
     def open_train_route(self, train_id):
         # open route and all base routes included;
         # remember which train opens it
-        self.opened = True
-        self.last_opened_by = train_id
-        self.base_routes[0].route_config['busy'] = True
-        self.base_routes[0].route_config['last_entered_by'] = train_id
         self.busy_routes.clear()
         self.opened_routes.clear()
+        self.opened = True
+        self.last_opened_by = train_id
+        self.base_routes[0].enter_base_route(train_id)
         for i in range(len(self.base_routes)):
             self.base_routes[i].route_config['opened'] = True
             self.base_routes[i].route_config['last_opened_by'] = train_id
