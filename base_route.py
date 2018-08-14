@@ -44,6 +44,7 @@ class BaseRoute(GameObject):
                                                                                     self.route_type))
         # parse user-related config
         self.route_config['locked'] = self.config['user_data'].getboolean('locked')
+        self.route_config['force_busy'] = self.config['user_data'].getboolean('force_busy')
         self.route_config['busy'] = self.config['user_data'].getboolean('busy')
         self.route_config['opened'] = self.config['user_data'].getboolean('opened')
         self.route_config['under_construction'] = self.config['user_data'].getboolean('under_construction')
@@ -102,6 +103,7 @@ class BaseRoute(GameObject):
             os.mkdir('user_cfg/base_route/track{}'.format(self.track_number))
 
         self.config['user_data']['locked'] = str(self.route_config['locked'])
+        self.config['user_data']['force_busy'] = str(self.route_config['force_busy'])
         self.config['user_data']['busy'] = str(self.route_config['busy'])
         self.config['user_data']['opened'] = str(self.route_config['opened'])
         self.config['user_data']['under_construction'] = str(self.route_config['under_construction'])
@@ -120,11 +122,13 @@ class BaseRoute(GameObject):
             for i in range(len(self.junctions)):
                 if type(self.junctions[i]) == type(RailroadSwitch):
                     self.junctions[i].force_busy = True
+                    self.junctions[i].busy = True
                     self.junctions[i].last_entered_by = train_id
                     trail_length_counter += len(self.junctions[i].trail_points[self.junction_position[i]])
                     self.checkpoints.append(trail_length_counter)
                 elif type(self.junctions[i]) == type(Crossover):
                     self.junctions[i].force_busy[self.junction_position[i][0]][self.junction_position[i][1]] = True
+                    self.junctions[i].busy[self.junction_position[i][0]][self.junction_position[i][1]] = True
                     self.junctions[i].last_entered_by[self.junction_position[i][0]][self.junction_position[i][1]] \
                         = train_id
                     trail_length_counter += len(
@@ -134,6 +138,7 @@ class BaseRoute(GameObject):
         else:
             self.checkpoints.append(len(self.route_config['trail_points']) - 1)
 
+        self.route_config['force_busy'] = True
         self.route_config['busy'] = True
         self.route_config['last_entered_by'] = train_id
 
@@ -156,6 +161,10 @@ class BaseRoute(GameObject):
 
     def update(self, game_paused):
         if not game_paused:
+            self.route_config['busy'] = self.route_config['force_busy']
+            if len(self.junctions) > 0:
+                for i in self.junctions:
+                    self.route_config['busy'] = self.route_config['busy'] or i.busy
             # unlock routes (not available at the moment)
             if self.route_config['under_construction']:
                 self.route_config['construction_time'] -= 1

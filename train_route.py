@@ -224,7 +224,7 @@ class TrainRoute(GameObject):
             self.base_routes[i].route_config['opened'] = False
 
         for i in self.busy_routes:
-            self.base_routes[i].route_config['busy'] = False
+            self.base_routes[i].route_config['force_busy'] = False
 
     def update(self, game_paused):
         if not game_paused:

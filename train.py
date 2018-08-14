@@ -1,16 +1,14 @@
+import configparser
 import logging
 import math
-import configparser
 import os
-import concurrent.futures
-import time
 
 import pygame
 
 import config as c
+from crossover import Crossover
 from game_object import GameObject
 from railroad_switch import RailroadSwitch
-from crossover import Crossover
 
 
 class Train(GameObject):
@@ -166,7 +164,7 @@ class Train(GameObject):
                                     > self.train_route.base_routes[k].route_config['trail_points'][k2][0]:
                                 if len(self.train_route.base_routes[k].checkpoints) == 1:
                                     self.train_route.base_routes[k].checkpoints.clear()
-                                    self.train_route.base_routes[k].route_config['busy'] = False
+                                    self.train_route.base_routes[k].route_config['force_busy'] = False
                                     self.train_route.busy_routes.remove(k)
                                     self.train_route.base_routes[k].route_config['opened'] = False
                                     self.train_route.opened_routes.remove(k)
@@ -187,7 +185,7 @@ class Train(GameObject):
                                     if self.train_route.base_routes[k].checkpoints.count(0) \
                                             == len(self.train_route.base_routes[k].checkpoints):
                                         self.train_route.base_routes[k].checkpoints.clear()
-                                        self.train_route.base_routes[k].route_config['busy'] = False
+                                        self.train_route.base_routes[k].route_config['force_busy'] = False
                                         self.train_route.busy_routes.remove(k)
                                         self.train_route.base_routes[k].route_config['opened'] = False
                                         self.train_route.opened_routes.remove(k)
@@ -202,7 +200,7 @@ class Train(GameObject):
                                     < self.train_route.base_routes[k].route_config['trail_points'][k2][0]:
                                 if len(self.train_route.base_routes[k].checkpoints) == 1:
                                     self.train_route.base_routes[k].checkpoints.clear()
-                                    self.train_route.base_routes[k].route_config['busy'] = False
+                                    self.train_route.base_routes[k].route_config['force_busy'] = False
                                     self.train_route.busy_routes.remove(k)
                                     self.train_route.base_routes[k].route_config['opened'] = False
                                     self.train_route.opened_routes.remove(k)
@@ -223,7 +221,7 @@ class Train(GameObject):
                                     if self.train_route.base_routes[k].checkpoints.count(0) \
                                             == len(self.train_route.base_routes[k].checkpoints):
                                         self.train_route.base_routes[k].checkpoints.clear()
-                                        self.train_route.base_routes[k].route_config['busy'] = False
+                                        self.train_route.base_routes[k].route_config['force_busy'] = False
                                         self.train_route.busy_routes.remove(k)
                                         self.train_route.base_routes[k].route_config['opened'] = False
                                         self.train_route.opened_routes.remove(k)
@@ -263,7 +261,7 @@ class Train(GameObject):
                 if self.speed_state == c.DECELERATE:
                     self.speed_factor_position -= 1
                     self.speed = c.train_acceleration_factor[self.speed_factor_position + 1] \
-                                 - c.train_acceleration_factor[self.speed_factor_position]
+                        - c.train_acceleration_factor[self.speed_factor_position]
 
                 # just stay sill here
                 if self.speed_state == c.STOP:
