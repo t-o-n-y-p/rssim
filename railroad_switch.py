@@ -34,14 +34,15 @@ class RailroadSwitch(GameObject):
         self.busy = self.config['user_data'].getboolean('busy')
         self.force_busy = self.config['user_data'].getboolean('force_busy')
         self.last_entered_by = self.config['user_data'].getint('last_entered_by')
-        straight_trail_points_parsed = self.config['switch_config']['straight_trail_points'].split('|')
+        straight_trail_points_parsed \
+            = self.config['switch_config']['trail_points_{}'.format(self.straight_track)].split('|')
         for i in range(len(straight_trail_points_parsed)):
             straight_trail_points_parsed[i] = straight_trail_points_parsed[i].split(',')
             straight_trail_points_parsed[i] = (int(straight_trail_points_parsed[i][0]),
                                                int(straight_trail_points_parsed[i][1]))
 
         self.trail_points[self.straight_track] = tuple(straight_trail_points_parsed)
-        side_trail_points_parsed = self.config['switch_config']['side_trail_points'].split('|')
+        side_trail_points_parsed = self.config['switch_config']['trail_points_{}'.format(self.side_track)].split('|')
         for i in range(len(side_trail_points_parsed)):
             side_trail_points_parsed[i] = side_trail_points_parsed[i].split(',')
             side_trail_points_parsed[i] = (int(side_trail_points_parsed[i][0]),

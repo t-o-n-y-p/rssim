@@ -39,35 +39,44 @@ class Crossover(GameObject):
                                                                                     self.straight_track_2,
                                                                                     self.direction))
 
-        self.busy[self.straight_track_1][self.straight_track_1] = self.config['user_data'].getboolean('busy_1_1')
-        self.busy[self.straight_track_1][self.straight_track_2] = self.config['user_data'].getboolean('busy_1_2')
-        self.busy[self.straight_track_2][self.straight_track_2] = self.config['user_data'].getboolean('busy_2_2')
+        self.busy[self.straight_track_1][self.straight_track_1] \
+            = self.config['user_data'].getboolean('busy_{}_{}'.format(self.straight_track_1, self.straight_track_1))
+        self.busy[self.straight_track_1][self.straight_track_2] \
+            = self.config['user_data'].getboolean('busy_{}_{}'.format(self.straight_track_1, self.straight_track_2))
+        self.busy[self.straight_track_2][self.straight_track_2] \
+            = self.config['user_data'].getboolean('busy_{}_{}'.format(self.straight_track_2, self.straight_track_2))
         self.force_busy[self.straight_track_1][self.straight_track_1] \
-            = self.config['user_data'].getboolean('force_busy_1_1')
+            = self.config['user_data'].getboolean('force_busy_{}_{}'
+                                                  .format(self.straight_track_1, self.straight_track_1))
         self.force_busy[self.straight_track_1][self.straight_track_2] \
-            = self.config['user_data'].getboolean('force_busy_1_2')
+            = self.config['user_data'].getboolean('force_busy_{}_{}'
+                                                  .format(self.straight_track_1, self.straight_track_2))
         self.force_busy[self.straight_track_2][self.straight_track_2] \
-            = self.config['user_data'].getboolean('force_busy_2_2')
+            = self.config['user_data'].getboolean('force_busy_{}_{}'
+                                                  .format(self.straight_track_2, self.straight_track_2))
         self.last_entered_by = self.config['user_data'].getint('last_entered_by')
-        trail_points_parsed = self.config['crossover_config']['trail_points_1_1'].split('|')
+        trail_points_parsed \
+            = self.config['crossover_config']['trail_points_{}_{}'
+                                              .format(self.straight_track_1, self.straight_track_1)].split('|')
         for i in range(len(trail_points_parsed)):
             trail_points_parsed[i] = trail_points_parsed[i].split(',')
-            trail_points_parsed[i] = (int(trail_points_parsed[i][0]),
-                                      int(trail_points_parsed[i][1]))
+            trail_points_parsed[i] = (int(trail_points_parsed[i][0]), int(trail_points_parsed[i][1]))
 
         self.trail_points[self.straight_track_1][self.straight_track_1] = tuple(trail_points_parsed)
-        trail_points_parsed = self.config['crossover_config']['trail_points_1_2'].split('|')
+        trail_points_parsed \
+            = self.config['crossover_config']['trail_points_{}_{}'
+                                              .format(self.straight_track_1, self.straight_track_2)].split('|')
         for i in range(len(trail_points_parsed)):
             trail_points_parsed[i] = trail_points_parsed[i].split(',')
-            trail_points_parsed[i] = (int(trail_points_parsed[i][0]),
-                                      int(trail_points_parsed[i][1]))
+            trail_points_parsed[i] = (int(trail_points_parsed[i][0]), int(trail_points_parsed[i][1]))
 
         self.trail_points[self.straight_track_1][self.straight_track_2] = tuple(trail_points_parsed)
-        trail_points_parsed = self.config['crossover_config']['trail_points_2_2'].split('|')
+        trail_points_parsed \
+            = self.config['crossover_config']['trail_points_{}_{}'
+                                              .format(self.straight_track_2, self.straight_track_2)].split('|')
         for i in range(len(trail_points_parsed)):
             trail_points_parsed[i] = trail_points_parsed[i].split(',')
-            trail_points_parsed[i] = (int(trail_points_parsed[i][0]),
-                                      int(trail_points_parsed[i][1]))
+            trail_points_parsed[i] = (int(trail_points_parsed[i][0]), int(trail_points_parsed[i][1]))
 
         self.trail_points[self.straight_track_2][self.straight_track_2] = tuple(trail_points_parsed)
 
