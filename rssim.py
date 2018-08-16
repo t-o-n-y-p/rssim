@@ -14,6 +14,8 @@ from button import Button
 from bottom_bar import BottomBar
 from ingame_time import InGameTime
 from onboarding_tips import OnboardingTips
+from railroad_switch import RailroadSwitch
+from crossover import Crossover
 
 
 class RSSim(Game):
@@ -25,6 +27,7 @@ class RSSim(Game):
         self.base_routes = [{}]
         self.signals = [{}]
         self.train_routes = [{}]
+        self.junctions = {}
         self.tracks = []
         self.dispatcher = None
         # we create background image object first to be drawn first
@@ -82,6 +85,90 @@ class RSSim(Game):
                 if placement is not None and k in (c.RIGHT_EXIT_PLATFORM_BASE_ROUTE, c.LEFT_EXIT_PLATFORM_BASE_ROUTE):
                     self.signals[i][k] = Signal(placement, flip_needed, invisible, i, k)
                     self.signals[i][k].read_state()
+
+        self.junctions[1] = {}
+        self.junctions[1][2] = {}
+        self.junctions[1][2][c.RIGHT_ENTRY_CROSSOVER] = Crossover(1, 2, c.RIGHT_ENTRY_CROSSOVER)
+        self.junctions[1][2][c.RIGHT_EXIT_CROSSOVER] = Crossover(1, 2, c.RIGHT_EXIT_CROSSOVER)
+        self.junctions[1][21] = {}
+        self.junctions[1][21][c.LEFT_ENTRY_RAILROAD_SWITCH] = RailroadSwitch(1, 21, c.LEFT_ENTRY_RAILROAD_SWITCH)
+        self.junctions[1][21][c.LEFT_EXIT_RAILROAD_SWITCH] = RailroadSwitch(1, 21, c.LEFT_EXIT_RAILROAD_SWITCH)
+        self.junctions[1][29] = {}
+        self.junctions[1][29][c.RIGHT_ENTRY_RAILROAD_SWITCH] = RailroadSwitch(1, 29, c.RIGHT_ENTRY_RAILROAD_SWITCH)
+        self.junctions[1][29][c.RIGHT_EXIT_RAILROAD_SWITCH] = RailroadSwitch(1, 29, c.RIGHT_EXIT_RAILROAD_SWITCH)
+
+        self.junctions[2] = {}
+        self.junctions[2][1] = {}
+        self.junctions[2][1][c.LEFT_ENTRY_CROSSOVER] = Crossover(2, 1, c.LEFT_ENTRY_CROSSOVER)
+        self.junctions[2][1][c.LEFT_EXIT_CROSSOVER] = Crossover(2, 1, c.LEFT_EXIT_CROSSOVER)
+        self.junctions[2][22] = {}
+        self.junctions[2][22][c.RIGHT_ENTRY_RAILROAD_SWITCH] = RailroadSwitch(2, 22, c.RIGHT_ENTRY_RAILROAD_SWITCH)
+        self.junctions[2][22][c.RIGHT_EXIT_RAILROAD_SWITCH] = RailroadSwitch(2, 22, c.RIGHT_EXIT_RAILROAD_SWITCH)
+        self.junctions[2][30] = {}
+        self.junctions[2][30][c.LEFT_ENTRY_RAILROAD_SWITCH] = RailroadSwitch(2, 30, c.LEFT_ENTRY_RAILROAD_SWITCH)
+        self.junctions[2][30][c.LEFT_EXIT_RAILROAD_SWITCH] = RailroadSwitch(2, 30, c.LEFT_EXIT_RAILROAD_SWITCH)
+
+        self.junctions[21] = {}
+        self.junctions[21][3] = {}
+        self.junctions[21][3][c.LEFT_ENTRY_RAILROAD_SWITCH] = RailroadSwitch(21, 3, c.LEFT_ENTRY_RAILROAD_SWITCH)
+        self.junctions[21][3][c.LEFT_EXIT_RAILROAD_SWITCH] = RailroadSwitch(21, 3, c.LEFT_EXIT_RAILROAD_SWITCH)
+
+        self.junctions[22] = {}
+        self.junctions[22][4] = {}
+        self.junctions[22][4][c.RIGHT_ENTRY_RAILROAD_SWITCH] = RailroadSwitch(22, 4, c.RIGHT_ENTRY_RAILROAD_SWITCH)
+        self.junctions[22][4][c.RIGHT_EXIT_RAILROAD_SWITCH] = RailroadSwitch(22, 4, c.RIGHT_EXIT_RAILROAD_SWITCH)
+
+        self.junctions[29] = {}
+        self.junctions[29][3] = {}
+        self.junctions[29][3][c.RIGHT_ENTRY_RAILROAD_SWITCH] = RailroadSwitch(29, 3, c.RIGHT_ENTRY_RAILROAD_SWITCH)
+        self.junctions[29][3][c.RIGHT_EXIT_RAILROAD_SWITCH] = RailroadSwitch(29, 3, c.RIGHT_EXIT_RAILROAD_SWITCH)
+
+        self.junctions[30] = {}
+        self.junctions[30][4] = {}
+        self.junctions[30][4][c.LEFT_ENTRY_RAILROAD_SWITCH] = RailroadSwitch(30, 4, c.LEFT_ENTRY_RAILROAD_SWITCH)
+        self.junctions[30][4][c.LEFT_EXIT_RAILROAD_SWITCH] = RailroadSwitch(30, 4, c.LEFT_EXIT_RAILROAD_SWITCH)
+
+        self.junctions[1][2][c.RIGHT_ENTRY_CROSSOVER].dependency = self.junctions[1][2][c.RIGHT_EXIT_CROSSOVER]
+        self.junctions[1][2][c.RIGHT_EXIT_CROSSOVER].dependency = self.junctions[1][2][c.RIGHT_ENTRY_CROSSOVER]
+        self.junctions[1][21][c.LEFT_ENTRY_RAILROAD_SWITCH].dependency \
+            = self.junctions[1][21][c.LEFT_EXIT_RAILROAD_SWITCH]
+        self.junctions[1][21][c.LEFT_EXIT_RAILROAD_SWITCH].dependency \
+            = self.junctions[1][21][c.LEFT_ENTRY_RAILROAD_SWITCH]
+        self.junctions[1][29][c.RIGHT_ENTRY_RAILROAD_SWITCH].dependency \
+            = self.junctions[1][29][c.RIGHT_EXIT_RAILROAD_SWITCH]
+        self.junctions[1][29][c.RIGHT_EXIT_RAILROAD_SWITCH].dependency \
+            = self.junctions[1][29][c.RIGHT_ENTRY_RAILROAD_SWITCH]
+
+        self.junctions[2][1][c.LEFT_ENTRY_CROSSOVER].dependency = self.junctions[2][1][c.LEFT_EXIT_CROSSOVER]
+        self.junctions[2][1][c.LEFT_EXIT_CROSSOVER].dependency = self.junctions[2][1][c.LEFT_ENTRY_CROSSOVER]
+        self.junctions[2][22][c.RIGHT_ENTRY_RAILROAD_SWITCH].dependency \
+            = self.junctions[2][22][c.RIGHT_EXIT_RAILROAD_SWITCH]
+        self.junctions[2][22][c.RIGHT_EXIT_RAILROAD_SWITCH].dependency \
+            = self.junctions[2][22][c.RIGHT_ENTRY_RAILROAD_SWITCH]
+        self.junctions[2][30][c.LEFT_ENTRY_RAILROAD_SWITCH].dependency \
+            = self.junctions[2][30][c.LEFT_EXIT_RAILROAD_SWITCH]
+        self.junctions[2][30][c.LEFT_EXIT_RAILROAD_SWITCH].dependency \
+            = self.junctions[2][30][c.LEFT_ENTRY_RAILROAD_SWITCH]
+
+        self.junctions[21][3][c.LEFT_ENTRY_RAILROAD_SWITCH].dependency \
+            = self.junctions[21][3][c.LEFT_EXIT_RAILROAD_SWITCH]
+        self.junctions[21][3][c.LEFT_EXIT_RAILROAD_SWITCH].dependency \
+            = self.junctions[21][3][c.LEFT_ENTRY_RAILROAD_SWITCH]
+
+        self.junctions[22][4][c.RIGHT_ENTRY_RAILROAD_SWITCH].dependency \
+            = self.junctions[22][4][c.RIGHT_EXIT_RAILROAD_SWITCH]
+        self.junctions[22][4][c.RIGHT_EXIT_RAILROAD_SWITCH].dependency \
+            = self.junctions[22][4][c.RIGHT_ENTRY_RAILROAD_SWITCH]
+
+        self.junctions[29][3][c.RIGHT_ENTRY_RAILROAD_SWITCH].dependency \
+            = self.junctions[29][3][c.RIGHT_EXIT_RAILROAD_SWITCH]
+        self.junctions[29][3][c.RIGHT_EXIT_RAILROAD_SWITCH].dependency \
+            = self.junctions[29][3][c.RIGHT_ENTRY_RAILROAD_SWITCH]
+
+        self.junctions[30][4][c.LEFT_ENTRY_RAILROAD_SWITCH].dependency \
+            = self.junctions[30][4][c.LEFT_EXIT_RAILROAD_SWITCH]
+        self.junctions[30][4][c.LEFT_EXIT_RAILROAD_SWITCH].dependency \
+            = self.junctions[30][4][c.LEFT_ENTRY_RAILROAD_SWITCH]
 
         for i in range(1, c.tracks_ready + 1, 2):
             self.base_routes[i][c.LEFT_ENTRY_BASE_ROUTE].read_trail_points()
