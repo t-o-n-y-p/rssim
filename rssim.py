@@ -48,6 +48,7 @@ class RSSim(Game):
         # create main entry and main exit base routes and signals for them
         for j in (c.LEFT_ENTRY_BASE_ROUTE, c.LEFT_EXIT_BASE_ROUTE, c.RIGHT_ENTRY_BASE_ROUTE, c.RIGHT_EXIT_BASE_ROUTE):
             self.base_routes[0][j] = BaseRoute(0, j)
+            self.base_routes[0][j].read_trail_points()
             placement = self.base_routes[0][j].route_config['exit_signal_placement']
             flip_needed = self.base_routes[0][j].route_config['flip_needed']
             invisible = self.base_routes[0][j].route_config['invisible_signal']
@@ -72,12 +73,27 @@ class RSSim(Game):
                       c.LEFT_ENTRY_PLATFORM_BASE_ROUTE, c.RIGHT_ENTRY_PLATFORM_BASE_ROUTE,
                       c.RIGHT_EXIT_PLATFORM_BASE_ROUTE, c.LEFT_EXIT_PLATFORM_BASE_ROUTE):
                 self.base_routes[i][k] = BaseRoute(i, k)
+                if k in (c.LEFT_ENTRY_PLATFORM_BASE_ROUTE, c.RIGHT_ENTRY_PLATFORM_BASE_ROUTE,
+                         c.RIGHT_EXIT_PLATFORM_BASE_ROUTE, c.LEFT_EXIT_PLATFORM_BASE_ROUTE):
+                    self.base_routes[i][k].read_trail_points()
                 placement = self.base_routes[i][k].route_config['exit_signal_placement']
                 flip_needed = self.base_routes[i][k].route_config['flip_needed']
                 invisible = self.base_routes[i][k].route_config['invisible_signal']
                 if placement is not None and k in (c.RIGHT_EXIT_PLATFORM_BASE_ROUTE, c.LEFT_EXIT_PLATFORM_BASE_ROUTE):
                     self.signals[i][k] = Signal(placement, flip_needed, invisible, i, k)
                     self.signals[i][k].read_state()
+
+        for i in range(1, c.tracks_ready + 1, 2):
+            self.base_routes[i][c.LEFT_ENTRY_BASE_ROUTE].read_trail_points()
+            self.base_routes[i][c.LEFT_EXIT_BASE_ROUTE].read_trail_points()
+            self.base_routes[i][c.RIGHT_ENTRY_BASE_ROUTE].read_trail_points()
+            self.base_routes[i][c.RIGHT_EXIT_BASE_ROUTE].read_trail_points()
+
+        for i in range(2, c.tracks_ready + 1, 2):
+            self.base_routes[i][c.LEFT_ENTRY_BASE_ROUTE].read_trail_points()
+            self.base_routes[i][c.LEFT_EXIT_BASE_ROUTE].read_trail_points()
+            self.base_routes[i][c.RIGHT_ENTRY_BASE_ROUTE].read_trail_points()
+            self.base_routes[i][c.RIGHT_EXIT_BASE_ROUTE].read_trail_points()
 
             self.logger.info('track {} base routes and signals created'.format(i))
 

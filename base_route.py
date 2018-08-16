@@ -59,12 +59,6 @@ class BaseRoute(GameObject):
 
         supported_carts_parsed = self.config['route_config']['supported_carts'].split(',')
         self.route_config['supported_carts'] = (int(supported_carts_parsed[0]), int(supported_carts_parsed[1]))
-        trail_points_parsed = self.config['route_config']['trail_points'].split('|')
-        for i in range(len(trail_points_parsed)):
-            trail_points_parsed[i] = trail_points_parsed[i].split(',')
-            trail_points_parsed[i] = (int(trail_points_parsed[i][0]), int(trail_points_parsed[i][1]))
-
-        self.route_config['trail_points'] = tuple(trail_points_parsed)
         if self.config['route_config']['stop_point'] == 'None':
             self.route_config['stop_point'] = None
         else:
@@ -91,6 +85,15 @@ class BaseRoute(GameObject):
 
         self.route_config['flip_needed'] = self.config['route_config'].getboolean('flip_needed')
         self.route_config['invisible_signal'] = self.config['route_config'].getboolean('invisible_signal')
+
+    def read_trail_points(self):
+        if len(self.junctions) == 0:
+            trail_points_parsed = self.config['route_config']['trail_points'].split('|')
+            for i in range(len(trail_points_parsed)):
+                trail_points_parsed[i] = trail_points_parsed[i].split(',')
+                trail_points_parsed[i] = (int(trail_points_parsed[i][0]), int(trail_points_parsed[i][1]))
+
+            self.route_config['trail_points'] = tuple(trail_points_parsed)
 
     def save_state(self):
         if not os.path.exists('user_cfg'):
