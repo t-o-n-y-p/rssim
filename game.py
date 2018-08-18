@@ -12,23 +12,32 @@ class Game:
     def __init__(self, caption, screen_resolution, frame_rate, base_offset):
         self.logs_config = configparser.RawConfigParser()
         self.logger = logging.getLogger('game')
-        self.logs_stream = None
+        self.logs_stream = io.StringIO()
         self.logs_file = None
         self.manage_logs_config()
+        self.logger.debug('main logger created')
         # since map can be moved, all objects should also be moved, that's why we need base offset here
         self.base_offset = base_offset
+        self.logger.debug('base offset set: {} {}'.format(self.base_offset[0], self.base_offset[1]))
         self.frame_rate = frame_rate
+        self.logger.debug('frame rate set: {}'.format(self.frame_rate))
         self.game_paused = False
+        self.logger.debug('game paused set: {}'.format(self.game_paused))
         self.objects = []
-        pygame.mixer.pre_init(44100, 16, 2, 4096)  # is not used at the moment
         pygame.init()
+        self.logger.debug('pygame module core initialized')
         pygame.font.init()
+        self.logger.debug('pygame fonts module initialized')
         self.surface = pygame.display.set_mode(screen_resolution, pygame.SRCALPHA)
+        self.logger.debug('created screen with resolution {}x{}'.format(screen_resolution[0], screen_resolution[1]))
         pygame.display.set_caption(caption)
+        self.logger.debug('caption set: {}'.format(caption))
         self.clock = pygame.time.Clock()
+        self.logger.debug('clock created')
         self.key_down_handlers = defaultdict(list)
         self.key_up_handlers = defaultdict(list)
         self.mouse_handlers = []
+        self.logger.warning('game init completed')
 
     def manage_logs_config(self):
         if os.path.exists('user_cfg/logs_config.ini'):
@@ -42,7 +51,6 @@ class Game:
         self.logger.setLevel(self.logs_config['logs_config'].getint('level'))
         session = self.logs_config['logs_config'].getint('session')
         # logs_handler = logging.FileHandler('logs/session_{}.log'.format(session))
-        self.logs_stream = io.StringIO()
         logs_handler = logging.StreamHandler(stream=self.logs_stream)
         logs_handler.setFormatter(logging.Formatter('%(asctime)s - %(name)s - %(levelname)s - %(message)s'))
         self.logger.addHandler(logs_handler)
@@ -81,12 +89,12 @@ class Game:
 
     def run(self):
         while True:
-            self.logger.info('frame begins')
+            self.logger.warning('frame begins')
             self.handle_events()
             self.update()
             self.draw()
             pygame.display.update()
-            self.logger.info('frame ends')
+            self.logger.warning('frame ends')
             new_lines = self.logs_stream.getvalue()
             self.logs_stream.seek(0, 0)
             self.logs_stream.truncate(0)
