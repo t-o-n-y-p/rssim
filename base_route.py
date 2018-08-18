@@ -96,6 +96,12 @@ class BaseRoute(GameObject):
 
         else:
             trail_points_parsed = []
+            if self.config['route_config']['trail_points'] != 'None':
+                trail_points_parsed = self.config['route_config']['trail_points'].split('|')
+                for i in range(len(trail_points_parsed)):
+                    trail_points_parsed[i] = trail_points_parsed[i].split(',')
+                    trail_points_parsed[i] = (int(trail_points_parsed[i][0]), int(trail_points_parsed[i][1]))
+
             for i in range(len(self.junctions)):
                 if type(self.junctions[i]) == RailroadSwitch:
                     trail_points_parsed.extend(self.junctions[i].trail_points[self.junction_position[i]])
@@ -131,21 +137,21 @@ class BaseRoute(GameObject):
     def enter_base_route(self, train_id, game_paused):
         self.checkpoints = []
         if len(self.junctions) > 0:
-            trail_length_counter = -1
             for i in range(len(self.junctions)):
                 if type(self.junctions[i]) == RailroadSwitch:
                     self.junctions[i].force_busy = True
                     self.junctions[i].busy = True
                     self.junctions[i].last_entered_by = train_id
-                    trail_length_counter += len(self.junctions[i].trail_points[self.junction_position[i]])
-                    self.checkpoints.append(trail_length_counter)
+                    self.checkpoints.append(self.route_config['trail_points']
+                                            .index(self.junctions[i].trail_points[self.junction_position[i]][-1]))
                 elif type(self.junctions[i]) == Crossover:
                     self.junctions[i].force_busy[self.junction_position[i][0]][self.junction_position[i][1]] = True
                     self.junctions[i].busy[self.junction_position[i][0]][self.junction_position[i][1]] = True
                     self.junctions[i].last_entered_by = train_id
-                    trail_length_counter += len(
-                        self.junctions[i].trail_points[self.junction_position[i][0]][self.junction_position[i][1]])
-                    self.checkpoints.append(trail_length_counter)
+                    self.checkpoints \
+                        .append(self.route_config['trail_points']
+                                .index(self.junctions[i]
+                                       .trail_points[self.junction_position[i][0]][self.junction_position[i][1]][-1]))
 
                 self.junctions[i].update(game_paused)
                 self.junctions[i].dependency.update(game_paused)
