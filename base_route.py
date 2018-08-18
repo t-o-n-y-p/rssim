@@ -87,13 +87,23 @@ class BaseRoute(GameObject):
         self.route_config['invisible_signal'] = self.config['route_config'].getboolean('invisible_signal')
 
     def read_trail_points(self):
+        self.route_config['trail_points'] = ()
         if len(self.junctions) == 0:
             trail_points_parsed = self.config['route_config']['trail_points'].split('|')
             for i in range(len(trail_points_parsed)):
                 trail_points_parsed[i] = trail_points_parsed[i].split(',')
                 trail_points_parsed[i] = (int(trail_points_parsed[i][0]), int(trail_points_parsed[i][1]))
 
-            self.route_config['trail_points'] = tuple(trail_points_parsed)
+        else:
+            trail_points_parsed = []
+            for i in range(len(self.junctions)):
+                if type(self.junctions[i]) == RailroadSwitch:
+                    trail_points_parsed.extend(self.junctions[i].trail_points[self.junction_position[i]])
+                elif type(self.junctions[i]) == Crossover:
+                    trail_points_parsed.extend(self.junctions[i].trail_points[self.junction_position[i][0]]
+                                               [self.junction_position[i][1]])
+
+        self.route_config['trail_points'] = tuple(trail_points_parsed)
 
     def save_state(self):
         if not os.path.exists('user_cfg'):
@@ -118,25 +128,27 @@ class BaseRoute(GameObject):
                 self.track_number, self.track_number, self.route_type), 'w') as configfile:
             self.config.write(configfile)
 
-    def enter_base_route(self, train_id):
+    def enter_base_route(self, train_id, game_paused):
         self.checkpoints = []
         if len(self.junctions) > 0:
             trail_length_counter = -1
             for i in range(len(self.junctions)):
-                if type(self.junctions[i]) == type(RailroadSwitch):
+                if type(self.junctions[i]) == RailroadSwitch:
                     self.junctions[i].force_busy = True
                     self.junctions[i].busy = True
                     self.junctions[i].last_entered_by = train_id
                     trail_length_counter += len(self.junctions[i].trail_points[self.junction_position[i]])
                     self.checkpoints.append(trail_length_counter)
-                elif type(self.junctions[i]) == type(Crossover):
+                elif type(self.junctions[i]) == Crossover:
                     self.junctions[i].force_busy[self.junction_position[i][0]][self.junction_position[i][1]] = True
                     self.junctions[i].busy[self.junction_position[i][0]][self.junction_position[i][1]] = True
-                    self.junctions[i].last_entered_by[self.junction_position[i][0]][self.junction_position[i][1]] \
-                        = train_id
+                    self.junctions[i].last_entered_by = train_id
                     trail_length_counter += len(
                         self.junctions[i].trail_points[self.junction_position[i][0]][self.junction_position[i][1]])
                     self.checkpoints.append(trail_length_counter)
+
+                self.junctions[i].update(game_paused)
+                self.junctions[i].dependency.update(game_paused)
 
         else:
             self.checkpoints.append(len(self.route_config['trail_points']) - 1)
@@ -166,8 +178,12 @@ class BaseRoute(GameObject):
         if not game_paused:
             self.route_config['busy'] = self.route_config['force_busy']
             if len(self.junctions) > 0:
-                for i in self.junctions:
-                    self.route_config['busy'] = self.route_config['busy'] or i.busy
+                for i in range(len(self.junctions)):
+                    if type(self.junctions[i]) == RailroadSwitch:
+                        self.route_config['busy'] = self.route_config['busy'] or self.junctions[i].busy
+                    elif type(self.junctions[i]) == Crossover:
+                        self.route_config['busy'] = self.route_config['busy'] or self.junctions[i].busy[
+                            self.junction_position[i][0]][self.junction_position[i][1]]
             # unlock routes (not available at the moment)
             if self.route_config['under_construction']:
                 self.route_config['construction_time'] -= 1

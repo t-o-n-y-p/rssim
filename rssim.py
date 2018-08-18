@@ -141,40 +141,143 @@ class RSSim(Game):
 
         self.junctions[2][1][c.LEFT_ENTRY_CROSSOVER].dependency = self.junctions[2][1][c.LEFT_EXIT_CROSSOVER]
         self.junctions[2][1][c.LEFT_EXIT_CROSSOVER].dependency = self.junctions[2][1][c.LEFT_ENTRY_CROSSOVER]
-        self.junctions[2][22][c.RIGHT_ENTRY_RAILROAD_SWITCH].dependency \
-            = self.junctions[2][22][c.RIGHT_EXIT_RAILROAD_SWITCH]
-        self.junctions[2][22][c.RIGHT_EXIT_RAILROAD_SWITCH].dependency \
-            = self.junctions[2][22][c.RIGHT_ENTRY_RAILROAD_SWITCH]
-        self.junctions[2][30][c.LEFT_ENTRY_RAILROAD_SWITCH].dependency \
-            = self.junctions[2][30][c.LEFT_EXIT_RAILROAD_SWITCH]
-        self.junctions[2][30][c.LEFT_EXIT_RAILROAD_SWITCH].dependency \
-            = self.junctions[2][30][c.LEFT_ENTRY_RAILROAD_SWITCH]
 
-        self.junctions[21][3][c.LEFT_ENTRY_RAILROAD_SWITCH].dependency \
-            = self.junctions[21][3][c.LEFT_EXIT_RAILROAD_SWITCH]
-        self.junctions[21][3][c.LEFT_EXIT_RAILROAD_SWITCH].dependency \
-            = self.junctions[21][3][c.LEFT_ENTRY_RAILROAD_SWITCH]
+        for i in self.junctions:
+            for j in self.junctions[i]:
+                for k in self.junctions[i][j]:
+                    if k == c.LEFT_ENTRY_RAILROAD_SWITCH:
+                        self.junctions[i][j][k].dependency = self.junctions[i][j][c.LEFT_EXIT_RAILROAD_SWITCH]
+                    elif k == c.LEFT_EXIT_RAILROAD_SWITCH:
+                        self.junctions[i][j][k].dependency = self.junctions[i][j][c.LEFT_ENTRY_RAILROAD_SWITCH]
+                    elif k == c.RIGHT_ENTRY_RAILROAD_SWITCH:
+                        self.junctions[i][j][k].dependency = self.junctions[i][j][c.RIGHT_EXIT_RAILROAD_SWITCH]
+                    elif k == c.RIGHT_EXIT_RAILROAD_SWITCH:
+                        self.junctions[i][j][k].dependency = self.junctions[i][j][c.RIGHT_ENTRY_RAILROAD_SWITCH]
 
-        self.junctions[22][4][c.RIGHT_ENTRY_RAILROAD_SWITCH].dependency \
-            = self.junctions[22][4][c.RIGHT_EXIT_RAILROAD_SWITCH]
-        self.junctions[22][4][c.RIGHT_EXIT_RAILROAD_SWITCH].dependency \
-            = self.junctions[22][4][c.RIGHT_ENTRY_RAILROAD_SWITCH]
+        self.base_routes[1][c.LEFT_ENTRY_BASE_ROUTE].junctions.append(self.junctions[2][1][c.LEFT_ENTRY_CROSSOVER])
+        self.base_routes[1][c.LEFT_ENTRY_BASE_ROUTE].junction_position.append([2, 1])
+        self.base_routes[1][c.LEFT_ENTRY_BASE_ROUTE].junctions\
+            .append(self.junctions[1][21][c.LEFT_ENTRY_RAILROAD_SWITCH])
+        self.base_routes[1][c.LEFT_ENTRY_BASE_ROUTE].junction_position.append(1)
 
-        self.junctions[29][3][c.RIGHT_ENTRY_RAILROAD_SWITCH].dependency \
-            = self.junctions[29][3][c.RIGHT_EXIT_RAILROAD_SWITCH]
-        self.junctions[29][3][c.RIGHT_EXIT_RAILROAD_SWITCH].dependency \
-            = self.junctions[29][3][c.RIGHT_ENTRY_RAILROAD_SWITCH]
+        self.base_routes[1][c.RIGHT_ENTRY_BASE_ROUTE].junctions.append(self.junctions[1][2][c.RIGHT_ENTRY_CROSSOVER])
+        self.base_routes[1][c.RIGHT_ENTRY_BASE_ROUTE].junction_position.append([1, 1])
+        self.base_routes[1][c.RIGHT_ENTRY_BASE_ROUTE].junctions\
+            .append(self.junctions[1][29][c.RIGHT_ENTRY_RAILROAD_SWITCH])
+        self.base_routes[1][c.RIGHT_ENTRY_BASE_ROUTE].junction_position.append(1)
 
-        self.junctions[30][4][c.LEFT_ENTRY_RAILROAD_SWITCH].dependency \
-            = self.junctions[30][4][c.LEFT_EXIT_RAILROAD_SWITCH]
-        self.junctions[30][4][c.LEFT_EXIT_RAILROAD_SWITCH].dependency \
-            = self.junctions[30][4][c.LEFT_ENTRY_RAILROAD_SWITCH]
+        self.base_routes[1][c.LEFT_EXIT_BASE_ROUTE].junctions.append(self.junctions[1][21][c.LEFT_EXIT_RAILROAD_SWITCH])
+        self.base_routes[1][c.LEFT_EXIT_BASE_ROUTE].junction_position.append(1)
+        self.base_routes[1][c.LEFT_EXIT_BASE_ROUTE].junctions.append(self.junctions[2][1][c.LEFT_EXIT_CROSSOVER])
+        self.base_routes[1][c.LEFT_EXIT_BASE_ROUTE].junction_position.append([1, 1])
+
+        self.base_routes[1][c.RIGHT_EXIT_BASE_ROUTE].junctions\
+            .append(self.junctions[1][29][c.RIGHT_EXIT_RAILROAD_SWITCH])
+        self.base_routes[1][c.RIGHT_EXIT_BASE_ROUTE].junction_position.append(1)
+        self.base_routes[1][c.RIGHT_EXIT_BASE_ROUTE].junctions.append(self.junctions[1][2][c.RIGHT_EXIT_CROSSOVER])
+        self.base_routes[1][c.RIGHT_EXIT_BASE_ROUTE].junction_position.append([1, 2])
+
+        self.base_routes[3][c.LEFT_ENTRY_BASE_ROUTE].junctions.append(self.junctions[2][1][c.LEFT_ENTRY_CROSSOVER])
+        self.base_routes[3][c.LEFT_ENTRY_BASE_ROUTE].junction_position.append([2, 1])
+        self.base_routes[3][c.LEFT_ENTRY_BASE_ROUTE].junctions\
+            .append(self.junctions[1][21][c.LEFT_ENTRY_RAILROAD_SWITCH])
+        self.base_routes[3][c.LEFT_ENTRY_BASE_ROUTE].junction_position.append(21)
+        self.base_routes[3][c.LEFT_ENTRY_BASE_ROUTE].junctions\
+            .append(self.junctions[21][3][c.LEFT_ENTRY_RAILROAD_SWITCH])
+        self.base_routes[3][c.LEFT_ENTRY_BASE_ROUTE].junction_position.append(3)
+
+        self.base_routes[3][c.RIGHT_ENTRY_BASE_ROUTE].junctions.append(self.junctions[1][2][c.RIGHT_ENTRY_CROSSOVER])
+        self.base_routes[3][c.RIGHT_ENTRY_BASE_ROUTE].junction_position.append([1, 1])
+        self.base_routes[3][c.RIGHT_ENTRY_BASE_ROUTE].junctions\
+            .append(self.junctions[1][29][c.RIGHT_ENTRY_RAILROAD_SWITCH])
+        self.base_routes[3][c.RIGHT_ENTRY_BASE_ROUTE].junction_position.append(29)
+        self.base_routes[3][c.RIGHT_ENTRY_BASE_ROUTE].junctions\
+            .append(self.junctions[29][3][c.RIGHT_ENTRY_RAILROAD_SWITCH])
+        self.base_routes[3][c.RIGHT_ENTRY_BASE_ROUTE].junction_position.append(3)
+
+        self.base_routes[3][c.LEFT_EXIT_BASE_ROUTE].junctions\
+            .append(self.junctions[21][3][c.LEFT_EXIT_RAILROAD_SWITCH])
+        self.base_routes[3][c.LEFT_EXIT_BASE_ROUTE].junction_position.append(3)
+        self.base_routes[3][c.LEFT_EXIT_BASE_ROUTE].junctions\
+            .append(self.junctions[1][21][c.LEFT_EXIT_RAILROAD_SWITCH])
+        self.base_routes[3][c.LEFT_EXIT_BASE_ROUTE].junction_position.append(21)
+        self.base_routes[3][c.LEFT_EXIT_BASE_ROUTE].junctions.append(self.junctions[2][1][c.LEFT_EXIT_CROSSOVER])
+        self.base_routes[3][c.LEFT_EXIT_BASE_ROUTE].junction_position.append([1, 1])
+
+        self.base_routes[3][c.RIGHT_EXIT_BASE_ROUTE].junctions\
+            .append(self.junctions[29][3][c.RIGHT_EXIT_RAILROAD_SWITCH])
+        self.base_routes[3][c.RIGHT_EXIT_BASE_ROUTE].junction_position.append(3)
+        self.base_routes[3][c.RIGHT_EXIT_BASE_ROUTE].junctions\
+            .append(self.junctions[1][29][c.RIGHT_EXIT_RAILROAD_SWITCH])
+        self.base_routes[3][c.RIGHT_EXIT_BASE_ROUTE].junction_position.append(29)
+        self.base_routes[3][c.RIGHT_EXIT_BASE_ROUTE].junctions.append(self.junctions[1][2][c.RIGHT_EXIT_CROSSOVER])
+        self.base_routes[3][c.RIGHT_EXIT_BASE_ROUTE].junction_position.append([1, 2])
 
         for i in range(1, c.tracks_ready + 1, 2):
             self.base_routes[i][c.LEFT_ENTRY_BASE_ROUTE].read_trail_points()
             self.base_routes[i][c.LEFT_EXIT_BASE_ROUTE].read_trail_points()
             self.base_routes[i][c.RIGHT_ENTRY_BASE_ROUTE].read_trail_points()
             self.base_routes[i][c.RIGHT_EXIT_BASE_ROUTE].read_trail_points()
+
+        self.base_routes[2][c.LEFT_ENTRY_BASE_ROUTE].junctions.append(self.junctions[2][1][c.LEFT_ENTRY_CROSSOVER])
+        self.base_routes[2][c.LEFT_ENTRY_BASE_ROUTE].junction_position.append([2, 2])
+        self.base_routes[2][c.LEFT_ENTRY_BASE_ROUTE].junctions\
+            .append(self.junctions[2][30][c.LEFT_ENTRY_RAILROAD_SWITCH])
+        self.base_routes[2][c.LEFT_ENTRY_BASE_ROUTE].junction_position.append(2)
+
+        self.base_routes[2][c.RIGHT_ENTRY_BASE_ROUTE].junctions.append(self.junctions[1][2][c.RIGHT_ENTRY_CROSSOVER])
+        self.base_routes[2][c.RIGHT_ENTRY_BASE_ROUTE].junction_position.append([1, 2])
+        self.base_routes[2][c.RIGHT_ENTRY_BASE_ROUTE].junctions\
+            .append(self.junctions[2][22][c.RIGHT_ENTRY_RAILROAD_SWITCH])
+        self.base_routes[2][c.RIGHT_ENTRY_BASE_ROUTE].junction_position.append(2)
+
+        self.base_routes[2][c.LEFT_EXIT_BASE_ROUTE].junctions\
+            .append(self.junctions[2][30][c.LEFT_EXIT_RAILROAD_SWITCH])
+        self.base_routes[2][c.LEFT_EXIT_BASE_ROUTE].junction_position.append(2)
+        self.base_routes[2][c.LEFT_EXIT_BASE_ROUTE].junctions.append(self.junctions[2][1][c.LEFT_EXIT_CROSSOVER])
+        self.base_routes[2][c.LEFT_EXIT_BASE_ROUTE].junction_position.append([2, 1])
+
+        self.base_routes[2][c.RIGHT_EXIT_BASE_ROUTE].junctions\
+            .append(self.junctions[2][22][c.RIGHT_EXIT_RAILROAD_SWITCH])
+        self.base_routes[2][c.RIGHT_EXIT_BASE_ROUTE].junction_position.append(2)
+        self.base_routes[2][c.RIGHT_EXIT_BASE_ROUTE].junctions.append(self.junctions[1][2][c.RIGHT_EXIT_CROSSOVER])
+        self.base_routes[2][c.RIGHT_EXIT_BASE_ROUTE].junction_position.append([2, 2])
+
+        self.base_routes[4][c.LEFT_ENTRY_BASE_ROUTE].junctions.append(self.junctions[2][1][c.LEFT_ENTRY_CROSSOVER])
+        self.base_routes[4][c.LEFT_ENTRY_BASE_ROUTE].junction_position.append([2, 2])
+        self.base_routes[4][c.LEFT_ENTRY_BASE_ROUTE].junctions\
+            .append(self.junctions[2][30][c.LEFT_ENTRY_RAILROAD_SWITCH])
+        self.base_routes[4][c.LEFT_ENTRY_BASE_ROUTE].junction_position.append(30)
+        self.base_routes[4][c.LEFT_ENTRY_BASE_ROUTE].junctions\
+            .append(self.junctions[30][4][c.LEFT_ENTRY_RAILROAD_SWITCH])
+        self.base_routes[4][c.LEFT_ENTRY_BASE_ROUTE].junction_position.append(4)
+
+        self.base_routes[4][c.RIGHT_ENTRY_BASE_ROUTE].junctions.append(self.junctions[1][2][c.RIGHT_ENTRY_CROSSOVER])
+        self.base_routes[4][c.RIGHT_ENTRY_BASE_ROUTE].junction_position.append([1, 2])
+        self.base_routes[4][c.RIGHT_ENTRY_BASE_ROUTE].junctions\
+            .append(self.junctions[2][22][c.RIGHT_ENTRY_RAILROAD_SWITCH])
+        self.base_routes[4][c.RIGHT_ENTRY_BASE_ROUTE].junction_position.append(22)
+        self.base_routes[4][c.RIGHT_ENTRY_BASE_ROUTE].junctions\
+            .append(self.junctions[22][4][c.RIGHT_ENTRY_RAILROAD_SWITCH])
+        self.base_routes[4][c.RIGHT_ENTRY_BASE_ROUTE].junction_position.append(4)
+
+        self.base_routes[4][c.LEFT_EXIT_BASE_ROUTE].junctions\
+            .append(self.junctions[30][4][c.LEFT_EXIT_RAILROAD_SWITCH])
+        self.base_routes[4][c.LEFT_EXIT_BASE_ROUTE].junction_position.append(4)
+        self.base_routes[4][c.LEFT_EXIT_BASE_ROUTE].junctions\
+            .append(self.junctions[2][30][c.LEFT_EXIT_RAILROAD_SWITCH])
+        self.base_routes[4][c.LEFT_EXIT_BASE_ROUTE].junction_position.append(30)
+        self.base_routes[4][c.LEFT_EXIT_BASE_ROUTE].junctions.append(self.junctions[2][1][c.LEFT_EXIT_CROSSOVER])
+        self.base_routes[4][c.LEFT_EXIT_BASE_ROUTE].junction_position.append([2, 1])
+
+        self.base_routes[4][c.RIGHT_EXIT_BASE_ROUTE].junctions\
+            .append(self.junctions[22][4][c.RIGHT_EXIT_RAILROAD_SWITCH])
+        self.base_routes[4][c.RIGHT_EXIT_BASE_ROUTE].junction_position.append(4)
+        self.base_routes[4][c.RIGHT_EXIT_BASE_ROUTE].junctions\
+            .append(self.junctions[2][22][c.RIGHT_EXIT_RAILROAD_SWITCH])
+        self.base_routes[4][c.RIGHT_EXIT_BASE_ROUTE].junction_position.append(22)
+        self.base_routes[4][c.RIGHT_EXIT_BASE_ROUTE].junctions.append(self.junctions[1][2][c.RIGHT_EXIT_CROSSOVER])
+        self.base_routes[4][c.RIGHT_EXIT_BASE_ROUTE].junction_position.append([2, 2])
 
         for i in range(2, c.tracks_ready + 1, 2):
             self.base_routes[i][c.LEFT_ENTRY_BASE_ROUTE].read_trail_points()
@@ -210,83 +313,14 @@ class RSSim(Game):
             self.signals[i][c.LEFT_EXIT_PLATFORM_BASE_ROUTE].base_route_opened_list \
                 .append(self.base_routes[i][c.LEFT_EXIT_BASE_ROUTE])
             self.logger.info('opened list set up for track {} signals'.format(i))
-            # for every platform signal, busy list includes all exit base routes
-            # located on the same side
-            for q in range(1, c.tracks_ready + 1):
-                self.signals[i][c.RIGHT_EXIT_PLATFORM_BASE_ROUTE].base_route_busy_list \
-                    .append(self.base_routes[q][c.RIGHT_EXIT_BASE_ROUTE])
-                self.signals[i][c.LEFT_EXIT_PLATFORM_BASE_ROUTE].base_route_busy_list \
-                    .append(self.base_routes[q][c.LEFT_EXIT_BASE_ROUTE])
 
-            # for first priority track exit routes,
-            # busy_additional list includes same track entries from other side
-            # and all entries from the same side
-            if i in ([2, ] + list(range(c.first_priority_tracks[c.LEFT][0],
-                                        c.first_priority_tracks[c.LEFT][1],
-                                        c.first_priority_tracks[c.LEFT][2]))):
-                for d1 in ([2, ] + list(range(c.first_priority_tracks[c.LEFT][0],
-                                              c.first_priority_tracks[c.LEFT][1],
-                                              c.first_priority_tracks[c.LEFT][2]))):
-                    self.signals[i][c.RIGHT_EXIT_PLATFORM_BASE_ROUTE].base_route_busy_additional_list \
-                        .append(self.base_routes[d1][c.RIGHT_ENTRY_BASE_ROUTE])
-
-                for d2 in range(1, c.tracks_ready + 1):
-                    self.signals[i][c.LEFT_EXIT_PLATFORM_BASE_ROUTE].base_route_busy_additional_list \
-                        .append(self.base_routes[d2][c.LEFT_ENTRY_BASE_ROUTE])
-
-            if i in ([1, ] + list(range(c.first_priority_tracks[c.RIGHT][0],
-                                        c.first_priority_tracks[c.RIGHT][1],
-                                        c.first_priority_tracks[c.RIGHT][2]))):
-                for e1 in ([1, ] + list(range(c.first_priority_tracks[c.RIGHT][0],
-                                              c.first_priority_tracks[c.RIGHT][1],
-                                              c.first_priority_tracks[c.RIGHT][2]))):
-                    self.signals[i][c.LEFT_EXIT_PLATFORM_BASE_ROUTE].base_route_busy_additional_list \
-                        .append(self.base_routes[e1][c.LEFT_ENTRY_BASE_ROUTE])
-
-                for e2 in range(1, c.tracks_ready + 1):
-                    self.signals[i][c.RIGHT_EXIT_PLATFORM_BASE_ROUTE].base_route_busy_additional_list \
-                        .append(self.base_routes[e2][c.RIGHT_ENTRY_BASE_ROUTE])
-
-            self.logger.info('busy list set up for track {} signals'.format(i))
             # for main entry signals, opened list includes all entry base routes
             self.signals[0][c.LEFT_ENTRY_BASE_ROUTE].base_route_opened_list \
                 .append(self.base_routes[i][c.LEFT_ENTRY_BASE_ROUTE])
             self.signals[0][c.RIGHT_ENTRY_BASE_ROUTE].base_route_opened_list \
                 .append(self.base_routes[i][c.RIGHT_ENTRY_BASE_ROUTE])
-            # for main entry signals, busy list includes all entry base routes too
-            self.signals[0][c.LEFT_ENTRY_BASE_ROUTE].base_route_busy_list \
-                .append(self.base_routes[i][c.LEFT_ENTRY_BASE_ROUTE])
-            self.signals[0][c.RIGHT_ENTRY_BASE_ROUTE].base_route_busy_list \
-                .append(self.base_routes[i][c.RIGHT_ENTRY_BASE_ROUTE])
-            # for main entry signals, busy_additional list includes all first priority exit base routes,
-            # and busy_extended list includes all second priority exit base routes
-            for u in ([2, ] + list(range(c.first_priority_tracks[c.LEFT][0],
-                                         c.first_priority_tracks[c.LEFT][1],
-                                         c.first_priority_tracks[c.LEFT][2]))):
-                self.signals[0][c.LEFT_ENTRY_BASE_ROUTE].base_route_busy_additional_list \
-                    .append(self.base_routes[u][c.LEFT_EXIT_BASE_ROUTE])
-
-            for u in ([1, ] + list(range(c.second_priority_tracks[c.LEFT][0],
-                                         c.second_priority_tracks[c.LEFT][1],
-                                         c.second_priority_tracks[c.LEFT][2]))):
-                self.signals[0][c.LEFT_ENTRY_BASE_ROUTE].base_route_busy_extended_list \
-                    .append(self.base_routes[u][c.LEFT_EXIT_BASE_ROUTE])
-
-            for v in ([1, ] + list(range(c.first_priority_tracks[c.RIGHT][0],
-                                         c.first_priority_tracks[c.RIGHT][1],
-                                         c.first_priority_tracks[c.RIGHT][2]))):
-                self.signals[0][c.RIGHT_ENTRY_BASE_ROUTE].base_route_busy_additional_list \
-                    .append(self.base_routes[v][c.RIGHT_EXIT_BASE_ROUTE])
-
-            for v in ([2, ] + list(range(c.second_priority_tracks[c.RIGHT][0],
-                                         c.second_priority_tracks[c.RIGHT][1],
-                                         c.second_priority_tracks[c.RIGHT][2]))):
-                self.signals[0][c.RIGHT_ENTRY_BASE_ROUTE].base_route_busy_extended_list \
-                    .append(self.base_routes[v][c.RIGHT_EXIT_BASE_ROUTE])
 
         self.logger.info('opened list set up for track 0 signals')
-        self.logger.info('busy list set up for track 0 signals')
-        self.logger.info('busy_extended list set up for track 0 signals')
 
         # ------ TRAIN ROUTES AND TRACKS ------
         # create basic entry train routes for trains which cannot find available track
@@ -335,6 +369,11 @@ class RSSim(Game):
 
         # ------ SORT THIS OUT ------
         # base routes and signals are added to generic objects list
+        for i in self.junctions:
+            for j in self.junctions[i]:
+                for k in self.junctions[i][j]:
+                    self.objects.append(self.junctions[i][j][k])
+
         for i in range(c.tracks_ready + 1):
             for n in self.base_routes[i].keys():
                 self.objects.append(self.base_routes[i][n])

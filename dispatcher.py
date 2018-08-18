@@ -169,7 +169,7 @@ class Dispatcher(GameObject):
                     # and now it is up to exit signal to decide if train moves or not
                     if i.boarding_time in range(11) and i.train_route is None and routes_created_inside_iteration == 0:
                         i.assign_new_train_route(self.train_routes[i.track_number][c.EXIT_TRAIN_ROUTE[i.direction]],
-                                                 i.train_id)
+                                                 i.train_id, game_paused)
                         routes_created_inside_iteration += 1
                         self.logger.info('train {} new route assigned: track {} {}'
                                          .format(i.train_id, i.train_route.track_number, i.train_route.route_type))
@@ -214,7 +214,7 @@ class Dispatcher(GameObject):
                             self.logger.info('train {} completed route: track {} {}'
                                              .format(i.train_id, i.train_route.track_number, i.train_route.route_type))
                             i.complete_train_route()
-                            i.assign_new_train_route(route_for_new_train, i.train_id)
+                            i.assign_new_train_route(route_for_new_train, i.train_id, game_paused)
                             routes_created_inside_iteration += 1
                             self.logger.info('train {} new route assigned: track {} {}'
                                              .format(i.train_id, i.train_route.track_number, i.train_route.route_type))
@@ -239,7 +239,7 @@ class Dispatcher(GameObject):
                                                  .format(i.train_id, i.train_route.track_number,
                                                          i.train_route.route_type))
                                 i.complete_train_route()
-                                i.assign_new_train_route(route_for_new_train, i.train_id)
+                                i.assign_new_train_route(route_for_new_train, i.train_id, game_paused)
                                 routes_created_inside_iteration += 1
                                 self.logger.info('train {} new route assigned: track {} {}'
                                                  .format(i.train_id, i.train_route.track_number,
@@ -263,7 +263,7 @@ class Dispatcher(GameObject):
                             self.logger.info('train {} completed route: track {} {}'
                                              .format(i.train_id, i.train_route.track_number, i.train_route.route_type))
                             i.complete_train_route()
-                            i.assign_new_train_route(route_for_new_train, i.train_id)
+                            i.assign_new_train_route(route_for_new_train, i.train_id, game_paused)
                             routes_created_inside_iteration += 1
                             self.logger.info('train {} new route assigned: track {} {}'
                                              .format(i.train_id, i.train_route.track_number, i.train_route.route_type))
@@ -271,7 +271,7 @@ class Dispatcher(GameObject):
 
             # it's time to check if we can spawn more trains
             if routes_created_inside_iteration == 0:
-                self.create_new_trains()
+                self.create_new_trains(game_paused)
 
             # dispatcher's logic iteration is done, now we update trains, routes and tracks
             for q4 in self.trains:
@@ -283,7 +283,7 @@ class Dispatcher(GameObject):
                     # self.logger.info('track {} busy = {}'.format(q3 + 1, self.tracks[q3].busy))
                     # self.logger.info('track {} last entered by {}'.format(q3 + 1, self.tracks[q3].last_entered_by))
 
-    def create_new_trains(self):
+    def create_new_trains(self, game_paused):
         for i in (c.LEFT, c.RIGHT):
             entry_busy = self.train_routes[0][c.APPROACHING_TRAIN_ROUTE[i]].base_routes[0].route_config['busy']
             # we wait until main entry is free
@@ -299,7 +299,7 @@ class Dispatcher(GameObject):
                         new_train = Train(carts, route_for_new_train, c.APPROACHING_PASS_THROUGH,
                                           i, self.train_counter)
                         self.train_ids.append(self.train_counter)
-                        new_train.train_route.open_train_route(new_train.train_id)
+                        new_train.train_route.open_train_route(new_train.train_id, game_paused)
                         new_train.train_route.set_stop_points(new_train.carts)
                         new_train.init_train_position()
                         self.logger.info('train created. id {}, track {}, route = {}, status = {}'
@@ -310,7 +310,7 @@ class Dispatcher(GameObject):
                         route_for_new_train = self.train_routes[0][c.APPROACHING_TRAIN_ROUTE[i]]
                         new_train = Train(carts, route_for_new_train, c.APPROACHING, i, self.train_counter)
                         self.train_ids.append(self.train_counter)
-                        new_train.train_route.open_train_route(new_train.train_id)
+                        new_train.train_route.open_train_route(new_train.train_id, game_paused)
                         new_train.train_route.set_stop_points(new_train.carts)
                         new_train.init_train_position()
                         self.logger.info('train created. id {}, track {}, route = {}, status = {}'

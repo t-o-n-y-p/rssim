@@ -203,14 +203,14 @@ class TrainRoute(GameObject):
         self.supported_carts = tuple(self.supported_carts)
         self.set_next_stop_point(0)
 
-    def open_train_route(self, train_id):
+    def open_train_route(self, train_id, game_paused):
         # open route and all base routes included;
         # remember which train opens it
         self.busy_routes.clear()
         self.opened_routes.clear()
         self.opened = True
         self.last_opened_by = train_id
-        self.base_routes[0].enter_base_route(train_id)
+        self.base_routes[0].enter_base_route(train_id, game_paused)
         for i in range(len(self.base_routes)):
             self.base_routes[i].route_config['opened'] = True
             self.base_routes[i].route_config['last_opened_by'] = train_id

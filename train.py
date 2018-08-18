@@ -124,12 +124,12 @@ class Train(GameObject):
         self.carts_position.clear()
         self.train_route = None
 
-    def assign_new_train_route(self, new_train_route, train_id):
+    def assign_new_train_route(self, new_train_route, train_id, game_paused):
         # when new route is assigned,
         # we open the route and convert carts positions to relative
         self.train_route = new_train_route
         self.train_route.set_stop_points(self.carts)
-        self.train_route.open_train_route(train_id)
+        self.train_route.open_train_route(train_id, game_paused)
         for i in self.carts_position_abs:
             self.carts_position.append([self.train_route.trail_points.index(i[0]),
                                         self.train_route.trail_points.index(i[1])])
@@ -171,11 +171,11 @@ class Train(GameObject):
                                 else:
                                     self.train_route.base_routes[k].checkpoints[next_checkpoint_index] = 0
                                     if type(self.train_route.base_routes[k].junctions[next_checkpoint_index]) \
-                                            == type(RailroadSwitch):
+                                            == RailroadSwitch:
                                         self.train_route.base_routes[k].junctions[next_checkpoint_index].force_busy \
                                             = False
                                     elif type(self.train_route.base_routes[k].junctions[next_checkpoint_index]) \
-                                            == type(Crossover):
+                                            == Crossover:
                                         self.train_route.base_routes[k].junctions[next_checkpoint_index].force_busy[
                                             self.train_route.base_routes[k].junction_position[next_checkpoint_index][0]
                                         ][
@@ -207,11 +207,11 @@ class Train(GameObject):
                                 else:
                                     self.train_route.base_routes[k].checkpoints[next_checkpoint_index] = 0
                                     if type(self.train_route.base_routes[k].junctions[next_checkpoint_index]) \
-                                            == type(RailroadSwitch):
+                                            == RailroadSwitch:
                                         self.train_route.base_routes[k].junctions[next_checkpoint_index].force_busy \
                                             = False
                                     elif type(self.train_route.base_routes[k].junctions[next_checkpoint_index]) \
-                                            == type(Crossover):
+                                            == Crossover:
                                         self.train_route.base_routes[k].junctions[next_checkpoint_index].force_busy[
                                             self.train_route.base_routes[k].junction_position[next_checkpoint_index][0]
                                         ][

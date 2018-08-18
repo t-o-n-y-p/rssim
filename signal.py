@@ -1,5 +1,6 @@
 import configparser
 import os
+import logging
 
 import pygame
 
@@ -12,6 +13,9 @@ class Signal(GameObject):
         super().__init__()
         self.track_number = track_number
         self.route_type = route_type
+        self.logger = logging.getLogger('signal {} {}'.format(self.route_type, self.track_number))
+        self.logger.setLevel(logging.DEBUG)
+        self.logger.addHandler(self.fh)
         self.config = None
         self.invisible = invisible
         # where to place signal on map
@@ -73,10 +77,9 @@ class Signal(GameObject):
 
     def update(self, game_paused):
         if not game_paused:
-            approaching_track = None
             busy_logical = False
-            busy_extended_logical = False
             opened_by = []
+            entered_by = []
 
             if not self.base_route_exit.route_config['opened']:
                 self.state = c.RED_SIGNAL
@@ -88,38 +91,17 @@ class Signal(GameObject):
                 if self.base_route_exit.route_config['last_opened_by'] not in opened_by:
                     self.state = c.RED_SIGNAL
                 else:
-                    for i in self.base_route_busy_list:
-                        if not (i.route_config['opened'] and i.route_config['last_opened_by']
-                                == self.base_route_exit.route_config['last_opened_by']):
+                    for i in self.base_route_opened_list:
+                        if i.route_config['opened'] and i.route_config['last_opened_by'] \
+                                == self.base_route_exit.route_config['last_opened_by']:
                             busy_logical = busy_logical or i.route_config['busy']
+                            entered_by.append(i.route_config['last_entered_by'])
 
-                    for j in self.base_route_busy_additional_list:
-                        busy_logical = busy_logical or j.route_config['busy']
-
-                    if busy_logical:
+                    if busy_logical and self.base_route_exit.route_config['last_opened_by'] not in entered_by:
                         self.state = c.RED_SIGNAL
                     else:
-                        if len(self.base_route_busy_extended_list) > 0:
-                            for i in self.base_route_opened_list:
-                                if i.route_config['opened'] and i.route_config['last_opened_by'] \
-                                        == self.base_route_exit.route_config['last_opened_by']:
-                                    approaching_track = i.track_number
-
-                            for j in self.base_route_busy_extended_list:
-                                if j.track_number % 2 == approaching_track % 2:
-                                    busy_extended_logical = busy_extended_logical or j.route_config['busy']
-
-                            if busy_extended_logical:
-                                self.state = c.RED_SIGNAL
-                            else:
-                                self.state = c.GREEN_SIGNAL
-                                for i in self.base_route_opened_list:
-                                    if i.route_config['opened'] and i.route_config['last_opened_by'] \
-                                            == self.base_route_exit.route_config['last_opened_by']:
-                                        i.enter_base_route(self.base_route_exit.route_config['last_opened_by'])
-                        else:
-                            self.state = c.GREEN_SIGNAL
-                            for i in self.base_route_opened_list:
-                                if i.route_config['opened'] and i.route_config['last_opened_by'] \
-                                        == self.base_route_exit.route_config['last_opened_by']:
-                                    i.enter_base_route(self.base_route_exit.route_config['last_opened_by'])
+                        self.state = c.GREEN_SIGNAL
+                        for i in self.base_route_opened_list:
+                            if i.route_config['opened'] and i.route_config['last_opened_by'] \
+                                    == self.base_route_exit.route_config['last_opened_by']:
+                                i.enter_base_route(self.base_route_exit.route_config['last_opened_by'], game_paused)

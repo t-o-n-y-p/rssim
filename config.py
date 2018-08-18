@@ -36,7 +36,7 @@ GREEN_SIGNAL = 'green'
 signal_image_base_path = 'img/signal_base.png'
 signal_image_path = {RED_SIGNAL: 'img/signal_red.png', GREEN_SIGNAL: 'img/signal_green.png'}
 
-train_creation_timeout = {LEFT: frame_rate*10, RIGHT: frame_rate*10}
+train_creation_timeout = {LEFT: frame_rate*0, RIGHT: frame_rate*0}
 train_cart_image_path = 'img/cart_red'
 train_acceleration_factor = (0, 0, 0, 0, 0, 1, 1, 1, 1, 1, 2, 2, 2, 2, 3, 3, 3, 3, 4, 4, 4, 5, 5, 5, 6, 6, 6, 7, 7,
                              8, 8, 8, 9, 9, 10, 10, 10, 11, 11, 12, 12, 13, 13, 14, 14, 15, 15, 16, 16, 17, 17, 18,
