@@ -21,9 +21,6 @@ from crossover import Crossover
 class RSSim(Game):
     def __init__(self):
         super().__init__('Railway Station Simulator', c.screen_resolution, c.frame_rate, c.base_offset)
-        self.logger = logging.getLogger('rssim')
-        self.logger.setLevel(logging.DEBUG)
-        self.logger.addHandler(self.fh)
         self.base_routes = [{}]
         self.signals = [{}]
         self.train_routes = [{}]

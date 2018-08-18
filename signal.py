@@ -13,9 +13,7 @@ class Signal(GameObject):
         super().__init__()
         self.track_number = track_number
         self.route_type = route_type
-        self.logger = logging.getLogger('signal {} {}'.format(self.route_type, self.track_number))
-        self.logger.setLevel(logging.DEBUG)
-        self.logger.addHandler(self.fh)
+        self.logger = logging.getLogger('game.signal_{}_{}'.format(self.route_type, self.track_number))
         self.config = None
         self.invisible = invisible
         # where to place signal on map

@@ -1,10 +1,7 @@
-import logs_config as log_c
-
-
 class GameObject:
     # simply pass this to be overridden by each object
     def __init__(self):
-        self.fh = log_c.fh
+        pass
 
     def read_state(self):
         pass

@@ -12,9 +12,7 @@ from train import Train
 class Dispatcher(GameObject):
     def __init__(self):
         super().__init__()
-        self.logger = logging.getLogger('dispatcher')
-        self.logger.setLevel(logging.DEBUG)
-        self.logger.addHandler(self.fh)
+        self.logger = logging.getLogger('game.dispatcher')
         # timer since main entry was left by previous train before creating new one
         self.train_timer = []
         self.trains = []

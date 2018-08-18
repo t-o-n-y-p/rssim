@@ -14,9 +14,7 @@ class BaseRoute(GameObject):
     def __init__(self, track_number, route_type):
         super().__init__()
         self.config = None
-        self.logger = logging.getLogger('base_route {} {}'.format(route_type, track_number))
-        self.logger.setLevel(logging.DEBUG)
-        self.logger.addHandler(self.fh)
+        self.logger = logging.getLogger('game.base_route_{}_{}'.format(route_type, track_number))
         self.route_type = route_type
         self.track_number = track_number
         # import config based on track number and route type

@@ -19,9 +19,7 @@ class Train(GameObject):
         self.carts = carts
         self.direction = direction
         self.train_id = train_id
-        self.logger = logging.getLogger('train {}'.format(self.train_id))
-        self.logger.setLevel(logging.DEBUG)
-        self.logger.addHandler(self.fh)
+        self.logger = logging.getLogger('game.train_{}'.format(self.train_id))
         # all trains are created with maximum speed,
         # not accelerating and not decelerating
         self.speed = c.train_maximum_speed

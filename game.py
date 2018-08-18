@@ -1,18 +1,17 @@
 import sys
 import logging
 from collections import defaultdict
+import configparser
+import os
 
 import pygame
-
-import logs_config as log_c
 
 
 class Game:
     def __init__(self, caption, screen_resolution, frame_rate, base_offset):
-        self.fh = log_c.fh
-        self.base_logger = logging.getLogger('game')
-        self.base_logger.setLevel(logging.DEBUG)
-        self.base_logger.addHandler(self.fh)
+        self.logs_config = configparser.RawConfigParser()
+        self.logger = logging.getLogger('game')
+        self.manage_logs_config()
         # since map can be moved, all objects should also be moved, that's why we need base offset here
         self.base_offset = base_offset
         self.frame_rate = frame_rate
@@ -27,6 +26,28 @@ class Game:
         self.key_down_handlers = defaultdict(list)
         self.key_up_handlers = defaultdict(list)
         self.mouse_handlers = []
+
+    def manage_logs_config(self):
+        if os.path.exists('user_cfg/logs_config.ini'):
+            self.logs_config.read('user_cfg/logs_config.ini')
+        else:
+            self.logs_config.read('default_cfg/logs_config.ini')
+
+        if not os.path.exists('logs'):
+            os.mkdir('logs')
+
+        self.logger.setLevel(self.logs_config['logs_config'].getint('level'))
+        session = self.logs_config['logs_config'].getint('session')
+        logs_handler = logging.FileHandler('logs/session_{}.log'.format(session))
+        logs_handler.setFormatter(logging.Formatter('%(asctime)s - %(name)s - %(levelname)s - %(message)s'))
+        self.logger.addHandler(logs_handler)
+        session += 1
+        self.logs_config['logs_config']['session'] = str(session)
+        if not os.path.exists('user_cfg'):
+            os.mkdir('user_cfg')
+
+        with open('user_cfg/logs_config.ini', 'w') as configfile:
+            self.logs_config.write(configfile)
 
     def update(self):
         for o in self.objects:
@@ -54,10 +75,12 @@ class Game:
 
     def run(self):
         while True:
-            self.base_logger.info('frame begins')
+            self.logger.info('frame begins')
             self.handle_events()
             self.update()
             self.draw()
             pygame.display.update()
-            self.base_logger.info('frame ends')
+            self.logger.info('frame ends')
             self.clock.tick(self.frame_rate)
+            if self.clock.get_fps() > 0:
+                self.logger.critical('FPS: {}'.format(round(self.clock.get_fps())))
