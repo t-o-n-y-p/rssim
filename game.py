@@ -42,7 +42,7 @@ class Game:
         self.logger.setLevel(self.logs_config['logs_config'].getint('level'))
         session = self.logs_config['logs_config'].getint('session')
         # logs_handler = logging.FileHandler('logs/session_{}.log'.format(session))
-        self.logs_stream = io.StringIO(initial_value='------- Session {} started -------'.format(session))
+        self.logs_stream = io.StringIO()
         logs_handler = logging.StreamHandler(stream=self.logs_stream)
         logs_handler.setFormatter(logging.Formatter('%(asctime)s - %(name)s - %(levelname)s - %(message)s'))
         self.logger.addHandler(logs_handler)
