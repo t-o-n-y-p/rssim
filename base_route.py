@@ -13,8 +13,10 @@ import config as c
 class BaseRoute(GameObject):
     def __init__(self, track_number, route_type):
         super().__init__()
-        self.config = None
         self.logger = logging.getLogger('game.base_route_{}_{}'.format(track_number, route_type))
+        self.logger.debug('------- START INIT -------')
+        self.config = configparser.RawConfigParser()
+        self.logger.debug('config parser created')
         self.route_type = route_type
         self.logger.debug('route type set: {}'.format(self.route_type))
         self.track_number = track_number
@@ -30,11 +32,11 @@ class BaseRoute(GameObject):
         else:
             self.image = None
         self.logger.debug('image is not None: {}'.format(self.image is None))
+        self.logger.debug('------- END INIT -------')
         self.logger.warning('base route init completed')
 
     def read_state(self):
-        self.config = configparser.RawConfigParser()
-        self.logger.debug('config parser created')
+        self.logger.debug('------- START READING STATE -------')
         if os.path.exists('user_cfg/base_route/track{}/track{}_{}.ini'.format(self.track_number,
                                                                               self.track_number,
                                                                               self.route_type)):
@@ -108,9 +110,11 @@ class BaseRoute(GameObject):
         self.route_config['invisible_signal'] = self.config['route_config'].getboolean('invisible_signal')
         self.logger.debug('invisible_signal: {}'.format(self.route_config['invisible_signal']))
         self.logger.info('solid config parsed')
-        self.logger.info('state initialized')
+        self.logger.debug('------- END READING STATE -------')
+        self.logger.info('base route state initialized')
 
     def read_trail_points(self):
+        self.logger.debug('------- START READING TRAIL POINTS -------')
         self.route_config['trail_points'] = ()
         trail_points_parsed = []
         if self.config['route_config']['trail_points'] != 'None':
@@ -132,9 +136,11 @@ class BaseRoute(GameObject):
                 self.logger.debug('added junction {} trail points'.format(i + 1))
 
         self.route_config['trail_points'] = tuple(trail_points_parsed)
-        self.logger.info('trail points fully initialized')
+        self.logger.debug('------- END READING TRAIL POINTS -------')
+        self.logger.info('base route trail points fully initialized')
 
     def save_state(self):
+        self.logger.debug('------- START SAVING STATE -------')
         if not os.path.exists('user_cfg'):
             os.mkdir('user_cfg')
             self.logger.debug('created user_cfg folder')
@@ -169,10 +175,12 @@ class BaseRoute(GameObject):
                 self.track_number, self.track_number, self.route_type), 'w') as configfile:
             self.config.write(configfile)
 
-        self.logger.info('config saved to file user_cfg/base_route/track{}/track{}_{}.ini'
+        self.logger.debug('------- END SAVING STATE -------')
+        self.logger.info('base route state saved to file user_cfg/base_route/track{}/track{}_{}.ini'
                          .format(self.track_number, self.track_number, self.route_type))
 
     def enter_base_route(self, train_id, game_paused):
+        self.logger.debug('------- START ENTERING BASE ROUTE -------')
         self.checkpoints = []
         self.route_config['force_busy'] = True
         self.logger.debug('force_busy set to True')
@@ -213,11 +221,13 @@ class BaseRoute(GameObject):
                                               self.junctions[i].straight_track_2,
                                               self.junctions[i].direction,
                                               self.junction_position[i][0], self.junction_position[i][1]))
-                    self.junctions[i].last_entered_by = train_id
-                    self.logger.debug('crossover {} {} {} busy by train {}'
+                    self.junctions[i].last_entered_by[self.junction_position[i][0]][self.junction_position[i][1]] \
+                        = train_id
+                    self.logger.debug('crossover {} {} {} busy from track {} to track {} by train {}'
                                       .format(self.junctions[i].straight_track_1,
                                               self.junctions[i].straight_track_2,
-                                              self.junctions[i].direction, train_id))
+                                              self.junctions[i].direction,
+                                              self.junction_position[i][0], self.junction_position[i][1], train_id))
                     self.checkpoints \
                         .append(self.route_config['trail_points']
                                 .index(self.junctions[i]
@@ -234,11 +244,14 @@ class BaseRoute(GameObject):
             self.checkpoints.append(len(self.route_config['trail_points']) - 1)
             self.logger.debug('checkpoint added: {}'.format(self.checkpoints[-1]))
 
+        self.logger.debug('------- END ENTERING BASE ROUTE -------')
         self.logger.info('train {} is ready to go'.format(train_id))
 
     def draw(self, surface, base_offset):
+        self.logger.debug('------- START DRAWING -------')
         if self.image is not None:
             if not self.route_config['locked']:
+                self.logger.debug('base route is not locked, regular image set')
                 width = self.image.get_width()
                 height = self.image.get_height()
                 # left entry routes are left-aligned
@@ -254,11 +267,12 @@ class BaseRoute(GameObject):
                     surface.blit(self.image, tuple((base_offset[0] + (c.map_resolution[0] - width) // 2,
                                                     base_offset[1] + (c.map_resolution[1] - height) // 2)))
 
-                self.logger.debug('base route image is in place')
+        self.logger.debug('------- END DRAWING -------')
+        self.logger.info('base route image is in place')
 
     def update(self, game_paused):
         if not game_paused:
-            self.logger.debug('-------UPDATE START-------')
+            self.logger.debug('------- START UPDATING -------')
             self.logger.debug('force_busy = {}'.format(self.route_config['force_busy']))
             self.route_config['busy'] = self.route_config['force_busy']
             if len(self.junctions) > 0:
@@ -278,15 +292,14 @@ class BaseRoute(GameObject):
                                                   .busy[self.junction_position[i][0]][self.junction_position[i][1]]))
 
             self.logger.debug('busy = {}'.format(self.route_config['busy']))
+            self.logger.debug('------- END UPDATING -------')
+            self.logger.info('base route updated')
             # unlock routes (not available at the moment)
-            self.logger.debug('under_construction: {}'.format(self.route_config['under_construction']))
             if self.route_config['under_construction']:
+                self.logger.info('base route is under construction')
                 self.route_config['construction_time'] -= 1
-                self.logger.debug('construction_time: {}'.format(self.route_config['construction_time']))
+                self.logger.info('construction_time left: {}'.format(self.route_config['construction_time']))
                 if self.route_config['construction_time'] <= 0:
                     self.route_config['locked'] = False
-                    self.logger.info('route unlocked')
                     self.route_config['under_construction'] = False
-
-            self.logger.debug('-------UPDATE END-------')
-            self.logger.info('route updated')
+                    self.logger.info('route unlocked and is no longer under construction')

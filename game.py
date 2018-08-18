@@ -48,7 +48,7 @@ class Game:
         if not os.path.exists('logs'):
             os.mkdir('logs')
 
-        self.logger.setLevel(self.logs_config['logs_config'].getint('level'))
+        self.logger.setLevel(self.logs_config['logs_config']['level'])
         session = self.logs_config['logs_config'].getint('session')
         # logs_handler = logging.FileHandler('logs/session_{}.log'.format(session))
         logs_handler = logging.StreamHandler(stream=self.logs_stream)
