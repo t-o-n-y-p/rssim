@@ -3,6 +3,7 @@ import logging
 from collections import defaultdict
 import configparser
 import os
+import io
 
 import pygame
 
@@ -11,6 +12,8 @@ class Game:
     def __init__(self, caption, screen_resolution, frame_rate, base_offset):
         self.logs_config = configparser.RawConfigParser()
         self.logger = logging.getLogger('game')
+        self.logs_stream = None
+        self.logs_file = None
         self.manage_logs_config()
         # since map can be moved, all objects should also be moved, that's why we need base offset here
         self.base_offset = base_offset
@@ -38,9 +41,12 @@ class Game:
 
         self.logger.setLevel(self.logs_config['logs_config'].getint('level'))
         session = self.logs_config['logs_config'].getint('session')
-        logs_handler = logging.FileHandler('logs/session_{}.log'.format(session))
+        # logs_handler = logging.FileHandler('logs/session_{}.log'.format(session))
+        self.logs_stream = io.StringIO(initial_value='------- Session {} started -------'.format(session))
+        logs_handler = logging.StreamHandler(stream=self.logs_stream)
         logs_handler.setFormatter(logging.Formatter('%(asctime)s - %(name)s - %(levelname)s - %(message)s'))
         self.logger.addHandler(logs_handler)
+        self.logs_file = open('logs/session_{}.log'.format(session), 'w')
         session += 1
         self.logs_config['logs_config']['session'] = str(session)
         if not os.path.exists('user_cfg'):
@@ -81,6 +87,12 @@ class Game:
             self.draw()
             pygame.display.update()
             self.logger.info('frame ends')
+            new_lines = self.logs_stream.getvalue()
+            self.logs_stream.seek(0, 0)
+            self.logs_stream.truncate(0)
+            if new_lines is not None:
+                self.logs_file.write(new_lines)
+
             self.clock.tick(self.frame_rate)
             if self.clock.get_fps() > 0:
                 self.logger.critical('FPS: {}'.format(round(self.clock.get_fps())))
