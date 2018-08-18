@@ -1,5 +1,6 @@
 import configparser
 import os
+import logging
 
 from game_object import GameObject
 
@@ -7,6 +8,7 @@ from game_object import GameObject
 class Crossover(GameObject):
     def __init__(self, straight_track_1, straight_track_2, direction):
         super().__init__()
+        self.logger = logging.getLogger('game.crossover_{}_{}_{}'.format(straight_track_1, straight_track_2, direction))
         self.straight_track_1 = straight_track_1
         self.straight_track_2 = straight_track_2
         self.direction = direction
@@ -57,7 +59,7 @@ class Crossover(GameObject):
         self.last_entered_by = self.config['user_data'].getint('last_entered_by')
         trail_points_parsed \
             = self.config['crossover_config']['trail_points_{}_{}'
-                                              .format(self.straight_track_1, self.straight_track_1)].split('|')
+            .format(self.straight_track_1, self.straight_track_1)].split('|')
         for i in range(len(trail_points_parsed)):
             trail_points_parsed[i] = trail_points_parsed[i].split(',')
             trail_points_parsed[i] = (int(trail_points_parsed[i][0]), int(trail_points_parsed[i][1]))
@@ -65,7 +67,7 @@ class Crossover(GameObject):
         self.trail_points[self.straight_track_1][self.straight_track_1] = tuple(trail_points_parsed)
         trail_points_parsed \
             = self.config['crossover_config']['trail_points_{}_{}'
-                                              .format(self.straight_track_1, self.straight_track_2)].split('|')
+            .format(self.straight_track_1, self.straight_track_2)].split('|')
         for i in range(len(trail_points_parsed)):
             trail_points_parsed[i] = trail_points_parsed[i].split(',')
             trail_points_parsed[i] = (int(trail_points_parsed[i][0]), int(trail_points_parsed[i][1]))
@@ -73,7 +75,7 @@ class Crossover(GameObject):
         self.trail_points[self.straight_track_1][self.straight_track_2] = tuple(trail_points_parsed)
         trail_points_parsed \
             = self.config['crossover_config']['trail_points_{}_{}'
-                                              .format(self.straight_track_2, self.straight_track_2)].split('|')
+            .format(self.straight_track_2, self.straight_track_2)].split('|')
         for i in range(len(trail_points_parsed)):
             trail_points_parsed[i] = trail_points_parsed[i].split(',')
             trail_points_parsed[i] = (int(trail_points_parsed[i][0]), int(trail_points_parsed[i][1]))
@@ -104,11 +106,17 @@ class Crossover(GameObject):
 
     def update(self, game_paused):
         if not game_paused:
+            self.logger.debug('------- CROSSOVER UPDATE START -------')
             self.busy[self.straight_track_1][self.straight_track_1] \
                 = self.force_busy[self.straight_track_1][self.straight_track_1] \
                 or self.force_busy[self.straight_track_1][self.straight_track_2] \
                 or self.dependency.force_busy[self.dependency.straight_track_1][self.dependency.straight_track_2] \
                 or self.dependency.force_busy[self.straight_track_1][self.straight_track_1]
+            self.logger.debug('track {}->{} force busy = {}'
+                              .format(self.straight_track_1, self.straight_track_1,
+                                      self.force_busy[self.straight_track_1][self.straight_track_1]))
+            self.logger.debug('track {}->{} busy = {}'.format(self.straight_track_1, self.straight_track_1,
+                                                              self.busy[self.straight_track_1][self.straight_track_1]))
             self.busy[self.straight_track_1][self.straight_track_2] \
                 = self.force_busy[self.straight_track_1][self.straight_track_1] \
                 or self.force_busy[self.straight_track_1][self.straight_track_2] \
@@ -116,8 +124,19 @@ class Crossover(GameObject):
                 or self.dependency.force_busy[self.dependency.straight_track_1][self.dependency.straight_track_1] \
                 or self.dependency.force_busy[self.dependency.straight_track_1][self.dependency.straight_track_2] \
                 or self.dependency.force_busy[self.dependency.straight_track_2][self.dependency.straight_track_2]
+            self.logger.debug('track {}->{} force busy = {}'
+                              .format(self.straight_track_1, self.straight_track_2,
+                                      self.force_busy[self.straight_track_1][self.straight_track_2]))
+            self.logger.debug('track {}->{} busy = {}'.format(self.straight_track_1, self.straight_track_2,
+                                                              self.busy[self.straight_track_1][self.straight_track_2]))
             self.busy[self.straight_track_2][self.straight_track_2] \
                 = self.force_busy[self.straight_track_2][self.straight_track_2] \
                 or self.force_busy[self.straight_track_1][self.straight_track_2] \
                 or self.dependency.force_busy[self.dependency.straight_track_1][self.dependency.straight_track_2] \
                 or self.dependency.force_busy[self.straight_track_2][self.straight_track_2]
+            self.logger.debug('track {}->{} force busy = {}'
+                              .format(self.straight_track_2, self.straight_track_2,
+                                      self.force_busy[self.straight_track_2][self.straight_track_2]))
+            self.logger.debug('track {}->{} busy = {}'.format(self.straight_track_2, self.straight_track_2,
+                                                              self.busy[self.straight_track_2][self.straight_track_2]))
+            self.logger.debug('------- CROSSOVER UPDATE END -------')

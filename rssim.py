@@ -372,10 +372,11 @@ class RSSim(Game):
                     self.objects.append(self.junctions[i][j][k])
 
         for i in range(c.tracks_ready + 1):
-            for n in self.base_routes[i].keys():
+            for n in self.base_routes[i]:
                 self.objects.append(self.base_routes[i][n])
 
-            for n in self.signals[i].keys():
+        for i in range(c.tracks_ready + 1):
+            for n in self.signals[i]:
                 self.objects.append(self.signals[i][n])
 
         self.logger.info('base routes and signals appended')

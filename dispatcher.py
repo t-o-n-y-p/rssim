@@ -291,7 +291,10 @@ class Dispatcher(GameObject):
                     self.train_timer[i] = 0
                     # randomly choose number of carts for train
                     random.seed()
-                    carts = random.choice(range(6, 14))
+                    if i == c.LEFT:
+                        carts = random.choice([10, 10])
+                    else:
+                        carts = random.choice([6, 6, 6, 6, 12])
                     if carts < self.supported_carts[0]:
                         route_for_new_train = self.train_routes[0][c.APPROACHING_TRAIN_ROUTE[i]]
                         new_train = Train(carts, route_for_new_train, c.APPROACHING_PASS_THROUGH,

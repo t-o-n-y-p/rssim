@@ -75,12 +75,14 @@ class Signal(GameObject):
 
     def update(self, game_paused):
         if not game_paused:
+            self.logger.debug('-------UPDATE START-------')
             busy_logical = False
             opened_by = []
             entered_by = []
 
             if not self.base_route_exit.route_config['opened']:
                 self.state = c.RED_SIGNAL
+                self.logger.debug('no train approaching, signal is RED')
             else:
                 for i in self.base_route_opened_list:
                     if i.route_config['opened']:
@@ -88,6 +90,7 @@ class Signal(GameObject):
 
                 if self.base_route_exit.route_config['last_opened_by'] not in opened_by:
                     self.state = c.RED_SIGNAL
+                    self.logger.debug('route through signal is not opened, signal is RED')
                 else:
                     for i in self.base_route_opened_list:
                         if i.route_config['opened'] and i.route_config['last_opened_by'] \
@@ -97,10 +100,17 @@ class Signal(GameObject):
 
                     if busy_logical and self.base_route_exit.route_config['last_opened_by'] not in entered_by:
                         self.state = c.RED_SIGNAL
+                        self.logger.debug('route through signal is opened but busy by another train, signal is RED')
                     else:
                         self.state = c.GREEN_SIGNAL
+                        self.logger.debug('route through signal is opened and free, signal is GREEN')
                         for i in self.base_route_opened_list:
                             if i.route_config['opened'] and i.route_config['last_opened_by'] \
                                     == self.base_route_exit.route_config['last_opened_by'] \
                                     and not i.route_config['busy']:
                                 i.enter_base_route(self.base_route_exit.route_config['last_opened_by'], game_paused)
+                                self.logger.debug('train {} is allowed to pass'
+                                                  .format(self.base_route_exit.route_config['last_opened_by']))
+
+            self.logger.debug('-------UPDATE END-------')
+            self.logger.info('signal updated')
