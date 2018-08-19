@@ -3,7 +3,7 @@ from cx_Freeze import setup, Executable
 
 executables = [Executable('rssim.py')]
 
-include_files = ['img', 'default_cfg']
+include_files = ['img', 'default_cfg', 'logs_config.ini']
 
 options = {
     'build_exe': {
