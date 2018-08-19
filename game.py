@@ -40,11 +40,7 @@ class Game:
         self.logger.warning('game init completed')
 
     def manage_logs_config(self):
-        if os.path.exists('user_cfg/logs_config.ini'):
-            self.logs_config.read('user_cfg/logs_config.ini')
-        else:
-            self.logs_config.read('default_cfg/logs_config.ini')
-
+        self.logs_config.read('logs_config.ini')
         if not os.path.exists('logs'):
             os.mkdir('logs')
 
@@ -57,10 +53,8 @@ class Game:
         self.logs_file = open('logs/session_{}.log'.format(session), 'w')
         session += 1
         self.logs_config['logs_config']['session'] = str(session)
-        if not os.path.exists('user_cfg'):
-            os.mkdir('user_cfg')
 
-        with open('user_cfg/logs_config.ini', 'w') as configfile:
+        with open('logs_config.ini', 'w') as configfile:
             self.logs_config.write(configfile)
 
     def update(self):

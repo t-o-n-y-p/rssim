@@ -15,8 +15,8 @@ class Crossover(GameObject):
         self.straight_track_1 = straight_track_1
         self.straight_track_2 = straight_track_2
         self.direction = direction
-        self.logger.debug('straight tracks and direction set: {} {} {}'.format(self.straight_track_1,
-                                                                               self.straight_track_2, self.direction))
+        self.logger.debug('straight tracks and direction set: {} {} {}'
+                          .format(self.straight_track_1, self.straight_track_2, self.direction))
         self.dependency = None
         self.busy = {}
         self.force_busy = {}
