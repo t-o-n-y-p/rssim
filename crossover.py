@@ -28,17 +28,14 @@ class Crossover(GameObject):
 
     def read_state(self):
         self.logger.debug('------- START READING STATE -------')
-        if os.path.exists('user_cfg/crossovers/crossover_{}_{}_{}.ini'.format(self.straight_track_1,
-                                                                              self.straight_track_2,
-                                                                              self.direction)):
-            self.config.read('user_cfg/crossovers/crossover_{}_{}_{}.ini'.format(self.straight_track_1,
-                                                                                 self.straight_track_2,
-                                                                                 self.direction))
+        if os.path.exists('user_cfg/crossovers/crossover_{}_{}_{}.ini'
+                          .format(self.straight_track_1, self.straight_track_2, self.direction)):
+            self.config.read('user_cfg/crossovers/crossover_{}_{}_{}.ini'
+                             .format(self.straight_track_1, self.straight_track_2, self.direction))
             self.logger.debug('config parsed from user_cfg')
         else:
-            self.config.read('default_cfg/crossovers/crossover_{}_{}_{}.ini'.format(self.straight_track_1,
-                                                                                    self.straight_track_2,
-                                                                                    self.direction))
+            self.config.read('default_cfg/crossovers/crossover_{}_{}_{}.ini'
+                             .format(self.straight_track_1, self.straight_track_2, self.direction))
             self.logger.debug('config parsed from default_cfg')
 
         self.busy[self.straight_track_1] = {}
