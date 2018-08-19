@@ -270,7 +270,7 @@ class BaseRoute(GameObject):
         self.logger.debug('------- END DRAWING -------')
         self.logger.info('base route image is in place')
 
-    def update(self, game_paused):
+    def update_base_route_state(self, game_paused):
         if not game_paused:
             self.logger.debug('------- START UPDATING -------')
             self.logger.debug('force_busy = {}'.format(self.route_config['force_busy']))
@@ -294,6 +294,10 @@ class BaseRoute(GameObject):
             self.logger.debug('busy = {}'.format(self.route_config['busy']))
             self.logger.debug('------- END UPDATING -------')
             self.logger.info('base route updated')
+
+    def update(self, game_paused):
+        if not game_paused:
+            self.update_base_route_state(game_paused)
             # unlock routes (not available at the moment)
             if self.route_config['under_construction']:
                 self.logger.info('base route is under construction')

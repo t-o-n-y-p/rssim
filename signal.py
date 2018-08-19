@@ -95,6 +95,7 @@ class Signal(GameObject):
                     for i in self.base_route_opened_list:
                         if i.route_config['opened'] and i.route_config['last_opened_by'] \
                                 == self.base_route_exit.route_config['last_opened_by']:
+                            i.update_base_route_state(game_paused)
                             busy_logical = busy_logical or i.route_config['busy']
                             entered_by.append(i.route_config['last_entered_by'])
 
