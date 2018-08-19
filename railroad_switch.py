@@ -88,7 +88,7 @@ class RailroadSwitch(GameObject):
             self.config.write(configfile)
 
         self.logger.debug('------- END SAVING STATE -------')
-        self.logger.info('crossover state saved to file user_cfg/switches/switch_{}_{}_{}.ini'
+        self.logger.info('switch state saved to file user_cfg/switches/switch_{}_{}_{}.ini'
                          .format(self.straight_track, self.side_track, self.direction))
 
     def update(self, game_paused):
