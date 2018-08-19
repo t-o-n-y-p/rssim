@@ -31,7 +31,7 @@ class Button(GameObject):
         self.text = text
         for i in range(len(on_click)):
             self.text_objects.append(TextObject((self.position[0] + 50, self.position[1] + 20), text[i],
-                                                c.button_text_color, c.font_size))
+                                                c.BUTTON_TEXT_COLOR, c.BUTTON_FONT_SIZE))
         self.logger.debug('text objects set: {}'.format(self.text))
         self.text_object_actual = self.text_objects[0]
         self.logger.debug('current text set: {}'.format(self.text[0]))

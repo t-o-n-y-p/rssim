@@ -18,7 +18,7 @@ from crossover import Crossover
 
 class RSSim(Game):
     def __init__(self):
-        super().__init__('Railway Station Simulator', c.screen_resolution, c.frame_rate, c.base_offset)
+        super().__init__('Railway Station Simulator', c.SCREEN_RESOLUTION, c.FRAME_RATE, c.BASE_OFFSET)
         self.logger.critical('rssim game created')
         self.logger.debug('------- START INIT -------')
         self.base_routes = [{}]
@@ -42,7 +42,7 @@ class RSSim(Game):
 
     def create_bg_img(self):
         self.logger.debug('------- START CREATING BG IMAGE -------')
-        background_image = BgImg(c.background_image)
+        background_image = BgImg(c.BACKGROUND_IMAGE)
         self.logger.info('background image object created')
         self.objects.append(background_image)
         self.logger.debug('background image object appended')
@@ -77,7 +77,7 @@ class RSSim(Game):
 
         self.logger.info('track 0 base routes and signals associated')
         # create all other base routes and signals for platform routes
-        for i in range(1, c.tracks_ready + 1):
+        for i in range(1, c.TRACKS_READY + 1):
             self.base_routes.append({})
             self.signals.append({})
             for k in (c.LEFT_ENTRY_BASE_ROUTE, c.LEFT_EXIT_BASE_ROUTE,
@@ -280,7 +280,7 @@ class RSSim(Game):
                           .format(1, 2, c.RIGHT_EXIT_CROSSOVER, [1, 2], 3, c.RIGHT_EXIT_BASE_ROUTE))
         self.logger.debug('junctions appended to base route {} {}'.format(3, c.RIGHT_EXIT_BASE_ROUTE))
 
-        for i in range(1, c.tracks_ready + 1, 2):
+        for i in range(1, c.TRACKS_READY + 1, 2):
             self.base_routes[i][c.LEFT_ENTRY_BASE_ROUTE].read_trail_points()
             self.base_routes[i][c.LEFT_EXIT_BASE_ROUTE].read_trail_points()
             self.base_routes[i][c.RIGHT_ENTRY_BASE_ROUTE].read_trail_points()
@@ -396,7 +396,7 @@ class RSSim(Game):
                           .format(1, 2, c.RIGHT_EXIT_CROSSOVER, [2, 2], 4, c.RIGHT_EXIT_BASE_ROUTE))
         self.logger.debug('junctions appended to base route {} {}'.format(4, c.RIGHT_EXIT_BASE_ROUTE))
 
-        for i in range(2, c.tracks_ready + 1, 2):
+        for i in range(2, c.TRACKS_READY + 1, 2):
             self.base_routes[i][c.LEFT_ENTRY_BASE_ROUTE].read_trail_points()
             self.base_routes[i][c.LEFT_EXIT_BASE_ROUTE].read_trail_points()
             self.base_routes[i][c.RIGHT_ENTRY_BASE_ROUTE].read_trail_points()
@@ -404,7 +404,7 @@ class RSSim(Game):
 
         self.logger.info('trail points initialized for even tracks')
 
-        for i in range(1, c.tracks_ready + 1):
+        for i in range(1, c.TRACKS_READY + 1):
             # associate platform base route with its signal
             self.base_routes[i][c.RIGHT_EXIT_PLATFORM_BASE_ROUTE].route_config['exit_signal'] = \
                 self.signals[i][c.RIGHT_EXIT_PLATFORM_BASE_ROUTE]
@@ -435,7 +435,7 @@ class RSSim(Game):
 
         self.logger.info('all base routes and signals associated')
         # fill opened and busy route lists for signals
-        for i in range(1, c.tracks_ready + 1):
+        for i in range(1, c.TRACKS_READY + 1):
             # for every platform signal, opened list includes exit base route
             # which begins behind the signal
             self.signals[i][c.RIGHT_EXIT_PLATFORM_BASE_ROUTE].base_route_opened_list \
@@ -471,7 +471,7 @@ class RSSim(Game):
             TrainRoute(base_routes_in_train_route, 0, c.APPROACHING_TRAIN_ROUTE[c.RIGHT])
         self.logger.info('approaching train routes created')
 
-        for i in range(1, c.tracks_ready + 1):
+        for i in range(1, c.TRACKS_READY + 1):
             self.train_routes.append({})
             # create track object
             # it includes all 4 base routes
@@ -515,12 +515,12 @@ class RSSim(Game):
                     self.objects.append(self.junctions[i][j][k])
                     self.logger.debug('junction {} {} {} appended to global objects list'.format(i, j, k))
 
-        for i in range(c.tracks_ready + 1):
+        for i in range(c.TRACKS_READY + 1):
             for n in self.base_routes[i]:
                 self.objects.append(self.base_routes[i][n])
                 self.logger.debug('base route {} {} appended to global objects list'.format(i, n))
 
-        for i in range(c.tracks_ready + 1):
+        for i in range(c.TRACKS_READY + 1):
             for n in self.signals[i]:
                 self.objects.append(self.signals[i][n])
                 self.logger.debug('signal {} {} appended to global objects list'.format(i, n))
@@ -528,14 +528,14 @@ class RSSim(Game):
         self.logger.info('base routes and signals appended')
         # train routes and tracks are added to dispatcher which we create right now
         self.dispatcher = Dispatcher()
-        for i in range(c.tracks_ready + 1):
+        for i in range(c.TRACKS_READY + 1):
             self.dispatcher.train_routes.append({})
             for p in self.train_routes[i].keys():
                 self.dispatcher.train_routes[i].update({p: self.train_routes[i][p]})
                 self.logger.debug('train route {} {} appended to dispatcher'.format(i, p))
 
         self.logger.info('all train routes appended to dispatcher')
-        for i in range(c.tracks_ready):
+        for i in range(c.TRACKS_READY):
             self.dispatcher.tracks.append(self.tracks[i])
             self.logger.debug('track {} appended to dispatcher'.format(i + 1))
 
@@ -592,7 +592,7 @@ class RSSim(Game):
     def handle_mouse_drag(self, event_type, pos):
         movement = pygame.mouse.get_rel()
         if event_type == pygame.MOUSEMOTION and pygame.mouse.get_pressed()[0] and \
-                pos[1] < c.screen_resolution[1] - c.bottom_bar_height:
+                pos[1] < c.SCREEN_RESOLUTION[1] - c.BOTTOM_BAR_HEIGHT:
             # if left mouse button is pressed and user moves mouse, we move entire map with all its content
             self.logger.debug('user drags map')
             self.logger.debug('old offset: {}'.format(self.base_offset))
@@ -600,14 +600,14 @@ class RSSim(Game):
             self.logger.debug('mouse movement: {}'.format(movement))
             self.logger.debug('new offset: {}'.format(self.base_offset))
             # but not beyond limits
-            if self.base_offset[0] > c.base_offset_lower_right_limit[0]:
-                self.base_offset = (c.base_offset_lower_right_limit[0], self.base_offset[1])
-            if self.base_offset[0] < c.base_offset_upper_left_limit[0]:
-                self.base_offset = (c.base_offset_upper_left_limit[0], self.base_offset[1])
-            if self.base_offset[1] > c.base_offset_lower_right_limit[1]:
-                self.base_offset = (self.base_offset[0], c.base_offset_lower_right_limit[1])
-            if self.base_offset[1] < c.base_offset_upper_left_limit[1]:
-                self.base_offset = (self.base_offset[0], c.base_offset_upper_left_limit[1])
+            if self.base_offset[0] > c.BASE_OFFSET_LOWER_RIGHT_LIMIT[0]:
+                self.base_offset = (c.BASE_OFFSET_LOWER_RIGHT_LIMIT[0], self.base_offset[1])
+            if self.base_offset[0] < c.BASE_OFFSET_UPPER_LEFT_LIMIT[0]:
+                self.base_offset = (c.BASE_OFFSET_UPPER_LEFT_LIMIT[0], self.base_offset[1])
+            if self.base_offset[1] > c.BASE_OFFSET_LOWER_RIGHT_LIMIT[1]:
+                self.base_offset = (self.base_offset[0], c.BASE_OFFSET_LOWER_RIGHT_LIMIT[1])
+            if self.base_offset[1] < c.BASE_OFFSET_UPPER_LEFT_LIMIT[1]:
+                self.base_offset = (self.base_offset[0], c.BASE_OFFSET_UPPER_LEFT_LIMIT[1])
 
             self.logger.debug('new limited offset: {}'.format(self.base_offset))
 

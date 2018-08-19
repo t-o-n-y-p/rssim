@@ -26,12 +26,12 @@ class Signal(GameObject):
                           .format(self.track_number, self.route_type, self.invisible, self.placement, self.flip_needed))
         # initialize signal state
         self.state = None
-        self.base_image = pygame.image.load(c.signal_image_base_path).convert_alpha()
-        self.logger.debug('base image loaded: {}'.format(c.signal_image_base_path))
-        self.image = {c.RED_SIGNAL: pygame.image.load(c.signal_image_path[c.RED_SIGNAL]).convert_alpha(),
-                      c.GREEN_SIGNAL: pygame.image.load(c.signal_image_path[c.GREEN_SIGNAL]).convert_alpha()}
-        self.logger.debug('images loaded: {}, {}'.format(c.signal_image_path[c.RED_SIGNAL],
-                                                         c.signal_image_path[c.GREEN_SIGNAL]))
+        self.base_image = pygame.image.load(c.SIGNAL_IMAGE_BASE_PATH).convert_alpha()
+        self.logger.debug('base image loaded: {}'.format(c.SIGNAL_IMAGE_BASE_PATH))
+        self.image = {c.RED_SIGNAL: pygame.image.load(c.SIGNAL_IMAGE_PATH[c.RED_SIGNAL]).convert_alpha(),
+                      c.GREEN_SIGNAL: pygame.image.load(c.SIGNAL_IMAGE_PATH[c.GREEN_SIGNAL]).convert_alpha()}
+        self.logger.debug('images loaded: {}, {}'.format(c.SIGNAL_IMAGE_PATH[c.RED_SIGNAL],
+                                                         c.SIGNAL_IMAGE_PATH[c.GREEN_SIGNAL]))
         if self.flip_needed:
             self.base_image = pygame.transform.flip(self.base_image, True, False)
             self.logger.debug('base image flipped')

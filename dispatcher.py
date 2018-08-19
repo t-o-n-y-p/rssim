@@ -251,9 +251,9 @@ class Dispatcher(GameObject):
                 if i.state == c.APPROACHING and routes_created_inside_iteration == 0:
                     self.logger.debug('looking for route for train {}'.format(i.train_id))
                     route_for_new_train = None
-                    for j in range(c.first_priority_tracks[i.direction][0],
-                                   c.first_priority_tracks[i.direction][1],
-                                   c.first_priority_tracks[i.direction][2]):
+                    for j in range(c.FIRST_PRIORITY_TRACKS[i.direction][0],
+                                   c.FIRST_PRIORITY_TRACKS[i.direction][1],
+                                   c.FIRST_PRIORITY_TRACKS[i.direction][2]):
                         r = self.train_routes[j][c.ENTRY_TRAIN_ROUTE[i.direction]]
                         self.logger.debug('checking track {}'.format(j))
                         self.logger.debug('track in busy: {}'.format(self.tracks[j - 1].busy))
@@ -284,9 +284,9 @@ class Dispatcher(GameObject):
                     if route_for_new_train is None:
                         self.logger.debug('could not find first priority track')
                         self.logger.debug('still looking for route for train {}'.format(i.train_id))
-                        for j in range(c.second_priority_tracks[i.direction][0],
-                                       c.second_priority_tracks[i.direction][1],
-                                       c.second_priority_tracks[i.direction][2]):
+                        for j in range(c.SECOND_PRIORITY_TRACKS[i.direction][0],
+                                       c.SECOND_PRIORITY_TRACKS[i.direction][1],
+                                       c.SECOND_PRIORITY_TRACKS[i.direction][2]):
                             r = self.train_routes[j][c.ENTRY_TRAIN_ROUTE[i.direction]]
                             self.logger.debug('checking track {}'.format(j))
                             self.logger.debug('track in busy: {}'.format(self.tracks[j - 1].busy))
@@ -321,9 +321,9 @@ class Dispatcher(GameObject):
 
                 if i.state == c.APPROACHING_PASS_THROUGH and routes_created_inside_iteration == 0:
                     self.logger.debug('looking for pass through route for train {}'.format(i.train_id))
-                    for j in range(c.pass_through_priority_tracks[i.direction][0],
-                                   c.pass_through_priority_tracks[i.direction][1],
-                                   c.pass_through_priority_tracks[i.direction][2]):
+                    for j in range(c.PASS_THROUGH_PRIORITY_TRACKS[i.direction][0],
+                                   c.PASS_THROUGH_PRIORITY_TRACKS[i.direction][1],
+                                   c.PASS_THROUGH_PRIORITY_TRACKS[i.direction][2]):
                         r = self.train_routes[j][c.ENTRY_TRAIN_ROUTE[i.direction]]
                         self.logger.debug('checking track {}'.format(j))
                         self.logger.debug('track in busy: {}'.format(self.tracks[j - 1].busy))
@@ -373,8 +373,8 @@ class Dispatcher(GameObject):
             if not entry_busy:
                 self.train_timer[i] += 1
                 self.logger.debug('train_timer: {}'.format(self.train_timer[i]))
-                self.logger.debug('train_creation_timeout: {}'.format(c.train_creation_timeout[i]))
-                if self.train_timer[i] >= c.train_creation_timeout[i]:
+                self.logger.debug('train_creation_timeout: {}'.format(c.TRAIN_CREATION_TIMEOUT[i]))
+                if self.train_timer[i] >= c.TRAIN_CREATION_TIMEOUT[i]:
                     self.train_timer[i] = 0
                     self.logger.debug('timer flushed')
                     # randomly choose number of carts for train
