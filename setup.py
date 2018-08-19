@@ -1,7 +1,9 @@
 from cx_Freeze import setup, Executable
 
-
-executables = [Executable('rssim.py')]
+executables = [Executable('rssim.py',
+                          targetName='rssim.exe',
+                          base='Win32GUI',
+                          icon='icon.ico')]
 
 include_files = ['img', 'default_cfg', 'logs_config.ini']
 
