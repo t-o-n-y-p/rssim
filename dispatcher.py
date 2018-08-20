@@ -262,7 +262,7 @@ class Dispatcher(GameObject):
                         # if compatible track is finally available,
                         # we open entry route for our train and leave loop
                         if i.carts in range(r.supported_carts[0], r.supported_carts[1] + 1) and not r.opened \
-                                and not self.tracks[j - 1].busy:
+                                and not r.locked and not self.tracks[j - 1].busy:
                             self.logger.debug('all requirements met')
                             route_for_new_train = r
                             self.tracks[j - 1].override = True

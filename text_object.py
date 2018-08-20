@@ -1,19 +1,17 @@
 import logging
 import pygame
 
-import config as c
-
 
 class TextObject:
-    def __init__(self, position, text, color, font_size):
+    def __init__(self, position, text, color, font_name, font_size):
         self.logger = logging.getLogger('game.{}_text_object'.format(text))
         self.logger.debug('------- START INIT -------')
         self.pos = position
         self.text = text
         self.color = color
         self.logger.debug('position, text and color set: {} {} {}'.format(self.pos, self.text, self.color))
-        self.font = pygame.font.SysFont(c.FONT_NAME, font_size)
-        self.logger.debug('font set: {} {}'.format(c.FONT_NAME, font_size))
+        self.font = pygame.font.SysFont(font_name, font_size)
+        self.logger.debug('font set: {} {}'.format(font_name, font_size))
         self.text_surface = self.font.render(self.text, False, self.color)
         self.logger.debug('text render complete')
         self.logger.debug('------- END INIT -------')

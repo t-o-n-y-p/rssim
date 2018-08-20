@@ -5,7 +5,7 @@ executables = [Executable('rssim.py',
                           base='Win32GUI',
                           icon='icon.ico')]
 
-include_files = ['img', 'default_cfg', 'logs_config.ini']
+include_files = ['img', 'default_cfg', 'logs_config.ini', 'game_config.ini']
 
 options = {
     'build_exe': {

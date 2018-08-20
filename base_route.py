@@ -7,7 +7,6 @@ import pygame
 from game_object import GameObject
 from railroad_switch import RailroadSwitch
 from crossover import Crossover
-import config as c
 
 
 class BaseRoute(GameObject):
@@ -193,39 +192,35 @@ class BaseRoute(GameObject):
             for i in range(len(self.junctions)):
                 if type(self.junctions[i]) == RailroadSwitch:
                     self.junctions[i].force_busy = True
-                    self.logger.debug('switch {} {} {} force_busy set to True'.format(self.junctions[i].straight_track,
-                                                                                      self.junctions[i].side_track,
-                                                                                      self.junctions[i].direction))
+                    self.logger.debug('switch {} {} {} force_busy set to True'
+                                      .format(self.junctions[i].straight_track, self.junctions[i].side_track,
+                                              self.junctions[i].direction))
                     self.junctions[i].busy = True
-                    self.logger.debug('switch {} {} {} busy set to True'.format(self.junctions[i].straight_track,
-                                                                                self.junctions[i].side_track,
-                                                                                self.junctions[i].direction))
+                    self.logger.debug('switch {} {} {} busy set to True'
+                                      .format(self.junctions[i].straight_track, self.junctions[i].side_track,
+                                              self.junctions[i].direction))
                     self.junctions[i].last_entered_by = train_id
-                    self.logger.debug('switch {} {} {} is busy by train {}'.format(self.junctions[i].straight_track,
-                                                                                   self.junctions[i].side_track,
-                                                                                   self.junctions[i].direction,
-                                                                                   train_id))
+                    self.logger.debug('switch {} {} {} is busy by train {}'
+                                      .format(self.junctions[i].straight_track, self.junctions[i].side_track,
+                                              self.junctions[i].direction, train_id))
                     self.checkpoints.append(self.route_config['trail_points']
                                             .index(self.junctions[i].trail_points[self.junction_position[i]][-1]))
                     self.logger.debug('checkpoint added: {}'.format(self.checkpoints[-1]))
                 elif type(self.junctions[i]) == Crossover:
                     self.junctions[i].force_busy[self.junction_position[i][0]][self.junction_position[i][1]] = True
                     self.logger.debug('crossover {} {} {} force_busy from track {} to track {} set to True'
-                                      .format(self.junctions[i].straight_track_1,
-                                              self.junctions[i].straight_track_2,
+                                      .format(self.junctions[i].straight_track_1, self.junctions[i].straight_track_2,
                                               self.junctions[i].direction,
                                               self.junction_position[i][0], self.junction_position[i][1]))
                     self.junctions[i].busy[self.junction_position[i][0]][self.junction_position[i][1]] = True
                     self.logger.debug('crossover {} {} {} busy from track {} to track {} set to True'
-                                      .format(self.junctions[i].straight_track_1,
-                                              self.junctions[i].straight_track_2,
+                                      .format(self.junctions[i].straight_track_1, self.junctions[i].straight_track_2,
                                               self.junctions[i].direction,
                                               self.junction_position[i][0], self.junction_position[i][1]))
                     self.junctions[i].last_entered_by[self.junction_position[i][0]][self.junction_position[i][1]] \
                         = train_id
                     self.logger.debug('crossover {} {} {} busy from track {} to track {} by train {}'
-                                      .format(self.junctions[i].straight_track_1,
-                                              self.junctions[i].straight_track_2,
+                                      .format(self.junctions[i].straight_track_1, self.junctions[i].straight_track_2,
                                               self.junctions[i].direction,
                                               self.junction_position[i][0], self.junction_position[i][1], train_id))
                     self.checkpoints \
@@ -255,17 +250,20 @@ class BaseRoute(GameObject):
                 width = self.image.get_width()
                 height = self.image.get_height()
                 # left entry routes are left-aligned
-                if self.route_type == c.LEFT_ENTRY_BASE_ROUTE:
-                    surface.blit(self.image, tuple((base_offset[0],
-                                                    base_offset[1] + (c.MAP_RESOLUTION[1] - height) // 2)))
+                if self.route_type == self.c['base_route_types']['left_entry_base_route']:
+                    surface.blit(self.image,
+                                 tuple((base_offset[0],
+                                        base_offset[1] + (self.c['graphics']['map_resolution'][1] - height) // 2)))
                 # right entry routes are right-aligned
-                elif self.route_type == c.RIGHT_ENTRY_BASE_ROUTE:
-                    surface.blit(self.image, tuple((base_offset[0] + c.MAP_RESOLUTION[0] - width,
-                                                    base_offset[1] + (c.MAP_RESOLUTION[1] - height) // 2)))
+                elif self.route_type == self.c['base_route_types']['right_entry_base_route']:
+                    surface.blit(self.image,
+                                 tuple((base_offset[0] + self.c['graphics']['map_resolution'][0] - width,
+                                        base_offset[1] + (self.c['graphics']['map_resolution'][1] - height) // 2)))
                 # platform routes are centralized
-                elif self.route_type == c.LEFT_ENTRY_PLATFORM_BASE_ROUTE:
-                    surface.blit(self.image, tuple((base_offset[0] + (c.MAP_RESOLUTION[0] - width) // 2,
-                                                    base_offset[1] + (c.MAP_RESOLUTION[1] - height) // 2)))
+                elif self.route_type == self.c['base_route_types']['left_entry_platform_base_route']:
+                    surface.blit(self.image,
+                                 tuple((base_offset[0] + (self.c['graphics']['map_resolution'][0] - width) // 2,
+                                        base_offset[1] + (self.c['graphics']['map_resolution'][1] - height) // 2)))
 
         self.logger.debug('------- END DRAWING -------')
         self.logger.info('base route image is in place')
@@ -279,9 +277,9 @@ class BaseRoute(GameObject):
                 for i in range(len(self.junctions)):
                     if type(self.junctions[i]) == RailroadSwitch:
                         self.route_config['busy'] = self.route_config['busy'] or self.junctions[i].busy
-                        self.logger.debug('switch {} {} busy = {}'.format(self.junctions[i].straight_track,
-                                                                          self.junctions[i].side_track,
-                                                                          self.junctions[i].busy))
+                        self.logger.debug('switch {} {} busy = {}'
+                                          .format(self.junctions[i].straight_track, self.junctions[i].side_track,
+                                                  self.junctions[i].busy))
                     elif type(self.junctions[i]) == Crossover:
                         self.route_config['busy'] = self.route_config['busy'] or self.junctions[i].busy[
                             self.junction_position[i][0]][self.junction_position[i][1]]

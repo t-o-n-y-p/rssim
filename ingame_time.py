@@ -27,8 +27,7 @@ class InGameTime(GameObject):
         self.hour = None
         self.minute = None
         self.day_text = TextObject((c.SCREEN_RESOLUTION[0] - 100, c.SCREEN_RESOLUTION[1] - 70),
-                                   'Day {}'.format(self.day),
-                                   c.DAY_FONT_COLOR, c.DAY_FONT_SIZE)
+                                   'Day {}'.format(self.day), c.DAY_FONT_COLOR, c.FONT_NAME, c.DAY_FONT_SIZE)
         self.logger.debug('created text object for days counter')
         self.read_state()
         self.logger.debug('------- END INIT -------')
