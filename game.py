@@ -9,17 +9,21 @@ import pygame
 
 
 class Game:
-    def __init__(self, caption, screen_resolution, frame_rate, base_offset):
+    def __init__(self, caption):
         self.logs_config = configparser.RawConfigParser()
         self.logger = logging.getLogger('game')
         self.logs_stream = io.StringIO()
         self.logs_file = None
         self.manage_logs_config()
         self.logger.debug('main logger created')
+        self.c = {}
+        self.game_config = configparser.RawConfigParser()
+        self.game_config.read('game_config.ini')
+        self.parse_game_config()
         # since map can be moved, all objects should also be moved, that's why we need base offset here
-        self.base_offset = base_offset
+        self.base_offset = self.c['graphics']['base_offset']
         self.logger.debug('base offset set: {} {}'.format(self.base_offset[0], self.base_offset[1]))
-        self.frame_rate = frame_rate
+        self.frame_rate = self.c['graphics']['frame_rate']
         self.logger.debug('frame rate set: {}'.format(self.frame_rate))
         self.game_paused = False
         self.logger.debug('game paused set: {}'.format(self.game_paused))
@@ -28,16 +32,13 @@ class Game:
         self.logger.debug('pygame module core initialized')
         pygame.font.init()
         self.logger.debug('pygame fonts module initialized')
-        self.surface = pygame.display.set_mode(screen_resolution, pygame.SRCALPHA)
-        self.logger.debug('created screen with resolution {}x{}'.format(screen_resolution[0], screen_resolution[1]))
+        self.surface = pygame.display.set_mode(self.c['graphics']['screen_resolution'], pygame.SRCALPHA)
+        self.logger.debug('created screen with resolution {}'
+                          .format(self.c['graphics']['screen_resolution']))
         pygame.display.set_caption(caption)
         self.logger.debug('caption set: {}'.format(caption))
         self.clock = pygame.time.Clock()
         self.logger.debug('clock created')
-        self.c = {}
-        self.game_config = configparser.RawConfigParser()
-        self.game_config.read('game_config.ini')
-        self.parse_game_config()
         self.key_down_handlers = defaultdict(list)
         self.key_up_handlers = defaultdict(list)
         self.mouse_handlers = []
@@ -175,6 +176,7 @@ class Game:
         self.c['train_speed_state_types']['stop'] = self.game_config['train_speed_state_types']['stop']
 
         self.c['dispatcher_config'] = {}
+        self.c['dispatcher_config']['tracks_ready'] = self.game_config['dispatcher_config'].getint('tracks_ready')
         first_priority_tracks = self.game_config['dispatcher_config']['first_priority_tracks'].split('|')
         for i in range(len(first_priority_tracks)):
             first_priority_tracks[i] = first_priority_tracks[i].split(',')

@@ -122,6 +122,7 @@ class GameObject:
         self.c['train_speed_state_types']['stop'] = self.game_config['train_speed_state_types']['stop']
 
         self.c['dispatcher_config'] = {}
+        self.c['dispatcher_config']['tracks_ready'] = self.game_config['dispatcher_config'].getint('tracks_ready')
         first_priority_tracks = self.game_config['dispatcher_config']['first_priority_tracks'].split('|')
         for i in range(len(first_priority_tracks)):
             first_priority_tracks[i] = first_priority_tracks[i].split(',')
