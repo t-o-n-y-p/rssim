@@ -2,7 +2,6 @@ import logging
 
 import pygame
 
-import config as c
 from game_object import GameObject
 
 
@@ -23,8 +22,8 @@ class OnboardingTips(GameObject):
         self.logger.debug('------- START DRAWING -------')
         if self.condition_met:
             self.logger.debug('condition met, we need to show tip')
-            surface.blit(self.image, (c.SCREEN_RESOLUTION[0] // 2 - self.image.get_width() // 2,
-                                      c.SCREEN_RESOLUTION[1] // 2 - self.image.get_height() // 2))
+            surface.blit(self.image, (self.c['graphics']['screen_resolution'][0] // 2 - self.image.get_width() // 2,
+                                      self.c['graphics']['screen_resolution'][1] // 2 - self.image.get_height() // 2))
         else:
             self.logger.debug('condition not met, no need to show tip')
 

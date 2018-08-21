@@ -35,6 +35,21 @@ class GameObject:
         self.c['graphics']['font_name'] = self.game_config['graphics']['font_name']
         self.c['graphics']['button_font_size'] = self.game_config['graphics'].getint('button_font_size')
         self.c['graphics']['day_font_size'] = self.game_config['graphics'].getint('day_font_size')
+        button_text_color = self.game_config['graphics']['button_text_color'].split(',')
+        for i in range(len(button_text_color)):
+            button_text_color[i] = int(button_text_color[i])
+
+        self.c['graphics']['button_text_color'] = tuple(button_text_color)
+        bottom_bar_color = self.game_config['graphics']['bottom_bar_color'].split(',')
+        for i in range(len(bottom_bar_color)):
+            bottom_bar_color[i] = int(bottom_bar_color[i])
+
+        self.c['graphics']['bottom_bar_color'] = tuple(bottom_bar_color)
+        day_text_color = self.game_config['graphics']['day_text_color'].split(',')
+        for i in range(len(day_text_color)):
+            day_text_color[i] = int(day_text_color[i])
+
+        self.c['graphics']['day_text_color'] = tuple(day_text_color)
 
         self.c['base_route_types'] = {}
         self.c['base_route_types']['left_entry_base_route'] \
@@ -72,8 +87,10 @@ class GameObject:
         self.c['signal_config']['signal_image_base_path'] = self.game_config['signal_config']['signal_image_base_path']
 
         self.c['signal_image_path'] = {}
-        self.c['signal_image_path']['red'] = self.game_config['signal_image_path']['red']
-        self.c['signal_image_path']['green'] = self.game_config['signal_image_path']['green']
+        self.c['signal_image_path'][self.c['signal_config']['red_signal']] \
+            = self.game_config['signal_image_path']['red_signal']
+        self.c['signal_image_path'][self.c['signal_config']['green_signal']] \
+            = self.game_config['signal_image_path']['green_signal']
 
         self.c['train_config'] = {}
         self.c['train_config']['train_cart_image_path'] = self.game_config['train_config']['train_cart_image_path']

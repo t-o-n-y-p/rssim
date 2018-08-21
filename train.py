@@ -5,7 +5,6 @@ import os
 
 import pygame
 
-import config as c
 from crossover import Crossover
 from game_object import GameObject
 from railroad_switch import RailroadSwitch
@@ -27,16 +26,16 @@ class Train(GameObject):
                           .format(self.carts, self.train_route, self.state, self.direction, self.train_id))
         # all trains are created with maximum speed,
         # not accelerating and not decelerating
-        self.speed = c.TRAIN_MAXIMUM_SPEED
-        self.logger.debug('set maximum speed: {}'.format(c.TRAIN_MAXIMUM_SPEED))
-        self.speed_state = c.MOVE
+        self.speed = self.c['train_config']['train_maximum_speed']
+        self.logger.debug('set maximum speed: {}'.format(self.c['train_config']['train_maximum_speed']))
+        self.speed_state = self.c['train_speed_state_types']['move']
         self.logger.debug('set speed_state: {}'.format(self.speed_state))
         # train_acceleration_factor tuple includes absolute shifts
         # for acceleration and deceleration (in reversed order);
         # by default train has far right position for this
-        self.speed_factor_position = c.TRAIN_ACCELERATION_FACTOR_LENGTH - 1
+        self.speed_factor_position = self.c['train_config']['train_acceleration_factor_length'] - 1
         self.logger.debug('set speed_factor_position: {}'.format(self.speed_factor_position))
-        if self.state == c.APPROACHING_PASS_THROUGH:
+        if self.state == self.c['train_state_types']['approaching_pass_through']:
             self.priority = 100000000
             self.boarding_time = 1
         else:
@@ -45,13 +44,18 @@ class Train(GameObject):
 
         self.logger.debug('set priority: {}'.format(self.priority))
         self.logger.debug('set boarding_time: {}'.format(self.boarding_time))
-        self.cart_images = [pygame.image.load('{}_head.png'.format(c.TRAIN_CART_IMAGE_PATH)).convert_alpha(), ]
+        self.cart_images = [pygame.image.load('{}_head.png'.format(self.c['train_config']['train_cart_image_path']))
+                                .convert_alpha(), ]
         for i in range(1, self.carts - 1):
-            self.cart_images.append(pygame.image.load('{}_mid.png'.format(c.TRAIN_CART_IMAGE_PATH)).convert_alpha())
+            self.cart_images.append(pygame.image.load('{}_mid.png'.format(self.c['train_config']['train_cart_image_path']))
+                                    .convert_alpha())
 
-        self.cart_images.append(pygame.image.load('{}_tail.png'.format(c.TRAIN_CART_IMAGE_PATH)).convert_alpha())
+        self.cart_images.append(pygame.image.load('{}_tail.png'.format(self.c['train_config']['train_cart_image_path']))
+                                .convert_alpha())
         self.logger.debug('loaded cart images: {}_head.png, {}_mid.png, {}_tail.png'
-                          .format(c.TRAIN_CART_IMAGE_PATH, c.TRAIN_CART_IMAGE_PATH, c.TRAIN_CART_IMAGE_PATH))
+                          .format(self.c['train_config']['train_cart_image_path'],
+                                  self.c['train_config']['train_cart_image_path'],
+                                  self.c['train_config']['train_cart_image_path']))
         # when train route is assigned, we use carts_position list;
         # it contains relative carts position based on route trail points
         self.carts_position = []
@@ -205,14 +209,16 @@ class Train(GameObject):
 
             # while boarding is in progress, train does not move indeed
             self.logger.debug('state: {}'.format(self.state))
-            if self.state in c.BOARDING_IN_PROGRESS:
+            if self.state in self.c['train_state_types']['boarding_in_progress']:
                 self.speed = 0
                 self.logger.debug('speed = 0')
                 self.speed_factor_position = 0
                 self.logger.debug('speed_factor_position = 0')
             else:
                 # as soon as entry route is assigned, train knows its track number
-                if self.train_route.route_type in (c.ENTRY_TRAIN_ROUTE[c.LEFT], c.ENTRY_TRAIN_ROUTE[c.RIGHT]):
+                if self.train_route.route_type \
+                        in (self.c['train_route_types']['entry_train_route'][self.c['direction']['left']],
+                            self.c['train_route_types']['entry_train_route'][self.c['direction']['right']]):
                     self.track_number = self.train_route.track_number
 
                 self.logger.debug('track_number: {}'.format(self.track_number))
@@ -226,59 +232,66 @@ class Train(GameObject):
                 self.logger.debug('next_stop_point: {}'.format(self.train_route.next_stop_point))
                 self.logger.debug('first cart position: {}'.format(self.carts_position[0][0]))
                 if self.carts_position[0][0] == self.train_route.next_stop_point:
-                    self.speed_state = c.STOP
-                    self.logger.debug('train reached red signal, speed state = {}'.format(c.STOP))
+                    self.speed_state = self.c['train_speed_state_types']['stop']
+                    self.logger.debug('train reached red signal, speed state = {}'.format(self.speed_state))
                 # if it is time to decelerate train, do this;
-                elif self.train_route.next_stop_point - self.carts_position[0][0] <= c.TRAIN_BRAKING_DISTANCE:
-                    self.speed_state = c.DECELERATE
+                elif self.train_route.next_stop_point - self.carts_position[0][0] \
+                        <= self.c['train_config']['train_braking_distance']:
+                    self.speed_state = self.c['train_speed_state_types']['decelerate']
                     self.logger.debug('distance less than {}, time to decelerate, speed state = {}'
-                                      .format(c.TRAIN_BRAKING_DISTANCE, c.DECELERATE))
+                                      .format(self.c['train_config']['train_braking_distance'],
+                                              self.c['train_speed_state_types']['decelerate']))
                 # if there is some free track space ahead and train is not at maximum speed,
                 # accelerate
                 else:
                     self.logger.debug('free way ahead')
-                    if self.speed_state != c.MOVE:
-                        self.speed_state = c.ACCELERATE
-                        self.logger.debug('not at maximum speed, accelerating, speed state = {}'.format(c.ACCELERATE))
+                    if self.speed_state != self.c['train_speed_state_types']['move']:
+                        self.speed_state = self.c['train_speed_state_types']['accelerate']
+                        self.logger.debug('not at maximum speed, accelerating, speed state = {}'
+                                          .format(self.speed_state))
                     else:
-                        self.logger.debug('already at maximum speed, speed state = {}'.format(c.MOVE))
+                        self.logger.debug('already at maximum speed, speed state = {}'
+                                          .format(self.c['train_speed_state_types']['move']))
 
                 # how to accelerate:
                 # difference between next and current shifts indicates how much to move the train;
                 # then increase factor position
                 self.logger.debug('speed state: {}'.format(self.speed_state))
-                if self.speed_state == c.ACCELERATE:
+                if self.speed_state == self.c['train_speed_state_types']['accelerate']:
                     self.logger.debug('speed_factor_position: {}'.format(self.speed_factor_position))
-                    self.logger.debug('speed_factor_position limit: {}'.format(c.TRAIN_ACCELERATION_FACTOR_LENGTH))
-                    if self.speed_factor_position == c.TRAIN_ACCELERATION_FACTOR_LENGTH - 1:
-                        self.speed_state = c.MOVE
+                    self.logger.debug('speed_factor_position limit: {}'
+                                      .format(self.c['train_config']['train_acceleration_factor_length']))
+                    if self.speed_factor_position == self.c['train_config']['train_acceleration_factor_length'] - 1:
+                        self.speed_state = self.c['train_speed_state_types']['move']
                         self.logger.debug('train has reached maximum speed')
                     else:
-                        self.speed = c.TRAIN_ACCELERATION_FACTOR[self.speed_factor_position + 1] \
-                                     - c.TRAIN_ACCELERATION_FACTOR[self.speed_factor_position]
+                        self.speed \
+                            = self.c['train_config']['train_acceleration_factor'][self.speed_factor_position + 1] \
+                            - self.c['train_config']['train_acceleration_factor'][self.speed_factor_position]
                         self.logger.debug('speed: {}'.format(self.speed))
                         self.speed_factor_position += 1
                         self.logger.debug('new speed_factor_position: {}'.format(self.speed_factor_position))
 
                 # just stay at maximum speed here
-                if self.speed_state == c.MOVE:
+                if self.speed_state == self.c['train_speed_state_types']['move']:
                     self.logger.debug('train is at maximum speed')
-                    self.speed = c.TRAIN_MAXIMUM_SPEED
+                    self.speed = self.c['train_config']['train_maximum_speed']
                     self.logger.debug('speed: {}'.format(self.speed))
 
                 # how to decelerate:
                 # decrease factor position;
                 # difference between next and current shifts indicates how much to move the train
-                if self.speed_state == c.DECELERATE:
+                if self.speed_state == self.c['train_speed_state_types']['decelerate']:
                     self.speed_factor_position -= 1
                     self.logger.debug('speed_factor_position: {}'.format(self.speed_factor_position))
-                    self.logger.debug('speed_factor_position limit: {}'.format(c.TRAIN_ACCELERATION_FACTOR_LENGTH))
-                    self.speed = c.TRAIN_ACCELERATION_FACTOR[self.speed_factor_position + 1] \
-                        - c.TRAIN_ACCELERATION_FACTOR[self.speed_factor_position]
+                    self.logger.debug('speed_factor_position limit: {}'
+                                      .format(self.c['train_config']['train_acceleration_factor_length']))
+                    self.speed = self.c['train_config']['train_acceleration_factor'][self.speed_factor_position + 1] \
+                        - self.c['train_config']['train_acceleration_factor'][self.speed_factor_position]
                     self.logger.debug('speed: {}'.format(self.speed))
 
                 # just stay sill here
-                if self.speed_state == c.STOP:
+                if self.speed_state == self.c['train_speed_state_types']['stop']:
                     self.speed = 0
                     self.logger.debug('speed = 0')
                     self.speed_factor_position = 0
@@ -296,7 +309,7 @@ class Train(GameObject):
 
     def leave_base_routes(self):
         more_than = False
-        if self.direction == c.LEFT:
+        if self.direction == self.c['direction']['left']:
             more_than = True
 
         for k in self.train_route.busy_routes:

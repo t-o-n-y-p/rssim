@@ -4,7 +4,6 @@ import pygame
 
 from game_object import GameObject
 from text_object import TextObject
-import config as c
 
 
 class Button(GameObject):
@@ -31,7 +30,9 @@ class Button(GameObject):
         self.text = text
         for i in range(len(on_click)):
             self.text_objects.append(TextObject((self.position[0] + 50, self.position[1] + 20), text[i],
-                                                c.BUTTON_TEXT_COLOR, c.FONT_NAME, c.BUTTON_FONT_SIZE))
+                                                self.c['graphics']['button_text_color'],
+                                                self.c['graphics']['font_name'],
+                                                self.c['graphics']['button_font_size']))
         self.logger.debug('text objects set: {}'.format(self.text))
         self.text_object_actual = self.text_objects[0]
         self.logger.debug('current text set: {}'.format(self.text[0]))

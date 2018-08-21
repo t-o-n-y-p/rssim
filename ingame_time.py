@@ -4,7 +4,6 @@ import os
 
 import pygame
 
-import config as c
 from text_object import TextObject
 from game_object import GameObject
 
@@ -26,8 +25,10 @@ class InGameTime(GameObject):
         self.day = None
         self.hour = None
         self.minute = None
-        self.day_text = TextObject((c.SCREEN_RESOLUTION[0] - 100, c.SCREEN_RESOLUTION[1] - 70),
-                                   'Day {}'.format(self.day), c.DAY_FONT_COLOR, c.FONT_NAME, c.DAY_FONT_SIZE)
+        self.day_text = TextObject((self.c['graphics']['screen_resolution'][0] - 100,
+                                    self.c['graphics']['screen_resolution'][1] - 70),
+                                   'Day {}'.format(self.day), self.c['graphics']['day_text_color'],
+                                   self.c['graphics']['font_name'], self.c['graphics']['day_font_size'])
         self.logger.debug('created text object for days counter')
         self.read_state()
         self.logger.debug('------- END INIT -------')
@@ -69,7 +70,8 @@ class InGameTime(GameObject):
 
     def draw(self, surface, base_offset):
         self.logger.debug('------- START DRAWING -------')
-        surface.blit(self.clock_face_image, (c.SCREEN_RESOLUTION[0] - 200, c.SCREEN_RESOLUTION[1] - 200))
+        surface.blit(self.clock_face_image, (self.c['graphics']['screen_resolution'][0] - 200,
+                                             self.c['graphics']['screen_resolution'][1] - 200))
         self.logger.debug('clock face image is in place')
         self.day_text.update('Day {}'.format(self.day))
         self.day_text.draw(surface)
@@ -78,15 +80,19 @@ class InGameTime(GameObject):
         self.logger.debug('minute_hand_rotate_axis: {}'.format(minute_hand_rotate_angle))
         minute_hand_rotated = pygame.transform.rotozoom(self.minute_hand_image, minute_hand_rotate_angle, 1.0)
         new_minute_hand_size = minute_hand_rotated.get_size()
-        surface.blit(minute_hand_rotated, (c.SCREEN_RESOLUTION[0] - 100 - new_minute_hand_size[0] // 2,
-                                           c.SCREEN_RESOLUTION[1] - 100 - new_minute_hand_size[1] // 2))
+        surface.blit(minute_hand_rotated, (self.c['graphics']['screen_resolution'][0] - 100
+                                           - new_minute_hand_size[0] // 2,
+                                           self.c['graphics']['screen_resolution'][1] - 100
+                                           - new_minute_hand_size[1] // 2))
         self.logger.debug('minute hand is in place')
         hour_hand_rotate_angle = float(-1)*self.hour/float(12)*float(360)
         self.logger.debug('hour_hand_rotate_axis: {}'.format(hour_hand_rotate_angle))
         hour_hand_rotated = pygame.transform.rotozoom(self.hour_hand_image, hour_hand_rotate_angle, 1.0)
         new_hour_hand_size = hour_hand_rotated.get_size()
-        surface.blit(hour_hand_rotated, (c.SCREEN_RESOLUTION[0] - 100 - new_hour_hand_size[0] // 2,
-                                         c.SCREEN_RESOLUTION[1] - 100 - new_hour_hand_size[1] // 2))
+        surface.blit(hour_hand_rotated, (self.c['graphics']['screen_resolution'][0] - 100
+                                         - new_hour_hand_size[0] // 2,
+                                         self.c['graphics']['screen_resolution'][1] - 100
+                                         - new_hour_hand_size[1] // 2))
         self.logger.debug('hour hand is in place')
         self.logger.debug('------- END DRAWING -------')
         self.logger.info('time is in place')

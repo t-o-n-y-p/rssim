@@ -4,7 +4,6 @@ import logging
 
 import pygame
 
-import config as c
 from game_object import GameObject
 
 
@@ -26,12 +25,17 @@ class Signal(GameObject):
                           .format(self.track_number, self.route_type, self.invisible, self.placement, self.flip_needed))
         # initialize signal state
         self.state = None
-        self.base_image = pygame.image.load(c.SIGNAL_IMAGE_BASE_PATH).convert_alpha()
-        self.logger.debug('base image loaded: {}'.format(c.SIGNAL_IMAGE_BASE_PATH))
-        self.image = {c.RED_SIGNAL: pygame.image.load(c.SIGNAL_IMAGE_PATH[c.RED_SIGNAL]).convert_alpha(),
-                      c.GREEN_SIGNAL: pygame.image.load(c.SIGNAL_IMAGE_PATH[c.GREEN_SIGNAL]).convert_alpha()}
-        self.logger.debug('images loaded: {}, {}'.format(c.SIGNAL_IMAGE_PATH[c.RED_SIGNAL],
-                                                         c.SIGNAL_IMAGE_PATH[c.GREEN_SIGNAL]))
+        self.base_image = pygame.image.load(self.c['signal_config']['signal_image_base_path']).convert_alpha()
+        self.logger.debug('base image loaded: {}'.format(self.c['signal_config']['signal_image_base_path']))
+        self.image = {self.c['signal_config']['red_signal']:
+                      pygame.image.load(self.c['signal_image_path'][self.c['signal_config']['red_signal']])
+                          .convert_alpha(),
+                      self.c['signal_config']['green_signal']:
+                      pygame.image.load(self.c['signal_image_path'][self.c['signal_config']['green_signal']])
+                          .convert_alpha()}
+        self.logger.debug('images loaded: {}, {}'
+                          .format(self.c['signal_image_path'][self.c['signal_config']['red_signal']],
+                                  self.c['signal_image_path'][self.c['signal_config']['green_signal']]))
         if self.flip_needed:
             self.base_image = pygame.transform.flip(self.base_image, True, False)
             self.logger.debug('base image flipped')
@@ -109,7 +113,7 @@ class Signal(GameObject):
             entered_by = []
 
             if not self.base_route_exit.route_config['opened']:
-                self.state = c.RED_SIGNAL
+                self.state = self.c['signal_config']['red_signal']
                 self.logger.debug('no train approaching, signal is RED')
             else:
                 for i in self.base_route_opened_list:
@@ -117,7 +121,7 @@ class Signal(GameObject):
                         opened_by.append(i.route_config['last_opened_by'])
 
                 if self.base_route_exit.route_config['last_opened_by'] not in opened_by:
-                    self.state = c.RED_SIGNAL
+                    self.state = self.c['signal_config']['red_signal']
                     self.logger.debug('route through signal is not opened, signal is RED')
                 else:
                     for i in self.base_route_opened_list:
@@ -128,10 +132,10 @@ class Signal(GameObject):
                             entered_by.append(i.route_config['last_entered_by'])
 
                     if busy_logical and self.base_route_exit.route_config['last_opened_by'] not in entered_by:
-                        self.state = c.RED_SIGNAL
+                        self.state = self.c['signal_config']['red_signal']
                         self.logger.debug('route through signal is opened but busy by another train, signal is RED')
                     else:
-                        self.state = c.GREEN_SIGNAL
+                        self.state = self.c['signal_config']['green_signal']
                         self.logger.debug('route through signal is opened and free, signal is GREEN')
                         for i in self.base_route_opened_list:
                             if i.route_config['opened'] and i.route_config['last_opened_by'] \
