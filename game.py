@@ -37,7 +37,6 @@ class Game:
         self.logger.debug('created screen with resolution {}'
                           .format(self.c['graphics']['screen_resolution']))
         pygame.display.set_caption(caption)
-        pygame.display.set_icon(pygame.image.load('icon.ico').convert_alpha())
         self.logger.debug('caption set: {}'.format(caption))
         self.clock = pygame.time.Clock()
         self.logger.debug('clock created')
