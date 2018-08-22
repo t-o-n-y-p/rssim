@@ -768,7 +768,7 @@ class RSSim(Game):
         self.logger.warning('all buttons created')
 
     def handle_map_drag(self, event_type, pos):
-        if pygame.display.get_active():
+        # if pygame.display.get_active():
             self.mouse_movement = pygame.mouse.get_rel()
             if event_type == pygame.MOUSEMOTION and pygame.mouse.get_pressed()[0] \
                     and pos[1] in range(self.c['graphics']['top_bar_height'],
@@ -795,8 +795,6 @@ class RSSim(Game):
 
     def handle_app_window_drag(self, event_type, pos):
         if pygame.display.get_active():
-            self.absolute_mouse_pos = win32api.GetCursorPos()
-            self.game_window_position = win32gui.GetWindowRect(self.game_window_handler)
             if event_type == pygame.MOUSEBUTTONDOWN \
                     and pos[0] < self.c['graphics']['screen_resolution'][0] - 70 \
                     and pos[1] < self.c['graphics']['top_bar_height']:
@@ -807,6 +805,8 @@ class RSSim(Game):
                 self.app_window_move_mode = False
 
             if self.app_window_move_mode:
+                self.absolute_mouse_pos = win32api.GetCursorPos()
+                self.game_window_position = win32gui.GetWindowRect(self.game_window_handler)
                 win32gui.SetWindowPos(self.game_window_handler, win32con.HWND_TOP,
                                       self.absolute_mouse_pos[0] - self.app_window_move_offset[0]
                                       - self.system_borders[0],
