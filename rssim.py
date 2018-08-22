@@ -796,8 +796,8 @@ class RSSim(Game):
     def handle_app_window_drag(self, event_type, pos):
         if pygame.display.get_active():
             if event_type == pygame.MOUSEBUTTONDOWN \
-                    and pos[0] < self.c['graphics']['screen_resolution'][0] - 70 \
-                    and pos[1] < self.c['graphics']['top_bar_height']:
+                    and pos[0] in range(0, self.c['graphics']['screen_resolution'][0] - 70) \
+                    and pos[1] in range(0, self.c['graphics']['top_bar_height']):
                 self.app_window_move_mode = True
                 self.app_window_move_offset = pos
 
