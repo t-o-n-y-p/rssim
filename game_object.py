@@ -30,6 +30,7 @@ class GameObject:
                                                                int(base_offset_lower_right_limit[1]))
         base_offset = self.game_config['graphics']['base_offset'].split(',')
         self.c['graphics']['base_offset'] = (int(base_offset[0]), int(base_offset[1]))
+        self.c['graphics']['top_bar_height'] = self.game_config['graphics'].getint('top_bar_height')
         self.c['graphics']['bottom_bar_height'] = self.game_config['graphics'].getint('bottom_bar_height')
         self.c['graphics']['bottom_bar_width'] = self.game_config['graphics'].getint('bottom_bar_width')
         self.c['graphics']['font_name'] = self.game_config['graphics']['font_name']

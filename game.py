@@ -32,15 +32,18 @@ class Game:
         self.logger.debug('pygame module core initialized')
         pygame.font.init()
         self.logger.debug('pygame fonts module initialized')
-        self.surface = pygame.display.set_mode(self.c['graphics']['screen_resolution'], pygame.SRCALPHA)
+        self.surface = pygame.display.set_mode(self.c['graphics']['screen_resolution'],
+                                               pygame.SRCALPHA | pygame.NOFRAME)
         self.logger.debug('created screen with resolution {}'
                           .format(self.c['graphics']['screen_resolution']))
         pygame.display.set_caption(caption)
+        pygame.display.set_icon(pygame.image.load('icon.ico').convert_alpha())
         self.logger.debug('caption set: {}'.format(caption))
         self.clock = pygame.time.Clock()
         self.logger.debug('clock created')
         self.key_down_handlers = defaultdict(list)
         self.key_up_handlers = defaultdict(list)
+        self.mouse_movement = ()
         self.mouse_handlers = []
         self.logger.warning('game init completed')
 
@@ -84,6 +87,7 @@ class Game:
                                                                int(base_offset_lower_right_limit[1]))
         base_offset = self.game_config['graphics']['base_offset'].split(',')
         self.c['graphics']['base_offset'] = (int(base_offset[0]), int(base_offset[1]))
+        self.c['graphics']['top_bar_height'] = self.game_config['graphics'].getint('top_bar_height')
         self.c['graphics']['bottom_bar_height'] = self.game_config['graphics'].getint('bottom_bar_height')
         self.c['graphics']['bottom_bar_width'] = self.game_config['graphics'].getint('bottom_bar_width')
         self.c['graphics']['font_name'] = self.game_config['graphics']['font_name']

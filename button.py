@@ -7,7 +7,7 @@ from text_object import TextObject
 
 
 class Button(GameObject):
-    def __init__(self, position, text, on_click, draw_only_if_game_paused):
+    def __init__(self, position, button_size, text, on_click, draw_only_if_game_paused):
         super().__init__()
         self.logger = logging.getLogger('game.{} button'.format(text[0]))
         self.logger.debug('------- START INIT -------')
@@ -18,18 +18,31 @@ class Button(GameObject):
         self.state = 'normal'
         self.logger.debug('state set: {}'.format(self.state))
         self.position = position
+        self.button_size = button_size
         self.logger.debug('position set: {}'.format(self.position))
         self.text_objects = []
         self.on_click = on_click
         self.on_click_actual = self.on_click[0]
         self.logger.debug('on click action set: {}'.format(self.on_click_actual))
-        self.image = {'normal': pygame.image.load('img/button_normal.png').convert_alpha(),
-                      'hover': pygame.image.load('img/button_hover.png').convert_alpha(),
-                      'pressed': pygame.image.load('img/button_pressed.png').convert_alpha()}
+        self.image = {'normal': pygame.Surface(button_size, pygame.SRCALPHA),
+                      'hover': pygame.Surface(button_size, pygame.SRCALPHA),
+                      'pressed': pygame.Surface(button_size, pygame.SRCALPHA)}
+        self.image['normal'].fill((0, 0, 0))
+        self.image['hover'].fill((127, 0, 0))
+        self.image['pressed'].fill((192, 0, 0))
+        for i in self.image:
+            pygame.draw.line(self.image[i], (255, 255, 255), (0, 0), (button_size[0] - 2, 0), 2)
+            pygame.draw.line(self.image[i], (255, 255, 255), (0, 0), (0, button_size[1] - 2), 2)
+            pygame.draw.line(self.image[i], (255, 255, 255),
+                             (0, button_size[1] - 2), (button_size[0] - 2, button_size[1] - 2), 2)
+            pygame.draw.line(self.image[i], (255, 255, 255),
+                             (button_size[0] - 2, 0), (button_size[0] - 2, button_size[1] - 2), 2)
+
         self.logger.debug('images set: {}'.format(self.image))
         self.text = text
         for i in range(len(on_click)):
-            self.text_objects.append(TextObject((self.position[0] + 50, self.position[1] + 20), text[i],
+            self.text_objects.append(TextObject((self.position[0] + button_size[0] // 2,
+                                                 self.position[1] + button_size[1] // 2), text[i],
                                                 self.c['graphics']['button_text_color'],
                                                 self.c['graphics']['font_name'],
                                                 self.c['graphics']['button_font_size']))
@@ -75,8 +88,8 @@ class Button(GameObject):
         self.logger.info('mouse events handled')
 
     def handle_mouse_move(self, pos):
-        if pos[0] in range(self.position[0], self.position[0] + 100) \
-                and pos[1] in range(self.position[1], self.position[1] + 40):
+        if pos[0] in range(self.position[0] + 2, self.position[0] + self.button_size[0] - 2) \
+                and pos[1] in range(self.position[1] + 2, self.position[1] + self.button_size[1] - 2):
             if self.state != 'pressed':
                 self.state = 'hover'
                 self.logger.info('cursor is on the button')
@@ -85,8 +98,8 @@ class Button(GameObject):
             self.logger.debug('cursor is not on the button')
 
     def handle_mouse_down(self, pos):
-        if pos[0] in range(self.position[0], self.position[0] + 100) \
-                and pos[1] in range(self.position[1], self.position[1] + 40):
+        if pos[0] in range(self.position[0] + 2, self.position[0] + self.button_size[0] - 2) \
+                and pos[1] in range(self.position[1] + 2, self.position[1] + self.button_size[1] - 2):
             self.state = 'pressed'
             self.logger.info('cursor is on the button and user holds mouse button')
 
