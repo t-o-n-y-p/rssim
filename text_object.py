@@ -3,12 +3,13 @@ import pygame
 
 
 class TextObject:
-    def __init__(self, position, text, color, font_name, font_size):
+    def __init__(self, position, text, color, font_name, font_size, alignment='center'):
         self.logger = logging.getLogger('game.{}_text_object'.format(text))
         self.logger.debug('------- START INIT -------')
         self.pos = position
         self.text = text
         self.color = color
+        self.alignment = alignment
         self.logger.debug('position, text and color set: {} {} {}'.format(self.pos, self.text, self.color))
         self.font = pygame.font.SysFont(font_name, font_size)
         self.logger.debug('font set: {} {}'.format(font_name, font_size))
@@ -19,8 +20,12 @@ class TextObject:
 
     def draw(self, surface):
         self.logger.debug('------- START DRAWING -------')
-        surface.blit(self.text_surface, (self.pos[0] - self.text_surface.get_width() // 2,
-                                         self.pos[1] - self.text_surface.get_height() // 2))
+        if self.alignment == 'center':
+            surface.blit(self.text_surface, (self.pos[0] - self.text_surface.get_width() // 2,
+                                             self.pos[1] - self.text_surface.get_height() // 2))
+        else:
+            surface.blit(self.text_surface, (self.pos[0],
+                                             self.pos[1] - self.text_surface.get_height() // 2))
         self.logger.debug('------- END DRAWING -------')
         self.logger.info('text is in place')
 

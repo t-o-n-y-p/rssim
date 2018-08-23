@@ -17,9 +17,9 @@ class TopAndBottomBar(GameObject):
         self.bottom_bar_surface = pygame.Surface((self.c['graphics']['bottom_bar_width'],
                                                   self.c['graphics']['bottom_bar_height']), pygame.SRCALPHA)
         self.app_title_surface \
-            = TextObject((100, self.c['graphics']['top_bar_height'] // 2),
+            = TextObject((10, self.c['graphics']['top_bar_height'] // 2),
                          'Railway Station Simulator', self.c['graphics']['button_text_color'],
-                         self.c['graphics']['font_name'], self.c['graphics']['button_font_size'])
+                         self.c['graphics']['font_name'], self.c['graphics']['button_font_size'], alignment='left')
         self.logger.debug('created surface for bottom bar {}x{}'.format(self.c['graphics']['bottom_bar_width'],
                                                                         self.c['graphics']['bottom_bar_height']))
         self.top_bar_surface.fill(self.c['graphics']['bottom_bar_color'])

@@ -768,28 +768,27 @@ class RSSim(Game):
         self.logger.warning('all buttons created')
 
     def handle_map_drag(self, event_type, pos):
-        # if pygame.display.get_active():
-            self.mouse_movement = pygame.mouse.get_rel()
-            if event_type == pygame.MOUSEMOTION and pygame.mouse.get_pressed()[0] \
-                    and pos[1] in range(self.c['graphics']['top_bar_height'],
-                                        self.c['graphics']['screen_resolution'][1]
-                                        - self.c['graphics']['bottom_bar_height']):
-                # if left mouse button is pressed and user moves mouse, we move entire map with all its content
-                self.logger.debug('user drags map')
-                self.logger.debug('old offset: {}'.format(self.base_offset))
-                self.base_offset = (self.base_offset[0] + self.mouse_movement[0],
-                                    self.base_offset[1] + self.mouse_movement[1])
-                self.logger.debug('mouse movement: {}'.format(self.mouse_movement))
-                self.logger.debug('new offset: {}'.format(self.base_offset))
-                # but not beyond limits
-                if self.base_offset[0] > self.c['graphics']['base_offset_lower_right_limit'][0]:
-                    self.base_offset = (self.c['graphics']['base_offset_lower_right_limit'][0], self.base_offset[1])
-                if self.base_offset[0] < self.c['graphics']['base_offset_upper_left_limit'][0]:
-                    self.base_offset = (self.c['graphics']['base_offset_upper_left_limit'][0], self.base_offset[1])
-                if self.base_offset[1] > self.c['graphics']['base_offset_lower_right_limit'][1]:
-                    self.base_offset = (self.base_offset[0], self.c['graphics']['base_offset_lower_right_limit'][1])
-                if self.base_offset[1] < self.c['graphics']['base_offset_upper_left_limit'][1]:
-                    self.base_offset = (self.base_offset[0], self.c['graphics']['base_offset_upper_left_limit'][1])
+        self.mouse_movement = pygame.mouse.get_rel()
+        if event_type == pygame.MOUSEMOTION and pygame.mouse.get_pressed()[0] \
+                and pos[1] in range(self.c['graphics']['top_bar_height'],
+                                    self.c['graphics']['screen_resolution'][1]
+                                    - self.c['graphics']['bottom_bar_height']):
+            # if left mouse button is pressed and user moves mouse, we move entire map with all its content
+            self.logger.debug('user drags map')
+            self.logger.debug('old offset: {}'.format(self.base_offset))
+            self.base_offset = (self.base_offset[0] + self.mouse_movement[0],
+                                self.base_offset[1] + self.mouse_movement[1])
+            self.logger.debug('mouse movement: {}'.format(self.mouse_movement))
+            self.logger.debug('new offset: {}'.format(self.base_offset))
+            # but not beyond limits
+            if self.base_offset[0] > self.c['graphics']['base_offset_lower_right_limit'][0]:
+                self.base_offset = (self.c['graphics']['base_offset_lower_right_limit'][0], self.base_offset[1])
+            if self.base_offset[0] < self.c['graphics']['base_offset_upper_left_limit'][0]:
+                self.base_offset = (self.c['graphics']['base_offset_upper_left_limit'][0], self.base_offset[1])
+            if self.base_offset[1] > self.c['graphics']['base_offset_lower_right_limit'][1]:
+                self.base_offset = (self.base_offset[0], self.c['graphics']['base_offset_lower_right_limit'][1])
+            if self.base_offset[1] < self.c['graphics']['base_offset_upper_left_limit'][1]:
+                self.base_offset = (self.base_offset[0], self.c['graphics']['base_offset_upper_left_limit'][1])
 
             self.logger.debug('new limited offset: {}'.format(self.base_offset))
 
