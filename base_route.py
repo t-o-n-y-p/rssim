@@ -30,6 +30,7 @@ class BaseRoute(GameObject):
             self.image = pygame.image.load(self.route_config['image_path']).convert_alpha()
         else:
             self.image = None
+
         self.logger.debug('image is not None: {}'.format(self.image is None))
         self.logger.debug('------- END INIT -------')
         self.logger.warning('base route init completed')
@@ -73,6 +74,12 @@ class BaseRoute(GameObject):
             self.route_config['image_path'] = self.config['route_config']['image_path']
 
         self.logger.debug('image_path: {}'.format(self.route_config['image_path']))
+        if self.config['route_config']['image_position'] == 'None':
+            self.route_config['image_position'] = None
+        else:
+            image_position_parsed = self.config['route_config']['image_position'].split(',')
+            self.route_config['image_position'] = (int(image_position_parsed[0]), int(image_position_parsed[1]))
+
         supported_carts_parsed = self.config['route_config']['supported_carts'].split(',')
         self.route_config['supported_carts'] = (int(supported_carts_parsed[0]), int(supported_carts_parsed[1]))
         self.logger.debug('supported_carts: {}'.format(self.route_config['supported_carts']))
@@ -247,23 +254,8 @@ class BaseRoute(GameObject):
         if self.image is not None:
             if not self.route_config['locked']:
                 self.logger.debug('base route is not locked, regular image set')
-                width = self.image.get_width()
-                height = self.image.get_height()
-                # left entry routes are left-aligned
-                if self.route_type == self.c['base_route_types']['left_entry_base_route']:
-                    surface.blit(self.image,
-                                 tuple((base_offset[0],
-                                        base_offset[1] + (self.c['graphics']['map_resolution'][1] - height) // 2)))
-                # right entry routes are right-aligned
-                elif self.route_type == self.c['base_route_types']['right_entry_base_route']:
-                    surface.blit(self.image,
-                                 tuple((base_offset[0] + self.c['graphics']['map_resolution'][0] - width,
-                                        base_offset[1] + (self.c['graphics']['map_resolution'][1] - height) // 2)))
-                # platform routes are centralized
-                elif self.route_type == self.c['base_route_types']['left_entry_platform_base_route']:
-                    surface.blit(self.image,
-                                 tuple((base_offset[0] + (self.c['graphics']['map_resolution'][0] - width) // 2,
-                                        base_offset[1] + (self.c['graphics']['map_resolution'][1] - height) // 2)))
+                surface.blit(self.image, (base_offset[0] + self.route_config['image_position'][0],
+                                          base_offset[1] + self.route_config['image_position'][1]))
 
         self.logger.debug('------- END DRAWING -------')
         self.logger.info('base route image is in place')

@@ -1,3 +1,4 @@
+import time
 import sys
 import logging
 from collections import defaultdict
@@ -255,11 +256,19 @@ class Game:
     def run(self):
         while True:
             self.logger.warning('frame begins')
+            time_1 = time.perf_counter()
             self.handle_events()
+            time_2 = time.perf_counter()
             self.update()
+            time_3 = time.perf_counter()
             self.draw()
-            pygame.display.update()
+            time_4 = time.perf_counter()
+            pygame.display.update(pygame.Rect(0, 0, self.c['graphics']['screen_resolution'][0],
+                                              self.c['graphics']['screen_resolution'][1]))
             self.logger.warning('frame ends')
+            self.logger.critical('handling events: {} sec'.format(time_2 - time_1))
+            self.logger.critical('updating: {} sec'.format(time_3 - time_2))
+            self.logger.critical('drawing: {} sec'.format(time_4 - time_3))
             new_lines = self.logs_stream.getvalue()
             self.logs_stream.seek(0, 0)
             self.logs_stream.truncate(0)
