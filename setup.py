@@ -5,7 +5,7 @@ executables = [Executable('rssim.py',
                           base='Win32GUI',
                           icon='icon.ico')]
 
-include_files = ['img', 'default_cfg', 'logs_config.ini', 'game_config.ini']
+include_files = ['img', 'default_cfg', 'logs_config.ini', 'game_config.ini', 'icon.ico']
 
 options = {
     'build_exe': {
@@ -15,7 +15,7 @@ options = {
 }
 
 setup(name='Railway Station Simulator',
-      version='0.0.1',
+      version='0.4.5',
       description='Railway Station Simulator',
       executables=executables,
       options=options)
