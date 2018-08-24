@@ -408,8 +408,8 @@ class Train(GameObject):
              + self.train_route.trail_points[self.carts_position[cart_number][1]][0]) // 2
         y = (self.train_route.trail_points[self.carts_position[cart_number][0]][1]
              + self.train_route.trail_points[self.carts_position[cart_number][1]][1]) // 2
-        if y not in (-50, self.c['graphics']['screen_resolution'][1] + 50) and x not in \
-                (-175, self.c['graphics']['screen_resolution'][0] + 175):
+        if (y + base_offset[1]) in range(-50, self.c['graphics']['screen_resolution'][1] + 50) \
+                and (x + base_offset[0]) in range(-175, self.c['graphics']['screen_resolution'][0] + 175):
             point_one = float(self.train_route.trail_points[self.carts_position[cart_number][1]][1]
                               - self.train_route.trail_points[self.carts_position[cart_number][0]][1])
             point_two = float(self.train_route.trail_points[self.carts_position[cart_number][0]][0]
@@ -440,8 +440,8 @@ class Train(GameObject):
     def draw_single_cart_abs(self, cart_number, surface, base_offset):
         x = (self.carts_position_abs[cart_number][0][0] + self.carts_position_abs[cart_number][1][0]) // 2
         y = (self.carts_position_abs[cart_number][0][1] + self.carts_position_abs[cart_number][1][1]) // 2
-        if y not in (-50, self.c['graphics']['screen_resolution'][1] + 50) and x not in \
-                (-175, self.c['graphics']['screen_resolution'][0] + 175):
+        if (y + base_offset[1]) in range(-50, self.c['graphics']['screen_resolution'][1] + 50) \
+                and (x + base_offset[0]) in range(-175, self.c['graphics']['screen_resolution'][0] + 175):
             point_one = float(self.carts_position_abs[cart_number][1][1] - self.carts_position_abs[cart_number][0][1])
             point_two = float(self.carts_position_abs[cart_number][0][0] - self.carts_position_abs[cart_number][1][0])
             self.logger.debug('difference on x and y axis: {} {}'.format(point_two, point_one))
