@@ -46,8 +46,8 @@ class TopAndBottomBar(GameObject):
         # draw bottom bar for buttons
         surface.blit(self.top_bar_surface, (0, 0))
         self.app_title_surface.draw(surface)
-        surface.blit(self.bottom_bar_surface,
-                     (0, self.c['graphics']['screen_resolution'][1] - self.c['graphics']['bottom_bar_height']))
+        surface.blit(self.bottom_bar_surface, (0, self.c['graphics']['screen_resolution'][1]
+                                               - self.c['graphics']['bottom_bar_height']))
         pygame.draw.line(surface, (255, 255, 255), (0, 0), (self.c['graphics']['screen_resolution'][0] - 2, 0), 2)
         pygame.draw.line(surface, (255, 255, 255), (0, 0), (0, self.c['graphics']['screen_resolution'][1] - 2), 2)
         pygame.draw.line(surface, (255, 255, 255), (self.c['graphics']['screen_resolution'][0] - 2, 0),

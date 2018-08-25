@@ -8,6 +8,14 @@ from game_object import GameObject
 from train import Train
 
 
+def _game_is_not_paused(fn):
+    def _update_if_game_is_not_paused(*args, **kwargs):
+        if not args[1]:
+            fn(*args, **kwargs)
+
+    return _update_if_game_is_not_paused
+
+
 class Dispatcher(GameObject):
     def __init__(self):
         super().__init__()
@@ -183,75 +191,106 @@ class Dispatcher(GameObject):
             for j in self.train_routes[i]:
                 self.train_routes[i][j].save_state()
 
+    @_game_is_not_paused
     def update(self, game_paused):
-        # if game is paused, dispatcher does not work
-        if not game_paused:
-            self.logger.debug('------- DISPATCHER UPDATE START -------')
-            for z1 in range(len(self.train_routes)):
-                for z2 in self.train_routes[z1]:
-                    if self.train_routes[z1][z2].supported_carts[0] in range(1, self.supported_carts[0]) \
-                            and not self.train_routes[z1][z2].locked:
-                        self.supported_carts[0] = self.train_routes[z1][z2].supported_carts[0]
+        self.logger.debug('------- DISPATCHER UPDATE START -------')
+        for z1 in range(len(self.train_routes)):
+            for z2 in self.train_routes[z1]:
+                if self.train_routes[z1][z2].supported_carts[0] in range(1, self.supported_carts[0]) \
+                        and not self.train_routes[z1][z2].locked:
+                    self.supported_carts[0] = self.train_routes[z1][z2].supported_carts[0]
 
-            self.logger.debug('supported_carts: {}'.format(self.supported_carts))
-            self.trains = sorted(self.trains, key=attrgetter('priority'), reverse=True)
-            routes_created_inside_iteration = 0
-            for i in self.trains:
-                self.logger.debug('train id: {}'.format(i.train_id))
-                self.logger.debug('train priority: {}'.format(i.priority))
-                self.logger.debug('train state: {}'.format(i.state))
-                if i.state == self.c['train_state_types']['boarding_in_progress']:
-                    # if boarding is in progress, track is busy, but no route is assigned,
-                    # so we need to override track settings
-                    i.boarding_time -= 1
-                    self.logger.debug('boarding_time: {}'.format(i.boarding_time))
-                    # when boarding time is about to expire, we open exit route,
-                    # and now it is up to exit signal to decide if train moves or not
-                    if i.boarding_time <= 60 and i.train_route is None and routes_created_inside_iteration == 0:
-                        i.assign_new_train_route(self.train_routes[i.track_number][
-                                                     self.c['train_route_types']['exit_train_route'][i.direction]],
-                                                 i.train_id, game_paused)
+        self.logger.debug('supported_carts: {}'.format(self.supported_carts))
+        self.trains = sorted(self.trains, key=attrgetter('priority'), reverse=True)
+        routes_created_inside_iteration = 0
+        for i in self.trains:
+            self.logger.debug('train id: {}'.format(i.train_id))
+            self.logger.debug('train priority: {}'.format(i.priority))
+            self.logger.debug('train state: {}'.format(i.state))
+            if i.state == self.c['train_state_types']['boarding_in_progress']:
+                # if boarding is in progress, track is busy, but no route is assigned,
+                # so we need to override track settings
+                i.boarding_time -= 1
+                self.logger.debug('boarding_time: {}'.format(i.boarding_time))
+                # when boarding time is about to expire, we open exit route,
+                # and now it is up to exit signal to decide if train moves or not
+                if i.boarding_time <= 60 and i.train_route is None and routes_created_inside_iteration == 0:
+                    i.assign_new_train_route(self.train_routes[i.track_number][
+                                                self.c['train_route_types']['exit_train_route'][i.direction]
+                                             ],
+                                             i.train_id, game_paused)
+                    routes_created_inside_iteration += 1
+                    self.logger.info('train {} new route assigned: track {} {}'
+                                     .format(i.train_id, i.train_route.track_number, i.train_route.route_type))
+                    self.logger.debug('routes_created_inside_iteration: {}'.format(routes_created_inside_iteration))
+                # when boarding time is expired, boarding is complete, and we unlock track settings
+                if i.boarding_time <= 0:
+                    self.tracks[i.track_number - 1].override = False
+                    i.state = self.c['train_state_types']['boarding_complete']
+                    self.logger.info('train {} status changed to {}'.format(i.train_id, i.state))
+
+            if len(i.carts_position) > 0:
+                if i.carts_position[0][0] == i.train_route.destination_point:
+                    self.logger.debug('train {} reached route destination point'.format(i.train_id))
+                    # if train arrives to the track, boarding begins
+                    if i.state == self.c['train_state_types']['pending_boarding']:
+                        i.state = self.c['train_state_types']['boarding_in_progress']
+                        self.logger.debug('train {} boarding begins'.format(i.train_id))
+                        self.tracks[i.track_number - 1].override = True
+                        self.tracks[i.track_number - 1].busy = True
+                        self.tracks[i.track_number - 1].last_entered_by = i.train_id
+                        self.logger.info('train {} status changed to {}'.format(i.train_id, i.state))
+                        self.logger.info('train {} completed route: track {} {}'
+                                         .format(i.train_id, i.train_route.track_number, i.train_route.route_type))
+                        i.complete_train_route()
+
+                    # if train arrives to the end of exit route, it just goes away
+                    if i.state == self.c['train_state_types']['boarding_complete']:
+                        self.logger.debug('train {} reached end of cycle'.format(i.train_id))
+                        self.logger.info('train {} completed route: track {} {}'
+                                         .format(i.train_id, i.train_route.track_number, i.train_route.route_type))
+                        i.complete_train_route()
+                        self.logger.info('train {} successfully processed and is about to be removed'
+                                         .format(i.train_id))
+                        self.trains.remove(i)
+
+            # train is in approaching state if all tracks are busy,
+            # so we wait for any compatible track to be available for this train
+            if i.state == self.c['train_state_types']['approaching'] and routes_created_inside_iteration == 0:
+                self.logger.debug('looking for route for train {}'.format(i.train_id))
+                route_for_new_train = None
+                for j in self.c['dispatcher_config']['first_priority_tracks'][i.direction]:
+                    r = self.train_routes[j][self.c['train_route_types']['entry_train_route'][i.direction]]
+                    self.logger.debug('checking track {}'.format(j))
+                    self.logger.debug('track in busy: {}'.format(self.tracks[j - 1].busy))
+                    self.logger.debug('opened: {}'.format(r.opened))
+                    self.logger.debug('train carts: {}; route supports: {}'.format(i.carts, r.supported_carts))
+                    # if compatible track is finally available,
+                    # we open entry route for our train and leave loop
+                    if i.carts in range(r.supported_carts[0], r.supported_carts[1] + 1) and not r.opened \
+                            and not r.locked and not self.tracks[j - 1].busy:
+                        self.logger.debug('all requirements met')
+                        route_for_new_train = r
+                        self.tracks[j - 1].override = True
+                        self.tracks[j - 1].busy = True
+                        self.tracks[j - 1].last_entered_by = i.train_id
+                        i.state = self.c['train_state_types']['pending_boarding']
+                        self.logger.info('train {} status changed to {}'.format(i.train_id, i.state))
+                        self.logger.info('train {} completed route: track {} {}'
+                                         .format(i.train_id, i.train_route.track_number, i.train_route.route_type))
+                        i.complete_train_route()
+                        i.assign_new_train_route(route_for_new_train, i.train_id, game_paused)
                         routes_created_inside_iteration += 1
+                        self.logger.debug('routes_created_inside_iteration: {}'
+                                          .format(routes_created_inside_iteration))
                         self.logger.info('train {} new route assigned: track {} {}'
                                          .format(i.train_id, i.train_route.track_number, i.train_route.route_type))
-                        self.logger.debug('routes_created_inside_iteration: {}'.format(routes_created_inside_iteration))
-                    # when boarding time is expired, boarding is complete, and we unlock track settings
-                    if i.boarding_time <= 0:
-                        self.tracks[i.track_number - 1].override = False
-                        i.state = self.c['train_state_types']['boarding_complete']
-                        self.logger.info('train {} status changed to {}'.format(i.train_id, i.state))
+                        break
 
-                if len(i.carts_position) > 0:
-                    if i.carts_position[0][0] == i.train_route.destination_point:
-                        self.logger.debug('train {} reached route destination point'.format(i.train_id))
-                        # if train arrives to the track, boarding begins
-                        if i.state == self.c['train_state_types']['pending_boarding']:
-                            i.state = self.c['train_state_types']['boarding_in_progress']
-                            self.logger.debug('train {} boarding begins'.format(i.train_id))
-                            self.tracks[i.track_number - 1].override = True
-                            self.tracks[i.track_number - 1].busy = True
-                            self.tracks[i.track_number - 1].last_entered_by = i.train_id
-                            self.logger.info('train {} status changed to {}'.format(i.train_id, i.state))
-                            self.logger.info('train {} completed route: track {} {}'
-                                             .format(i.train_id, i.train_route.track_number, i.train_route.route_type))
-                            i.complete_train_route()
-
-                        # if train arrives to the end of exit route, it just goes away
-                        if i.state == self.c['train_state_types']['boarding_complete']:
-                            self.logger.debug('train {} reached end of cycle'.format(i.train_id))
-                            self.logger.info('train {} completed route: track {} {}'
-                                             .format(i.train_id, i.train_route.track_number, i.train_route.route_type))
-                            i.complete_train_route()
-                            self.logger.info('train {} successfully processed and is about to be removed'
-                                             .format(i.train_id))
-                            self.trains.remove(i)
-
-                # train is in approaching state if all tracks are busy,
-                # so we wait for any compatible track to be available for this train
-                if i.state == self.c['train_state_types']['approaching'] and routes_created_inside_iteration == 0:
-                    self.logger.debug('looking for route for train {}'.format(i.train_id))
-                    route_for_new_train = None
-                    for j in self.c['dispatcher_config']['first_priority_tracks'][i.direction]:
+                if route_for_new_train is None:
+                    self.logger.debug('could not find first priority track')
+                    self.logger.debug('still looking for route for train {}'.format(i.train_id))
+                    for j in self.c['dispatcher_config']['second_priority_tracks'][i.direction]:
                         r = self.train_routes[j][self.c['train_route_types']['entry_train_route'][i.direction]]
                         self.logger.debug('checking track {}'.format(j))
                         self.logger.debug('track in busy: {}'.format(self.tracks[j - 1].busy))
@@ -260,7 +299,7 @@ class Dispatcher(GameObject):
                         # if compatible track is finally available,
                         # we open entry route for our train and leave loop
                         if i.carts in range(r.supported_carts[0], r.supported_carts[1] + 1) and not r.opened \
-                                and not r.locked and not self.tracks[j - 1].busy:
+                                and not self.tracks[j - 1].busy:
                             self.logger.debug('all requirements met')
                             route_for_new_train = r
                             self.tracks[j - 1].override = True
@@ -269,95 +308,64 @@ class Dispatcher(GameObject):
                             i.state = self.c['train_state_types']['pending_boarding']
                             self.logger.info('train {} status changed to {}'.format(i.train_id, i.state))
                             self.logger.info('train {} completed route: track {} {}'
-                                             .format(i.train_id, i.train_route.track_number, i.train_route.route_type))
+                                             .format(i.train_id, i.train_route.track_number,
+                                                     i.train_route.route_type))
                             i.complete_train_route()
                             i.assign_new_train_route(route_for_new_train, i.train_id, game_paused)
                             routes_created_inside_iteration += 1
                             self.logger.debug('routes_created_inside_iteration: {}'
                                               .format(routes_created_inside_iteration))
                             self.logger.info('train {} new route assigned: track {} {}'
-                                             .format(i.train_id, i.train_route.track_number, i.train_route.route_type))
+                                             .format(i.train_id, i.train_route.track_number,
+                                                     i.train_route.route_type))
                             break
 
-                    if route_for_new_train is None:
-                        self.logger.debug('could not find first priority track')
-                        self.logger.debug('still looking for route for train {}'.format(i.train_id))
-                        for j in self.c['dispatcher_config']['second_priority_tracks'][i.direction]:
-                            r = self.train_routes[j][self.c['train_route_types']['entry_train_route'][i.direction]]
-                            self.logger.debug('checking track {}'.format(j))
-                            self.logger.debug('track in busy: {}'.format(self.tracks[j - 1].busy))
-                            self.logger.debug('opened: {}'.format(r.opened))
-                            self.logger.debug('train carts: {}; route supports: {}'.format(i.carts, r.supported_carts))
-                            # if compatible track is finally available,
-                            # we open entry route for our train and leave loop
-                            if i.carts in range(r.supported_carts[0], r.supported_carts[1] + 1) and not r.opened \
-                                    and not self.tracks[j - 1].busy:
-                                self.logger.debug('all requirements met')
-                                route_for_new_train = r
-                                self.tracks[j - 1].override = True
-                                self.tracks[j - 1].busy = True
-                                self.tracks[j - 1].last_entered_by = i.train_id
-                                i.state = self.c['train_state_types']['pending_boarding']
-                                self.logger.info('train {} status changed to {}'.format(i.train_id, i.state))
-                                self.logger.info('train {} completed route: track {} {}'
-                                                 .format(i.train_id, i.train_route.track_number,
-                                                         i.train_route.route_type))
-                                i.complete_train_route()
-                                i.assign_new_train_route(route_for_new_train, i.train_id, game_paused)
-                                routes_created_inside_iteration += 1
-                                self.logger.debug('routes_created_inside_iteration: {}'
-                                                  .format(routes_created_inside_iteration))
-                                self.logger.info('train {} new route assigned: track {} {}'
-                                                 .format(i.train_id, i.train_route.track_number,
-                                                         i.train_route.route_type))
-                                break
+                if route_for_new_train is None:
+                    self.logger.debug('all tracks are busy, will try next time')
 
-                    if route_for_new_train is None:
-                        self.logger.debug('all tracks are busy, will try next time')
+            if i.state == self.c['train_state_types']['approaching_pass_through'] \
+                    and routes_created_inside_iteration == 0:
+                self.logger.debug('looking for pass through route for train {}'.format(i.train_id))
+                for j in self.c['dispatcher_config']['pass_through_priority_tracks'][i.direction]:
+                    r = self.train_routes[j][self.c['train_route_types']['entry_train_route'][i.direction]]
+                    self.logger.debug('checking track {}'.format(j))
+                    self.logger.debug('track in busy: {}'.format(self.tracks[j - 1].busy))
+                    self.logger.debug('opened: {}'.format(r.opened))
+                    # if compatible track is finally available,
+                    # we open entry route for our train and leave loop
+                    if not r.opened and not self.tracks[j - 1].busy:
+                        self.logger.debug('all requirements met')
+                        route_for_new_train = r
+                        self.tracks[j - 1].override = True
+                        self.tracks[j - 1].busy = True
+                        self.tracks[j - 1].last_entered_by = i.train_id
+                        i.state = self.c['train_state_types']['pending_boarding']
+                        self.logger.info('train {} status changed to {}'.format(i.train_id, i.state))
+                        self.logger.info('train {} completed route: track {} {}'
+                                         .format(i.train_id, i.train_route.track_number, i.train_route.route_type))
+                        i.complete_train_route()
+                        i.assign_new_train_route(route_for_new_train, i.train_id, game_paused)
+                        routes_created_inside_iteration += 1
+                        self.logger.debug('routes_created_inside_iteration: {}'
+                                          .format(routes_created_inside_iteration))
+                        self.logger.info('train {} new route assigned: track {} {}'
+                                         .format(i.train_id, i.train_route.track_number, i.train_route.route_type))
+                        break
 
-                if i.state == self.c['train_state_types']['approaching_pass_through'] \
-                        and routes_created_inside_iteration == 0:
-                    self.logger.debug('looking for pass through route for train {}'.format(i.train_id))
-                    for j in self.c['dispatcher_config']['pass_through_priority_tracks'][i.direction]:
-                        r = self.train_routes[j][self.c['train_route_types']['entry_train_route'][i.direction]]
-                        self.logger.debug('checking track {}'.format(j))
-                        self.logger.debug('track in busy: {}'.format(self.tracks[j - 1].busy))
-                        self.logger.debug('opened: {}'.format(r.opened))
-                        # if compatible track is finally available,
-                        # we open entry route for our train and leave loop
-                        if not r.opened and not self.tracks[j - 1].busy:
-                            self.logger.debug('all requirements met')
-                            route_for_new_train = r
-                            self.tracks[j - 1].override = True
-                            self.tracks[j - 1].busy = True
-                            self.tracks[j - 1].last_entered_by = i.train_id
-                            i.state = self.c['train_state_types']['pending_boarding']
-                            self.logger.info('train {} status changed to {}'.format(i.train_id, i.state))
-                            self.logger.info('train {} completed route: track {} {}'
-                                             .format(i.train_id, i.train_route.track_number, i.train_route.route_type))
-                            i.complete_train_route()
-                            i.assign_new_train_route(route_for_new_train, i.train_id, game_paused)
-                            routes_created_inside_iteration += 1
-                            self.logger.debug('routes_created_inside_iteration: {}'
-                                              .format(routes_created_inside_iteration))
-                            self.logger.info('train {} new route assigned: track {} {}'
-                                             .format(i.train_id, i.train_route.track_number, i.train_route.route_type))
-                            break
+        # it's time to check if we can spawn more trains
+        if routes_created_inside_iteration == 0:
+            self.logger.debug('since no routes assigned, we can create new train')
+            self.create_new_trains(game_paused)
 
-            # it's time to check if we can spawn more trains
-            if routes_created_inside_iteration == 0:
-                self.logger.debug('since no routes assigned, we can create new train')
-                self.create_new_trains(game_paused)
-
-            self.logger.debug('------- DISPATCHER UPDATE END -------')
-            self.logger.info('dispatcher updated')
-            # dispatcher's logic iteration is done, now we update trains, routes and tracks
-            for q4 in self.trains:
-                q4.update(game_paused)
-                if q4.train_route:
-                    q4.train_route.update(game_paused)
-                for q3 in range(len(self.tracks)):
-                    self.tracks[q3].update(game_paused)
+        self.logger.debug('------- DISPATCHER UPDATE END -------')
+        self.logger.info('dispatcher updated')
+        # dispatcher's logic iteration is done, now we update trains, routes and tracks
+        for q4 in self.trains:
+            q4.update(game_paused)
+            if q4.train_route:
+                q4.train_route.update(game_paused)
+            for q3 in range(len(self.tracks)):
+                self.tracks[q3].update(game_paused)
 
     def create_new_trains(self, game_paused):
         self.logger.debug('------- START CREATING NEW TRAINS -------')
@@ -380,7 +388,7 @@ class Dispatcher(GameObject):
                     if i == self.c['direction']['left']:
                         carts = random.choice([10, 10])
                     else:
-                        carts = random.choice([20, 20])
+                        carts = random.choice([6, 6, 6, 20])
 
                     self.logger.debug('carts: {}'.format(carts))
                     if carts < self.supported_carts[0]:
@@ -421,5 +429,8 @@ class Dispatcher(GameObject):
         self.logger.debug('------- END CREATING NEW TRAINS -------')
 
     def draw(self, surface, base_offset):
+        rect_area = []
         for i in self.trains:
-            i.draw(surface, base_offset)
+            rect_area.extend(i.draw(surface, base_offset))
+
+        return rect_area

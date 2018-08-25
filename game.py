@@ -1,3 +1,6 @@
+import win32api
+import win32con
+import win32gui
 import time
 import sys
 import logging
@@ -7,6 +10,20 @@ import os
 import io
 
 import pygame
+
+from button import Button
+from dispatcher import Dispatcher
+from ingame_time import InGameTime
+from onboarding_tips import OnboardingTips
+from signal import Signal
+
+
+def _game_window_is_active(fn):
+    def _handle_if_game_window_is_active(*args, **kwargs):
+        if pygame.display.get_active():
+            fn(*args, **kwargs)
+
+    return _handle_if_game_window_is_active
 
 
 class Game:
@@ -46,6 +63,20 @@ class Game:
         self.key_up_handlers = defaultdict(list)
         self.mouse_movement = ()
         self.mouse_handlers = []
+        self.mouse_handlers.append(self.handle_app_window_drag)
+        self.mouse_handlers.append(self.handle_map_drag)
+        self.rect_area = []
+        self.app_window_move_mode = False
+        self.map_move_mode = False
+        self.app_window_move_offset = ()
+        self.game_window_handler = win32gui.GetActiveWindow()
+        self.game_window_position = win32gui.GetWindowRect(self.game_window_handler)
+        self.absolute_mouse_pos = win32api.GetCursorPos()
+        pygame.mouse.set_pos([0, 0])
+        temp_absolute_mouse_pos = win32api.GetCursorPos()
+        self.system_borders = (temp_absolute_mouse_pos[0] - self.game_window_position[0],
+                               temp_absolute_mouse_pos[1] - self.game_window_position[1])
+        win32api.SetCursorPos(self.absolute_mouse_pos)
         self.logger.warning('game init completed')
 
     def manage_logs_config(self):
@@ -236,8 +267,12 @@ class Game:
             o.update(self.game_paused)
 
     def draw(self):
+        self.rect_area = []
         for o in self.objects:
-            o.draw(self.surface, self.base_offset)
+            if type(o) in (Button, Dispatcher, InGameTime, OnboardingTips, Signal):
+                self.rect_area.extend(o.draw(self.surface, self.base_offset))
+            else:
+                o.draw(self.surface, self.base_offset)
 
     def handle_events(self):
         for event in pygame.event.get():
@@ -254,9 +289,67 @@ class Game:
                 for handler in self.mouse_handlers:
                     handler(event.type, event.pos)
 
+    def handle_map_drag(self, event_type, pos):
+        self.mouse_movement = pygame.mouse.get_rel()
+        if event_type == pygame.MOUSEBUTTONDOWN \
+                and pos[0] in range(0, self.c['graphics']['screen_resolution'][0]) \
+                and pos[1] in range(self.c['graphics']['top_bar_height'],
+                                    self.c['graphics']['screen_resolution'][1]
+                                    - self.c['graphics']['bottom_bar_height']):
+            self.map_move_mode = True
+
+        if event_type == pygame.MOUSEBUTTONUP:
+            self.map_move_mode = False
+
+        if event_type == pygame.MOUSEMOTION and self.map_move_mode:
+            # if left mouse button is pressed and user moves mouse, we move entire map with all its content
+            self.logger.debug('user drags map')
+            self.logger.debug('old offset: {}'.format(self.base_offset))
+            self.base_offset = (self.base_offset[0] + self.mouse_movement[0],
+                                self.base_offset[1] + self.mouse_movement[1])
+            self.logger.debug('mouse movement: {}'.format(self.mouse_movement))
+            self.logger.debug('new offset: {}'.format(self.base_offset))
+            # but not beyond limits
+            if self.base_offset[0] > self.c['graphics']['base_offset_lower_right_limit'][0]:
+                self.base_offset = (self.c['graphics']['base_offset_lower_right_limit'][0], self.base_offset[1])
+            if self.base_offset[0] < self.c['graphics']['base_offset_upper_left_limit'][0]:
+                self.base_offset = (self.c['graphics']['base_offset_upper_left_limit'][0], self.base_offset[1])
+            if self.base_offset[1] > self.c['graphics']['base_offset_lower_right_limit'][1]:
+                self.base_offset = (self.base_offset[0], self.c['graphics']['base_offset_lower_right_limit'][1])
+            if self.base_offset[1] < self.c['graphics']['base_offset_upper_left_limit'][1]:
+                self.base_offset = (self.base_offset[0], self.c['graphics']['base_offset_upper_left_limit'][1])
+
+            self.logger.debug('new limited offset: {}'.format(self.base_offset))
+
+    @_game_window_is_active
+    def handle_app_window_drag(self, event_type, pos):
+        if event_type == pygame.MOUSEBUTTONDOWN \
+                and pos[0] in range(0, self.c['graphics']['screen_resolution'][0] - 70) \
+                and pos[1] in range(0, self.c['graphics']['top_bar_height']):
+            self.app_window_move_mode = True
+            self.app_window_move_offset = pos
+
+        if event_type == pygame.MOUSEBUTTONUP:
+            self.app_window_move_mode = False
+
+        if self.app_window_move_mode:
+            self.absolute_mouse_pos = win32api.GetCursorPos()
+            self.game_window_position = win32gui.GetWindowRect(self.game_window_handler)
+            win32gui.SetWindowPos(self.game_window_handler, win32con.HWND_TOP,
+                                  self.absolute_mouse_pos[0] - self.app_window_move_offset[0]
+                                  - self.system_borders[0],
+                                  self.absolute_mouse_pos[1] - self.app_window_move_offset[1]
+                                  - self.system_borders[1],
+                                  self.game_window_position[2] - self.game_window_position[0],
+                                  self.game_window_position[3] - self.game_window_position[1],
+                                  win32con.SWP_NOREDRAW)
+
     def run(self):
+        frame_counter = 0
         while True:
-            self.logger.warning('frame begins')
+            frame_counter += 1
+            self.logger.warning('frame {} begins'.format(frame_counter))
+            frame_time_1 = time.perf_counter()
             time_1 = time.perf_counter()
             self.handle_events()
             time_2 = time.perf_counter()
@@ -264,9 +357,12 @@ class Game:
             time_3 = time.perf_counter()
             self.draw()
             time_4 = time.perf_counter()
-            pygame.display.update(pygame.Rect(0, 0, self.c['graphics']['screen_resolution'][0],
-                                              self.c['graphics']['screen_resolution'][1]))
-            self.logger.warning('frame ends')
+            if self.map_move_mode or frame_counter == 1:
+                pygame.display.update(pygame.Rect(0, 0, self.c['graphics']['screen_resolution'][0],
+                                                  self.c['graphics']['screen_resolution'][1]))
+            else:
+                pygame.display.update(self.rect_area)
+            self.logger.warning('frame {} ends'.format(frame_counter))
             self.logger.critical('handling events: {} sec'.format(time_2 - time_1))
             self.logger.critical('updating: {} sec'.format(time_3 - time_2))
             self.logger.critical('drawing: {} sec'.format(time_4 - time_3))
@@ -276,6 +372,7 @@ class Game:
             if new_lines is not None:
                 self.logs_file.write(new_lines)
 
-            self.clock.tick(self.frame_rate)
-            if self.clock.get_fps() > 0:
-                self.logger.critical('FPS: {}'.format(round(self.clock.get_fps())))
+            # self.clock.tick(self.frame_rate)
+            while time.perf_counter() - frame_time_1 < 0.0166:
+                tmp = 2
+

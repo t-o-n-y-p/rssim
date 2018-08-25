@@ -7,6 +7,24 @@ import pygame
 from game_object import GameObject
 
 
+def _game_is_not_paused(fn):
+    def _update_if_game_is_not_paused(*args, **kwargs):
+        if not args[1]:
+            fn(*args, **kwargs)
+
+    return _update_if_game_is_not_paused
+
+
+def _signal_is_not_invisible(fn):
+    def _draw_if_signal_is_not_invisible(*args, **kwargs):
+        if not args[0].invisible:
+            return fn(*args, **kwargs)
+        else:
+            return []
+
+    return _draw_if_signal_is_not_invisible
+
+
 class Signal(GameObject):
     def __init__(self, placement, flip_needed, invisible, track_number, route_type):
         super().__init__()
@@ -88,62 +106,61 @@ class Signal(GameObject):
         self.logger.info('signal state saved to file user_cfg/signals/track{}/track{}_{}.ini'
                          .format(self.track_number, self.track_number, self.route_type))
 
+    @_signal_is_not_invisible
     def draw(self, surface, base_offset):
         self.logger.debug('------- START DRAWING -------')
-        if not self.invisible:
-            self.logger.debug('signal is not invisible, drawing')
-            signal_position = (base_offset[0] + self.placement[0], base_offset[1] + self.placement[1])
-            # reserved for future transition between states,
-            # for now there are only 2 states: pure red and pure green
-            surface.blit(self.image[self.state], signal_position)
-            self.logger.debug('signal base image is in place')
-            surface.blit(self.base_image, signal_position)
-            self.logger.debug('signal light image is in place')
-            self.logger.info('signal image is in place')
-        else:
-            self.logger.debug('signal is invisible, no need to draw')
-
+        rect_area = []
+        self.logger.debug('signal is not invisible, drawing')
+        signal_position = (base_offset[0] + self.placement[0], base_offset[1] + self.placement[1])
+        # reserved for future transition between states,
+        # for now there are only 2 states: pure red and pure green
+        rect_area.extend(surface.blits([(self.image[self.state], signal_position), ]))
+        self.logger.debug('signal base image is in place')
+        rect_area.extend(surface.blits([(self.base_image, signal_position), ]))
+        self.logger.debug('signal light image is in place')
+        self.logger.info('signal image is in place')
         self.logger.debug('------- END DRAWING -------')
+        return rect_area
 
+    @_game_is_not_paused
     def update(self, game_paused):
-        if not game_paused:
-            self.logger.debug('-------UPDATE START-------')
-            busy_logical = False
-            opened_by = []
-            entered_by = []
+        self.logger.debug('-------UPDATE START-------')
+        busy_logical = False
+        opened_by = []
+        entered_by = []
 
-            if not self.base_route_exit.route_config['opened']:
+        if not self.base_route_exit.route_config['opened']:
+            self.state = self.c['signal_config']['red_signal']
+            self.logger.debug('no train approaching, signal is RED')
+        else:
+            for i in self.base_route_opened_list:
+                if i.route_config['opened']:
+                    opened_by.append(i.route_config['last_opened_by'])
+
+            if self.base_route_exit.route_config['last_opened_by'] not in opened_by:
                 self.state = self.c['signal_config']['red_signal']
-                self.logger.debug('no train approaching, signal is RED')
+                self.logger.debug('route through signal is not opened, signal is RED')
             else:
                 for i in self.base_route_opened_list:
-                    if i.route_config['opened']:
-                        opened_by.append(i.route_config['last_opened_by'])
+                    if i.route_config['opened'] and i.route_config['last_opened_by'] \
+                            == self.base_route_exit.route_config['last_opened_by']:
+                        i.update_base_route_state(game_paused)
+                        busy_logical = busy_logical or i.route_config['busy']
+                        entered_by.append(i.route_config['last_entered_by'])
 
-                if self.base_route_exit.route_config['last_opened_by'] not in opened_by:
+                if busy_logical and self.base_route_exit.route_config['last_opened_by'] not in entered_by:
                     self.state = self.c['signal_config']['red_signal']
-                    self.logger.debug('route through signal is not opened, signal is RED')
+                    self.logger.debug('route through signal is opened but busy by another train, signal is RED')
                 else:
+                    self.state = self.c['signal_config']['green_signal']
+                    self.logger.debug('route through signal is opened and free, signal is GREEN')
                     for i in self.base_route_opened_list:
                         if i.route_config['opened'] and i.route_config['last_opened_by'] \
-                                == self.base_route_exit.route_config['last_opened_by']:
-                            i.update_base_route_state(game_paused)
-                            busy_logical = busy_logical or i.route_config['busy']
-                            entered_by.append(i.route_config['last_entered_by'])
+                                == self.base_route_exit.route_config['last_opened_by'] \
+                                and not i.route_config['busy']:
+                            i.enter_base_route(self.base_route_exit.route_config['last_opened_by'], game_paused)
+                            self.logger.debug('train {} is allowed to pass'
+                                              .format(self.base_route_exit.route_config['last_opened_by']))
 
-                    if busy_logical and self.base_route_exit.route_config['last_opened_by'] not in entered_by:
-                        self.state = self.c['signal_config']['red_signal']
-                        self.logger.debug('route through signal is opened but busy by another train, signal is RED')
-                    else:
-                        self.state = self.c['signal_config']['green_signal']
-                        self.logger.debug('route through signal is opened and free, signal is GREEN')
-                        for i in self.base_route_opened_list:
-                            if i.route_config['opened'] and i.route_config['last_opened_by'] \
-                                    == self.base_route_exit.route_config['last_opened_by'] \
-                                    and not i.route_config['busy']:
-                                i.enter_base_route(self.base_route_exit.route_config['last_opened_by'], game_paused)
-                                self.logger.debug('train {} is allowed to pass'
-                                                  .format(self.base_route_exit.route_config['last_opened_by']))
-
-            self.logger.debug('-------UPDATE END-------')
-            self.logger.info('signal updated')
+        self.logger.debug('-------UPDATE END-------')
+        self.logger.info('signal updated')

@@ -5,6 +5,14 @@ import logging
 from game_object import GameObject
 
 
+def _game_is_not_paused(fn):
+    def _update_if_game_is_not_paused(*args, **kwargs):
+        if not args[1]:
+            fn(*args, **kwargs)
+
+    return _update_if_game_is_not_paused
+
+
 class TrainRoute(GameObject):
     def __init__(self, base_routes, track_number, route_type):
         super().__init__()
@@ -302,19 +310,20 @@ class TrainRoute(GameObject):
 
         for i in self.busy_routes:
             self.base_routes[i].route_config['force_busy'] = False
+            self.base_routes[i].update_base_route_state(False)
             self.logger.debug('base route {} {} force_busy is set to False'
                               .format(self.base_routes[i].track_number, self.base_routes[i].route_type))
 
+    @_game_is_not_paused
     def update(self, game_paused):
-        if not game_paused:
-            self.logger.debug('------- TRAIN ROUTE UPDATE START -------')
-            # if signal turns green, make this stop point inactive
-            self.active_stop_points = []
-            index = list(range(len(self.signals)))
-            for i in index:
-                if self.signals[i].state != self.c['signal_config']['green_signal'] and len(self.stop_points) > 0:
-                    self.active_stop_points.append(self.stop_points[i])
+        self.logger.debug('------- TRAIN ROUTE UPDATE START -------')
+        # if signal turns green, make this stop point inactive
+        self.active_stop_points = []
+        index = list(range(len(self.signals)))
+        for i in index:
+            if self.signals[i].state != self.c['signal_config']['green_signal'] and len(self.stop_points) > 0:
+                self.active_stop_points.append(self.stop_points[i])
 
-            self.logger.debug('active stop points: {}'.format(self.active_stop_points))
-            self.logger.debug('------- TRAIN ROUTE UPDATE END -------')
-            self.logger.info('train route updated')
+        self.logger.debug('active stop points: {}'.format(self.active_stop_points))
+        self.logger.debug('------- TRAIN ROUTE UPDATE END -------')
+        self.logger.info('train route updated')

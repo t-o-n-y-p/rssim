@@ -5,6 +5,14 @@ import logging
 from game_object import GameObject
 
 
+def _game_is_not_paused(fn):
+    def _update_if_game_is_not_paused(*args, **kwargs):
+        if not args[1]:
+            fn(*args, **kwargs)
+
+    return _update_if_game_is_not_paused
+
+
 class Crossover(GameObject):
     def __init__(self, straight_track_1, straight_track_2, direction):
         super().__init__()
@@ -200,40 +208,40 @@ class Crossover(GameObject):
         self.logger.info('crossover state saved to file user_cfg/crossovers/crossover_{}_{}_{}.ini'
                          .format(self.straight_track_1, self.straight_track_2, self.direction))
 
+    @_game_is_not_paused
     def update(self, game_paused):
-        if not game_paused:
-            self.logger.debug('------- CROSSOVER UPDATE START -------')
-            self.busy[self.straight_track_1][self.straight_track_1] \
-                = self.force_busy[self.straight_track_1][self.straight_track_1] \
-                or self.force_busy[self.straight_track_1][self.straight_track_2] \
-                or self.dependency.force_busy[self.dependency.straight_track_1][self.dependency.straight_track_2] \
-                or self.dependency.force_busy[self.straight_track_1][self.straight_track_1]
-            self.logger.debug('track {}->{} force busy = {}'
-                              .format(self.straight_track_1, self.straight_track_1,
-                                      self.force_busy[self.straight_track_1][self.straight_track_1]))
-            self.logger.debug('track {}->{} busy = {}'.format(self.straight_track_1, self.straight_track_1,
-                                                              self.busy[self.straight_track_1][self.straight_track_1]))
-            self.busy[self.straight_track_1][self.straight_track_2] \
-                = self.force_busy[self.straight_track_1][self.straight_track_1] \
-                or self.force_busy[self.straight_track_1][self.straight_track_2] \
-                or self.force_busy[self.straight_track_2][self.straight_track_2] \
-                or self.dependency.force_busy[self.dependency.straight_track_1][self.dependency.straight_track_1] \
-                or self.dependency.force_busy[self.dependency.straight_track_1][self.dependency.straight_track_2] \
-                or self.dependency.force_busy[self.dependency.straight_track_2][self.dependency.straight_track_2]
-            self.logger.debug('track {}->{} force busy = {}'
-                              .format(self.straight_track_1, self.straight_track_2,
-                                      self.force_busy[self.straight_track_1][self.straight_track_2]))
-            self.logger.debug('track {}->{} busy = {}'.format(self.straight_track_1, self.straight_track_2,
-                                                              self.busy[self.straight_track_1][self.straight_track_2]))
-            self.busy[self.straight_track_2][self.straight_track_2] \
-                = self.force_busy[self.straight_track_2][self.straight_track_2] \
-                or self.force_busy[self.straight_track_1][self.straight_track_2] \
-                or self.dependency.force_busy[self.dependency.straight_track_1][self.dependency.straight_track_2] \
-                or self.dependency.force_busy[self.straight_track_2][self.straight_track_2]
-            self.logger.debug('track {}->{} force busy = {}'
-                              .format(self.straight_track_2, self.straight_track_2,
-                                      self.force_busy[self.straight_track_2][self.straight_track_2]))
-            self.logger.debug('track {}->{} busy = {}'.format(self.straight_track_2, self.straight_track_2,
-                                                              self.busy[self.straight_track_2][self.straight_track_2]))
-            self.logger.debug('------- CROSSOVER UPDATE END -------')
-            self.logger.info('crossover updated')
+        self.logger.debug('------- CROSSOVER UPDATE START -------')
+        self.busy[self.straight_track_1][self.straight_track_1] \
+            = self.force_busy[self.straight_track_1][self.straight_track_1] \
+            or self.force_busy[self.straight_track_1][self.straight_track_2] \
+            or self.dependency.force_busy[self.dependency.straight_track_1][self.dependency.straight_track_2] \
+            or self.dependency.force_busy[self.straight_track_1][self.straight_track_1]
+        self.logger.debug('track {}->{} force busy = {}'
+                          .format(self.straight_track_1, self.straight_track_1,
+                                  self.force_busy[self.straight_track_1][self.straight_track_1]))
+        self.logger.debug('track {}->{} busy = {}'.format(self.straight_track_1, self.straight_track_1,
+                                                          self.busy[self.straight_track_1][self.straight_track_1]))
+        self.busy[self.straight_track_1][self.straight_track_2] \
+            = self.force_busy[self.straight_track_1][self.straight_track_1] \
+            or self.force_busy[self.straight_track_1][self.straight_track_2] \
+            or self.force_busy[self.straight_track_2][self.straight_track_2] \
+            or self.dependency.force_busy[self.dependency.straight_track_1][self.dependency.straight_track_1] \
+            or self.dependency.force_busy[self.dependency.straight_track_1][self.dependency.straight_track_2] \
+            or self.dependency.force_busy[self.dependency.straight_track_2][self.dependency.straight_track_2]
+        self.logger.debug('track {}->{} force busy = {}'
+                          .format(self.straight_track_1, self.straight_track_2,
+                                  self.force_busy[self.straight_track_1][self.straight_track_2]))
+        self.logger.debug('track {}->{} busy = {}'.format(self.straight_track_1, self.straight_track_2,
+                                                          self.busy[self.straight_track_1][self.straight_track_2]))
+        self.busy[self.straight_track_2][self.straight_track_2] \
+            = self.force_busy[self.straight_track_2][self.straight_track_2] \
+            or self.force_busy[self.straight_track_1][self.straight_track_2] \
+            or self.dependency.force_busy[self.dependency.straight_track_1][self.dependency.straight_track_2] \
+            or self.dependency.force_busy[self.straight_track_2][self.straight_track_2]
+        self.logger.debug('track {}->{} force busy = {}'
+                          .format(self.straight_track_2, self.straight_track_2,
+                                  self.force_busy[self.straight_track_2][self.straight_track_2]))
+        self.logger.debug('track {}->{} busy = {}'.format(self.straight_track_2, self.straight_track_2,
+                                                          self.busy[self.straight_track_2][self.straight_track_2]))
+        self.logger.debug('------- CROSSOVER UPDATE END -------')
+        self.logger.info('crossover updated')

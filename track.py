@@ -5,6 +5,22 @@ import os
 from game_object import GameObject
 
 
+def _game_is_not_paused(fn):
+    def _update_if_game_is_not_paused(*args, **kwargs):
+        if not args[1]:
+            fn(*args, **kwargs)
+
+    return _update_if_game_is_not_paused
+
+
+def _track_state_is_not_overridden(fn):
+    def _update_if_track_state_is_not_overridden(*args, **kwargs):
+        if not args[0].override:
+            fn(*args, **kwargs)
+
+    return _update_if_track_state_is_not_overridden
+
+
 class Track(GameObject):
     def __init__(self, track_number, base_routes_in_track):
         super().__init__()
@@ -63,21 +79,21 @@ class Track(GameObject):
         self.logger.debug('------- END SAVING STATE -------')
         self.logger.info('track state saved to file user_cfg/tracks/track{}.ini'.format(self.track_number))
 
+    @_game_is_not_paused
+    @_track_state_is_not_overridden
     def update(self, game_paused):
         # if game is paused, track status should not be updated
         # if track settings are overridden, we do nothing too
         self.logger.debug('------- TRACK UPDATE START -------')
-        self.logger.debug('override: {}'.format(self.override))
-        if not game_paused and not self.override:
-            busy_1 = False
-            # if any of 4 base routes are busy, all track will become busy
-            for i in self.base_routes:
-                busy_1 = busy_1 or i.route_config['busy']
-                self.logger.debug('base route {} busy: {}'.format(i, i.route_config['busy']))
-                if i.route_config['busy']:
-                    self.last_entered_by = i.route_config['last_entered_by']
+        busy_1 = False
+        # if any of 4 base routes are busy, all track will become busy
+        for i in self.base_routes:
+            busy_1 = busy_1 or i.route_config['busy']
+            self.logger.debug('base route {} busy: {}'.format(i, i.route_config['busy']))
+            if i.route_config['busy']:
+                self.last_entered_by = i.route_config['last_entered_by']
 
-            self.busy = busy_1
-            self.logger.debug('busy: {}'.format(self.busy))
-            self.logger.debug('------- TRACK UPDATE END -------')
-            self.logger.info('track updated')
+        self.busy = busy_1
+        self.logger.debug('busy: {}'.format(self.busy))
+        self.logger.debug('------- TRACK UPDATE END -------')
+        self.logger.info('track updated')

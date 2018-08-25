@@ -6,6 +6,16 @@ from game_object import GameObject
 from text_object import TextObject
 
 
+def _allowed_to_be_drawn(fn):
+    def _draw_if_allowed(*args, **kwargs):
+        if args[0].allowed_to_be_drawn:
+            fn(*args, **kwargs)
+
+        return [args[0].rect_area, ]
+
+    return _draw_if_allowed
+
+
 class Button(GameObject):
     def __init__(self, position, button_size, text, on_click, draw_only_if_game_paused):
         super().__init__()
@@ -49,15 +59,16 @@ class Button(GameObject):
         self.logger.debug('text objects set: {}'.format(self.text))
         self.text_object_actual = self.text_objects[0]
         self.logger.debug('current text set: {}'.format(self.text[0]))
+        self.rect_area = pygame.Rect(self.position[0], self.position[1], self.image['normal'].get_width(),
+                                     self.image['normal'].get_height())
         self.logger.debug('------- END INIT -------')
         self.logger.warning('button init completed')
 
+    @_allowed_to_be_drawn
     def draw(self, surface, base_offset):
         self.logger.debug('------- START DRAWING -------')
-        if self.allowed_to_be_drawn:
-            surface.blit(self.image[self.state], self.position)
-            self.text_object_actual.draw(surface)
-
+        surface.blit(self.image[self.state], self.position)
+        self.text_object_actual.draw(surface)
         self.logger.debug('------- END DRAWING -------')
         self.logger.info('button is in place')
 

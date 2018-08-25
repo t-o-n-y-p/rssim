@@ -1,6 +1,3 @@
-import win32api
-import win32con
-import win32gui
 import sys
 
 import pygame
@@ -23,14 +20,6 @@ from crossover import Crossover
 class RSSim(Game):
     def __init__(self):
         super().__init__('Railway Station Simulator')
-        self.game_window_handler = win32gui.GetActiveWindow()
-        self.game_window_position = win32gui.GetWindowRect(self.game_window_handler)
-        self.absolute_mouse_pos = win32api.GetCursorPos()
-        pygame.mouse.set_pos([0, 0])
-        temp_absolute_mouse_pos = win32api.GetCursorPos()
-        self.system_borders = (temp_absolute_mouse_pos[0] - self.game_window_position[0],
-                               temp_absolute_mouse_pos[1] - self.game_window_position[1])
-        win32api.SetCursorPos(self.absolute_mouse_pos)
         self.logger.critical('rssim game created')
         self.logger.debug('------- START INIT -------')
         self.base_routes = [{}]
@@ -46,11 +35,6 @@ class RSSim(Game):
         self.saved_onboarding_tip = None
         self.create_onboarding_tips()
         self.create_buttons()
-        # this allows user to drag map
-        self.app_window_move_mode = False
-        self.app_window_move_offset = ()
-        self.mouse_handlers.append(self.handle_app_window_drag)
-        self.mouse_handlers.append(self.handle_map_drag)
         self.logger.debug('map drag event appended')
         self.logger.debug('------- END INIT -------')
         self.logger.warning('rssim game init completed')
@@ -725,6 +709,7 @@ class RSSim(Game):
 
         def resume_game(button):
             self.game_paused = False
+            self.saved_onboarding_tip.return_rect_area = True
             self.logger.critical('------- GAME IS RESUMED -------')
 
         def close_game(button):
@@ -740,6 +725,7 @@ class RSSim(Game):
                 i.save_state()
 
             self.saved_onboarding_tip.condition_met = True
+            self.saved_onboarding_tip.return_rect_area = True
             self.logger.critical('------- GAME SAVE END -------')
 
         self.objects.append(InGameTime())
@@ -766,54 +752,6 @@ class RSSim(Game):
         self.logger.debug('save button appended to global objects list')
         self.logger.debug('------- END CREATING BUTTONS -------')
         self.logger.warning('all buttons created')
-
-    def handle_map_drag(self, event_type, pos):
-        self.mouse_movement = pygame.mouse.get_rel()
-        if event_type == pygame.MOUSEMOTION and pygame.mouse.get_pressed()[0] \
-                and pos[1] in range(self.c['graphics']['top_bar_height'],
-                                    self.c['graphics']['screen_resolution'][1]
-                                    - self.c['graphics']['bottom_bar_height']):
-            # if left mouse button is pressed and user moves mouse, we move entire map with all its content
-            self.logger.debug('user drags map')
-            self.logger.debug('old offset: {}'.format(self.base_offset))
-            self.base_offset = (self.base_offset[0] + self.mouse_movement[0],
-                                self.base_offset[1] + self.mouse_movement[1])
-            self.logger.debug('mouse movement: {}'.format(self.mouse_movement))
-            self.logger.debug('new offset: {}'.format(self.base_offset))
-            # but not beyond limits
-            if self.base_offset[0] > self.c['graphics']['base_offset_lower_right_limit'][0]:
-                self.base_offset = (self.c['graphics']['base_offset_lower_right_limit'][0], self.base_offset[1])
-            if self.base_offset[0] < self.c['graphics']['base_offset_upper_left_limit'][0]:
-                self.base_offset = (self.c['graphics']['base_offset_upper_left_limit'][0], self.base_offset[1])
-            if self.base_offset[1] > self.c['graphics']['base_offset_lower_right_limit'][1]:
-                self.base_offset = (self.base_offset[0], self.c['graphics']['base_offset_lower_right_limit'][1])
-            if self.base_offset[1] < self.c['graphics']['base_offset_upper_left_limit'][1]:
-                self.base_offset = (self.base_offset[0], self.c['graphics']['base_offset_upper_left_limit'][1])
-
-            self.logger.debug('new limited offset: {}'.format(self.base_offset))
-
-    def handle_app_window_drag(self, event_type, pos):
-        if pygame.display.get_active():
-            if event_type == pygame.MOUSEBUTTONDOWN \
-                    and pos[0] in range(0, self.c['graphics']['screen_resolution'][0] - 70) \
-                    and pos[1] in range(0, self.c['graphics']['top_bar_height']):
-                self.app_window_move_mode = True
-                self.app_window_move_offset = pos
-
-            if event_type == pygame.MOUSEBUTTONUP:
-                self.app_window_move_mode = False
-
-            if self.app_window_move_mode:
-                self.absolute_mouse_pos = win32api.GetCursorPos()
-                self.game_window_position = win32gui.GetWindowRect(self.game_window_handler)
-                win32gui.SetWindowPos(self.game_window_handler, win32con.HWND_TOP,
-                                      self.absolute_mouse_pos[0] - self.app_window_move_offset[0]
-                                      - self.system_borders[0],
-                                      self.absolute_mouse_pos[1] - self.app_window_move_offset[1]
-                                      - self.system_borders[1],
-                                      self.game_window_position[2] - self.game_window_position[0],
-                                      self.game_window_position[3] - self.game_window_position[1],
-                                      win32con.SWP_NOREDRAW)
 
 
 def main():

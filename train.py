@@ -10,6 +10,14 @@ from game_object import GameObject
 from railroad_switch import RailroadSwitch
 
 
+def _game_is_not_paused(fn):
+    def _update_if_game_is_not_paused(*args, **kwargs):
+        if not args[1]:
+            fn(*args, **kwargs)
+
+    return _update_if_game_is_not_paused
+
+
 class Train(GameObject):
     def __init__(self, carts, train_route, state, direction, train_id):
         super().__init__()
@@ -47,8 +55,9 @@ class Train(GameObject):
         self.cart_images = [pygame.image.load('{}_head.png'.format(self.c['train_config']['train_cart_image_path']))
                                 .convert_alpha(), ]
         for i in range(1, self.carts - 1):
-            self.cart_images.append(pygame.image.load('{}_mid.png'.format(self.c['train_config']['train_cart_image_path']))
-                                    .convert_alpha())
+            self.cart_images.append(
+                pygame.image.load('{}_mid.png'.format(self.c['train_config']['train_cart_image_path']))
+                    .convert_alpha())
 
         self.cart_images.append(pygame.image.load('{}_tail.png'.format(self.c['train_config']['train_cart_image_path']))
                                 .convert_alpha())
@@ -193,119 +202,119 @@ class Train(GameObject):
         self.logger.debug('------- END ASSIGNING NEW TRAIN ROUTE -------')
         self.logger.info('train route assigned')
 
+    @_game_is_not_paused
     def update(self, game_paused):
-        if not game_paused:
-            self.logger.debug('------- TRAIN UPDATE START -------')
-            self.logger.debug('carts: {}'.format(self.carts))
-            if self.carts < 11:
-                self.priority += 3
-                self.logger.debug('increased priority by 3')
-            elif self.carts < 16:
-                self.priority += 2
-                self.logger.debug('increased priority by 2')
-            elif self.carts < 21:
-                self.priority += 1
-                self.logger.debug('increased priority by 1')
+        self.logger.debug('------- TRAIN UPDATE START -------')
+        self.logger.debug('carts: {}'.format(self.carts))
+        if self.carts < 11:
+            self.priority += 3
+            self.logger.debug('increased priority by 3')
+        elif self.carts < 16:
+            self.priority += 2
+            self.logger.debug('increased priority by 2')
+        elif self.carts < 21:
+            self.priority += 1
+            self.logger.debug('increased priority by 1')
 
-            # while boarding is in progress, train does not move indeed
-            self.logger.debug('state: {}'.format(self.state))
-            if self.state in self.c['train_state_types']['boarding_in_progress']:
+        # while boarding is in progress, train does not move indeed
+        self.logger.debug('state: {}'.format(self.state))
+        if self.state in self.c['train_state_types']['boarding_in_progress']:
+            self.speed = 0
+            self.logger.debug('speed = 0')
+            self.speed_factor_position = 0
+            self.logger.debug('speed_factor_position = 0')
+        else:
+            # as soon as entry route is assigned, train knows its track number
+            if self.train_route.route_type \
+                    in (self.c['train_route_types']['entry_train_route'][self.c['direction']['left']],
+                        self.c['train_route_types']['entry_train_route'][self.c['direction']['right']]):
+                self.track_number = self.train_route.track_number
+
+            self.logger.debug('track_number: {}'.format(self.track_number))
+
+            # base route is not busy and not opened as soon as back chassis of last cart leaves it
+            self.leave_base_routes()
+
+            # stop point is updated based on signal state
+            self.train_route.set_next_stop_point(self.carts_position[0][0])
+            # if train has reached red signal, stop it
+            self.logger.debug('next_stop_point: {}'.format(self.train_route.next_stop_point))
+            self.logger.debug('first cart position: {}'.format(self.carts_position[0][0]))
+            if self.carts_position[0][0] == self.train_route.next_stop_point:
+                self.speed_state = self.c['train_speed_state_types']['stop']
+                self.logger.debug('train reached red signal, speed state = {}'.format(self.speed_state))
+            # if it is time to decelerate train, do this;
+            elif self.train_route.next_stop_point - self.carts_position[0][0] \
+                    <= self.c['train_config']['train_braking_distance']:
+                self.speed_state = self.c['train_speed_state_types']['decelerate']
+                self.logger.debug('distance less than {}, time to decelerate, speed state = {}'
+                                  .format(self.c['train_config']['train_braking_distance'],
+                                          self.c['train_speed_state_types']['decelerate']))
+            # if there is some free track space ahead and train is not at maximum speed,
+            # accelerate
+            else:
+                self.logger.debug('free way ahead')
+                if self.speed_state != self.c['train_speed_state_types']['move']:
+                    self.speed_state = self.c['train_speed_state_types']['accelerate']
+                    self.logger.debug('not at maximum speed, accelerating, speed state = {}'
+                                      .format(self.speed_state))
+                else:
+                    self.logger.debug('already at maximum speed, speed state = {}'
+                                      .format(self.c['train_speed_state_types']['move']))
+
+            # how to accelerate:
+            # difference between next and current shifts indicates how much to move the train;
+            # then increase factor position
+            self.logger.debug('speed state: {}'.format(self.speed_state))
+            if self.speed_state == self.c['train_speed_state_types']['accelerate']:
+                self.logger.debug('speed_factor_position: {}'.format(self.speed_factor_position))
+                self.logger.debug('speed_factor_position limit: {}'
+                                  .format(self.c['train_config']['train_acceleration_factor_length']))
+                if self.speed_factor_position == self.c['train_config']['train_acceleration_factor_length'] - 1:
+                    self.speed_state = self.c['train_speed_state_types']['move']
+                    self.logger.debug('train has reached maximum speed')
+                else:
+                    self.speed \
+                        = self.c['train_config']['train_acceleration_factor'][self.speed_factor_position + 1] \
+                          - self.c['train_config']['train_acceleration_factor'][self.speed_factor_position]
+                    self.logger.debug('speed: {}'.format(self.speed))
+                    self.speed_factor_position += 1
+                    self.logger.debug('new speed_factor_position: {}'.format(self.speed_factor_position))
+
+            # just stay at maximum speed here
+            if self.speed_state == self.c['train_speed_state_types']['move']:
+                self.logger.debug('train is at maximum speed')
+                self.speed = self.c['train_config']['train_maximum_speed']
+                self.logger.debug('speed: {}'.format(self.speed))
+
+            # how to decelerate:
+            # decrease factor position;
+            # difference between next and current shifts indicates how much to move the train
+            if self.speed_state == self.c['train_speed_state_types']['decelerate']:
+                self.speed_factor_position -= 1
+                self.logger.debug('speed_factor_position: {}'.format(self.speed_factor_position))
+                self.logger.debug('speed_factor_position limit: {}'
+                                  .format(self.c['train_config']['train_acceleration_factor_length']))
+                self.speed = self.c['train_config']['train_acceleration_factor'][self.speed_factor_position + 1] \
+                             - self.c['train_config']['train_acceleration_factor'][self.speed_factor_position]
+                self.logger.debug('speed: {}'.format(self.speed))
+
+            # just stay sill here
+            if self.speed_state == self.c['train_speed_state_types']['stop']:
                 self.speed = 0
                 self.logger.debug('speed = 0')
                 self.speed_factor_position = 0
                 self.logger.debug('speed_factor_position = 0')
-            else:
-                # as soon as entry route is assigned, train knows its track number
-                if self.train_route.route_type \
-                        in (self.c['train_route_types']['entry_train_route'][self.c['direction']['left']],
-                            self.c['train_route_types']['entry_train_route'][self.c['direction']['right']]):
-                    self.track_number = self.train_route.track_number
 
-                self.logger.debug('track_number: {}'.format(self.track_number))
+            # apply changes
+            for i in self.carts_position:
+                self.logger.debug('cart old position: {}'.format(i))
+                i[0] += self.speed
+                i[1] += self.speed
+                self.logger.debug('cart new position: {}'.format(i))
 
-                # base route is not busy and not opened as soon as back chassis of last cart leaves it
-                self.leave_base_routes()
-
-                # stop point is updated based on signal state
-                self.train_route.set_next_stop_point(self.carts_position[0][0])
-                # if train has reached red signal, stop it
-                self.logger.debug('next_stop_point: {}'.format(self.train_route.next_stop_point))
-                self.logger.debug('first cart position: {}'.format(self.carts_position[0][0]))
-                if self.carts_position[0][0] == self.train_route.next_stop_point:
-                    self.speed_state = self.c['train_speed_state_types']['stop']
-                    self.logger.debug('train reached red signal, speed state = {}'.format(self.speed_state))
-                # if it is time to decelerate train, do this;
-                elif self.train_route.next_stop_point - self.carts_position[0][0] \
-                        <= self.c['train_config']['train_braking_distance']:
-                    self.speed_state = self.c['train_speed_state_types']['decelerate']
-                    self.logger.debug('distance less than {}, time to decelerate, speed state = {}'
-                                      .format(self.c['train_config']['train_braking_distance'],
-                                              self.c['train_speed_state_types']['decelerate']))
-                # if there is some free track space ahead and train is not at maximum speed,
-                # accelerate
-                else:
-                    self.logger.debug('free way ahead')
-                    if self.speed_state != self.c['train_speed_state_types']['move']:
-                        self.speed_state = self.c['train_speed_state_types']['accelerate']
-                        self.logger.debug('not at maximum speed, accelerating, speed state = {}'
-                                          .format(self.speed_state))
-                    else:
-                        self.logger.debug('already at maximum speed, speed state = {}'
-                                          .format(self.c['train_speed_state_types']['move']))
-
-                # how to accelerate:
-                # difference between next and current shifts indicates how much to move the train;
-                # then increase factor position
-                self.logger.debug('speed state: {}'.format(self.speed_state))
-                if self.speed_state == self.c['train_speed_state_types']['accelerate']:
-                    self.logger.debug('speed_factor_position: {}'.format(self.speed_factor_position))
-                    self.logger.debug('speed_factor_position limit: {}'
-                                      .format(self.c['train_config']['train_acceleration_factor_length']))
-                    if self.speed_factor_position == self.c['train_config']['train_acceleration_factor_length'] - 1:
-                        self.speed_state = self.c['train_speed_state_types']['move']
-                        self.logger.debug('train has reached maximum speed')
-                    else:
-                        self.speed \
-                            = self.c['train_config']['train_acceleration_factor'][self.speed_factor_position + 1] \
-                            - self.c['train_config']['train_acceleration_factor'][self.speed_factor_position]
-                        self.logger.debug('speed: {}'.format(self.speed))
-                        self.speed_factor_position += 1
-                        self.logger.debug('new speed_factor_position: {}'.format(self.speed_factor_position))
-
-                # just stay at maximum speed here
-                if self.speed_state == self.c['train_speed_state_types']['move']:
-                    self.logger.debug('train is at maximum speed')
-                    self.speed = self.c['train_config']['train_maximum_speed']
-                    self.logger.debug('speed: {}'.format(self.speed))
-
-                # how to decelerate:
-                # decrease factor position;
-                # difference between next and current shifts indicates how much to move the train
-                if self.speed_state == self.c['train_speed_state_types']['decelerate']:
-                    self.speed_factor_position -= 1
-                    self.logger.debug('speed_factor_position: {}'.format(self.speed_factor_position))
-                    self.logger.debug('speed_factor_position limit: {}'
-                                      .format(self.c['train_config']['train_acceleration_factor_length']))
-                    self.speed = self.c['train_config']['train_acceleration_factor'][self.speed_factor_position + 1] \
-                        - self.c['train_config']['train_acceleration_factor'][self.speed_factor_position]
-                    self.logger.debug('speed: {}'.format(self.speed))
-
-                # just stay sill here
-                if self.speed_state == self.c['train_speed_state_types']['stop']:
-                    self.speed = 0
-                    self.logger.debug('speed = 0')
-                    self.speed_factor_position = 0
-                    self.logger.debug('speed_factor_position = 0')
-
-                # apply changes
-                for i in self.carts_position:
-                    self.logger.debug('cart old position: {}'.format(i))
-                    i[0] += self.speed
-                    i[1] += self.speed
-                    self.logger.debug('cart new position: {}'.format(i))
-
-            self.logger.debug('------- TRAIN UPDATE END -------')
-            self.logger.info('train updated')
+        self.logger.debug('------- TRAIN UPDATE END -------')
+        self.logger.info('train updated')
 
     def leave_base_routes(self):
         more_than = False
@@ -327,6 +336,7 @@ class Train(GameObject):
                         self.train_route.base_routes[k].checkpoints.clear()
                         self.logger.debug('cleared checkpoints')
                         self.train_route.base_routes[k].route_config['force_busy'] = False
+                        self.train_route.base_routes[k].update_base_route_state(False)
                         self.logger.debug('force_busy = {}'
                                           .format(self.train_route.base_routes[k].route_config['force_busy']))
                         self.logger.debug('removing base route {} {} from busy routes and opened routes'
@@ -366,12 +376,15 @@ class Train(GameObject):
                                                       self.train_route.base_routes[k]
                                                       .junction_position[next_checkpoint_index][1]))
 
+                        self.train_route.base_routes[k].junctions[next_checkpoint_index].update(False)
+                        self.train_route.base_routes[k].junctions[next_checkpoint_index].dependency.update(False)
                         if self.train_route.base_routes[k].checkpoints.count(0) \
                                 == len(self.train_route.base_routes[k].checkpoints):
                             self.logger.debug('all checkpoints are passed, so entire base route is free now')
                             self.train_route.base_routes[k].checkpoints.clear()
                             self.logger.debug('cleared checkpoints')
                             self.train_route.base_routes[k].route_config['force_busy'] = False
+                            self.train_route.base_routes[k].update_base_route_state(False)
                             self.logger.debug('force_busy = {}'
                                               .format(self.train_route.base_routes[k].route_config['force_busy']))
                             self.logger.debug('removing base route {} {} from busy routes and opened routes'
@@ -388,22 +401,25 @@ class Train(GameObject):
         # calculate middle point and axis,
         # but for relative position we need to convert it to absolute positions
         self.logger.debug('------- START DRAWING -------')
+        rect_area = []
         if len(self.carts_position_abs) > 0:
             self.logger.debug('using absolute positions')
             for i in range(len(self.carts_position_abs)):
-                self.draw_single_cart_abs(i, surface, base_offset)
+                rect_area.extend(self.draw_single_cart_abs(i, surface, base_offset))
                 self.logger.debug('cart {} is in place'.format(i + 1))
 
         else:
             self.logger.debug('using relative positions')
             for i in range(len(self.carts_position)):
-                self.draw_single_cart(i, surface, base_offset)
+                rect_area.extend(self.draw_single_cart(i, surface, base_offset))
                 self.logger.debug('cart {} is in place'.format(i + 1))
 
         self.logger.debug('------- END DRAWING -------')
         self.logger.info('train is in place')
+        return rect_area
 
     def draw_single_cart(self, cart_number, surface, base_offset):
+        rect_area = []
         x = (self.train_route.trail_points[self.carts_position[cart_number][0]][0]
              + self.train_route.trail_points[self.carts_position[cart_number][1]][0]) // 2
         y = (self.train_route.trail_points[self.carts_position[cart_number][0]][1]
@@ -419,25 +435,33 @@ class Train(GameObject):
                 self.logger.debug('cart middle point: {} {}'.format(x, y))
                 if round(point_two, 0) > 0:
                     self.logger.debug('no need to flip')
-                    surface.blit(self.cart_images[cart_number],
-                                 (x - self.cart_images[cart_number].get_width() // 2 + base_offset[0],
-                                  y - self.cart_images[cart_number].get_height() // 2 + base_offset[1]))
+                    rect_area.extend(surface.blits([(self.cart_images[cart_number],
+                                                     (x - self.cart_images[cart_number].get_width() // 2
+                                                      + base_offset[0],
+                                                      y - self.cart_images[cart_number].get_height() // 2
+                                                      + base_offset[1])), ]))
                 else:
                     new_cart = pygame.transform.flip(self.cart_images[cart_number], True, False)
                     self.logger.debug('flipped cart image to match direction')
-                    surface.blit(new_cart, (x - self.cart_images[cart_number].get_width() // 2 + base_offset[0],
-                                            y - self.cart_images[cart_number].get_height() // 2 + base_offset[1]))
+                    rect_area.extend(surface.blits([(new_cart,
+                                                     (x - self.cart_images[cart_number].get_width() // 2
+                                                      + base_offset[0],
+                                                      y - self.cart_images[cart_number].get_height() // 2
+                                                      + base_offset[1])), ]))
             else:
                 angle = math.atan2(point_one, point_two) * float(180) / math.pi
                 self.logger.debug('angle: {}'.format(angle))
                 new_cart = pygame.transform.rotate(self.cart_images[cart_number], angle)
                 self.logger.debug('rotated cart')
                 new_size = new_cart.get_size()
-                surface.blit(new_cart,
-                             (round(x - new_size[0] // 2 + base_offset[0]),
-                              round(y - new_size[1] // 2 + base_offset[1])))
+                rect_area.extend(surface.blits([(new_cart,
+                                                 (round(x - new_size[0] // 2 + base_offset[0]),
+                                                  round(y - new_size[1] // 2 + base_offset[1]))), ]))
+
+        return rect_area
 
     def draw_single_cart_abs(self, cart_number, surface, base_offset):
+        rect_area = []
         x = (self.carts_position_abs[cart_number][0][0] + self.carts_position_abs[cart_number][1][0]) // 2
         y = (self.carts_position_abs[cart_number][0][1] + self.carts_position_abs[cart_number][1][1]) // 2
         if (y + base_offset[1]) in range(-50, self.c['graphics']['screen_resolution'][1] + 50) \
@@ -449,20 +473,27 @@ class Train(GameObject):
                 self.logger.debug('cart middle point: {} {}'.format(x, y))
                 if round(point_two, 0) > 0:
                     self.logger.debug('no need to flip')
-                    surface.blit(self.cart_images[cart_number],
-                                 (x - self.cart_images[cart_number].get_width() // 2 + base_offset[0],
-                                  y - self.cart_images[cart_number].get_height() // 2 + base_offset[1]))
+                    rect_area.extend(surface.blits([(self.cart_images[cart_number],
+                                                     (x - self.cart_images[cart_number].get_width() // 2
+                                                      + base_offset[0],
+                                                      y - self.cart_images[cart_number].get_height() // 2
+                                                      + base_offset[1])), ]))
                 else:
                     new_cart = pygame.transform.flip(self.cart_images[cart_number], True, False)
                     self.logger.debug('flipped cart image to match direction')
-                    surface.blit(new_cart, (x - self.cart_images[cart_number].get_width() // 2 + base_offset[0],
-                                            y - self.cart_images[cart_number].get_height() // 2 + base_offset[1]))
+                    rect_area.extend(surface.blits([(new_cart,
+                                                     (x - self.cart_images[cart_number].get_width() // 2
+                                                      + base_offset[0],
+                                                      y - self.cart_images[cart_number].get_height() // 2
+                                                      + base_offset[1])), ]))
             else:
                 angle = math.atan2(point_one, point_two) * float(180) / math.pi
                 self.logger.debug('angle: {}'.format(angle))
                 new_cart = pygame.transform.rotate(self.cart_images[cart_number], angle)
                 self.logger.debug('rotated cart')
                 new_size = new_cart.get_size()
-                surface.blit(new_cart,
-                             (round(x - new_size[0] // 2 + base_offset[0]),
-                              round(y - new_size[1] // 2 + base_offset[1])))
+                rect_area.extend(surface.blits([(new_cart,
+                                                 (round(x - new_size[0] // 2 + base_offset[0]),
+                                                  round(y - new_size[1] // 2 + base_offset[1]))), ]))
+
+        return rect_area

@@ -15,6 +15,10 @@ class OnboardingTips(GameObject):
         self.logger.debug('image loaded: {}'.format(image))
         self.condition_met = False
         self.logger.debug('condition_met: {}'.format(self.condition_met))
+        self.rect_area = pygame.Rect(self.c['graphics']['screen_resolution'][0] // 2 - self.image.get_width() // 2,
+                                     self.c['graphics']['screen_resolution'][1] // 2 - self.image.get_height() // 2,
+                                     self.image.get_width(), self.image.get_height())
+        self.return_rect_area = False
         self.logger.debug('------- END INIT -------')
         self.logger.warning('tip init completed')
 
@@ -22,13 +26,17 @@ class OnboardingTips(GameObject):
         self.logger.debug('------- START DRAWING -------')
         if self.condition_met:
             self.logger.debug('condition met, we need to show tip')
-            surface.blit(self.image, (self.c['graphics']['screen_resolution'][0] // 2 - self.image.get_width() // 2,
-                                      self.c['graphics']['screen_resolution'][1] // 2 - self.image.get_height() // 2))
+            surface.blit(self.image, (self.rect_area.x, self.rect_area.y))
         else:
             self.logger.debug('condition not met, no need to show tip')
 
         self.logger.debug('------- END DRAWING -------')
         self.logger.info('onboarding tip drawing processed')
+        if self.return_rect_area:
+            self.return_rect_area = False
+            return [self.rect_area, ]
+        else:
+            return []
 
     def update(self, game_paused):
         self.logger.debug('------- START UPDATING -------')

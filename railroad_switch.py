@@ -5,6 +5,14 @@ import os
 from game_object import GameObject
 
 
+def _game_is_not_paused(fn):
+    def _update_if_game_is_not_paused(*args, **kwargs):
+        if not args[1]:
+            fn(*args, **kwargs)
+
+    return _update_if_game_is_not_paused
+
+
 class RailroadSwitch(GameObject):
     def __init__(self, straight_track, side_track, direction):
         super().__init__()
@@ -91,11 +99,11 @@ class RailroadSwitch(GameObject):
         self.logger.info('switch state saved to file user_cfg/switches/switch_{}_{}_{}.ini'
                          .format(self.straight_track, self.side_track, self.direction))
 
+    @_game_is_not_paused
     def update(self, game_paused):
-        if not game_paused:
-            self.logger.debug('------- SWITCH UPDATE START -------')
-            self.busy = self.force_busy or self.dependency.force_busy
-            self.logger.debug('force_busy: {}'.format(self.force_busy))
-            self.logger.debug('busy: {}'.format(self.busy))
-            self.logger.debug('------- SWITCH UPDATE END -------')
-            self.logger.info('switch updated')
+        self.logger.debug('------- SWITCH UPDATE START -------')
+        self.busy = self.force_busy or self.dependency.force_busy
+        self.logger.debug('force_busy: {}'.format(self.force_busy))
+        self.logger.debug('busy: {}'.format(self.busy))
+        self.logger.debug('------- SWITCH UPDATE END -------')
+        self.logger.info('switch updated')

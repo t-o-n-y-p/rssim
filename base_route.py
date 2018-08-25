@@ -9,6 +9,33 @@ from railroad_switch import RailroadSwitch
 from crossover import Crossover
 
 
+def _image_exists(fn):
+    def _draw_if_image_is_not_none(*args, **kwargs):
+        if args[0].image is not None:
+            fn(*args, **kwargs)
+
+    return _draw_if_image_is_not_none
+
+
+def _route_is_not_locked(fn):
+    def _draw_if_route_is_not_locked(*args, **kwargs):
+        if not args[0].route_config['locked']:
+            fn(*args, **kwargs)
+
+    return _draw_if_route_is_not_locked
+
+
+def _route_fits_on_the_screen(fn):
+    def _draw_if_route_fits_on_the_screen(*args, **kwargs):
+        x = args[2][0] + args[0].route_config['image_position'][0]
+        y = args[2][1] + args[0].route_config['image_position'][1]
+        if x in range((-1) * args[0].image.get_width(), args[0].c['graphics']['screen_resolution'][0]) \
+                and y in range((-1) * args[0].image.get_height(), args[0].c['graphics']['screen_resolution'][1]):
+            fn(*args, **kwargs)
+
+    return _draw_if_route_fits_on_the_screen
+
+
 class BaseRoute(GameObject):
     def __init__(self, track_number, route_type):
         super().__init__()
@@ -246,17 +273,41 @@ class BaseRoute(GameObject):
             self.checkpoints.append(len(self.route_config['trail_points']) - 1)
             self.logger.debug('checkpoint added: {}'.format(self.checkpoints[-1]))
 
+        self.update_base_route_state(game_paused)
         self.logger.debug('------- END ENTERING BASE ROUTE -------')
         self.logger.info('train {} is ready to go'.format(train_id))
 
+    @_image_exists
+    @_route_is_not_locked
+    @_route_fits_on_the_screen
     def draw(self, surface, base_offset):
         self.logger.debug('------- START DRAWING -------')
-        if self.image is not None:
-            if not self.route_config['locked']:
-                self.logger.debug('base route is not locked, regular image set')
-                surface.blit(self.image, (base_offset[0] + self.route_config['image_position'][0],
-                                          base_offset[1] + self.route_config['image_position'][1]))
+        area = self.image.get_rect()
+        x = base_offset[0] + self.route_config['image_position'][0]
+        y = base_offset[1] + self.route_config['image_position'][1]
+        if x < 0:
+            drawing_x = 0
+            area.x = (-1) * x
+            area.w = self.image.get_width() + x
+        else:
+            drawing_x = x
 
+        if y < 0:
+            drawing_y = 0
+            area.y = (-1) * y
+            area.h = self.image.get_height() + y
+        else:
+            drawing_y = y
+
+        off_screen_x = x + self.image.get_width() - self.c['graphics']['screen_resolution'][0]
+        if off_screen_x > 0:
+            area.w -= off_screen_x
+
+        off_screen_y = y + self.image.get_height() - self.c['graphics']['screen_resolution'][1]
+        if off_screen_y > 0:
+            area.h -= off_screen_y
+
+        surface.blit(self.image, (drawing_x, drawing_y), area)
         self.logger.debug('------- END DRAWING -------')
         self.logger.info('base route image is in place')
 
@@ -287,7 +338,7 @@ class BaseRoute(GameObject):
 
     def update(self, game_paused):
         if not game_paused:
-            self.update_base_route_state(game_paused)
+            # self.update_base_route_state(game_paused)
             # unlock routes (not available at the moment)
             if self.route_config['under_construction']:
                 self.logger.info('base route is under construction')
