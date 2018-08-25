@@ -51,7 +51,7 @@ class Game:
         pygame.font.init()
         self.logger.debug('pygame fonts module initialized')
         self.surface = pygame.display.set_mode(self.c['graphics']['screen_resolution'],
-                                               pygame.SRCALPHA | pygame.NOFRAME)
+                                               pygame.SRCALPHA | pygame.NOFRAME | pygame.DOUBLEBUF)
         self.logger.debug('created screen with resolution {}'
                           .format(self.c['graphics']['screen_resolution']))
         pygame.display.set_caption(caption)

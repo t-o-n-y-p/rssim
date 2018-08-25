@@ -19,7 +19,7 @@ def _game_is_not_paused(fn):
 
 
 class Train(GameObject):
-    def __init__(self, carts, train_route, state, direction, train_id):
+    def __init__(self, carts, train_route, state, direction, train_id, head_image, mid_image, tail_image):
         super().__init__()
         self.logger = logging.getLogger('game.train_{}'.format(train_id))
         self.logger.debug('------- START INIT -------')
@@ -52,15 +52,11 @@ class Train(GameObject):
 
         self.logger.debug('set priority: {}'.format(self.priority))
         self.logger.debug('set boarding_time: {}'.format(self.boarding_time))
-        self.cart_images = [pygame.image.load('{}_head.png'.format(self.c['train_config']['train_cart_image_path']))
-                                .convert_alpha(), ]
+        self.cart_images = [head_image, ]
         for i in range(1, self.carts - 1):
-            self.cart_images.append(
-                pygame.image.load('{}_mid.png'.format(self.c['train_config']['train_cart_image_path']))
-                    .convert_alpha())
+            self.cart_images.append(mid_image)
 
-        self.cart_images.append(pygame.image.load('{}_tail.png'.format(self.c['train_config']['train_cart_image_path']))
-                                .convert_alpha())
+        self.cart_images.append(tail_image)
         self.logger.debug('loaded cart images: {}_head.png, {}_mid.png, {}_tail.png'
                           .format(self.c['train_config']['train_cart_image_path'],
                                   self.c['train_config']['train_cart_image_path'],

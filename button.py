@@ -41,11 +41,11 @@ class Button(GameObject):
         self.image['hover'].fill((127, 0, 0))
         self.image['pressed'].fill((192, 0, 0))
         for i in self.image:
-            pygame.draw.line(self.image[i], (255, 255, 255), (0, 0), (button_size[0] - 2, 0), 2)
-            pygame.draw.line(self.image[i], (255, 255, 255), (0, 0), (0, button_size[1] - 2), 2)
-            pygame.draw.line(self.image[i], (255, 255, 255),
+            pygame.draw.line(self.image[i], (255, 0, 0), (0, 0), (button_size[0] - 2, 0), 2)
+            pygame.draw.line(self.image[i], (255, 0, 0), (0, 0), (0, button_size[1] - 2), 2)
+            pygame.draw.line(self.image[i], (255, 0, 0),
                              (0, button_size[1] - 2), (button_size[0] - 2, button_size[1] - 2), 2)
-            pygame.draw.line(self.image[i], (255, 255, 255),
+            pygame.draw.line(self.image[i], (255, 0, 0),
                              (button_size[0] - 2, 0), (button_size[0] - 2, button_size[1] - 2), 2)
 
         self.logger.debug('images set: {}'.format(self.image))

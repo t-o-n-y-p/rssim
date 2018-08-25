@@ -4,6 +4,8 @@ import random
 import logging
 from operator import attrgetter
 
+import pygame
+
 from game_object import GameObject
 from train import Train
 
@@ -32,6 +34,12 @@ class Dispatcher(GameObject):
         # next train ID, used by signals to distinguish trains
         self.train_counter = None
         self.supported_carts = []
+        self.train_head_image = \
+            pygame.image.load('{}_head.png'.format(self.c['train_config']['train_cart_image_path'])).convert_alpha()
+        self.train_mid_image = \
+            pygame.image.load('{}_mid.png'.format(self.c['train_config']['train_cart_image_path'])).convert_alpha()
+        self.train_tail_image = \
+            pygame.image.load('{}_tail.png'.format(self.c['train_config']['train_cart_image_path'])).convert_alpha()
         self.logger.debug('------- END INIT -------')
         self.logger.warning('dispatcher init completed')
 
@@ -90,9 +98,11 @@ class Dispatcher(GameObject):
                 self.logger.debug('direction: {}'.format(train_direction))
                 if train_route_track_number is not None and train_route_type is not None:
                     saved_train = Train(train_carts, self.train_routes[train_route_track_number][train_route_type],
-                                        train_state, train_direction, i)
+                                        train_state, train_direction, i, self.train_head_image, self.train_mid_image,
+                                        self.train_tail_image)
                 else:
-                    saved_train = Train(train_carts, None, train_state, train_direction, i)
+                    saved_train = Train(train_carts, None, train_state, train_direction, i,
+                                        self.train_head_image, self.train_mid_image, self.train_tail_image)
 
                 self.logger.info('train {} created'.format(i))
                 if train_config['user_data']['track_number'] == 'None':
@@ -398,7 +408,8 @@ class Dispatcher(GameObject):
                             self.c['train_route_types']['approaching_train_route'][i]]
                         new_train = Train(carts, route_for_new_train,
                                           self.c['train_state_types']['approaching_pass_through'],
-                                          i, self.train_counter)
+                                          i, self.train_counter, self.train_head_image, self.train_mid_image,
+                                          self.train_tail_image)
                         self.train_ids.append(self.train_counter)
                         new_train.train_route.open_train_route(new_train.train_id, game_paused)
                         new_train.train_route.set_stop_points(new_train.carts)
@@ -413,7 +424,8 @@ class Dispatcher(GameObject):
                         route_for_new_train = self.train_routes[0][
                             self.c['train_route_types']['approaching_train_route'][i]]
                         new_train = Train(carts, route_for_new_train, self.c['train_state_types']['approaching'],
-                                          i, self.train_counter)
+                                          i, self.train_counter, self.train_head_image, self.train_mid_image,
+                                          self.train_tail_image)
                         self.train_ids.append(self.train_counter)
                         new_train.train_route.open_train_route(new_train.train_id, game_paused)
                         new_train.train_route.set_stop_points(new_train.carts)
