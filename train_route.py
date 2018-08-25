@@ -41,7 +41,7 @@ class TrainRoute(GameObject):
         self.destination_point = None
         self.supported_carts = [0, 0]
         self.signals = []
-        self.locked = False
+        self.locked = True
         # number of supported carts is decided below
         for j in self.base_routes:
             self.locked = self.locked or j.route_config['locked']
@@ -318,6 +318,9 @@ class TrainRoute(GameObject):
     def update(self, game_paused):
         self.logger.debug('------- TRAIN ROUTE UPDATE START -------')
         # if signal turns green, make this stop point inactive
+        for i in self.base_routes:
+            self.locked = self.locked or i.route_config['locked']
+
         self.active_stop_points = []
         index = list(range(len(self.signals)))
         for i in index:

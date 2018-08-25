@@ -695,8 +695,17 @@ class RSSim(Game):
         self.logger.warning('all infrastructure created')
 
     def create_onboarding_tips(self):
-        self.saved_onboarding_tip = OnboardingTips('img/game_saved.png', 'game_saved')
+        saved_onboarding_image = pygame.image.load('img/game_saved.png').convert_alpha()
+        self.saved_onboarding_tip \
+            = OnboardingTips(saved_onboarding_image,
+                             self.c['graphics']['screen_resolution'][0] // 2 - saved_onboarding_image.get_width() // 2,
+                             self.c['graphics']['screen_resolution'][1] // 2 - saved_onboarding_image.get_height() // 2,
+                             'game_saved')
         self.objects.append(self.saved_onboarding_tip)
+        self.mini_map_tip.update_image(pygame.image.load('img/full_map_{}.png'
+                                                         .format(self.dispatcher.unlocked_tracks)).convert_alpha())
+        self.dispatcher.mini_map_tip = self.mini_map_tip
+        self.objects.append(self.mini_map_tip)
         self.logger.debug('saved_onboarding_tip appended to global objects list')
         self.logger.info('all tips appended to global objects list')
 
@@ -709,6 +718,7 @@ class RSSim(Game):
 
         def resume_game(button):
             self.game_paused = False
+            self.saved_onboarding_tip.condition_met = False
             self.saved_onboarding_tip.return_rect_area = True
             self.logger.critical('------- GAME IS RESUMED -------')
 

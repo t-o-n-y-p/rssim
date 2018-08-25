@@ -34,12 +34,14 @@ class Dispatcher(GameObject):
         # next train ID, used by signals to distinguish trains
         self.train_counter = None
         self.supported_carts = []
+        self.unlocked_tracks = 0
         self.train_head_image = \
             pygame.image.load('{}_head.png'.format(self.c['train_config']['train_cart_image_path'])).convert_alpha()
         self.train_mid_image = \
             pygame.image.load('{}_mid.png'.format(self.c['train_config']['train_cart_image_path'])).convert_alpha()
         self.train_tail_image = \
             pygame.image.load('{}_tail.png'.format(self.c['train_config']['train_cart_image_path'])).convert_alpha()
+        self.mini_map_tip = None
         self.logger.debug('------- END INIT -------')
         self.logger.warning('dispatcher init completed')
 
@@ -52,6 +54,7 @@ class Dispatcher(GameObject):
             self.config.read('default_cfg/dispatcher/config.ini')
             self.logger.debug('config parsed from default_cfg')
 
+        self.unlocked_tracks = self.config['user_data'].getint('unlocked_tracks')
         train_timer_parsed = self.config['user_data']['train_timer'].split(',')
         self.train_timer = [int(train_timer_parsed[0]), int(train_timer_parsed[1])]
         self.logger.debug('train_timer: {}'.format(self.train_timer))
@@ -167,6 +170,7 @@ class Dispatcher(GameObject):
             os.mkdir('user_cfg/dispatcher')
             self.logger.debug('created user_cfg/dispatcher folder')
 
+        self.config['user_data']['unlocked_tracks'] = str(self.unlocked_tracks)
         self.config['user_data']['train_timer'] = str(self.train_timer[0])+','+str(self.train_timer[1])
         self.logger.debug('train_timer: {}'.format(self.config['user_data']['train_timer']))
         if len(self.train_ids) == 0:
@@ -206,9 +210,16 @@ class Dispatcher(GameObject):
         self.logger.debug('------- DISPATCHER UPDATE START -------')
         for z1 in range(len(self.train_routes)):
             for z2 in self.train_routes[z1]:
-                if self.train_routes[z1][z2].supported_carts[0] in range(1, self.supported_carts[0]) \
-                        and not self.train_routes[z1][z2].locked:
-                    self.supported_carts[0] = self.train_routes[z1][z2].supported_carts[0]
+                if not self.train_routes[z1][z2].locked:
+                    if self.train_routes[z1][z2].track_number > self.unlocked_tracks:
+                        self.unlocked_tracks = self.train_routes[z1][z2].track_number
+                        if self.mini_map_tip is not None:
+                            self.mini_map_tip.update_image(
+                                pygame.image.load('img/full_map_{}.png'
+                                                  .format(self.unlocked_tracks)).convert_alpha())
+
+                    if self.train_routes[z1][z2].supported_carts[0] in range(1, self.supported_carts[0]):
+                        self.supported_carts[0] = self.train_routes[z1][z2].supported_carts[0]
 
         self.logger.debug('supported_carts: {}'.format(self.supported_carts))
         self.trains = sorted(self.trains, key=attrgetter('priority'), reverse=True)

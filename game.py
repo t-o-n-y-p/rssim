@@ -77,6 +77,13 @@ class Game:
         self.system_borders = (temp_absolute_mouse_pos[0] - self.game_window_position[0],
                                temp_absolute_mouse_pos[1] - self.game_window_position[1])
         win32api.SetCursorPos(self.absolute_mouse_pos)
+        mini_map_image = pygame.image.load('img/full_map_4.png').convert_alpha()
+        self.mini_map_tip \
+            = OnboardingTips(mini_map_image,
+                             self.c['graphics']['screen_resolution'][0] - mini_map_image.get_width() - 6,
+                             self.c['graphics']['top_bar_height'] + 4,
+                             'mini_map')
+        self.mini_map_timer = 0
         self.logger.warning('game init completed')
 
     def manage_logs_config(self):
@@ -266,6 +273,11 @@ class Game:
             # some objects should be updated even after game is paused
             o.update(self.game_paused)
 
+        if self.mini_map_tip.condition_met and not self.map_move_mode:
+            if time.time() - self.mini_map_timer > 1:
+                self.mini_map_tip.condition_met = False
+                self.mini_map_tip.return_rect_area = True
+
     def draw(self):
         self.rect_area = []
         for o in self.objects:
@@ -297,9 +309,12 @@ class Game:
                                     self.c['graphics']['screen_resolution'][1]
                                     - self.c['graphics']['bottom_bar_height']):
             self.map_move_mode = True
+            self.mini_map_tip.condition_met = True
+            self.mini_map_tip.return_rect_area = True
 
         if event_type == pygame.MOUSEBUTTONUP:
             self.map_move_mode = False
+            self.mini_map_timer = time.time()
 
         if event_type == pygame.MOUSEMOTION and self.map_move_mode:
             # if left mouse button is pressed and user moves mouse, we move entire map with all its content
@@ -372,7 +387,7 @@ class Game:
             if new_lines is not None:
                 self.logs_file.write(new_lines)
 
-            # self.clock.tick(self.frame_rate)
-            while time.perf_counter() - frame_time_1 < 0.0166:
-                tmp = 2
+            self.clock.tick(self.frame_rate)
+            if self.clock.get_fps() > 0:
+                self.logger.critical('FPS: {}'.format(self.clock.get_fps()))
 
