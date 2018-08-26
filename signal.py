@@ -112,12 +112,16 @@ class Signal(GameObject):
         self.logger.debug('------- START DRAWING -------')
         self.logger.debug('signal is not invisible, drawing')
         signal_position = (base_offset[0] + self.placement[0],
-                           self.c['graphics']['screen_resolution'][1] - (base_offset[1] + self.placement[1]))
+                           self.c['graphics']['screen_resolution'][1] - self.base_image.height
+                           - (base_offset[1] + self.placement[1]))
         # reserved for future transition between states,
         # for now there are only 2 states: pure red and pure green
         self.base_sprite.position = signal_position
         self.logger.debug('signal base image is in place')
-        self.sprite.delete()
+        if self.sprite is not None:
+            self.sprite.delete()
+            self.sprite = None
+
         self.sprite = pyglet.sprite.Sprite(self.image[self.state],
                                            batch=self.batch, group=self.group)
         self.sprite.position = signal_position

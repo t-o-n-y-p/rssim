@@ -48,11 +48,10 @@ class Game:
         self.logger.debug('caption set: {}'.format(caption))
         pyglet.clock.set_fps_limit(self.c['graphics']['frame_rate'])
         self.logger.debug('clock created')
-        self.surface.set_handler('on_draw', self.draw)
-        self.surface.set_handler('on_mouse_press', self.handle_mouse_press)
-        self.surface.set_handler('on_mouse_release', self.handle_mouse_release)
-        self.surface.set_handler('on_mouse_motion', self.handle_mouse_motion)
-
+        self.surface.push_handlers(on_draw=self.draw)
+        self.surface.push_handlers(on_mouse_press=self.handle_mouse_press,
+                                   on_mouse_release=self.handle_mouse_release,
+                                   on_mouse_drag=self.handle_mouse_drag)
         self.surface.set_location(0, 0)
         self.app_window_move_mode = False
         self.map_move_mode = False
@@ -84,6 +83,7 @@ class Game:
         self.logger.setLevel(self.logs_config['logs_config']['level'])
         session = self.logs_config['logs_config'].getint('session')
         logs_handler = logging.StreamHandler(stream=self.logs_stream)
+        # logs_handler = logging.FileHandler('logs/logs_session_{}.log'.format(session))
         logs_handler.setFormatter(logging.Formatter('%(asctime)s - %(name)s - %(levelname)s - %(message)s'))
         self.logger.addHandler(logs_handler)
         self.logs_file = open('logs/session_{}.log'.format(session), 'w')
@@ -280,6 +280,7 @@ class Game:
                 and y in range(0, self.c['graphics']['top_bar_height']) and button == pyglet.window.mouse.LEFT:
             self.app_window_move_mode = True
             self.app_window_move_offset = (x, y)
+            self.logger.critical('app move mode = True')
 
         if x in range(0, self.c['graphics']['screen_resolution'][0]) \
                 and y in range(self.c['graphics']['top_bar_height'],
@@ -287,17 +288,19 @@ class Game:
                                - self.c['graphics']['bottom_bar_height']) and button == pyglet.window.mouse.LEFT:
             self.map_move_mode = True
             self.mini_map_tip.condition_met = True
-            self.mini_map_tip.return_rect_area = True
+            self.logger.critical('map move mode = True')
 
     @_game_window_is_active
     def handle_mouse_release(self, x, y, button, modifiers):
         if button == pyglet.window.mouse.LEFT:
             self.app_window_move_mode = False
+            self.logger.critical('app move mode = False')
             self.map_move_mode = False
+            self.logger.critical('map move mode = False')
             self.mini_map_timer = time.time()
 
-    @_game_window_is_active
-    def handle_mouse_motion(self, x, y, dx, dy):
+    def handle_mouse_drag(self, x, y, dx, dy, buttons, modifiers):
+        self.logger.critical('main motion event mouse movement: {} {}'.format(dx, dy))
         if self.map_move_mode:
             # if left mouse button is pressed and user moves mouse, we move entire map with all its content
             self.logger.debug('user drags map')
@@ -317,9 +320,6 @@ class Game:
             self.logger.debug('new limited offset: {}'.format(self.base_offset))
 
         if self.app_window_move_mode:
-            current_location = self.surface.get_location()
-            self.surface.set_location((current_location[0] + dx, current_location[1] - dy))
-            """""
             self.absolute_mouse_pos = win32api.GetCursorPos()
             self.game_window_position = win32gui.GetWindowRect(self.game_window_handler)
             win32gui.SetWindowPos(self.game_window_handler, win32con.HWND_TOP,
@@ -328,7 +328,6 @@ class Game:
                                   self.game_window_position[2] - self.game_window_position[0],
                                   self.game_window_position[3] - self.game_window_position[1],
                                   win32con.SWP_NOREDRAW)
-            """""
 
     def run(self):
         while True:
@@ -353,5 +352,6 @@ class Game:
             self.logs_stream.truncate(0)
             if new_lines is not None:
                 self.logs_file.write(new_lines)
+
 
 
