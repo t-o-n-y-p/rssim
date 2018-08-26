@@ -4,7 +4,7 @@ import random
 import logging
 from operator import attrgetter
 
-import pygame
+import pyglet
 
 from game_object import GameObject
 from train import Train
@@ -19,7 +19,7 @@ def _game_is_not_paused(fn):
 
 
 class Dispatcher(GameObject):
-    def __init__(self):
+    def __init__(self, batch, group):
         super().__init__()
         self.logger = logging.getLogger('game.dispatcher')
         self.logger.debug('------- START INIT -------')
@@ -31,16 +31,24 @@ class Dispatcher(GameObject):
         self.train_ids = []
         self.train_routes = []
         self.tracks = []
+        self.batch = batch
+        self.group = group
         # next train ID, used by signals to distinguish trains
         self.train_counter = None
         self.supported_carts = []
         self.unlocked_tracks = 0
         self.train_head_image = \
-            pygame.image.load('{}_head.png'.format(self.c['train_config']['train_cart_image_path'])).convert_alpha()
+            pyglet.image.load('{}_head.png'.format(self.c['train_config']['train_cart_image_path']))
+        self.train_head_image.anchor_x = self.train_head_image.width // 2 + 1
+        self.train_head_image.anchor_y = self.train_head_image.height // 2 + 1
         self.train_mid_image = \
-            pygame.image.load('{}_mid.png'.format(self.c['train_config']['train_cart_image_path'])).convert_alpha()
+            pyglet.image.load('{}_mid.png'.format(self.c['train_config']['train_cart_image_path']))
+        self.train_mid_image.anchor_x = self.train_mid_image.width // 2 + 1
+        self.train_mid_image.anchor_y = self.train_mid_image.height // 2 + 1
         self.train_tail_image = \
-            pygame.image.load('{}_tail.png'.format(self.c['train_config']['train_cart_image_path'])).convert_alpha()
+            pyglet.image.load('{}_tail.png'.format(self.c['train_config']['train_cart_image_path']))
+        self.train_tail_image.anchor_x = self.train_tail_image.width // 2 + 1
+        self.train_tail_image.anchor_y = self.train_tail_image.height // 2 + 1
         self.mini_map_tip = None
         self.logger.debug('------- END INIT -------')
         self.logger.warning('dispatcher init completed')
@@ -102,10 +110,11 @@ class Dispatcher(GameObject):
                 if train_route_track_number is not None and train_route_type is not None:
                     saved_train = Train(train_carts, self.train_routes[train_route_track_number][train_route_type],
                                         train_state, train_direction, i, self.train_head_image, self.train_mid_image,
-                                        self.train_tail_image)
+                                        self.train_tail_image, self.batch, self.group)
                 else:
                     saved_train = Train(train_carts, None, train_state, train_direction, i,
-                                        self.train_head_image, self.train_mid_image, self.train_tail_image)
+                                        self.train_head_image, self.train_mid_image, self.train_tail_image,
+                                        self.batch, self.group)
 
                 self.logger.info('train {} created'.format(i))
                 if train_config['user_data']['track_number'] == 'None':
@@ -215,8 +224,8 @@ class Dispatcher(GameObject):
                         self.unlocked_tracks = self.train_routes[z1][z2].track_number
                         if self.mini_map_tip is not None:
                             self.mini_map_tip.update_image(
-                                pygame.image.load('img/full_map_{}.png'
-                                                  .format(self.unlocked_tracks)).convert_alpha())
+                                pyglet.image.load('img/full_map_{}.png'
+                                                  .format(self.unlocked_tracks)))
 
                     if self.train_routes[z1][z2].supported_carts[0] in range(1, self.supported_carts[0]):
                         self.supported_carts[0] = self.train_routes[z1][z2].supported_carts[0]
@@ -273,6 +282,9 @@ class Dispatcher(GameObject):
                         i.complete_train_route()
                         self.logger.info('train {} successfully processed and is about to be removed'
                                          .format(i.train_id))
+                        for j in i.cart_sprites:
+                            j.delete()
+
                         self.trains.remove(i)
 
             # train is in approaching state if all tracks are busy,
@@ -420,7 +432,7 @@ class Dispatcher(GameObject):
                         new_train = Train(carts, route_for_new_train,
                                           self.c['train_state_types']['approaching_pass_through'],
                                           i, self.train_counter, self.train_head_image, self.train_mid_image,
-                                          self.train_tail_image)
+                                          self.train_tail_image, self.batch, self.group)
                         self.train_ids.append(self.train_counter)
                         new_train.train_route.open_train_route(new_train.train_id, game_paused)
                         new_train.train_route.set_stop_points(new_train.carts)
@@ -436,7 +448,7 @@ class Dispatcher(GameObject):
                             self.c['train_route_types']['approaching_train_route'][i]]
                         new_train = Train(carts, route_for_new_train, self.c['train_state_types']['approaching'],
                                           i, self.train_counter, self.train_head_image, self.train_mid_image,
-                                          self.train_tail_image)
+                                          self.train_tail_image, self.batch, self.group)
                         self.train_ids.append(self.train_counter)
                         new_train.train_route.open_train_route(new_train.train_id, game_paused)
                         new_train.train_route.set_stop_points(new_train.carts)
@@ -451,9 +463,6 @@ class Dispatcher(GameObject):
 
         self.logger.debug('------- END CREATING NEW TRAINS -------')
 
-    def draw(self, surface, base_offset):
-        rect_area = []
+    def update_sprite(self, base_offset):
         for i in self.trains:
-            rect_area.extend(i.draw(surface, base_offset))
-
-        return rect_area
+            i.update_sprite(base_offset)

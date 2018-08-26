@@ -1,6 +1,6 @@
 import sys
 
-import pygame
+import pyglet
 
 from base_route import BaseRoute
 from bgimg import BgImg
@@ -41,7 +41,7 @@ class RSSim(Game):
 
     def create_bg_img(self):
         self.logger.debug('------- START CREATING BG IMAGE -------')
-        background_image = BgImg(self.c['graphics']['background_image'])
+        background_image = BgImg(self.c['graphics']['background_image'], self.batch, self.background_ordered_group)
         self.logger.info('background image object created')
         self.objects.append(background_image)
         self.logger.debug('background image object appended')
@@ -55,7 +55,7 @@ class RSSim(Game):
                   self.c['base_route_types']['left_exit_base_route'],
                   self.c['base_route_types']['right_entry_base_route'],
                   self.c['base_route_types']['right_exit_base_route']):
-            self.base_routes[0][j] = BaseRoute(0, j)
+            self.base_routes[0][j] = BaseRoute(0, j, self.batch, self.base_routes_ordered_group)
             self.base_routes[0][j].read_trail_points()
             placement = self.base_routes[0][j].route_config['exit_signal_placement']
             self.logger.debug('placement = {}'.format(placement))
@@ -64,7 +64,8 @@ class RSSim(Game):
             invisible = self.base_routes[0][j].route_config['invisible_signal']
             self.logger.debug('invisible = {}'.format(invisible))
             if placement is not None:
-                self.signals[0][j] = Signal(placement, flip_needed, invisible, 0, j)
+                self.signals[0][j] = Signal(placement, flip_needed, invisible, 0, j,
+                                            self.batch, self.signals_and_trains_ordered_group)
 
         self.logger.info('track 0 base routes and signals created')
         for j in (self.c['base_route_types']['left_entry_base_route'],
@@ -93,7 +94,7 @@ class RSSim(Game):
                       self.c['base_route_types']['left_exit_platform_base_route'],
                       self.c['base_route_types']['right_entry_platform_base_route'],
                       self.c['base_route_types']['right_exit_platform_base_route']):
-                self.base_routes[i][k] = BaseRoute(i, k)
+                self.base_routes[i][k] = BaseRoute(i, k, self.batch, self.base_routes_ordered_group)
                 if k in (self.c['base_route_types']['left_entry_platform_base_route'],
                          self.c['base_route_types']['left_exit_platform_base_route'],
                          self.c['base_route_types']['right_entry_platform_base_route'],
@@ -108,7 +109,8 @@ class RSSim(Game):
                 self.logger.debug('invisible = {}'.format(invisible))
                 if placement is not None and k in (self.c['base_route_types']['right_exit_platform_base_route'],
                                                    self.c['base_route_types']['left_exit_platform_base_route']):
-                    self.signals[i][k] = Signal(placement, flip_needed, invisible, i, k)
+                    self.signals[i][k] = Signal(placement, flip_needed, invisible, i, k,
+                                                self.batch, self.signals_and_trains_ordered_group)
 
             self.logger.debug('track {} base routes and signals created'.format(i))
 
@@ -827,7 +829,7 @@ class RSSim(Game):
 
         self.logger.info('base routes and signals appended')
         # train routes and tracks are added to dispatcher which we create right now
-        self.dispatcher = Dispatcher()
+        self.dispatcher = Dispatcher(self.batch, self.signals_and_trains_ordered_group)
         for i in range(self.c['dispatcher_config']['tracks_ready'] + 1):
             self.dispatcher.train_routes.append({})
             for p in self.train_routes[i].keys():
@@ -848,15 +850,15 @@ class RSSim(Game):
         self.logger.warning('all infrastructure created')
 
     def create_onboarding_tips(self):
-        saved_onboarding_image = pygame.image.load('img/game_saved.png').convert_alpha()
+        saved_onboarding_image = pyglet.image.load('img/game_saved.png')
         self.saved_onboarding_tip \
             = OnboardingTips(saved_onboarding_image,
-                             self.c['graphics']['screen_resolution'][0] // 2 - saved_onboarding_image.get_width() // 2,
-                             self.c['graphics']['screen_resolution'][1] // 2 - saved_onboarding_image.get_height() // 2,
-                             'game_saved')
+                             self.c['graphics']['screen_resolution'][0] // 2 - saved_onboarding_image.width // 2,
+                             self.c['graphics']['screen_resolution'][1] // 2 - saved_onboarding_image.height // 2,
+                             'game_saved', self.batch, self.buttons_ordered_group)
         self.objects.append(self.saved_onboarding_tip)
-        self.mini_map_tip.update_image(pygame.image.load('img/full_map_{}.png'
-                                                         .format(self.dispatcher.unlocked_tracks)).convert_alpha())
+        self.mini_map_tip.update_image(pyglet.image.load('img/full_map_{}.png'
+                                                         .format(self.dispatcher.unlocked_tracks)))
         self.dispatcher.mini_map_tip = self.mini_map_tip
         self.objects.append(self.mini_map_tip)
         self.logger.debug('saved_onboarding_tip appended to global objects list')
@@ -876,11 +878,11 @@ class RSSim(Game):
             self.logger.critical('------- GAME IS RESUMED -------')
 
         def close_game(button):
-            pygame.quit()
+            self.surface.close()
             sys.exit()
 
         def iconify_game(button):
-            pygame.display.iconify()
+            self.surface.minimize()
 
         def save_game(button):
             self.logger.critical('------- GAME SAVE START -------')
@@ -891,21 +893,33 @@ class RSSim(Game):
             self.saved_onboarding_tip.return_rect_area = True
             self.logger.critical('------- GAME SAVE END -------')
 
-        self.objects.append(InGameTime())
+        self.objects.append(InGameTime(self.batch, self.top_bottom_bars_ordered_group, self.buttons_ordered_group))
         self.logger.debug('time appended to global objects list')
-        self.objects.append(TopAndBottomBar())
+        self.objects.append(TopAndBottomBar(self.batch, self.top_bottom_bars_ordered_group))
         self.logger.debug('bottom bar appended to global objects list')
-        stop_button = Button((890, 673), (100, 40), ['Pause', 'Resume'], [pause_game, resume_game], False)
-        save_button = Button((780, 673), (100, 40), ['Save', ], [save_game, ], True)
+        stop_button = Button((890, 673), (100, 40), ['Pause', 'Resume'], [pause_game, resume_game], False,
+                             self.batch, self.buttons_ordered_group, self.buttons_text_ordered_group)
+        save_button = Button((780, 673), (100, 40), ['Save', ], [save_game, ], True,
+                             self.batch, self.buttons_ordered_group, self.buttons_text_ordered_group)
         close_button = Button((self.c['graphics']['screen_resolution'][0] - 34, 0), (34, 34),
-                              ['X', ], [close_game, ], False)
+                              ['X', ], [close_game, ], False,
+                              self.batch, self.buttons_ordered_group, self.buttons_text_ordered_group)
         iconify_button = Button((self.c['graphics']['screen_resolution'][0] - 66, 0), (34, 34),
-                                ['_', ], [iconify_game, ], False)
-        self.mouse_handlers.append(stop_button.handle_mouse_event)
+                                ['_', ], [iconify_game, ], False,
+                                self.batch, self.buttons_ordered_group, self.buttons_text_ordered_group)
+        self.surface.push_handlers(on_mouse_press=stop_button.handle_mouse_press,
+                                   on_mouse_release=stop_button.handle_mouse_release,
+                                   on_mouse_motion=stop_button.handle_mouse_motion)
         self.logger.debug('pause/resume button handler appended to global mouse handlers list')
-        self.mouse_handlers.append(save_button.handle_mouse_event)
-        self.mouse_handlers.append(close_button.handle_mouse_event)
-        self.mouse_handlers.append(iconify_button.handle_mouse_event)
+        self.surface.push_handlers(on_mouse_press=save_button.handle_mouse_press,
+                                   on_mouse_release=save_button.handle_mouse_release,
+                                   on_mouse_motion=save_button.handle_mouse_motion)
+        self.surface.push_handlers(on_mouse_press=close_button.handle_mouse_press,
+                                   on_mouse_release=close_button.handle_mouse_release,
+                                   on_mouse_motion=close_button.handle_mouse_motion)
+        self.surface.push_handlers(on_mouse_press=iconify_button.handle_mouse_press,
+                                   on_mouse_release=iconify_button.handle_mouse_release,
+                                   on_mouse_motion=iconify_button.handle_mouse_motion)
         self.logger.debug('save button button handler appended to global mouse handlers list')
         self.objects.append(stop_button)
         self.logger.debug('pause/resume button appended to global objects list')

@@ -2,9 +2,8 @@ import logging
 import configparser
 import os
 
-import pygame
+import pyglet
 
-from text_object import TextObject
 from game_object import GameObject
 
 
@@ -17,28 +16,48 @@ def _game_is_not_paused(fn):
 
 
 class InGameTime(GameObject):
-    def __init__(self):
+    def __init__(self, batch, clock_face_group, hands_group):
         super().__init__()
         self.logger = logging.getLogger('game.in-game_time')
         self.logger.debug('------- START INIT -------')
         self.config = configparser.RawConfigParser()
         self.logger.debug('config parser created')
-        self.clock_face_image = pygame.image.load('img/clock_face.png').convert_alpha()
+        self.batch = batch
+        self.clock_face_group = clock_face_group
+        self.hands_group = hands_group
+        self.clock_face_image = pyglet.image.load('img/clock_face.png')
+        self.clock_face_image.anchor_x = self.clock_face_image.width // 2 + 1
+        self.clock_face_image.anchor_y = self.clock_face_image.height // 2 + 1
+        self.clock_face_sprite = pyglet.sprite.Sprite(self.clock_face_image,
+                                                      x=self.c['graphics']['screen_resolution'][0] - 101,
+                                                      y=101, batch=self.batch, group=self.clock_face_group)
         self.logger.debug('loaded clock face image: img/clock_face.png')
-        self.minute_hand_image = pygame.image.load('img/minute_hand.png').convert_alpha()
+        self.minute_hand_image = pyglet.image.load('img/minute_hand.png')
+        self.minute_hand_image.anchor_x = self.minute_hand_image.width // 2 + 1
+        self.minute_hand_image.anchor_y = self.minute_hand_image.height // 2 + 1
+        self.minute_hand_sprite = pyglet.sprite.Sprite(self.minute_hand_image,
+                                                       x=self.c['graphics']['screen_resolution'][0] - 101,
+                                                       y=101, batch=self.batch, group=self.hands_group)
         self.logger.debug('loaded minute hand image: img/minute_hand.png')
-        self.hour_hand_image = pygame.image.load('img/hour_hand.png').convert_alpha()
+        self.hour_hand_image = pyglet.image.load('img/hour_hand.png')
+        self.hour_hand_image.anchor_x = self.hour_hand_image.width // 2 + 1
+        self.hour_hand_image.anchor_y = self.hour_hand_image.height // 2 + 1
+        self.hour_hand_sprite = pyglet.sprite.Sprite(self.hour_hand_image,
+                                                     x=self.c['graphics']['screen_resolution'][0] - 101,
+                                                     y=101, batch=self.batch, group=self.hands_group)
         self.logger.debug('loaded hour hand image: img/hour_hand.png')
         self.epoch_timestamp = None
         self.day = None
         self.hour = None
         self.minute = None
-        self.day_text = TextObject((self.c['graphics']['screen_resolution'][0] - 100,
-                                    self.c['graphics']['screen_resolution'][1] - 70),
-                                   'Day {}'.format(self.day), self.c['graphics']['day_text_color'],
-                                   self.c['graphics']['font_name'], self.c['graphics']['day_font_size'])
         self.logger.debug('created text object for days counter')
         self.read_state()
+        self.day_text = pyglet.text.Label('Day {}'.format(self.day),
+                                          font_name=self.c['graphics']['font_name'],
+                                          font_size=self.c['graphics']['day_font_size'],
+                                          x=self.c['graphics']['screen_resolution'][0] - 101, y=70,
+                                          anchor_x='center', anchor_y='center',
+                                          batch=self.batch, group=self.hands_group)
         self.logger.debug('------- END INIT -------')
         self.logger.warning('time init completed')
 
@@ -76,33 +95,12 @@ class InGameTime(GameObject):
         self.logger.debug('------- END SAVING STATE -------')
         self.logger.info('time state saved to file user_cfg/epoch_time.ini')
 
-    def draw(self, surface, base_offset):
-        self.logger.debug('------- START DRAWING -------')
-        rect_area = surface.blits([(self.clock_face_image, (self.c['graphics']['screen_resolution'][0] - 200,
-                                    self.c['graphics']['screen_resolution'][1] - 200)), ])
-        self.logger.debug('clock face image is in place')
-        self.day_text.update('Day {}'.format(self.day))
-        self.day_text.draw(surface)
-        self.logger.debug('days counter is in place')
-        minute_hand_rotate_angle = float(-1)*self.minute/float(60)*float(360)
-        self.logger.debug('minute_hand_rotate_axis: {}'.format(minute_hand_rotate_angle))
-        minute_hand_rotated = pygame.transform.rotozoom(self.minute_hand_image, minute_hand_rotate_angle, 1.0)
-        new_minute_hand_size = minute_hand_rotated.get_size()
-        surface.blit(minute_hand_rotated,
-                     (self.c['graphics']['screen_resolution'][0] - 100 - new_minute_hand_size[0] // 2,
-                      self.c['graphics']['screen_resolution'][1] - 100 - new_minute_hand_size[1] // 2))
-        self.logger.debug('minute hand is in place')
-        hour_hand_rotate_angle = float(-1)*self.hour/float(12)*float(360)
-        self.logger.debug('hour_hand_rotate_axis: {}'.format(hour_hand_rotate_angle))
-        hour_hand_rotated = pygame.transform.rotozoom(self.hour_hand_image, hour_hand_rotate_angle, 1.0)
-        new_hour_hand_size = hour_hand_rotated.get_size()
-        surface.blit(hour_hand_rotated,
-                     (self.c['graphics']['screen_resolution'][0] - 100 - new_hour_hand_size[0] // 2,
-                      self.c['graphics']['screen_resolution'][1] - 100 - new_hour_hand_size[1] // 2))
-        self.logger.debug('hour hand is in place')
-        self.logger.debug('------- END DRAWING -------')
-        self.logger.info('time is in place')
-        return rect_area
+    def update_sprite(self, base_offset):
+        self.day_text.text = 'Day {}'.format(self.day)
+        minute_hand_rotate_angle = self.minute / float(60) * float(360)
+        self.minute_hand_sprite.rotation = minute_hand_rotate_angle
+        hour_hand_rotate_angle = self.hour / float(12) * float(360)
+        self.hour_hand_sprite.rotation = hour_hand_rotate_angle
 
     @_game_is_not_paused
     def update(self, game_paused):
@@ -115,5 +113,5 @@ class InGameTime(GameObject):
         self.logger.debug('hour: {}'.format(self.hour))
         self.minute = float((self.epoch_timestamp % 345600) % 14400) / float(240)
         self.logger.debug('minute: {}'.format(self.minute))
-        self.logger.debug('------- CROSSOVER UPDATE END -------')
+        self.logger.debug('------- TIME UPDATE END -------')
         self.logger.info('time updated')

@@ -2,7 +2,7 @@ import configparser
 import logging
 import os
 
-import pygame
+import pyglet
 
 from game_object import GameObject
 from railroad_switch import RailroadSwitch
@@ -11,7 +11,7 @@ from crossover import Crossover
 
 def _image_exists(fn):
     def _draw_if_image_is_not_none(*args, **kwargs):
-        if args[0].image is not None:
+        if args[0].sprite is not None:
             fn(*args, **kwargs)
 
     return _draw_if_image_is_not_none
@@ -25,19 +25,16 @@ def _route_is_not_locked(fn):
     return _draw_if_route_is_not_locked
 
 
-def _route_fits_on_the_screen(fn):
-    def _draw_if_route_fits_on_the_screen(*args, **kwargs):
-        x = args[2][0] + args[0].route_config['image_position'][0]
-        y = args[2][1] + args[0].route_config['image_position'][1]
-        if x in range((-1) * args[0].image.get_width(), args[0].c['graphics']['screen_resolution'][0]) \
-                and y in range((-1) * args[0].image.get_height(), args[0].c['graphics']['screen_resolution'][1]):
+def _game_is_not_paused(fn):
+    def _update_if_game_is_not_paused(*args, **kwargs):
+        if not args[1]:
             fn(*args, **kwargs)
 
-    return _draw_if_route_fits_on_the_screen
+    return _update_if_game_is_not_paused
 
 
 class BaseRoute(GameObject):
-    def __init__(self, track_number, route_type):
+    def __init__(self, track_number, route_type, batch, group):
         super().__init__()
         self.logger = logging.getLogger('game.base_route_{}_{}'.format(track_number, route_type))
         self.logger.debug('------- START INIT -------')
@@ -53,12 +50,18 @@ class BaseRoute(GameObject):
         self.checkpoints = []
         self.junction_position = []
         self.read_state()
-        if self.route_config['image_path'] is not None:
-            self.image = pygame.image.load(self.route_config['image_path']).convert_alpha()
+        self.batch = batch
+        self.group = group
+        if self.route_config['image_path'] is not None and not self.route_config['locked']:
+            self.image = pyglet.image.load(self.route_config['image_path'])
+            self.sprite = pyglet.sprite.Sprite(self.image,
+                                               x=self.route_config['image_position'][0],
+                                               y=self.route_config['image_position'][1],
+                                               batch=self.batch, group=self.group)
         else:
-            self.image = None
+            self.sprite = None
 
-        self.logger.debug('image is not None: {}'.format(self.image is None))
+        self.logger.debug('image is not None: {}'.format(self.sprite is None))
         self.logger.debug('------- END INIT -------')
         self.logger.warning('base route init completed')
 
@@ -279,72 +282,53 @@ class BaseRoute(GameObject):
 
     @_image_exists
     @_route_is_not_locked
-    @_route_fits_on_the_screen
-    def draw(self, surface, base_offset):
+    def update_sprite(self, base_offset):
         self.logger.debug('------- START DRAWING -------')
-        area = self.image.get_rect()
         x = base_offset[0] + self.route_config['image_position'][0]
-        y = base_offset[1] + self.route_config['image_position'][1]
-        if x < 0:
-            drawing_x = 0
-            area.x = (-1) * x
-            area.w = self.image.get_width() + x
-        else:
-            drawing_x = x
-
-        if y < 0:
-            drawing_y = 0
-            area.y = (-1) * y
-            area.h = self.image.get_height() + y
-        else:
-            drawing_y = y
-
-        off_screen_x = x + self.image.get_width() - self.c['graphics']['screen_resolution'][0]
-        if off_screen_x > 0:
-            area.w -= off_screen_x
-
-        off_screen_y = y + self.image.get_height() - self.c['graphics']['screen_resolution'][1]
-        if off_screen_y > 0:
-            area.h -= off_screen_y
-
-        surface.blit(self.image, (drawing_x, drawing_y), area)
+        y = self.c['graphics']['screen_resolution'][1] - (base_offset[1] + self.route_config['image_position'][1]) \
+            - self.image.height
+        self.sprite.position = (x, y)
         self.logger.debug('------- END DRAWING -------')
         self.logger.info('base route image is in place')
 
+    @_game_is_not_paused
     def update_base_route_state(self, game_paused):
-        if not game_paused:
-            self.logger.debug('------- START UPDATING -------')
-            self.logger.debug('force_busy = {}'.format(self.route_config['force_busy']))
-            self.route_config['busy'] = self.route_config['force_busy']
-            if len(self.junctions) > 0:
-                for i in range(len(self.junctions)):
-                    if type(self.junctions[i]) == RailroadSwitch:
-                        self.route_config['busy'] = self.route_config['busy'] or self.junctions[i].busy
-                        self.logger.debug('switch {} {} busy = {}'
-                                          .format(self.junctions[i].straight_track, self.junctions[i].side_track,
-                                                  self.junctions[i].busy))
-                    elif type(self.junctions[i]) == Crossover:
-                        self.route_config['busy'] = self.route_config['busy'] or self.junctions[i].busy[
-                            self.junction_position[i][0]][self.junction_position[i][1]]
-                        self.logger.debug('crossover {} {} busy = {}'
-                                          .format(self.junctions[i].straight_track_1,
-                                                  self.junctions[i].straight_track_2,
-                                                  self.junctions[i]
-                                                  .busy[self.junction_position[i][0]][self.junction_position[i][1]]))
+        self.logger.debug('------- START UPDATING -------')
+        self.logger.debug('force_busy = {}'.format(self.route_config['force_busy']))
+        self.route_config['busy'] = self.route_config['force_busy']
+        if len(self.junctions) > 0:
+            for i in range(len(self.junctions)):
+                if type(self.junctions[i]) == RailroadSwitch:
+                    self.route_config['busy'] = self.route_config['busy'] or self.junctions[i].busy
+                    self.logger.debug('switch {} {} busy = {}'
+                                      .format(self.junctions[i].straight_track, self.junctions[i].side_track,
+                                              self.junctions[i].busy))
+                elif type(self.junctions[i]) == Crossover:
+                    self.route_config['busy'] = self.route_config['busy'] or self.junctions[i].busy[
+                        self.junction_position[i][0]][self.junction_position[i][1]]
+                    self.logger.debug('crossover {} {} busy = {}'
+                                      .format(self.junctions[i].straight_track_1,
+                                              self.junctions[i].straight_track_2,
+                                              self.junctions[i]
+                                              .busy[self.junction_position[i][0]][self.junction_position[i][1]]))
 
-            self.logger.debug('busy = {}'.format(self.route_config['busy']))
-            self.logger.debug('------- END UPDATING -------')
-            self.logger.info('base route updated')
+        self.logger.debug('busy = {}'.format(self.route_config['busy']))
+        self.logger.debug('------- END UPDATING -------')
+        self.logger.info('base route updated')
 
+    @_game_is_not_paused
     def update(self, game_paused):
-        if not game_paused:
-            # self.update_base_route_state(game_paused)
-            # unlock routes (not available at the moment)
-            if self.route_config['under_construction']:
-                self.logger.info('base route is under construction')
-                self.route_config['construction_time'] -= 1
-                self.logger.info('construction_time left: {}'.format(self.route_config['construction_time']))
-                if self.route_config['construction_time'] <= 0:
-                    self.route_config['locked'] = False
-                    self.route_config['under_construction'] = False
-                    self.logger.info('route unlocked and is no longer under construction')
+        # self.update_base_route_state(game_paused)
+        # unlock routes (not available at the moment)
+        if self.route_config['under_construction']:
+            self.logger.info('base route is under construction')
+            self.route_config['construction_time'] -= 1
+            self.logger.info('construction_time left: {}'.format(self.route_config['construction_time']))
+            if self.route_config['construction_time'] <= 0:
+                self.route_config['locked'] = False
+                self.route_config['under_construction'] = False
+                self.sprite = pyglet.sprite.Sprite(pyglet.image.load(self.route_config['image_path']),
+                                                   x=self.route_config['image_position'][0],
+                                                   y=self.route_config['image_position'][1],
+                                                   batch=self.batch, group=self.group)
+                self.logger.info('route unlocked and is no longer under construction')

@@ -3,7 +3,7 @@ import logging
 import math
 import os
 
-import pygame
+import pyglet
 
 from crossover import Crossover
 from game_object import GameObject
@@ -19,7 +19,7 @@ def _game_is_not_paused(fn):
 
 
 class Train(GameObject):
-    def __init__(self, carts, train_route, state, direction, train_id, head_image, mid_image, tail_image):
+    def __init__(self, carts, train_route, state, direction, train_id, head_image, mid_image, tail_image, batch, group):
         super().__init__()
         self.logger = logging.getLogger('game.train_{}'.format(train_id))
         self.logger.debug('------- START INIT -------')
@@ -52,11 +52,11 @@ class Train(GameObject):
 
         self.logger.debug('set priority: {}'.format(self.priority))
         self.logger.debug('set boarding_time: {}'.format(self.boarding_time))
-        self.cart_images = [head_image, ]
+        self.cart_sprites = [pyglet.sprite.Sprite(head_image, batch=batch, group=group), ]
         for i in range(1, self.carts - 1):
-            self.cart_images.append(mid_image)
+            self.cart_sprites.append(pyglet.sprite.Sprite(mid_image, batch=batch, group=group))
 
-        self.cart_images.append(tail_image)
+        self.cart_sprites.append(pyglet.sprite.Sprite(tail_image, batch=batch, group=group))
         self.logger.debug('loaded cart images: {}_head.png, {}_mid.png, {}_tail.png'
                           .format(self.c['train_config']['train_cart_image_path'],
                                   self.c['train_config']['train_cart_image_path'],
@@ -272,7 +272,7 @@ class Train(GameObject):
                 else:
                     self.speed \
                         = self.c['train_config']['train_acceleration_factor'][self.speed_factor_position + 1] \
-                          - self.c['train_config']['train_acceleration_factor'][self.speed_factor_position]
+                        - self.c['train_config']['train_acceleration_factor'][self.speed_factor_position]
                     self.logger.debug('speed: {}'.format(self.speed))
                     self.speed_factor_position += 1
                     self.logger.debug('new speed_factor_position: {}'.format(self.speed_factor_position))
@@ -392,72 +392,59 @@ class Train(GameObject):
                                               .format(self.train_route.base_routes[k].route_config['opened']))
                             self.train_route.opened_routes.remove(k)
 
-    def draw(self, surface, base_offset):
+    def update_sprite(self, base_offset):
         # in both cases, we use pivot points of both chassis,
         # calculate middle point and axis,
         # but for relative position we need to convert it to absolute positions
         self.logger.debug('------- START DRAWING -------')
-        rect_area = []
         if len(self.carts_position_abs) > 0:
             self.logger.debug('using absolute positions')
             for i in range(len(self.carts_position_abs)):
-                rect_area.extend(self.draw_single_cart_abs(i, surface, base_offset))
+                self.update_single_cart_sprite_abs(i, base_offset)
                 self.logger.debug('cart {} is in place'.format(i + 1))
 
         else:
             self.logger.debug('using relative positions')
             for i in range(len(self.carts_position)):
-                rect_area.extend(self.draw_single_cart(i, surface, base_offset))
+                self.update_single_cart_sprite(i, base_offset)
                 self.logger.debug('cart {} is in place'.format(i + 1))
 
         self.logger.debug('------- END DRAWING -------')
         self.logger.info('train is in place')
-        return rect_area
 
-    def draw_single_cart(self, cart_number, surface, base_offset):
-        rect_area = []
+    def update_single_cart_sprite(self, cart_number, base_offset):
         x = (self.train_route.trail_points[self.carts_position[cart_number][0]][0]
              + self.train_route.trail_points[self.carts_position[cart_number][1]][0]) // 2
         y = (self.train_route.trail_points[self.carts_position[cart_number][0]][1]
              + self.train_route.trail_points[self.carts_position[cart_number][1]][1]) // 2
-        if (y + base_offset[1]) in range(-50, self.c['graphics']['screen_resolution'][1] + 50) \
-                and (x + base_offset[0]) in range(-175, self.c['graphics']['screen_resolution'][0] + 175):
-            point_one = float(self.train_route.trail_points[self.carts_position[cart_number][1]][1]
-                              - self.train_route.trail_points[self.carts_position[cart_number][0]][1])
-            point_two = float(self.train_route.trail_points[self.carts_position[cart_number][0]][0]
-                              - self.train_route.trail_points[self.carts_position[cart_number][1]][0])
-            self.logger.debug('difference on x and y axis: {} {}'.format(point_two, point_one))
-            if round(point_one, 0) == 0:
-                self.logger.debug('cart middle point: {} {}'.format(x, y))
-                if round(point_two, 0) > 0:
-                    self.logger.debug('no need to flip')
-                    rect_area.extend(surface.blits([(self.cart_images[cart_number],
-                                                     (x - self.cart_images[cart_number].get_width() // 2
-                                                      + base_offset[0],
-                                                      y - self.cart_images[cart_number].get_height() // 2
-                                                      + base_offset[1])), ]))
-                else:
-                    new_cart = pygame.transform.flip(self.cart_images[cart_number], True, False)
-                    self.logger.debug('flipped cart image to match direction')
-                    rect_area.extend(surface.blits([(new_cart,
-                                                     (x - self.cart_images[cart_number].get_width() // 2
-                                                      + base_offset[0],
-                                                      y - self.cart_images[cart_number].get_height() // 2
-                                                      + base_offset[1])), ]))
+        point_one = float(self.train_route.trail_points[self.carts_position[cart_number][1]][1]
+                          - self.train_route.trail_points[self.carts_position[cart_number][0]][1])
+        point_two = float(self.train_route.trail_points[self.carts_position[cart_number][0]][0]
+                          - self.train_route.trail_points[self.carts_position[cart_number][1]][0])
+        self.logger.debug('difference on x and y axis: {} {}'.format(point_two, point_one))
+        if round(point_one, 0) == 0:
+            self.logger.debug('cart middle point: {} {}'.format(x, y))
+            if round(point_two, 0) > 0:
+                self.logger.debug('no need to flip')
+                self.cart_sprites[cart_number].position = (base_offset[0] + x,
+                                                           self.c['graphics']['screen_resolution'][1]
+                                                           - (y + base_offset[1]))
             else:
-                angle = math.atan2(point_one, point_two) * float(180) / math.pi
-                self.logger.debug('angle: {}'.format(angle))
-                new_cart = pygame.transform.rotate(self.cart_images[cart_number], angle)
-                self.logger.debug('rotated cart')
-                new_size = new_cart.get_size()
-                rect_area.extend(surface.blits([(new_cart,
-                                                 (round(x - new_size[0] // 2 + base_offset[0]),
-                                                  round(y - new_size[1] // 2 + base_offset[1]))), ]))
+                self.cart_sprites[cart_number].rotation = 180.0
+                self.logger.debug('flipped cart image to match direction')
+                self.cart_sprites[cart_number].position = (base_offset[0] + x,
+                                                           self.c['graphics']['screen_resolution'][1]
+                                                           - (y + base_offset[1]))
+        else:
+            angle = math.atan2(point_one, point_two) * float(180) / math.pi
+            self.logger.debug('angle: {}'.format(angle))
+            self.cart_sprites[cart_number].rotation = (-1) * angle
+            self.logger.debug('rotated cart')
+            self.cart_sprites[cart_number].position = (base_offset[0] + x,
+                                                       self.c['graphics']['screen_resolution'][1]
+                                                       - (y + base_offset[1]))
 
-        return rect_area
-
-    def draw_single_cart_abs(self, cart_number, surface, base_offset):
-        rect_area = []
+    def update_single_cart_sprite_abs(self, cart_number, base_offset):
         x = (self.carts_position_abs[cart_number][0][0] + self.carts_position_abs[cart_number][1][0]) // 2
         y = (self.carts_position_abs[cart_number][0][1] + self.carts_position_abs[cart_number][1][1]) // 2
         if (y + base_offset[1]) in range(-50, self.c['graphics']['screen_resolution'][1] + 50) \
@@ -469,27 +456,21 @@ class Train(GameObject):
                 self.logger.debug('cart middle point: {} {}'.format(x, y))
                 if round(point_two, 0) > 0:
                     self.logger.debug('no need to flip')
-                    rect_area.extend(surface.blits([(self.cart_images[cart_number],
-                                                     (x - self.cart_images[cart_number].get_width() // 2
-                                                      + base_offset[0],
-                                                      y - self.cart_images[cart_number].get_height() // 2
-                                                      + base_offset[1])), ]))
+                    self.cart_sprites[cart_number].position = (base_offset[0] + x,
+                                                               self.c['graphics']['screen_resolution'][1]
+                                                               - (y + base_offset[1]))
                 else:
-                    new_cart = pygame.transform.flip(self.cart_images[cart_number], True, False)
+                    self.cart_sprites[cart_number].rotation = 180.0
                     self.logger.debug('flipped cart image to match direction')
-                    rect_area.extend(surface.blits([(new_cart,
-                                                     (x - self.cart_images[cart_number].get_width() // 2
-                                                      + base_offset[0],
-                                                      y - self.cart_images[cart_number].get_height() // 2
-                                                      + base_offset[1])), ]))
+                    self.cart_sprites[cart_number].position = (base_offset[0] + x,
+                                                               self.c['graphics']['screen_resolution'][1]
+                                                               - (y + base_offset[1]))
             else:
                 angle = math.atan2(point_one, point_two) * float(180) / math.pi
                 self.logger.debug('angle: {}'.format(angle))
-                new_cart = pygame.transform.rotate(self.cart_images[cart_number], angle)
+                self.cart_sprites[cart_number].rotation = (-1) * angle
                 self.logger.debug('rotated cart')
-                new_size = new_cart.get_size()
-                rect_area.extend(surface.blits([(new_cart,
-                                                 (round(x - new_size[0] // 2 + base_offset[0]),
-                                                  round(y - new_size[1] // 2 + base_offset[1]))), ]))
+                self.cart_sprites[cart_number].position = (base_offset[0] + x,
+                                                           self.c['graphics']['screen_resolution'][1]
+                                                           - (y + base_offset[1]))
 
-        return rect_area
