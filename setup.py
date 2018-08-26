@@ -1,4 +1,5 @@
 from cx_Freeze import setup, Executable
+import os
 
 executables = [Executable('rssim.py',
                           targetName='rssim.exe',
@@ -7,15 +8,38 @@ executables = [Executable('rssim.py',
 
 include_files = ['img', 'default_cfg', 'logs_config.ini', 'game_config.ini', 'icon.ico']
 
+includes = ['pyglet',
+            'pyglet.app',
+            'pyglet.canvas',
+            'pyglet.clock',
+            'pyglet.extlibs',
+            'pyglet.font', 'pyglet.font.ttf',
+            'pyglet.gl', 'pyglet.gl.glext_nv', 'pyglet.gl.glxext_nv', 'pyglet.gl.wglext_nv',
+            'pyglet.graphics',
+            'pyglet.image', 'pyglet.image.codecs',
+            'pyglet.info',
+            'pyglet.input',
+            'pyglet.libs', 'pyglet.libs.darwin', 'pyglet.libs.darwin.cocoapy', 'pyglet.libs.win32', 'pyglet.libs.x11',
+            'pyglet.media', 'pyglet.media.drivers', 'pyglet.media.drivers.directsound',
+            'pyglet.media.drivers.openal', 'pyglet.media.drivers.pulse', 'pyglet.media.sources',
+            'pyglet.resource',
+            'pyglet.sprite',
+            'pyglet.text', 'pyglet.text.formats',
+            'pyglet.window', 'pyglet.window.carbon', 'pyglet.window.cocoa', 'pyglet.window.win32', 'pyglet.window.xlib']
+
 options = {
     'build_exe': {
         'include_msvcr': True,
+        'includes': includes,
         'include_files': include_files
     }
 }
 
+os.environ['TCL_LIBRARY'] = r'C:\Users\1\AppData\Local\Programs\Python\Python37-32\tcl\tcl8.6'
+os.environ['TK_LIBRARY'] = r'C:\Users\1\AppData\Local\Programs\Python\Python37-32\tcl\tk8.6'
+
 setup(name='Railway Station Simulator',
-      version='0.4.5',
+      version='0.5.0',
       description='Railway Station Simulator',
       executables=executables,
       options=options)

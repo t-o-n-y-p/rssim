@@ -330,6 +330,8 @@ class Game:
                                   win32con.SWP_NOREDRAW)
 
     def run(self):
+        pyglet.app.run()
+        """""
         while True:
             pyglet.clock.tick()
             self.logger.warning('frame begins')
@@ -352,6 +354,6 @@ class Game:
             self.logs_stream.truncate(0)
             if new_lines is not None:
                 self.logs_file.write(new_lines)
-
+        """""
 
 
