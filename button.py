@@ -78,12 +78,12 @@ class Button(GameObject):
                 self.text_object_actual.delete()
                 self.text_object_actual = None
 
-            self.sprite_actual = pyglet.sprite.Sprite(self.image['normal'],
+            self.sprite_actual = pyglet.sprite.Sprite(self.image[self.state],
                                                       x=self.position[0],
                                                       y=self.c['graphics']['screen_resolution'][1] - self.position[1]
                                                       - self.image['normal'].height,
                                                       batch=self.batch, group=self.button_group)
-            self.text_object_actual = pyglet.text.Label(self.text[0],
+            self.text_object_actual = pyglet.text.Label(self.text_object_actual_text,
                                                         font_name=self.c['graphics']['font_name'],
                                                         font_size=self.c['graphics']['button_font_size'],
                                                         x=self.position[0] + self.button_size[0] // 2,

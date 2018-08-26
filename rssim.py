@@ -36,6 +36,7 @@ class RSSim(Game):
         self.create_onboarding_tips()
         self.create_buttons()
         self.logger.debug('map drag event appended')
+        # pyglet.clock.schedule_interval_soft(self.update, 1 / float(self.c['graphics']['frame_rate']))
         self.logger.debug('------- END INIT -------')
         self.logger.warning('rssim game init completed')
 
