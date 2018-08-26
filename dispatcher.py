@@ -409,7 +409,7 @@ class Dispatcher(GameObject):
                     if i == self.c['direction']['left']:
                         carts = random.choice([10, 10])
                     else:
-                        carts = random.choice([6, 6, 6, 20])
+                        carts = random.choice([8, 10, 18, 20])
 
                     self.logger.debug('carts: {}'.format(carts))
                     if carts < self.supported_carts[0]:

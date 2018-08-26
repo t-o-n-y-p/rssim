@@ -39,16 +39,16 @@ class TrainRoute(GameObject):
         # single stop point which is closest to the first chassis of the train
         self.next_stop_point = None
         self.destination_point = None
-        self.supported_carts = [0, 0]
+        self.supported_carts = [0, 20]
         self.signals = []
-        self.locked = True
+        self.locked = False
         # number of supported carts is decided below
         for j in self.base_routes:
             self.locked = self.locked or j.route_config['locked']
             if j.route_config['supported_carts'][0] > self.supported_carts[0]:
                 self.supported_carts[0] = j.route_config['supported_carts'][0]
 
-            if j.route_config['supported_carts'][1] > self.supported_carts[1]:
+            if j.route_config['supported_carts'][1] < self.supported_carts[1]:
                 self.supported_carts[1] = j.route_config['supported_carts'][1]
 
         self.logger.debug('supported carts: {}'.format(self.supported_carts))
