@@ -52,28 +52,6 @@ class Game:
         self.on_mouse_release_handlers = []
         self.on_mouse_motion_handlers = []
         self.on_mouse_drag_handlers = []
-        self.surface.push_handlers(on_draw=self.draw)
-
-        @surface.event
-        def on_mouse_press(x, y, button, modifiers):
-            for i in self.on_mouse_press_handlers:
-                i(x, y, button, modifiers)
-
-        @surface.event
-        def on_mouse_release(x, y, button, modifiers):
-            for i in self.on_mouse_release_handlers:
-                i(x, y, button, modifiers)
-
-        @surface.event
-        def on_mouse_motion(x, y, dx, dy):
-            for i in self.on_mouse_motion_handlers:
-                i(x, y, dx, dy)
-
-        @surface.event
-        def on_mouse_drag(x, y, dx, dy, button, modifiers):
-            for i in self.on_mouse_drag_handlers:
-                i(x, y, dx, dy, button, modifiers)
-
         self.surface.set_location(0, 0)
         self.app_window_move_mode = False
         self.map_move_mode = False
@@ -96,6 +74,36 @@ class Game:
                              'mini_map', self.batch, self.buttons_ordered_group)
         self.mini_map_timer = 0
         self.logger.warning('game init completed')
+
+        @surface.event
+        def on_draw():
+            self.batch.draw()
+
+            self.logger.critical('start update sprites')
+            for o in self.objects:
+                o.update_sprite(self.base_offset)
+
+            self.logger.critical('end update sprites')
+
+        @surface.event
+        def on_mouse_press(x, y, button, modifiers):
+            for i in self.on_mouse_press_handlers:
+                i(x, y, button, modifiers)
+
+        @surface.event
+        def on_mouse_release(x, y, button, modifiers):
+            for i in self.on_mouse_release_handlers:
+                i(x, y, button, modifiers)
+
+        @surface.event
+        def on_mouse_motion(x, y, dx, dy):
+            for i in self.on_mouse_motion_handlers:
+                i(x, y, dx, dy)
+
+        @surface.event
+        def on_mouse_drag(x, y, dx, dy, button, modifiers):
+            for i in self.on_mouse_drag_handlers:
+                i(x, y, dx, dy, button, modifiers)
 
     def manage_logs_config(self):
         self.logs_config.read('logs_config.ini')
@@ -287,17 +295,8 @@ class Game:
             if time.time() - self.mini_map_timer > 1:
                 self.mini_map_tip.condition_met = False
 
-    def draw(self):
-        for o in self.objects:
-            o.update_sprite(self.base_offset)
-
-        self.surface.clear()
-        self.batch.invalidate()
-        self.batch.draw()
-
     @_game_window_is_active
     def handle_mouse_press(self, x, y, button, modifiers):
-        self.logger.critical('main handle_mouse_press enter')
         y = self.c['graphics']['screen_resolution'][1] - y
         if x in range(0, self.c['graphics']['screen_resolution'][0] - 70) \
                 and y in range(0, self.c['graphics']['top_bar_height']) and button == pyglet.window.mouse.LEFT:
@@ -311,20 +310,15 @@ class Game:
             self.map_move_mode = True
             self.mini_map_tip.condition_met = True
 
-        self.logger.critical('main handle_mouse_press exit')
-
     @_game_window_is_active
     def handle_mouse_release(self, x, y, button, modifiers):
-        self.logger.critical('main handle_mouse_release enter')
         if button == pyglet.window.mouse.LEFT:
             self.app_window_move_mode = False
             self.map_move_mode = False
             self.mini_map_timer = time.time()
 
-        self.logger.critical('main handle_mouse_release exit')
-
+    @_game_window_is_active
     def handle_mouse_drag(self, x, y, dx, dy, buttons, modifiers):
-        self.logger.critical('main handle_mouse_drag enter')
         if self.map_move_mode:
             # if left mouse button is pressed and user moves mouse, we move entire map with all its content
             self.logger.debug('user drags map')
@@ -353,8 +347,6 @@ class Game:
                                   self.game_window_position[3] - self.game_window_position[1],
                                   win32con.SWP_NOREDRAW)
 
-            self.logger.critical('main handle_mouse_drag exit')
-
     def run(self):
         # pyglet.app.run()
         while True:
@@ -372,7 +364,8 @@ class Game:
             self.logger.critical('handling events: {} sec'.format(time_2 - time_1))
             self.logger.critical('updating: {} sec'.format(time_3 - time_2))
             self.logger.critical('drawing: {} sec'.format(time_4 - time_3))
-            self.logger.critical('FPS: {}'.format(pyglet.clock.get_fps()))
+            self.logger.critical('FPS: {}'.format(float(1/(time_4 - time_1))))
+
             new_lines = self.logs_stream.getvalue()
             self.logs_stream.seek(0, 0)
             self.logs_stream.truncate(0)

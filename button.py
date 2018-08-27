@@ -100,7 +100,6 @@ class Button(GameObject):
         self.logger.info('button updated')
 
     def handle_mouse_motion(self, x, y, dx, dy):
-        self.logger.critical('handle_mouse_motion enter')
         y = self.c['graphics']['screen_resolution'][1] - y
         if x in range(self.position[0] + 2, self.position[0] + self.button_size[0] - 2) \
                 and y in range(self.position[1] + 2, self.position[1] + self.button_size[1] - 2):
@@ -129,10 +128,7 @@ class Button(GameObject):
                                                       batch=self.batch, group=self.button_group)
             self.logger.debug('cursor is not on the button')
 
-            self.logger.critical('handle_mouse_motion exit')
-
     def handle_mouse_press(self, x, y, button, modifiers):
-        self.logger.critical('handle_mouse_press enter')
         y = self.c['graphics']['screen_resolution'][1] - y
         if x in range(self.position[0] + 2, self.position[0] + self.button_size[0] - 2) \
                 and y in range(self.position[1] + 2, self.position[1] + self.button_size[1] - 2) \
@@ -146,10 +142,7 @@ class Button(GameObject):
                                                       batch=self.batch, group=self.button_group)
             self.logger.info('cursor is on the button and user holds mouse button')
 
-            self.logger.critical('handle_mouse_press exit')
-
     def handle_mouse_release(self, x, y, button, modifiers):
-        self.logger.critical('handle_mouse_release enter')
         if self.state == 'pressed' and button == pyglet.window.mouse.LEFT:
             self.state = 'hover'
             self.sprite_actual.delete()
@@ -198,4 +191,3 @@ class Button(GameObject):
                                                             batch=self.batch, group=self.text_group)
                 self.logger.debug('button has only 1 text, so it remains the same')
 
-                self.logger.critical('handle_mouse_release exit')
