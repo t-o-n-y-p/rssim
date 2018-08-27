@@ -46,12 +46,19 @@ class Game:
         self.logger.debug('created screen with resolution {}'
                           .format(self.c['graphics']['screen_resolution']))
         self.logger.debug('caption set: {}'.format(caption))
-        pyglet.clock.set_fps_limit(self.c['graphics']['frame_rate'])
+        # pyglet.clock.set_fps_limit(self.c['graphics']['frame_rate'])
         self.logger.debug('clock created')
+        self.on_mouse_press_handlers = []
+        self.on_mouse_release_handlers = []
+        self.on_mouse_motion_handlers = []
+        self.on_mouse_drag_handlers = []
         self.surface.push_handlers(on_draw=self.draw)
-        self.surface.push_handlers(on_mouse_press=self.handle_mouse_press,
-                                   on_mouse_release=self.handle_mouse_release,
-                                   on_mouse_drag=self.handle_mouse_drag)
+
+        self.surface.push_handlers(on_mouse_press=self.handle_mouse_press_all_in_one,
+                                   on_mouse_release=self.handle_mouse_release_all_in_one,
+                                   on_mouse_motion=self.handle_mouse_motion_all_in_one,
+                                   on_mouse_drag=self.handle_mouse_drag_all_in_one)
+
         self.surface.set_location(0, 0)
         self.app_window_move_mode = False
         self.map_move_mode = False
@@ -272,6 +279,22 @@ class Game:
         self.surface.clear()
         self.batch.invalidate()
         self.batch.draw()
+
+    def handle_mouse_press_all_in_one(self, x, y, button, modifiers):
+        for i in self.on_mouse_press_handlers:
+            i(x, y, button, modifiers)
+
+    def handle_mouse_release_all_in_one(self, x, y, button, modifiers):
+        for i in self.on_mouse_release_handlers:
+            i(x, y, button, modifiers)
+
+    def handle_mouse_motion_all_in_one(self, x, y, dx, dy):
+        for i in self.on_mouse_motion_handlers:
+            i(x, y, dx, dy)
+
+    def handle_mouse_drag_all_in_one(self, x, y, dx, dy, button, modifiers):
+        for i in self.on_mouse_drag_handlers:
+            i(x, y, dx, dy, button, modifiers)
 
     @_game_window_is_active
     def handle_mouse_press(self, x, y, button, modifiers):

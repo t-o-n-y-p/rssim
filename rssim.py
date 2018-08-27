@@ -908,6 +908,25 @@ class RSSim(Game):
         iconify_button = Button((self.c['graphics']['screen_resolution'][0] - 66, 0), (34, 34),
                                 ['_', ], [iconify_game, ], False,
                                 self.batch, self.buttons_ordered_group, self.buttons_text_ordered_group)
+        self.on_mouse_press_handlers.append(stop_button.handle_mouse_press)
+        self.on_mouse_press_handlers.append(save_button.handle_mouse_press)
+        self.on_mouse_press_handlers.append(close_button.handle_mouse_press)
+        self.on_mouse_press_handlers.append(iconify_button.handle_mouse_press)
+        self.on_mouse_press_handlers.append(self.handle_mouse_press)
+
+        self.on_mouse_release_handlers.append(stop_button.handle_mouse_release)
+        self.on_mouse_release_handlers.append(save_button.handle_mouse_release)
+        self.on_mouse_release_handlers.append(close_button.handle_mouse_release)
+        self.on_mouse_release_handlers.append(iconify_button.handle_mouse_release)
+        self.on_mouse_release_handlers.append(self.handle_mouse_release)
+
+        self.on_mouse_motion_handlers.append(stop_button.handle_mouse_motion)
+        self.on_mouse_motion_handlers.append(save_button.handle_mouse_motion)
+        self.on_mouse_motion_handlers.append(close_button.handle_mouse_motion)
+        self.on_mouse_motion_handlers.append(iconify_button.handle_mouse_motion)
+
+        self.on_mouse_drag_handlers.append(self.handle_mouse_drag)
+        """""
         self.surface.push_handlers(on_mouse_press=stop_button.handle_mouse_press,
                                    on_mouse_release=stop_button.handle_mouse_release,
                                    on_mouse_motion=stop_button.handle_mouse_motion)
@@ -921,6 +940,7 @@ class RSSim(Game):
         self.surface.push_handlers(on_mouse_press=iconify_button.handle_mouse_press,
                                    on_mouse_release=iconify_button.handle_mouse_release,
                                    on_mouse_motion=iconify_button.handle_mouse_motion)
+        """""
         self.logger.debug('save button button handler appended to global mouse handlers list')
         self.objects.append(stop_button)
         self.logger.debug('pause/resume button appended to global objects list')
