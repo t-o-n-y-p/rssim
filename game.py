@@ -48,6 +48,7 @@ class Game:
         self.logger.debug('caption set: {}'.format(caption))
         # pyglet.clock.set_fps_limit(self.c['graphics']['frame_rate'])
         self.logger.debug('clock created')
+        self.main_map_tiles = None
         self.on_mouse_press_handlers = []
         self.on_mouse_release_handlers = []
         self.on_mouse_motion_handlers = []
@@ -60,7 +61,7 @@ class Game:
         self.game_window_position = win32gui.GetWindowRect(self.game_window_handler)
         self.absolute_mouse_pos = win32api.GetCursorPos()
         self.batch = pyglet.graphics.Batch()
-        self.background_ordered_group = pyglet.graphics.OrderedGroup(1)
+        self.map_ordered_group = pyglet.graphics.OrderedGroup(1)
         self.base_routes_ordered_group = pyglet.graphics.OrderedGroup(2)
         self.signals_and_trains_ordered_group = pyglet.graphics.OrderedGroup(3)
         self.top_bottom_bars_ordered_group = pyglet.graphics.OrderedGroup(4)
@@ -77,13 +78,15 @@ class Game:
 
         @surface.event
         def on_draw():
-            self.batch.draw()
-
             self.logger.critical('start update sprites')
             for o in self.objects:
                 o.update_sprite(self.base_offset)
 
             self.logger.critical('end update sprites')
+
+            self.surface.clear()
+            self.batch.invalidate()
+            self.batch.draw()
 
         @surface.event
         def on_mouse_press(x, y, button, modifiers):
@@ -129,12 +132,6 @@ class Game:
         self.c['graphics']['screen_resolution'] = (int(screen_resolution[0]), int(screen_resolution[1]))
         self.c['graphics']['frame_rate'] = self.game_config['graphics'].getint('frame_rate')
         self.c['graphics']['background_image'] = self.game_config['graphics']['background_image']
-        background_tile_resolution = self.game_config['graphics']['background_tile_resolution'].split(',')
-        self.c['graphics']['background_tile_resolution'] = (int(background_tile_resolution[0]),
-                                                            int(background_tile_resolution[1]))
-        number_of_background_tiles = self.game_config['graphics']['number_of_background_tiles'].split(',')
-        self.c['graphics']['number_of_background_tiles'] = (int(number_of_background_tiles[0]),
-                                                            int(number_of_background_tiles[1]))
         map_resolution = self.game_config['graphics']['map_resolution'].split(',')
         self.c['graphics']['map_resolution'] = (int(map_resolution[0]), int(map_resolution[1]))
         base_offset_upper_left_limit = self.game_config['graphics']['base_offset_upper_left_limit'].split(',')
@@ -323,7 +320,7 @@ class Game:
             # if left mouse button is pressed and user moves mouse, we move entire map with all its content
             self.logger.debug('user drags map')
             self.logger.debug('old offset: {}'.format(self.base_offset))
-            self.base_offset = (self.base_offset[0] + dx, self.base_offset[1] - dy)
+            self.base_offset = (self.base_offset[0] + dx, self.base_offset[1] + dy)
             self.logger.debug('new offset: {}'.format(self.base_offset))
             # but not beyond limits
             if self.base_offset[0] > self.c['graphics']['base_offset_lower_right_limit'][0]:
@@ -336,6 +333,7 @@ class Game:
                 self.base_offset = (self.base_offset[0], self.c['graphics']['base_offset_upper_left_limit'][1])
 
             self.logger.debug('new limited offset: {}'.format(self.base_offset))
+            self.main_map_tiles.update_sprite(self.base_offset)
 
         if self.app_window_move_mode:
             self.absolute_mouse_pos = win32api.GetCursorPos()

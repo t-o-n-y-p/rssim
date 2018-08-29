@@ -50,18 +50,7 @@ class BaseRoute(GameObject):
         self.checkpoints = []
         self.junction_position = []
         self.read_state()
-        self.batch = batch
-        self.group = group
-        if self.route_config['image_path'] is not None and not self.route_config['locked']:
-            self.image = pyglet.image.load(self.route_config['image_path'])
-            self.sprite = pyglet.sprite.Sprite(self.image,
-                                               x=self.route_config['image_position'][0],
-                                               y=self.route_config['image_position'][1],
-                                               batch=self.batch, group=self.group)
-        else:
-            self.sprite = None
 
-        self.logger.debug('image is not None: {}'.format(self.sprite is None))
         self.logger.debug('------- END INIT -------')
         self.logger.warning('base route init completed')
 
@@ -279,17 +268,6 @@ class BaseRoute(GameObject):
         self.update_base_route_state(game_paused)
         self.logger.debug('------- END ENTERING BASE ROUTE -------')
         self.logger.info('train {} is ready to go'.format(train_id))
-
-    @_image_exists
-    @_route_is_not_locked
-    def update_sprite(self, base_offset):
-        self.logger.debug('------- START DRAWING -------')
-        x = base_offset[0] + self.route_config['image_position'][0]
-        y = self.c['graphics']['screen_resolution'][1] - (base_offset[1] + self.route_config['image_position'][1]) \
-            - self.image.height
-        self.sprite.position = (x, y)
-        self.logger.debug('------- END DRAWING -------')
-        self.logger.info('base route image is in place')
 
     @_game_is_not_paused
     def update_base_route_state(self, game_paused):

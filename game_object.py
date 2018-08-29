@@ -14,12 +14,6 @@ class GameObject:
         self.c['graphics']['screen_resolution'] = (int(screen_resolution[0]), int(screen_resolution[1]))
         self.c['graphics']['frame_rate'] = self.game_config['graphics'].getint('frame_rate')
         self.c['graphics']['background_image'] = self.game_config['graphics']['background_image']
-        background_tile_resolution = self.game_config['graphics']['background_tile_resolution'].split(',')
-        self.c['graphics']['background_tile_resolution'] = (int(background_tile_resolution[0]),
-                                                            int(background_tile_resolution[1]))
-        number_of_background_tiles = self.game_config['graphics']['number_of_background_tiles'].split(',')
-        self.c['graphics']['number_of_background_tiles'] = (int(number_of_background_tiles[0]),
-                                                            int(number_of_background_tiles[1]))
         map_resolution = self.game_config['graphics']['map_resolution'].split(',')
         self.c['graphics']['map_resolution'] = (int(map_resolution[0]), int(map_resolution[1]))
         base_offset_upper_left_limit = self.game_config['graphics']['base_offset_upper_left_limit'].split(',')

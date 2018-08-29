@@ -3,7 +3,7 @@ import sys
 import pyglet
 
 from base_route import BaseRoute
-from bgimg import BgImg
+from main_map import MainMap
 from dispatcher import Dispatcher
 from game import Game
 from signal import Signal
@@ -29,7 +29,7 @@ class RSSim(Game):
         self.tracks = []
         self.dispatcher = None
         # we create background image object first to be drawn first
-        self.create_bg_img()
+        self.create_main_map()
         # we create routes, signals and dispatcher and link them to each other correctly
         self.create_infrastructure()
         self.saved_onboarding_tip = None
@@ -40,12 +40,11 @@ class RSSim(Game):
         self.logger.debug('------- END INIT -------')
         self.logger.warning('rssim game init completed')
 
-    def create_bg_img(self):
+    def create_main_map(self):
         self.logger.debug('------- START CREATING BG IMAGE -------')
-        background_image = BgImg(self.c['graphics']['background_image'], self.batch, self.background_ordered_group)
-        self.logger.info('background image object created')
-        self.objects.append(background_image)
-        self.logger.debug('background image object appended')
+        self.main_map_tiles = MainMap(self.batch, self.map_ordered_group)
+        self.logger.info('main map object created')
+        self.logger.debug('main map object appended')
         self.logger.debug('------- END CREATING BG IMAGE -------')
 
     def create_infrastructure(self):
