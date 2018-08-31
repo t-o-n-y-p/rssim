@@ -3,10 +3,10 @@ import io
 import logging
 import os
 import time
+
 import win32api
 import win32gui
 import win32con
-
 import pyglet
 
 from onboarding_tips import OnboardingTips
@@ -42,6 +42,29 @@ class Game:
                                        height=self.c['graphics']['screen_resolution'][1],
                                        caption=caption, style='borderless')
         self.surface = surface
+        pyglet.gl.glEnable(pyglet.gl.GL_BLEND)
+        pyglet.gl.glBlendFunc(pyglet.gl.GL_SRC_ALPHA, pyglet.gl.GL_ONE_MINUS_SRC_ALPHA)
+        self.game_window_handler = win32gui.GetActiveWindow()
+        self.game_window_position = win32gui.GetWindowRect(self.game_window_handler)
+        self.absolute_mouse_pos = win32api.GetCursorPos()
+        self.batch = pyglet.graphics.Batch()
+        self.map_ordered_group = pyglet.graphics.OrderedGroup(1)
+        self.base_routes_ordered_group = pyglet.graphics.OrderedGroup(2)
+        self.signals_and_trains_ordered_group = pyglet.graphics.OrderedGroup(3)
+        self.top_bottom_bars_ordered_group = pyglet.graphics.OrderedGroup(4)
+        self.buttons_ordered_group = pyglet.graphics.OrderedGroup(5)
+        self.buttons_text_ordered_group = pyglet.graphics.OrderedGroup(6)
+        self.fps_display_label = None
+        if self.c['graphics']['fps_display_enabled']:
+            self.fps_display_label \
+                = pyglet.text.Label(text='0', font_name='Courier New',
+                                    font_size=self.c['graphics']['button_font_size'],
+                                    x=self.c['graphics']['screen_resolution'][0] - 120,
+                                    y=self.c['graphics']['screen_resolution'][1]
+                                    - self.c['graphics']['top_bar_height'] // 2,
+                                    anchor_x='center', anchor_y='center',
+                                    batch=self.batch, group=self.buttons_text_ordered_group)
+
         self.surface.set_icon(pyglet.image.load('icon.ico'))
         self.logger.debug('created screen with resolution {}'
                           .format(self.c['graphics']['screen_resolution']))
@@ -57,16 +80,6 @@ class Game:
         self.app_window_move_mode = False
         self.map_move_mode = False
         self.app_window_move_offset = ()
-        self.game_window_handler = win32gui.GetActiveWindow()
-        self.game_window_position = win32gui.GetWindowRect(self.game_window_handler)
-        self.absolute_mouse_pos = win32api.GetCursorPos()
-        self.batch = pyglet.graphics.Batch()
-        self.map_ordered_group = pyglet.graphics.OrderedGroup(1)
-        self.base_routes_ordered_group = pyglet.graphics.OrderedGroup(2)
-        self.signals_and_trains_ordered_group = pyglet.graphics.OrderedGroup(3)
-        self.top_bottom_bars_ordered_group = pyglet.graphics.OrderedGroup(4)
-        self.buttons_ordered_group = pyglet.graphics.OrderedGroup(5)
-        self.buttons_text_ordered_group = pyglet.graphics.OrderedGroup(6)
         mini_map_image = pyglet.image.load('img/full_map_4.png')
         self.mini_map_tip \
             = OnboardingTips(mini_map_image,
@@ -163,6 +176,7 @@ class Game:
             day_text_color[i] = int(day_text_color[i])
 
         self.c['graphics']['day_text_color'] = tuple(day_text_color)
+        self.c['graphics']['fps_display_enabled'] = self.game_config['graphics'].getboolean('fps_display_enabled')
 
         self.c['base_route_types'] = {}
         self.c['base_route_types']['left_entry_base_route'] \
@@ -347,8 +361,8 @@ class Game:
 
     def run(self):
         # pyglet.app.run()
+        fps_timer = 0.0
         while True:
-
             self.logger.warning('frame begins')
             time_1 = time.perf_counter()
             self.surface.dispatch_events()
@@ -362,7 +376,9 @@ class Game:
             self.logger.critical('handling events: {} sec'.format(time_2 - time_1))
             self.logger.critical('updating: {} sec'.format(time_3 - time_2))
             self.logger.critical('drawing: {} sec'.format(time_4 - time_3))
-            self.logger.critical('FPS: {}'.format(float(1/(time_4 - time_1))))
+            if self.fps_display_label is not None and time.perf_counter() - fps_timer > 0.25:
+                self.fps_display_label.text = str(round(float(1/(time_4 - time_1)))) + ' FPS'
+                fps_timer = time.perf_counter()
 
             new_lines = self.logs_stream.getvalue()
             self.logs_stream.seek(0, 0)

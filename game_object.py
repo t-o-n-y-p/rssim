@@ -45,6 +45,7 @@ class GameObject:
             day_text_color[i] = int(day_text_color[i])
 
         self.c['graphics']['day_text_color'] = tuple(day_text_color)
+        self.c['graphics']['fps_display_enabled'] = self.game_config['graphics'].getboolean('fps_display_enabled')
 
         self.c['base_route_types'] = {}
         self.c['base_route_types']['left_entry_base_route'] \

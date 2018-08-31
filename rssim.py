@@ -1,9 +1,13 @@
 import sys
 
+import win32api
+import win32gui
+import win32con
 import pyglet
 
 from base_route import BaseRoute
 from main_map import MainMap
+from main_map import NotSupportedVideoAdapterException
 from dispatcher import Dispatcher
 from game import Game
 from signal import Signal
@@ -29,7 +33,12 @@ class RSSim(Game):
         self.tracks = []
         self.dispatcher = None
         # we create background image object first to be drawn first
-        self.create_main_map()
+        try:
+            self.create_main_map()
+        except NotSupportedVideoAdapterException as e:
+            e.handler = self.game_window_handler
+            e.surface = self.surface
+            raise e
         # we create routes, signals and dispatcher and link them to each other correctly
         self.create_infrastructure()
         self.saved_onboarding_tip = None
@@ -42,7 +51,10 @@ class RSSim(Game):
 
     def create_main_map(self):
         self.logger.debug('------- START CREATING BG IMAGE -------')
-        self.main_map_tiles = MainMap(self.batch, self.map_ordered_group)
+        try:
+            self.main_map_tiles = MainMap(self.batch, self.map_ordered_group)
+        except NotSupportedVideoAdapterException:
+            raise NotSupportedVideoAdapterException
         self.logger.info('main map object created')
         self.logger.debug('main map object appended')
         self.logger.debug('------- END CREATING BG IMAGE -------')
@@ -952,7 +964,14 @@ class RSSim(Game):
 
 
 def main():
-    RSSim().run()
+    try:
+        RSSim().run()
+    except NotSupportedVideoAdapterException as e:
+        e.surface.close()
+        win32api.MessageBoxEx(win32con.NULL, e.text, e.caption,
+                              win32con.MB_OK | win32con.MB_ICONERROR | win32con.MB_DEFBUTTON1
+                              | win32con.MB_SYSTEMMODAL | win32con.MB_SETFOREGROUND, 0)
+        sys.exit()
 
 
 if __name__ == '__main__':
