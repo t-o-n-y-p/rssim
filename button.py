@@ -144,10 +144,10 @@ class Button(GameObject):
                                      ('v2i/static',
                                       (self.position[0],
                                        self.c['graphics']['screen_resolution'][1] - self.position[1]
-                                       - self.button_size[0],
+                                       - self.button_size[1],
                                        self.position[0] + self.button_size[0],
                                        self.c['graphics']['screen_resolution'][1] - self.position[1]
-                                       - self.button_size[0],
+                                       - self.button_size[1],
                                        self.position[0] + self.button_size[0],
                                        self.c['graphics']['screen_resolution'][1] - self.position[1],
                                        self.position[0],
