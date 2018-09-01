@@ -824,12 +824,6 @@ class RSSim(Game):
         self.logger.info('tracks and train routes created')
         # ------ SORT THIS OUT ------
         # base routes and signals are added to generic objects list
-        for i in self.junctions:
-            for j in self.junctions[i]:
-                for k in self.junctions[i][j]:
-                    self.objects.append(self.junctions[i][j][k])
-                    self.logger.debug('junction {} {} {} appended to global objects list'.format(i, j, k))
-
         for i in range(self.c['dispatcher_config']['tracks_ready'] + 1):
             for n in self.base_routes[i]:
                 self.objects.append(self.base_routes[i][n])
