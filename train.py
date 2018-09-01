@@ -49,7 +49,7 @@ class Train(GameObject):
         self.logger.debug('set speed_factor_position: {}'.format(self.speed_factor_position))
         if self.state == self.c['train_state_types']['approaching_pass_through']:
             self.priority = 100000000
-            self.boarding_time = 1
+            self.boarding_time = 5
         else:
             self.priority = 0
             self.boarding_time = self.carts * 300

@@ -58,9 +58,11 @@ class Signal(GameObject):
         self.base_route_opened_list = []
         self.base_route_exit = None
         self.read_state()
-        self.sprite = pyglet.sprite.Sprite(self.image[self.state],
-                                           x=self.placement[0], y=self.placement[1],
-                                           batch=self.batch, group=self.signal_group)
+        self.sprite = None
+        if not self.invisible:
+            self.sprite = pyglet.sprite.Sprite(self.image[self.state],
+                                               x=self.placement[0], y=self.placement[1],
+                                               batch=self.batch, group=self.signal_group)
         if self.flip_needed:
             self.sprite.rotation = 180.0
             self.logger.debug('base image flipped')
