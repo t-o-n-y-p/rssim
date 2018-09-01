@@ -2,7 +2,7 @@ rssim.py run requires:
 
 python 3.7
 
-pygame 1.9.4
+pyglet 1.3.2
 
 pywin32 2.2.3
 
