@@ -30,6 +30,10 @@ class Train(GameObject):
         self.state = state
         self.direction = direction
         self.train_id = train_id
+        self.batch = batch
+        self.group = group
+        self.mid_image = mid_image
+        self.tail_image = tail_image
         self.logger.debug('{} carts, route {}, state {}, direction {}, train_id {}'
                           .format(self.carts, self.train_route, self.state, self.direction, self.train_id))
         # all trains are created with maximum speed,
@@ -57,11 +61,11 @@ class Train(GameObject):
 
         self.logger.debug('set priority: {}'.format(self.priority))
         self.logger.debug('set boarding_time: {}'.format(self.boarding_time))
-        self.cart_sprites = [pyglet.sprite.Sprite(head_image, batch=batch, group=group), ]
+        self.cart_sprites = [pyglet.sprite.Sprite(head_image, batch=self.batch, group=self.group), ]
         for i in range(1, self.carts - 1):
-            self.cart_sprites.append(pyglet.sprite.Sprite(mid_image, batch=batch, group=group))
+            self.cart_sprites.append(None)
 
-        self.cart_sprites.append(pyglet.sprite.Sprite(tail_image, batch=batch, group=group))
+        self.cart_sprites.append(None)
         self.logger.debug('loaded cart images: {}_head.png, {}_mid.png, {}_tail.png'
                           .format(self.c['train_config']['train_cart_image_path'],
                                   self.c['train_config']['train_cart_image_path'],
@@ -411,14 +415,26 @@ class Train(GameObject):
         if len(self.carts_position_abs) > 0:
             self.logger.debug('using absolute positions')
             for i in range(len(self.carts_position_abs)):
-                self.update_single_cart_sprite_abs(i, base_offset)
-                self.logger.debug('cart {} is in place'.format(i + 1))
+                if self.cart_sprites[i] is not None:
+                    self.update_single_cart_sprite_abs(i, base_offset)
+                    self.logger.debug('cart {} is in place'.format(i + 1))
+                else:
+                    if i == len(self.carts_position_abs) - 1:
+                        self.cart_sprites[i] = pyglet.sprite.Sprite(self.tail_image, batch=self.batch, group=self.group)
+                    else:
+                        self.cart_sprites[i] = pyglet.sprite.Sprite(self.mid_image, batch=self.batch, group=self.group)
 
         else:
             self.logger.debug('using relative positions')
             for i in range(len(self.carts_position)):
-                self.update_single_cart_sprite(i, base_offset)
-                self.logger.debug('cart {} is in place'.format(i + 1))
+                if self.cart_sprites[i] is not None:
+                    self.update_single_cart_sprite(i, base_offset)
+                    self.logger.debug('cart {} is in place'.format(i + 1))
+                else:
+                    if i == len(self.carts_position) - 1:
+                        self.cart_sprites[i] = pyglet.sprite.Sprite(self.tail_image, batch=self.batch, group=self.group)
+                    else:
+                        self.cart_sprites[i] = pyglet.sprite.Sprite(self.mid_image, batch=self.batch, group=self.group)
 
         self.logger.debug('------- END DRAWING -------')
         self.logger.info('train is in place')
@@ -453,14 +469,14 @@ class Train(GameObject):
                 and (self.cart_sprites[cart_number].x
                      not in range(-175, self.c['graphics']['screen_resolution'][0] + 175)
                      or self.cart_sprites[cart_number].y
-                     not in range(-50, self.c['graphics']['screen_resolution'][0] + 50)):
+                     not in range(-25, self.c['graphics']['screen_resolution'][0] + 25)):
             self.cart_sprites[cart_number].visible = False
 
         if not self.cart_sprites[cart_number].visible \
                 and (self.cart_sprites[cart_number].x
                      in range(-175, self.c['graphics']['screen_resolution'][0] + 175)
                      and self.cart_sprites[cart_number].y
-                     in range(-50, self.c['graphics']['screen_resolution'][0] + 50)):
+                     in range(-25, self.c['graphics']['screen_resolution'][0] + 25)):
             self.cart_sprites[cart_number].visible = True
 
     def update_single_cart_sprite_abs(self, cart_number, base_offset):
@@ -489,12 +505,12 @@ class Train(GameObject):
                 and (self.cart_sprites[cart_number].x
                      not in range(-175, self.c['graphics']['screen_resolution'][0] + 175)
                      or self.cart_sprites[cart_number].y
-                     not in range(-50, self.c['graphics']['screen_resolution'][0] + 50)):
+                     not in range(-25, self.c['graphics']['screen_resolution'][0] + 25)):
             self.cart_sprites[cart_number].visible = False
 
         if not self.cart_sprites[cart_number].visible \
                 and (self.cart_sprites[cart_number].x
                      in range(-175, self.c['graphics']['screen_resolution'][0] + 175)
                      and self.cart_sprites[cart_number].y
-                     in range(-50, self.c['graphics']['screen_resolution'][0] + 50)):
+                     in range(-25, self.c['graphics']['screen_resolution'][0] + 25)):
             self.cart_sprites[cart_number].visible = True
