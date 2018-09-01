@@ -231,7 +231,7 @@ class Dispatcher(GameObject):
                         self.supported_carts[0] = self.train_routes[z1][z2].supported_carts[0]
 
         self.logger.debug('supported_carts: {}'.format(self.supported_carts))
-        self.trains = sorted(self.trains, key=attrgetter('priority'), reverse=True)
+        # self.trains = sorted(self.trains, key=attrgetter('priority'), reverse=True)
         routes_created_inside_iteration = 0
         for i in self.trains:
             self.logger.debug('train id: {}'.format(i.train_id))
