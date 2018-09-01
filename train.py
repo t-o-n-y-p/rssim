@@ -423,6 +423,7 @@ class Train(GameObject):
                         self.cart_sprites[i] = pyglet.sprite.Sprite(self.tail_image, batch=self.batch, group=self.group)
                     else:
                         self.cart_sprites[i] = pyglet.sprite.Sprite(self.mid_image, batch=self.batch, group=self.group)
+                    break
 
         else:
             self.logger.debug('using relative positions')
@@ -435,6 +436,7 @@ class Train(GameObject):
                         self.cart_sprites[i] = pyglet.sprite.Sprite(self.tail_image, batch=self.batch, group=self.group)
                     else:
                         self.cart_sprites[i] = pyglet.sprite.Sprite(self.mid_image, batch=self.batch, group=self.group)
+                    break
 
         self.logger.debug('------- END DRAWING -------')
         self.logger.info('train is in place')
