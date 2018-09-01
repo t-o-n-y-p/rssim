@@ -76,8 +76,7 @@ class RSSim(Game):
             self.logger.debug('invisible = {}'.format(invisible))
             if placement is not None:
                 self.signals[0][j] = Signal(placement, flip_needed, invisible, 0, j,
-                                            self.batch, self.signals_and_trains_ordered_group,
-                                            self.signals_ordered_group)
+                                            self.batch, self.signals_and_trains_ordered_group)
 
         self.logger.info('track 0 base routes and signals created')
         for j in (self.c['base_route_types']['left_entry_base_route'],
@@ -122,8 +121,7 @@ class RSSim(Game):
                 if placement is not None and k in (self.c['base_route_types']['right_exit_platform_base_route'],
                                                    self.c['base_route_types']['left_exit_platform_base_route']):
                     self.signals[i][k] = Signal(placement, flip_needed, invisible, i, k,
-                                                self.batch, self.signals_and_trains_ordered_group,
-                                                self.signals_ordered_group)
+                                                self.batch, self.signals_and_trains_ordered_group)
 
             self.logger.debug('track {} base routes and signals created'.format(i))
 

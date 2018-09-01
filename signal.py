@@ -26,7 +26,7 @@ def _signal_is_not_invisible(fn):
 
 
 class Signal(GameObject):
-    def __init__(self, placement, flip_needed, invisible, track_number, route_type, batch, base_group, signal_group):
+    def __init__(self, placement, flip_needed, invisible, track_number, route_type, batch, signal_group):
         super().__init__()
         self.logger = logging.getLogger('game.signal_{}_{}'.format(route_type, track_number))
         self.logger.debug('------- START INIT -------')
@@ -38,7 +38,6 @@ class Signal(GameObject):
         # where to place signal on map
         self.placement = placement
         self.batch = batch
-        self.base_group = base_group
         self.signal_group = signal_group
         # for left-directed routes we need to flip signal (its default image is for right-directed routes)
         self.flip_needed = flip_needed
@@ -46,20 +45,14 @@ class Signal(GameObject):
                           .format(self.track_number, self.route_type, self.invisible, self.placement, self.flip_needed))
         # initialize signal state
         self.state = None
-        self.base_image = pyglet.image.load(self.c['signal_config']['signal_image_base_path'])
-        self.base_image.anchor_x = 5
-        self.base_image.anchor_y = 5
-        self.base_sprite = pyglet.sprite.Sprite(self.base_image,
-                                                x=self.placement[0], y=self.placement[1],
-                                                batch=self.batch, group=self.base_group)
-        self.logger.debug('base image loaded: {}'.format(self.c['signal_config']['signal_image_base_path']))
         self.image = {self.c['signal_config']['red_signal']:
                       pyglet.image.load(self.c['signal_image_path'][self.c['signal_config']['red_signal']]),
                       self.c['signal_config']['green_signal']:
                       pyglet.image.load(self.c['signal_image_path'][self.c['signal_config']['green_signal']])}
-        if self.flip_needed:
-            self.base_sprite.rotation = 180.0
-            self.logger.debug('base image flipped')
+        self.image[self.c['signal_config']['red_signal']].anchor_x = 5
+        self.image[self.c['signal_config']['red_signal']].anchor_y = 5
+        self.image[self.c['signal_config']['green_signal']].anchor_x = 5
+        self.image[self.c['signal_config']['green_signal']].anchor_y = 5
 
         self.base_route_opened_list = []
         self.base_route_exit = None
@@ -67,6 +60,10 @@ class Signal(GameObject):
         self.sprite = pyglet.sprite.Sprite(self.image[self.state],
                                            x=self.placement[0], y=self.placement[1],
                                            batch=self.batch, group=self.signal_group)
+        if self.flip_needed:
+            self.sprite.rotation = 180.0
+            self.logger.debug('base image flipped')
+
         self.logger.debug('------- END INIT -------')
         self.logger.warning('signal init completed')
 
@@ -118,13 +115,9 @@ class Signal(GameObject):
         self.logger.debug('signal is not invisible, drawing')
         signal_position = (base_offset[0] + self.placement[0],
                            base_offset[1] + self.c['graphics']['map_resolution'][1] - self.placement[1]
-                           - self.base_image.height)
+                           - self.image[self.state].height)
         # reserved for future transition between states,
         # for now there are only 2 states: pure red and pure green
-        if self.flip_needed:
-            self.base_sprite.position = (signal_position[0] + 4, signal_position[1] + 4)
-        else:
-            self.base_sprite.position = (signal_position[0] + 5, signal_position[1] + 5)
 
         self.logger.debug('signal base image is in place')
         self.sprite.position = signal_position
@@ -142,12 +135,10 @@ class Signal(GameObject):
         if not self.base_route_exit.route_config['opened']:
             if self.state == self.c['signal_config']['green_signal']:
                 self.state = self.c['signal_config']['red_signal']
-                if self.sprite is not None:
-                    self.sprite.delete()
-                    self.sprite = None
+                self.sprite.image = self.image[self.state]
+                if self.flip_needed:
+                    self.sprite.rotation = 180.0
 
-                self.sprite = pyglet.sprite.Sprite(self.image[self.state],
-                                                   batch=self.batch, group=self.signal_group)
             self.logger.debug('no train approaching, signal is RED')
         else:
             for i in self.base_route_opened_list:
@@ -157,12 +148,10 @@ class Signal(GameObject):
             if self.base_route_exit.route_config['last_opened_by'] not in opened_by:
                 if self.state == self.c['signal_config']['green_signal']:
                     self.state = self.c['signal_config']['red_signal']
-                    if self.sprite is not None:
-                        self.sprite.delete()
-                        self.sprite = None
+                    self.sprite.image = self.image[self.state]
+                    if self.flip_needed:
+                        self.sprite.rotation = 180.0
 
-                    self.sprite = pyglet.sprite.Sprite(self.image[self.state],
-                                                       batch=self.batch, group=self.signal_group)
                 self.logger.debug('route through signal is not opened, signal is RED')
             else:
                 for i in self.base_route_opened_list:
@@ -175,22 +164,17 @@ class Signal(GameObject):
                 if busy_logical and self.base_route_exit.route_config['last_opened_by'] not in entered_by:
                     if self.state == self.c['signal_config']['green_signal']:
                         self.state = self.c['signal_config']['red_signal']
-                        if self.sprite is not None:
-                            self.sprite.delete()
-                            self.sprite = None
+                        self.sprite.image = self.image[self.state]
+                        if self.flip_needed:
+                            self.sprite.rotation = 180.0
 
-                        self.sprite = pyglet.sprite.Sprite(self.image[self.state],
-                                                           batch=self.batch, group=self.signal_group)
                     self.logger.debug('route through signal is opened but busy by another train, signal is RED')
                 else:
                     if self.state == self.c['signal_config']['red_signal']:
                         self.state = self.c['signal_config']['green_signal']
-                        if self.sprite is not None:
-                            self.sprite.delete()
-                            self.sprite = None
-
-                        self.sprite = pyglet.sprite.Sprite(self.image[self.state],
-                                                           batch=self.batch, group=self.signal_group)
+                        self.sprite.image = self.image[self.state]
+                        if self.flip_needed:
+                            self.sprite.rotation = 180.0
 
                     self.logger.debug('route through signal is opened and free, signal is GREEN')
                     for i in self.base_route_opened_list:

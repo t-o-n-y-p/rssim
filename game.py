@@ -48,8 +48,7 @@ class Game:
         self.game_window_position = win32gui.GetWindowRect(self.game_window_handler)
         self.absolute_mouse_pos = win32api.GetCursorPos()
         self.batch = pyglet.graphics.Batch()
-        self.map_ordered_group = pyglet.graphics.OrderedGroup(0)
-        self.signals_ordered_group = pyglet.graphics.OrderedGroup(1)
+        self.map_ordered_group = pyglet.graphics.OrderedGroup(1)
         self.signals_and_trains_ordered_group = pyglet.graphics.OrderedGroup(2)
         self.twilight_ordered_group = pyglet.graphics.OrderedGroup(3)  # reserved for future use
         self.top_bottom_bars_clock_face_ordered_group = pyglet.graphics.OrderedGroup(4)
@@ -61,10 +60,10 @@ class Game:
             self.fps_display_label \
                 = pyglet.text.Label(text='0', font_name='Courier New',
                                     font_size=self.c['graphics']['button_font_size'],
-                                    x=self.c['graphics']['screen_resolution'][0] - 120,
+                                    x=self.c['graphics']['screen_resolution'][0] - 75,
                                     y=self.c['graphics']['screen_resolution'][1]
                                     - self.c['graphics']['top_bar_height'] // 2,
-                                    anchor_x='center', anchor_y='center',
+                                    anchor_x='right', anchor_y='center',
                                     batch=self.batch, group=self.buttons_text_minute_hand_ordered_group)
 
         self.surface.set_icon(pyglet.image.load('icon.ico'))
@@ -179,6 +178,8 @@ class Game:
 
         self.c['graphics']['day_text_color'] = tuple(day_text_color)
         self.c['graphics']['fps_display_enabled'] = self.game_config['graphics'].getboolean('fps_display_enabled')
+        self.c['graphics']['fps_display_update_interval'] \
+            = self.game_config['graphics'].getfloat('fps_display_update_interval')
 
         self.c['base_route_types'] = {}
         self.c['base_route_types']['left_entry_base_route'] \
@@ -378,7 +379,8 @@ class Game:
             self.logger.critical('handling events: {} sec'.format(time_2 - time_1))
             self.logger.critical('updating: {} sec'.format(time_3 - time_2))
             self.logger.critical('drawing: {} sec'.format(time_4 - time_3))
-            if self.fps_display_label is not None and time.perf_counter() - fps_timer > 0.25:
+            if self.fps_display_label is not None \
+                    and time.perf_counter() - fps_timer > self.c['graphics']['fps_display_update_interval']:
                 self.fps_display_label.text = str(round(float(1/(time_4 - time_1)))) + ' FPS'
                 fps_timer = time.perf_counter()
 

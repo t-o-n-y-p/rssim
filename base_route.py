@@ -87,18 +87,6 @@ class BaseRoute(GameObject):
         self.logger.debug('last_entered_by: {}'.format(self.route_config['last_entered_by']))
         self.logger.info('user-related config parsed')
         # parse stable config
-        if self.config['route_config']['image_path'] == 'None':
-            self.route_config['image_path'] = None
-        else:
-            self.route_config['image_path'] = self.config['route_config']['image_path']
-
-        self.logger.debug('image_path: {}'.format(self.route_config['image_path']))
-        if self.config['route_config']['image_position'] == 'None':
-            self.route_config['image_position'] = None
-        else:
-            image_position_parsed = self.config['route_config']['image_position'].split(',')
-            self.route_config['image_position'] = (int(image_position_parsed[0]), int(image_position_parsed[1]))
-
         supported_carts_parsed = self.config['route_config']['supported_carts'].split(',')
         self.route_config['supported_carts'] = (int(supported_carts_parsed[0]), int(supported_carts_parsed[1]))
         self.logger.debug('supported_carts: {}'.format(self.route_config['supported_carts']))
