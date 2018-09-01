@@ -115,8 +115,7 @@ class Signal(GameObject):
         self.logger.debug('------- START DRAWING -------')
         self.logger.debug('signal is not invisible, drawing')
         signal_position = (base_offset[0] + self.placement[0],
-                           base_offset[1] + self.c['graphics']['map_resolution'][1] - self.placement[1]
-                           - self.image[self.state].height)
+                           base_offset[1] + self.c['graphics']['map_resolution'][1] - self.placement[1])
         self.logger.debug('signal base image is in place')
         self.sprite.position = signal_position
         self.logger.debug('signal light image is in place')
