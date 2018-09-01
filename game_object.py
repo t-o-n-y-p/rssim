@@ -13,7 +13,6 @@ class GameObject:
         screen_resolution = self.game_config['graphics']['screen_resolution'].split(',')
         self.c['graphics']['screen_resolution'] = (int(screen_resolution[0]), int(screen_resolution[1]))
         self.c['graphics']['frame_rate'] = self.game_config['graphics'].getint('frame_rate')
-        self.c['graphics']['background_image'] = self.game_config['graphics']['background_image']
         map_resolution = self.game_config['graphics']['map_resolution'].split(',')
         self.c['graphics']['map_resolution'] = (int(map_resolution[0]), int(map_resolution[1]))
         base_offset_upper_left_limit = self.game_config['graphics']['base_offset_upper_left_limit'].split(',')

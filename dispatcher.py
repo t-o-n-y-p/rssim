@@ -31,6 +31,7 @@ class Dispatcher(GameObject):
         self.train_ids = []
         self.train_routes = []
         self.tracks = []
+        self.signals = []
         self.batch = batch
         self.group = group
         # next train ID, used by signals to distinguish trains
@@ -216,6 +217,10 @@ class Dispatcher(GameObject):
 
     @_game_is_not_paused
     def update(self, game_paused):
+        self.signals = sorted(self.signals, key=attrgetter('priority'), reverse=True)
+        for s in self.signals:
+            s.update(game_paused)
+
         self.logger.debug('------- DISPATCHER UPDATE START -------')
         for z1 in range(len(self.train_routes)):
             for z2 in self.train_routes[z1]:
@@ -231,7 +236,6 @@ class Dispatcher(GameObject):
                         self.supported_carts[0] = self.train_routes[z1][z2].supported_carts[0]
 
         self.logger.debug('supported_carts: {}'.format(self.supported_carts))
-        # self.trains = sorted(self.trains, key=attrgetter('priority'), reverse=True)
         routes_created_inside_iteration = 0
         for i in self.trains:
             self.logger.debug('train id: {}'.format(i.train_id))
@@ -247,8 +251,7 @@ class Dispatcher(GameObject):
                 if i.boarding_time <= 60 and i.train_route is None and routes_created_inside_iteration == 0:
                     i.assign_new_train_route(self.train_routes[i.track_number][
                                                 self.c['train_route_types']['exit_train_route'][i.direction]
-                                             ],
-                                             i.train_id, game_paused)
+                                             ], game_paused)
                     routes_created_inside_iteration += 1
                     self.logger.info('train {} new route assigned: track {} {}'
                                      .format(i.train_id, i.train_route.track_number, i.train_route.route_type))
@@ -312,7 +315,7 @@ class Dispatcher(GameObject):
                         self.logger.info('train {} completed route: track {} {}'
                                          .format(i.train_id, i.train_route.track_number, i.train_route.route_type))
                         i.complete_train_route()
-                        i.assign_new_train_route(route_for_new_train, i.train_id, game_paused)
+                        i.assign_new_train_route(route_for_new_train, game_paused)
                         routes_created_inside_iteration += 1
                         self.logger.debug('routes_created_inside_iteration: {}'
                                           .format(routes_created_inside_iteration))
@@ -344,7 +347,7 @@ class Dispatcher(GameObject):
                                              .format(i.train_id, i.train_route.track_number,
                                                      i.train_route.route_type))
                             i.complete_train_route()
-                            i.assign_new_train_route(route_for_new_train, i.train_id, game_paused)
+                            i.assign_new_train_route(route_for_new_train, game_paused)
                             routes_created_inside_iteration += 1
                             self.logger.debug('routes_created_inside_iteration: {}'
                                               .format(routes_created_inside_iteration))
@@ -377,7 +380,7 @@ class Dispatcher(GameObject):
                         self.logger.info('train {} completed route: track {} {}'
                                          .format(i.train_id, i.train_route.track_number, i.train_route.route_type))
                         i.complete_train_route()
-                        i.assign_new_train_route(route_for_new_train, i.train_id, game_paused)
+                        i.assign_new_train_route(route_for_new_train, game_paused)
                         routes_created_inside_iteration += 1
                         self.logger.debug('routes_created_inside_iteration: {}'
                                           .format(routes_created_inside_iteration))
@@ -434,7 +437,7 @@ class Dispatcher(GameObject):
                                           i, self.train_counter, self.train_head_image, self.train_mid_image,
                                           self.train_tail_image, self.batch, self.group)
                         self.train_ids.append(self.train_counter)
-                        new_train.train_route.open_train_route(new_train.train_id, game_paused)
+                        new_train.train_route.open_train_route(new_train.train_id, new_train.priority, game_paused)
                         new_train.train_route.set_stop_points(new_train.carts)
                         new_train.init_train_position()
                         self.logger.info('train created. id {}, track {}, route = {}, status = {}'
@@ -450,7 +453,7 @@ class Dispatcher(GameObject):
                                           i, self.train_counter, self.train_head_image, self.train_mid_image,
                                           self.train_tail_image, self.batch, self.group)
                         self.train_ids.append(self.train_counter)
-                        new_train.train_route.open_train_route(new_train.train_id, game_paused)
+                        new_train.train_route.open_train_route(new_train.train_id, new_train.priority, game_paused)
                         new_train.train_route.set_stop_points(new_train.carts)
                         new_train.init_train_position()
                         self.logger.info('train created. id {}, track {}, route = {}, status = {}'

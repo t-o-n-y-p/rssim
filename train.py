@@ -50,6 +50,11 @@ class Train(GameObject):
             self.priority = 0
             self.boarding_time = self.carts * 300
 
+        if self.train_route is not None:
+            if self.train_route.base_routes[0].route_config['force_busy'] \
+                    and self.train_route.base_routes[0].route_config['last_entered_by'] == self.train_id:
+                self.train_route.base_routes[0].priority = self.priority
+
         self.logger.debug('set priority: {}'.format(self.priority))
         self.logger.debug('set boarding_time: {}'.format(self.boarding_time))
         self.cart_sprites = [pyglet.sprite.Sprite(head_image, batch=batch, group=group), ]
@@ -180,13 +185,13 @@ class Train(GameObject):
         self.logger.debug('------- END COMPLETE_TRAIN_ROUTE FUNCTION -------')
         self.logger.info('train route completed')
 
-    def assign_new_train_route(self, new_train_route, train_id, game_paused):
+    def assign_new_train_route(self, new_train_route, game_paused):
         self.logger.debug('------- START ASSIGNING NEW TRAIN ROUTE -------')
         # when new route is assigned,
         # we open the route and convert carts positions to relative
         self.train_route = new_train_route
         self.train_route.set_stop_points(self.carts)
-        self.train_route.open_train_route(train_id, game_paused)
+        self.train_route.open_train_route(self.train_id, self.priority, game_paused)
         self.logger.debug('converting cart positions to relative')
         for i in self.carts_position_abs:
             self.carts_position.append([self.train_route.trail_points.index(i[0]),
@@ -211,6 +216,11 @@ class Train(GameObject):
         elif self.carts < 21:
             self.priority += 1
             self.logger.debug('increased priority by 1')
+
+        if self.train_route is not None:
+            if self.train_route.base_routes[0].route_config['force_busy'] \
+                    and self.train_route.base_routes[0].route_config['last_entered_by'] == self.train_id:
+                self.train_route.base_routes[0].priority = self.priority
 
         # while boarding is in progress, train does not move indeed
         self.logger.debug('state: {}'.format(self.state))
@@ -291,8 +301,9 @@ class Train(GameObject):
                 self.logger.debug('speed_factor_position: {}'.format(self.speed_factor_position))
                 self.logger.debug('speed_factor_position limit: {}'
                                   .format(self.c['train_config']['train_acceleration_factor_length']))
-                self.speed = self.c['train_config']['train_acceleration_factor'][self.speed_factor_position + 1] \
-                             - self.c['train_config']['train_acceleration_factor'][self.speed_factor_position]
+                self.speed \
+                    = self.c['train_config']['train_acceleration_factor'][self.speed_factor_position + 1] \
+                    - self.c['train_config']['train_acceleration_factor'][self.speed_factor_position]
                 self.logger.debug('speed: {}'.format(self.speed))
 
             # just stay sill here

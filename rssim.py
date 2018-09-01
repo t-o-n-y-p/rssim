@@ -827,11 +827,6 @@ class RSSim(Game):
                 self.objects.append(self.base_routes[i][n])
                 self.logger.debug('base route {} {} appended to global objects list'.format(i, n))
 
-        for i in range(self.c['dispatcher_config']['tracks_ready'] + 1):
-            for n in self.signals[i]:
-                self.objects.append(self.signals[i][n])
-                self.logger.debug('signal {} {} appended to global objects list'.format(i, n))
-
         self.logger.info('base routes and signals appended')
         # train routes and tracks are added to dispatcher which we create right now
         self.dispatcher = Dispatcher(self.batch, self.signals_and_trains_ordered_group)
@@ -845,6 +840,11 @@ class RSSim(Game):
         for i in range(self.c['dispatcher_config']['tracks_ready']):
             self.dispatcher.tracks.append(self.tracks[i])
             self.logger.debug('track {} appended to dispatcher'.format(i + 1))
+
+        for i in range(self.c['dispatcher_config']['tracks_ready'] + 1):
+            for n in self.signals[i]:
+                self.dispatcher.signals.append(self.signals[i][n])
+                self.logger.debug('signal {} {} appended to dispatcher'.format(i, n))
 
         self.logger.info('all tracks appended to dispatcher')
         # now we add dispatcher itself to generic objects list

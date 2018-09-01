@@ -50,7 +50,7 @@ class BaseRoute(GameObject):
         self.checkpoints = []
         self.junction_position = []
         self.read_state()
-
+        self.priority = 0
         self.logger.debug('------- END INIT -------')
         self.logger.warning('base route init completed')
 

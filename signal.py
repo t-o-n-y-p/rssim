@@ -37,6 +37,7 @@ class Signal(GameObject):
         self.invisible = invisible
         # where to place signal on map
         self.placement = placement
+        self.priority = 0
         self.batch = batch
         self.signal_group = signal_group
         # for left-directed routes we need to flip signal (its default image is for right-directed routes)
@@ -116,9 +117,6 @@ class Signal(GameObject):
         signal_position = (base_offset[0] + self.placement[0],
                            base_offset[1] + self.c['graphics']['map_resolution'][1] - self.placement[1]
                            - self.image[self.state].height)
-        # reserved for future transition between states,
-        # for now there are only 2 states: pure red and pure green
-
         self.logger.debug('signal base image is in place')
         self.sprite.position = signal_position
         self.logger.debug('signal light image is in place')
@@ -133,6 +131,7 @@ class Signal(GameObject):
         entered_by = []
 
         if not self.base_route_exit.route_config['opened']:
+            self.priority = 0
             if self.state == self.c['signal_config']['green_signal']:
                 self.state = self.c['signal_config']['red_signal']
                 self.sprite.image = self.image[self.state]
@@ -141,6 +140,7 @@ class Signal(GameObject):
 
             self.logger.debug('no train approaching, signal is RED')
         else:
+            self.priority = self.base_route_exit.priority
             for i in self.base_route_opened_list:
                 if i.route_config['opened']:
                     opened_by.append(i.route_config['last_opened_by'])
