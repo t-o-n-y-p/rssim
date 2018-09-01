@@ -16,35 +16,32 @@ def _game_is_not_paused(fn):
 
 
 class InGameTime(GameObject):
-    def __init__(self, batch, clock_face_group, hands_group):
+    def __init__(self, batch, clock_face_group, day_text_group, minute_hand_group, hour_hand_group):
         super().__init__()
         self.logger = logging.getLogger('game.in-game_time')
         self.logger.debug('------- START INIT -------')
         self.config = configparser.RawConfigParser()
         self.logger.debug('config parser created')
-        self.batch = batch
-        self.clock_face_group = clock_face_group
-        self.hands_group = hands_group
         self.clock_face_image = pyglet.image.load('img/clock_face.png')
         self.clock_face_image.anchor_x = self.clock_face_image.width // 2 + 1
         self.clock_face_image.anchor_y = self.clock_face_image.height // 2 + 1
         self.clock_face_sprite = pyglet.sprite.Sprite(self.clock_face_image,
                                                       x=self.c['graphics']['screen_resolution'][0] - 101,
-                                                      y=101, batch=self.batch, group=self.clock_face_group)
+                                                      y=101, batch=batch, group=clock_face_group)
         self.logger.debug('loaded clock face image: img/clock_face.png')
         self.minute_hand_image = pyglet.image.load('img/minute_hand.png')
         self.minute_hand_image.anchor_x = self.minute_hand_image.width // 2 + 1
         self.minute_hand_image.anchor_y = self.minute_hand_image.height // 2 + 1
         self.minute_hand_sprite = pyglet.sprite.Sprite(self.minute_hand_image,
                                                        x=self.c['graphics']['screen_resolution'][0] - 101,
-                                                       y=101, batch=self.batch, group=self.hands_group)
+                                                       y=101, batch=batch, group=minute_hand_group)
         self.logger.debug('loaded minute hand image: img/minute_hand.png')
         self.hour_hand_image = pyglet.image.load('img/hour_hand.png')
         self.hour_hand_image.anchor_x = self.hour_hand_image.width // 2 + 1
         self.hour_hand_image.anchor_y = self.hour_hand_image.height // 2 + 1
         self.hour_hand_sprite = pyglet.sprite.Sprite(self.hour_hand_image,
                                                      x=self.c['graphics']['screen_resolution'][0] - 101,
-                                                     y=101, batch=self.batch, group=self.hands_group)
+                                                     y=101, batch=batch, group=hour_hand_group)
         self.logger.debug('loaded hour hand image: img/hour_hand.png')
         self.epoch_timestamp = None
         self.day = None
@@ -55,9 +52,10 @@ class InGameTime(GameObject):
         self.day_text = pyglet.text.Label('Day {}'.format(self.day),
                                           font_name=self.c['graphics']['font_name'],
                                           font_size=self.c['graphics']['day_font_size'],
+                                          color=self.c['graphics']['day_text_color'],
                                           x=self.c['graphics']['screen_resolution'][0] - 101, y=70,
                                           anchor_x='center', anchor_y='center',
-                                          batch=self.batch, group=self.hands_group)
+                                          batch=batch, group=day_text_group)
         self.logger.debug('------- END INIT -------')
         self.logger.warning('time init completed')
 

@@ -34,7 +34,7 @@ def _game_is_not_paused(fn):
 
 
 class BaseRoute(GameObject):
-    def __init__(self, track_number, route_type, batch, group):
+    def __init__(self, track_number, route_type):
         super().__init__()
         self.logger = logging.getLogger('game.base_route_{}_{}'.format(track_number, route_type))
         self.logger.debug('------- START INIT -------')
@@ -305,8 +305,4 @@ class BaseRoute(GameObject):
             if self.route_config['construction_time'] <= 0:
                 self.route_config['locked'] = False
                 self.route_config['under_construction'] = False
-                self.sprite = pyglet.sprite.Sprite(pyglet.image.load(self.route_config['image_path']),
-                                                   x=self.route_config['image_position'][0],
-                                                   y=self.route_config['image_position'][1],
-                                                   batch=self.batch, group=self.group)
                 self.logger.info('route unlocked and is no longer under construction')

@@ -48,12 +48,14 @@ class Game:
         self.game_window_position = win32gui.GetWindowRect(self.game_window_handler)
         self.absolute_mouse_pos = win32api.GetCursorPos()
         self.batch = pyglet.graphics.Batch()
-        self.map_ordered_group = pyglet.graphics.OrderedGroup(1)
-        self.base_routes_ordered_group = pyglet.graphics.OrderedGroup(2)
-        self.signals_and_trains_ordered_group = pyglet.graphics.OrderedGroup(3)
-        self.top_bottom_bars_ordered_group = pyglet.graphics.OrderedGroup(4)
-        self.buttons_ordered_group = pyglet.graphics.OrderedGroup(5)
-        self.buttons_text_ordered_group = pyglet.graphics.OrderedGroup(6)
+        self.map_ordered_group = pyglet.graphics.OrderedGroup(0)
+        self.signals_ordered_group = pyglet.graphics.OrderedGroup(1)
+        self.signals_and_trains_ordered_group = pyglet.graphics.OrderedGroup(2)
+        self.twilight_ordered_group = pyglet.graphics.OrderedGroup(3)  # reserved for future use
+        self.top_bottom_bars_clock_face_ordered_group = pyglet.graphics.OrderedGroup(4)
+        self.buttons_general_borders_day_text_ordered_group = pyglet.graphics.OrderedGroup(5)
+        self.buttons_text_minute_hand_ordered_group = pyglet.graphics.OrderedGroup(6)
+        self.buttons_borders_hour_hand_ordered_group = pyglet.graphics.OrderedGroup(7)
         self.fps_display_label = None
         if self.c['graphics']['fps_display_enabled']:
             self.fps_display_label \
@@ -63,7 +65,7 @@ class Game:
                                     y=self.c['graphics']['screen_resolution'][1]
                                     - self.c['graphics']['top_bar_height'] // 2,
                                     anchor_x='center', anchor_y='center',
-                                    batch=self.batch, group=self.buttons_text_ordered_group)
+                                    batch=self.batch, group=self.buttons_text_minute_hand_ordered_group)
 
         self.surface.set_icon(pyglet.image.load('icon.ico'))
         self.logger.debug('created screen with resolution {}'
@@ -85,7 +87,7 @@ class Game:
             = OnboardingTips(mini_map_image,
                              self.c['graphics']['screen_resolution'][0] - mini_map_image.width - 6,
                              self.c['graphics']['top_bar_height'] + 4,
-                             'mini_map', self.batch, self.buttons_ordered_group)
+                             'mini_map', self.batch, self.buttons_general_borders_day_text_ordered_group)
         self.mini_map_timer = 0
         self.logger.warning('game init completed')
 

@@ -67,7 +67,7 @@ class RSSim(Game):
                   self.c['base_route_types']['left_exit_base_route'],
                   self.c['base_route_types']['right_entry_base_route'],
                   self.c['base_route_types']['right_exit_base_route']):
-            self.base_routes[0][j] = BaseRoute(0, j, self.batch, self.base_routes_ordered_group)
+            self.base_routes[0][j] = BaseRoute(0, j)
             self.base_routes[0][j].read_trail_points()
             placement = self.base_routes[0][j].route_config['exit_signal_placement']
             self.logger.debug('placement = {}'.format(placement))
@@ -77,7 +77,8 @@ class RSSim(Game):
             self.logger.debug('invisible = {}'.format(invisible))
             if placement is not None:
                 self.signals[0][j] = Signal(placement, flip_needed, invisible, 0, j,
-                                            self.batch, self.signals_and_trains_ordered_group)
+                                            self.batch, self.signals_and_trains_ordered_group,
+                                            self.signals_ordered_group)
 
         self.logger.info('track 0 base routes and signals created')
         for j in (self.c['base_route_types']['left_entry_base_route'],
@@ -106,7 +107,7 @@ class RSSim(Game):
                       self.c['base_route_types']['left_exit_platform_base_route'],
                       self.c['base_route_types']['right_entry_platform_base_route'],
                       self.c['base_route_types']['right_exit_platform_base_route']):
-                self.base_routes[i][k] = BaseRoute(i, k, self.batch, self.base_routes_ordered_group)
+                self.base_routes[i][k] = BaseRoute(i, k)
                 if k in (self.c['base_route_types']['left_entry_platform_base_route'],
                          self.c['base_route_types']['left_exit_platform_base_route'],
                          self.c['base_route_types']['right_entry_platform_base_route'],
@@ -122,7 +123,8 @@ class RSSim(Game):
                 if placement is not None and k in (self.c['base_route_types']['right_exit_platform_base_route'],
                                                    self.c['base_route_types']['left_exit_platform_base_route']):
                     self.signals[i][k] = Signal(placement, flip_needed, invisible, i, k,
-                                                self.batch, self.signals_and_trains_ordered_group)
+                                                self.batch, self.signals_and_trains_ordered_group,
+                                                self.signals_ordered_group)
 
             self.logger.debug('track {} base routes and signals created'.format(i))
 
@@ -867,7 +869,7 @@ class RSSim(Game):
             = OnboardingTips(saved_onboarding_image,
                              self.c['graphics']['screen_resolution'][0] // 2 - saved_onboarding_image.width // 2,
                              self.c['graphics']['screen_resolution'][1] // 2 - saved_onboarding_image.height // 2,
-                             'game_saved', self.batch, self.buttons_ordered_group)
+                             'game_saved', self.batch, self.buttons_general_borders_day_text_ordered_group)
         self.objects.append(self.saved_onboarding_tip)
         self.mini_map_tip.update_image(pyglet.image.load('img/full_map_{}.png'
                                                          .format(self.dispatcher.unlocked_tracks)))
@@ -905,20 +907,30 @@ class RSSim(Game):
             self.saved_onboarding_tip.return_rect_area = True
             self.logger.critical('------- GAME SAVE END -------')
 
-        self.objects.append(InGameTime(self.batch, self.top_bottom_bars_ordered_group, self.buttons_ordered_group))
+        self.objects.append(InGameTime(self.batch,
+                                       self.top_bottom_bars_clock_face_ordered_group,
+                                       self.buttons_general_borders_day_text_ordered_group,
+                                       self.buttons_text_minute_hand_ordered_group,
+                                       self.buttons_borders_hour_hand_ordered_group))
         self.logger.debug('time appended to global objects list')
-        self.objects.append(TopAndBottomBar(self.batch, self.top_bottom_bars_ordered_group))
+        self.objects.append(TopAndBottomBar(self.batch,
+                                            self.top_bottom_bars_clock_face_ordered_group,
+                                            self.buttons_general_borders_day_text_ordered_group))
         self.logger.debug('bottom bar appended to global objects list')
         stop_button = Button((890, 673), (100, 40), ['Pause', 'Resume'], [pause_game, resume_game], False,
-                             self.batch, self.buttons_ordered_group, self.buttons_text_ordered_group)
+                             self.batch, self.buttons_general_borders_day_text_ordered_group,
+                             self.buttons_text_minute_hand_ordered_group)
         save_button = Button((780, 673), (100, 40), ['Save', ], [save_game, ], True,
-                             self.batch, self.buttons_ordered_group, self.buttons_text_ordered_group)
+                             self.batch, self.buttons_general_borders_day_text_ordered_group,
+                             self.buttons_text_minute_hand_ordered_group)
         close_button = Button((self.c['graphics']['screen_resolution'][0] - 34, 0), (34, 34),
                               ['X', ], [close_game, ], False,
-                              self.batch, self.buttons_ordered_group, self.buttons_text_ordered_group)
+                              self.batch, self.buttons_general_borders_day_text_ordered_group,
+                              self.buttons_text_minute_hand_ordered_group)
         iconify_button = Button((self.c['graphics']['screen_resolution'][0] - 66, 0), (34, 34),
                                 ['_', ], [iconify_game, ], False,
-                                self.batch, self.buttons_ordered_group, self.buttons_text_ordered_group)
+                                self.batch, self.buttons_general_borders_day_text_ordered_group,
+                                self.buttons_text_minute_hand_ordered_group)
         self.on_mouse_press_handlers.append(stop_button.handle_mouse_press)
         self.on_mouse_press_handlers.append(save_button.handle_mouse_press)
         self.on_mouse_press_handlers.append(close_button.handle_mouse_press)
