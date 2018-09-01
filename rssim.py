@@ -1,7 +1,6 @@
 import sys
 
 import win32api
-import win32gui
 import win32con
 import pyglet
 
@@ -949,21 +948,6 @@ class RSSim(Game):
         self.on_mouse_motion_handlers.append(iconify_button.handle_mouse_motion)
 
         self.on_mouse_drag_handlers.append(self.handle_mouse_drag)
-        """""
-        self.surface.push_handlers(on_mouse_press=stop_button.handle_mouse_press,
-                                   on_mouse_release=stop_button.handle_mouse_release,
-                                   on_mouse_motion=stop_button.handle_mouse_motion)
-        self.logger.debug('pause/resume button handler appended to global mouse handlers list')
-        self.surface.push_handlers(on_mouse_press=save_button.handle_mouse_press,
-                                   on_mouse_release=save_button.handle_mouse_release,
-                                   on_mouse_motion=save_button.handle_mouse_motion)
-        self.surface.push_handlers(on_mouse_press=close_button.handle_mouse_press,
-                                   on_mouse_release=close_button.handle_mouse_release,
-                                   on_mouse_motion=close_button.handle_mouse_motion)
-        self.surface.push_handlers(on_mouse_press=iconify_button.handle_mouse_press,
-                                   on_mouse_release=iconify_button.handle_mouse_release,
-                                   on_mouse_motion=iconify_button.handle_mouse_motion)
-        """""
         self.logger.debug('save button button handler appended to global mouse handlers list')
         self.objects.append(stop_button)
         self.logger.debug('pause/resume button appended to global objects list')
