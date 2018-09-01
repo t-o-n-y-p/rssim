@@ -910,18 +910,19 @@ class RSSim(Game):
         self.logger.debug('bottom bar appended to global objects list')
         stop_button = Button((890, 673), (100, 40), ['Pause', 'Resume'], [pause_game, resume_game], False,
                              self.batch, self.buttons_general_borders_day_text_ordered_group,
-                             self.buttons_text_minute_hand_ordered_group)
+                             self.buttons_text_minute_hand_ordered_group, self.buttons_borders_hour_hand_ordered_group)
         save_button = Button((780, 673), (100, 40), ['Save', ], [save_game, ], True,
                              self.batch, self.buttons_general_borders_day_text_ordered_group,
-                             self.buttons_text_minute_hand_ordered_group)
+                             self.buttons_text_minute_hand_ordered_group, self.buttons_borders_hour_hand_ordered_group)
         close_button = Button((self.c['graphics']['screen_resolution'][0] - 34, 0), (34, 34),
                               ['X', ], [close_game, ], False,
                               self.batch, self.buttons_general_borders_day_text_ordered_group,
-                              self.buttons_text_minute_hand_ordered_group)
-        iconify_button = Button((self.c['graphics']['screen_resolution'][0] - 66, 0), (34, 34),
+                              self.buttons_text_minute_hand_ordered_group, self.buttons_borders_hour_hand_ordered_group)
+        iconify_button = Button((self.c['graphics']['screen_resolution'][0] - 67, 0), (34, 34),
                                 ['_', ], [iconify_game, ], False,
                                 self.batch, self.buttons_general_borders_day_text_ordered_group,
-                                self.buttons_text_minute_hand_ordered_group)
+                                self.buttons_text_minute_hand_ordered_group,
+                                self.buttons_borders_hour_hand_ordered_group)
         self.on_mouse_press_handlers.append(stop_button.handle_mouse_press)
         self.on_mouse_press_handlers.append(save_button.handle_mouse_press)
         self.on_mouse_press_handlers.append(close_button.handle_mouse_press)
