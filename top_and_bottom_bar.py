@@ -59,7 +59,7 @@ class TopAndBottomBar(GameObject):
                   )
         self.caption = pyglet.text.Label('Railway Station Simulator',
                                          font_name=self.c['graphics']['font_name'],
-                                         font_size=self.c['graphics']['day_font_size'],
+                                         font_size=self.c['graphics']['button_font_size'],
                                          x=10, y=self.c['graphics']['screen_resolution'][1]
                                          - self.c['graphics']['top_bar_height'] // 2,
                                          anchor_x='left', anchor_y='center',
