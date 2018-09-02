@@ -484,23 +484,6 @@ class Train(GameObject):
     def update_single_cart_sprite_abs(self, cart_number, base_offset):
         x = (self.carts_position_abs[cart_number][0][0] + self.carts_position_abs[cart_number][1][0]) // 2
         y = (self.carts_position_abs[cart_number][0][1] + self.carts_position_abs[cart_number][1][1]) // 2
-        point_one = float(self.carts_position_abs[cart_number][1][1] - self.carts_position_abs[cart_number][0][1])
-        point_two = float(self.carts_position_abs[cart_number][0][0] - self.carts_position_abs[cart_number][1][0])
-        self.logger.debug('difference on x and y axis: {} {}'.format(point_two, point_one))
-        if round(point_one, 0) == 0:
-            self.logger.debug('cart middle point: {} {}'.format(x, y))
-            if round(point_two, 0) > 0:
-                self.logger.debug('no need to flip')
-            else:
-                self.cart_sprites[cart_number].rotation = 180.0
-                self.logger.debug('flipped cart image to match direction')
-
-        else:
-            angle = math.atan2(point_one, point_two) * float(180) / math.pi
-            self.logger.debug('angle: {}'.format(angle))
-            self.cart_sprites[cart_number].rotation = (-1) * angle
-            self.logger.debug('rotated cart')
-
         self.cart_sprites[cart_number].position = (base_offset[0] + x,
                                                    base_offset[1] + self.c['graphics']['map_resolution'][1] - y - 1)
         if self.cart_sprites[cart_number].visible \
