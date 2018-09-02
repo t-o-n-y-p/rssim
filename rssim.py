@@ -860,9 +860,10 @@ class RSSim(Game):
             = OnboardingTips(saved_onboarding_image,
                              self.c['graphics']['screen_resolution'][0] // 2 - saved_onboarding_image.width // 2,
                              self.c['graphics']['screen_resolution'][1] // 2 - saved_onboarding_image.height // 2,
-                             'game_saved', self.batch, self.buttons_general_borders_day_text_ordered_group)
+                             'game_saved', self.batch, self.top_bottom_bars_clock_face_ordered_group,
+                             self.buttons_general_borders_day_text_ordered_group)
         self.objects.append(self.saved_onboarding_tip)
-        self.mini_map_tip.update_image(pyglet.image.load('img/full_map_{}.png'
+        self.mini_map_tip.update_image(pyglet.image.load('img/mini_map/{}/mini_map.png'
                                                          .format(self.dispatcher.unlocked_tracks)))
         self.dispatcher.mini_map_tip = self.mini_map_tip
         self.objects.append(self.mini_map_tip)

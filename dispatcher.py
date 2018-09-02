@@ -37,7 +37,7 @@ class Dispatcher(GameObject):
         # next train ID, used by signals to distinguish trains
         self.train_counter = None
         self.supported_carts = []
-        self.unlocked_tracks = 0
+        self.unlocked_tracks = 4
         self.train_head_image = \
             pyglet.image.load('{}_head.png'.format(self.c['train_config']['train_cart_image_path']))
         self.train_head_image.anchor_x = self.train_head_image.width // 2 + 1
@@ -229,7 +229,7 @@ class Dispatcher(GameObject):
                         self.unlocked_tracks = self.train_routes[z1][z2].track_number
                         if self.mini_map_tip is not None:
                             self.mini_map_tip.update_image(
-                                pyglet.image.load('img/full_map_{}.png'
+                                pyglet.image.load('img/mini_map/{}/mini_map.png'
                                                   .format(self.unlocked_tracks)))
 
                     if self.train_routes[z1][z2].supported_carts[0] in range(1, self.supported_carts[0]):

@@ -81,12 +81,13 @@ class Game:
         self.app_window_move_mode = False
         self.map_move_mode = False
         self.app_window_move_offset = ()
-        mini_map_image = pyglet.image.load('img/full_map_4.png')
+        mini_map_image = pyglet.image.load('img/mini_map/5/mini_map.png')
         self.mini_map_tip \
             = OnboardingTips(mini_map_image,
                              self.c['graphics']['screen_resolution'][0] - mini_map_image.width - 6,
                              self.c['graphics']['top_bar_height'] + 4,
-                             'mini_map', self.batch, self.buttons_general_borders_day_text_ordered_group)
+                             'mini_map', self.batch, self.top_bottom_bars_clock_face_ordered_group,
+                             self.buttons_general_borders_day_text_ordered_group)
         self.mini_map_timer = 0
         self.dispatcher = None
         self.logger.warning('game init completed')
