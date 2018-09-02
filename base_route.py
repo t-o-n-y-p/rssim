@@ -2,27 +2,9 @@ import configparser
 import logging
 import os
 
-import pyglet
-
 from game_object import GameObject
 from railroad_switch import RailroadSwitch
 from crossover import Crossover
-
-
-def _image_exists(fn):
-    def _draw_if_image_is_not_none(*args, **kwargs):
-        if args[0].sprite is not None:
-            fn(*args, **kwargs)
-
-    return _draw_if_image_is_not_none
-
-
-def _route_is_not_locked(fn):
-    def _draw_if_route_is_not_locked(*args, **kwargs):
-        if not args[0].route_config['locked']:
-            fn(*args, **kwargs)
-
-    return _draw_if_route_is_not_locked
 
 
 def _game_is_not_paused(fn):
@@ -69,18 +51,12 @@ class BaseRoute(GameObject):
                                                                                     self.route_type))
             self.logger.debug('config parsed from default_cfg')
         # parse user-related config
-        self.route_config['locked'] = self.config['user_data'].getboolean('locked')
-        self.logger.debug('locked: {}'.format(self.route_config['locked']))
         self.route_config['force_busy'] = self.config['user_data'].getboolean('force_busy')
         self.logger.debug('force_busy: {}'.format(self.route_config['force_busy']))
         self.route_config['busy'] = self.config['user_data'].getboolean('busy')
         self.logger.debug('busy: {}'.format(self.route_config['busy']))
         self.route_config['opened'] = self.config['user_data'].getboolean('opened')
         self.logger.debug('opened: {}'.format(self.route_config['opened']))
-        self.route_config['under_construction'] = self.config['user_data'].getboolean('under_construction')
-        self.logger.debug('under_construction: {}'.format(self.route_config['under_construction']))
-        self.route_config['construction_time'] = self.config['user_data'].getint('construction_time')
-        self.logger.debug('construction_time: {}'.format(self.route_config['construction_time']))
         self.route_config['last_opened_by'] = self.config['user_data'].getint('last_opened_by')
         self.logger.debug('last_opened_by: {}'.format(self.route_config['last_opened_by']))
         self.route_config['last_entered_by'] = self.config['user_data'].getint('last_entered_by')
@@ -166,18 +142,12 @@ class BaseRoute(GameObject):
             os.mkdir('user_cfg/base_route/track{}'.format(self.track_number))
             self.logger.debug('created user_cfg/base_route/track{} folder'.format(self.track_number))
 
-        self.config['user_data']['locked'] = str(self.route_config['locked'])
-        self.logger.debug('locked value to save: {}'.format(self.config['user_data']['locked']))
         self.config['user_data']['force_busy'] = str(self.route_config['force_busy'])
         self.logger.debug('force_busy value to save: {}'.format(self.config['user_data']['force_busy']))
         self.config['user_data']['busy'] = str(self.route_config['busy'])
         self.logger.debug('busy value to save: {}'.format(self.config['user_data']['busy']))
         self.config['user_data']['opened'] = str(self.route_config['opened'])
         self.logger.debug('opened value to save: {}'.format(self.config['user_data']['opened']))
-        self.config['user_data']['under_construction'] = str(self.route_config['under_construction'])
-        self.logger.debug('under_construction value to save: {}'.format(self.config['user_data']['under_construction']))
-        self.config['user_data']['construction_time'] = str(self.route_config['construction_time'])
-        self.logger.debug('construction_time value to save: {}'.format(self.config['user_data']['construction_time']))
         self.config['user_data']['last_opened_by'] = str(self.route_config['last_opened_by'])
         self.logger.debug('last_opened_by value to save: {}'.format(self.config['user_data']['last_opened_by']))
         self.config['user_data']['last_entered_by'] = str(self.route_config['last_entered_by'])
@@ -281,16 +251,3 @@ class BaseRoute(GameObject):
         self.logger.debug('busy = {}'.format(self.route_config['busy']))
         self.logger.debug('------- END UPDATING -------')
         self.logger.info('base route updated')
-
-    @_game_is_not_paused
-    def update(self, game_paused):
-        # self.update_base_route_state(game_paused)
-        # unlock routes (not available at the moment)
-        if self.route_config['under_construction']:
-            self.logger.info('base route is under construction')
-            self.route_config['construction_time'] -= 1
-            self.logger.info('construction_time left: {}'.format(self.route_config['construction_time']))
-            if self.route_config['construction_time'] <= 0:
-                self.route_config['locked'] = False
-                self.route_config['under_construction'] = False
-                self.logger.info('route unlocked and is no longer under construction')

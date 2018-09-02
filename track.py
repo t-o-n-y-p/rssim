@@ -13,14 +13,6 @@ def _game_is_not_paused(fn):
     return _update_if_game_is_not_paused
 
 
-def _track_state_is_not_overridden(fn):
-    def _update_if_track_state_is_not_overridden(*args, **kwargs):
-        if not args[0].override:
-            fn(*args, **kwargs)
-
-    return _update_if_track_state_is_not_overridden
-
-
 class Track(GameObject):
     def __init__(self, track_number, base_routes_in_track):
         super().__init__()
@@ -31,6 +23,9 @@ class Track(GameObject):
         self.track_number = track_number
         self.base_routes = base_routes_in_track
         self.logger.debug('track number and base routes set')
+        self.locked = False
+        self.under_construction = False
+        self.construction_time = 0
         self.busy = False
         self.last_entered_by = 0
         self.override = False
@@ -47,6 +42,9 @@ class Track(GameObject):
             self.config.read('default_cfg/tracks/track{}.ini'.format(self.track_number))
             self.logger.debug('config parsed from default_cfg')
 
+        self.locked = self.config['user_data'].getboolean('locked')
+        self.under_construction = self.config['user_data'].getboolean('under_construction')
+        self.construction_time = self.config['user_data'].getint('construction_time')
         self.busy = self.config['user_data'].getboolean('busy')
         self.logger.debug('busy: {}'.format(self.busy))
         self.last_entered_by = self.config['user_data'].getint('last_entered_by')
@@ -66,6 +64,9 @@ class Track(GameObject):
             os.mkdir('user_cfg/tracks')
             self.logger.debug('created user_cfg/tracks folder')
 
+        self.config['user_data']['locked'] = str(self.locked)
+        self.config['user_data']['under_construction'] = str(self.under_construction)
+        self.config['user_data']['construction_time'] = str(self.construction_time)
         self.config['user_data']['busy'] = str(self.busy)
         self.logger.debug('busy: {}'.format(self.config['user_data']['busy']))
         self.config['user_data']['last_entered_by'] = str(self.last_entered_by)
@@ -80,20 +81,30 @@ class Track(GameObject):
         self.logger.info('track state saved to file user_cfg/tracks/track{}.ini'.format(self.track_number))
 
     @_game_is_not_paused
-    @_track_state_is_not_overridden
     def update(self, game_paused):
         # if game is paused, track status should not be updated
         # if track settings are overridden, we do nothing too
         self.logger.debug('------- TRACK UPDATE START -------')
-        busy_1 = False
-        # if any of 4 base routes are busy, all track will become busy
-        for i in self.base_routes:
-            busy_1 = busy_1 or i.route_config['busy']
-            self.logger.debug('base route {} busy: {}'.format(i, i.route_config['busy']))
-            if i.route_config['busy']:
-                self.last_entered_by = i.route_config['last_entered_by']
+        if not self.override:
+            busy_1 = False
+            # if any of 4 base routes are busy, all track will become busy
+            for i in self.base_routes:
+                busy_1 = busy_1 or i.route_config['busy']
+                self.logger.debug('base route {} busy: {}'.format(i, i.route_config['busy']))
+                if i.route_config['busy']:
+                    self.last_entered_by = i.route_config['last_entered_by']
 
-        self.busy = busy_1
-        self.logger.debug('busy: {}'.format(self.busy))
+            self.busy = busy_1
+            self.logger.debug('busy: {}'.format(self.busy))
+
+        if self.under_construction:
+            self.logger.info('base route is under construction')
+            self.construction_time -= 1
+            self.logger.info('construction_time left: {}'.format(self.construction_time))
+            if self.construction_time <= 0:
+                self.locked = False
+                self.under_construction = False
+                self.logger.info('route unlocked and is no longer under construction')
+
         self.logger.debug('------- TRACK UPDATE END -------')
         self.logger.info('track updated')

@@ -222,18 +222,16 @@ class Dispatcher(GameObject):
             s.update(game_paused)
 
         self.logger.debug('------- DISPATCHER UPDATE START -------')
-        for z1 in range(len(self.train_routes)):
-            for z2 in self.train_routes[z1]:
-                if not self.train_routes[z1][z2].locked:
-                    if self.train_routes[z1][z2].track_number > self.unlocked_tracks:
-                        self.unlocked_tracks = self.train_routes[z1][z2].track_number
-                        if self.mini_map_tip is not None:
-                            self.mini_map_tip.update_image(
-                                pyglet.image.load('img/mini_map/{}/mini_map.png'
-                                                  .format(self.unlocked_tracks)))
+        for z3 in self.tracks:
+            if not z3.locked:
+                if z3.base_routes[0].route_config['supported_carts'][0] in range(1, self.supported_carts[0]):
+                    self.supported_carts[0] = z3.base_routes[0].route_config['supported_carts'][0]
 
-                    if self.train_routes[z1][z2].supported_carts[0] in range(1, self.supported_carts[0]):
-                        self.supported_carts[0] = self.train_routes[z1][z2].supported_carts[0]
+                if z3.track_number > self.unlocked_tracks:
+                    self.unlocked_tracks = z3.track_number
+                    if self.mini_map_tip is not None:
+                        self.mini_map_tip.update_image(pyglet.image.load('img/mini_map/{}/mini_map.png'
+                                                       .format(self.unlocked_tracks)))
 
         self.logger.debug('supported_carts: {}'.format(self.supported_carts))
         routes_created_inside_iteration = 0
@@ -304,7 +302,7 @@ class Dispatcher(GameObject):
                     # if compatible track is finally available,
                     # we open entry route for our train and leave loop
                     if i.carts in range(r.supported_carts[0], r.supported_carts[1] + 1) and not r.opened \
-                            and not r.locked and not self.tracks[j - 1].busy:
+                            and not self.tracks[j - 1].locked and not self.tracks[j - 1].busy:
                         self.logger.debug('all requirements met')
                         route_for_new_train = r
                         self.tracks[j - 1].override = True
@@ -335,7 +333,7 @@ class Dispatcher(GameObject):
                         # if compatible track is finally available,
                         # we open entry route for our train and leave loop
                         if i.carts in range(r.supported_carts[0], r.supported_carts[1] + 1) and not r.opened \
-                                and not self.tracks[j - 1].busy:
+                                and not self.tracks[j - 1].busy and not self.tracks[j - 1].locked:
                             self.logger.debug('all requirements met')
                             route_for_new_train = r
                             self.tracks[j - 1].override = True
@@ -400,8 +398,9 @@ class Dispatcher(GameObject):
             q4.update(game_paused)
             if q4.train_route:
                 q4.train_route.update(game_paused)
-            for q3 in range(len(self.tracks)):
-                self.tracks[q3].update(game_paused)
+
+        for q3 in range(len(self.tracks)):
+            self.tracks[q3].update(game_paused)
 
     def create_new_trains(self, game_paused):
         self.logger.debug('------- START CREATING NEW TRAINS -------')

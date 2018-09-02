@@ -44,6 +44,7 @@ class Game:
         self.surface = surface
         pyglet.gl.glEnable(pyglet.gl.GL_BLEND)
         pyglet.gl.glBlendFunc(pyglet.gl.GL_SRC_ALPHA, pyglet.gl.GL_ONE_MINUS_SRC_ALPHA)
+        self.surface.flip()
         self.game_window_handler = win32gui.GetActiveWindow()
         self.game_window_position = win32gui.GetWindowRect(self.game_window_handler)
         self.absolute_mouse_pos = win32api.GetCursorPos()
