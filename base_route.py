@@ -61,6 +61,15 @@ class BaseRoute(GameObject):
         self.logger.debug('last_opened_by: {}'.format(self.route_config['last_opened_by']))
         self.route_config['last_entered_by'] = self.config['user_data'].getint('last_entered_by')
         self.logger.debug('last_entered_by: {}'.format(self.route_config['last_entered_by']))
+        if self.config['user_data']['checkpoints'] == 'None':
+            self.checkpoints = []
+        else:
+            checkpoints_parsed = self.config['user_data']['checkpoints'].split(',')
+            for i in range(len(checkpoints_parsed)):
+                checkpoints_parsed[i] = int(checkpoints_parsed[i])
+
+            self.checkpoints = checkpoints_parsed
+
         self.logger.info('user-related config parsed')
         # parse stable config
         supported_carts_parsed = self.config['route_config']['supported_carts'].split(',')
@@ -152,6 +161,16 @@ class BaseRoute(GameObject):
         self.logger.debug('last_opened_by value to save: {}'.format(self.config['user_data']['last_opened_by']))
         self.config['user_data']['last_entered_by'] = str(self.route_config['last_entered_by'])
         self.logger.debug('last_entered_by value to save: {}'.format(self.config['user_data']['last_entered_by']))
+        if len(self.checkpoints) == 0:
+            self.config['user_data']['checkpoints'] = 'None'
+        else:
+            combined_string = ''
+            for i in self.checkpoints:
+                combined_string += '{},'.format(i)
+
+            combined_string = combined_string[0:len(combined_string)-1]
+            self.config['user_data']['checkpoints'] = combined_string
+
         self.logger.info('config ready to be saved to ini file')
 
         with open('user_cfg/base_route/track{}/track{}_{}.ini'.format(

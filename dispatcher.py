@@ -286,6 +286,7 @@ class Dispatcher(GameObject):
                         for j in i.cart_sprites:
                             j.delete()
 
+                        self.train_ids.remove(i.train_id)
                         self.trains.remove(i)
 
             # train is in approaching state if all tracks are busy,
