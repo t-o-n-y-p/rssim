@@ -16,7 +16,7 @@ class OnboardingTips(GameObject):
         self.group = group
         self.viewport_border_group = viewport_border_group
         self.x = x
-        self.y = self.c['graphics']['screen_resolution'][1] - y - self.image.height
+        self.y = y
         self.sprite = None
         self.viewport_border = None
         self.viewport_border_opacity = 0
@@ -45,24 +45,24 @@ class OnboardingTips(GameObject):
                                          ('v2i',
                                           (self.x + round((-1) * base_offset[0]
                                                           / self.c['graphics']['map_resolution'][0]
-                                                          * self.sprite.width) + 1,
+                                                          * self.sprite.width),
                                            self.y + round((-1) * base_offset[1]
                                                           / self.c['graphics']['map_resolution'][1]
-                                                          * self.sprite.height) + 1,
+                                                          * self.sprite.height),
                                            self.x + round(((-1) * base_offset[0]
                                                            + self.c['graphics']['screen_resolution'][0])
                                                           / self.c['graphics']['map_resolution'][0]
                                                           * self.sprite.width),
                                            self.y + round((-1) * base_offset[1]
                                                           / self.c['graphics']['map_resolution'][1]
-                                                          * self.sprite.height) + 1,
+                                                          * self.sprite.height),
                                            self.x + round(((-1) * base_offset[0]
                                                            + self.c['graphics']['screen_resolution'][0])
                                                           / self.c['graphics']['map_resolution'][0]
                                                           * self.sprite.width),
                                            self.y + round((-1) * base_offset[1]
                                                           / self.c['graphics']['map_resolution'][1]
-                                                          * self.sprite.height) + 1,
+                                                          * self.sprite.height),
                                            self.x + round(((-1) * base_offset[0]
                                                            + self.c['graphics']['screen_resolution'][0])
                                                           / self.c['graphics']['map_resolution'][0]
@@ -81,21 +81,21 @@ class OnboardingTips(GameObject):
                                                           * self.sprite.height),
                                            self.x + round((-1) * base_offset[0]
                                                           / self.c['graphics']['map_resolution'][0]
-                                                          * self.sprite.width) + 1,
+                                                          * self.sprite.width),
                                            self.y + round(((-1) * base_offset[1]
                                                            + self.c['graphics']['screen_resolution'][1])
                                                           / self.c['graphics']['map_resolution'][1]
                                                           * self.sprite.height),
                                            self.x + round((-1) * base_offset[0]
                                                           / self.c['graphics']['map_resolution'][0]
-                                                          * self.sprite.width) + 1,
+                                                          * self.sprite.width),
                                            self.y + round(((-1) * base_offset[1]
                                                            + self.c['graphics']['screen_resolution'][1])
                                                           / self.c['graphics']['map_resolution'][1]
                                                           * self.sprite.height),
                                            self.x + round((-1) * base_offset[0]
                                                           / self.c['graphics']['map_resolution'][0]
-                                                          * self.sprite.width) + 1,
+                                                          * self.sprite.width),
                                            self.y + round((-1) * base_offset[1]
                                                           / self.c['graphics']['map_resolution'][1]
                                                           * self.sprite.height)
@@ -107,24 +107,24 @@ class OnboardingTips(GameObject):
                     self.viewport_border.vertices \
                         = (self.x + round((-1) * base_offset[0]
                                           / self.c['graphics']['map_resolution'][0]
-                                          * self.sprite.width) + 1,
+                                          * self.sprite.width),
                            self.y + round((-1) * base_offset[1]
                                           / self.c['graphics']['map_resolution'][1]
-                                          * self.sprite.height) + 1,
+                                          * self.sprite.height),
                            self.x + round(((-1) * base_offset[0]
                                            + self.c['graphics']['screen_resolution'][0])
                                           / self.c['graphics']['map_resolution'][0]
                                           * self.sprite.width),
                            self.y + round((-1) * base_offset[1]
                                           / self.c['graphics']['map_resolution'][1]
-                                          * self.sprite.height) + 1,
+                                          * self.sprite.height),
                            self.x + round(((-1) * base_offset[0]
                                            + self.c['graphics']['screen_resolution'][0])
                                           / self.c['graphics']['map_resolution'][0]
                                           * self.sprite.width),
                            self.y + round((-1) * base_offset[1]
                                           / self.c['graphics']['map_resolution'][1]
-                                          * self.sprite.height) + 1,
+                                          * self.sprite.height),
                            self.x + round(((-1) * base_offset[0]
                                            + self.c['graphics']['screen_resolution'][0])
                                           / self.c['graphics']['map_resolution'][0]
@@ -143,21 +143,21 @@ class OnboardingTips(GameObject):
                                           * self.sprite.height),
                            self.x + round((-1) * base_offset[0]
                                           / self.c['graphics']['map_resolution'][0]
-                                          * self.sprite.width) + 1,
+                                          * self.sprite.width),
                            self.y + round(((-1) * base_offset[1]
                                            + self.c['graphics']['screen_resolution'][1])
                                           / self.c['graphics']['map_resolution'][1]
                                           * self.sprite.height),
                            self.x + round((-1) * base_offset[0]
                                           / self.c['graphics']['map_resolution'][0]
-                                          * self.sprite.width) + 1,
+                                          * self.sprite.width),
                            self.y + round(((-1) * base_offset[1]
                                            + self.c['graphics']['screen_resolution'][1])
                                           / self.c['graphics']['map_resolution'][1]
                                           * self.sprite.height),
                            self.x + round((-1) * base_offset[0]
                                           / self.c['graphics']['map_resolution'][0]
-                                          * self.sprite.width) + 1,
+                                          * self.sprite.width),
                            self.y + round((-1) * base_offset[1]
                                           / self.c['graphics']['map_resolution'][1]
                                           * self.sprite.height)

@@ -39,64 +39,50 @@ class Button(GameObject):
         self.vertex_list \
             = batch.add(4, pyglet.gl.GL_QUADS, button_group,
                         ('v2i/static', (self.position[0],
-                                        self.c['graphics']['screen_resolution'][1] - self.position[1]
-                                        - self.button_size[1],
-                                        self.position[0] + self.button_size[0],
-                                        self.c['graphics']['screen_resolution'][1] - self.position[1]
-                                        - self.button_size[1],
-                                        self.position[0] + self.button_size[0],
-                                        self.c['graphics']['screen_resolution'][1] - self.position[1],
+                                        self.position[1],
+                                        self.position[0] + self.button_size[0] - 1,
+                                        self.position[1],
+                                        self.position[0] + self.button_size[0] - 1,
+                                        self.position[1] + self.button_size[1] - 1,
                                         self.position[0],
-                                        self.c['graphics']['screen_resolution'][1] - self.position[1])),
+                                        self.position[1] + self.button_size[1] - 1)),
                         ('c4B', (0, 0, 0, 255, 0, 0, 0, 255, 0, 0, 0, 255, 0, 0, 0, 255))
                         )
         self.vertex_list_2 \
             = batch.add(16, pyglet.gl.GL_LINES, borders_group,
-                        ('v2i/static', (self.position[0] - 1,
-                                        self.c['graphics']['screen_resolution'][1] - self.position[1]
-                                        - self.button_size[1] + 1,
-                                        self.position[0] + self.button_size[0],
-                                        self.c['graphics']['screen_resolution'][1] - self.position[1]
-                                        - self.button_size[1] + 1,
-                                        self.position[0] + self.button_size[0],
-                                        self.c['graphics']['screen_resolution'][1] - self.position[1]
-                                        - self.button_size[1] + 1,
-                                        self.position[0] + self.button_size[0],
-                                        self.c['graphics']['screen_resolution'][1] - self.position[1],
-                                        self.position[0] + self.button_size[0],
-                                        self.c['graphics']['screen_resolution'][1] - self.position[1],
-                                        self.position[0],
-                                        self.c['graphics']['screen_resolution'][1] - self.position[1],
-                                        self.position[0],
-                                        self.c['graphics']['screen_resolution'][1] - self.position[1],
-                                        self.position[0],
-                                        self.c['graphics']['screen_resolution'][1] - self.position[1]
-                                        - self.button_size[1] + 1,
-                                        # inside edge
-                                        self.position[0],
-                                        self.c['graphics']['screen_resolution'][1] - self.position[1]
-                                        - self.button_size[1] + 2,
+                        ('v2i/static', (self.position[0],
+                                        self.position[1],
                                         self.position[0] + self.button_size[0] - 1,
-                                        self.c['graphics']['screen_resolution'][1] - self.position[1]
-                                        - self.button_size[1] + 2,
+                                        self.position[1],
                                         self.position[0] + self.button_size[0] - 1,
-                                        self.c['graphics']['screen_resolution'][1] - self.position[1]
-                                        - self.button_size[1] + 2,
+                                        self.position[1],
                                         self.position[0] + self.button_size[0] - 1,
-                                        self.c['graphics']['screen_resolution'][1]
-                                        - self.position[1] - 1,
+                                        self.position[1] + self.button_size[1] - 1,
                                         self.position[0] + self.button_size[0] - 1,
-                                        self.c['graphics']['screen_resolution'][1]
-                                        - self.position[1] - 1,
+                                        self.position[1] + self.button_size[1] - 1,
+                                        self.position[0],
+                                        self.position[1] + self.button_size[1] - 1,
+                                        self.position[0],
+                                        self.position[1] + self.button_size[1] - 1,
+                                        self.position[0],
+                                        self.position[1],
+                                        # inside
                                         self.position[0] + 1,
-                                        self.c['graphics']['screen_resolution'][1]
-                                        - self.position[1] - 1,
+                                        self.position[1] + 1,
+                                        self.position[0] + self.button_size[0] - 2,
+                                        self.position[1] + 1,
+                                        self.position[0] + self.button_size[0] - 2,
+                                        self.position[1] + 1,
+                                        self.position[0] + self.button_size[0] - 2,
+                                        self.position[1] + self.button_size[1] - 2,
+                                        self.position[0] + self.button_size[0] - 2,
+                                        self.position[1] + self.button_size[1] - 2,
                                         self.position[0] + 1,
-                                        self.c['graphics']['screen_resolution'][1]
-                                        - self.position[1] - 1,
+                                        self.position[1] + self.button_size[1] - 2,
                                         self.position[0] + 1,
-                                        self.c['graphics']['screen_resolution'][1] - self.position[1]
-                                        - self.button_size[1] + 2
+                                        self.position[1] + self.button_size[1] - 2,
+                                        self.position[0] + 1,
+                                        self.position[1] + 1
                                         )),
                         ('c4B/static', (255, 0, 0, 255, 255, 0, 0, 255, 255, 0, 0, 255, 255, 0, 0, 255,
                                         255, 0, 0, 255, 255, 0, 0, 255, 255, 0, 0, 255, 255, 0, 0, 255,
@@ -109,8 +95,7 @@ class Button(GameObject):
                                                     font_name=self.c['graphics']['font_name'],
                                                     font_size=self.c['graphics']['button_font_size'],
                                                     x=self.position[0] + self.button_size[0] // 2,
-                                                    y=self.c['graphics']['screen_resolution'][1]
-                                                      - (self.position[1] + self.button_size[1] // 2),
+                                                    y=self.position[1] + self.button_size[1] // 2,
                                                     anchor_x='center', anchor_y='center',
                                                     batch=self.batch, group=self.text_group)
         self.text_object_actual_text = self.text[0]
@@ -143,66 +128,52 @@ class Button(GameObject):
                     = self.batch.add(4, pyglet.gl.GL_QUADS, self.button_group,
                                      ('v2i/static',
                                       (self.position[0],
-                                       self.c['graphics']['screen_resolution'][1] - self.position[1]
-                                       - self.button_size[1],
-                                       self.position[0] + self.button_size[0],
-                                       self.c['graphics']['screen_resolution'][1] - self.position[1]
-                                       - self.button_size[1],
-                                       self.position[0] + self.button_size[0],
-                                       self.c['graphics']['screen_resolution'][1] - self.position[1],
+                                       self.position[1],
+                                       self.position[0] + self.button_size[0] - 1,
+                                       self.position[1],
+                                       self.position[0] + self.button_size[0] - 1,
+                                       self.position[1] + self.button_size[1] - 1,
                                        self.position[0],
-                                       self.c['graphics']['screen_resolution'][1] - self.position[1])),
+                                       self.position[1] + self.button_size[1] - 1)),
                                      ('c4B', (0, 0, 0, 255, 0, 0, 0, 255, 0, 0, 0, 255, 0, 0, 0, 255))
                                      )
 
             if self.vertex_list_2 is None:
                 self.vertex_list_2 \
                     = self.batch.add(16, pyglet.gl.GL_LINES, self.borders_group,
-                                     ('v2i/static', (self.position[0] - 1,
-                                                     self.c['graphics']['screen_resolution'][1] - self.position[1]
-                                                     - self.button_size[1] + 1,
-                                                     self.position[0] + self.button_size[0],
-                                                     self.c['graphics']['screen_resolution'][1] - self.position[1]
-                                                     - self.button_size[1] + 1,
-                                                     self.position[0] + self.button_size[0],
-                                                     self.c['graphics']['screen_resolution'][1] - self.position[1]
-                                                     - self.button_size[1] + 1,
-                                                     self.position[0] + self.button_size[0],
-                                                     self.c['graphics']['screen_resolution'][1] - self.position[1],
-                                                     self.position[0] + self.button_size[0],
-                                                     self.c['graphics']['screen_resolution'][1] - self.position[1],
-                                                     self.position[0],
-                                                     self.c['graphics']['screen_resolution'][1] - self.position[1],
-                                                     self.position[0],
-                                                     self.c['graphics']['screen_resolution'][1] - self.position[1],
-                                                     self.position[0],
-                                                     self.c['graphics']['screen_resolution'][1] - self.position[1]
-                                                     - self.button_size[1] + 1,
-                                                     # inside edge
-                                                     self.position[0],
-                                                     self.c['graphics']['screen_resolution'][1] - self.position[1]
-                                                     - self.button_size[1] + 2,
+                                     ('v2i/static', (self.position[0],
+                                                     self.position[1],
                                                      self.position[0] + self.button_size[0] - 1,
-                                                     self.c['graphics']['screen_resolution'][1] - self.position[1]
-                                                     - self.button_size[1] + 2,
+                                                     self.position[1],
                                                      self.position[0] + self.button_size[0] - 1,
-                                                     self.c['graphics']['screen_resolution'][1] - self.position[1]
-                                                     - self.button_size[1] + 2,
+                                                     self.position[1],
                                                      self.position[0] + self.button_size[0] - 1,
-                                                     self.c['graphics']['screen_resolution'][1]
-                                                     - self.position[1] - 1,
+                                                     self.position[1] + self.button_size[1] - 1,
                                                      self.position[0] + self.button_size[0] - 1,
-                                                     self.c['graphics']['screen_resolution'][1]
-                                                     - self.position[1] - 1,
+                                                     self.position[1] + self.button_size[1] - 1,
+                                                     self.position[0],
+                                                     self.position[1] + self.button_size[1] - 1,
+                                                     self.position[0],
+                                                     self.position[1] + self.button_size[1] - 1,
+                                                     self.position[0],
+                                                     self.position[1],
+                                                     # inside
                                                      self.position[0] + 1,
-                                                     self.c['graphics']['screen_resolution'][1]
-                                                     - self.position[1] - 1,
+                                                     self.position[1] + 1,
+                                                     self.position[0] + self.button_size[0] - 2,
+                                                     self.position[1] + 1,
+                                                     self.position[0] + self.button_size[0] - 2,
+                                                     self.position[1] + 1,
+                                                     self.position[0] + self.button_size[0] - 2,
+                                                     self.position[1] + self.button_size[1] - 2,
+                                                     self.position[0] + self.button_size[0] - 2,
+                                                     self.position[1] + self.button_size[1] - 2,
                                                      self.position[0] + 1,
-                                                     self.c['graphics']['screen_resolution'][1]
-                                                     - self.position[1] - 1,
+                                                     self.position[1] + self.button_size[1] - 2,
                                                      self.position[0] + 1,
-                                                     self.c['graphics']['screen_resolution'][1] - self.position[1]
-                                                     - self.button_size[1] + 2
+                                                     self.position[1] + self.button_size[1] - 2,
+                                                     self.position[0] + 1,
+                                                     self.position[1] + 1
                                                      )),
                                      ('c4B/static', (255, 0, 0, 255, 255, 0, 0, 255, 255, 0, 0, 255, 255, 0, 0, 255,
                                                      255, 0, 0, 255, 255, 0, 0, 255, 255, 0, 0, 255, 255, 0, 0, 255,
@@ -216,8 +187,7 @@ class Button(GameObject):
                                                             font_name=self.c['graphics']['font_name'],
                                                             font_size=self.c['graphics']['button_font_size'],
                                                             x=self.position[0] + self.button_size[0] // 2,
-                                                            y=self.c['graphics']['screen_resolution'][1]
-                                                              - (self.position[1] + self.button_size[1] // 2),
+                                                            y=self.position[1] + self.button_size[1] // 2,
                                                             anchor_x='center', anchor_y='center',
                                                             batch=self.batch, group=self.text_group)
 
@@ -229,7 +199,6 @@ class Button(GameObject):
 
     @_allowed_to_be_drawn
     def handle_mouse_motion(self, x, y, dx, dy):
-        y = self.c['graphics']['screen_resolution'][1] - y
         if x in range(self.position[0] + 2, self.position[0] + self.button_size[0] - 2) \
                 and y in range(self.position[1] + 2, self.position[1] + self.button_size[1] - 2):
             if self.state != 'pressed':
@@ -244,7 +213,6 @@ class Button(GameObject):
 
     @_allowed_to_be_drawn
     def handle_mouse_press(self, x, y, button, modifiers):
-        y = self.c['graphics']['screen_resolution'][1] - y
         if x in range(self.position[0] + 2, self.position[0] + self.button_size[0] - 2) \
                 and y in range(self.position[1] + 2, self.position[1] + self.button_size[1] - 2) \
                 and button == pyglet.window.mouse.LEFT:

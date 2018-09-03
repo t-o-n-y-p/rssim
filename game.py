@@ -40,7 +40,7 @@ class Game:
         self.objects = []
         surface = pyglet.window.Window(width=self.c['graphics']['screen_resolution'][0],
                                        height=self.c['graphics']['screen_resolution'][1],
-                                       caption=caption, style='borderless')
+                                       caption=caption, style='borderless', vsync=False)
         self.surface = surface
         pyglet.gl.glEnable(pyglet.gl.GL_BLEND)
         pyglet.gl.glBlendFunc(pyglet.gl.GL_SRC_ALPHA, pyglet.gl.GL_ONE_MINUS_SRC_ALPHA)
@@ -86,7 +86,8 @@ class Game:
         self.mini_map_tip \
             = OnboardingTips(mini_map_image,
                              self.c['graphics']['screen_resolution'][0] - mini_map_image.width - 6,
-                             self.c['graphics']['top_bar_height'] + 4,
+                             self.c['graphics']['screen_resolution'][1] - self.c['graphics']['top_bar_height']
+                             - 4 - mini_map_image.height,
                              'mini_map', self.batch, self.top_bottom_bars_clock_face_ordered_group,
                              self.buttons_general_borders_day_text_ordered_group)
         self.mini_map_timer = 0
