@@ -13,3 +13,8 @@ rssim.exe build (python setup.py build) also requires:
 cx_Freeze 5.1.1 with py3.7 fix
 
 -------------------------------------------
+
+New in this build:
+- fixed graphics
+- technical tasks
+- turned off vsync to test real FPS
