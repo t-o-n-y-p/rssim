@@ -51,7 +51,7 @@ class RSSim(Game):
     def create_main_map(self):
         self.logger.debug('------- START CREATING BG IMAGE -------')
         try:
-            self.main_map_tiles = MainMap(self.batch, self.map_ordered_group)
+            self.main_map_tiles = MainMap(batch=self.batch, group=self.map_ordered_group)
         except NotSupportedVideoAdapterException:
             raise NotSupportedVideoAdapterException
         self.logger.info('main map object created')
@@ -66,7 +66,7 @@ class RSSim(Game):
                   self.c['base_route_types']['left_exit_base_route'],
                   self.c['base_route_types']['right_entry_base_route'],
                   self.c['base_route_types']['right_exit_base_route']):
-            self.base_routes[0][j] = BaseRoute(0, j)
+            self.base_routes[0][j] = BaseRoute(track_number=0, route_type=j)
             self.base_routes[0][j].read_trail_points()
             placement = self.base_routes[0][j].route_config['exit_signal_placement']
             self.logger.debug('placement = {}'.format(placement))
@@ -75,8 +75,9 @@ class RSSim(Game):
             invisible = self.base_routes[0][j].route_config['invisible_signal']
             self.logger.debug('invisible = {}'.format(invisible))
             if placement is not None:
-                self.signals[0][j] = Signal(placement, flip_needed, invisible, 0, j,
-                                            self.batch, self.signals_and_trains_ordered_group)
+                self.signals[0][j] = Signal(placement=placement, flip_needed=flip_needed, invisible=invisible,
+                                            track_number=0, route_type=j,
+                                            batch=self.batch, signal_group=self.signals_and_trains_ordered_group)
 
         self.logger.info('track 0 base routes and signals created')
         for j in (self.c['base_route_types']['left_entry_base_route'],
@@ -105,7 +106,7 @@ class RSSim(Game):
                       self.c['base_route_types']['left_exit_platform_base_route'],
                       self.c['base_route_types']['right_entry_platform_base_route'],
                       self.c['base_route_types']['right_exit_platform_base_route']):
-                self.base_routes[i][k] = BaseRoute(i, k)
+                self.base_routes[i][k] = BaseRoute(track_number=i, route_type=k)
                 if k in (self.c['base_route_types']['left_entry_platform_base_route'],
                          self.c['base_route_types']['left_exit_platform_base_route'],
                          self.c['base_route_types']['right_entry_platform_base_route'],
@@ -120,8 +121,9 @@ class RSSim(Game):
                 self.logger.debug('invisible = {}'.format(invisible))
                 if placement is not None and k in (self.c['base_route_types']['right_exit_platform_base_route'],
                                                    self.c['base_route_types']['left_exit_platform_base_route']):
-                    self.signals[i][k] = Signal(placement, flip_needed, invisible, i, k,
-                                                self.batch, self.signals_and_trains_ordered_group)
+                    self.signals[i][k] = Signal(placement=placement, flip_needed=flip_needed, invisible=invisible,
+                                                track_number=i, route_type=k,
+                                                batch=self.batch, signal_group=self.signals_and_trains_ordered_group)
 
             self.logger.debug('track {} base routes and signals created'.format(i))
 
@@ -130,12 +132,14 @@ class RSSim(Game):
         self.junctions[1] = {}
         self.junctions[1][2] = {}
         self.junctions[1][2][self.c['crossover_types']['right_entry_crossover']] \
-            = Crossover(1, 2, self.c['crossover_types']['right_entry_crossover'])
+            = Crossover(straight_track_1=1, straight_track_2=2,
+                        direction=self.c['crossover_types']['right_entry_crossover'])
         self.junctions[1][2][self.c['crossover_types']['right_exit_crossover']] \
             = Crossover(1, 2, self.c['crossover_types']['right_exit_crossover'])
         self.junctions[1][21] = {}
         self.junctions[1][21][self.c['switch_types']['left_entry_railroad_switch']] \
-            = RailroadSwitch(1, 21, self.c['switch_types']['left_entry_railroad_switch'])
+            = RailroadSwitch(straight_track=1, side_track=21,
+                             direction=self.c['switch_types']['left_entry_railroad_switch'])
         self.junctions[1][21][self.c['switch_types']['left_exit_railroad_switch']] \
             = RailroadSwitch(1, 21, self.c['switch_types']['left_exit_railroad_switch'])
         self.junctions[1][29] = {}
@@ -770,15 +774,19 @@ class RSSim(Game):
                    '{}_base_route'
                    .format(self.c['train_route_types']['entry_train_route'][self.c['direction']['left']])], ]
         self.train_routes[0][self.c['train_route_types']['approaching_train_route'][self.c['direction']['left']]] \
-            = TrainRoute(base_routes_in_train_route,
-                         0, self.c['train_route_types']['approaching_train_route'][self.c['direction']['left']])
+            = TrainRoute(base_routes=base_routes_in_train_route,
+                         track_number=0,
+                         route_type=self.c['train_route_types']['approaching_train_route'][self.c['direction']['left']]
+                         )
         base_routes_in_train_route \
             = [self.base_routes[0][
                    '{}_base_route'
                    .format(self.c['train_route_types']['entry_train_route'][self.c['direction']['right']])], ]
         self.train_routes[0][self.c['train_route_types']['approaching_train_route'][self.c['direction']['right']]] \
-            = TrainRoute(base_routes_in_train_route,
-                         0, self.c['train_route_types']['approaching_train_route'][self.c['direction']['right']])
+            = TrainRoute(base_routes=base_routes_in_train_route,
+                         track_number=0,
+                         route_type=self.c['train_route_types']['approaching_train_route'][self.c['direction']['right']]
+                         )
         self.logger.info('approaching train routes created')
 
         for i in range(1, self.c['dispatcher_config']['tracks_ready'] + 1):
@@ -789,7 +797,7 @@ class RSSim(Game):
                                     self.base_routes[i][self.c['base_route_types']['right_entry_platform_base_route']],
                                     self.base_routes[i][self.c['base_route_types']['left_exit_platform_base_route']],
                                     self.base_routes[i][self.c['base_route_types']['right_exit_platform_base_route']]]
-            new_track = Track(i, base_routes_in_track)
+            new_track = Track(track_number=i, base_routes_in_track=base_routes_in_track)
             self.tracks.append(new_track)
             self.logger.info('track {} created'.format(i))
             # create entry train route
@@ -802,8 +810,9 @@ class RSSim(Game):
                                         .format(self.c['train_route_types']['entry_train_route'][k])]]
 
                 self.train_routes[i][self.c['train_route_types']['entry_train_route'][k]] \
-                    = TrainRoute(base_routes_in_train_route,
-                                 i, self.c['train_route_types']['entry_train_route'][k])
+                    = TrainRoute(base_routes=base_routes_in_train_route,
+                                 track_number=i,
+                                 route_type=self.c['train_route_types']['entry_train_route'][k])
                 self.logger.info('track {} {} train route created'.format(i, k))
 
             # create exit train route
@@ -816,7 +825,9 @@ class RSSim(Game):
                     self.base_routes[0]['{}_base_route'.format(self.c['train_route_types']['exit_train_route'][m])]]
 
                 self.train_routes[i][self.c['train_route_types']['exit_train_route'][m]] \
-                    = TrainRoute(base_routes_in_train_route, i, self.c['train_route_types']['exit_train_route'][m])
+                    = TrainRoute(base_routes=base_routes_in_train_route,
+                                 track_number=i,
+                                 route_type=self.c['train_route_types']['exit_train_route'][m])
                 self.logger.info('track {} {} train route created'.format(i, m))
 
         self.logger.info('tracks and train routes created')
@@ -829,7 +840,7 @@ class RSSim(Game):
 
         self.logger.info('base routes and signals appended')
         # train routes and tracks are added to dispatcher which we create right now
-        self.dispatcher = Dispatcher(self.batch, self.signals_and_trains_ordered_group)
+        self.dispatcher = Dispatcher(batch=self.batch, group=self.signals_and_trains_ordered_group)
         for i in range(self.c['dispatcher_config']['tracks_ready'] + 1):
             self.dispatcher.train_routes.append({})
             for p in self.train_routes[i].keys():
@@ -857,11 +868,12 @@ class RSSim(Game):
     def create_onboarding_tips(self):
         saved_onboarding_image = pyglet.image.load('img/game_saved.png')
         self.saved_onboarding_tip \
-            = OnboardingTips(saved_onboarding_image,
-                             self.c['graphics']['screen_resolution'][0] // 2 - saved_onboarding_image.width // 2,
-                             self.c['graphics']['screen_resolution'][1] // 2 - saved_onboarding_image.height // 2,
-                             'game_saved', self.batch, self.top_bottom_bars_clock_face_ordered_group,
-                             self.buttons_general_borders_day_text_ordered_group)
+            = OnboardingTips(image=saved_onboarding_image,
+                             x=self.c['graphics']['screen_resolution'][0] // 2 - saved_onboarding_image.width // 2,
+                             y=self.c['graphics']['screen_resolution'][1] // 2 - saved_onboarding_image.height // 2,
+                             tip_type='game_saved', batch=self.batch,
+                             group=self.top_bottom_bars_clock_face_ordered_group,
+                             viewport_border_group=self.buttons_general_borders_day_text_ordered_group)
         self.objects.append(self.saved_onboarding_tip)
         self.mini_map_tip.update_image(pyglet.image.load('img/mini_map/{}/mini_map.png'
                                                          .format(self.dispatcher.unlocked_tracks)))
@@ -899,33 +911,38 @@ class RSSim(Game):
             self.saved_onboarding_tip.return_rect_area = True
             self.logger.critical('------- GAME SAVE END -------')
 
-        self.objects.append(InGameTime(self.batch,
-                                       self.top_bottom_bars_clock_face_ordered_group,
-                                       self.buttons_general_borders_day_text_ordered_group,
-                                       self.buttons_text_minute_hand_ordered_group,
-                                       self.buttons_borders_hour_hand_ordered_group))
+        self.objects.append(InGameTime(batch=self.batch,
+                                       clock_face_group=self.top_bottom_bars_clock_face_ordered_group,
+                                       day_text_group=self.buttons_general_borders_day_text_ordered_group,
+                                       minute_hand_group=self.buttons_text_minute_hand_ordered_group,
+                                       hour_hand_group=self.buttons_borders_hour_hand_ordered_group))
         self.logger.debug('time appended to global objects list')
-        self.objects.append(TopAndBottomBar(self.batch,
-                                            self.top_bottom_bars_clock_face_ordered_group,
-                                            self.buttons_general_borders_day_text_ordered_group))
+        self.objects.append(TopAndBottomBar(batch=self.batch,
+                                            bar_group=self.top_bottom_bars_clock_face_ordered_group,
+                                            border_group=self.buttons_general_borders_day_text_ordered_group))
         self.logger.debug('bottom bar appended to global objects list')
-        stop_button = Button((890, 7), (100, 40), ['Pause', 'Resume'], [pause_game, resume_game], False,
-                             self.batch, self.buttons_general_borders_day_text_ordered_group,
-                             self.buttons_text_minute_hand_ordered_group, self.buttons_borders_hour_hand_ordered_group)
-        save_button = Button((780, 7), (100, 40), ['Save', ], [save_game, ], True,
-                             self.batch, self.buttons_general_borders_day_text_ordered_group,
-                             self.buttons_text_minute_hand_ordered_group, self.buttons_borders_hour_hand_ordered_group)
-        close_button = Button((self.c['graphics']['screen_resolution'][0] - 35,
-                               self.c['graphics']['screen_resolution'][1] - 35), (35, 35),
-                              ['X', ], [close_game, ], False,
-                              self.batch, self.buttons_general_borders_day_text_ordered_group,
-                              self.buttons_text_minute_hand_ordered_group, self.buttons_borders_hour_hand_ordered_group)
-        iconify_button = Button((self.c['graphics']['screen_resolution'][0] - 68,
-                                 self.c['graphics']['screen_resolution'][1] - 35), (35, 35),
-                                ['_', ], [iconify_game, ], False,
-                                self.batch, self.buttons_general_borders_day_text_ordered_group,
-                                self.buttons_text_minute_hand_ordered_group,
-                                self.buttons_borders_hour_hand_ordered_group)
+        stop_button = Button(position=(890, 7), button_size=(100, 40), text=['Pause', 'Resume'],
+                             on_click=[pause_game, resume_game], draw_only_if_game_paused=False,
+                             batch=self.batch, button_group=self.buttons_general_borders_day_text_ordered_group,
+                             text_group=self.buttons_text_minute_hand_ordered_group,
+                             borders_group=self.buttons_borders_hour_hand_ordered_group)
+        save_button = Button(position=(780, 7), button_size=(100, 40), text=['Save', ], on_click=[save_game, ],
+                             draw_only_if_game_paused=True,
+                             batch=self.batch, button_group=self.buttons_general_borders_day_text_ordered_group,
+                             text_group=self.buttons_text_minute_hand_ordered_group,
+                             borders_group=self.buttons_borders_hour_hand_ordered_group)
+        close_button = Button(position=(self.c['graphics']['screen_resolution'][0] - 35,
+                                        self.c['graphics']['screen_resolution'][1] - 35), button_size=(35, 35),
+                              text=['X', ], on_click=[close_game, ], draw_only_if_game_paused=False,
+                              batch=self.batch, button_group=self.buttons_general_borders_day_text_ordered_group,
+                              text_group=self.buttons_text_minute_hand_ordered_group,
+                              borders_group=self.buttons_borders_hour_hand_ordered_group)
+        iconify_button = Button(position=(self.c['graphics']['screen_resolution'][0] - 68,
+                                          self.c['graphics']['screen_resolution'][1] - 35), button_size=(35, 35),
+                                text=['_', ], on_click=[iconify_game, ], draw_only_if_game_paused=False,
+                                batch=self.batch, button_group=self.buttons_general_borders_day_text_ordered_group,
+                                text_group=self.buttons_text_minute_hand_ordered_group,
+                                borders_group=self.buttons_borders_hour_hand_ordered_group)
         self.on_mouse_press_handlers.append(stop_button.handle_mouse_press)
         self.on_mouse_press_handlers.append(save_button.handle_mouse_press)
         self.on_mouse_press_handlers.append(close_button.handle_mouse_press)

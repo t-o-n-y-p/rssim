@@ -44,10 +44,6 @@ class Game:
         self.surface = surface
         pyglet.gl.glEnable(pyglet.gl.GL_BLEND)
         pyglet.gl.glBlendFunc(pyglet.gl.GL_SRC_ALPHA, pyglet.gl.GL_ONE_MINUS_SRC_ALPHA)
-        self.surface.flip()
-        self.game_window_handler = win32gui.GetActiveWindow()
-        self.game_window_position = win32gui.GetWindowRect(self.game_window_handler)
-        self.absolute_mouse_pos = win32api.GetCursorPos()
         self.batch = pyglet.graphics.Batch()
         self.map_ordered_group = pyglet.graphics.OrderedGroup(1)
         self.signals_and_trains_ordered_group = pyglet.graphics.OrderedGroup(2)
@@ -56,6 +52,20 @@ class Game:
         self.buttons_general_borders_day_text_ordered_group = pyglet.graphics.OrderedGroup(5)
         self.buttons_text_minute_hand_ordered_group = pyglet.graphics.OrderedGroup(6)
         self.buttons_borders_hour_hand_ordered_group = pyglet.graphics.OrderedGroup(7)
+        self.loading_shadow_ordered_group = pyglet.graphics.OrderedGroup(8)
+        self.fade_vertex = self.batch.add(4, pyglet.gl.GL_QUADS, self.loading_shadow_ordered_group,
+                                          ('v2i/static', (0, 0, self.c['graphics']['screen_resolution'][0], 0,
+                                                          self.c['graphics']['screen_resolution'][0],
+                                                          self.c['graphics']['screen_resolution'][1],
+                                                          0, self.c['graphics']['screen_resolution'][1])),
+                                          ('c4B', (0, 0, 0, 255, 0, 0, 0, 255, 0, 0, 0, 255, 0, 0, 0, 255))
+                                          )
+        self.fade_vertex_opacity = 255
+        self.surface.dispatch_event('on_draw')
+        self.surface.flip()
+        self.game_window_handler = win32gui.GetActiveWindow()
+        self.game_window_position = win32gui.GetWindowRect(self.game_window_handler)
+        self.absolute_mouse_pos = win32api.GetCursorPos()
         self.fps_display_label = None
         if self.c['graphics']['fps_display_enabled']:
             self.fps_display_label \
@@ -84,12 +94,13 @@ class Game:
         self.app_window_move_offset = ()
         mini_map_image = pyglet.image.load('img/mini_map/5/mini_map.png')
         self.mini_map_tip \
-            = OnboardingTips(mini_map_image,
-                             self.c['graphics']['screen_resolution'][0] - mini_map_image.width - 6,
-                             self.c['graphics']['screen_resolution'][1] - self.c['graphics']['top_bar_height']
+            = OnboardingTips(image=mini_map_image,
+                             x=self.c['graphics']['screen_resolution'][0] - mini_map_image.width - 6,
+                             y=self.c['graphics']['screen_resolution'][1] - self.c['graphics']['top_bar_height']
                              - 4 - mini_map_image.height,
-                             'mini_map', self.batch, self.top_bottom_bars_clock_face_ordered_group,
-                             self.buttons_general_borders_day_text_ordered_group)
+                             tip_type='mini_map', batch=self.batch,
+                             group=self.top_bottom_bars_clock_face_ordered_group,
+                             viewport_border_group=self.buttons_general_borders_day_text_ordered_group)
         self.mini_map_timer = 0
         self.dispatcher = None
         self.logger.warning('game init completed')
@@ -99,6 +110,17 @@ class Game:
             self.logger.critical('start update sprites')
             for o in self.objects:
                 o.update_sprite(self.base_offset)
+
+            if self.fade_vertex is not None:
+                if self.fade_vertex_opacity > 0:
+                    self.fade_vertex_opacity -= 17
+                    self.fade_vertex.colors = (0, 0, 0, self.fade_vertex_opacity,
+                                               0, 0, 0, self.fade_vertex_opacity,
+                                               0, 0, 0, self.fade_vertex_opacity,
+                                               0, 0, 0, self.fade_vertex_opacity)
+                else:
+                    self.fade_vertex.delete()
+                    self.fade_vertex = None
 
             self.logger.critical('end update sprites')
 
