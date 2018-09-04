@@ -19,7 +19,8 @@ def _game_is_not_paused(fn):
 
 
 class Train(GameObject):
-    def __init__(self, carts, train_route, state, direction, train_id, head_image, mid_image, tail_image, batch, group):
+    def __init__(self, carts, train_route, state, direction, train_id, head_image, mid_image, mid_boarding_image,
+                 tail_image, batch, group):
         super().__init__()
         self.logger = logging.getLogger('game.train_{}'.format(train_id))
         self.logger.debug('------- START INIT -------')
@@ -48,10 +49,10 @@ class Train(GameObject):
         self.speed_factor_position = self.c['train_config']['train_acceleration_factor_length'] - 1
         self.logger.debug('set speed_factor_position: {}'.format(self.speed_factor_position))
         if self.state == self.c['train_state_types']['approaching_pass_through']:
-            self.priority = 100000000
+            self.priority = 0
             self.boarding_time = 5
         else:
-            self.priority = 0
+            self.priority = 10000000
             self.boarding_time = self.carts * 300
 
         if self.train_route is not None:
@@ -65,7 +66,7 @@ class Train(GameObject):
         for i in range(1, self.carts - 1):
             self.cart_sprites.append(None)
 
-        self.cart_sprites.append(None)
+        self.cart_sprites.append(pyglet.sprite.Sprite(tail_image, batch=self.batch, group=self.group))
         self.logger.debug('loaded cart images: {}_head.png, {}_mid.png, {}_tail.png'
                           .format(self.c['train_config']['train_cart_image_path'],
                                   self.c['train_config']['train_cart_image_path'],
