@@ -35,7 +35,6 @@ class RSSim(Game):
         try:
             self.create_main_map()
         except NotSupportedVideoAdapterException as e:
-            e.handler = self.game_window_handler
             e.surface = self.surface
             raise e
         # we create routes, signals and dispatcher and link them to each other correctly
@@ -977,7 +976,9 @@ def main():
     try:
         RSSim().run()
     except NotSupportedVideoAdapterException as e:
-        e.surface.close()
+        if e.surface is not None:
+            e.surface.close()
+
         win32api.MessageBoxEx(win32con.NULL, e.text, e.caption,
                               win32con.MB_OK | win32con.MB_ICONERROR | win32con.MB_DEFBUTTON1
                               | win32con.MB_SYSTEMMODAL | win32con.MB_SETFOREGROUND, 0)

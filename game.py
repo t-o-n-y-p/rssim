@@ -3,6 +3,7 @@ import io
 import logging
 import os
 import time
+import ctypes
 
 import win32api
 import win32gui
@@ -10,6 +11,7 @@ import win32con
 import pyglet
 
 from onboarding_tips import OnboardingTips
+from main_map import NotSupportedVideoAdapterException
 
 
 def _game_window_is_active(fn):
@@ -22,6 +24,11 @@ def _game_window_is_active(fn):
 
 class Game:
     def __init__(self, caption):
+        max_texture_size = ctypes.c_long(0)
+        pyglet.gl.glGetIntegerv(pyglet.gl.GL_MAX_TEXTURE_SIZE, max_texture_size)
+        if max_texture_size.value < 8192:
+            raise NotSupportedVideoAdapterException
+
         self.logs_config = configparser.RawConfigParser()
         self.logger = logging.getLogger('game')
         self.logs_stream = io.StringIO()
@@ -95,7 +102,7 @@ class Game:
         mini_map_image = pyglet.image.load('img/mini_map/5/mini_map.png')
         self.mini_map_tip \
             = OnboardingTips(image=mini_map_image,
-                             x=self.c['graphics']['screen_resolution'][0] - mini_map_image.width - 6,
+                             x=self.c['graphics']['screen_resolution'][0] - mini_map_image.width,
                              y=self.c['graphics']['screen_resolution'][1] - self.c['graphics']['top_bar_height']
                              - 4 - mini_map_image.height,
                              tip_type='mini_map', batch=self.batch,
