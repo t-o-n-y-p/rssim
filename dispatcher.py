@@ -19,7 +19,7 @@ def _game_is_not_paused(fn):
 
 
 class Dispatcher(GameObject):
-    def __init__(self, batch, group):
+    def __init__(self, batch, group, boarding_lights_group):
         super().__init__()
         self.logger = logging.getLogger('game.dispatcher')
         self.logger.debug('------- START INIT -------')
@@ -34,6 +34,7 @@ class Dispatcher(GameObject):
         self.signals = []
         self.batch = batch
         self.group = group
+        self.boarding_lights_group = boarding_lights_group
         # next train ID, used by signals to distinguish trains
         self.train_counter = None
         self.supported_carts = []
@@ -50,6 +51,13 @@ class Dispatcher(GameObject):
             pyglet.image.load('{}_tail.png'.format(self.c['train_config']['train_cart_image_path']))
         self.train_tail_image.anchor_x = self.train_tail_image.width // 2 + 1
         self.train_tail_image.anchor_y = self.train_tail_image.height // 2 + 1
+        self.boarding_lights_image = []
+        for i in range(6):
+            self.boarding_lights_image.append(None)
+
+        for i in range(6, 21):
+            self.boarding_lights_image.append(pyglet.image.load('img/boarding_lights/day/{}.png'.format(i)))
+
         self.mini_map_tip = None
         self.logger.debug('------- END INIT -------')
         self.logger.warning('dispatcher init completed')
@@ -113,14 +121,20 @@ class Dispatcher(GameObject):
                                         train_route=self.train_routes[train_route_track_number][train_route_type],
                                         state=train_state, direction=train_direction, train_id=i,
                                         head_image=self.train_head_image, mid_image=self.train_mid_image,
-                                        mid_boarding_image=None, tail_image=self.train_tail_image,
-                                        batch=self.batch, group=self.group)
+                                        boarding_lights_image=self.boarding_lights_image[train_carts],
+                                        tail_image=self.train_tail_image,
+                                        batch=self.batch, group=self.group,
+                                        boarding_lights_group=self.boarding_lights_group,
+                                        load_all_carts_at_once=True)
                 else:
                     saved_train = Train(carts=train_carts, train_route=None, state=train_state,
                                         direction=train_direction, train_id=i,
                                         head_image=self.train_head_image, mid_image=self.train_mid_image,
-                                        mid_boarding_image=None, tail_image=self.train_tail_image,
-                                        batch=self.batch, group=self.group)
+                                        boarding_lights_image=self.boarding_lights_image[train_carts],
+                                        tail_image=self.train_tail_image,
+                                        batch=self.batch, group=self.group,
+                                        boarding_lights_group=self.boarding_lights_group,
+                                        load_all_carts_at_once=True)
 
                 self.logger.info('train {} created'.format(i))
                 if train_config['user_data']['track_number'] == 'None':
@@ -164,6 +178,15 @@ class Dispatcher(GameObject):
                                                                int(carts_position_abs_parsed[j][k][1]))
 
                     saved_train.carts_position_abs = carts_position_abs_parsed
+                    for w in range(len(saved_train.carts_position_abs)):
+                        point_two = float(saved_train.carts_position_abs[w][0][0]
+                                          - saved_train.carts_position_abs[w][1][0])
+                        if round(point_two, 0) > 0:
+                            self.logger.debug('no need to flip')
+                        else:
+                            saved_train.cart_sprites[w].rotation = 180.0
+                            self.logger.debug('flipped cart image to match direction')
+
                     self.logger.debug('carts_position_abs: {}'.format(saved_train.carts_position_abs))
 
                 saved_train.config = train_config
@@ -263,6 +286,7 @@ class Dispatcher(GameObject):
                 if i.boarding_time <= 0:
                     self.tracks[i.track_number - 1].override = False
                     i.state = self.c['train_state_types']['boarding_complete']
+                    i.boarding_lights_sprite.visible = False
                     self.logger.info('train {} status changed to {}'.format(i.train_id, i.state))
 
             if len(i.carts_position) > 0:
@@ -271,6 +295,9 @@ class Dispatcher(GameObject):
                     # if train arrives to the track, boarding begins
                     if i.state == self.c['train_state_types']['pending_boarding']:
                         i.state = self.c['train_state_types']['boarding_in_progress']
+                        if i.boarding_time > 60:
+                            i.boarding_lights_sprite.visible = True
+
                         self.logger.debug('train {} boarding begins'.format(i.train_id))
                         self.tracks[i.track_number - 1].override = True
                         self.tracks[i.track_number - 1].busy = True
@@ -441,8 +468,10 @@ class Dispatcher(GameObject):
                                           state=self.c['train_state_types']['approaching_pass_through'],
                                           direction=i, train_id=self.train_counter,
                                           head_image=self.train_head_image, mid_image=self.train_mid_image,
-                                          mid_boarding_image=None, tail_image=self.train_tail_image,
-                                          batch=self.batch, group=self.group)
+                                          boarding_lights_image=self.boarding_lights_image[carts],
+                                          tail_image=self.train_tail_image,
+                                          batch=self.batch, group=self.group,
+                                          boarding_lights_group=self.boarding_lights_group)
                         self.train_ids.append(self.train_counter)
                         new_train.train_route.open_train_route(new_train.train_id, new_train.priority, game_paused)
                         new_train.train_route.set_stop_points(new_train.carts)
@@ -460,8 +489,10 @@ class Dispatcher(GameObject):
                                           state=self.c['train_state_types']['approaching'],
                                           direction=i, train_id=self.train_counter,
                                           head_image=self.train_head_image, mid_image=self.train_mid_image,
-                                          mid_boarding_image=None, tail_image=self.train_tail_image,
-                                          batch=self.batch, group=self.group)
+                                          boarding_lights_image=self.boarding_lights_image[carts],
+                                          tail_image=self.train_tail_image,
+                                          batch=self.batch, group=self.group,
+                                          boarding_lights_group=self.boarding_lights_group)
                         self.train_ids.append(self.train_counter)
                         new_train.train_route.open_train_route(new_train.train_id, new_train.priority, game_paused)
                         new_train.train_route.set_stop_points(new_train.carts)

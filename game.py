@@ -52,8 +52,9 @@ class Game:
         pyglet.gl.glEnable(pyglet.gl.GL_BLEND)
         pyglet.gl.glBlendFunc(pyglet.gl.GL_SRC_ALPHA, pyglet.gl.GL_ONE_MINUS_SRC_ALPHA)
         self.batch = pyglet.graphics.Batch()
-        self.map_ordered_group = pyglet.graphics.OrderedGroup(1)
-        self.signals_and_trains_ordered_group = pyglet.graphics.OrderedGroup(2)
+        self.map_ordered_group = pyglet.graphics.OrderedGroup(0)
+        self.signals_and_trains_ordered_group = pyglet.graphics.OrderedGroup(1)
+        self.boarding_lights_ordered_group = pyglet.graphics.OrderedGroup(2)
         self.twilight_ordered_group = pyglet.graphics.OrderedGroup(3)  # reserved for future use
         self.top_bottom_bars_clock_face_ordered_group = pyglet.graphics.OrderedGroup(4)
         self.buttons_general_borders_day_text_ordered_group = pyglet.graphics.OrderedGroup(5)
@@ -402,6 +403,7 @@ class Game:
         while True:
             self.logger.warning('frame begins')
             time_1 = time.perf_counter()
+            # pyglet.clock.tick()
             self.surface.dispatch_events()
             time_2 = time.perf_counter()
             self.update()

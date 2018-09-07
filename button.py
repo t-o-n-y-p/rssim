@@ -48,48 +48,10 @@ class Button(GameObject):
                                         self.position[1] + self.button_size[1] - 1)),
                         ('c4B', (0, 0, 0, 255, 0, 0, 0, 255, 0, 0, 0, 255, 0, 0, 0, 255))
                         )
-        self.vertex_list_2 \
-            = batch.add(16, pyglet.gl.GL_LINES, borders_group,
-                        ('v2i/static', (self.position[0],
-                                        self.position[1],
-                                        self.position[0] + self.button_size[0] - 1,
-                                        self.position[1],
-                                        self.position[0] + self.button_size[0] - 1,
-                                        self.position[1],
-                                        self.position[0] + self.button_size[0] - 1,
-                                        self.position[1] + self.button_size[1] - 1,
-                                        self.position[0] + self.button_size[0] - 1,
-                                        self.position[1] + self.button_size[1] - 1,
-                                        self.position[0],
-                                        self.position[1] + self.button_size[1] - 1,
-                                        self.position[0],
-                                        self.position[1] + self.button_size[1] - 1,
-                                        self.position[0],
-                                        self.position[1],
-                                        # inside
-                                        self.position[0] + 1,
-                                        self.position[1] + 1,
-                                        self.position[0] + self.button_size[0] - 2,
-                                        self.position[1] + 1,
-                                        self.position[0] + self.button_size[0] - 2,
-                                        self.position[1] + 1,
-                                        self.position[0] + self.button_size[0] - 2,
-                                        self.position[1] + self.button_size[1] - 2,
-                                        self.position[0] + self.button_size[0] - 2,
-                                        self.position[1] + self.button_size[1] - 2,
-                                        self.position[0] + 1,
-                                        self.position[1] + self.button_size[1] - 2,
-                                        self.position[0] + 1,
-                                        self.position[1] + self.button_size[1] - 2,
-                                        self.position[0] + 1,
-                                        self.position[1] + 1
-                                        )),
-                        ('c4B/static', (255, 0, 0, 255, 255, 0, 0, 255, 255, 0, 0, 255, 255, 0, 0, 255,
-                                        255, 0, 0, 255, 255, 0, 0, 255, 255, 0, 0, 255, 255, 0, 0, 255,
-                                        255, 0, 0, 255, 255, 0, 0, 255, 255, 0, 0, 255, 255, 0, 0, 255,
-                                        255, 0, 0, 255, 255, 0, 0, 255, 255, 0, 0, 255, 255, 0, 0, 255
-                                        ))
-                        )
+        self.border_sprite_image = pyglet.image.load('img/button_border_{}_{}.png'
+                                                     .format(self.button_size[0], self.button_size[1]))
+        self.border_sprite = pyglet.sprite.Sprite(self.border_sprite_image, x=self.position[0], y=self.position[1],
+                                                  batch=self.batch, group=self.borders_group)
         self.text = text
         self.text_object_actual = pyglet.text.Label(text[0],
                                                     font_name=self.c['graphics']['font_name'],
@@ -112,9 +74,7 @@ class Button(GameObject):
                 self.vertex_list.delete()
                 self.vertex_list = None
 
-            if self.vertex_list_2 is not None:
-                self.vertex_list_2.delete()
-                self.vertex_list_2 = None
+            self.border_sprite.visible = False
 
             if self.text_object_actual is not None:
                 self.text_object_actual.delete()
@@ -138,49 +98,7 @@ class Button(GameObject):
                                      ('c4B', (0, 0, 0, 255, 0, 0, 0, 255, 0, 0, 0, 255, 0, 0, 0, 255))
                                      )
 
-            if self.vertex_list_2 is None:
-                self.vertex_list_2 \
-                    = self.batch.add(16, pyglet.gl.GL_LINES, self.borders_group,
-                                     ('v2i/static', (self.position[0],
-                                                     self.position[1],
-                                                     self.position[0] + self.button_size[0] - 1,
-                                                     self.position[1],
-                                                     self.position[0] + self.button_size[0] - 1,
-                                                     self.position[1],
-                                                     self.position[0] + self.button_size[0] - 1,
-                                                     self.position[1] + self.button_size[1] - 1,
-                                                     self.position[0] + self.button_size[0] - 1,
-                                                     self.position[1] + self.button_size[1] - 1,
-                                                     self.position[0],
-                                                     self.position[1] + self.button_size[1] - 1,
-                                                     self.position[0],
-                                                     self.position[1] + self.button_size[1] - 1,
-                                                     self.position[0],
-                                                     self.position[1],
-                                                     # inside
-                                                     self.position[0] + 1,
-                                                     self.position[1] + 1,
-                                                     self.position[0] + self.button_size[0] - 2,
-                                                     self.position[1] + 1,
-                                                     self.position[0] + self.button_size[0] - 2,
-                                                     self.position[1] + 1,
-                                                     self.position[0] + self.button_size[0] - 2,
-                                                     self.position[1] + self.button_size[1] - 2,
-                                                     self.position[0] + self.button_size[0] - 2,
-                                                     self.position[1] + self.button_size[1] - 2,
-                                                     self.position[0] + 1,
-                                                     self.position[1] + self.button_size[1] - 2,
-                                                     self.position[0] + 1,
-                                                     self.position[1] + self.button_size[1] - 2,
-                                                     self.position[0] + 1,
-                                                     self.position[1] + 1
-                                                     )),
-                                     ('c4B/static', (255, 0, 0, 255, 255, 0, 0, 255, 255, 0, 0, 255, 255, 0, 0, 255,
-                                                     255, 0, 0, 255, 255, 0, 0, 255, 255, 0, 0, 255, 255, 0, 0, 255,
-                                                     255, 0, 0, 255, 255, 0, 0, 255, 255, 0, 0, 255, 255, 0, 0, 255,
-                                                     255, 0, 0, 255, 255, 0, 0, 255, 255, 0, 0, 255, 255, 0, 0, 255
-                                                     ))
-                                     )
+            self.border_sprite.visible = True
 
             if self.text_object_actual is None:
                 self.text_object_actual = pyglet.text.Label(self.text_object_actual_text,

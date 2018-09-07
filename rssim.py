@@ -714,7 +714,8 @@ class RSSim(Game):
 
         self.logger.info('base routes and signals appended')
         # train routes and tracks are added to dispatcher which we create right now
-        self.dispatcher = Dispatcher(batch=self.batch, group=self.signals_and_trains_ordered_group)
+        self.dispatcher = Dispatcher(batch=self.batch, group=self.signals_and_trains_ordered_group,
+                                     boarding_lights_group=self.boarding_lights_ordered_group)
         for i in range(self.c['dispatcher_config']['tracks_ready'] + 1):
             self.dispatcher.train_routes.append({})
             for p in self.train_routes[i].keys():
@@ -931,14 +932,14 @@ class RSSim(Game):
                              batch=self.batch, button_group=self.buttons_general_borders_day_text_ordered_group,
                              text_group=self.buttons_text_minute_hand_ordered_group,
                              borders_group=self.buttons_borders_hour_hand_ordered_group)
-        close_button = Button(position=(self.c['graphics']['screen_resolution'][0] - 35,
-                                        self.c['graphics']['screen_resolution'][1] - 35), button_size=(35, 35),
+        close_button = Button(position=(self.c['graphics']['screen_resolution'][0] - 34,
+                                        self.c['graphics']['screen_resolution'][1] - 34), button_size=(34, 34),
                               text=['X', ], on_click=[close_game, ], draw_only_if_game_paused=False,
                               batch=self.batch, button_group=self.buttons_general_borders_day_text_ordered_group,
                               text_group=self.buttons_text_minute_hand_ordered_group,
                               borders_group=self.buttons_borders_hour_hand_ordered_group)
-        iconify_button = Button(position=(self.c['graphics']['screen_resolution'][0] - 68,
-                                          self.c['graphics']['screen_resolution'][1] - 35), button_size=(35, 35),
+        iconify_button = Button(position=(self.c['graphics']['screen_resolution'][0] - 66,
+                                          self.c['graphics']['screen_resolution'][1] - 34), button_size=(34, 34),
                                 text=['_', ], on_click=[iconify_game, ], draw_only_if_game_paused=False,
                                 batch=self.batch, button_group=self.buttons_general_borders_day_text_ordered_group,
                                 text_group=self.buttons_text_minute_hand_ordered_group,

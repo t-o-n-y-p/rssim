@@ -19,7 +19,6 @@ class OnboardingTips(GameObject):
         self.y = y
         self.sprite = None
         self.viewport_border = None
-        self.viewport_border_opacity = 0
         self.logger.debug('image loaded: {}'.format(image))
         self.condition_met = False
         self.logger.debug('condition_met: {}'.format(self.condition_met))
@@ -40,138 +39,19 @@ class OnboardingTips(GameObject):
 
             if self.tip_type == 'mini_map':
                 if self.viewport_border is None:
-                    self.viewport_border \
-                        = self.batch.add(8, pyglet.gl.GL_LINES, self.viewport_border_group,
-                                         ('v2i',
-                                          (self.x + round((-1) * base_offset[0]
-                                                          / self.c['graphics']['map_resolution'][0]
-                                                          * self.sprite.width),
-                                           self.y + round((-1) * base_offset[1]
-                                                          / self.c['graphics']['map_resolution'][1]
-                                                          * self.sprite.height),
-                                           self.x + round(((-1) * base_offset[0]
-                                                           + self.c['graphics']['screen_resolution'][0])
-                                                          / self.c['graphics']['map_resolution'][0]
-                                                          * self.sprite.width),
-                                           self.y + round((-1) * base_offset[1]
-                                                          / self.c['graphics']['map_resolution'][1]
-                                                          * self.sprite.height),
-                                           self.x + round(((-1) * base_offset[0]
-                                                           + self.c['graphics']['screen_resolution'][0])
-                                                          / self.c['graphics']['map_resolution'][0]
-                                                          * self.sprite.width),
-                                           self.y + round((-1) * base_offset[1]
-                                                          / self.c['graphics']['map_resolution'][1]
-                                                          * self.sprite.height),
-                                           self.x + round(((-1) * base_offset[0]
-                                                           + self.c['graphics']['screen_resolution'][0])
-                                                          / self.c['graphics']['map_resolution'][0]
-                                                          * self.sprite.width),
-                                           self.y + round(((-1) * base_offset[1]
-                                                           + self.c['graphics']['screen_resolution'][1])
-                                                          / self.c['graphics']['map_resolution'][1]
-                                                          * self.sprite.height),
-                                           self.x + round(((-1) * base_offset[0]
-                                                           + self.c['graphics']['screen_resolution'][0])
-                                                          / self.c['graphics']['map_resolution'][0]
-                                                          * self.sprite.width),
-                                           self.y + round(((-1) * base_offset[1]
-                                                           + self.c['graphics']['screen_resolution'][1])
-                                                          / self.c['graphics']['map_resolution'][1]
-                                                          * self.sprite.height),
-                                           self.x + round((-1) * base_offset[0]
-                                                          / self.c['graphics']['map_resolution'][0]
-                                                          * self.sprite.width),
-                                           self.y + round(((-1) * base_offset[1]
-                                                           + self.c['graphics']['screen_resolution'][1])
-                                                          / self.c['graphics']['map_resolution'][1]
-                                                          * self.sprite.height),
-                                           self.x + round((-1) * base_offset[0]
-                                                          / self.c['graphics']['map_resolution'][0]
-                                                          * self.sprite.width),
-                                           self.y + round(((-1) * base_offset[1]
-                                                           + self.c['graphics']['screen_resolution'][1])
-                                                          / self.c['graphics']['map_resolution'][1]
-                                                          * self.sprite.height),
-                                           self.x + round((-1) * base_offset[0]
-                                                          / self.c['graphics']['map_resolution'][0]
-                                                          * self.sprite.width),
-                                           self.y + round((-1) * base_offset[1]
-                                                          / self.c['graphics']['map_resolution'][1]
-                                                          * self.sprite.height)
-                                           )),
-                                         ('c4B', (255, 127, 0, 0, 255, 127, 0, 0, 255, 127, 0, 0, 255, 127, 0, 0,
-                                                  255, 127, 0, 0, 255, 127, 0, 0, 255, 127, 0, 0, 255, 127, 0, 0))
-                                         )
+                    self.viewport_border = pyglet.sprite.Sprite(pyglet.image.load('img/viewport_border.png'),
+                                                                batch=self.batch,
+                                                                group=self.viewport_border_group)
                 else:
-                    self.viewport_border.vertices \
-                        = (self.x + round((-1) * base_offset[0]
-                                          / self.c['graphics']['map_resolution'][0]
-                                          * self.sprite.width),
-                           self.y + round((-1) * base_offset[1]
-                                          / self.c['graphics']['map_resolution'][1]
-                                          * self.sprite.height),
-                           self.x + round(((-1) * base_offset[0]
-                                           + self.c['graphics']['screen_resolution'][0])
-                                          / self.c['graphics']['map_resolution'][0]
-                                          * self.sprite.width),
-                           self.y + round((-1) * base_offset[1]
-                                          / self.c['graphics']['map_resolution'][1]
-                                          * self.sprite.height),
-                           self.x + round(((-1) * base_offset[0]
-                                           + self.c['graphics']['screen_resolution'][0])
-                                          / self.c['graphics']['map_resolution'][0]
-                                          * self.sprite.width),
-                           self.y + round((-1) * base_offset[1]
-                                          / self.c['graphics']['map_resolution'][1]
-                                          * self.sprite.height),
-                           self.x + round(((-1) * base_offset[0]
-                                           + self.c['graphics']['screen_resolution'][0])
-                                          / self.c['graphics']['map_resolution'][0]
-                                          * self.sprite.width),
-                           self.y + round(((-1) * base_offset[1]
-                                           + self.c['graphics']['screen_resolution'][1])
-                                          / self.c['graphics']['map_resolution'][1]
-                                          * self.sprite.height),
-                           self.x + round(((-1) * base_offset[0]
-                                           + self.c['graphics']['screen_resolution'][0])
-                                          / self.c['graphics']['map_resolution'][0]
-                                          * self.sprite.width),
-                           self.y + round(((-1) * base_offset[1]
-                                           + self.c['graphics']['screen_resolution'][1])
-                                          / self.c['graphics']['map_resolution'][1]
-                                          * self.sprite.height),
-                           self.x + round((-1) * base_offset[0]
-                                          / self.c['graphics']['map_resolution'][0]
-                                          * self.sprite.width),
-                           self.y + round(((-1) * base_offset[1]
-                                           + self.c['graphics']['screen_resolution'][1])
-                                          / self.c['graphics']['map_resolution'][1]
-                                          * self.sprite.height),
-                           self.x + round((-1) * base_offset[0]
-                                          / self.c['graphics']['map_resolution'][0]
-                                          * self.sprite.width),
-                           self.y + round(((-1) * base_offset[1]
-                                           + self.c['graphics']['screen_resolution'][1])
-                                          / self.c['graphics']['map_resolution'][1]
-                                          * self.sprite.height),
-                           self.x + round((-1) * base_offset[0]
-                                          / self.c['graphics']['map_resolution'][0]
-                                          * self.sprite.width),
-                           self.y + round((-1) * base_offset[1]
-                                          / self.c['graphics']['map_resolution'][1]
-                                          * self.sprite.height)
-                           )
-                    if self.viewport_border_opacity < 255:
-                        self.viewport_border_opacity += 15
-                        self.viewport_border.colors = (255, 127, 0, self.viewport_border_opacity,
-                                                       255, 127, 0, self.viewport_border_opacity,
-                                                       255, 127, 0, self.viewport_border_opacity,
-                                                       255, 127, 0, self.viewport_border_opacity,
-                                                       255, 127, 0, self.viewport_border_opacity,
-                                                       255, 127, 0, self.viewport_border_opacity,
-                                                       255, 127, 0, self.viewport_border_opacity,
-                                                       255, 127, 0, self.viewport_border_opacity)
+                    self.viewport_border.position = (self.x + round((-1) * base_offset[0]
+                                                                    / self.c['graphics']['map_resolution'][0]
+                                                                    * self.sprite.width),
+                                                     self.y + round((-1) * base_offset[1]
+                                                                    / self.c['graphics']['map_resolution'][1]
+                                                                    * self.sprite.height))
+                    if self.viewport_border.opacity < 255:
+                        self.viewport_border.opacity += 15
+
         else:
             if self.sprite is not None:
                 self.sprite.opacity -= 15
@@ -180,16 +60,8 @@ class OnboardingTips(GameObject):
                     self.sprite = None
 
             if self.viewport_border is not None:
-                self.viewport_border_opacity -= 15
-                self.viewport_border.colors = (255, 127, 0, self.viewport_border_opacity,
-                                               255, 127, 0, self.viewport_border_opacity,
-                                               255, 127, 0, self.viewport_border_opacity,
-                                               255, 127, 0, self.viewport_border_opacity,
-                                               255, 127, 0, self.viewport_border_opacity,
-                                               255, 127, 0, self.viewport_border_opacity,
-                                               255, 127, 0, self.viewport_border_opacity,
-                                               255, 127, 0, self.viewport_border_opacity)
-                if self.viewport_border_opacity <= 0:
+                self.viewport_border.opacity -= 15
+                if self.viewport_border.opacity <= 0:
                     self.viewport_border.delete()
                     self.viewport_border = None
 
