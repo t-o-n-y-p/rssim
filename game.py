@@ -11,7 +11,7 @@ import win32con
 import pyglet
 
 from onboarding_tips import OnboardingTips
-from main_map import NotSupportedVideoAdapterException
+from exceptions import NotSupportedVideoAdapterException
 
 
 def _game_window_is_active(fn):

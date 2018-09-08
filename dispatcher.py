@@ -41,16 +41,10 @@ class Dispatcher(GameObject):
         self.unlocked_tracks = 4
         self.train_head_image = \
             pyglet.image.load('{}_head.png'.format(self.c['train_config']['train_cart_image_path']))
-        self.train_head_image.anchor_x = self.train_head_image.width // 2 + 1
-        self.train_head_image.anchor_y = self.train_head_image.height // 2 + 1
         self.train_mid_image = \
             pyglet.image.load('{}_mid.png'.format(self.c['train_config']['train_cart_image_path']))
-        self.train_mid_image.anchor_x = self.train_mid_image.width // 2 + 1
-        self.train_mid_image.anchor_y = self.train_mid_image.height // 2 + 1
         self.train_tail_image = \
             pyglet.image.load('{}_tail.png'.format(self.c['train_config']['train_cart_image_path']))
-        self.train_tail_image.anchor_x = self.train_tail_image.width // 2 + 1
-        self.train_tail_image.anchor_y = self.train_tail_image.height // 2 + 1
         self.boarding_lights_image = []
         for i in range(6):
             self.boarding_lights_image.append(None)
