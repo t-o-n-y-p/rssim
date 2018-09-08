@@ -13,3 +13,9 @@ rssim.exe build (python setup.py build) also requires:
 cx_Freeze 5.1.1 with py3.7 fix
 
 -------------------------------------------
+
+New in this build:
+- added 3 more tracks
+- extended video adapter support
+- added door lights to trains
+- fixes
