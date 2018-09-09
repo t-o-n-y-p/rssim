@@ -77,11 +77,14 @@ class TrainRoute(GameObject):
 
     def read_state(self):
         self.logger.debug('------- START READING STATE -------')
-        if os.path.exists('user_cfg/train_route/track{}_{}.ini'.format(self.track_number, self.route_type)):
-            self.config.read('user_cfg/train_route/track{}_{}.ini'.format(self.track_number, self.route_type))
+        if os.path.exists('user_cfg/train_route/track{}/track{}_{}.ini'
+                          .format(self.track_number, self.track_number, self.route_type)):
+            self.config.read('user_cfg/train_route/track{}/track{}_{}.ini'
+                             .format(self.track_number, self.track_number, self.route_type))
             self.logger.debug('config parsed from user_cfg')
         else:
-            self.config.read('default_cfg/train_route/track{}_{}.ini'.format(self.track_number, self.route_type))
+            self.config.read('default_cfg/train_route/track{}/track{}_{}.ini'
+                             .format(self.track_number, self.track_number, self.route_type))
             self.logger.debug('config parsed from default_cfg')
 
         if self.config['user_data']['busy_routes'] == 'None':
@@ -225,12 +228,13 @@ class TrainRoute(GameObject):
 
         self.logger.debug('next_stop_point = {}'.format(self.config['user_data']['next_stop_point']))
 
-        with open('user_cfg/train_route/track{}_{}.ini'.format(self.track_number, self.route_type), 'w') as configfile:
+        with open('user_cfg/train_route/track{}/track{}_{}.ini'
+                  .format(self.track_number, self.track_number, self.route_type), 'w') as configfile:
             self.config.write(configfile)
 
         self.logger.debug('------- END SAVING STATE -------')
-        self.logger.info('train route state saved to file user_cfg/train_route/track{}_{}.ini'
-                         .format(self.track_number, self.route_type))
+        self.logger.info('train route state saved to file user_cfg/train_route/track{}/track{}_{}.ini'
+                         .format(self.track_number, self.track_number, self.route_type))
 
     def set_next_stop_point(self, first_cart_position):
         # update single stop point which is closest to the first chassis of the train
