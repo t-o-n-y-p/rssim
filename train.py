@@ -497,16 +497,16 @@ class Train(GameObject):
                                                    base_offset[1] + self.c['graphics']['map_resolution'][1] - y - 1)
         if self.cart_sprites[cart_number].visible \
                 and (self.cart_sprites[cart_number].x
-                     not in range(-175, self.c['graphics']['screen_resolution'][0] + 175)
+                     not in range(-150, self.c['graphics']['screen_resolution'][0] + 150)
                      or self.cart_sprites[cart_number].y
-                     not in range(-25, self.c['graphics']['screen_resolution'][0] + 25)):
+                     not in range(-100, self.c['graphics']['screen_resolution'][0] + 100)):
             self.cart_sprites[cart_number].visible = False
 
         if not self.cart_sprites[cart_number].visible \
                 and (self.cart_sprites[cart_number].x
-                     in range(-175, self.c['graphics']['screen_resolution'][0] + 175)
+                     in range(-150, self.c['graphics']['screen_resolution'][0] + 150)
                      and self.cart_sprites[cart_number].y
-                     in range(-25, self.c['graphics']['screen_resolution'][0] + 25)):
+                     in range(-100, self.c['graphics']['screen_resolution'][0] + 100)):
             self.cart_sprites[cart_number].visible = True
 
     def update_single_cart_sprite_abs(self, cart_number, base_offset):
@@ -516,14 +516,14 @@ class Train(GameObject):
                                                    base_offset[1] + self.c['graphics']['map_resolution'][1] - y - 1)
         if self.cart_sprites[cart_number].visible \
                 and (self.cart_sprites[cart_number].x
-                     not in range(-175, self.c['graphics']['screen_resolution'][0] + 175)
+                     not in range(-150, self.c['graphics']['screen_resolution'][0] + 150)
                      or self.cart_sprites[cart_number].y
                      not in range(-25, self.c['graphics']['screen_resolution'][0] + 25)):
             self.cart_sprites[cart_number].visible = False
 
         if not self.cart_sprites[cart_number].visible \
                 and (self.cart_sprites[cart_number].x
-                     in range(-175, self.c['graphics']['screen_resolution'][0] + 175)
+                     in range(-150, self.c['graphics']['screen_resolution'][0] + 150)
                      and self.cart_sprites[cart_number].y
                      in range(-25, self.c['graphics']['screen_resolution'][0] + 25)):
             self.cart_sprites[cart_number].visible = True
