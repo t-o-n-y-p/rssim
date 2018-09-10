@@ -497,9 +497,9 @@ class Dispatcher(GameObject):
                     # randomly choose number of carts for train
                     random.seed()
                     if i == self.c['direction']['left']:
-                        carts = random.choice([10, 10])
+                        carts = random.choice([6, 8, 10, 12, 14, 16, 18, 20])
                     else:
-                        carts = random.choice([8, 10, 18, 20])
+                        carts = random.choice([6, 8, 10, 12, 14, 16, 18, 20])
 
                     self.logger.debug('carts: {}'.format(carts))
                     if carts < self.supported_carts[0]:
