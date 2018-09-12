@@ -44,42 +44,48 @@ class Dispatcher(GameObject):
         self.train_tail_image = {}
         # ----------- left direction images -----------------
         self.train_head_image[self.c['direction']['left']] = \
-            pyglet.image.load('{}_head.png'.format(self.c['train_config']['train_cart_image_path']))
+            pyglet.image.load('{}_head_{}.png'.format(self.c['train_config']['train_cart_image_path'],
+                                                      self.c['direction']['left']))
         self.train_head_image[self.c['direction']['left']].anchor_x \
             = self.train_head_image[self.c['direction']['left']].width // 2
         self.train_head_image[self.c['direction']['left']].anchor_y \
             = self.train_head_image[self.c['direction']['left']].height // 2
         self.train_mid_image[self.c['direction']['left']] = \
-            pyglet.image.load('{}_mid.png'.format(self.c['train_config']['train_cart_image_path']))
+            pyglet.image.load('{}_mid_{}.png'.format(self.c['train_config']['train_cart_image_path'],
+                                                     self.c['direction']['left']))
         self.train_mid_image[self.c['direction']['left']].anchor_x \
             = self.train_mid_image[self.c['direction']['left']].width // 2
         self.train_mid_image[self.c['direction']['left']].anchor_y \
             = self.train_mid_image[self.c['direction']['left']].height // 2
         self.train_tail_image[self.c['direction']['left']] = \
-            pyglet.image.load('{}_tail.png'.format(self.c['train_config']['train_cart_image_path']))
+            pyglet.image.load('{}_tail_{}.png'.format(self.c['train_config']['train_cart_image_path'],
+                                                      self.c['direction']['left']))
         self.train_tail_image[self.c['direction']['left']].anchor_x \
             = self.train_tail_image[self.c['direction']['left']].width // 2
         self.train_tail_image[self.c['direction']['left']].anchor_y \
             = self.train_tail_image[self.c['direction']['left']].height // 2
         # -------------------- right direction images ----------------------
         self.train_head_image[self.c['direction']['right']] = \
-            pyglet.image.load('{}_head.png'.format(self.c['train_config']['train_cart_image_path']))
+            pyglet.image.load('{}_head_{}.png'.format(self.c['train_config']['train_cart_image_path'],
+                                                      self.c['direction']['right']))
         self.train_head_image[self.c['direction']['right']].anchor_x \
-            = self.train_head_image[self.c['direction']['right']].width // 2 + 1
+            = self.train_head_image[self.c['direction']['right']].width // 2
         self.train_head_image[self.c['direction']['right']].anchor_y \
-            = self.train_head_image[self.c['direction']['right']].height // 2 + 1
+            = self.train_head_image[self.c['direction']['right']].height // 2
         self.train_mid_image[self.c['direction']['right']] = \
-            pyglet.image.load('{}_mid.png'.format(self.c['train_config']['train_cart_image_path']))
+            pyglet.image.load('{}_mid_{}.png'.format(self.c['train_config']['train_cart_image_path'],
+                                                     self.c['direction']['right']))
         self.train_mid_image[self.c['direction']['right']].anchor_x \
-            = self.train_mid_image[self.c['direction']['right']].width // 2 + 1
+            = self.train_mid_image[self.c['direction']['right']].width // 2
         self.train_mid_image[self.c['direction']['right']].anchor_y \
-            = self.train_mid_image[self.c['direction']['right']].height // 2 + 1
+            = self.train_mid_image[self.c['direction']['right']].height // 2
         self.train_tail_image[self.c['direction']['right']] = \
-            pyglet.image.load('{}_tail.png'.format(self.c['train_config']['train_cart_image_path']))
+            pyglet.image.load('{}_tail_{}.png'.format(self.c['train_config']['train_cart_image_path'],
+                                                      self.c['direction']['right']))
         self.train_tail_image[self.c['direction']['right']].anchor_x \
-            = self.train_tail_image[self.c['direction']['right']].width // 2 + 1
+            = self.train_tail_image[self.c['direction']['right']].width // 2
         self.train_tail_image[self.c['direction']['right']].anchor_y \
-            = self.train_tail_image[self.c['direction']['right']].height // 2 + 1
+            = self.train_tail_image[self.c['direction']['right']].height // 2
 
         self.boarding_lights_image = {}
         self.boarding_lights_image[self.c['direction']['left']] = []

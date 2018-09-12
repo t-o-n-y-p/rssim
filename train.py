@@ -473,22 +473,21 @@ class Train(GameObject):
              + self.train_route.trail_points[self.carts_position[cart_number][1]][0]) // 2
         y = (self.train_route.trail_points[self.carts_position[cart_number][0]][1]
              + self.train_route.trail_points[self.carts_position[cart_number][1]][1]) // 2
+        self.logger.debug('cart middle point: {} {}'.format(x, y))
         point_one = float(self.train_route.trail_points[self.carts_position[cart_number][1]][1]
                           - self.train_route.trail_points[self.carts_position[cart_number][0]][1])
         point_two = float(self.train_route.trail_points[self.carts_position[cart_number][0]][0]
                           - self.train_route.trail_points[self.carts_position[cart_number][1]][0])
         self.logger.debug('difference on x and y axis: {} {}'.format(point_two, point_one))
         if round(point_one, 0) == 0:
-            self.logger.debug('cart middle point: {} {}'.format(x, y))
-            if self.direction == self.c['direction']['left']:
-                self.cart_sprites[cart_number].rotation = 0.0
-                self.logger.debug('no need to flip')
-            else:
-                self.cart_sprites[cart_number].rotation = 180.0
-                self.logger.debug('flipped cart image to match direction')
-
+            self.cart_sprites[cart_number].rotation = 0.0
+            self.logger.debug('no need to rotate')
         else:
-            angle = math.atan2(point_one, point_two) * float(180) / math.pi
+            if self.direction == self.c['direction']['left']:
+                angle = math.atan2(point_one, point_two) * float(180) / math.pi
+            else:
+                angle = 180 + math.atan2(point_one, point_two) * float(180) / math.pi
+
             self.logger.debug('angle: {}'.format(angle))
             self.cart_sprites[cart_number].rotation = (-1) * angle
             self.logger.debug('rotated cart')
