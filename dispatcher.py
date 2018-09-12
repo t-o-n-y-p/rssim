@@ -42,6 +42,7 @@ class Dispatcher(GameObject):
         self.train_head_image = {}
         self.train_mid_image = {}
         self.train_tail_image = {}
+        self.boarding_lights_image = {}
         # ----------- left direction images -----------------
         self.train_head_image[self.c['direction']['left']] = \
             pyglet.image.load('{}_head_{}.png'.format(self.c['train_config']['train_cart_image_path'],
@@ -87,7 +88,6 @@ class Dispatcher(GameObject):
         self.train_tail_image[self.c['direction']['right']].anchor_y \
             = self.train_tail_image[self.c['direction']['right']].height // 2
 
-        self.boarding_lights_image = {}
         self.boarding_lights_image[self.c['direction']['left']] = []
         self.boarding_lights_image[self.c['direction']['right']] = []
         for i in range(6):
