@@ -6,7 +6,7 @@ import pyglet
 
 from base_route import BaseRoute
 from main_map import MainMap
-from exceptions import NotSupportedVideoAdapterException
+from exceptions import VideoAdapterNotSupportedException
 from dispatcher import Dispatcher
 from game import Game
 from signal import Signal
@@ -34,7 +34,7 @@ class RSSim(Game):
         # we create background image object first to be drawn first
         try:
             self.create_main_map()
-        except NotSupportedVideoAdapterException as e:
+        except VideoAdapterNotSupportedException as e:
             e.surface = self.surface
             raise e
         # we create routes, signals and dispatcher and link them to each other correctly
@@ -51,8 +51,8 @@ class RSSim(Game):
         self.logger.debug('------- START CREATING BG IMAGE -------')
         try:
             self.main_map_tiles = MainMap(batch=self.batch, group=self.map_ordered_group)
-        except NotSupportedVideoAdapterException:
-            raise NotSupportedVideoAdapterException
+        except VideoAdapterNotSupportedException:
+            raise VideoAdapterNotSupportedException
         self.logger.info('main map object created')
         self.logger.debug('main map object appended')
         self.logger.debug('------- END CREATING BG IMAGE -------')
@@ -1842,7 +1842,7 @@ class RSSim(Game):
 def main():
     try:
         RSSim().run()
-    except NotSupportedVideoAdapterException as e:
+    except VideoAdapterNotSupportedException as e:
         if e.surface is not None:
             e.surface.close()
 

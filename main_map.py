@@ -3,7 +3,7 @@ import logging
 import pyglet
 
 from game_object import GameObject
-from exceptions import NotSupportedVideoAdapterException
+from exceptions import VideoAdapterNotSupportedException
 
 
 class MainMap(GameObject):
@@ -19,7 +19,7 @@ class MainMap(GameObject):
                                                y=self.c['graphics']['base_offset'][1],
                                                batch=batch, group=group)
         except pyglet.gl.lib.GLException:
-            raise NotSupportedVideoAdapterException
+            raise VideoAdapterNotSupportedException
 
         self.logger.debug('main map loaded')
         self.logger.debug('------- END INIT -------')

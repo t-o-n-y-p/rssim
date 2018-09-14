@@ -11,7 +11,7 @@ import win32con
 import pyglet
 
 from onboarding_tips import OnboardingTips
-from exceptions import NotSupportedVideoAdapterException
+from exceptions import VideoAdapterNotSupportedException
 
 
 def _game_window_is_active(fn):
@@ -27,7 +27,7 @@ class Game:
         max_texture_size = ctypes.c_long(0)
         pyglet.gl.glGetIntegerv(pyglet.gl.GL_MAX_TEXTURE_SIZE, max_texture_size)
         if max_texture_size.value < 8192:
-            raise NotSupportedVideoAdapterException
+            raise VideoAdapterNotSupportedException
 
         self.logs_config = configparser.RawConfigParser()
         self.logger = logging.getLogger('game')
@@ -47,7 +47,7 @@ class Game:
         self.objects = []
         surface = pyglet.window.Window(width=self.c['graphics']['screen_resolution'][0],
                                        height=self.c['graphics']['screen_resolution'][1],
-                                       caption=caption, style='borderless', vsync=False)
+                                       caption=caption, style='borderless', vsync=self.c['graphics']['vsync'])
         self.surface = surface
         pyglet.gl.glEnable(pyglet.gl.GL_BLEND)
         pyglet.gl.glBlendFunc(pyglet.gl.GL_SRC_ALPHA, pyglet.gl.GL_ONE_MINUS_SRC_ALPHA)
@@ -179,6 +179,7 @@ class Game:
         screen_resolution = self.game_config['graphics']['screen_resolution'].split(',')
         self.c['graphics']['screen_resolution'] = (int(screen_resolution[0]), int(screen_resolution[1]))
         self.c['graphics']['frame_rate'] = self.game_config['graphics'].getint('frame_rate')
+        self.c['graphics']['vsync'] = self.game_config['graphics'].getboolean('vsync')
         map_resolution = self.game_config['graphics']['map_resolution'].split(',')
         self.c['graphics']['map_resolution'] = (int(map_resolution[0]), int(map_resolution[1]))
         base_offset_upper_left_limit = self.game_config['graphics']['base_offset_upper_left_limit'].split(',')

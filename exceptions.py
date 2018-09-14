@@ -1,4 +1,4 @@
-class NotSupportedVideoAdapterException(Exception):
+class VideoAdapterNotSupportedException(Exception):
     def __init__(self):
         self.surface = None
         self.text = 'Your video adapter is not supported.'
