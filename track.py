@@ -16,7 +16,7 @@ def _game_is_not_paused(fn):
 class Track(GameObject):
     def __init__(self, track_number, base_routes_in_track):
         super().__init__()
-        self.logger = logging.getLogger('game.track()'.format(track_number))
+        self.logger = logging.getLogger('game.track_{}'.format(track_number))
         self.logger.debug('------- START INIT -------')
         self.config = configparser.RawConfigParser()
         self.logger.debug('config parser created')

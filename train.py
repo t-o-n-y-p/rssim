@@ -478,6 +478,12 @@ class Train(GameObject):
              + self.train_route.trail_points[self.carts_position[cart_number][1]][0]) // 2
         y = (self.train_route.trail_points[self.carts_position[cart_number][0]][1]
              + self.train_route.trail_points[self.carts_position[cart_number][1]][1]) // 2
+        self.logger.debug('cart chassis 1: {} {}'
+                          .format(self.train_route.trail_points[self.carts_position[cart_number][0]][0],
+                                  self.train_route.trail_points[self.carts_position[cart_number][0]][1]))
+        self.logger.debug('cart chassis 2: {} {}'
+                          .format(self.train_route.trail_points[self.carts_position[cart_number][1]][0],
+                                  self.train_route.trail_points[self.carts_position[cart_number][1]][1]))
         self.logger.debug('cart middle point: {} {}'.format(x, y))
         point_one = float(self.train_route.trail_points[self.carts_position[cart_number][1]][1]
                           - self.train_route.trail_points[self.carts_position[cart_number][0]][1])
@@ -499,12 +505,14 @@ class Train(GameObject):
 
         self.cart_sprites[cart_number].position = (base_offset[0] + x,
                                                    base_offset[1] + self.c['graphics']['map_resolution'][1] - y - 1)
+        self.logger.debug('cart position = {}'.format(self.cart_sprites[cart_number].position))
         if self.cart_sprites[cart_number].visible \
                 and (self.cart_sprites[cart_number].x
                      not in range(-150, self.c['graphics']['screen_resolution'][0] + 150)
                      or self.cart_sprites[cart_number].y
                      not in range(-100, self.c['graphics']['screen_resolution'][0] + 100)):
             self.cart_sprites[cart_number].visible = False
+            self.logger.debug('cart visible = False')
 
         if not self.cart_sprites[cart_number].visible \
                 and (self.cart_sprites[cart_number].x
@@ -512,6 +520,7 @@ class Train(GameObject):
                      and self.cart_sprites[cart_number].y
                      in range(-100, self.c['graphics']['screen_resolution'][0] + 100)):
             self.cart_sprites[cart_number].visible = True
+            self.logger.debug('cart visible = True')
 
     def update_single_cart_sprite_abs(self, cart_number, base_offset):
         x = (self.carts_position_abs[cart_number][0][0] + self.carts_position_abs[cart_number][1][0]) // 2
