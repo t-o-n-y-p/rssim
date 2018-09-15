@@ -38,7 +38,6 @@ class Train(GameObject):
         self.mid_image = mid_image
         self.tail_image = tail_image
         self.boarding_lights_image = boarding_lights_image
-
         self.logger.debug('{} carts, route {}, state {}, direction {}, train_id {}'
                           .format(self.carts, self.train_route, self.state, self.direction, self.train_id))
         # all trains are created with maximum speed,
@@ -441,8 +440,11 @@ class Train(GameObject):
                 else:
                     if i == len(self.carts_position_abs) - 1:
                         self.cart_sprites[i] = pyglet.sprite.Sprite(self.tail_image, batch=self.batch, group=self.group)
+                        self.cart_sprites[i].visible = False
                     else:
                         self.cart_sprites[i] = pyglet.sprite.Sprite(self.mid_image, batch=self.batch, group=self.group)
+                        self.cart_sprites[i].visible = False
+
                     break
 
         else:
@@ -454,8 +456,11 @@ class Train(GameObject):
                 else:
                     if i == len(self.carts_position) - 1:
                         self.cart_sprites[i] = pyglet.sprite.Sprite(self.tail_image, batch=self.batch, group=self.group)
+                        self.cart_sprites[i].visible = False
                     else:
                         self.cart_sprites[i] = pyglet.sprite.Sprite(self.mid_image, batch=self.batch, group=self.group)
+                        self.cart_sprites[i].visible = False
+
                     break
 
         if self.boarding_lights_sprite is None:
