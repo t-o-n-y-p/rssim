@@ -236,6 +236,8 @@ class Game:
         self.c['direction'] = {}
         self.c['direction']['left'] = self.game_config['direction'].getint('left')
         self.c['direction']['right'] = self.game_config['direction'].getint('right')
+        self.c['direction']['left_side'] = self.game_config['direction'].getint('left_side')
+        self.c['direction']['right_side'] = self.game_config['direction'].getint('right_side')
 
         self.c['train_route_types'] = {}
         self.c['train_route_types']['entry_train_route'] \

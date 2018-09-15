@@ -43,7 +43,6 @@ class RSSim(Game):
         self.create_onboarding_tips()
         self.create_buttons()
         self.logger.debug('map drag event appended')
-        # pyglet.clock.schedule_interval_soft(self.update, 1 / float(self.c['graphics']['frame_rate']))
         self.logger.debug('------- END INIT -------')
         self.logger.warning('rssim game init completed')
 
@@ -1718,33 +1717,34 @@ class RSSim(Game):
             self.logger.info('track {} created'.format(i))
             # create entry train route
             # it includes main entry base route, specific entry base route and platform base route
-            for k in range(len(self.c['train_route_types']['entry_train_route'])):
-                base_routes_in_train_route = [
-                    self.base_routes[0]['{}_base_route'.format(self.c['train_route_types']['entry_train_route'][k])],
-                    self.base_routes[i]['{}_base_route'.format(self.c['train_route_types']['entry_train_route'][k])],
-                    self.base_routes[i]['{}_platform_base_route'
-                                        .format(self.c['train_route_types']['entry_train_route'][k])]]
+            if i <= 24:
+                for k in (self.c['direction']['left'], self.c['direction']['right']):
+                    base_routes_in_train_route = [
+                        self.base_routes[0]['{}_base_route'.format(self.c['train_route_types']['entry_train_route'][k])],
+                        self.base_routes[i]['{}_base_route'.format(self.c['train_route_types']['entry_train_route'][k])],
+                        self.base_routes[i]['{}_platform_base_route'
+                                            .format(self.c['train_route_types']['entry_train_route'][k])]]
 
-                self.train_routes[i][self.c['train_route_types']['entry_train_route'][k]] \
-                    = TrainRoute(base_routes=base_routes_in_train_route,
-                                 track_number=i,
-                                 route_type=self.c['train_route_types']['entry_train_route'][k])
-                self.logger.info('track {} {} train route created'.format(i, k))
+                    self.train_routes[i][self.c['train_route_types']['entry_train_route'][k]] \
+                        = TrainRoute(base_routes=base_routes_in_train_route,
+                                     track_number=i,
+                                     route_type=self.c['train_route_types']['entry_train_route'][k])
+                    self.logger.info('track {} {} train route created'.format(i, k))
 
-            # create exit train route
-            # it includes platform base route, specific exit base route and main exit base route
-            for m in range(len(self.c['train_route_types']['exit_train_route'])):
-                base_routes_in_train_route = [
-                    self.base_routes[i]['{}_platform_base_route'
-                                        .format(self.c['train_route_types']['exit_train_route'][m])],
-                    self.base_routes[i]['{}_base_route'.format(self.c['train_route_types']['exit_train_route'][m])],
-                    self.base_routes[0]['{}_base_route'.format(self.c['train_route_types']['exit_train_route'][m])]]
+                # create exit train route
+                # it includes platform base route, specific exit base route and main exit base route
+                for m in (self.c['direction']['left'], self.c['direction']['right']):
+                    base_routes_in_train_route = [
+                        self.base_routes[i]['{}_platform_base_route'
+                                            .format(self.c['train_route_types']['exit_train_route'][m])],
+                        self.base_routes[i]['{}_base_route'.format(self.c['train_route_types']['exit_train_route'][m])],
+                        self.base_routes[0]['{}_base_route'.format(self.c['train_route_types']['exit_train_route'][m])]]
 
-                self.train_routes[i][self.c['train_route_types']['exit_train_route'][m]] \
-                    = TrainRoute(base_routes=base_routes_in_train_route,
-                                 track_number=i,
-                                 route_type=self.c['train_route_types']['exit_train_route'][m])
-                self.logger.info('track {} {} train route created'.format(i, m))
+                    self.train_routes[i][self.c['train_route_types']['exit_train_route'][m]] \
+                        = TrainRoute(base_routes=base_routes_in_train_route,
+                                     track_number=i,
+                                     route_type=self.c['train_route_types']['exit_train_route'][m])
+                    self.logger.info('track {} {} train route created'.format(i, m))
 
         self.logger.info('tracks and train routes created')
         # ------ SORT THIS OUT ------
