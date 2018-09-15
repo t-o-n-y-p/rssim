@@ -42,6 +42,7 @@ class OnboardingTips(GameObject):
                     self.viewport_border = pyglet.sprite.Sprite(pyglet.image.load('img/viewport_border.png'),
                                                                 batch=self.batch,
                                                                 group=self.viewport_border_group)
+                    self.viewport_border.opacity = 0
                 else:
                     self.viewport_border.position = (self.x + round((-1) * base_offset[0]
                                                                     / self.c['graphics']['map_resolution'][0]
