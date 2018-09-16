@@ -56,6 +56,14 @@ class GameObject:
             = self.game_config['base_route_types']['right_entry_base_route']
         self.c['base_route_types']['right_exit_base_route'] \
             = self.game_config['base_route_types']['right_exit_base_route']
+        self.c['base_route_types']['left_side_entry_base_route'] \
+            = self.game_config['base_route_types']['left_side_entry_base_route']
+        self.c['base_route_types']['left_side_exit_base_route'] \
+            = self.game_config['base_route_types']['left_side_exit_base_route']
+        self.c['base_route_types']['right_side_entry_base_route'] \
+            = self.game_config['base_route_types']['right_side_entry_base_route']
+        self.c['base_route_types']['right_side_exit_base_route'] \
+            = self.game_config['base_route_types']['right_side_exit_base_route']
         self.c['base_route_types']['left_entry_platform_base_route'] \
             = self.game_config['base_route_types']['left_entry_platform_base_route']
         self.c['base_route_types']['right_entry_platform_base_route'] \

@@ -19,8 +19,9 @@ def _game_is_not_paused(fn):
 
 
 class Train(GameObject):
-    def __init__(self, carts, train_route, state, direction, train_id, head_image, mid_image, boarding_lights_image,
-                 tail_image, batch, group, boarding_lights_group, load_all_carts_at_once=False):
+    def __init__(self, carts, train_route, state, direction, new_direction, current_direction, train_id,
+                 head_image, mid_image, boarding_lights_image, tail_image, batch, group, boarding_lights_group,
+                 load_all_carts_at_once=False):
         super().__init__()
         self.logger = logging.getLogger('game.train_{}'.format(train_id))
         self.logger.debug('------- START INIT -------')
@@ -30,6 +31,8 @@ class Train(GameObject):
         self.train_route = train_route
         self.state = state
         self.direction = direction
+        self.new_direction = new_direction
+        self.current_direction = current_direction
         self.train_id = train_id
         self.batch = batch
         self.group = group
@@ -66,7 +69,8 @@ class Train(GameObject):
         self.logger.debug('set priority: {}'.format(self.priority))
         self.logger.debug('set boarding_time: {}'.format(self.boarding_time))
         self.cart_sprites = []
-        self.cart_sprites.append(pyglet.sprite.Sprite(self.head_image, batch=self.batch, group=self.group))
+        self.cart_sprites.append(pyglet.sprite.Sprite(self.head_image[self.current_direction],
+                                                      batch=self.batch, group=self.group))
         if not load_all_carts_at_once:
             for i in range(1, self.carts - 1):
                 self.cart_sprites.append(None)
@@ -75,11 +79,14 @@ class Train(GameObject):
             self.boarding_lights_sprite = None
         else:
             for i in range(1, self.carts - 1):
-                self.cart_sprites.append(pyglet.sprite.Sprite(self.mid_image, batch=self.batch, group=self.group))
+                self.cart_sprites.append(pyglet.sprite.Sprite(self.mid_image[self.current_direction],
+                                                              batch=self.batch, group=self.group))
 
-            self.cart_sprites.append(pyglet.sprite.Sprite(self.tail_image, batch=self.batch, group=self.group))
-            self.boarding_lights_sprite = pyglet.sprite.Sprite(self.boarding_lights_image,
-                                                               batch=self.batch, group=self.boarding_lights_group)
+            self.cart_sprites.append(pyglet.sprite.Sprite(self.tail_image[self.current_direction],
+                                                          batch=self.batch, group=self.group))
+            self.boarding_lights_sprite \
+                = pyglet.sprite.Sprite(self.boarding_lights_image[self.current_direction][self.carts],
+                                       batch=self.batch, group=self.boarding_lights_group)
             if self.state == self.c['train_state_types']['boarding_in_progress']:
                 self.boarding_lights_sprite.visible = True
             else:
@@ -128,6 +135,8 @@ class Train(GameObject):
         self.config['user_data']['state'] = self.state
         self.logger.debug('state: {}'.format(self.config['user_data']['state']))
         self.config['user_data']['direction'] = str(self.direction)
+        self.config['user_data']['new_direction'] = str(self.new_direction)
+        self.config['user_data']['current_direction'] = str(self.current_direction)
         self.logger.debug('direction: {}'.format(self.config['user_data']['direction']))
         if self.track_number is not None:
             self.config['user_data']['track_number'] = str(self.track_number)
@@ -348,7 +357,7 @@ class Train(GameObject):
 
     def leave_base_routes(self):
         more_than = False
-        if self.direction == self.c['direction']['left']:
+        if self.current_direction in (self.c['direction']['left'], self.c['direction']['left_side']):
             more_than = True
 
         for k in self.train_route.busy_routes:
@@ -358,7 +367,7 @@ class Train(GameObject):
                 k2 = self.train_route.base_routes[k].checkpoints[next_checkpoint_index]
                 self.logger.debug('next checkpoint = {}'.format(k2))
                 self.logger.debug('last cart position = {}'.format(self.carts_position[-1][1]))
-                self.logger.debug('direction = {}'.format(self.direction))
+                self.logger.debug('direction = {}'.format(self.current_direction))
                 if (self.train_route.trail_points[self.carts_position[-1][1]][0]
                         > self.train_route.base_routes[k].route_config['trail_points'][k2][0]) == more_than:
                     if len(self.train_route.base_routes[k].checkpoints) == 1:
@@ -439,10 +448,12 @@ class Train(GameObject):
                     self.logger.debug('cart {} is in place'.format(i + 1))
                 else:
                     if i == len(self.carts_position_abs) - 1:
-                        self.cart_sprites[i] = pyglet.sprite.Sprite(self.tail_image, batch=self.batch, group=self.group)
+                        self.cart_sprites[i] = pyglet.sprite.Sprite(self.tail_image[self.current_direction],
+                                                                    batch=self.batch, group=self.group)
                         self.cart_sprites[i].visible = False
                     else:
-                        self.cart_sprites[i] = pyglet.sprite.Sprite(self.mid_image, batch=self.batch, group=self.group)
+                        self.cart_sprites[i] = pyglet.sprite.Sprite(self.mid_image[self.current_direction],
+                                                                    batch=self.batch, group=self.group)
                         self.cart_sprites[i].visible = False
 
                     break
@@ -455,17 +466,20 @@ class Train(GameObject):
                     self.logger.debug('cart {} is in place'.format(i + 1))
                 else:
                     if i == len(self.carts_position) - 1:
-                        self.cart_sprites[i] = pyglet.sprite.Sprite(self.tail_image, batch=self.batch, group=self.group)
+                        self.cart_sprites[i] = pyglet.sprite.Sprite(self.tail_image[self.current_direction],
+                                                                    batch=self.batch, group=self.group)
                         self.cart_sprites[i].visible = False
                     else:
-                        self.cart_sprites[i] = pyglet.sprite.Sprite(self.mid_image, batch=self.batch, group=self.group)
+                        self.cart_sprites[i] = pyglet.sprite.Sprite(self.mid_image[self.current_direction],
+                                                                    batch=self.batch, group=self.group)
                         self.cart_sprites[i].visible = False
 
                     break
 
         if self.boarding_lights_sprite is None:
-            self.boarding_lights_sprite = pyglet.sprite.Sprite(self.boarding_lights_image,
-                                                               batch=self.batch, group=self.boarding_lights_group)
+            self.boarding_lights_sprite \
+                = pyglet.sprite.Sprite(self.boarding_lights_image[self.current_direction][self.carts],
+                                       batch=self.batch, group=self.boarding_lights_group)
             self.boarding_lights_sprite.visible = False
         else:
             self.boarding_lights_sprite.position = self.cart_sprites[1].position
@@ -494,7 +508,7 @@ class Train(GameObject):
             self.cart_sprites[cart_number].rotation = 0.0
             self.logger.debug('no need to rotate')
         else:
-            if self.direction == self.c['direction']['left']:
+            if self.current_direction in (self.c['direction']['left'], self.c['direction']['left_side']):
                 angle = math.atan2(point_one, point_two) * float(180) / math.pi
             else:
                 angle = 180 + math.atan2(point_one, point_two) * float(180) / math.pi
@@ -540,3 +554,16 @@ class Train(GameObject):
                      and self.cart_sprites[cart_number].y
                      in range(-25, self.c['graphics']['screen_resolution'][0] + 25)):
             self.cart_sprites[cart_number].visible = True
+
+    def switch_direction(self):
+        self.current_direction = self.new_direction
+        self.carts_position_abs = list(reversed(self.carts_position_abs))
+        for i in range(len(self.carts_position_abs)):
+            self.carts_position_abs[i] = list(reversed(self.carts_position_abs[i]))
+
+        self.cart_sprites[0].image = self.head_image[self.current_direction]
+        for i in range(1, self.carts - 1):
+            self.cart_sprites[i].image = self.mid_image[self.current_direction]
+
+        self.cart_sprites[self.carts - 1].image = self.tail_image[self.current_direction]
+        self.boarding_lights_sprite.image = self.boarding_lights_image[self.current_direction][self.carts]
