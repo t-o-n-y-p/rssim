@@ -115,8 +115,7 @@ class Dispatcher(GameObject):
             self.boarding_lights_image[self.c['direction']['left_side']][i].anchor_y = 20
             self.boarding_lights_image[self.c['direction']['right']]\
                 .append(pyglet.image.load('img/boarding_lights/day/{}.png'.format(i)))
-            self.boarding_lights_image[self.c['direction']['right']][i].anchor_x \
-                = self.boarding_lights_image[self.c['direction']['right']][i].width - 126
+            self.boarding_lights_image[self.c['direction']['right']][i].anchor_x = 125
             self.boarding_lights_image[self.c['direction']['right']][i].anchor_y = 20
             self.boarding_lights_image[self.c['direction']['right_side']]\
                 .append(pyglet.image.load('img/boarding_lights/day/{}.png'.format(i)))
@@ -347,12 +346,15 @@ class Dispatcher(GameObject):
                 self.logger.debug('boarding_time: {}'.format(i.boarding_time))
                 # when boarding time is about to expire, we open exit route,
                 # and now it is up to exit signal to decide if train moves or not
-                if i.boarding_time <= 240 and i.direction != i.new_direction and i.current_direction != i.new_direction:
-                    i.switch_direction()
+                if i.boarding_time <= 240 and i.current_direction != i.new_direction:
+                    if i.direction % 2 != i.new_direction % 2:
+                        i.switch_direction()
+                    else:
+                        i.current_direction = i.new_direction
 
                 if i.boarding_time <= 60 and i.train_route is None and routes_created_inside_iteration == 0:
                     i.assign_new_train_route(self.train_routes[i.track_number][
-                                                self.c['train_route_types']['exit_train_route'][i.direction]
+                                                self.c['train_route_types']['exit_train_route'][i.new_direction]
                                              ], game_paused)
                     routes_created_inside_iteration += 1
                     self.logger.info('train {} new route assigned: track {} {}'
@@ -402,7 +404,7 @@ class Dispatcher(GameObject):
             if i.state == self.c['train_state_types']['approaching'] and routes_created_inside_iteration == 0:
                 self.logger.debug('looking for route for train {}'.format(i.train_id))
                 route_for_new_train = None
-                for j in self.c['dispatcher_config']['first_priority_tracks'][i.direction]:
+                for j in self.c['dispatcher_config']['first_priority_tracks'][i.new_direction]:
                     r = self.train_routes[j][self.c['train_route_types']['entry_train_route'][i.direction]]
                     self.logger.debug('checking track {}'.format(j))
                     self.logger.debug('track in busy: {}'.format(self.tracks[j - 1].busy))
@@ -433,7 +435,7 @@ class Dispatcher(GameObject):
                 if route_for_new_train is None:
                     self.logger.debug('could not find first priority track')
                     self.logger.debug('still looking for route for train {}'.format(i.train_id))
-                    for j in self.c['dispatcher_config']['second_priority_tracks'][i.direction]:
+                    for j in self.c['dispatcher_config']['second_priority_tracks'][i.new_direction]:
                         r = self.train_routes[j][self.c['train_route_types']['entry_train_route'][i.direction]]
                         self.logger.debug('checking track {}'.format(j))
                         self.logger.debug('track in busy: {}'.format(self.tracks[j - 1].busy))
@@ -529,10 +531,12 @@ class Dispatcher(GameObject):
                     self.logger.debug('timer flushed')
                     # randomly choose number of carts for train
                     random.seed()
+                    new_direction = i
                     if i == self.c['direction']['left']:
                         carts = random.choice(range(6, 21))
                     else:
                         carts = random.choice(range(6, 8))
+                        new_direction = self.c['direction']['right_side']
 
                     self.logger.debug('carts: {}'.format(carts))
                     if carts < self.supported_carts[0]:
@@ -542,7 +546,7 @@ class Dispatcher(GameObject):
                             self.c['train_route_types']['approaching_train_route'][i]]
                         new_train = Train(carts=carts, train_route=route_for_new_train,
                                           state=self.c['train_state_types']['approaching_pass_through'],
-                                          direction=i, new_direction=i, current_direction=i,
+                                          direction=i, new_direction=new_direction, current_direction=i,
                                           train_id=self.train_counter,
                                           head_image=self.train_head_image, mid_image=self.train_mid_image,
                                           boarding_lights_image=self.boarding_lights_image,
@@ -564,7 +568,7 @@ class Dispatcher(GameObject):
                             self.c['train_route_types']['approaching_train_route'][i]]
                         new_train = Train(carts=carts, train_route=route_for_new_train,
                                           state=self.c['train_state_types']['approaching'],
-                                          direction=i, new_direction=i, current_direction=i,
+                                          direction=i, new_direction=new_direction, current_direction=i,
                                           train_id=self.train_counter,
                                           head_image=self.train_head_image, mid_image=self.train_mid_image,
                                           boarding_lights_image=self.boarding_lights_image,

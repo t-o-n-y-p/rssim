@@ -1009,7 +1009,7 @@ class RSSim(Game):
         self.base_routes[21][self.c['base_route_types']['left_side_exit_base_route']].junctions\
             .append(self.junctions[101][103][self.c['crossover_types']['left_exit_crossover']])
         self.base_routes[21][self.c['base_route_types']['left_side_exit_base_route']].junction_position\
-            .append([101, 101])
+            .append([101, 103])
 
         self.base_routes[21][self.c['base_route_types']['right_exit_base_route']].junctions \
             .append(self.junctions[21][23][self.c['switch_types']['right_exit_railroad_switch']])
@@ -1840,29 +1840,55 @@ class RSSim(Game):
         for i in range(1, self.c['dispatcher_config']['tracks_ready'] + 1):
             # for every platform signal, opened list includes exit base route
             # which begins behind the signal
-            self.signals[i][self.c['base_route_types']['right_exit_platform_base_route']].base_route_opened_list \
-                .append(self.base_routes[i][self.c['base_route_types']['right_exit_base_route']])
-            self.logger.debug('base route {} {} appended to signal {} {} opened list'
-                              .format(i, self.c['base_route_types']['right_exit_base_route'],
-                                      i, self.c['base_route_types']['right_exit_platform_base_route']))
-            self.signals[i][self.c['base_route_types']['left_exit_platform_base_route']].base_route_opened_list \
-                .append(self.base_routes[i][self.c['base_route_types']['left_exit_base_route']])
-            self.logger.debug('base route {} {} appended to signal {} {} opened list'
-                              .format(i, self.c['base_route_types']['left_exit_base_route'],
-                                      i, self.c['base_route_types']['left_exit_platform_base_route']))
-            self.logger.debug('opened list set up for track {} signals'.format(i))
-
             # for main entry signals, opened list includes all entry base routes
-            self.signals[0][self.c['base_route_types']['left_entry_base_route']].base_route_opened_list \
-                .append(self.base_routes[i][self.c['base_route_types']['left_entry_base_route']])
-            self.logger.debug('base route {} {} appended to signal {} {} opened list'
-                              .format(i, self.c['base_route_types']['left_entry_base_route'],
-                                      0, self.c['base_route_types']['left_entry_base_route']))
-            self.signals[0][self.c['base_route_types']['right_entry_base_route']].base_route_opened_list \
-                .append(self.base_routes[i][self.c['base_route_types']['right_entry_base_route']])
-            self.logger.debug('base route {} {} appended to signal {} {} opened list'
-                              .format(i, self.c['base_route_types']['right_entry_base_route'],
-                                      0, self.c['base_route_types']['right_entry_base_route']))
+            if i <= 24 or i in (26, 28, 30, 32):
+                self.signals[i][self.c['base_route_types']['left_exit_platform_base_route']].base_route_opened_list \
+                    .append(self.base_routes[i][self.c['base_route_types']['left_exit_base_route']])
+                self.logger.debug('base route {} {} appended to signal {} {} opened list'
+                                  .format(i, self.c['base_route_types']['left_exit_base_route'],
+                                          i, self.c['base_route_types']['left_exit_platform_base_route']))
+                self.signals[0][self.c['base_route_types']['left_entry_base_route']].base_route_opened_list \
+                    .append(self.base_routes[i][self.c['base_route_types']['left_entry_base_route']])
+                self.logger.debug('base route {} {} appended to signal {} {} opened list'
+                                  .format(i, self.c['base_route_types']['left_entry_base_route'],
+                                          0, self.c['base_route_types']['left_entry_base_route']))
+
+            if i <= 24 or i in (25, 27, 29, 31):
+                self.signals[i][self.c['base_route_types']['right_exit_platform_base_route']].base_route_opened_list \
+                    .append(self.base_routes[i][self.c['base_route_types']['right_exit_base_route']])
+                self.logger.debug('base route {} {} appended to signal {} {} opened list'
+                                  .format(i, self.c['base_route_types']['right_exit_base_route'],
+                                          i, self.c['base_route_types']['right_exit_platform_base_route']))
+                self.signals[0][self.c['base_route_types']['right_entry_base_route']].base_route_opened_list \
+                    .append(self.base_routes[i][self.c['base_route_types']['right_entry_base_route']])
+                self.logger.debug('base route {} {} appended to signal {} {} opened list'
+                                  .format(i, self.c['base_route_types']['right_entry_base_route'],
+                                          0, self.c['base_route_types']['right_entry_base_route']))
+
+            if i in (21, 23, 25, 27, 29, 31):
+                self.signals[i][self.c['base_route_types']['left_exit_platform_base_route']]\
+                    .base_route_opened_list\
+                    .append(self.base_routes[i][self.c['base_route_types']['left_side_exit_base_route']])
+                self.logger.debug('base route {} {} appended to signal {} {} opened list'
+                                  .format(i, self.c['base_route_types']['left_side_exit_base_route'],
+                                          i, self.c['base_route_types']['left_exit_platform_base_route']))
+                self.signals[100][self.c['base_route_types']['left_side_entry_base_route']].base_route_opened_list \
+                    .append(self.base_routes[i][self.c['base_route_types']['left_side_entry_base_route']])
+                self.logger.debug('base route {} {} appended to signal {} {} opened list'
+                                  .format(i, self.c['base_route_types']['left_side_entry_base_route'],
+                                          100, self.c['base_route_types']['left_side_entry_base_route']))
+
+            if i in (22, 24, 26, 28, 30, 32):
+                self.signals[i][self.c['base_route_types']['right_exit_platform_base_route']].base_route_opened_list \
+                    .append(self.base_routes[i][self.c['base_route_types']['right_side_exit_base_route']])
+                self.logger.debug('base route {} {} appended to signal {} {} opened list'
+                                  .format(i, self.c['base_route_types']['right_side_exit_base_route'],
+                                          i, self.c['base_route_types']['right_exit_platform_base_route']))
+                self.signals[100][self.c['base_route_types']['right_side_entry_base_route']].base_route_opened_list \
+                    .append(self.base_routes[i][self.c['base_route_types']['right_side_entry_base_route']])
+                self.logger.debug('base route {} {} appended to signal {} {} opened list'
+                                  .format(i, self.c['base_route_types']['right_side_entry_base_route'],
+                                          100, self.c['base_route_types']['right_side_entry_base_route']))
 
         self.logger.debug('opened list set up for track 0 signals')
         self.logger.info('opened list set up for all signals')
@@ -1905,8 +1931,10 @@ class RSSim(Game):
             if i <= 24:
                 for k in (self.c['direction']['left'], self.c['direction']['right']):
                     base_routes_in_train_route = [
-                        self.base_routes[0]['{}_base_route'.format(self.c['train_route_types']['entry_train_route'][k])],
-                        self.base_routes[i]['{}_base_route'.format(self.c['train_route_types']['entry_train_route'][k])],
+                        self.base_routes[0]['{}_base_route'
+                                            .format(self.c['train_route_types']['entry_train_route'][k])],
+                        self.base_routes[i]['{}_base_route'
+                                            .format(self.c['train_route_types']['entry_train_route'][k])],
                         self.base_routes[i]['{}_platform_base_route'
                                             .format(self.c['train_route_types']['entry_train_route'][k])]]
 
@@ -1922,14 +1950,146 @@ class RSSim(Game):
                     base_routes_in_train_route = [
                         self.base_routes[i]['{}_platform_base_route'
                                             .format(self.c['train_route_types']['exit_train_route'][m])],
-                        self.base_routes[i]['{}_base_route'.format(self.c['train_route_types']['exit_train_route'][m])],
-                        self.base_routes[0]['{}_base_route'.format(self.c['train_route_types']['exit_train_route'][m])]]
+                        self.base_routes[i]['{}_base_route'
+                                            .format(self.c['train_route_types']['exit_train_route'][m])],
+                        self.base_routes[0]['{}_base_route'
+                                            .format(self.c['train_route_types']['exit_train_route'][m])]]
 
                     self.train_routes[i][self.c['train_route_types']['exit_train_route'][m]] \
                         = TrainRoute(base_routes=base_routes_in_train_route,
                                      track_number=i,
                                      route_type=self.c['train_route_types']['exit_train_route'][m])
                     self.logger.info('track {} {} train route created'.format(i, m))
+
+            if i in (21, 23, 25, 27, 29, 31):
+                base_routes_in_train_route = [
+                    self.base_routes[100]['{}_base_route'
+                        .format(self.c['train_route_types']['entry_train_route'][self.c['direction']['left_side']])],
+                    self.base_routes[i]['{}_base_route'
+                        .format(self.c['train_route_types']['entry_train_route'][self.c['direction']['left_side']])],
+                    self.base_routes[i]['{}_platform_base_route'
+                        .format(self.c['train_route_types']['entry_train_route'][self.c['direction']['left']])]]
+
+                self.train_routes[i][self.c['train_route_types']['entry_train_route'][
+                    self.c['direction']['left_side']]] \
+                    = TrainRoute(base_routes=base_routes_in_train_route,
+                                 track_number=i,
+                                 route_type=self.c['train_route_types']['entry_train_route'][
+                                     self.c['direction']['left_side']])
+                self.logger.info('track {} {} train route created'.format(i, self.c['direction']['left_side']))
+
+                base_routes_in_train_route = [
+                    self.base_routes[i]['{}_platform_base_route'
+                        .format(self.c['train_route_types']['exit_train_route'][self.c['direction']['right']])],
+                    self.base_routes[i]['{}_base_route'
+                        .format(self.c['train_route_types']['exit_train_route'][self.c['direction']['right_side']])],
+                    self.base_routes[100]['{}_base_route'
+                        .format(self.c['train_route_types']['exit_train_route'][self.c['direction']['right_side']])]]
+
+                self.train_routes[i][self.c['train_route_types']['exit_train_route'][
+                    self.c['direction']['right_side']]] \
+                    = TrainRoute(base_routes=base_routes_in_train_route,
+                                 track_number=i,
+                                 route_type=self.c['train_route_types']['exit_train_route'][
+                                     self.c['direction']['right_side']])
+                self.logger.info('track {} {} train route created'.format(i, self.c['direction']['right_side']))
+                if i >= 25:
+                    base_routes_in_train_route = [
+                        self.base_routes[0]['{}_base_route'
+                            .format(self.c['train_route_types']['entry_train_route'][self.c['direction']['right']])],
+                        self.base_routes[i]['{}_base_route'
+                            .format(self.c['train_route_types']['entry_train_route'][self.c['direction']['right']])],
+                        self.base_routes[i]['{}_platform_base_route'
+                            .format(self.c['train_route_types']['entry_train_route'][self.c['direction']['right']])]]
+
+                    self.train_routes[i][self.c['train_route_types']['entry_train_route'][
+                        self.c['direction']['right']]] \
+                        = TrainRoute(base_routes=base_routes_in_train_route,
+                                     track_number=i,
+                                     route_type=self.c['train_route_types']['entry_train_route'][
+                                         self.c['direction']['right']])
+                    self.logger.info('track {} {} train route created'.format(i, self.c['direction']['right']))
+
+                    base_routes_in_train_route = [
+                        self.base_routes[i]['{}_platform_base_route'
+                            .format(self.c['train_route_types']['exit_train_route'][self.c['direction']['left']])],
+                        self.base_routes[i]['{}_base_route'
+                            .format(self.c['train_route_types']['exit_train_route'][self.c['direction']['left']])],
+                        self.base_routes[0]['{}_base_route'
+                            .format(self.c['train_route_types']['exit_train_route'][self.c['direction']['left']])]]
+
+                    self.train_routes[i][self.c['train_route_types']['exit_train_route'][
+                        self.c['direction']['left']]] \
+                        = TrainRoute(base_routes=base_routes_in_train_route,
+                                     track_number=i,
+                                     route_type=self.c['train_route_types']['exit_train_route'][
+                                         self.c['direction']['left']])
+                    self.logger.info('track {} {} train route created'.format(i, self.c['direction']['left']))
+
+            if i in (22, 24, 26, 28, 30, 32):
+                base_routes_in_train_route = [
+                    self.base_routes[100]['{}_base_route'
+                        .format(self.c['train_route_types']['entry_train_route'][self.c['direction']['right_side']])],
+                    self.base_routes[i]['{}_base_route'
+                        .format(self.c['train_route_types']['entry_train_route'][self.c['direction']['right_side']])],
+                    self.base_routes[i]['{}_platform_base_route'
+                        .format(self.c['train_route_types']['entry_train_route'][self.c['direction']['right']])]]
+
+                self.train_routes[i][self.c['train_route_types']['entry_train_route'][
+                    self.c['direction']['right_side']]] \
+                    = TrainRoute(base_routes=base_routes_in_train_route,
+                                 track_number=i,
+                                 route_type=self.c['train_route_types']['entry_train_route'][
+                                     self.c['direction']['right_side']])
+                self.logger.info('track {} {} train route created'.format(i, self.c['direction']['right_side']))
+
+                base_routes_in_train_route = [
+                    self.base_routes[i]['{}_platform_base_route'
+                        .format(self.c['train_route_types']['exit_train_route'][self.c['direction']['left']])],
+                    self.base_routes[i]['{}_base_route'
+                        .format(self.c['train_route_types']['exit_train_route'][self.c['direction']['left_side']])],
+                    self.base_routes[100]['{}_base_route'
+                        .format(self.c['train_route_types']['exit_train_route'][self.c['direction']['left_side']])]]
+
+                self.train_routes[i][self.c['train_route_types']['exit_train_route'][
+                    self.c['direction']['left_side']]] \
+                    = TrainRoute(base_routes=base_routes_in_train_route,
+                                 track_number=i,
+                                 route_type=self.c['train_route_types']['exit_train_route'][
+                                     self.c['direction']['left_side']])
+                self.logger.info('track {} {} train route created'.format(i, self.c['direction']['left_side']))
+                if i >= 26:
+                    base_routes_in_train_route = [
+                        self.base_routes[0]['{}_base_route'
+                            .format(self.c['train_route_types']['entry_train_route'][self.c['direction']['left']])],
+                        self.base_routes[i]['{}_base_route'
+                            .format(self.c['train_route_types']['entry_train_route'][self.c['direction']['left']])],
+                        self.base_routes[i]['{}_platform_base_route'
+                            .format(self.c['train_route_types']['entry_train_route'][self.c['direction']['left']])]]
+
+                    self.train_routes[i][self.c['train_route_types']['entry_train_route'][
+                        self.c['direction']['left']]] \
+                        = TrainRoute(base_routes=base_routes_in_train_route,
+                                     track_number=i,
+                                     route_type=self.c['train_route_types']['entry_train_route'][
+                                         self.c['direction']['left']])
+                    self.logger.info('track {} {} train route created'.format(i, self.c['direction']['left']))
+
+                    base_routes_in_train_route = [
+                        self.base_routes[i]['{}_platform_base_route'
+                            .format(self.c['train_route_types']['exit_train_route'][self.c['direction']['right']])],
+                        self.base_routes[i]['{}_base_route'
+                            .format(self.c['train_route_types']['exit_train_route'][self.c['direction']['right']])],
+                        self.base_routes[0]['{}_base_route'
+                            .format(self.c['train_route_types']['exit_train_route'][self.c['direction']['right']])]]
+
+                    self.train_routes[i][self.c['train_route_types']['exit_train_route'][
+                        self.c['direction']['right']]] \
+                        = TrainRoute(base_routes=base_routes_in_train_route,
+                                     track_number=i,
+                                     route_type=self.c['train_route_types']['exit_train_route'][
+                                         self.c['direction']['right']])
+                    self.logger.info('track {} {} train route created'.format(i, self.c['direction']['right']))
 
         self.logger.info('tracks and train routes created')
         # ------ SORT THIS OUT ------
