@@ -2091,6 +2091,32 @@ class RSSim(Game):
                                          self.c['direction']['right']])
                     self.logger.info('track {} {} train route created'.format(i, self.c['direction']['right']))
 
+        for i in range(100):
+            self.train_routes.append({})
+
+        base_routes_in_train_route \
+            = [self.base_routes[100][
+                   '{}_base_route'
+                   .format(self.c['train_route_types']['entry_train_route'][self.c['direction']['left_side']])], ]
+        self.train_routes[100][self.c['train_route_types']['approaching_train_route'][
+            self.c['direction']['left_side']]] \
+            = TrainRoute(base_routes=base_routes_in_train_route,
+                         track_number=100,
+                         route_type=self.c['train_route_types']['approaching_train_route'][
+                             self.c['direction']['left_side']]
+                         )
+        base_routes_in_train_route \
+            = [self.base_routes[100][
+                   '{}_base_route'
+                   .format(self.c['train_route_types']['entry_train_route'][self.c['direction']['right_side']])], ]
+        self.train_routes[100][self.c['train_route_types']['approaching_train_route'][
+            self.c['direction']['right_side']]] \
+            = TrainRoute(base_routes=base_routes_in_train_route,
+                         track_number=100,
+                         route_type=self.c['train_route_types']['approaching_train_route'][
+                             self.c['direction']['right_side']]
+                         )
+
         self.logger.info('tracks and train routes created')
         # ------ SORT THIS OUT ------
         # base routes and signals are added to generic objects list
@@ -2099,15 +2125,27 @@ class RSSim(Game):
                 self.objects.append(self.base_routes[i][n])
                 self.logger.debug('base route {} {} appended to global objects list'.format(i, n))
 
+        for n in self.base_routes[100]:
+            self.objects.append(self.base_routes[100][n])
+            self.logger.debug('base route {} {} appended to global objects list'.format(100, n))
+
         self.logger.info('base routes and signals appended')
         # train routes and tracks are added to dispatcher which we create right now
         self.dispatcher = Dispatcher(batch=self.batch, group=self.signals_and_trains_ordered_group,
                                      boarding_lights_group=self.boarding_lights_ordered_group)
         for i in range(self.c['dispatcher_config']['tracks_ready'] + 1):
             self.dispatcher.train_routes.append({})
-            for p in self.train_routes[i].keys():
+            for p in self.train_routes[i]:
                 self.dispatcher.train_routes[i].update({p: self.train_routes[i][p]})
                 self.logger.debug('train route {} {} appended to dispatcher'.format(i, p))
+
+        for i in range(100):
+            self.dispatcher.train_routes.append({})
+
+        self.dispatcher.train_routes.append({})
+        for p in self.train_routes[100]:
+            self.dispatcher.train_routes[100].update({p: self.train_routes[100][p]})
+            self.logger.debug('train route {} {} appended to dispatcher'.format(100, p))
 
         self.logger.info('all train routes appended to dispatcher')
         for i in range(self.c['dispatcher_config']['tracks_ready']):
@@ -2118,6 +2156,10 @@ class RSSim(Game):
             for n in self.signals[i]:
                 self.dispatcher.signals.append(self.signals[i][n])
                 self.logger.debug('signal {} {} appended to dispatcher'.format(i, n))
+
+        for n in self.signals[100]:
+            self.dispatcher.signals.append(self.signals[100][n])
+            self.logger.debug('signal {} {} appended to dispatcher'.format(100, n))
 
         self.logger.info('all tracks appended to dispatcher')
         # now we add dispatcher itself to generic objects list
