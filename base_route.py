@@ -72,9 +72,6 @@ class BaseRoute(GameObject):
 
         self.logger.info('user-related config parsed')
         # parse stable config
-        supported_carts_parsed = self.config['route_config']['supported_carts'].split(',')
-        self.route_config['supported_carts'] = (int(supported_carts_parsed[0]), int(supported_carts_parsed[1]))
-        self.logger.debug('supported_carts: {}'.format(self.route_config['supported_carts']))
         if self.config['route_config']['stop_point'] == 'None':
             self.route_config['stop_point'] = None
         else:

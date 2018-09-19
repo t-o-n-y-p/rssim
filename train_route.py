@@ -14,7 +14,7 @@ def _game_is_not_paused(fn):
 
 
 class TrainRoute(GameObject):
-    def __init__(self, base_routes, track_number, route_type):
+    def __init__(self, base_routes, track_number, route_type, supported_carts):
         super().__init__()
         self.logger = logging.getLogger('game.train_route_{}_{}'.format(track_number, route_type))
         self.logger.debug('------- START INIT -------')
@@ -39,16 +39,9 @@ class TrainRoute(GameObject):
         # single stop point which is closest to the first chassis of the train
         self.next_stop_point = None
         self.destination_point = None
-        self.supported_carts = [0, 20]
         self.signals = []
         # number of supported carts is decided below
-        for j in self.base_routes:
-            if j.route_config['supported_carts'][0] > self.supported_carts[0]:
-                self.supported_carts[0] = j.route_config['supported_carts'][0]
-
-            if j.route_config['supported_carts'][1] < self.supported_carts[1]:
-                self.supported_carts[1] = j.route_config['supported_carts'][1]
-
+        self.supported_carts = supported_carts
         self.logger.debug('supported carts: {}'.format(self.supported_carts))
 
         # merge trail points of all base routes into single route

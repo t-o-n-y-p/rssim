@@ -323,8 +323,8 @@ class Dispatcher(GameObject):
         self.logger.debug('------- DISPATCHER UPDATE START -------')
         for z3 in self.tracks:
             if not z3.locked:
-                if z3.base_routes[0].route_config['supported_carts'][0] in range(1, self.supported_carts[0]):
-                    self.supported_carts[0] = z3.base_routes[0].route_config['supported_carts'][0]
+                if z3.supported_carts[0] in range(1, self.supported_carts[0]):
+                    self.supported_carts[0] = z3.supported_carts[0]
 
                 if z3.track_number > self.unlocked_tracks:
                     self.unlocked_tracks = z3.track_number
@@ -412,7 +412,8 @@ class Dispatcher(GameObject):
                     self.logger.debug('train carts: {}; route supports: {}'.format(i.carts, r.supported_carts))
                     # if compatible track is finally available,
                     # we open entry route for our train and leave loop
-                    if i.carts in range(r.supported_carts[0], r.supported_carts[1] + 1) and not r.opened \
+                    if i.carts in range(self.tracks[j - 1].supported_carts[0],
+                                        self.tracks[j - 1].supported_carts[1] + 1) and not r.opened \
                             and not self.tracks[j - 1].locked and not self.tracks[j - 1].busy:
                         self.logger.debug('all requirements met')
                         route_for_new_train = r
@@ -443,7 +444,8 @@ class Dispatcher(GameObject):
                         self.logger.debug('train carts: {}; route supports: {}'.format(i.carts, r.supported_carts))
                         # if compatible track is finally available,
                         # we open entry route for our train and leave loop
-                        if i.carts in range(r.supported_carts[0], r.supported_carts[1] + 1) and not r.opened \
+                        if i.carts in range(self.tracks[j - 1].supported_carts[0],
+                                            self.tracks[j - 1].supported_carts[1] + 1) and not r.opened \
                                 and not self.tracks[j - 1].busy and not self.tracks[j - 1].locked:
                             self.logger.debug('all requirements met')
                             route_for_new_train = r

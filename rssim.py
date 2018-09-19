@@ -1902,8 +1902,8 @@ class RSSim(Game):
         self.train_routes[0][self.c['train_route_types']['approaching_train_route'][self.c['direction']['left']]] \
             = TrainRoute(base_routes=base_routes_in_train_route,
                          track_number=0,
-                         route_type=self.c['train_route_types']['approaching_train_route'][self.c['direction']['left']]
-                         )
+                         route_type=self.c['train_route_types']['approaching_train_route'][self.c['direction']['left']],
+                         supported_carts=[0, 20])
         base_routes_in_train_route \
             = [self.base_routes[0][
                    '{}_base_route'
@@ -1911,8 +1911,9 @@ class RSSim(Game):
         self.train_routes[0][self.c['train_route_types']['approaching_train_route'][self.c['direction']['right']]] \
             = TrainRoute(base_routes=base_routes_in_train_route,
                          track_number=0,
-                         route_type=self.c['train_route_types']['approaching_train_route'][self.c['direction']['right']]
-                         )
+                         route_type=self.c['train_route_types']['approaching_train_route'][
+                             self.c['direction']['right']],
+                         supported_carts=[0, 20])
         self.logger.info('approaching train routes created')
 
         for i in range(1, self.c['dispatcher_config']['tracks_ready'] + 1):
@@ -1941,7 +1942,8 @@ class RSSim(Game):
                     self.train_routes[i][self.c['train_route_types']['entry_train_route'][k]] \
                         = TrainRoute(base_routes=base_routes_in_train_route,
                                      track_number=i,
-                                     route_type=self.c['train_route_types']['entry_train_route'][k])
+                                     route_type=self.c['train_route_types']['entry_train_route'][k],
+                                     supported_carts=self.tracks[i - 1].supported_carts)
                     self.logger.info('track {} {} train route created'.format(i, k))
 
                 # create exit train route
@@ -1958,7 +1960,8 @@ class RSSim(Game):
                     self.train_routes[i][self.c['train_route_types']['exit_train_route'][m]] \
                         = TrainRoute(base_routes=base_routes_in_train_route,
                                      track_number=i,
-                                     route_type=self.c['train_route_types']['exit_train_route'][m])
+                                     route_type=self.c['train_route_types']['exit_train_route'][m],
+                                     supported_carts=self.tracks[i - 1].supported_carts)
                     self.logger.info('track {} {} train route created'.format(i, m))
 
             if i in (21, 23, 25, 27, 29, 31):
@@ -1975,7 +1978,8 @@ class RSSim(Game):
                     = TrainRoute(base_routes=base_routes_in_train_route,
                                  track_number=i,
                                  route_type=self.c['train_route_types']['entry_train_route'][
-                                     self.c['direction']['left_side']])
+                                     self.c['direction']['left_side']],
+                                 supported_carts=self.tracks[i - 1].supported_carts)
                 self.logger.info('track {} {} train route created'.format(i, self.c['direction']['left_side']))
 
                 base_routes_in_train_route = [
@@ -1991,7 +1995,8 @@ class RSSim(Game):
                     = TrainRoute(base_routes=base_routes_in_train_route,
                                  track_number=i,
                                  route_type=self.c['train_route_types']['exit_train_route'][
-                                     self.c['direction']['right_side']])
+                                     self.c['direction']['right_side']],
+                                 supported_carts=self.tracks[i - 1].supported_carts)
                 self.logger.info('track {} {} train route created'.format(i, self.c['direction']['right_side']))
                 if i >= 25:
                     base_routes_in_train_route = [
@@ -2007,7 +2012,8 @@ class RSSim(Game):
                         = TrainRoute(base_routes=base_routes_in_train_route,
                                      track_number=i,
                                      route_type=self.c['train_route_types']['entry_train_route'][
-                                         self.c['direction']['right']])
+                                         self.c['direction']['right']],
+                                     supported_carts=self.tracks[i - 1].supported_carts)
                     self.logger.info('track {} {} train route created'.format(i, self.c['direction']['right']))
 
                     base_routes_in_train_route = [
@@ -2023,7 +2029,8 @@ class RSSim(Game):
                         = TrainRoute(base_routes=base_routes_in_train_route,
                                      track_number=i,
                                      route_type=self.c['train_route_types']['exit_train_route'][
-                                         self.c['direction']['left']])
+                                         self.c['direction']['left']],
+                                     supported_carts=self.tracks[i - 1].supported_carts)
                     self.logger.info('track {} {} train route created'.format(i, self.c['direction']['left']))
 
             if i in (22, 24, 26, 28, 30, 32):
@@ -2040,7 +2047,8 @@ class RSSim(Game):
                     = TrainRoute(base_routes=base_routes_in_train_route,
                                  track_number=i,
                                  route_type=self.c['train_route_types']['entry_train_route'][
-                                     self.c['direction']['right_side']])
+                                     self.c['direction']['right_side']],
+                                 supported_carts=self.tracks[i - 1].supported_carts)
                 self.logger.info('track {} {} train route created'.format(i, self.c['direction']['right_side']))
 
                 base_routes_in_train_route = [
@@ -2056,7 +2064,8 @@ class RSSim(Game):
                     = TrainRoute(base_routes=base_routes_in_train_route,
                                  track_number=i,
                                  route_type=self.c['train_route_types']['exit_train_route'][
-                                     self.c['direction']['left_side']])
+                                     self.c['direction']['left_side']],
+                                 supported_carts=self.tracks[i - 1].supported_carts)
                 self.logger.info('track {} {} train route created'.format(i, self.c['direction']['left_side']))
                 if i >= 26:
                     base_routes_in_train_route = [
@@ -2072,7 +2081,8 @@ class RSSim(Game):
                         = TrainRoute(base_routes=base_routes_in_train_route,
                                      track_number=i,
                                      route_type=self.c['train_route_types']['entry_train_route'][
-                                         self.c['direction']['left']])
+                                         self.c['direction']['left']],
+                                     supported_carts=self.tracks[i - 1].supported_carts)
                     self.logger.info('track {} {} train route created'.format(i, self.c['direction']['left']))
 
                     base_routes_in_train_route = [
@@ -2088,7 +2098,8 @@ class RSSim(Game):
                         = TrainRoute(base_routes=base_routes_in_train_route,
                                      track_number=i,
                                      route_type=self.c['train_route_types']['exit_train_route'][
-                                         self.c['direction']['right']])
+                                         self.c['direction']['right']],
+                                     supported_carts=self.tracks[i - 1].supported_carts)
                     self.logger.info('track {} {} train route created'.format(i, self.c['direction']['right']))
 
         for i in range(100):
@@ -2103,7 +2114,8 @@ class RSSim(Game):
             = TrainRoute(base_routes=base_routes_in_train_route,
                          track_number=100,
                          route_type=self.c['train_route_types']['approaching_train_route'][
-                             self.c['direction']['left_side']]
+                             self.c['direction']['left_side']],
+                         supported_carts=[0, 20]
                          )
         base_routes_in_train_route \
             = [self.base_routes[100][
@@ -2114,7 +2126,8 @@ class RSSim(Game):
             = TrainRoute(base_routes=base_routes_in_train_route,
                          track_number=100,
                          route_type=self.c['train_route_types']['approaching_train_route'][
-                             self.c['direction']['right_side']]
+                             self.c['direction']['right_side']],
+                         supported_carts=[0, 20]
                          )
 
         self.logger.info('tracks and train routes created')

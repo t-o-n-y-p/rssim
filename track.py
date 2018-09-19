@@ -29,6 +29,7 @@ class Track(GameObject):
         self.busy = False
         self.last_entered_by = 0
         self.override = False
+        self.supported_carts = None
         self.read_state()
         self.logger.debug('------- END INIT -------')
         self.logger.warning('track init completed')
@@ -51,6 +52,8 @@ class Track(GameObject):
         self.logger.debug('last_entered_by: {}'.format(self.last_entered_by))
         self.override = self.config['user_data'].getboolean('override')
         self.logger.debug('override: {}'.format(self.override))
+        supported_carts_parsed = self.config['track_config']['supported_carts'].split(',')
+        self.supported_carts = (int(supported_carts_parsed[0]), int(supported_carts_parsed[1]))
         self.logger.debug('------- END READING STATE -------')
         self.logger.info('track state initialized')
 
