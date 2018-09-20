@@ -2530,6 +2530,32 @@ class RSSim(Game):
             = Crossover(101, 103, self.c['crossover_types']['left_entry_crossover'])
         self.junctions[101][103][self.c['crossover_types']['left_exit_crossover']] \
             = Crossover(101, 103, self.c['crossover_types']['left_exit_crossover'])
+
+        self.junctions[102] = {}
+        self.junctions[102][22] = {}
+        self.junctions[102][22][self.c['switch_types']['right_entry_railroad_switch']] \
+            = RailroadSwitch(102, 22, self.c['switch_types']['right_entry_railroad_switch'])
+        self.junctions[102][22][self.c['switch_types']['right_exit_railroad_switch']] \
+            = RailroadSwitch(102, 22, self.c['switch_types']['right_exit_railroad_switch'])
+        self.junctions[102][104] = {}
+        self.junctions[102][104][self.c['crossover_types']['right_entry_crossover']] \
+            = Crossover(102, 104, self.c['crossover_types']['right_entry_crossover'])
+        self.junctions[102][104][self.c['crossover_types']['right_exit_crossover']] \
+            = Crossover(102, 104, self.c['crossover_types']['right_exit_crossover'])
+
+        self.junctions[103] = {}
+        self.junctions[103][29] = {}
+        self.junctions[103][29][self.c['switch_types']['left_entry_railroad_switch']] \
+            = RailroadSwitch(103, 29, self.c['switch_types']['left_entry_railroad_switch'])
+        self.junctions[103][29][self.c['switch_types']['left_exit_railroad_switch']] \
+            = RailroadSwitch(103, 29, self.c['switch_types']['left_exit_railroad_switch'])
+
+        self.junctions[104] = {}
+        self.junctions[104][30] = {}
+        self.junctions[104][30][self.c['switch_types']['right_entry_railroad_switch']] \
+            = RailroadSwitch(104, 30, self.c['switch_types']['right_entry_railroad_switch'])
+        self.junctions[104][30][self.c['switch_types']['right_exit_railroad_switch']] \
+            = RailroadSwitch(104, 30, self.c['switch_types']['right_exit_railroad_switch'])
         self.logger.info('all junctions created')
 
         self.junctions[21][23][self.c['crossover_types']['left_entry_crossover']].dependency \
