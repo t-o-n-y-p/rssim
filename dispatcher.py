@@ -404,7 +404,7 @@ class Dispatcher(GameObject):
             if i.state == self.c['train_state_types']['approaching'] and routes_created_inside_iteration == 0:
                 self.logger.debug('looking for route for train {}'.format(i.train_id))
                 route_for_new_train = None
-                for j in self.c['dispatcher_config']['first_priority_tracks'][i.new_direction]:
+                for j in self.c['dispatcher_config']['main_priority_tracks'][i.direction][i.new_direction]:
                     r = self.train_routes[j][self.c['train_route_types']['entry_train_route'][i.direction]]
                     self.logger.debug('checking track {}'.format(j))
                     self.logger.debug('track in busy: {}'.format(self.tracks[j - 1].busy))
@@ -432,40 +432,6 @@ class Dispatcher(GameObject):
                         self.logger.info('train {} new route assigned: track {} {}'
                                          .format(i.train_id, i.train_route.track_number, i.train_route.route_type))
                         break
-
-                if route_for_new_train is None:
-                    self.logger.debug('could not find first priority track')
-                    self.logger.debug('still looking for route for train {}'.format(i.train_id))
-                    for j in self.c['dispatcher_config']['second_priority_tracks'][i.new_direction]:
-                        r = self.train_routes[j][self.c['train_route_types']['entry_train_route'][i.direction]]
-                        self.logger.debug('checking track {}'.format(j))
-                        self.logger.debug('track in busy: {}'.format(self.tracks[j - 1].busy))
-                        self.logger.debug('opened: {}'.format(r.opened))
-                        self.logger.debug('train carts: {}; route supports: {}'.format(i.carts, r.supported_carts))
-                        # if compatible track is finally available,
-                        # we open entry route for our train and leave loop
-                        if i.carts in range(self.tracks[j - 1].supported_carts[0],
-                                            self.tracks[j - 1].supported_carts[1] + 1) and not r.opened \
-                                and not self.tracks[j - 1].busy and not self.tracks[j - 1].locked:
-                            self.logger.debug('all requirements met')
-                            route_for_new_train = r
-                            self.tracks[j - 1].override = True
-                            self.tracks[j - 1].busy = True
-                            self.tracks[j - 1].last_entered_by = i.train_id
-                            i.state = self.c['train_state_types']['pending_boarding']
-                            self.logger.info('train {} status changed to {}'.format(i.train_id, i.state))
-                            self.logger.info('train {} completed route: track {} {}'
-                                             .format(i.train_id, i.train_route.track_number,
-                                                     i.train_route.route_type))
-                            i.complete_train_route()
-                            i.assign_new_train_route(route_for_new_train, game_paused)
-                            routes_created_inside_iteration += 1
-                            self.logger.debug('routes_created_inside_iteration: {}'
-                                              .format(routes_created_inside_iteration))
-                            self.logger.info('train {} new route assigned: track {} {}'
-                                             .format(i.train_id, i.train_route.track_number,
-                                                     i.train_route.route_type))
-                            break
 
                 if route_for_new_train is None:
                     self.logger.debug('all tracks are busy, will try next time')
@@ -509,7 +475,7 @@ class Dispatcher(GameObject):
         # dispatcher's logic iteration is done, now we update trains, routes and tracks
         for q4 in self.trains:
             q4.update(game_paused)
-            if q4.train_route:
+            if q4.train_route is not None:
                 q4.train_route.update(game_paused)
 
         for q3 in range(len(self.tracks)):

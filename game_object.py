@@ -129,24 +129,19 @@ class GameObject:
 
         self.c['dispatcher_config'] = {}
         self.c['dispatcher_config']['tracks_ready'] = self.game_config['dispatcher_config'].getint('tracks_ready')
-        first_priority_tracks = self.game_config['dispatcher_config']['first_priority_tracks'].split('|')
-        for i in range(len(first_priority_tracks)):
-            first_priority_tracks[i] = first_priority_tracks[i].split(',')
-            for j in range(len(first_priority_tracks[i])):
-                first_priority_tracks[i][j] = int(first_priority_tracks[i][j])
+        main_priority_tracks_parsed = self.game_config['dispatcher_config']['main_priority_tracks'].split('|')
+        for i in range(len(main_priority_tracks_parsed)):
+            main_priority_tracks_parsed[i] = main_priority_tracks_parsed[i].split(',')
+            for j in range(len(main_priority_tracks_parsed[i])):
+                main_priority_tracks_parsed[i][j] = main_priority_tracks_parsed[i][j].split('-')
+                for k in range(len(main_priority_tracks_parsed[i][j])):
+                    main_priority_tracks_parsed[i][j][k] = int(main_priority_tracks_parsed[i][j][k])
 
-            first_priority_tracks[i] = tuple(first_priority_tracks[i])
+                main_priority_tracks_parsed[i][j] = tuple(main_priority_tracks_parsed[i][j])
 
-        self.c['dispatcher_config']['first_priority_tracks'] = tuple(first_priority_tracks)
-        second_priority_tracks = self.game_config['dispatcher_config']['second_priority_tracks'].split('|')
-        for i in range(len(second_priority_tracks)):
-            second_priority_tracks[i] = second_priority_tracks[i].split(',')
-            for j in range(len(second_priority_tracks[i])):
-                second_priority_tracks[i][j] = int(second_priority_tracks[i][j])
+            main_priority_tracks_parsed[i] = tuple(main_priority_tracks_parsed[i])
 
-            second_priority_tracks[i] = tuple(second_priority_tracks[i])
-
-        self.c['dispatcher_config']['second_priority_tracks'] = tuple(second_priority_tracks)
+        self.c['dispatcher_config']['main_priority_tracks'] = tuple(main_priority_tracks_parsed)
         pass_through_priority_tracks = self.game_config['dispatcher_config']['pass_through_priority_tracks'].split('|')
         for i in range(len(pass_through_priority_tracks)):
             pass_through_priority_tracks[i] = pass_through_priority_tracks[i].split(',')
