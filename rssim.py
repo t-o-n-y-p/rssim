@@ -2367,11 +2367,51 @@ class RSSim(Game):
             = RailroadSwitch(22, 18, self.c['switch_types']['right_entry_railroad_switch'])
         self.junctions[22][18][self.c['switch_types']['right_exit_railroad_switch']] \
             = RailroadSwitch(22, 18, self.c['switch_types']['right_exit_railroad_switch'])
+        self.junctions[22][24] = {}
+        self.junctions[22][24][self.c['switch_types']['left_entry_railroad_switch']] \
+            = RailroadSwitch(22, 24, self.c['switch_types']['left_entry_railroad_switch'])
+        self.junctions[22][24][self.c['switch_types']['left_exit_railroad_switch']] \
+            = RailroadSwitch(22, 24, self.c['switch_types']['left_exit_railroad_switch'])
+        self.junctions[22][24][self.c['crossover_types']['right_entry_crossover']] \
+            = Crossover(22, 24, self.c['crossover_types']['right_entry_crossover'])
 
         self.junctions[23] = {}
         self.junctions[23][21] = {}
         self.junctions[23][21][self.c['crossover_types']['left_exit_crossover']] \
             = Crossover(23, 21, self.c['crossover_types']['left_exit_crossover'])
+
+        self.junctions[24] = {}
+        self.junctions[24][22] = {}
+        self.junctions[24][22][self.c['crossover_types']['right_exit_crossover']] \
+            = Crossover(24, 22, self.c['crossover_types']['right_exit_crossover'])
+
+        self.junctions[25] = {}
+        self.junctions[25][27] = {}
+        self.junctions[25][27][self.c['switch_types']['right_entry_railroad_switch']] \
+            = RailroadSwitch(25, 27, self.c['switch_types']['right_entry_railroad_switch'])
+        self.junctions[25][27][self.c['switch_types']['right_exit_railroad_switch']] \
+            = RailroadSwitch(25, 27, self.c['switch_types']['right_exit_railroad_switch'])
+
+        self.junctions[26] = {}
+        self.junctions[26][28] = {}
+        self.junctions[26][28][self.c['switch_types']['left_entry_railroad_switch']] \
+            = RailroadSwitch(26, 28, self.c['switch_types']['left_entry_railroad_switch'])
+        self.junctions[26][28][self.c['switch_types']['left_exit_railroad_switch']] \
+            = RailroadSwitch(26, 28, self.c['switch_types']['left_exit_railroad_switch'])
+
+        self.junctions[27] = {}
+        self.junctions[27][25] = {}
+        self.junctions[27][25][self.c['switch_types']['left_entry_railroad_switch']] \
+            = RailroadSwitch(27, 25, self.c['switch_types']['left_entry_railroad_switch'])
+        self.junctions[27][25][self.c['switch_types']['left_exit_railroad_switch']] \
+            = RailroadSwitch(27, 25, self.c['switch_types']['left_exit_railroad_switch'])
+
+        self.junctions[28] = {}
+        self.junctions[28][26] = {}
+        self.junctions[28][26][self.c['switch_types']['right_entry_railroad_switch']] \
+            = RailroadSwitch(28, 26, self.c['switch_types']['right_entry_railroad_switch'])
+        self.junctions[28][26][self.c['switch_types']['right_exit_railroad_switch']] \
+            = RailroadSwitch(28, 26, self.c['switch_types']['right_exit_railroad_switch'])
 
         self.junctions[29] = {}
         self.junctions[29][3] = {}
@@ -2406,6 +2446,25 @@ class RSSim(Game):
             = RailroadSwitch(29, 21, self.c['switch_types']['right_entry_railroad_switch'])
         self.junctions[29][21][self.c['switch_types']['right_exit_railroad_switch']] \
             = RailroadSwitch(29, 21, self.c['switch_types']['right_exit_railroad_switch'])
+        self.junctions[29][25] = {}
+        self.junctions[29][25][self.c['switch_types']['right_entry_railroad_switch']] \
+            = RailroadSwitch(29, 25, self.c['switch_types']['right_entry_railroad_switch'])
+        self.junctions[29][25][self.c['switch_types']['right_exit_railroad_switch']] \
+            = RailroadSwitch(29, 25, self.c['switch_types']['right_exit_railroad_switch'])
+        self.junctions[29][27] = {}
+        self.junctions[29][27][self.c['switch_types']['left_entry_railroad_switch']] \
+            = RailroadSwitch(29, 27, self.c['switch_types']['left_entry_railroad_switch'])
+        self.junctions[29][27][self.c['switch_types']['left_exit_railroad_switch']] \
+            = RailroadSwitch(29, 27, self.c['switch_types']['left_exit_railroad_switch'])
+        self.junctions[29][31] = {}
+        self.junctions[29][31][self.c['switch_types']['left_entry_railroad_switch']] \
+            = RailroadSwitch(29, 31, self.c['switch_types']['left_entry_railroad_switch'])
+        self.junctions[29][31][self.c['switch_types']['left_exit_railroad_switch']] \
+            = RailroadSwitch(29, 31, self.c['switch_types']['left_exit_railroad_switch'])
+        self.junctions[29][31][self.c['switch_types']['right_entry_railroad_switch']] \
+            = RailroadSwitch(29, 31, self.c['switch_types']['right_entry_railroad_switch'])
+        self.junctions[29][31][self.c['switch_types']['right_exit_railroad_switch']] \
+            = RailroadSwitch(29, 31, self.c['switch_types']['right_exit_railroad_switch'])
         self.logger.debug('junctions for track 3 created')
 
         self.junctions[30] = {}
@@ -2434,6 +2493,30 @@ class RSSim(Game):
             = RailroadSwitch(30, 18, self.c['switch_types']['left_entry_railroad_switch'])
         self.junctions[30][18][self.c['switch_types']['left_exit_railroad_switch']] \
             = RailroadSwitch(30, 18, self.c['switch_types']['left_exit_railroad_switch'])
+        self.junctions[30][22] = {}
+        self.junctions[30][22][self.c['switch_types']['left_entry_railroad_switch']] \
+            = RailroadSwitch(30, 22, self.c['switch_types']['left_entry_railroad_switch'])
+        self.junctions[30][22][self.c['switch_types']['left_exit_railroad_switch']] \
+            = RailroadSwitch(30, 22, self.c['switch_types']['left_exit_railroad_switch'])
+        self.junctions[30][26] = {}
+        self.junctions[30][26][self.c['switch_types']['left_entry_railroad_switch']] \
+            = RailroadSwitch(30, 26, self.c['switch_types']['left_entry_railroad_switch'])
+        self.junctions[30][26][self.c['switch_types']['left_exit_railroad_switch']] \
+            = RailroadSwitch(30, 26, self.c['switch_types']['left_exit_railroad_switch'])
+        self.junctions[30][28] = {}
+        self.junctions[30][28][self.c['switch_types']['right_entry_railroad_switch']] \
+            = RailroadSwitch(30, 28, self.c['switch_types']['right_entry_railroad_switch'])
+        self.junctions[30][28][self.c['switch_types']['right_exit_railroad_switch']] \
+            = RailroadSwitch(30, 28, self.c['switch_types']['right_exit_railroad_switch'])
+        self.junctions[30][32] = {}
+        self.junctions[30][32][self.c['switch_types']['left_entry_railroad_switch']] \
+            = RailroadSwitch(30, 32, self.c['switch_types']['left_entry_railroad_switch'])
+        self.junctions[30][32][self.c['switch_types']['left_exit_railroad_switch']] \
+            = RailroadSwitch(30, 32, self.c['switch_types']['left_exit_railroad_switch'])
+        self.junctions[30][32][self.c['switch_types']['right_entry_railroad_switch']] \
+            = RailroadSwitch(30, 32, self.c['switch_types']['right_entry_railroad_switch'])
+        self.junctions[30][32][self.c['switch_types']['right_exit_railroad_switch']] \
+            = RailroadSwitch(30, 32, self.c['switch_types']['right_exit_railroad_switch'])
         self.logger.debug('junctions for track 4 created')
 
         self.junctions[101] = {}
@@ -2449,24 +2532,14 @@ class RSSim(Game):
             = Crossover(101, 103, self.c['crossover_types']['left_exit_crossover'])
         self.logger.info('all junctions created')
 
-        self.junctions[1][2][self.c['crossover_types']['right_entry_crossover']].dependency \
-            = self.junctions[1][2][self.c['crossover_types']['right_exit_crossover']]
-        self.junctions[1][2][self.c['crossover_types']['right_exit_crossover']].dependency \
-            = self.junctions[1][2][self.c['crossover_types']['right_entry_crossover']]
-        self.logger.debug('main left crossovers associated')
-        self.junctions[2][1][self.c['crossover_types']['left_entry_crossover']].dependency \
-            = self.junctions[2][1][self.c['crossover_types']['left_exit_crossover']]
-        self.junctions[2][1][self.c['crossover_types']['left_exit_crossover']].dependency \
-            = self.junctions[2][1][self.c['crossover_types']['left_entry_crossover']]
-        self.logger.debug('main right crossovers associated')
         self.junctions[21][23][self.c['crossover_types']['left_entry_crossover']].dependency \
             = self.junctions[23][21][self.c['crossover_types']['left_exit_crossover']]
         self.junctions[23][21][self.c['crossover_types']['left_exit_crossover']].dependency \
             = self.junctions[21][23][self.c['crossover_types']['left_entry_crossover']]
-        self.junctions[101][103][self.c['crossover_types']['left_entry_crossover']].dependency \
-            = self.junctions[101][103][self.c['crossover_types']['left_exit_crossover']]
-        self.junctions[101][103][self.c['crossover_types']['left_exit_crossover']].dependency \
-            = self.junctions[101][103][self.c['crossover_types']['left_entry_crossover']]
+        self.junctions[22][24][self.c['crossover_types']['right_entry_crossover']].dependency \
+            = self.junctions[24][22][self.c['crossover_types']['right_exit_crossover']]
+        self.junctions[24][22][self.c['crossover_types']['right_exit_crossover']].dependency \
+            = self.junctions[22][24][self.c['crossover_types']['right_entry_crossover']]
 
         for i in self.junctions:
             for j in self.junctions[i]:
@@ -2474,23 +2547,27 @@ class RSSim(Game):
                     if k == self.c['switch_types']['left_entry_railroad_switch']:
                         self.junctions[i][j][k].dependency \
                             = self.junctions[i][j][self.c['switch_types']['left_exit_railroad_switch']]
-                        self.logger.debug('{} {} {} and {} associated'
-                                          .format(i, j, k, self.c['switch_types']['left_exit_railroad_switch']))
                     elif k == self.c['switch_types']['left_exit_railroad_switch']:
                         self.junctions[i][j][k].dependency \
                             = self.junctions[i][j][self.c['switch_types']['left_entry_railroad_switch']]
-                        self.logger.debug('{} {} {} and {} associated'
-                                          .format(i, j, k, self.c['switch_types']['left_entry_railroad_switch']))
                     elif k == self.c['switch_types']['right_entry_railroad_switch']:
                         self.junctions[i][j][k].dependency \
                             = self.junctions[i][j][self.c['switch_types']['right_exit_railroad_switch']]
-                        self.logger.debug('{} {} {} and {} associated'
-                                          .format(i, j, k, self.c['switch_types']['right_exit_railroad_switch']))
                     elif k == self.c['switch_types']['right_exit_railroad_switch']:
                         self.junctions[i][j][k].dependency \
                             = self.junctions[i][j][self.c['switch_types']['right_entry_railroad_switch']]
-                        self.logger.debug('{} {} {} and {} associated'
-                                          .format(i, j, k, self.c['switch_types']['right_entry_railroad_switch']))
+                    elif k == self.c['crossover_types']['left_entry_crossover'] and i in (1, 2, 101, 102):
+                        self.junctions[i][j][k].dependency \
+                            = self.junctions[i][j][self.c['crossover_types']['left_exit_crossover']]
+                    elif k == self.c['crossover_types']['left_exit_crossover'] and i in (1, 2, 101, 102):
+                        self.junctions[i][j][k].dependency \
+                            = self.junctions[i][j][self.c['crossover_types']['left_entry_crossover']]
+                    elif k == self.c['crossover_types']['right_entry_crossover'] and i in (1, 2, 101, 102):
+                        self.junctions[i][j][k].dependency \
+                            = self.junctions[i][j][self.c['crossover_types']['right_exit_crossover']]
+                    elif k == self.c['crossover_types']['right_exit_crossover'] and i in (1, 2, 101, 102):
+                        self.junctions[i][j][k].dependency \
+                            = self.junctions[i][j][self.c['crossover_types']['right_entry_crossover']]
 
         self.logger.info('all junctions associated')
 
