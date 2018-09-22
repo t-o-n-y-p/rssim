@@ -1715,7 +1715,7 @@ class RSSim(Game):
                 .append(self.junctions[30][i][self.c['switch_types']['left_exit_railroad_switch']])
             self.base_routes[i][self.c['base_route_types']['left_exit_base_route']].junction_position.append(i)
             if i > 6:
-                for j in range(i - 4, 5, 4):
+                for j in range(i - 4, 5, -4):
                     self.base_routes[i][self.c['base_route_types']['left_exit_base_route']].junctions \
                         .append(self.junctions[30][j][self.c['switch_types']['left_exit_railroad_switch']])
                     self.base_routes[i][self.c['base_route_types']['left_exit_base_route']].junction_position.append(30)
@@ -1738,7 +1738,7 @@ class RSSim(Game):
                 .append(self.junctions[22][i][self.c['switch_types']['right_exit_railroad_switch']])
             self.base_routes[i][self.c['base_route_types']['right_exit_base_route']].junction_position.append(i)
             if i > 6:
-                for j in range(i - 4, 5, 4):
+                for j in range(i - 4, 5, -4):
                     self.base_routes[i][self.c['base_route_types']['right_exit_base_route']].junctions \
                         .append(self.junctions[22][j][self.c['switch_types']['right_exit_railroad_switch']])
                     self.base_routes[i][self.c['base_route_types']['right_exit_base_route']].junction_position.append(22)
@@ -1806,7 +1806,7 @@ class RSSim(Game):
                 .append(self.junctions[30][i - 2][self.c['switch_types']['left_exit_railroad_switch']])
             self.base_routes[i][self.c['base_route_types']['left_exit_base_route']].junction_position.append(i - 2)
             if i > 8:
-                for j in range(i - 6, 5, 4):
+                for j in range(i - 6, 5, -4):
                     self.base_routes[i][self.c['base_route_types']['left_exit_base_route']].junctions \
                         .append(self.junctions[30][j][self.c['switch_types']['left_exit_railroad_switch']])
                     self.base_routes[i][self.c['base_route_types']['left_exit_base_route']].junction_position.append(30)
@@ -1829,7 +1829,7 @@ class RSSim(Game):
                 .append(self.junctions[22][i - 2][self.c['switch_types']['right_exit_railroad_switch']])
             self.base_routes[i][self.c['base_route_types']['right_exit_base_route']].junction_position.append(i - 2)
             if i > 8:
-                for j in range(i - 6, 5, 4):
+                for j in range(i - 6, 5, -4):
                     self.base_routes[i][self.c['base_route_types']['right_exit_base_route']].junctions \
                         .append(self.junctions[22][j][self.c['switch_types']['right_exit_railroad_switch']])
                     self.base_routes[i][self.c['base_route_types']['right_exit_base_route']].junction_position\

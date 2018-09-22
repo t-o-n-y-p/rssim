@@ -499,12 +499,26 @@ class Dispatcher(GameObject):
                     self.logger.debug('timer flushed')
                     # randomly choose number of carts for train
                     random.seed()
-                    new_direction = i
                     if i == self.c['direction']['left']:
                         carts = random.choice(range(6, 21))
+                        if carts <= 10:
+                            new_direction = random.choice([self.c['direction']['right_side'],
+                                                           self.c['direction']['left_side'],
+                                                           self.c['direction']['left_side'],
+                                                           self.c['direction']['left'],
+                                                           self.c['direction']['left']])
+                        else:
+                            new_direction = i
                     else:
-                        carts = random.choice(range(6, 8))
-                        # new_direction = self.c['direction']['right_side']
+                        carts = random.choice(range(6, 21))
+                        if carts <= 10:
+                            new_direction = random.choice([self.c['direction']['left_side'],
+                                                           self.c['direction']['right_side'],
+                                                           self.c['direction']['right_side'],
+                                                           self.c['direction']['right'],
+                                                           self.c['direction']['right']])
+                        else:
+                            new_direction = i
 
                     self.logger.debug('carts: {}'.format(carts))
                     if carts < self.supported_carts[0]:
