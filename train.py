@@ -285,7 +285,7 @@ class Train(GameObject):
                 self.logger.debug('train reached red signal, speed state = {}'.format(self.speed_state))
             # if it is time to decelerate train, do this;
             elif self.train_route.next_stop_point - self.carts_position[0][0] \
-                    <= self.c['train_config']['train_braking_distance']:
+                    <= self.c['train_config']['train_acceleration_factor'][self.speed_factor_position]:
                 self.speed_state = self.c['train_speed_state_types']['decelerate']
                 self.logger.debug('distance less than {}, time to decelerate, speed state = {}'
                                   .format(self.c['train_config']['train_braking_distance'],
