@@ -485,21 +485,22 @@ class Dispatcher(GameObject):
                                     self.c['direction']['right'],
                                     self.c['direction']['right']]
                                    )
-
-            self.create_new_trains(self.c['direction']['left_side'], 100, range(6, 11),
-                                   [self.c['direction']['right_side'],
-                                    self.c['direction']['right_side'],
-                                    self.c['direction']['right'],
-                                    self.c['direction']['left'],
-                                    self.c['direction']['left']]
-                                   )
-            self.create_new_trains(self.c['direction']['right_side'], 100, range(6, 11),
-                                   [self.c['direction']['left_side'],
-                                    self.c['direction']['left_side'],
-                                    self.c['direction']['left'],
-                                    self.c['direction']['right'],
-                                    self.c['direction']['right']]
-                                   )
+            if not self.tracks[20].locked:
+                self.create_new_trains(self.c['direction']['left_side'], 100, range(6, 11),
+                                       [self.c['direction']['right_side'],
+                                        self.c['direction']['right_side'],
+                                        self.c['direction']['right'],
+                                        self.c['direction']['left'],
+                                        self.c['direction']['left']]
+                                       )
+            if not self.tracks[21].locked:
+                self.create_new_trains(self.c['direction']['right_side'], 100, range(6, 11),
+                                       [self.c['direction']['left_side'],
+                                        self.c['direction']['left_side'],
+                                        self.c['direction']['left'],
+                                        self.c['direction']['right'],
+                                        self.c['direction']['right']]
+                                       )
 
         self.logger.debug('------- DISPATCHER UPDATE END -------')
         self.logger.info('dispatcher updated')
