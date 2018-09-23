@@ -268,7 +268,7 @@ class TrainRoute(GameObject):
         self.supported_carts = tuple(self.supported_carts)
         self.set_next_stop_point(0)
 
-    def open_train_route(self, train_id, priority, game_paused):
+    def open_train_route(self, train_id, priority):
         # open route and all base routes included;
         # remember which train opens it
         self.busy_routes.clear()
@@ -277,7 +277,7 @@ class TrainRoute(GameObject):
         self.logger.debug('train route opened is set to True')
         self.last_opened_by = train_id
         self.logger.debug('train route last_opened_by: {}'.format(self.last_opened_by))
-        self.base_routes[0].enter_base_route(train_id, game_paused)
+        self.base_routes[0].enter_base_route(train_id)
         self.base_routes[0].priority = priority
         for i in range(len(self.base_routes)):
             self.base_routes[i].route_config['opened'] = True
@@ -306,7 +306,7 @@ class TrainRoute(GameObject):
 
         for i in self.busy_routes:
             self.base_routes[i].route_config['force_busy'] = False
-            self.base_routes[i].update_base_route_state(False)
+            self.base_routes[i].update_base_route_state()
             self.logger.debug('base route {} {} force_busy is set to False'
                               .format(self.base_routes[i].track_number, self.base_routes[i].route_type))
 

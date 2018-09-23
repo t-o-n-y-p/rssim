@@ -137,7 +137,8 @@ class Dispatcher(GameObject):
 
         self.unlocked_tracks = self.config['user_data'].getint('unlocked_tracks')
         train_timer_parsed = self.config['user_data']['train_timer'].split(',')
-        self.train_timer = [int(train_timer_parsed[0]), int(train_timer_parsed[1])]
+        self.train_timer = [int(train_timer_parsed[0]), int(train_timer_parsed[1]),
+                            int(train_timer_parsed[2]), int(train_timer_parsed[3])]
         self.logger.debug('train_timer: {}'.format(self.train_timer))
         self.train_counter = self.config['user_data'].getint('train_counter')
         self.logger.debug('train_counter: {}'.format(self.train_counter))
@@ -280,7 +281,9 @@ class Dispatcher(GameObject):
             self.logger.debug('created user_cfg/dispatcher folder')
 
         self.config['user_data']['unlocked_tracks'] = str(self.unlocked_tracks)
-        self.config['user_data']['train_timer'] = str(self.train_timer[0])+','+str(self.train_timer[1])
+        self.config['user_data']['train_timer'] \
+            = str(self.train_timer[0]) + ',' + str(self.train_timer[1]) + ',' \
+            + str(self.train_timer[2]) + ',' + str(self.train_timer[3])
         self.logger.debug('train_timer: {}'.format(self.config['user_data']['train_timer']))
         if len(self.train_ids) == 0:
             self.config['user_data']['train_ids'] = 'None'
@@ -355,7 +358,7 @@ class Dispatcher(GameObject):
                 if i.boarding_time <= 60 and i.train_route is None and routes_created_inside_iteration == 0:
                     i.assign_new_train_route(self.train_routes[i.track_number][
                                                 self.c['train_route_types']['exit_train_route'][i.new_direction]
-                                             ], game_paused)
+                                             ])
                     routes_created_inside_iteration += 1
                     self.logger.info('train {} new route assigned: track {} {}'
                                      .format(i.train_id, i.train_route.track_number, i.train_route.route_type))
@@ -425,7 +428,7 @@ class Dispatcher(GameObject):
                         self.logger.info('train {} completed route: track {} {}'
                                          .format(i.train_id, i.train_route.track_number, i.train_route.route_type))
                         i.complete_train_route()
-                        i.assign_new_train_route(route_for_new_train, game_paused)
+                        i.assign_new_train_route(route_for_new_train)
                         routes_created_inside_iteration += 1
                         self.logger.debug('routes_created_inside_iteration: {}'
                                           .format(routes_created_inside_iteration))
@@ -457,7 +460,7 @@ class Dispatcher(GameObject):
                         self.logger.info('train {} completed route: track {} {}'
                                          .format(i.train_id, i.train_route.track_number, i.train_route.route_type))
                         i.complete_train_route()
-                        i.assign_new_train_route(route_for_new_train, game_paused)
+                        i.assign_new_train_route(route_for_new_train)
                         routes_created_inside_iteration += 1
                         self.logger.debug('routes_created_inside_iteration: {}'
                                           .format(routes_created_inside_iteration))
@@ -468,7 +471,35 @@ class Dispatcher(GameObject):
         # it's time to check if we can spawn more trains
         if routes_created_inside_iteration == 0:
             self.logger.debug('since no routes assigned, we can create new train')
-            self.create_new_trains(game_paused)
+            self.create_new_trains(self.c['direction']['left'], 0, range(6, 21),
+                                   [self.c['direction']['right_side'],
+                                    self.c['direction']['left_side'],
+                                    self.c['direction']['left_side'],
+                                    self.c['direction']['left'],
+                                    self.c['direction']['left']]
+                                   )
+            self.create_new_trains(self.c['direction']['right'], 0, range(6, 21),
+                                   [self.c['direction']['left_side'],
+                                    self.c['direction']['right_side'],
+                                    self.c['direction']['right_side'],
+                                    self.c['direction']['right'],
+                                    self.c['direction']['right']]
+                                   )
+
+            self.create_new_trains(self.c['direction']['left_side'], 100, range(6, 11),
+                                   [self.c['direction']['right_side'],
+                                    self.c['direction']['right_side'],
+                                    self.c['direction']['right'],
+                                    self.c['direction']['left'],
+                                    self.c['direction']['left']]
+                                   )
+            self.create_new_trains(self.c['direction']['right_side'], 100, range(6, 11),
+                                   [self.c['direction']['left_side'],
+                                    self.c['direction']['left_side'],
+                                    self.c['direction']['left'],
+                                    self.c['direction']['right'],
+                                    self.c['direction']['right']]
+                                   )
 
         self.logger.debug('------- DISPATCHER UPDATE END -------')
         self.logger.info('dispatcher updated')
@@ -481,93 +512,77 @@ class Dispatcher(GameObject):
         for q3 in range(len(self.tracks)):
             self.tracks[q3].update(game_paused)
 
-    def create_new_trains(self, game_paused):
+    def create_new_trains(self, direction, track_number, carts_choice_list, new_direction_choice_list):
         self.logger.debug('------- START CREATING NEW TRAINS -------')
-        for i in (self.c['direction']['left'], self.c['direction']['right']):
-            entry_busy = self.train_routes[0][
-                self.c['train_route_types']['approaching_train_route'][i]
-            ].base_routes[0].route_config['busy']
-            self.logger.debug('entry is busy: {}'.format(entry_busy))
-            # we wait until main entry is free
-            if not entry_busy:
-                self.train_timer[i] += 1
-                self.logger.debug('train_timer: {}'.format(self.train_timer[i]))
-                self.logger.debug('train_creation_timeout: {}'
-                                  .format(self.c['dispatcher_config']['train_creation_timeout'][i]))
-                if self.train_timer[i] >= self.c['dispatcher_config']['train_creation_timeout'][i]:
-                    self.train_timer[i] = 0
-                    self.logger.debug('timer flushed')
-                    # randomly choose number of carts for train
-                    random.seed()
-                    if i == self.c['direction']['left']:
-                        carts = random.choice(range(6, 21))
-                        if carts <= 10:
-                            new_direction = random.choice([self.c['direction']['right_side'],
-                                                           self.c['direction']['left_side'],
-                                                           self.c['direction']['left_side'],
-                                                           self.c['direction']['left'],
-                                                           self.c['direction']['left']])
-                        else:
-                            new_direction = i
-                    else:
-                        carts = random.choice(range(6, 21))
-                        if carts <= 10:
-                            new_direction = random.choice([self.c['direction']['left_side'],
-                                                           self.c['direction']['right_side'],
-                                                           self.c['direction']['right_side'],
-                                                           self.c['direction']['right'],
-                                                           self.c['direction']['right']])
-                        else:
-                            new_direction = i
+        entry_busy = self.train_routes[track_number][
+            self.c['train_route_types']['approaching_train_route'][direction]
+        ].base_routes[0].route_config['busy']
+        self.logger.debug('entry is busy: {}'.format(entry_busy))
+        # we wait until main entry is free
+        if not entry_busy:
+            self.train_timer[direction] += 1
+            self.logger.debug('train_timer: {}'.format(self.train_timer[direction]))
+            self.logger.debug('train_creation_timeout: {}'
+                              .format(self.c['dispatcher_config']['train_creation_timeout'][direction]))
+            if self.train_timer[direction] >= self.c['dispatcher_config']['train_creation_timeout'][direction]:
+                self.train_timer[direction] = 0
+                self.logger.debug('timer flushed')
+                # randomly choose number of carts for train
+                random.seed()
+                carts = random.choice(carts_choice_list)
+                if carts <= 10:
+                    new_direction = random.choice(new_direction_choice_list)
+                else:
+                    new_direction = direction
 
-                    self.logger.debug('carts: {}'.format(carts))
-                    if carts < self.supported_carts[0]:
-                        self.logger.debug('{}-cart trains are not supported for now, assign pass through route'
-                                          .format(carts))
-                        route_for_new_train = self.train_routes[0][
-                            self.c['train_route_types']['approaching_train_route'][i]]
-                        new_train = Train(carts=carts, train_route=route_for_new_train,
-                                          state=self.c['train_state_types']['approaching_pass_through'],
-                                          direction=i, new_direction=new_direction, current_direction=i,
-                                          train_id=self.train_counter,
-                                          head_image=self.train_head_image, mid_image=self.train_mid_image,
-                                          boarding_lights_image=self.boarding_lights_image,
-                                          tail_image=self.train_tail_image,
-                                          batch=self.batch, group=self.group,
-                                          boarding_lights_group=self.boarding_lights_group)
-                        self.train_ids.append(self.train_counter)
-                        new_train.train_route.open_train_route(new_train.train_id, new_train.priority, game_paused)
-                        new_train.train_route.set_stop_points(new_train.carts)
-                        new_train.init_train_position()
-                        self.logger.info('train created. id {}, track {}, route = {}, status = {}'
-                                         .format(new_train.train_id, new_train.train_route.track_number,
-                                                 new_train.train_route.route_type, new_train.state))
-                        self.train_counter += 1
-                    else:
-                        self.logger.debug('{}-cart trains are supported, assign route'
-                                          .format(carts))
-                        route_for_new_train = self.train_routes[0][
-                            self.c['train_route_types']['approaching_train_route'][i]]
-                        new_train = Train(carts=carts, train_route=route_for_new_train,
-                                          state=self.c['train_state_types']['approaching'],
-                                          direction=i, new_direction=new_direction, current_direction=i,
-                                          train_id=self.train_counter,
-                                          head_image=self.train_head_image, mid_image=self.train_mid_image,
-                                          boarding_lights_image=self.boarding_lights_image,
-                                          tail_image=self.train_tail_image,
-                                          batch=self.batch, group=self.group,
-                                          boarding_lights_group=self.boarding_lights_group)
-                        self.train_ids.append(self.train_counter)
-                        new_train.train_route.open_train_route(new_train.train_id, new_train.priority, game_paused)
-                        new_train.train_route.set_stop_points(new_train.carts)
-                        new_train.init_train_position()
-                        self.logger.info('train created. id {}, track {}, route = {}, status = {}'
-                                         .format(new_train.train_id, new_train.train_route.track_number,
-                                                 new_train.train_route.route_type, new_train.state))
-                        self.train_counter += 1
+                self.logger.debug('carts: {}'.format(carts))
+                if carts < self.supported_carts[0]:
+                    self.logger.debug('{}-cart trains are not supported for now, assign pass through route'
+                                      .format(carts))
+                    route_for_new_train = self.train_routes[track_number][
+                        self.c['train_route_types']['approaching_train_route'][direction]]
+                    new_train = Train(carts=carts, train_route=route_for_new_train,
+                                      state=self.c['train_state_types']['approaching_pass_through'],
+                                      direction=direction, new_direction=new_direction, current_direction=direction,
+                                      train_id=self.train_counter,
+                                      head_image=self.train_head_image, mid_image=self.train_mid_image,
+                                      boarding_lights_image=self.boarding_lights_image,
+                                      tail_image=self.train_tail_image,
+                                      batch=self.batch, group=self.group,
+                                      boarding_lights_group=self.boarding_lights_group)
+                    self.train_ids.append(self.train_counter)
+                    new_train.train_route.open_train_route(new_train.train_id, new_train.priority)
+                    new_train.train_route.set_stop_points(new_train.carts)
+                    new_train.init_train_position()
+                    self.logger.info('train created. id {}, track {}, route = {}, status = {}'
+                                     .format(new_train.train_id, new_train.train_route.track_number,
+                                             new_train.train_route.route_type, new_train.state))
+                    self.train_counter += 1
+                else:
+                    self.logger.debug('{}-cart trains are supported, assign route'
+                                      .format(carts))
+                    route_for_new_train = self.train_routes[track_number][
+                        self.c['train_route_types']['approaching_train_route'][direction]]
+                    new_train = Train(carts=carts, train_route=route_for_new_train,
+                                      state=self.c['train_state_types']['approaching'],
+                                      direction=direction, new_direction=new_direction, current_direction=direction,
+                                      train_id=self.train_counter,
+                                      head_image=self.train_head_image, mid_image=self.train_mid_image,
+                                      boarding_lights_image=self.boarding_lights_image,
+                                      tail_image=self.train_tail_image,
+                                      batch=self.batch, group=self.group,
+                                      boarding_lights_group=self.boarding_lights_group)
+                    self.train_ids.append(self.train_counter)
+                    new_train.train_route.open_train_route(new_train.train_id, new_train.priority)
+                    new_train.train_route.set_stop_points(new_train.carts)
+                    new_train.init_train_position()
+                    self.logger.info('train created. id {}, track {}, route = {}, status = {}'
+                                     .format(new_train.train_id, new_train.train_route.track_number,
+                                             new_train.train_route.route_type, new_train.state))
+                    self.train_counter += 1
 
-                    self.trains.append(new_train)
-                    self.logger.debug('train {} appended'.format(new_train.train_id))
+                self.trains.append(new_train)
+                self.logger.debug('train {} appended'.format(new_train.train_id))
 
         self.logger.debug('------- END CREATING NEW TRAINS -------')
 

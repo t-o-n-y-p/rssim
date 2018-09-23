@@ -217,13 +217,13 @@ class Train(GameObject):
         self.logger.debug('------- END COMPLETE_TRAIN_ROUTE FUNCTION -------')
         self.logger.info('train route completed')
 
-    def assign_new_train_route(self, new_train_route, game_paused):
+    def assign_new_train_route(self, new_train_route):
         self.logger.debug('------- START ASSIGNING NEW TRAIN ROUTE -------')
         # when new route is assigned,
         # we open the route and convert carts positions to relative
         self.train_route = new_train_route
         self.train_route.set_stop_points(self.carts)
-        self.train_route.open_train_route(self.train_id, self.priority, game_paused)
+        self.train_route.open_train_route(self.train_id, self.priority)
         self.logger.debug('converting cart positions to relative')
         for i in self.carts_position_abs:
             self.carts_position.append([self.train_route.trail_points.index(i[0]),
@@ -265,7 +265,9 @@ class Train(GameObject):
             # as soon as entry route is assigned, train knows its track number
             if self.train_route.route_type \
                     in (self.c['train_route_types']['entry_train_route'][self.c['direction']['left']],
-                        self.c['train_route_types']['entry_train_route'][self.c['direction']['right']]):
+                        self.c['train_route_types']['entry_train_route'][self.c['direction']['right']],
+                        self.c['train_route_types']['entry_train_route'][self.c['direction']['left_side']],
+                        self.c['train_route_types']['entry_train_route'][self.c['direction']['right_side']]):
                 self.track_number = self.train_route.track_number
 
             self.logger.debug('track_number: {}'.format(self.track_number))
@@ -375,7 +377,7 @@ class Train(GameObject):
                         self.train_route.base_routes[k].checkpoints.clear()
                         self.logger.debug('cleared checkpoints')
                         self.train_route.base_routes[k].route_config['force_busy'] = False
-                        self.train_route.base_routes[k].update_base_route_state(False)
+                        self.train_route.base_routes[k].update_base_route_state()
                         self.logger.debug('force_busy = {}'
                                           .format(self.train_route.base_routes[k].route_config['force_busy']))
                         self.logger.debug('removing base route {} {} from busy routes and opened routes'
@@ -423,7 +425,7 @@ class Train(GameObject):
                             self.train_route.base_routes[k].checkpoints.clear()
                             self.logger.debug('cleared checkpoints')
                             self.train_route.base_routes[k].route_config['force_busy'] = False
-                            self.train_route.base_routes[k].update_base_route_state(False)
+                            self.train_route.base_routes[k].update_base_route_state()
                             self.logger.debug('force_busy = {}'
                                               .format(self.train_route.base_routes[k].route_config['force_busy']))
                             self.logger.debug('removing base route {} {} from busy routes and opened routes'

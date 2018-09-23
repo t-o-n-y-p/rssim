@@ -178,7 +178,7 @@ class BaseRoute(GameObject):
         self.logger.info('base route state saved to file user_cfg/base_route/track{}/track{}_{}.ini'
                          .format(self.track_number, self.track_number, self.route_type))
 
-    def enter_base_route(self, train_id, game_paused):
+    def enter_base_route(self, train_id):
         self.logger.debug('------- START ENTERING BASE ROUTE -------')
         self.checkpoints = []
         self.route_config['force_busy'] = True
@@ -229,9 +229,9 @@ class BaseRoute(GameObject):
                                        .trail_points[self.junction_position[i][0]][self.junction_position[i][1]][-1]))
                     self.logger.debug('checkpoint added: {}'.format(self.checkpoints[-1]))
 
-                self.junctions[i].update(game_paused)
+                self.junctions[i].update(False)
                 self.logger.debug('junction updated')
-                self.junctions[i].dependency.update(game_paused)
+                self.junctions[i].dependency.update(False)
                 self.logger.debug('junction dependency updated')
                 self.logger.info('junction {} processed'.format(i + 1))
 
@@ -239,12 +239,11 @@ class BaseRoute(GameObject):
             self.checkpoints.append(len(self.route_config['trail_points']) - 1)
             self.logger.debug('checkpoint added: {}'.format(self.checkpoints[-1]))
 
-        self.update_base_route_state(game_paused)
+        self.update_base_route_state()
         self.logger.debug('------- END ENTERING BASE ROUTE -------')
         self.logger.info('train {} is ready to go'.format(train_id))
 
-    @_game_is_not_paused
-    def update_base_route_state(self, game_paused):
+    def update_base_route_state(self):
         self.logger.debug('------- START UPDATING -------')
         self.logger.debug('force_busy = {}'.format(self.route_config['force_busy']))
         self.route_config['busy'] = self.route_config['force_busy']

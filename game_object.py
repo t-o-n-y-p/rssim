@@ -153,7 +153,9 @@ class GameObject:
         self.c['dispatcher_config']['pass_through_priority_tracks'] = tuple(pass_through_priority_tracks)
         train_creation_timeout = self.game_config['dispatcher_config']['train_creation_timeout'].split(',')
         self.c['dispatcher_config']['train_creation_timeout'] = (int(train_creation_timeout[0]),
-                                                                 int(train_creation_timeout[1]))
+                                                                 int(train_creation_timeout[1]),
+                                                                 int(train_creation_timeout[2]),
+                                                                 int(train_creation_timeout[3]))
 
         self.c['switch_types'] = {}
         self.c['switch_types']['left_entry_railroad_switch'] \
