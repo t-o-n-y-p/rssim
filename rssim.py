@@ -2223,7 +2223,7 @@ class RSSim(Game):
                              x=self.c['graphics']['screen_resolution'][0] // 2 - saved_onboarding_image.width // 2,
                              y=self.c['graphics']['screen_resolution'][1] // 2 - saved_onboarding_image.height // 2,
                              tip_type='game_saved', batch=self.batch,
-                             group=self.top_bottom_bars_clock_face_ordered_group,
+                             group=self.top_bottom_bars_ordered_group,
                              viewport_border_group=self.buttons_general_borders_day_text_ordered_group)
         self.objects.append(self.saved_onboarding_tip)
         self.mini_map_tip.update_image(pyglet.image.load('img/mini_map/{}/mini_map.png'
@@ -2262,37 +2262,33 @@ class RSSim(Game):
             self.logger.critical('------- GAME SAVE END -------')
 
         self.objects.append(InGameTime(batch=self.batch,
-                                       clock_face_group=self.top_bottom_bars_clock_face_ordered_group,
-                                       day_text_group=self.buttons_general_borders_day_text_ordered_group,
-                                       minute_hand_group=self.buttons_text_minute_hand_ordered_group,
-                                       hour_hand_group=self.buttons_borders_hour_hand_ordered_group))
+                                       day_text_group=self.buttons_general_borders_day_text_ordered_group))
         self.logger.debug('time appended to global objects list')
         self.objects.append(TopAndBottomBar(batch=self.batch,
-                                            bar_group=self.top_bottom_bars_clock_face_ordered_group,
-                                            border_group=self.buttons_general_borders_day_text_ordered_group))
+                                            bar_group=self.top_bottom_bars_ordered_group,))
         self.logger.debug('bottom bar appended to global objects list')
         stop_button = Button(position=(890, 7), button_size=(100, 40), text=['Pause', 'Resume'],
                              on_click=[pause_game, resume_game], draw_only_if_game_paused=False,
                              batch=self.batch, button_group=self.buttons_general_borders_day_text_ordered_group,
-                             text_group=self.buttons_text_minute_hand_ordered_group,
-                             borders_group=self.buttons_borders_hour_hand_ordered_group)
+                             text_group=self.buttons_text_and_borders_ordered_group,
+                             borders_group=self.buttons_text_and_borders_ordered_group)
         save_button = Button(position=(780, 7), button_size=(100, 40), text=['Save', ], on_click=[save_game, ],
                              draw_only_if_game_paused=True,
                              batch=self.batch, button_group=self.buttons_general_borders_day_text_ordered_group,
-                             text_group=self.buttons_text_minute_hand_ordered_group,
-                             borders_group=self.buttons_borders_hour_hand_ordered_group)
+                             text_group=self.buttons_text_and_borders_ordered_group,
+                             borders_group=self.buttons_text_and_borders_ordered_group)
         close_button = Button(position=(self.c['graphics']['screen_resolution'][0] - 34,
                                         self.c['graphics']['screen_resolution'][1] - 34), button_size=(34, 34),
                               text=['X', ], on_click=[close_game, ], draw_only_if_game_paused=False,
                               batch=self.batch, button_group=self.buttons_general_borders_day_text_ordered_group,
-                              text_group=self.buttons_text_minute_hand_ordered_group,
-                              borders_group=self.buttons_borders_hour_hand_ordered_group)
+                              text_group=self.buttons_text_and_borders_ordered_group,
+                              borders_group=self.buttons_text_and_borders_ordered_group)
         iconify_button = Button(position=(self.c['graphics']['screen_resolution'][0] - 66,
                                           self.c['graphics']['screen_resolution'][1] - 34), button_size=(34, 34),
                                 text=['_', ], on_click=[iconify_game, ], draw_only_if_game_paused=False,
                                 batch=self.batch, button_group=self.buttons_general_borders_day_text_ordered_group,
-                                text_group=self.buttons_text_minute_hand_ordered_group,
-                                borders_group=self.buttons_borders_hour_hand_ordered_group)
+                                text_group=self.buttons_text_and_borders_ordered_group,
+                                borders_group=self.buttons_text_and_borders_ordered_group)
         self.on_mouse_press_handlers.append(stop_button.handle_mouse_press)
         self.on_mouse_press_handlers.append(save_button.handle_mouse_press)
         self.on_mouse_press_handlers.append(close_button.handle_mouse_press)

@@ -16,46 +16,36 @@ def _game_is_not_paused(fn):
 
 
 class InGameTime(GameObject):
-    def __init__(self, batch, clock_face_group, day_text_group, minute_hand_group, hour_hand_group):
+    def __init__(self, batch, day_text_group):
         super().__init__()
         self.logger = logging.getLogger('game.in-game_time')
         self.logger.debug('------- START INIT -------')
         self.config = configparser.RawConfigParser()
         self.logger.debug('config parser created')
-        self.clock_face_image = pyglet.image.load('img/clock_face.png')
-        self.clock_face_image.anchor_x = self.clock_face_image.width // 2 + 1
-        self.clock_face_image.anchor_y = self.clock_face_image.height // 2 + 1
-        self.clock_face_sprite = pyglet.sprite.Sprite(self.clock_face_image,
-                                                      x=self.c['graphics']['screen_resolution'][0] - 101,
-                                                      y=101, batch=batch, group=clock_face_group)
-        self.logger.debug('loaded clock face image: img/clock_face.png')
-        self.minute_hand_image = pyglet.image.load('img/minute_hand.png')
-        self.minute_hand_image.anchor_x = self.minute_hand_image.width // 2 + 1
-        self.minute_hand_image.anchor_y = self.minute_hand_image.height // 2 + 1
-        self.minute_hand_sprite = pyglet.sprite.Sprite(self.minute_hand_image,
-                                                       x=self.c['graphics']['screen_resolution'][0] - 101,
-                                                       y=101, batch=batch, group=minute_hand_group)
-        self.logger.debug('loaded minute hand image: img/minute_hand.png')
-        self.hour_hand_image = pyglet.image.load('img/hour_hand.png')
-        self.hour_hand_image.anchor_x = self.hour_hand_image.width // 2 + 1
-        self.hour_hand_image.anchor_y = self.hour_hand_image.height // 2 + 1
-        self.hour_hand_sprite = pyglet.sprite.Sprite(self.hour_hand_image,
-                                                     x=self.c['graphics']['screen_resolution'][0] - 101,
-                                                     y=101, batch=batch, group=hour_hand_group)
-        self.logger.debug('loaded hour hand image: img/hour_hand.png')
         self.epoch_timestamp = None
         self.day = None
         self.hour = None
+        self.hour_string = ''
         self.minute = None
+        self.minute_string = ''
+        self.second = None
+        self.second_string = ''
         self.logger.debug('created text object for days counter')
         self.read_state()
-        self.day_text = pyglet.text.Label('Day {}'.format(self.day),
-                                          font_name=self.c['graphics']['font_name'],
+        self.day_text = pyglet.text.Label('DAY {}'.format(self.day),
+                                          font_name='Courier New', bold=True,
                                           font_size=self.c['graphics']['day_font_size'],
                                           color=self.c['graphics']['day_text_color'],
-                                          x=self.c['graphics']['screen_resolution'][0] - 101, y=70,
+                                          x=self.c['graphics']['screen_resolution'][0] - 100, y=85,
                                           anchor_x='center', anchor_y='center',
                                           batch=batch, group=day_text_group)
+        self.time_text = pyglet.text.Label('0',
+                                           font_name='Courier New', bold=True,
+                                           font_size=self.c['graphics']['day_font_size'],
+                                           color=self.c['graphics']['day_text_color'],
+                                           x=self.c['graphics']['screen_resolution'][0] - 100, y=45,
+                                           anchor_x='center', anchor_y='center',
+                                           batch=batch, group=day_text_group)
         self.logger.debug('------- END INIT -------')
         self.logger.warning('time init completed')
 
@@ -72,10 +62,26 @@ class InGameTime(GameObject):
         self.logger.debug('epoch_timestamp: {}'.format(self.epoch_timestamp))
         self.day = 1 + self.epoch_timestamp // 345600
         self.logger.debug('day: {}'.format(self.day))
-        self.hour = float(self.epoch_timestamp % 345600) / float(14400)
+        self.hour = 12 + (self.epoch_timestamp % 345600) // 14400
         self.logger.debug('hour: {}'.format(self.hour))
-        self.minute = float(self.hour % 14400) / float(240)
+        self.minute = ((self.epoch_timestamp % 345600) % 14400) // 240
         self.logger.debug('minute: {}'.format(self.minute))
+        self.second = (((self.epoch_timestamp % 345600) % 14400) % 240) // 4
+        if self.second < 10:
+            self.second_string = '0' + str(self.second)
+        else:
+            self.second_string = str(self.second)
+
+        if self.minute < 10:
+            self.minute_string = '0' + str(self.minute)
+        else:
+            self.minute_string = str(self.minute)
+
+        if self.hour < 10:
+            self.hour_string = '0' + str(self.hour)
+        else:
+            self.hour_string = str(self.hour)
+
         self.logger.debug('------- END READING STATE -------')
         self.logger.info('time state initialized')
 
@@ -94,22 +100,41 @@ class InGameTime(GameObject):
         self.logger.info('time state saved to file user_cfg/epoch_time.ini')
 
     def update_sprite(self, base_offset):
-        self.day_text.text = 'Day {}'.format(self.day)
-        minute_hand_rotate_angle = self.minute / float(60) * float(360)
-        self.minute_hand_sprite.rotation = minute_hand_rotate_angle
-        hour_hand_rotate_angle = self.hour / float(12) * float(360)
-        self.hour_hand_sprite.rotation = hour_hand_rotate_angle
+        self.time_text.text = self.hour_string + ':' + self.minute_string + ':' + self.second_string
 
     @_game_is_not_paused
     def update(self, game_paused):
         self.logger.debug('------- TIME UPDATE START -------')
         self.epoch_timestamp += 1
-        self.logger.debug('epoch_timestamp: {}'.format(self.epoch_timestamp))
-        self.day = 1 + self.epoch_timestamp // 345600
-        self.logger.debug('day: {}'.format(self.day))
-        self.hour = float(self.epoch_timestamp % 345600) / float(14400)
-        self.logger.debug('hour: {}'.format(self.hour))
-        self.minute = float((self.epoch_timestamp % 345600) % 14400) / float(240)
-        self.logger.debug('minute: {}'.format(self.minute))
+        self.second = (self.epoch_timestamp // 4) % 60
+        if self.second < 10:
+            self.second_string = '0' + str(self.second)
+        else:
+            self.second_string = str(self.second)
+
+        if self.epoch_timestamp % 240 == 0:
+            self.minute += 1
+            if self.minute % 60 == 0:
+                self.minute = 0
+
+            if self.minute < 10:
+                self.minute_string = '0' + str(self.minute)
+            else:
+                self.minute_string = str(self.minute)
+
+        if self.epoch_timestamp % 14400 == 0:
+            self.hour += 1
+            if self.hour % 24 == 0:
+                self.hour = 0
+
+            if self.hour < 10:
+                self.hour_string = '0' + str(self.hour)
+            else:
+                self.hour_string = str(self.hour)
+
+        if self.epoch_timestamp % 345600 == 0:
+            self.day += 1
+            self.day_text.text = 'DAY {}'.format(self.day)
+
         self.logger.debug('------- TIME UPDATE END -------')
         self.logger.info('time updated')

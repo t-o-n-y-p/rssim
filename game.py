@@ -56,11 +56,10 @@ class Game:
         self.signals_and_trains_ordered_group = pyglet.graphics.OrderedGroup(1)
         self.boarding_lights_ordered_group = pyglet.graphics.OrderedGroup(2)
         self.twilight_ordered_group = pyglet.graphics.OrderedGroup(3)  # reserved for future use
-        self.top_bottom_bars_clock_face_ordered_group = pyglet.graphics.OrderedGroup(4)
+        self.top_bottom_bars_ordered_group = pyglet.graphics.OrderedGroup(4)
         self.buttons_general_borders_day_text_ordered_group = pyglet.graphics.OrderedGroup(5)
-        self.buttons_text_minute_hand_ordered_group = pyglet.graphics.OrderedGroup(6)
-        self.buttons_borders_hour_hand_ordered_group = pyglet.graphics.OrderedGroup(7)
-        self.loading_shadow_ordered_group = pyglet.graphics.OrderedGroup(8)
+        self.buttons_text_and_borders_ordered_group = pyglet.graphics.OrderedGroup(6)
+        self.loading_shadow_ordered_group = pyglet.graphics.OrderedGroup(7)
         self.fade_vertex = self.batch.add(4, pyglet.gl.GL_QUADS, self.loading_shadow_ordered_group,
                                           ('v2i/static', (0, 0, self.c['graphics']['screen_resolution'][0], 0,
                                                           self.c['graphics']['screen_resolution'][0],
@@ -83,7 +82,7 @@ class Game:
                                     y=self.c['graphics']['screen_resolution'][1]
                                     - self.c['graphics']['top_bar_height'] // 2,
                                     anchor_x='right', anchor_y='center',
-                                    batch=self.batch, group=self.buttons_text_minute_hand_ordered_group)
+                                    batch=self.batch, group=self.buttons_text_and_borders_ordered_group)
 
         self.surface.set_icon(pyglet.image.load('icon.ico'))
         self.logger.debug('created screen with resolution {}'
@@ -107,7 +106,7 @@ class Game:
                              y=self.c['graphics']['screen_resolution'][1] - self.c['graphics']['top_bar_height']
                              - 4 - mini_map_image.height,
                              tip_type='mini_map', batch=self.batch,
-                             group=self.top_bottom_bars_clock_face_ordered_group,
+                             group=self.top_bottom_bars_ordered_group,
                              viewport_border_group=self.buttons_general_borders_day_text_ordered_group)
         self.mini_map_timer = 0
         self.dispatcher = None

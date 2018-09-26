@@ -6,7 +6,7 @@ from game_object import GameObject
 
 
 class TopAndBottomBar(GameObject):
-    def __init__(self, batch, bar_group, border_group):
+    def __init__(self, batch, bar_group):
         super().__init__()
         self.logger = logging.getLogger('game.top_and_bottom_bar')
         self.logger.debug('------- START INIT -------')
