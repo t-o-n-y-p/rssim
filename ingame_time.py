@@ -36,14 +36,14 @@ class InGameTime(GameObject):
                                           font_name='Courier New', bold=True,
                                           font_size=self.c['graphics']['day_font_size'],
                                           color=self.c['graphics']['day_text_color'],
-                                          x=self.c['graphics']['screen_resolution'][0] - 100, y=85,
+                                          x=self.c['graphics']['screen_resolution'][0] - 141, y=85,
                                           anchor_x='center', anchor_y='center',
                                           batch=batch, group=day_text_group)
         self.time_text = pyglet.text.Label('0',
                                            font_name='Courier New', bold=True,
                                            font_size=self.c['graphics']['day_font_size'],
                                            color=self.c['graphics']['day_text_color'],
-                                           x=self.c['graphics']['screen_resolution'][0] - 100, y=45,
+                                           x=self.c['graphics']['screen_resolution'][0] - 141, y=45,
                                            anchor_x='center', anchor_y='center',
                                            batch=batch, group=day_text_group)
         self.logger.debug('------- END INIT -------')
