@@ -154,6 +154,10 @@ class TrainRoute(GameObject):
             os.mkdir('user_cfg/train_route')
             self.logger.debug('created user_cfg/train_route folder')
 
+        if not os.path.exists('user_cfg/train_route/track{}'.format(self.track_number)):
+            os.mkdir('user_cfg/train_route/track{}'.format(self.track_number))
+            self.logger.debug('created user_cfg/train_route/track{} folder'.format(self.track_number))
+
         if len(self.busy_routes) == 0:
             self.config['user_data']['busy_routes'] = 'None'
         else:
