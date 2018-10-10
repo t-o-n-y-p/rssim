@@ -29,7 +29,7 @@ class RailroadSwitch(GameObject):
         self.busy = False
         self.force_busy = False
         self.last_entered_by = 0
-        self.trail_points = {}
+        self.length = {}
         self.read_state()
         self.logger.debug('------- END INIT -------')
         self.logger.warning('switch init completed')
@@ -53,23 +53,8 @@ class RailroadSwitch(GameObject):
         self.last_entered_by = self.config['user_data'].getint('last_entered_by')
         self.logger.debug('last_entered_by: {}'.format(self.last_entered_by))
         self.logger.info('user-related config parsed')
-        straight_trail_points_parsed \
-            = self.config['switch_config']['trail_points_{}'.format(self.straight_track)].split('|')
-        for i in range(len(straight_trail_points_parsed)):
-            straight_trail_points_parsed[i] = straight_trail_points_parsed[i].split(',')
-            straight_trail_points_parsed[i] = (int(straight_trail_points_parsed[i][0]),
-                                               int(straight_trail_points_parsed[i][1]))
-
-        self.trail_points[self.straight_track] = tuple(straight_trail_points_parsed)
-        self.logger.debug('trail points for straight track parsed')
-        side_trail_points_parsed = self.config['switch_config']['trail_points_{}'.format(self.side_track)].split('|')
-        for i in range(len(side_trail_points_parsed)):
-            side_trail_points_parsed[i] = side_trail_points_parsed[i].split(',')
-            side_trail_points_parsed[i] = (int(side_trail_points_parsed[i][0]),
-                                           int(side_trail_points_parsed[i][1]))
-
-        self.trail_points[self.side_track] = tuple(side_trail_points_parsed)
-        self.logger.debug('trail points for side track parsed')
+        self.length[self.straight_track] = self.config['switch_config'].getint('length_{}'.format(self.straight_track))
+        self.length[self.side_track] = self.config['switch_config'].getint('length_{}'.format(self.side_track))
         self.logger.info('solid config parsed')
         self.logger.debug('------- END READING STATE -------')
         self.logger.info('switch state initialized')

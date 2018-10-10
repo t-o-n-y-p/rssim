@@ -29,7 +29,7 @@ class Crossover(GameObject):
         self.busy = {}
         self.force_busy = {}
         self.last_entered_by = {}
-        self.trail_points = {}
+        self.length = {}
         self.read_state()
         self.logger.debug('------- END INIT -------')
         self.logger.warning('crossover init completed')
@@ -99,35 +99,18 @@ class Crossover(GameObject):
                                   self.last_entered_by[self.straight_track_2][self.straight_track_2]))
         self.logger.info('user-related config parsed')
 
-        self.trail_points[self.straight_track_1] = {}
-        self.trail_points[self.straight_track_2] = {}
-        trail_points_parsed \
-            = self.config['crossover_config']['trail_points_{}_{}'
-                                              .format(self.straight_track_1, self.straight_track_1)].split('|')
-        for i in range(len(trail_points_parsed)):
-            trail_points_parsed[i] = trail_points_parsed[i].split(',')
-            trail_points_parsed[i] = (int(trail_points_parsed[i][0]), int(trail_points_parsed[i][1]))
+        self.length[self.straight_track_1] = {}
+        self.length[self.straight_track_2] = {}
+        self.length[self.straight_track_1][self.straight_track_1] \
+            = self.config['crossover_config'].getint('length_{}_{}'
+                                                     .format(self.straight_track_1, self.straight_track_1))
+        self.length[self.straight_track_1][self.straight_track_2] \
+            = self.config['crossover_config'].getint('length_{}_{}'
+                                                     .format(self.straight_track_1, self.straight_track_2))
+        self.length[self.straight_track_2][self.straight_track_2] \
+            = self.config['crossover_config'].getint('length_{}_{}'
+                                                     .format(self.straight_track_2, self.straight_track_2))
 
-        self.trail_points[self.straight_track_1][self.straight_track_1] = tuple(trail_points_parsed)
-        self.logger.debug('trail points {}->{} parsed'.format(self.straight_track_1, self.straight_track_1))
-        trail_points_parsed \
-            = self.config['crossover_config']['trail_points_{}_{}'
-                                              .format(self.straight_track_1, self.straight_track_2)].split('|')
-        for i in range(len(trail_points_parsed)):
-            trail_points_parsed[i] = trail_points_parsed[i].split(',')
-            trail_points_parsed[i] = (int(trail_points_parsed[i][0]), int(trail_points_parsed[i][1]))
-
-        self.trail_points[self.straight_track_1][self.straight_track_2] = tuple(trail_points_parsed)
-        self.logger.debug('trail points {}->{} parsed'.format(self.straight_track_1, self.straight_track_2))
-        trail_points_parsed \
-            = self.config['crossover_config']['trail_points_{}_{}'
-                                              .format(self.straight_track_2, self.straight_track_2)].split('|')
-        for i in range(len(trail_points_parsed)):
-            trail_points_parsed[i] = trail_points_parsed[i].split(',')
-            trail_points_parsed[i] = (int(trail_points_parsed[i][0]), int(trail_points_parsed[i][1]))
-
-        self.trail_points[self.straight_track_2][self.straight_track_2] = tuple(trail_points_parsed)
-        self.logger.debug('trail points {}->{} parsed'.format(self.straight_track_2, self.straight_track_2))
         self.logger.info('solid config parsed')
         self.logger.debug('------- END READING STATE -------')
         self.logger.info('crossover state initialized')
@@ -199,9 +182,8 @@ class Crossover(GameObject):
                                   self.config['user_data'][
                                       'last_entered_by_{}_{}'.format(self.straight_track_2, self.straight_track_2)]))
 
-        with open('user_cfg/crossovers/crossover_{}_{}_{}.ini'.format(self.straight_track_1,
-                                                                      self.straight_track_2,
-                                                                      self.direction), 'w') as configfile:
+        with open('user_cfg/crossovers/crossover_{}_{}_{}.ini'
+                  .format(self.straight_track_1, self.straight_track_2, self.direction), 'w') as configfile:
             self.config.write(configfile)
 
         self.logger.debug('------- END SAVING STATE -------')
