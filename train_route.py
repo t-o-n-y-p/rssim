@@ -178,6 +178,7 @@ class TrainRoute(GameObject):
         if last_cart_position >= self.checkpoints_v2[self.current_checkpoint]:
             if type(self.train_route_sections[self.current_checkpoint]) == BaseRoute:
                 self.train_route_sections[self.current_checkpoint].route_config['force_busy'] = False
+                self.train_route_sections[self.current_checkpoint].route_config['opened'] = False
                 self.train_route_sections[self.current_checkpoint].update_base_route_state()
             elif type(self.train_route_sections[self.current_checkpoint]) == RailroadSwitch:
                 self.train_route_sections[self.current_checkpoint].force_busy = False

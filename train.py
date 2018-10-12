@@ -102,6 +102,7 @@ class Train(GameObject):
         # when train route is not assigned, we use carts_position_abs list;
         # it contains absolute carts position on the map
         self.carts_position_abs = []
+        self.stop_point = None
         self.logger.debug('------- END INIT -------')
         self.logger.warning('train init completed')
 
@@ -192,10 +193,11 @@ class Train(GameObject):
     def init_train_position(self):
         self.logger.debug('------- START INIT TRAIN POSITION -------')
         # each cart position is based on front and back chassis position
-        self.logger.debug('start point: {}'.format(self.train_route.start_point))
+        start_point_parsed = self.train_route.start_point_v2[self.carts]
+        self.logger.debug('start point: {}'.format(start_point_parsed))
         for i in range(self.carts):
-            self.carts_position.append([self.train_route.start_point - i * 251,
-                                        self.train_route.start_point - i * 251 - 178])
+            self.carts_position.append(start_point_parsed - i * 251)
+
         self.logger.debug('carts_position: {}'.format(self.carts_position))
         self.logger.debug('------- START INIT TRAIN POSITION -------')
         self.logger.info('train position initialized')
@@ -206,8 +208,10 @@ class Train(GameObject):
         # we close the route and convert carts positions to absolute for next route
         self.train_route.close_train_route()
         self.logger.debug('converting cart positions to absolute')
+        self.carts_position_abs.clear()
         for i in self.carts_position:
-            self.carts_position_abs.append([self.train_route.trail_points[i[0]], self.train_route.trail_points[i[1]]])
+            dot = self.train_route.trail_points_v2[i]
+            self.carts_position_abs.append([dot[0], dot[1]])
 
         self.logger.debug('cart positions converted to absolute: {}'.format(self.carts_position_abs))
         self.carts_position.clear()
@@ -222,15 +226,15 @@ class Train(GameObject):
         # when new route is assigned,
         # we open the route and convert carts positions to relative
         self.train_route = new_train_route
-        self.train_route.set_stop_points(self.carts)
         self.train_route.open_train_route(self.train_id, self.priority)
+        self.carts_position.clear()
         self.logger.debug('converting cart positions to relative')
         for i in self.carts_position_abs:
-            self.carts_position.append([self.train_route.trail_points.index(i[0]),
-                                        self.train_route.trail_points.index(i[1])])
+            self.carts_position.append(i[0] - self.train_route.trail_points_v2[0][0])
 
         self.logger.debug('cart positions converted to relative: {}'.format(self.carts_position))
         self.carts_position_abs.clear()
+        self.stop_point = self.train_route.stop_point_v2[self.carts]
         self.logger.debug('absolute cart positions cleared')
         self.logger.debug('------- END ASSIGNING NEW TRAIN ROUTE -------')
         self.logger.info('train route assigned')
@@ -272,19 +276,20 @@ class Train(GameObject):
 
             self.logger.debug('track_number: {}'.format(self.track_number))
 
-            # base route is not busy and not opened as soon as back chassis of last cart leaves it
-            self.leave_base_routes()
-
             # stop point is updated based on signal state
-            self.train_route.set_next_stop_point(self.carts_position[0][0])
+            if self.train_route.signal.state == self.c['signal_config']['red_signal']:
+                self.stop_point = self.train_route.stop_point_v2[self.carts]
+            else:
+                self.stop_point = self.train_route.destination_point_v2[self.carts]
+
             # if train has reached red signal, stop it
-            self.logger.debug('next_stop_point: {}'.format(self.train_route.next_stop_point))
-            self.logger.debug('first cart position: {}'.format(self.carts_position[0][0]))
-            if self.carts_position[0][0] == self.train_route.next_stop_point:
+            self.logger.debug('next_stop_point: {}'.format(self.stop_point))
+            self.logger.debug('first cart position: {}'.format(self.carts_position[0]))
+            if self.carts_position[0] == self.stop_point:
                 self.speed_state = self.c['train_speed_state_types']['stop']
                 self.logger.debug('train reached red signal, speed state = {}'.format(self.speed_state))
             # if it is time to decelerate train, do this;
-            elif self.train_route.next_stop_point - self.carts_position[0][0] \
+            elif self.stop_point - self.carts_position[0] \
                     <= self.c['train_config']['train_acceleration_factor'][self.speed_factor_position]:
                 self.speed_state = self.c['train_speed_state_types']['decelerate']
                 self.logger.debug('distance less than {}, time to decelerate, speed state = {}'
@@ -350,92 +355,11 @@ class Train(GameObject):
             # apply changes
             for i in self.carts_position:
                 self.logger.debug('cart old position: {}'.format(i))
-                i[0] += self.speed
-                i[1] += self.speed
+                i += self.speed
                 self.logger.debug('cart new position: {}'.format(i))
 
         self.logger.debug('------- TRAIN UPDATE END -------')
         self.logger.info('train updated')
-
-    def leave_base_routes(self):
-        more_than = False
-        if self.current_direction in (self.c['direction']['left'], self.c['direction']['left_side']):
-            more_than = True
-
-        for k in self.train_route.busy_routes:
-            self.logger.debug('checkpoints: {}'.format(self.train_route.base_routes[k].checkpoints))
-            if len(self.train_route.base_routes[k].checkpoints) > 0:
-                next_checkpoint_index = self.train_route.base_routes[k].checkpoints.count(0)
-                k2 = self.train_route.base_routes[k].checkpoints[next_checkpoint_index]
-                self.logger.debug('next checkpoint = {}'.format(k2))
-                self.logger.debug('last cart position = {}'.format(self.carts_position[-1][1]))
-                self.logger.debug('direction = {}'.format(self.current_direction))
-                if (self.train_route.trail_points[self.carts_position[-1][1]][0]
-                        > self.train_route.base_routes[k].route_config['trail_points'][k2][0]) == more_than:
-                    if len(self.train_route.base_routes[k].checkpoints) == 1:
-                        self.logger.debug('one checkpoint left, entire base route is free now')
-                        self.train_route.base_routes[k].checkpoints.clear()
-                        self.logger.debug('cleared checkpoints')
-                        self.train_route.base_routes[k].route_config['force_busy'] = False
-                        self.train_route.base_routes[k].update_base_route_state()
-                        self.logger.debug('force_busy = {}'
-                                          .format(self.train_route.base_routes[k].route_config['force_busy']))
-                        self.logger.debug('removing base route {} {} from busy routes and opened routes'
-                                          .format(self.train_route.base_routes[k].track_number,
-                                                  self.train_route.base_routes[k].route_type))
-                        self.train_route.busy_routes.remove(k)
-                        self.train_route.base_routes[k].route_config['opened'] = False
-                        self.logger.debug('opened = {}'.format(self.train_route.base_routes[k].route_config['opened']))
-                        self.train_route.opened_routes.remove(k)
-                    else:
-                        self.train_route.base_routes[k].checkpoints[next_checkpoint_index] = 0
-                        self.logger.debug('checkpoints: {}'.format(self.train_route.base_routes[k].checkpoints))
-                        if type(self.train_route.base_routes[k].junctions[next_checkpoint_index]) == RailroadSwitch:
-                            self.train_route.base_routes[k].junctions[next_checkpoint_index].force_busy = False
-                            self.logger.debug('force_busy set to False for switch {} {} {}'
-                                              .format(self.train_route.base_routes[k]
-                                                      .junctions[next_checkpoint_index].straight_track,
-                                                      self.train_route.base_routes[k]
-                                                      .junctions[next_checkpoint_index].side_track,
-                                                      self.train_route.base_routes[k]
-                                                      .junctions[next_checkpoint_index].direction))
-                        elif type(self.train_route.base_routes[k].junctions[next_checkpoint_index]) == Crossover:
-                            self.train_route.base_routes[k].junctions[next_checkpoint_index].force_busy[
-                                self.train_route.base_routes[k].junction_position[next_checkpoint_index][0]
-                            ][
-                                self.train_route.base_routes[k].junction_position[next_checkpoint_index][1]
-                            ] = False
-                            self.logger.debug('force_busy set to False for crossover {} {} {} in direction {}->{}'
-                                              .format(self.train_route.base_routes[k]
-                                                      .junctions[next_checkpoint_index].straight_track_1,
-                                                      self.train_route.base_routes[k]
-                                                      .junctions[next_checkpoint_index].straight_track_2,
-                                                      self.train_route.base_routes[k]
-                                                      .junctions[next_checkpoint_index].direction,
-                                                      self.train_route.base_routes[k]
-                                                      .junction_position[next_checkpoint_index][0],
-                                                      self.train_route.base_routes[k]
-                                                      .junction_position[next_checkpoint_index][1]))
-
-                        self.train_route.base_routes[k].junctions[next_checkpoint_index].update(False)
-                        self.train_route.base_routes[k].junctions[next_checkpoint_index].dependency.update(False)
-                        if self.train_route.base_routes[k].checkpoints.count(0) \
-                                == len(self.train_route.base_routes[k].checkpoints):
-                            self.logger.debug('all checkpoints are passed, so entire base route is free now')
-                            self.train_route.base_routes[k].checkpoints.clear()
-                            self.logger.debug('cleared checkpoints')
-                            self.train_route.base_routes[k].route_config['force_busy'] = False
-                            self.train_route.base_routes[k].update_base_route_state()
-                            self.logger.debug('force_busy = {}'
-                                              .format(self.train_route.base_routes[k].route_config['force_busy']))
-                            self.logger.debug('removing base route {} {} from busy routes and opened routes'
-                                              .format(self.train_route.base_routes[k].track_number,
-                                                      self.train_route.base_routes[k].route_type))
-                            self.train_route.busy_routes.remove(k)
-                            self.train_route.base_routes[k].route_config['opened'] = False
-                            self.logger.debug('opened = {}'
-                                              .format(self.train_route.base_routes[k].route_config['opened']))
-                            self.train_route.opened_routes.remove(k)
 
     def update_sprite(self, base_offset):
         # in both cases, we use pivot points of both chassis,
@@ -490,38 +414,10 @@ class Train(GameObject):
         self.logger.info('train is in place')
 
     def update_single_cart_sprite(self, cart_number, base_offset):
-        x = (self.train_route.trail_points[self.carts_position[cart_number][0]][0]
-             + self.train_route.trail_points[self.carts_position[cart_number][1]][0]) // 2
-        y = (self.train_route.trail_points[self.carts_position[cart_number][0]][1]
-             + self.train_route.trail_points[self.carts_position[cart_number][1]][1]) // 2
-        self.logger.debug('cart chassis 1: {} {}'
-                          .format(self.train_route.trail_points[self.carts_position[cart_number][0]][0],
-                                  self.train_route.trail_points[self.carts_position[cart_number][0]][1]))
-        self.logger.debug('cart chassis 2: {} {}'
-                          .format(self.train_route.trail_points[self.carts_position[cart_number][1]][0],
-                                  self.train_route.trail_points[self.carts_position[cart_number][1]][1]))
-        self.logger.debug('cart middle point: {} {}'.format(x, y))
-        point_one = float(self.train_route.trail_points[self.carts_position[cart_number][1]][1]
-                          - self.train_route.trail_points[self.carts_position[cart_number][0]][1])
-        point_two = float(self.train_route.trail_points[self.carts_position[cart_number][0]][0]
-                          - self.train_route.trail_points[self.carts_position[cart_number][1]][0])
-        self.logger.debug('difference on x and y axis: {} {}'.format(point_two, point_one))
-        if round(point_one, 0) == 0:
-            self.cart_sprites[cart_number].rotation = 0.0
-            self.logger.debug('no need to rotate')
-        else:
-            if self.current_direction in (self.c['direction']['left'], self.c['direction']['left_side']):
-                angle = math.atan2(point_one, point_two) * float(180) / math.pi
-            else:
-                angle = 180 + math.atan2(point_one, point_two) * float(180) / math.pi
-
-            self.logger.debug('angle: {}'.format(angle))
-            self.cart_sprites[cart_number].rotation = angle
-            self.logger.debug('rotated cart')
-
-        self.cart_sprites[cart_number].position = (base_offset[0] + x,
-                                                   base_offset[1] + y)
-        self.logger.debug('cart position = {}'.format(self.cart_sprites[cart_number].position))
+        dot = self.train_route.trail_points_v2[self.carts_position[cart_number]]
+        self.cart_sprites[cart_number].position = (base_offset[0] + dot[0],
+                                                   base_offset[1] + dot[1])
+        self.cart_sprites[cart_number].rotation = dot[2]
         if self.cart_sprites[cart_number].visible \
                 and (self.cart_sprites[cart_number].x
                      not in range(-150, self.c['graphics']['screen_resolution'][0] + 150)
@@ -539,10 +435,8 @@ class Train(GameObject):
             self.logger.debug('cart visible = True')
 
     def update_single_cart_sprite_abs(self, cart_number, base_offset):
-        x = (self.carts_position_abs[cart_number][0][0] + self.carts_position_abs[cart_number][1][0]) // 2
-        y = self.carts_position_abs[cart_number][0][1]
-        self.cart_sprites[cart_number].position = (base_offset[0] + x,
-                                                   base_offset[1] + y)
+        self.cart_sprites[cart_number].position = (base_offset[0] + self.carts_position_abs[cart_number][0],
+                                                   base_offset[1] + self.carts_position_abs[cart_number][1])
         if self.cart_sprites[cart_number].visible \
                 and (self.cart_sprites[cart_number].x
                      not in range(-150, self.c['graphics']['screen_resolution'][0] + 150)
@@ -560,9 +454,6 @@ class Train(GameObject):
     def switch_direction(self):
         self.current_direction = self.new_direction
         self.carts_position_abs = list(reversed(self.carts_position_abs))
-        for i in range(len(self.carts_position_abs)):
-            self.carts_position_abs[i] = list(reversed(self.carts_position_abs[i]))
-
         self.cart_sprites[0].image = self.head_image[self.current_direction]
         for i in range(1, self.carts - 1):
             self.cart_sprites[i].image = self.mid_image[self.current_direction]
