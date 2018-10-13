@@ -62,9 +62,9 @@ class Train(GameObject):
             self.boarding_time = self.carts * 300
 
         if self.train_route is not None:
-            if self.train_route.base_routes[0].route_config['force_busy'] \
-                    and self.train_route.base_routes[0].route_config['last_entered_by'] == self.train_id:
-                self.train_route.base_routes[0].priority = self.priority
+            if self.train_route.train_route_sections[0].route_config['force_busy'] \
+                    and self.train_route.train_route_sections[0].route_config['last_entered_by'] == self.train_id:
+                self.train_route.train_route_sections[0].priority = self.priority
 
         self.logger.debug('set priority: {}'.format(self.priority))
         self.logger.debug('set boarding_time: {}'.format(self.boarding_time))
@@ -254,9 +254,9 @@ class Train(GameObject):
             self.logger.debug('increased priority by 1')
 
         if self.train_route is not None:
-            if self.train_route.base_routes[0].route_config['force_busy'] \
-                    and self.train_route.base_routes[0].route_config['last_entered_by'] == self.train_id:
-                self.train_route.base_routes[0].priority = self.priority
+            if self.train_route.train_route_sections[0].route_config['force_busy'] \
+                    and self.train_route.train_route_sections[0].route_config['last_entered_by'] == self.train_id:
+                self.train_route.train_route_sections[0].priority = self.priority
 
         # while boarding is in progress, train does not move indeed
         self.logger.debug('state: {}'.format(self.state))

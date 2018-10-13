@@ -65,7 +65,6 @@ class RSSim(Game):
                   self.c['base_route_types']['right_entry_base_route'],
                   self.c['base_route_types']['right_exit_base_route']):
             self.base_routes[0][j] = BaseRoute(track_number=0, route_type=j)
-            self.base_routes[0][j].read_trail_points()
             placement = self.base_routes[0][j].route_config['exit_signal_placement']
             self.logger.debug('placement = {}'.format(placement))
             flip_needed = self.base_routes[0][j].route_config['flip_needed']
@@ -136,7 +135,6 @@ class RSSim(Game):
                       self.c['base_route_types']['right_entry_platform_base_route'],
                       self.c['base_route_types']['right_exit_platform_base_route']):
                 self.base_routes[i][k] = BaseRoute(track_number=i, route_type=k)
-                self.base_routes[i][k].read_trail_points()
                 placement = self.base_routes[i][k].route_config['exit_signal_placement']
                 self.logger.debug('placement = {}'.format(placement))
                 flip_needed = self.base_routes[i][k].route_config['flip_needed']
@@ -157,7 +155,6 @@ class RSSim(Game):
                   self.c['base_route_types']['right_side_entry_base_route'],
                   self.c['base_route_types']['right_side_exit_base_route']):
             self.base_routes[100][j] = BaseRoute(track_number=100, route_type=j)
-            self.base_routes[100][j].read_trail_points()
             placement = self.base_routes[100][j].route_config['exit_signal_placement']
             self.logger.debug('placement = {}'.format(placement))
             flip_needed = self.base_routes[100][j].route_config['flip_needed']
@@ -1697,18 +1694,6 @@ class RSSim(Game):
                 .append(self.junctions[1][2][self.c['crossover_types']['right_exit_crossover']])
             self.base_routes[i][self.c['base_route_types']['right_exit_base_route']].junction_position.append([1, 2])
 
-        for i in range(1, self.c['dispatcher_config']['tracks_ready'] + 1, 2):
-            if i <= 23:
-                self.base_routes[i][self.c['base_route_types']['left_entry_base_route']].read_trail_points()
-                self.base_routes[i][self.c['base_route_types']['left_exit_base_route']].read_trail_points()
-
-            if i >= 21:
-                self.base_routes[i][self.c['base_route_types']['left_side_entry_base_route']].read_trail_points()
-                self.base_routes[i][self.c['base_route_types']['left_side_exit_base_route']].read_trail_points()
-
-            self.base_routes[i][self.c['base_route_types']['right_entry_base_route']].read_trail_points()
-            self.base_routes[i][self.c['base_route_types']['right_exit_base_route']].read_trail_points()
-
         self.logger.info('trail points initialized for odd tracks')
 
         self.base_routes[2][self.c['base_route_types']['left_entry_base_route']].junctions\
@@ -2307,17 +2292,6 @@ class RSSim(Game):
                 .append(self.junctions[102][104][self.c['crossover_types']['right_exit_crossover']])
             self.base_routes[i][self.c['base_route_types']['right_side_exit_base_route']].junction_position \
                 .append([104, 104])
-
-        for i in range(2, self.c['dispatcher_config']['tracks_ready'] + 1, 2):
-            self.base_routes[i][self.c['base_route_types']['left_entry_base_route']].read_trail_points()
-            self.base_routes[i][self.c['base_route_types']['left_exit_base_route']].read_trail_points()
-            if i <= 24:
-                self.base_routes[i][self.c['base_route_types']['right_entry_base_route']].read_trail_points()
-                self.base_routes[i][self.c['base_route_types']['right_exit_base_route']].read_trail_points()
-
-            if i >= 22:
-                self.base_routes[i][self.c['base_route_types']['right_side_entry_base_route']].read_trail_points()
-                self.base_routes[i][self.c['base_route_types']['right_side_exit_base_route']].read_trail_points()
 
         self.logger.info('trail points initialized for even tracks')
 
