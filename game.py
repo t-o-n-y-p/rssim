@@ -114,7 +114,7 @@ class Game:
 
         @surface.event
         def on_draw():
-            self.logger.critical('start update sprites')
+            time_3 = time.perf_counter()
             for o in self.objects:
                 o.update_sprite(self.base_offset)
 
@@ -129,11 +129,11 @@ class Game:
                     self.fade_vertex.delete()
                     self.fade_vertex = None
 
-            self.logger.critical('end update sprites')
-
             self.surface.clear()
             self.batch.invalidate()
             self.batch.draw()
+            time_4 = time.perf_counter()
+            self.logger.critical('drawing: {} sec'.format(time_4 - time_3))
 
         @surface.event
         def on_mouse_press(x, y, button, modifiers):
@@ -413,15 +413,14 @@ class Game:
             # pyglet.clock.tick()
             self.surface.dispatch_events()
             time_2 = time.perf_counter()
+            self.logger.critical('handling events: {} sec'.format(time_2 - time_1))
             self.update()
             time_3 = time.perf_counter()
+            self.logger.critical('updating: {} sec'.format(time_3 - time_2))
             self.surface.dispatch_event('on_draw')
             time_4 = time.perf_counter()
             self.surface.flip()
             self.logger.warning('frame ends')
-            self.logger.critical('handling events: {} sec'.format(time_2 - time_1))
-            self.logger.critical('updating: {} sec'.format(time_3 - time_2))
-            self.logger.critical('drawing: {} sec'.format(time_4 - time_3))
             if self.fps_display_label is not None \
                     and time.perf_counter() - fps_timer > self.c['graphics']['fps_display_update_interval']:
                 self.fps_display_label.text = str(round(float(1/(time_4 - time_1)))) + ' FPS'
