@@ -637,17 +637,6 @@ class RSSim(Game):
 
         self.logger.info('tracks and train routes created')
         # ------ SORT THIS OUT ------
-        # base routes and signals are added to generic objects list
-        for i in range(self.c['dispatcher_config']['tracks_ready'] + 1):
-            for n in self.base_routes[i]:
-                self.objects.append(self.base_routes[i][n])
-                self.logger.debug('base route {} {} appended to global objects list'.format(i, n))
-
-        for n in self.base_routes[100]:
-            self.objects.append(self.base_routes[100][n])
-            self.logger.debug('base route {} {} appended to global objects list'.format(100, n))
-
-        self.logger.info('base routes and signals appended')
         # train routes and tracks are added to dispatcher which we create right now
         self.dispatcher = Dispatcher(batch=self.batch, group=self.signals_and_trains_ordered_group,
                                      boarding_lights_group=self.boarding_lights_ordered_group)
