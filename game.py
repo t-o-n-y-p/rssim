@@ -106,15 +106,16 @@ class Game:
 
         @surface.event
         def on_draw():
-            time_3 = time.perf_counter()
+            time_1 = time.perf_counter()
             for o in self.objects:
                 o.update_sprite(self.base_offset)
 
+            time_2 = time.perf_counter()
             self.surface.clear()
-            self.batch.invalidate()
             self.batch.draw()
-            time_4 = time.perf_counter()
-            self.logger.critical('drawing: {} sec'.format(time_4 - time_3))
+            time_3 = time.perf_counter()
+            self.logger.critical('updating sprites: {} sec'.format(time_2 - time_1))
+            self.logger.critical('drawing sprites: {} sec'.format(time_3 - time_2))
 
         @surface.event
         def on_mouse_press(x, y, button, modifiers):
