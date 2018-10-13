@@ -5,6 +5,10 @@ import logging
 from operator import attrgetter
 
 import pyglet
+import win32api
+import win32con
+import win32gui
+import win32process
 
 from game_object import GameObject
 from train import Train
@@ -367,7 +371,9 @@ class Dispatcher(GameObject):
                 if i.boarding_time <= 0:
                     self.tracks[i.track_number - 1].override = False
                     i.state = self.c['train_state_types']['boarding_complete']
-                    i.boarding_lights_sprite.visible = False
+                    if i.boarding_lights_sprite is not None:
+                        i.boarding_lights_sprite.visible = False
+
                     self.logger.info('train {} status changed to {}'.format(i.train_id, i.state))
 
             if len(i.carts_position) > 0:
@@ -376,7 +382,7 @@ class Dispatcher(GameObject):
                     # if train arrives to the track, boarding begins
                     if i.state == self.c['train_state_types']['pending_boarding']:
                         i.state = self.c['train_state_types']['boarding_in_progress']
-                        if i.boarding_time > 60:
+                        if i.boarding_time > 60 and i.boarding_lights_sprite is not None:
                             i.boarding_lights_sprite.visible = True
 
                         self.logger.debug('train {} boarding begins'.format(i.train_id))
@@ -506,9 +512,10 @@ class Dispatcher(GameObject):
         self.logger.info('dispatcher updated')
         # dispatcher's logic iteration is done, now we update trains, routes and tracks
         for q4 in self.trains:
-            q4.update(game_paused)
-            if q4.train_route is not None:
-                q4.train_route.update_train_route_sections(game_paused, q4.carts_position[-1])
+            if q4.train_id in self.train_ids:
+                q4.update(game_paused)
+                if q4.train_route is not None:
+                    q4.train_route.update_train_route_sections(game_paused, q4.carts_position[-1])
 
         for q3 in range(len(self.tracks)):
             self.tracks[q3].update(game_paused)
@@ -588,4 +595,6 @@ class Dispatcher(GameObject):
 
     def update_sprite(self, base_offset):
         for i in self.trains:
-            i.update_sprite(base_offset)
+            if i.train_id in self.train_ids:
+                # win32process.beginthreadex(None, 0, i.update_sprite, (base_offset, ), 0)
+                i.update_sprite(base_offset)

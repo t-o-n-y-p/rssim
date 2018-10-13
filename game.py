@@ -324,12 +324,16 @@ class Game:
         self.c['crossover_types']['right_exit_crossover'] = self.game_config['crossover_types']['right_exit_crossover']
 
     def update(self):
+        time_1 = time.perf_counter()
         for o in self.objects:
             o.update(self.game_paused)
 
         if self.mini_map_tip.condition_met and not self.map_move_mode:
             if time.time() - self.mini_map_timer > 1:
                 self.mini_map_tip.condition_met = False
+
+        time_2 = time.perf_counter()
+        self.logger.critical('updating: {} sec'.format(time_2 - time_1))
 
     @_game_window_is_active
     def handle_mouse_press(self, x, y, button, modifiers):

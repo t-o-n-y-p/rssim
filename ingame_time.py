@@ -37,7 +37,7 @@ class InGameTime(GameObject):
                                           x=self.c['graphics']['screen_resolution'][0] - 141, y=85,
                                           anchor_x='center', anchor_y='center',
                                           batch=batch, group=day_text_group)
-        self.time_text = pyglet.text.Label(self.hour_string + ':' + self.minute_string,
+        self.time_text = pyglet.text.Label('0',
                                            font_name='Courier New', bold=True,
                                            font_size=self.c['graphics']['day_font_size'],
                                            color=self.c['graphics']['day_text_color'],
@@ -64,7 +64,6 @@ class InGameTime(GameObject):
         self.logger.debug('hour: {}'.format(self.hour))
         self.minute = ((self.epoch_timestamp % 345600) % 14400) // 240
         self.logger.debug('minute: {}'.format(self.minute))
-
         if self.minute < 10:
             self.minute_string = '0' + str(self.minute)
         else:
@@ -92,6 +91,12 @@ class InGameTime(GameObject):
         self.logger.debug('------- END SAVING STATE -------')
         self.logger.info('time state saved to file user_cfg/epoch_time.ini')
 
+    def update_sprite(self, base_offset):
+        if self.epoch_timestamp % 240 in range(0, 60) or self.epoch_timestamp % 240 in range(120, 180):
+            self.time_text.text = self.hour_string + ':' + self.minute_string
+        else:
+            self.time_text.text = self.hour_string + ' ' + self.minute_string
+
     @_game_is_not_paused
     def update(self, game_paused):
         self.logger.debug('------- TIME UPDATE START -------')
@@ -105,8 +110,6 @@ class InGameTime(GameObject):
                 self.minute_string = '0' + str(self.minute)
             else:
                 self.minute_string = str(self.minute)
-
-            self.time_text.text = self.hour_string + ':' + self.minute_string
 
         if self.epoch_timestamp % 14400 == 0:
             self.hour += 1
