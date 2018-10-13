@@ -52,6 +52,7 @@ class TrainRoute(GameObject):
             self.checkpoints_v2.append(counter)
 
         self.checkpoints_v2 = tuple(self.checkpoints_v2)
+        self.logger.debug('checkpoints_v2 = {}'.format(self.checkpoints_v2))
         self.current_checkpoint = 0
         self.signal = self.train_route_sections[0].route_config['exit_signal']
         # number of supported carts is decided below
@@ -149,23 +150,13 @@ class TrainRoute(GameObject):
         self.current_checkpoint = 0
         for i in range(len(self.train_route_sections)):
             if type(self.train_route_sections[i]) == BaseRoute:
-                self.train_route_sections[i].route_config['force_busy'] = True
-                self.train_route_sections[i].route_config['last_entered_by'] = train_id
                 self.train_route_sections[i].route_config['opened'] = True
                 self.train_route_sections[i].route_config['last_opened_by'] = train_id
-                self.train_route_sections[i].update_base_route_state()
-            elif type(self.train_route_sections[i]) == RailroadSwitch:
-                self.train_route_sections[i].force_busy = True
-                self.train_route_sections[i].last_entered_by = train_id
-                self.train_route_sections[i].update(False)
-                self.train_route_sections[i].dependency.update(False)
-            elif type(self.train_route_sections[i]) == Crossover:
-                self.train_route_sections[i].force_busy[
-                    self.train_route_sections_positions[i][0]][self.train_route_sections_positions[i][1]] = True
-                self.train_route_sections[i].last_entered_by[
-                    self.train_route_sections_positions[i][0]][self.train_route_sections_positions[i][1]] = train_id
-                self.train_route_sections[i].update(False)
-                self.train_route_sections[i].dependency.update(False)
+                self.train_route_sections[i].priority = priority
+
+        self.train_route_sections[0].route_config['force_busy'] = True
+        self.train_route_sections[0].route_config['last_entered_by'] = train_id
+        self.train_route_sections[0].update_base_route_state()
 
     def close_train_route(self):
         # fully unlock entire route and remaining base routes
@@ -190,6 +181,9 @@ class TrainRoute(GameObject):
     @_game_is_not_paused
     def update_train_route_sections(self, game_paused, last_cart_position):
         self.logger.debug('------- TRAIN ROUTE UPDATE START -------')
+        self.logger.debug('last cart position = {}'.format(last_cart_position))
+        self.logger.debug('current checkpoint number {}: {}'
+                          .format(self.current_checkpoint, self.checkpoints_v2[self.current_checkpoint]))
         if last_cart_position >= self.checkpoints_v2[self.current_checkpoint]:
             if type(self.train_route_sections[self.current_checkpoint]) == BaseRoute:
                 self.train_route_sections[self.current_checkpoint].route_config['force_busy'] = False

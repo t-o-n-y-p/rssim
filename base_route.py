@@ -135,3 +135,55 @@ class BaseRoute(GameObject):
         self.logger.debug('busy = {}'.format(self.route_config['busy']))
         self.logger.debug('------- END UPDATING -------')
         self.logger.info('base route updated')
+
+    def enter_base_route(self, train_id):
+        self.logger.debug('------- START ENTERING BASE ROUTE -------')
+        self.route_config['force_busy'] = True
+        self.logger.debug('force_busy set to True')
+        self.route_config['busy'] = True
+        self.logger.debug('busy set to True')
+        self.route_config['last_entered_by'] = train_id
+        self.logger.debug('entered by train {}'.format(train_id))
+        self.logger.debug('junctions in this base route: {}'.format(len(self.junctions)))
+        if len(self.junctions) > 0:
+            for i in range(len(self.junctions)):
+                if type(self.junctions[i]) == RailroadSwitch:
+                    self.junctions[i].force_busy = True
+                    self.logger.debug('switch {} {} {} force_busy set to True'
+                                      .format(self.junctions[i].straight_track, self.junctions[i].side_track,
+                                              self.junctions[i].direction))
+                    self.junctions[i].busy = True
+                    self.logger.debug('switch {} {} {} busy set to True'
+                                      .format(self.junctions[i].straight_track, self.junctions[i].side_track,
+                                              self.junctions[i].direction))
+                    self.junctions[i].last_entered_by = train_id
+                    self.logger.debug('switch {} {} {} is busy by train {}'
+                                      .format(self.junctions[i].straight_track, self.junctions[i].side_track,
+                                              self.junctions[i].direction, train_id))
+                elif type(self.junctions[i]) == Crossover:
+                    self.junctions[i].force_busy[self.junction_position[i][0]][self.junction_position[i][1]] = True
+                    self.logger.debug('crossover {} {} {} force_busy from track {} to track {} set to True'
+                                      .format(self.junctions[i].straight_track_1, self.junctions[i].straight_track_2,
+                                              self.junctions[i].direction,
+                                              self.junction_position[i][0], self.junction_position[i][1]))
+                    self.junctions[i].busy[self.junction_position[i][0]][self.junction_position[i][1]] = True
+                    self.logger.debug('crossover {} {} {} busy from track {} to track {} set to True'
+                                      .format(self.junctions[i].straight_track_1, self.junctions[i].straight_track_2,
+                                              self.junctions[i].direction,
+                                              self.junction_position[i][0], self.junction_position[i][1]))
+                    self.junctions[i].last_entered_by[self.junction_position[i][0]][self.junction_position[i][1]] \
+                        = train_id
+                    self.logger.debug('crossover {} {} {} busy from track {} to track {} by train {}'
+                                      .format(self.junctions[i].straight_track_1, self.junctions[i].straight_track_2,
+                                              self.junctions[i].direction,
+                                              self.junction_position[i][0], self.junction_position[i][1], train_id))
+
+                self.junctions[i].update(False)
+                self.logger.debug('junction updated')
+                self.junctions[i].dependency.update(False)
+                self.logger.debug('junction dependency updated')
+                self.logger.info('junction {} processed'.format(i + 1))
+
+        self.update_base_route_state()
+        self.logger.debug('------- END ENTERING BASE ROUTE -------')
+        self.logger.info('train {} is ready to go'.format(train_id))

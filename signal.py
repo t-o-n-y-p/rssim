@@ -149,6 +149,8 @@ class Signal(GameObject):
                         busy_logical = busy_logical or i.route_config['busy']
                         entered_by.append(i.route_config['last_entered_by'])
 
+                self.logger.debug('approaching train: {}'.format(self.base_route_exit.route_config['last_opened_by']))
+                self.logger.debug('its route is busy by train: {}'.format(entered_by))
                 if busy_logical and self.base_route_exit.route_config['last_opened_by'] not in entered_by:
                     if self.state == self.c['signal_config']['green_signal']:
                         self.state = self.c['signal_config']['red_signal']
