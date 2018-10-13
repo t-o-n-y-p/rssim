@@ -15,18 +15,8 @@ def _game_is_not_paused(fn):
     return _update_if_game_is_not_paused
 
 
-def _signal_is_not_invisible(fn):
-    def _draw_if_signal_is_not_invisible(*args, **kwargs):
-        if not args[0].invisible:
-            return fn(*args, **kwargs)
-        else:
-            return []
-
-    return _draw_if_signal_is_not_invisible
-
-
 class Signal(GameObject):
-    def __init__(self, placement, flip_needed, invisible, track_number, route_type, batch, signal_group):
+    def __init__(self, placement, flip_needed, track_number, route_type, batch, signal_group):
         super().__init__()
         self.logger = logging.getLogger('game.signal_{}_{}'.format(route_type, track_number))
         self.logger.debug('------- START INIT -------')
@@ -34,7 +24,6 @@ class Signal(GameObject):
         self.logger.debug('config parser created')
         self.track_number = track_number
         self.route_type = route_type
-        self.invisible = invisible
         # where to place signal on map
         self.placement = placement
         self.priority = 0
@@ -42,8 +31,8 @@ class Signal(GameObject):
         self.signal_group = signal_group
         # for left-directed routes we need to flip signal (its default image is for right-directed routes)
         self.flip_needed = flip_needed
-        self.logger.debug('params set: track number {}, route type {}, invisible {}, placement {}, flip_needed {}'
-                          .format(self.track_number, self.route_type, self.invisible, self.placement, self.flip_needed))
+        self.logger.debug('params set: track number {}, route type {}, placement {}, flip_needed {}'
+                          .format(self.track_number, self.route_type, self.placement, self.flip_needed))
         # initialize signal state
         self.state = None
         self.image = {self.c['signal_config']['red_signal']:
@@ -59,10 +48,9 @@ class Signal(GameObject):
         self.base_route_exit = None
         self.read_state()
         self.sprite = None
-        if not self.invisible:
-            self.sprite = pyglet.sprite.Sprite(self.image[self.state],
-                                               x=self.placement[0], y=self.placement[1],
-                                               batch=self.batch, group=self.signal_group)
+        self.sprite = pyglet.sprite.Sprite(self.image[self.state],
+                                           x=self.placement[0], y=self.placement[1],
+                                           batch=self.batch, group=self.signal_group)
         if self.flip_needed:
             self.sprite.rotation = 180.0
             self.logger.debug('base image flipped')
@@ -112,7 +100,6 @@ class Signal(GameObject):
         self.logger.info('signal state saved to file user_cfg/signals/track{}/track{}_{}.ini'
                          .format(self.track_number, self.track_number, self.route_type))
 
-    @_signal_is_not_invisible
     def update_sprite(self, base_offset):
         self.logger.debug('------- START DRAWING -------')
         self.logger.debug('signal is not invisible, drawing')

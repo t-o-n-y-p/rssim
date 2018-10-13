@@ -17,8 +17,7 @@ def _game_is_not_paused(fn):
 
 
 class TrainRoute(GameObject):
-    def __init__(self, track_number, route_type, supported_carts, train_route_sections, train_route_sections_positions,
-                 checkpoints_v2):
+    def __init__(self, track_number, route_type, supported_carts, train_route_sections, train_route_sections_positions):
         super().__init__()
         self.logger = logging.getLogger('game.train_route_{}_{}'.format(track_number, route_type))
         self.logger.debug('------- START INIT -------')
@@ -39,7 +38,20 @@ class TrainRoute(GameObject):
         self.destination_point_v2 = ()
         self.train_route_sections = train_route_sections
         self.train_route_sections_positions = train_route_sections_positions
-        self.checkpoints_v2 = checkpoints_v2
+        self.checkpoints_v2 = []
+        counter = 0
+        for i in range(len(self.train_route_sections)):
+            if type(self.train_route_sections[i]) == BaseRoute:
+                counter += self.train_route_sections[i].route_config['length']
+            elif type(self.train_route_sections[i]) == RailroadSwitch:
+                counter += self.train_route_sections[i].length[self.train_route_sections_positions[i]]
+            elif type(self.train_route_sections[i]) == Crossover:
+                counter += self.train_route_sections[i]\
+                    .length[self.train_route_sections_positions[i][0]][self.train_route_sections_positions[i][1]]
+
+            self.checkpoints_v2.append(counter)
+
+        self.checkpoints_v2 = tuple(self.checkpoints_v2)
         self.current_checkpoint = 0
         self.signal = self.train_route_sections[0].route_config['exit_signal']
         # number of supported carts is decided below
@@ -173,7 +185,7 @@ class TrainRoute(GameObject):
                 self.train_route_sections[i].dependency.update(False)
 
     @_game_is_not_paused
-    def update(self, game_paused, last_cart_position):
+    def update_train_route_sections(self, game_paused, last_cart_position):
         self.logger.debug('------- TRAIN ROUTE UPDATE START -------')
         if last_cart_position >= self.checkpoints_v2[self.current_checkpoint]:
             if type(self.train_route_sections[self.current_checkpoint]) == BaseRoute:
