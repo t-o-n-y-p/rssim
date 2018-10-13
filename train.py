@@ -230,7 +230,7 @@ class Train(GameObject):
         self.carts_position.clear()
         self.logger.debug('converting cart positions to relative')
         for i in self.carts_position_abs:
-            self.carts_position.append(i[0] - self.train_route.trail_points_v2[0][0])
+            self.carts_position.append(abs(i[0] - self.train_route.trail_points_v2[0][0]))
 
         self.logger.debug('cart positions converted to relative: {}'.format(self.carts_position))
         self.carts_position_abs.clear()
@@ -282,8 +282,9 @@ class Train(GameObject):
             else:
                 self.stop_point = self.train_route.destination_point_v2[self.carts]
 
+            self.logger.debug('stop point: {}'.format(self.stop_point))
+
             # if train has reached red signal, stop it
-            self.logger.debug('next_stop_point: {}'.format(self.stop_point))
             self.logger.debug('first cart position: {}'.format(self.carts_position[0]))
             if self.carts_position[0] == self.stop_point:
                 self.speed_state = self.c['train_speed_state_types']['stop']
@@ -353,10 +354,11 @@ class Train(GameObject):
                 self.logger.debug('speed_factor_position = 0')
 
             # apply changes
-            for i in self.carts_position:
-                self.logger.debug('cart old position: {}'.format(i))
-                i += self.speed
-                self.logger.debug('cart new position: {}'.format(i))
+            self.logger.debug('cart old position: {}'.format(self.carts_position))
+            for i in range(len(self.carts_position)):
+                self.carts_position[i] += self.speed
+
+            self.logger.debug('cart new position: {}'.format(self.carts_position))
 
         self.logger.debug('------- TRAIN UPDATE END -------')
         self.logger.info('train updated')
@@ -418,6 +420,7 @@ class Train(GameObject):
         self.cart_sprites[cart_number].position = (base_offset[0] + dot[0],
                                                    base_offset[1] + dot[1])
         self.cart_sprites[cart_number].rotation = dot[2]
+        self.logger.debug('dot for cart {}: {}'.format(cart_number, dot))
         if self.cart_sprites[cart_number].visible \
                 and (self.cart_sprites[cart_number].x
                      not in range(-150, self.c['graphics']['screen_resolution'][0] + 150)
