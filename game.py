@@ -60,14 +60,6 @@ class Game:
         self.buttons_general_borders_day_text_ordered_group = pyglet.graphics.OrderedGroup(5)
         self.buttons_text_and_borders_ordered_group = pyglet.graphics.OrderedGroup(6)
         self.loading_shadow_ordered_group = pyglet.graphics.OrderedGroup(7)
-        self.fade_vertex = self.batch.add(4, pyglet.gl.GL_QUADS, self.loading_shadow_ordered_group,
-                                          ('v2i/static', (0, 0, self.c['graphics']['screen_resolution'][0], 0,
-                                                          self.c['graphics']['screen_resolution'][0],
-                                                          self.c['graphics']['screen_resolution'][1],
-                                                          0, self.c['graphics']['screen_resolution'][1])),
-                                          ('c4B', (0, 0, 0, 255, 0, 0, 0, 255, 0, 0, 0, 255, 0, 0, 0, 255))
-                                          )
-        self.fade_vertex_opacity = 255
         self.surface.dispatch_event('on_draw')
         self.surface.flip()
         self.game_window_handler = win32gui.GetActiveWindow()
@@ -117,17 +109,6 @@ class Game:
             time_3 = time.perf_counter()
             for o in self.objects:
                 o.update_sprite(self.base_offset)
-
-            if self.fade_vertex is not None:
-                if self.fade_vertex_opacity > 0:
-                    self.fade_vertex_opacity -= 17
-                    self.fade_vertex.colors = (0, 0, 0, self.fade_vertex_opacity,
-                                               0, 0, 0, self.fade_vertex_opacity,
-                                               0, 0, 0, self.fade_vertex_opacity,
-                                               0, 0, 0, self.fade_vertex_opacity)
-                else:
-                    self.fade_vertex.delete()
-                    self.fade_vertex = None
 
             self.surface.clear()
             self.batch.invalidate()
@@ -412,11 +393,7 @@ class Game:
             time_1 = time.perf_counter()
             # pyglet.clock.tick()
             self.surface.dispatch_events()
-            time_2 = time.perf_counter()
-            self.logger.critical('handling events: {} sec'.format(time_2 - time_1))
             self.update()
-            time_3 = time.perf_counter()
-            self.logger.critical('updating: {} sec'.format(time_3 - time_2))
             self.surface.dispatch_event('on_draw')
             time_4 = time.perf_counter()
             self.surface.flip()
