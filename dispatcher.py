@@ -517,7 +517,7 @@ class Dispatcher(GameObject):
         self.logger.debug('------- START CREATING NEW TRAINS -------')
         entry_busy = self.train_routes[track_number][
             self.c['train_route_types']['approaching_train_route'][direction]
-        ].base_routes[0].route_config['busy']
+        ].train_route_sections[0].route_config['busy']
         self.logger.debug('entry is busy: {}'.format(entry_busy))
         # we wait until main entry is free
         if not entry_busy:
@@ -575,7 +575,6 @@ class Dispatcher(GameObject):
                                       boarding_lights_group=self.boarding_lights_group)
                     self.train_ids.append(self.train_counter)
                     new_train.train_route.open_train_route(new_train.train_id, new_train.priority)
-                    new_train.train_route.set_stop_points(new_train.carts)
                     new_train.init_train_position()
                     self.logger.info('train created. id {}, track {}, route = {}, status = {}'
                                      .format(new_train.train_id, new_train.train_route.track_number,

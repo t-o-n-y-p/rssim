@@ -79,11 +79,14 @@ class TrainRoute(GameObject):
         self.logger.debug('last_opened_by: {}'.format(self.last_opened_by))
         self.current_checkpoint = self.config['user_data'].getint('current_checkpoint')
 
-        start_point_v2_parsed = self.config['train_route_config']['start_point_v2'].split(',')
-        for i in range(len(start_point_v2_parsed)):
-            start_point_v2_parsed[i] = int(start_point_v2_parsed[i])
+        if self.config['train_route_config']['start_point_v2'] == 'None':
+            self.start_point_v2 = None
+        else:
+            start_point_v2_parsed = self.config['train_route_config']['start_point_v2'].split(',')
+            for i in range(len(start_point_v2_parsed)):
+                start_point_v2_parsed[i] = int(start_point_v2_parsed[i])
 
-        self.start_point_v2 = tuple(start_point_v2_parsed)
+            self.start_point_v2 = tuple(start_point_v2_parsed)
 
         stop_point_v2_parsed = self.config['train_route_config']['stop_point_v2'].split(',')
         for i in range(len(stop_point_v2_parsed)):
