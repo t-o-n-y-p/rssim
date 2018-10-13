@@ -28,8 +28,6 @@ class InGameTime(GameObject):
         self.hour_string = ''
         self.minute = None
         self.minute_string = ''
-        self.second = None
-        self.second_string = ''
         self.logger.debug('created text object for days counter')
         self.read_state()
         self.day_text = pyglet.text.Label('DAY {}'.format(self.day),
@@ -66,12 +64,6 @@ class InGameTime(GameObject):
         self.logger.debug('hour: {}'.format(self.hour))
         self.minute = ((self.epoch_timestamp % 345600) % 14400) // 240
         self.logger.debug('minute: {}'.format(self.minute))
-        self.second = (((self.epoch_timestamp % 345600) % 14400) % 240) // 4
-        if self.second < 10:
-            self.second_string = '0' + str(self.second)
-        else:
-            self.second_string = str(self.second)
-
         if self.minute < 10:
             self.minute_string = '0' + str(self.minute)
         else:
@@ -100,18 +92,15 @@ class InGameTime(GameObject):
         self.logger.info('time state saved to file user_cfg/epoch_time.ini')
 
     def update_sprite(self, base_offset):
-        self.time_text.text = self.hour_string + ':' + self.minute_string + ':' + self.second_string
+        if self.epoch_timestamp % 240 in range(0, 60) or self.epoch_timestamp % 240 in range(120, 180):
+            self.time_text.text = self.hour_string + ':' + self.minute_string
+        else:
+            self.time_text.text = self.hour_string + ' ' + self.minute_string
 
     @_game_is_not_paused
     def update(self, game_paused):
         self.logger.debug('------- TIME UPDATE START -------')
         self.epoch_timestamp += 1
-        self.second = (self.epoch_timestamp // 4) % 60
-        if self.second < 10:
-            self.second_string = '0' + str(self.second)
-        else:
-            self.second_string = str(self.second)
-
         if self.epoch_timestamp % 240 == 0:
             self.minute += 1
             if self.minute % 60 == 0:

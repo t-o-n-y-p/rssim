@@ -1,13 +1,11 @@
 import configparser
 import logging
-import math
 import os
+import time
 
 import pyglet
 
-from crossover import Crossover
 from game_object import GameObject
-from railroad_switch import RailroadSwitch
 
 
 def _game_is_not_paused(fn):
@@ -103,6 +101,7 @@ class Train(GameObject):
         # it contains absolute carts position on the map
         self.carts_position_abs = []
         self.stop_point = None
+        self.entire_train_is_visible = False
         self.logger.debug('------- END INIT -------')
         self.logger.warning('train init completed')
 
@@ -368,6 +367,7 @@ class Train(GameObject):
         # in both cases, we use pivot points of both chassis,
         # calculate middle point and axis,
         # but for relative position we need to convert it to absolute positions
+        time_1 = time.perf_counter()
         self.logger.debug('------- START DRAWING -------')
         if len(self.carts_position_abs) > 0:
             self.logger.debug('using absolute positions')
@@ -413,54 +413,56 @@ class Train(GameObject):
         else:
             self.boarding_lights_sprite.position = self.cart_sprites[1].position
 
+        time_2 = time.perf_counter()
+        self.logger.critical('updating sprites: {} sec'.format(time_2 - time_1))
         self.logger.debug('------- END DRAWING -------')
         self.logger.info('train is in place')
 
     def update_single_cart_sprite(self, cart_number, base_offset):
         dot = self.train_route.trail_points_v2[self.carts_position[cart_number]]
-        self.cart_sprites[cart_number].position = (base_offset[0] + dot[0],
-                                                   base_offset[1] + dot[1])
-        self.cart_sprites[cart_number].rotation = dot[2]
+        x = base_offset[0] + dot[0]
+        y = base_offset[1] + dot[1]
         self.logger.debug('dot for cart {}: {}'.format(cart_number, dot))
         if self.cart_sprites[cart_number].visible \
-                and (self.cart_sprites[cart_number].x
-                     not in range(-150, self.c['graphics']['screen_resolution'][0] + 150)
-                     or self.cart_sprites[cart_number].y
-                     not in range(-100, self.c['graphics']['screen_resolution'][0] + 100)):
+                and (x not in range(-150, self.c['graphics']['screen_resolution'][0] + 150)
+                     or y not in range(-100, self.c['graphics']['screen_resolution'][0] + 100)):
             self.cart_sprites[cart_number].visible = False
-            self.logger.debug('cart visible = False')
 
         if not self.cart_sprites[cart_number].visible \
-                and (self.cart_sprites[cart_number].x
-                     in range(-150, self.c['graphics']['screen_resolution'][0] + 150)
-                     and self.cart_sprites[cart_number].y
-                     in range(-100, self.c['graphics']['screen_resolution'][0] + 100)):
+                and (x in range(-150, self.c['graphics']['screen_resolution'][0] + 150)
+                     and y in range(-100, self.c['graphics']['screen_resolution'][0] + 100)):
             self.cart_sprites[cart_number].visible = True
-            self.logger.debug('cart visible = True')
+
+        if self.cart_sprites[cart_number].visible:
+            self.cart_sprites[cart_number].position = (x, y)
+            self.cart_sprites[cart_number].rotation = dot[2]
 
     def update_single_cart_sprite_abs(self, cart_number, base_offset):
-        self.cart_sprites[cart_number].position = (base_offset[0] + self.carts_position_abs[cart_number][0],
-                                                   base_offset[1] + self.carts_position_abs[cart_number][1])
+        x = base_offset[0] + self.carts_position_abs[cart_number][0]
+        y = base_offset[1] + self.carts_position_abs[cart_number][1]
         if self.cart_sprites[cart_number].visible \
-                and (self.cart_sprites[cart_number].x
-                     not in range(-150, self.c['graphics']['screen_resolution'][0] + 150)
-                     or self.cart_sprites[cart_number].y
-                     not in range(-25, self.c['graphics']['screen_resolution'][0] + 25)):
+                and (x not in range(-150, self.c['graphics']['screen_resolution'][0] + 150)
+                     or y not in range(-25, self.c['graphics']['screen_resolution'][0] + 25)):
             self.cart_sprites[cart_number].visible = False
 
         if not self.cart_sprites[cart_number].visible \
-                and (self.cart_sprites[cart_number].x
-                     in range(-150, self.c['graphics']['screen_resolution'][0] + 150)
-                     and self.cart_sprites[cart_number].y
-                     in range(-25, self.c['graphics']['screen_resolution'][0] + 25)):
+                and (x in range(-150, self.c['graphics']['screen_resolution'][0] + 150)
+                     and y in range(-25, self.c['graphics']['screen_resolution'][0] + 25)):
             self.cart_sprites[cart_number].visible = True
+
+        if self.cart_sprites[cart_number].visible:
+            self.cart_sprites[cart_number].position = (x, y)
 
     def switch_direction(self):
         self.current_direction = self.new_direction
         self.carts_position_abs = list(reversed(self.carts_position_abs))
         self.cart_sprites[0].image = self.head_image[self.current_direction]
         for i in range(1, self.carts - 1):
-            self.cart_sprites[i].image = self.mid_image[self.current_direction]
+            if self.cart_sprites[i] is not None:
+                self.cart_sprites[i].image = self.mid_image[self.current_direction]
 
-        self.cart_sprites[self.carts - 1].image = self.tail_image[self.current_direction]
-        self.boarding_lights_sprite.image = self.boarding_lights_image[self.current_direction][self.carts]
+        if self.cart_sprites[self.carts - 1] is not None:
+            self.cart_sprites[self.carts - 1].image = self.tail_image[self.current_direction]
+
+        if self.boarding_lights_sprite is not None:
+            self.boarding_lights_sprite.image = self.boarding_lights_image[self.current_direction][self.carts]
