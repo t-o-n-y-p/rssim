@@ -410,8 +410,6 @@ class Train(GameObject):
                 = pyglet.sprite.Sprite(self.boarding_lights_image[self.current_direction][self.carts],
                                        batch=self.batch, group=self.boarding_lights_group)
             self.boarding_lights_sprite.visible = False
-        else:
-            self.boarding_lights_sprite.position = self.cart_sprites[1].position
 
         time_2 = time.perf_counter()
         self.logger.critical('updating sprites: {} sec'.format(time_2 - time_1))
@@ -437,6 +435,9 @@ class Train(GameObject):
             self.cart_sprites[cart_number].position = (x, y)
             self.cart_sprites[cart_number].rotation = dot[2]
 
+        if cart_number == 1 and self.boarding_lights_sprite.visible:
+            self.boarding_lights_sprite.position = (x, y)
+
     def update_single_cart_sprite_abs(self, cart_number, base_offset):
         x = base_offset[0] + self.carts_position_abs[cart_number][0]
         y = base_offset[1] + self.carts_position_abs[cart_number][1]
@@ -452,6 +453,9 @@ class Train(GameObject):
 
         if self.cart_sprites[cart_number].visible:
             self.cart_sprites[cart_number].position = (x, y)
+
+        if cart_number == 1 and self.boarding_lights_sprite.visible:
+            self.boarding_lights_sprite.position = (x, y)
 
     def switch_direction(self):
         self.current_direction = self.new_direction
