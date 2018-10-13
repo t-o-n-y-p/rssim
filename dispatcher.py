@@ -371,7 +371,7 @@ class Dispatcher(GameObject):
                     self.logger.info('train {} status changed to {}'.format(i.train_id, i.state))
 
             if len(i.carts_position) > 0:
-                if i.carts_position[0][0] == i.train_route.destination_point:
+                if i.carts_position[0] == i.train_route.destination_point_v2[i.carts]:
                     self.logger.debug('train {} reached route destination point'.format(i.train_id))
                     # if train arrives to the track, boarding begins
                     if i.state == self.c['train_state_types']['pending_boarding']:
@@ -508,7 +508,7 @@ class Dispatcher(GameObject):
         for q4 in self.trains:
             q4.update(game_paused)
             if q4.train_route is not None:
-                q4.train_route.update(game_paused)
+                q4.train_route.update_train_route_sections(game_paused, q4.carts_position[-1])
 
         for q3 in range(len(self.tracks)):
             self.tracks[q3].update(game_paused)

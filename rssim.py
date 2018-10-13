@@ -70,18 +70,14 @@ class RSSim(Game):
             self.logger.debug('placement = {}'.format(placement))
             flip_needed = self.base_routes[0][j].route_config['flip_needed']
             self.logger.debug('flip_needed = {}'.format(flip_needed))
-            invisible = self.base_routes[0][j].route_config['invisible_signal']
-            self.logger.debug('invisible = {}'.format(invisible))
             if placement is not None:
-                self.signals[0][j] = Signal(placement=placement, flip_needed=flip_needed, invisible=invisible,
+                self.signals[0][j] = Signal(placement=placement, flip_needed=flip_needed,
                                             track_number=0, route_type=j,
                                             batch=self.batch, signal_group=self.signals_and_trains_ordered_group)
 
         self.logger.info('track 0 base routes and signals created')
         for j in (self.c['base_route_types']['left_entry_base_route'],
-                  self.c['base_route_types']['left_exit_base_route'],
-                  self.c['base_route_types']['right_entry_base_route'],
-                  self.c['base_route_types']['right_exit_base_route']):
+                  self.c['base_route_types']['right_entry_base_route']):
             # associate main entry/exit base route with its signal
             self.base_routes[0][j].route_config['exit_signal'] = self.signals[0][j]
             self.logger.debug('base route {} {} exit signal now is signal {} {}'
@@ -145,11 +141,8 @@ class RSSim(Game):
                 self.logger.debug('placement = {}'.format(placement))
                 flip_needed = self.base_routes[i][k].route_config['flip_needed']
                 self.logger.debug('flip_needed = {}'.format(flip_needed))
-                invisible = self.base_routes[i][k].route_config['invisible_signal']
-                self.logger.debug('invisible = {}'.format(invisible))
-                if placement is not None and k in (self.c['base_route_types']['right_exit_platform_base_route'],
-                                                   self.c['base_route_types']['left_exit_platform_base_route']):
-                    self.signals[i][k] = Signal(placement=placement, flip_needed=flip_needed, invisible=invisible,
+                if placement is not None:
+                    self.signals[i][k] = Signal(placement=placement, flip_needed=flip_needed,
                                                 track_number=i, route_type=k, batch=self.batch,
                                                 signal_group=self.signals_and_trains_ordered_group)
 
@@ -169,17 +162,13 @@ class RSSim(Game):
             self.logger.debug('placement = {}'.format(placement))
             flip_needed = self.base_routes[100][j].route_config['flip_needed']
             self.logger.debug('flip_needed = {}'.format(flip_needed))
-            invisible = self.base_routes[100][j].route_config['invisible_signal']
-            self.logger.debug('invisible = {}'.format(invisible))
             if placement is not None:
-                self.signals[100][j] = Signal(placement=placement, flip_needed=flip_needed, invisible=invisible,
+                self.signals[100][j] = Signal(placement=placement, flip_needed=flip_needed,
                                               track_number=100, route_type=j,
                                               batch=self.batch, signal_group=self.signals_and_trains_ordered_group)
 
         for j in (self.c['base_route_types']['left_side_entry_base_route'],
-                  self.c['base_route_types']['left_side_exit_base_route'],
-                  self.c['base_route_types']['right_side_entry_base_route'],
-                  self.c['base_route_types']['right_side_exit_base_route']):
+                  self.c['base_route_types']['right_side_entry_base_route']):
             # associate main entry/exit base route with its signal
             self.base_routes[100][j].route_config['exit_signal'] = self.signals[100][j]
             self.logger.debug('base route {} {} exit signal now is signal {} {}'
@@ -298,25 +287,27 @@ class RSSim(Game):
 
         # ------ TRAIN ROUTES AND TRACKS ------
         # create basic entry train routes for trains which cannot find available track
-        base_routes_in_train_route \
+        train_route_sections \
             = [self.base_routes[0][
                    '{}_base_route'
                    .format(self.c['train_route_types']['entry_train_route'][self.c['direction']['left']])], ]
+        train_route_sections_positions = [0, ]
         self.train_routes[0][self.c['train_route_types']['approaching_train_route'][self.c['direction']['left']]] \
-            = TrainRoute(base_routes=base_routes_in_train_route,
-                         track_number=0,
+            = TrainRoute(track_number=0,
                          route_type=self.c['train_route_types']['approaching_train_route'][self.c['direction']['left']],
-                         supported_carts=[0, 20])
-        base_routes_in_train_route \
+                         supported_carts=[0, 20], train_route_sections=train_route_sections,
+                         train_route_sections_positions=train_route_sections_positions)
+        train_route_sections \
             = [self.base_routes[0][
                    '{}_base_route'
                    .format(self.c['train_route_types']['entry_train_route'][self.c['direction']['right']])], ]
+        train_route_sections_positions = [0, ]
         self.train_routes[0][self.c['train_route_types']['approaching_train_route'][self.c['direction']['right']]] \
-            = TrainRoute(base_routes=base_routes_in_train_route,
-                         track_number=0,
+            = TrainRoute(track_number=0,
                          route_type=self.c['train_route_types']['approaching_train_route'][
                              self.c['direction']['right']],
-                         supported_carts=[0, 20])
+                         supported_carts=[0, 20], train_route_sections=train_route_sections,
+                         train_route_sections_positions=train_route_sections_positions)
         self.logger.info('approaching train routes created')
 
         for i in range(1, self.c['dispatcher_config']['tracks_ready'] + 1):
@@ -334,204 +325,318 @@ class RSSim(Game):
             # it includes main entry base route, specific entry base route and platform base route
             if i <= 24:
                 for k in (self.c['direction']['left'], self.c['direction']['right']):
-                    base_routes_in_train_route = [
+                    train_route_sections = [
                         self.base_routes[0]['{}_base_route'
-                                            .format(self.c['train_route_types']['entry_train_route'][k])],
+                                            .format(self.c['train_route_types']['entry_train_route'][k])], ]
+                    train_route_sections.extend(
+                        self.base_routes[i]['{}_base_route'
+                                            .format(self.c['train_route_types']['entry_train_route'][k])].junctions)
+                    train_route_sections.extend([
                         self.base_routes[i]['{}_base_route'
                                             .format(self.c['train_route_types']['entry_train_route'][k])],
                         self.base_routes[i]['{}_platform_base_route'
-                                            .format(self.c['train_route_types']['entry_train_route'][k])]]
-
+                                            .format(self.c['train_route_types']['entry_train_route'][k])]])
+                    train_route_sections_positions = [0, ]
+                    train_route_sections_positions.extend(
+                        self.base_routes[i]['{}_base_route'.format(self.c['train_route_types']['entry_train_route'][k])]
+                            .junction_position)
+                    train_route_sections_positions.extend([0, 0])
                     self.train_routes[i][self.c['train_route_types']['entry_train_route'][k]] \
-                        = TrainRoute(base_routes=base_routes_in_train_route,
-                                     track_number=i,
-                                     route_type=self.c['train_route_types']['entry_train_route'][k],
-                                     supported_carts=self.tracks[i - 1].supported_carts)
+                        = TrainRoute(track_number=i, route_type=self.c['train_route_types']['entry_train_route'][k],
+                                     supported_carts=self.tracks[i - 1].supported_carts,
+                                     train_route_sections=train_route_sections,
+                                     train_route_sections_positions=train_route_sections_positions)
                     self.logger.info('track {} {} train route created'.format(i, k))
 
                 # create exit train route
                 # it includes platform base route, specific exit base route and main exit base route
                 for m in (self.c['direction']['left'], self.c['direction']['right']):
-                    base_routes_in_train_route = [
+                    train_route_sections = [
                         self.base_routes[i]['{}_platform_base_route'
-                                            .format(self.c['train_route_types']['exit_train_route'][m])],
+                                            .format(self.c['train_route_types']['exit_train_route'][m])], ]
+                    train_route_sections.extend(
+                        self.base_routes[i]['{}_base_route'
+                                            .format(self.c['train_route_types']['exit_train_route'][m])].junctions)
+                    train_route_sections.extend([
                         self.base_routes[i]['{}_base_route'
                                             .format(self.c['train_route_types']['exit_train_route'][m])],
                         self.base_routes[0]['{}_base_route'
-                                            .format(self.c['train_route_types']['exit_train_route'][m])]]
+                                            .format(self.c['train_route_types']['exit_train_route'][m])]])
+                    train_route_sections_positions = [0, ]
+                    train_route_sections_positions.extend(
+                        self.base_routes[i]['{}_base_route'.format(self.c['train_route_types']['exit_train_route'][m])]
+                            .junction_position)
+                    train_route_sections_positions.extend([0, 0])
 
                     self.train_routes[i][self.c['train_route_types']['exit_train_route'][m]] \
-                        = TrainRoute(base_routes=base_routes_in_train_route,
-                                     track_number=i,
-                                     route_type=self.c['train_route_types']['exit_train_route'][m],
-                                     supported_carts=self.tracks[i - 1].supported_carts)
+                        = TrainRoute(track_number=i, route_type=self.c['train_route_types']['exit_train_route'][m],
+                                     supported_carts=self.tracks[i - 1].supported_carts,
+                                     train_route_sections=train_route_sections,
+                                     train_route_sections_positions=train_route_sections_positions)
                     self.logger.info('track {} {} train route created'.format(i, m))
 
             if i in (21, 23, 25, 27, 29, 31):
-                base_routes_in_train_route = [
+                train_route_sections = [
                     self.base_routes[100]['{}_base_route'
-                        .format(self.c['train_route_types']['entry_train_route'][self.c['direction']['left_side']])],
+                        .format(self.c['train_route_types']['entry_train_route'][self.c['direction']['left_side']])], ]
+                train_route_sections.extend(
+                    self.base_routes[i]['{}_base_route'
+                        .format(self.c['train_route_types']['entry_train_route'][self.c['direction']['left_side']])]
+                        .junctions)
+                train_route_sections.extend([
                     self.base_routes[i]['{}_base_route'
                         .format(self.c['train_route_types']['entry_train_route'][self.c['direction']['left_side']])],
                     self.base_routes[i]['{}_platform_base_route'
-                        .format(self.c['train_route_types']['entry_train_route'][self.c['direction']['left']])]]
+                        .format(self.c['train_route_types']['entry_train_route'][self.c['direction']['left']])]])
+                train_route_sections_positions = [0, ]
+                train_route_sections_positions.extend(
+                    self.base_routes[i]['{}_base_route'
+                        .format(self.c['train_route_types']['entry_train_route'][self.c['direction']['left_side']])]
+                        .junction_position)
+                train_route_sections_positions.extend([0, 0])
 
                 self.train_routes[i][self.c['train_route_types']['entry_train_route'][
                     self.c['direction']['left_side']]] \
-                    = TrainRoute(base_routes=base_routes_in_train_route,
-                                 track_number=i,
+                    = TrainRoute(track_number=i,
                                  route_type=self.c['train_route_types']['entry_train_route'][
                                      self.c['direction']['left_side']],
-                                 supported_carts=self.tracks[i - 1].supported_carts)
+                                 supported_carts=self.tracks[i - 1].supported_carts,
+                                 train_route_sections=train_route_sections,
+                                 train_route_sections_positions=train_route_sections_positions)
                 self.logger.info('track {} {} train route created'.format(i, self.c['direction']['left_side']))
 
-                base_routes_in_train_route = [
+                train_route_sections = [
                     self.base_routes[i]['{}_platform_base_route'
-                        .format(self.c['train_route_types']['exit_train_route'][self.c['direction']['right']])],
+                        .format(self.c['train_route_types']['exit_train_route'][self.c['direction']['right']])], ]
+                train_route_sections.extend(
+                    self.base_routes[i]['{}_base_route'
+                        .format(self.c['train_route_types']['exit_train_route'][self.c['direction']['right_side']])]
+                        .junctions)
+                train_route_sections.extend([
                     self.base_routes[i]['{}_base_route'
                         .format(self.c['train_route_types']['exit_train_route'][self.c['direction']['right_side']])],
                     self.base_routes[100]['{}_base_route'
-                        .format(self.c['train_route_types']['exit_train_route'][self.c['direction']['right_side']])]]
+                        .format(self.c['train_route_types']['exit_train_route'][self.c['direction']['right_side']])]])
+                train_route_sections_positions = [0, ]
+                train_route_sections_positions.extend(
+                    self.base_routes[i]['{}_base_route'
+                        .format(self.c['train_route_types']['exit_train_route'][self.c['direction']['right_side']])]
+                        .junction_position)
+                train_route_sections_positions.extend([0, 0])
 
                 self.train_routes[i][self.c['train_route_types']['exit_train_route'][
                     self.c['direction']['right_side']]] \
-                    = TrainRoute(base_routes=base_routes_in_train_route,
-                                 track_number=i,
+                    = TrainRoute(track_number=i,
                                  route_type=self.c['train_route_types']['exit_train_route'][
                                      self.c['direction']['right_side']],
-                                 supported_carts=self.tracks[i - 1].supported_carts)
+                                 supported_carts=self.tracks[i - 1].supported_carts,
+                                 train_route_sections=train_route_sections,
+                                 train_route_sections_positions=train_route_sections_positions)
                 self.logger.info('track {} {} train route created'.format(i, self.c['direction']['right_side']))
                 if i >= 25:
-                    base_routes_in_train_route = [
+                    train_route_sections = [
                         self.base_routes[0]['{}_base_route'
-                            .format(self.c['train_route_types']['entry_train_route'][self.c['direction']['right']])],
+                            .format(self.c['train_route_types']['entry_train_route'][self.c['direction']['right']])], ]
+                    train_route_sections.extend(
+                        self.base_routes[i]['{}_base_route'
+                            .format(self.c['train_route_types']['entry_train_route'][self.c['direction']['right']])]
+                            .junctions)
+                    train_route_sections.extend([
                         self.base_routes[i]['{}_base_route'
                             .format(self.c['train_route_types']['entry_train_route'][self.c['direction']['right']])],
                         self.base_routes[i]['{}_platform_base_route'
-                            .format(self.c['train_route_types']['entry_train_route'][self.c['direction']['right']])]]
+                            .format(self.c['train_route_types']['entry_train_route'][self.c['direction']['right']])]])
+                    train_route_sections_positions = [0, ]
+                    train_route_sections_positions.extend(
+                        self.base_routes[i]['{}_base_route'
+                            .format(self.c['train_route_types']['entry_train_route'][self.c['direction']['right']])]
+                            .junction_position)
+                    train_route_sections_positions.extend([0, 0])
 
                     self.train_routes[i][self.c['train_route_types']['entry_train_route'][
                         self.c['direction']['right']]] \
-                        = TrainRoute(base_routes=base_routes_in_train_route,
-                                     track_number=i,
+                        = TrainRoute(track_number=i,
                                      route_type=self.c['train_route_types']['entry_train_route'][
                                          self.c['direction']['right']],
-                                     supported_carts=self.tracks[i - 1].supported_carts)
+                                     supported_carts=self.tracks[i - 1].supported_carts,
+                                     train_route_sections=train_route_sections,
+                                     train_route_sections_positions=train_route_sections_positions)
                     self.logger.info('track {} {} train route created'.format(i, self.c['direction']['right']))
 
-                    base_routes_in_train_route = [
+                    train_route_sections = [
                         self.base_routes[i]['{}_platform_base_route'
-                            .format(self.c['train_route_types']['exit_train_route'][self.c['direction']['left']])],
+                            .format(self.c['train_route_types']['exit_train_route'][self.c['direction']['left']])], ]
+                    train_route_sections.extend(
+                        self.base_routes[i]['{}_base_route'
+                            .format(self.c['train_route_types']['exit_train_route'][self.c['direction']['left']])]
+                            .junctions)
+                    train_route_sections.extend([
                         self.base_routes[i]['{}_base_route'
                             .format(self.c['train_route_types']['exit_train_route'][self.c['direction']['left']])],
                         self.base_routes[0]['{}_base_route'
-                            .format(self.c['train_route_types']['exit_train_route'][self.c['direction']['left']])]]
+                            .format(self.c['train_route_types']['exit_train_route'][self.c['direction']['left']])]])
+                    train_route_sections_positions = [0, ]
+                    train_route_sections_positions.extend(
+                        self.base_routes[i]['{}_base_route'
+                            .format(self.c['train_route_types']['exit_train_route'][self.c['direction']['left']])]
+                            .junction_position)
+                    train_route_sections_positions.extend([0, 0])
 
                     self.train_routes[i][self.c['train_route_types']['exit_train_route'][
                         self.c['direction']['left']]] \
-                        = TrainRoute(base_routes=base_routes_in_train_route,
-                                     track_number=i,
+                        = TrainRoute(track_number=i,
                                      route_type=self.c['train_route_types']['exit_train_route'][
                                          self.c['direction']['left']],
-                                     supported_carts=self.tracks[i - 1].supported_carts)
+                                     supported_carts=self.tracks[i - 1].supported_carts,
+                                     train_route_sections=train_route_sections,
+                                     train_route_sections_positions=train_route_sections_positions)
                     self.logger.info('track {} {} train route created'.format(i, self.c['direction']['left']))
 
             if i in (22, 24, 26, 28, 30, 32):
-                base_routes_in_train_route = [
+                train_route_sections = [
                     self.base_routes[100]['{}_base_route'
-                        .format(self.c['train_route_types']['entry_train_route'][self.c['direction']['right_side']])],
+                        .format(self.c['train_route_types']['entry_train_route'][self.c['direction']['right_side']])], ]
+                train_route_sections.extend(
+                    self.base_routes[i]['{}_base_route'
+                        .format(self.c['train_route_types']['entry_train_route'][self.c['direction']['right_side']])]
+                        .junctions)
+                train_route_sections.extend([
                     self.base_routes[i]['{}_base_route'
                         .format(self.c['train_route_types']['entry_train_route'][self.c['direction']['right_side']])],
                     self.base_routes[i]['{}_platform_base_route'
-                        .format(self.c['train_route_types']['entry_train_route'][self.c['direction']['right']])]]
+                        .format(self.c['train_route_types']['entry_train_route'][self.c['direction']['right']])]])
+                train_route_sections_positions = [0, ]
+                train_route_sections_positions.extend(
+                    self.base_routes[i]['{}_base_route'
+                        .format(self.c['train_route_types']['entry_train_route'][self.c['direction']['right_side']])]
+                        .junction_position)
+                train_route_sections_positions.extend([0, 0])
 
                 self.train_routes[i][self.c['train_route_types']['entry_train_route'][
                     self.c['direction']['right_side']]] \
-                    = TrainRoute(base_routes=base_routes_in_train_route,
-                                 track_number=i,
+                    = TrainRoute(track_number=i,
                                  route_type=self.c['train_route_types']['entry_train_route'][
                                      self.c['direction']['right_side']],
-                                 supported_carts=self.tracks[i - 1].supported_carts)
+                                 supported_carts=self.tracks[i - 1].supported_carts,
+                                 train_route_sections=train_route_sections,
+                                 train_route_sections_positions=train_route_sections_positions)
                 self.logger.info('track {} {} train route created'.format(i, self.c['direction']['right_side']))
 
-                base_routes_in_train_route = [
+                train_route_sections = [
                     self.base_routes[i]['{}_platform_base_route'
-                        .format(self.c['train_route_types']['exit_train_route'][self.c['direction']['left']])],
+                        .format(self.c['train_route_types']['exit_train_route'][self.c['direction']['left']])], ]
+                train_route_sections.extend(
+                    self.base_routes[i]['{}_base_route'
+                        .format(self.c['train_route_types']['exit_train_route'][self.c['direction']['left_side']])]
+                        .junctions)
+                train_route_sections.extend([
                     self.base_routes[i]['{}_base_route'
                         .format(self.c['train_route_types']['exit_train_route'][self.c['direction']['left_side']])],
                     self.base_routes[100]['{}_base_route'
-                        .format(self.c['train_route_types']['exit_train_route'][self.c['direction']['left_side']])]]
+                        .format(self.c['train_route_types']['exit_train_route'][self.c['direction']['left_side']])]])
+                train_route_sections_positions = [0, ]
+                train_route_sections_positions.extend(
+                    self.base_routes[i]['{}_base_route'
+                        .format(self.c['train_route_types']['exit_train_route'][self.c['direction']['left_side']])]
+                        .junction_position)
+                train_route_sections_positions.extend([0, 0])
 
                 self.train_routes[i][self.c['train_route_types']['exit_train_route'][
                     self.c['direction']['left_side']]] \
-                    = TrainRoute(base_routes=base_routes_in_train_route,
-                                 track_number=i,
+                    = TrainRoute(track_number=i,
                                  route_type=self.c['train_route_types']['exit_train_route'][
                                      self.c['direction']['left_side']],
-                                 supported_carts=self.tracks[i - 1].supported_carts)
+                                 supported_carts=self.tracks[i - 1].supported_carts,
+                                 train_route_sections=train_route_sections,
+                                 train_route_sections_positions=train_route_sections_positions)
                 self.logger.info('track {} {} train route created'.format(i, self.c['direction']['left_side']))
                 if i >= 26:
-                    base_routes_in_train_route = [
+                    train_route_sections = [
                         self.base_routes[0]['{}_base_route'
-                            .format(self.c['train_route_types']['entry_train_route'][self.c['direction']['left']])],
+                            .format(self.c['train_route_types']['entry_train_route'][self.c['direction']['left']])], ]
+                    train_route_sections.extend(
+                        self.base_routes[i]['{}_base_route'
+                            .format(self.c['train_route_types']['entry_train_route'][self.c['direction']['left']])]
+                            .junctions)
+                    train_route_sections.extend([
                         self.base_routes[i]['{}_base_route'
                             .format(self.c['train_route_types']['entry_train_route'][self.c['direction']['left']])],
                         self.base_routes[i]['{}_platform_base_route'
-                            .format(self.c['train_route_types']['entry_train_route'][self.c['direction']['left']])]]
+                            .format(self.c['train_route_types']['entry_train_route'][self.c['direction']['left']])]])
+                    train_route_sections_positions = [0, ]
+                    train_route_sections_positions.extend(
+                        self.base_routes[i]['{}_base_route'
+                            .format(self.c['train_route_types']['entry_train_route'][self.c['direction']['left']])]
+                            .junction_position)
+                    train_route_sections_positions.extend([0, 0])
 
                     self.train_routes[i][self.c['train_route_types']['entry_train_route'][
                         self.c['direction']['left']]] \
-                        = TrainRoute(base_routes=base_routes_in_train_route,
-                                     track_number=i,
+                        = TrainRoute(track_number=i,
                                      route_type=self.c['train_route_types']['entry_train_route'][
                                          self.c['direction']['left']],
-                                     supported_carts=self.tracks[i - 1].supported_carts)
+                                     supported_carts=self.tracks[i - 1].supported_carts,
+                                     train_route_sections=train_route_sections,
+                                     train_route_sections_positions=train_route_sections_positions)
                     self.logger.info('track {} {} train route created'.format(i, self.c['direction']['left']))
 
-                    base_routes_in_train_route = [
+                    train_route_sections = [
                         self.base_routes[i]['{}_platform_base_route'
-                            .format(self.c['train_route_types']['exit_train_route'][self.c['direction']['right']])],
+                            .format(self.c['train_route_types']['exit_train_route'][self.c['direction']['right']])], ]
+                    train_route_sections.extend(
+                        self.base_routes[i]['{}_base_route'
+                            .format(self.c['train_route_types']['exit_train_route'][self.c['direction']['right']])]
+                            .junctions)
+                    train_route_sections.extend([
                         self.base_routes[i]['{}_base_route'
                             .format(self.c['train_route_types']['exit_train_route'][self.c['direction']['right']])],
                         self.base_routes[0]['{}_base_route'
-                            .format(self.c['train_route_types']['exit_train_route'][self.c['direction']['right']])]]
+                            .format(self.c['train_route_types']['exit_train_route'][self.c['direction']['right']])]])
+                    train_route_sections_positions = [0, ]
+                    train_route_sections_positions.extend(
+                        self.base_routes[i]['{}_base_route'
+                            .format(self.c['train_route_types']['exit_train_route'][self.c['direction']['right']])]
+                            .junction_position)
+                    train_route_sections_positions.extend([0, 0])
 
                     self.train_routes[i][self.c['train_route_types']['exit_train_route'][
                         self.c['direction']['right']]] \
-                        = TrainRoute(base_routes=base_routes_in_train_route,
-                                     track_number=i,
+                        = TrainRoute(track_number=i,
                                      route_type=self.c['train_route_types']['exit_train_route'][
                                          self.c['direction']['right']],
-                                     supported_carts=self.tracks[i - 1].supported_carts)
+                                     supported_carts=self.tracks[i - 1].supported_carts,
+                                     train_route_sections=train_route_sections,
+                                     train_route_sections_positions=train_route_sections_positions)
                     self.logger.info('track {} {} train route created'.format(i, self.c['direction']['right']))
 
         for i in range(100):
             self.train_routes.append({})
 
-        base_routes_in_train_route \
+        train_route_sections \
             = [self.base_routes[100][
-                   '{}_base_route'
-                   .format(self.c['train_route_types']['entry_train_route'][self.c['direction']['left_side']])], ]
+                '{}_base_route'
+                .format(self.c['train_route_types']['entry_train_route'][self.c['direction']['left_side']])], ]
+        train_route_sections_positions = [0, ]
         self.train_routes[100][self.c['train_route_types']['approaching_train_route'][
             self.c['direction']['left_side']]] \
-            = TrainRoute(base_routes=base_routes_in_train_route,
-                         track_number=100,
+            = TrainRoute(track_number=100,
                          route_type=self.c['train_route_types']['approaching_train_route'][
                              self.c['direction']['left_side']],
-                         supported_carts=[0, 20]
-                         )
-        base_routes_in_train_route \
+                         supported_carts=[0, 20], train_route_sections=train_route_sections,
+                         train_route_sections_positions=train_route_sections_positions)
+
+        train_route_sections \
             = [self.base_routes[100][
                    '{}_base_route'
                    .format(self.c['train_route_types']['entry_train_route'][self.c['direction']['right_side']])], ]
+        train_route_sections_positions = [0, ]
         self.train_routes[100][self.c['train_route_types']['approaching_train_route'][
             self.c['direction']['right_side']]] \
-            = TrainRoute(base_routes=base_routes_in_train_route,
-                         track_number=100,
+            = TrainRoute(track_number=100,
                          route_type=self.c['train_route_types']['approaching_train_route'][
                              self.c['direction']['right_side']],
-                         supported_carts=[0, 20]
-                         )
+                         supported_carts=[0, 20], train_route_sections=train_route_sections,
+                         train_route_sections_positions=train_route_sections_positions)
 
         self.logger.info('tracks and train routes created')
         # ------ SORT THIS OUT ------
