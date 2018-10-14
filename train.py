@@ -516,11 +516,11 @@ class Train(GameObject):
                 angle = 180 + math.atan2(point_one, point_two) * float(180) / math.pi
 
             self.logger.debug('angle: {}'.format(angle))
-            self.cart_sprites[cart_number].rotation = (-1) * angle
+            self.cart_sprites[cart_number].rotation = angle
             self.logger.debug('rotated cart')
 
         self.cart_sprites[cart_number].position = (base_offset[0] + x,
-                                                   base_offset[1] + self.c['graphics']['map_resolution'][1] - y - 1)
+                                                   base_offset[1] + y)
         self.logger.debug('cart position = {}'.format(self.cart_sprites[cart_number].position))
         if self.cart_sprites[cart_number].visible \
                 and (self.cart_sprites[cart_number].x
@@ -542,7 +542,7 @@ class Train(GameObject):
         x = (self.carts_position_abs[cart_number][0][0] + self.carts_position_abs[cart_number][1][0]) // 2
         y = self.carts_position_abs[cart_number][0][1]
         self.cart_sprites[cart_number].position = (base_offset[0] + x,
-                                                   base_offset[1] + self.c['graphics']['map_resolution'][1] - y - 1)
+                                                   base_offset[1] + y)
         if self.cart_sprites[cart_number].visible \
                 and (self.cart_sprites[cart_number].x
                      not in range(-150, self.c['graphics']['screen_resolution'][0] + 150)
