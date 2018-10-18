@@ -163,20 +163,9 @@ class TrainRoute(GameObject):
         self.opened = False
         self.logger.debug('train route opened is set to False')
         self.current_checkpoint = 0
-        for i in range(len(self.train_route_sections)):
-            if type(self.train_route_sections[i]) == BaseRoute:
-                self.train_route_sections[i].route_config['force_busy'] = False
-                self.train_route_sections[i].route_config['opened'] = False
-                self.train_route_sections[i].update_base_route_state()
-            elif type(self.train_route_sections[i]) == RailroadSwitch:
-                self.train_route_sections[i].force_busy = False
-                self.train_route_sections[i].update(False)
-                self.train_route_sections[i].dependency.update(False)
-            elif type(self.train_route_sections[i]) == Crossover:
-                self.train_route_sections[i].force_busy[
-                    self.train_route_sections_positions[i][0]][self.train_route_sections_positions[i][1]] = False
-                self.train_route_sections[i].update(False)
-                self.train_route_sections[i].dependency.update(False)
+        self.train_route_sections[-1].route_config['force_busy'] = False
+        self.train_route_sections[-1].route_config['opened'] = False
+        self.train_route_sections[-1].update_base_route_state()
 
     @_game_is_not_paused
     def update_train_route_sections(self, game_paused, last_cart_position):

@@ -5,10 +5,6 @@ import logging
 from operator import attrgetter
 
 import pyglet
-import win32api
-import win32con
-import win32gui
-import win32process
 
 from game_object import GameObject
 from train import Train
@@ -594,7 +590,7 @@ class Dispatcher(GameObject):
         self.logger.debug('------- END CREATING NEW TRAINS -------')
 
     def update_sprite(self, base_offset):
+        self.logger.critical('number of trains: {}'.format(len(self.trains)))
         for i in self.trains:
             if i.train_id in self.train_ids:
-                # win32process.beginthreadex(None, 0, i.update_sprite, (base_offset, ), 0)
                 i.update_sprite(base_offset)
