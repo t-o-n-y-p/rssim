@@ -39,7 +39,7 @@ os.environ['TCL_LIBRARY'] = r'C:\Users\1\AppData\Local\Programs\Python\Python37-
 os.environ['TK_LIBRARY'] = r'C:\Users\1\AppData\Local\Programs\Python\Python37-32\tcl\tk8.6'
 
 setup(name='Railway Station Simulator',
-      version='0.5.0',
+      version='0.8.0',
       description='Railway Station Simulator',
       executables=executables,
       options=options)
