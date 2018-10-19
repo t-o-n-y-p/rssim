@@ -363,7 +363,6 @@ class Train(GameObject):
         # in both cases, we use pivot points of both chassis,
         # calculate middle point and axis,
         # but for relative position we need to convert it to absolute positions
-        time_1 = time.perf_counter()
         self.logger.debug('------- START DRAWING -------')
         if len(self.carts_position_abs) > 0:
             self.logger.debug('using absolute positions')
@@ -407,8 +406,6 @@ class Train(GameObject):
                                        batch=self.batch, group=self.boarding_lights_group)
             self.boarding_lights_sprite.visible = False
 
-        time_2 = time.perf_counter()
-        self.logger.critical('updating sprites: {} sec'.format(time_2 - time_1))
         self.logger.debug('------- END DRAWING -------')
         self.logger.info('train is in place')
 
