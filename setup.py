@@ -1,5 +1,6 @@
 from cx_Freeze import setup, Executable
 import os
+import sys
 
 executables = [Executable('rssim.py',
                           targetName='rssim.exe',
@@ -35,8 +36,8 @@ options = {
     }
 }
 
-os.environ['TCL_LIBRARY'] = r'C:\Users\1\AppData\Local\Programs\Python\Python37-32\tcl\tcl8.6'
-os.environ['TK_LIBRARY'] = r'C:\Users\1\AppData\Local\Programs\Python\Python37-32\tcl\tk8.6'
+os.environ['TCL_LIBRARY'] = r'{}\tcl\tcl8.6'.format(sys.exec_prefix)
+os.environ['TK_LIBRARY'] = r'{}\tcl\tk8.6'.format(sys.exec_prefix)
 
 setup(name='Railway Station Simulator',
       version='0.8.1',
