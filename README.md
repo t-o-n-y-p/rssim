@@ -14,3 +14,8 @@ cx_Freeze 5.1.1 with py3.7 fix
 
 -------------------------------------------
 
+New in this build:
+- fixed incorrect drawing for signals
+- optimized train route config
+- fixed game save
+- minor fixes
