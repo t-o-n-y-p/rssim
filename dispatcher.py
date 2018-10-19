@@ -229,10 +229,9 @@ class Dispatcher(GameObject):
                     saved_train.carts_position = []
                     self.logger.debug('carts_position is empty: in this case carts_position_abs must not be empty')
                 else:
-                    carts_position_parsed = train_config['user_data']['carts_position'].split('|')
+                    carts_position_parsed = train_config['user_data']['carts_position'].split(',')
                     for j in range(len(carts_position_parsed)):
-                        carts_position_parsed[j] = carts_position_parsed[j].split(',')
-                        carts_position_parsed[j] = [int(carts_position_parsed[j][0]), int(carts_position_parsed[j][1])]
+                        carts_position_parsed[j] = int(carts_position_parsed[j])
 
                     saved_train.carts_position = carts_position_parsed
                     self.logger.debug('carts_position: {}'.format(saved_train.carts_position))
@@ -245,20 +244,9 @@ class Dispatcher(GameObject):
                     for j in range(len(carts_position_abs_parsed)):
                         carts_position_abs_parsed[j] = carts_position_abs_parsed[j].split(',')
                         for k in range(len(carts_position_abs_parsed[j])):
-                            carts_position_abs_parsed[j][k] = carts_position_abs_parsed[j][k].split('-')
-                            carts_position_abs_parsed[j][k] = (int(carts_position_abs_parsed[j][k][0]),
-                                                               int(carts_position_abs_parsed[j][k][1]))
+                            carts_position_abs_parsed[j][k] = int(carts_position_abs_parsed[j][k])
 
                     saved_train.carts_position_abs = carts_position_abs_parsed
-                    for w in range(len(saved_train.carts_position_abs)):
-                        point_two = float(saved_train.carts_position_abs[w][0][0]
-                                          - saved_train.carts_position_abs[w][1][0])
-                        if round(point_two, 0) > 0:
-                            self.logger.debug('no need to flip')
-                        else:
-                            saved_train.cart_sprites[w].rotation = 180.0
-                            self.logger.debug('flipped cart image to match direction')
-
                     self.logger.debug('carts_position_abs: {}'.format(saved_train.carts_position_abs))
 
                 saved_train.config = train_config
@@ -306,6 +294,9 @@ class Dispatcher(GameObject):
 
         self.logger.debug('------- END SAVING STATE -------')
         self.logger.info('dispatcher state saved to file user_cfg/dispatcher/config.ini')
+
+        for i in self.signals:
+            i.save_state()
 
         for i in self.trains:
             i.save_state()

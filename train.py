@@ -160,7 +160,7 @@ class Train(GameObject):
         else:
             combined_string = ''
             for i in self.carts_position:
-                combined_string += '{},{}|'.format(i[0], i[1])
+                combined_string += '{},'.format(i)
 
             combined_string = combined_string[0:len(combined_string) - 1]
             self.config['user_data']['carts_position'] = combined_string
@@ -172,11 +172,7 @@ class Train(GameObject):
         else:
             combined_string = ''
             for i in self.carts_position_abs:
-                for j in i:
-                    combined_string += '{}-{},'.format(j[0], j[1])
-
-                combined_string = combined_string[0:len(combined_string) - 1]
-                combined_string += '|'
+                combined_string += '{},{}|'.format(i[0], i[1])
 
             combined_string = combined_string[0:len(combined_string) - 1]
             self.config['user_data']['carts_position_abs'] = combined_string

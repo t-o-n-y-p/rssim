@@ -2326,6 +2326,16 @@ class RSSim(Game):
             for i in self.objects:
                 i.save_state()
 
+            for x in range(len(self.base_routes)):
+                for y in self.base_routes[x]:
+                    if self.base_routes[x][y] is not None:
+                        self.base_routes[x][y].save_state()
+
+            for u in self.junctions:
+                for v in self.junctions[u]:
+                    for w in self.junctions[u][v]:
+                        self.junctions[u][v][w].save_state()
+
             self.saved_onboarding_tip.condition_met = True
             self.logger.critical('------- GAME SAVE END -------')
 
