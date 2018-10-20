@@ -45,7 +45,7 @@ class Train(GameObject):
         # not accelerating and not decelerating
         self.speed = self.c['train_config']['train_maximum_speed']
         self.logger.debug('set maximum speed: {}'.format(self.c['train_config']['train_maximum_speed']))
-        self.speed_state = self.c['train_speed_state_types']['move']
+        self.speed_state = 'move'
         self.logger.debug('set speed_state: {}'.format(self.speed_state))
         # train_acceleration_factor tuple includes absolute shifts
         # for acceleration and deceleration (in reversed order);
@@ -283,37 +283,38 @@ class Train(GameObject):
             # if train has reached red signal, stop it
             self.logger.debug('first cart position: {}'.format(self.carts_position[0]))
             if self.carts_position[0] == self.stop_point:
-                self.speed_state = self.c['train_speed_state_types']['stop']
+                self.speed_state = 'stop'
                 self.logger.debug('train reached red signal, speed state = {}'.format(self.speed_state))
             # if it is time to decelerate train, do this;
             elif self.stop_point - self.carts_position[0] \
                     <= self.c['train_config']['train_acceleration_factor'][self.speed_factor_position]:
-                self.speed_state = self.c['train_speed_state_types']['decelerate']
+                self.speed_state = 'decelerate'
                 self.logger.debug('distance less than {}, time to decelerate, speed state = {}'
-                                  .format(self.c['train_config']['train_braking_distance'],
-                                          self.c['train_speed_state_types']['decelerate']))
+                                  .format(self.c['train_config']['train_acceleration_factor'][
+                                                                                self.speed_factor_position],
+                                          'decelerate'))
             # if there is some free track space ahead and train is not at maximum speed,
             # accelerate
             else:
                 self.logger.debug('free way ahead')
-                if self.speed_state != self.c['train_speed_state_types']['move']:
-                    self.speed_state = self.c['train_speed_state_types']['accelerate']
+                if self.speed_state != 'move':
+                    self.speed_state = 'accelerate'
                     self.logger.debug('not at maximum speed, accelerating, speed state = {}'
                                       .format(self.speed_state))
                 else:
                     self.logger.debug('already at maximum speed, speed state = {}'
-                                      .format(self.c['train_speed_state_types']['move']))
+                                      .format('move'))
 
             # how to accelerate:
             # difference between next and current shifts indicates how much to move the train;
             # then increase factor position
             self.logger.debug('speed state: {}'.format(self.speed_state))
-            if self.speed_state == self.c['train_speed_state_types']['accelerate']:
+            if self.speed_state == 'accelerate':
                 self.logger.debug('speed_factor_position: {}'.format(self.speed_factor_position))
                 self.logger.debug('speed_factor_position limit: {}'
                                   .format(self.c['train_config']['train_acceleration_factor_length']))
                 if self.speed_factor_position == self.c['train_config']['train_acceleration_factor_length'] - 1:
-                    self.speed_state = self.c['train_speed_state_types']['move']
+                    self.speed_state = 'move'
                     self.logger.debug('train has reached maximum speed')
                 else:
                     self.speed \
@@ -324,7 +325,7 @@ class Train(GameObject):
                     self.logger.debug('new speed_factor_position: {}'.format(self.speed_factor_position))
 
             # just stay at maximum speed here
-            if self.speed_state == self.c['train_speed_state_types']['move']:
+            if self.speed_state == 'move':
                 self.logger.debug('train is at maximum speed')
                 self.speed = self.c['train_config']['train_maximum_speed']
                 self.logger.debug('speed: {}'.format(self.speed))
@@ -332,7 +333,7 @@ class Train(GameObject):
             # how to decelerate:
             # decrease factor position;
             # difference between next and current shifts indicates how much to move the train
-            if self.speed_state == self.c['train_speed_state_types']['decelerate']:
+            if self.speed_state == 'decelerate':
                 self.speed_factor_position -= 1
                 self.logger.debug('speed_factor_position: {}'.format(self.speed_factor_position))
                 self.logger.debug('speed_factor_position limit: {}'
@@ -343,7 +344,7 @@ class Train(GameObject):
                 self.logger.debug('speed: {}'.format(self.speed))
 
             # just stay sill here
-            if self.speed_state == self.c['train_speed_state_types']['stop']:
+            if self.speed_state == 'stop':
                 self.speed = 0
                 self.logger.debug('speed = 0')
                 self.speed_factor_position = 0

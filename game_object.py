@@ -82,8 +82,6 @@ class GameObject:
         self.c['train_config']['train_acceleration_factor_length'] \
             = self.game_config['train_config'].getint('train_acceleration_factor_length')
         self.c['train_config']['train_maximum_speed'] = self.game_config['train_config'].getint('train_maximum_speed')
-        self.c['train_config']['train_braking_distance'] \
-            = self.game_config['train_config'].getint('train_braking_distance')
 
         self.c['train_state_types'] = {}
         self.c['train_state_types']['pass_through'] = self.game_config['train_state_types']['pass_through']
@@ -94,12 +92,6 @@ class GameObject:
         self.c['train_state_types']['boarding_in_progress'] \
             = self.game_config['train_state_types']['boarding_in_progress']
         self.c['train_state_types']['boarding_complete'] = self.game_config['train_state_types']['boarding_complete']
-
-        self.c['train_speed_state_types'] = {}
-        self.c['train_speed_state_types']['move'] = self.game_config['train_speed_state_types']['move']
-        self.c['train_speed_state_types']['accelerate'] = self.game_config['train_speed_state_types']['accelerate']
-        self.c['train_speed_state_types']['decelerate'] = self.game_config['train_speed_state_types']['decelerate']
-        self.c['train_speed_state_types']['stop'] = self.game_config['train_speed_state_types']['stop']
 
         self.c['dispatcher_config'] = {}
         self.c['dispatcher_config']['tracks_ready'] = self.game_config['dispatcher_config'].getint('tracks_ready')
