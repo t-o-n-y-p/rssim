@@ -34,15 +34,13 @@ class Signal(GameObject):
         self.logger.debug('params set: track number {}, route type {}, placement {}, flip_needed {}'
                           .format(self.track_number, self.route_type, self.placement, self.flip_needed))
         # initialize signal state
-        self.state = None
-        self.image = {self.c['signal_config']['red_signal']:
-                      pyglet.image.load(self.c['signal_image_path'][self.c['signal_config']['red_signal']]),
-                      self.c['signal_config']['green_signal']:
-                      pyglet.image.load(self.c['signal_image_path'][self.c['signal_config']['green_signal']])}
-        self.image[self.c['signal_config']['red_signal']].anchor_x = 5
-        self.image[self.c['signal_config']['red_signal']].anchor_y = 5
-        self.image[self.c['signal_config']['green_signal']].anchor_x = 5
-        self.image[self.c['signal_config']['green_signal']].anchor_y = 5
+        self.state = 'red_signal'
+        self.image = {'red_signal': pyglet.image.load('img/signal_red.png'),
+                      'green_signal': pyglet.image.load('img/signal_green.png')}
+        self.image['red_signal'].anchor_x = 5
+        self.image['red_signal'].anchor_y = 5
+        self.image['green_signal'].anchor_x = 5
+        self.image['green_signal'].anchor_y = 5
 
         self.base_route_opened_list = []
         self.base_route_exit = None
@@ -120,8 +118,8 @@ class Signal(GameObject):
 
         if not self.base_route_exit.route_config['opened']:
             self.priority = 0
-            if self.state == self.c['signal_config']['green_signal']:
-                self.state = self.c['signal_config']['red_signal']
+            if self.state == 'green_signal':
+                self.state = 'red_signal'
                 self.sprite.image = self.image[self.state]
                 if self.flip_needed:
                     self.sprite.rotation = 180.0
@@ -134,8 +132,8 @@ class Signal(GameObject):
                     opened_by.append(i.route_config['last_opened_by'])
 
             if self.base_route_exit.route_config['last_opened_by'] not in opened_by:
-                if self.state == self.c['signal_config']['green_signal']:
-                    self.state = self.c['signal_config']['red_signal']
+                if self.state == 'green_signal':
+                    self.state = 'red_signal'
                     self.sprite.image = self.image[self.state]
                     if self.flip_needed:
                         self.sprite.rotation = 180.0
@@ -152,16 +150,16 @@ class Signal(GameObject):
                 self.logger.debug('approaching train: {}'.format(self.base_route_exit.route_config['last_opened_by']))
                 self.logger.debug('its route is busy by train: {}'.format(entered_by))
                 if busy_logical and self.base_route_exit.route_config['last_opened_by'] not in entered_by:
-                    if self.state == self.c['signal_config']['green_signal']:
-                        self.state = self.c['signal_config']['red_signal']
+                    if self.state == 'green_signal':
+                        self.state = 'red_signal'
                         self.sprite.image = self.image[self.state]
                         if self.flip_needed:
                             self.sprite.rotation = 180.0
 
                     self.logger.debug('route through signal is opened but busy by another train, signal is RED')
                 else:
-                    if self.state == self.c['signal_config']['red_signal']:
-                        self.state = self.c['signal_config']['green_signal']
+                    if self.state == 'red_signal':
+                        self.state = 'green_signal'
                         self.sprite.image = self.image[self.state]
                         if self.flip_needed:
                             self.sprite.rotation = 180.0

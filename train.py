@@ -272,7 +272,7 @@ class Train(GameObject):
             self.logger.debug('track_number: {}'.format(self.track_number))
 
             # stop point is updated based on signal state
-            if self.train_route.signal.state == self.c['signal_config']['red_signal'] \
+            if self.train_route.signal.state == 'red_signal' \
                     and self.carts_position[0] <= self.train_route.stop_point_v2[self.carts]:
                 self.stop_point = self.train_route.stop_point_v2[self.carts]
             else:

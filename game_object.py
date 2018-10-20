@@ -61,17 +61,6 @@ class GameObject:
         self.c['train_route_types']['approaching_train_route'] \
             = self.game_config['train_route_types']['approaching_train_route'].split(',')
 
-        self.c['signal_config'] = {}
-        self.c['signal_config']['red_signal'] = self.game_config['signal_config']['red_signal']
-        self.c['signal_config']['green_signal'] = self.game_config['signal_config']['green_signal']
-        self.c['signal_config']['signal_image_base_path'] = self.game_config['signal_config']['signal_image_base_path']
-
-        self.c['signal_image_path'] = {}
-        self.c['signal_image_path'][self.c['signal_config']['red_signal']] \
-            = self.game_config['signal_image_path']['red_signal']
-        self.c['signal_image_path'][self.c['signal_config']['green_signal']] \
-            = self.game_config['signal_image_path']['green_signal']
-
         self.c['train_config'] = {}
         self.c['train_config']['train_cart_image_path'] = self.game_config['train_config']['train_cart_image_path']
         train_acceleration_factor = self.game_config['train_config']['train_acceleration_factor'].split(',')
