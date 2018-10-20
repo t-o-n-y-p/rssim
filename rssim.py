@@ -60,10 +60,7 @@ class RSSim(Game):
         self.logger.debug('------- START CREATING INFRASTRUCTURE -------')
         # ------ BASE ROUTES AND SIGNALS ------
         # create main entry and main exit base routes and signals for them
-        for j in (self.c['base_route_types']['left_entry_base_route'],
-                  self.c['base_route_types']['left_exit_base_route'],
-                  self.c['base_route_types']['right_entry_base_route'],
-                  self.c['base_route_types']['right_exit_base_route']):
+        for j in ('left_entry_base_route', 'left_exit_base_route', 'right_entry_base_route', 'right_exit_base_route'):
             self.base_routes[0][j] = BaseRoute(track_number=0, route_type=j)
             placement = self.base_routes[0][j].route_config['exit_signal_placement']
             self.logger.debug('placement = {}'.format(placement))
@@ -75,8 +72,7 @@ class RSSim(Game):
                                             batch=self.batch, signal_group=self.signals_and_trains_ordered_group)
 
         self.logger.info('track 0 base routes and signals created')
-        for j in (self.c['base_route_types']['left_entry_base_route'],
-                  self.c['base_route_types']['right_entry_base_route']):
+        for j in ('left_entry_base_route', 'right_entry_base_route'):
             # associate main entry/exit base route with its signal
             self.base_routes[0][j].route_config['exit_signal'] = self.signals[0][j]
             self.logger.debug('base route {} {} exit signal now is signal {} {}'
@@ -92,48 +88,34 @@ class RSSim(Game):
             self.base_routes.append({})
             self.signals.append({})
             if i <= 20:
-                for k in (self.c['base_route_types']['left_entry_base_route'],
-                          self.c['base_route_types']['left_exit_base_route'],
-                          self.c['base_route_types']['right_entry_base_route'],
-                          self.c['base_route_types']['right_exit_base_route']):
+                for k in ('left_entry_base_route', 'left_exit_base_route',
+                          'right_entry_base_route', 'right_exit_base_route'):
                     self.base_routes[i][k] = BaseRoute(track_number=i, route_type=k)
 
             if i in (21, 23):
-                for k in (self.c['base_route_types']['left_entry_base_route'],
-                          self.c['base_route_types']['left_exit_base_route'],
-                          self.c['base_route_types']['left_side_entry_base_route'],
-                          self.c['base_route_types']['left_side_exit_base_route'],
-                          self.c['base_route_types']['right_entry_base_route'],
-                          self.c['base_route_types']['right_exit_base_route']):
+                for k in ('left_entry_base_route', 'left_exit_base_route',
+                          'left_side_entry_base_route', 'left_side_exit_base_route',
+                          'right_entry_base_route', 'right_exit_base_route'):
                     self.base_routes[i][k] = BaseRoute(track_number=i, route_type=k)
 
             if i in (22, 24):
-                for k in (self.c['base_route_types']['left_entry_base_route'],
-                          self.c['base_route_types']['left_exit_base_route'],
-                          self.c['base_route_types']['right_side_entry_base_route'],
-                          self.c['base_route_types']['right_side_exit_base_route'],
-                          self.c['base_route_types']['right_entry_base_route'],
-                          self.c['base_route_types']['right_exit_base_route']):
+                for k in ('left_entry_base_route', 'left_exit_base_route',
+                          'right_side_entry_base_route', 'right_side_exit_base_route',
+                          'right_entry_base_route', 'right_exit_base_route'):
                     self.base_routes[i][k] = BaseRoute(track_number=i, route_type=k)
 
             if i >= 25:
                 if i % 2 == 1:
-                    for k in (self.c['base_route_types']['left_side_entry_base_route'],
-                              self.c['base_route_types']['left_side_exit_base_route'],
-                              self.c['base_route_types']['right_entry_base_route'],
-                              self.c['base_route_types']['right_exit_base_route']):
+                    for k in ('left_side_entry_base_route', 'left_side_exit_base_route',
+                              'right_entry_base_route', 'right_exit_base_route'):
                         self.base_routes[i][k] = BaseRoute(track_number=i, route_type=k)
                 else:
-                    for k in (self.c['base_route_types']['left_entry_base_route'],
-                              self.c['base_route_types']['left_exit_base_route'],
-                              self.c['base_route_types']['right_side_entry_base_route'],
-                              self.c['base_route_types']['right_side_exit_base_route']):
+                    for k in ('left_entry_base_route', 'left_exit_base_route',
+                              'right_side_entry_base_route', 'right_side_exit_base_route'):
                         self.base_routes[i][k] = BaseRoute(track_number=i, route_type=k)
 
-            for k in (self.c['base_route_types']['left_entry_platform_base_route'],
-                      self.c['base_route_types']['left_exit_platform_base_route'],
-                      self.c['base_route_types']['right_entry_platform_base_route'],
-                      self.c['base_route_types']['right_exit_platform_base_route']):
+            for k in ('left_entry_platform_base_route', 'left_exit_platform_base_route',
+                      'right_entry_platform_base_route', 'right_exit_platform_base_route'):
                 self.base_routes[i][k] = BaseRoute(track_number=i, route_type=k)
                 placement = self.base_routes[i][k].route_config['exit_signal_placement']
                 self.logger.debug('placement = {}'.format(placement))
@@ -150,10 +132,8 @@ class RSSim(Game):
             self.base_routes.append({})
             self.signals.append({})
 
-        for j in (self.c['base_route_types']['left_side_entry_base_route'],
-                  self.c['base_route_types']['left_side_exit_base_route'],
-                  self.c['base_route_types']['right_side_entry_base_route'],
-                  self.c['base_route_types']['right_side_exit_base_route']):
+        for j in ('left_side_entry_base_route', 'left_side_exit_base_route',
+                  'right_side_entry_base_route', 'right_side_exit_base_route'):
             self.base_routes[100][j] = BaseRoute(track_number=100, route_type=j)
             placement = self.base_routes[100][j].route_config['exit_signal_placement']
             self.logger.debug('placement = {}'.format(placement))
@@ -164,8 +144,7 @@ class RSSim(Game):
                                               track_number=100, route_type=j,
                                               batch=self.batch, signal_group=self.signals_and_trains_ordered_group)
 
-        for j in (self.c['base_route_types']['left_side_entry_base_route'],
-                  self.c['base_route_types']['right_side_entry_base_route']):
+        for j in ('left_side_entry_base_route', 'right_side_entry_base_route'):
             # associate main entry/exit base route with its signal
             self.base_routes[100][j].route_config['exit_signal'] = self.signals[100][j]
             self.logger.debug('base route {} {} exit signal now is signal {} {}'
@@ -183,45 +162,15 @@ class RSSim(Game):
 
         for i in range(1, self.c['dispatcher_config']['tracks_ready'] + 1):
             # associate platform base route with its signal
-            self.base_routes[i][
-                self.c['base_route_types']['right_exit_platform_base_route']
-            ].route_config['exit_signal'] \
-                = self.signals[i][self.c['base_route_types']['right_exit_platform_base_route']]
-            self.logger.debug('base route {} {} signal is signal {} {}'
-                              .format(i, self.c['base_route_types']['right_exit_platform_base_route'],
-                                      i, self.c['base_route_types']['right_exit_platform_base_route']))
-            self.base_routes[i][
-                self.c['base_route_types']['left_entry_platform_base_route']
-            ].route_config['exit_signal'] \
-                = self.signals[i][self.c['base_route_types']['right_exit_platform_base_route']]
-            self.logger.debug('base route {} {} signal is signal {} {}'
-                              .format(i, self.c['base_route_types']['left_entry_platform_base_route'],
-                                      i, self.c['base_route_types']['right_exit_platform_base_route']))
-            self.base_routes[i][
-                self.c['base_route_types']['left_exit_platform_base_route']
-            ].route_config['exit_signal'] \
-                = self.signals[i][self.c['base_route_types']['left_exit_platform_base_route']]
-            self.logger.debug('base route {} {} signal is signal {} {}'
-                              .format(i, self.c['base_route_types']['left_exit_platform_base_route'],
-                                      i, self.c['base_route_types']['left_exit_platform_base_route']))
-            self.base_routes[i][
-                self.c['base_route_types']['right_entry_platform_base_route']
-            ].route_config['exit_signal'] \
-                = self.signals[i][self.c['base_route_types']['left_exit_platform_base_route']]
-            self.logger.debug('base route {} {} signal is signal {} {}'
-                              .format(i, self.c['base_route_types']['right_entry_platform_base_route'],
-                                      i, self.c['base_route_types']['left_exit_platform_base_route']))
+            self.base_routes[i]['right_exit_platform_base_route'].route_config['exit_signal'] \
+                = self.signals[i]['right_exit_platform_base_route']
+            self.base_routes[i]['left_exit_platform_base_route'].route_config['exit_signal'] \
+                = self.signals[i]['left_exit_platform_base_route']
             # for every signal, exit route is the route which ends with this signal
-            self.signals[i][self.c['base_route_types']['right_exit_platform_base_route']].base_route_exit \
-                = self.base_routes[i][self.c['base_route_types']['right_exit_platform_base_route']]
-            self.logger.debug('signal {} {} exit route is base route {} {}'
-                              .format(i, self.c['base_route_types']['right_exit_platform_base_route'],
-                                      i, self.c['base_route_types']['right_exit_platform_base_route']))
-            self.signals[i][self.c['base_route_types']['left_exit_platform_base_route']].base_route_exit \
-                = self.base_routes[i][self.c['base_route_types']['left_exit_platform_base_route']]
-            self.logger.debug('signal {} {} exit route is base route {} {}'
-                              .format(i, self.c['base_route_types']['left_exit_platform_base_route'],
-                                      i, self.c['base_route_types']['left_exit_platform_base_route']))
+            self.signals[i]['right_exit_platform_base_route'].base_route_exit \
+                = self.base_routes[i]['right_exit_platform_base_route']
+            self.signals[i]['left_exit_platform_base_route'].base_route_exit \
+                = self.base_routes[i]['left_exit_platform_base_route']
             self.logger.debug('track {} base routes and signals associated'.format(i))
 
         self.logger.info('all base routes and signals associated')
@@ -231,53 +180,28 @@ class RSSim(Game):
             # which begins behind the signal
             # for main entry signals, opened list includes all entry base routes
             if i <= 24 or i in (26, 28, 30, 32):
-                self.signals[i][self.c['base_route_types']['left_exit_platform_base_route']].base_route_opened_list \
-                    .append(self.base_routes[i][self.c['base_route_types']['left_exit_base_route']])
-                self.logger.debug('base route {} {} appended to signal {} {} opened list'
-                                  .format(i, self.c['base_route_types']['left_exit_base_route'],
-                                          i, self.c['base_route_types']['left_exit_platform_base_route']))
-                self.signals[0][self.c['base_route_types']['left_entry_base_route']].base_route_opened_list \
-                    .append(self.base_routes[i][self.c['base_route_types']['left_entry_base_route']])
-                self.logger.debug('base route {} {} appended to signal {} {} opened list'
-                                  .format(i, self.c['base_route_types']['left_entry_base_route'],
-                                          0, self.c['base_route_types']['left_entry_base_route']))
+                self.signals[i]['left_exit_platform_base_route'].base_route_opened_list \
+                    .append(self.base_routes[i]['left_exit_base_route'])
+                self.signals[0]['left_entry_base_route'].base_route_opened_list \
+                    .append(self.base_routes[i]['left_entry_base_route'])
 
             if i <= 24 or i in (25, 27, 29, 31):
-                self.signals[i][self.c['base_route_types']['right_exit_platform_base_route']].base_route_opened_list \
-                    .append(self.base_routes[i][self.c['base_route_types']['right_exit_base_route']])
-                self.logger.debug('base route {} {} appended to signal {} {} opened list'
-                                  .format(i, self.c['base_route_types']['right_exit_base_route'],
-                                          i, self.c['base_route_types']['right_exit_platform_base_route']))
-                self.signals[0][self.c['base_route_types']['right_entry_base_route']].base_route_opened_list \
-                    .append(self.base_routes[i][self.c['base_route_types']['right_entry_base_route']])
-                self.logger.debug('base route {} {} appended to signal {} {} opened list'
-                                  .format(i, self.c['base_route_types']['right_entry_base_route'],
-                                          0, self.c['base_route_types']['right_entry_base_route']))
+                self.signals[i]['right_exit_platform_base_route'].base_route_opened_list \
+                    .append(self.base_routes[i]['right_exit_base_route'])
+                self.signals[0]['right_entry_base_route'].base_route_opened_list \
+                    .append(self.base_routes[i]['right_entry_base_route'])
 
             if i in (21, 23, 25, 27, 29, 31):
-                self.signals[i][self.c['base_route_types']['left_exit_platform_base_route']]\
-                    .base_route_opened_list\
-                    .append(self.base_routes[i][self.c['base_route_types']['left_side_exit_base_route']])
-                self.logger.debug('base route {} {} appended to signal {} {} opened list'
-                                  .format(i, self.c['base_route_types']['left_side_exit_base_route'],
-                                          i, self.c['base_route_types']['left_exit_platform_base_route']))
-                self.signals[100][self.c['base_route_types']['left_side_entry_base_route']].base_route_opened_list \
-                    .append(self.base_routes[i][self.c['base_route_types']['left_side_entry_base_route']])
-                self.logger.debug('base route {} {} appended to signal {} {} opened list'
-                                  .format(i, self.c['base_route_types']['left_side_entry_base_route'],
-                                          100, self.c['base_route_types']['left_side_entry_base_route']))
+                self.signals[i]['left_exit_platform_base_route'].base_route_opened_list\
+                    .append(self.base_routes[i]['left_side_exit_base_route'])
+                self.signals[100]['left_side_entry_base_route'].base_route_opened_list \
+                    .append(self.base_routes[i]['left_side_entry_base_route'])
 
             if i in (22, 24, 26, 28, 30, 32):
-                self.signals[i][self.c['base_route_types']['right_exit_platform_base_route']].base_route_opened_list \
-                    .append(self.base_routes[i][self.c['base_route_types']['right_side_exit_base_route']])
-                self.logger.debug('base route {} {} appended to signal {} {} opened list'
-                                  .format(i, self.c['base_route_types']['right_side_exit_base_route'],
-                                          i, self.c['base_route_types']['right_exit_platform_base_route']))
-                self.signals[100][self.c['base_route_types']['right_side_entry_base_route']].base_route_opened_list \
-                    .append(self.base_routes[i][self.c['base_route_types']['right_side_entry_base_route']])
-                self.logger.debug('base route {} {} appended to signal {} {} opened list'
-                                  .format(i, self.c['base_route_types']['right_side_entry_base_route'],
-                                          100, self.c['base_route_types']['right_side_entry_base_route']))
+                self.signals[i]['right_exit_platform_base_route'].base_route_opened_list \
+                    .append(self.base_routes[i]['right_side_exit_base_route'])
+                self.signals[100]['right_side_entry_base_route'].base_route_opened_list \
+                    .append(self.base_routes[i]['right_side_entry_base_route'])
 
         self.logger.debug('opened list set up for track 0 signals')
         self.logger.info('opened list set up for all signals')
@@ -311,10 +235,10 @@ class RSSim(Game):
             self.train_routes.append({})
             # create track object
             # it includes all 4 base routes
-            base_routes_in_track = [self.base_routes[i][self.c['base_route_types']['left_entry_platform_base_route']],
-                                    self.base_routes[i][self.c['base_route_types']['right_entry_platform_base_route']],
-                                    self.base_routes[i][self.c['base_route_types']['left_exit_platform_base_route']],
-                                    self.base_routes[i][self.c['base_route_types']['right_exit_platform_base_route']]]
+            base_routes_in_track = [self.base_routes[i]['left_entry_platform_base_route'],
+                                    self.base_routes[i]['right_entry_platform_base_route'],
+                                    self.base_routes[i]['left_exit_platform_base_route'],
+                                    self.base_routes[i]['right_exit_platform_base_route']]
             new_track = Track(track_number=i, base_routes_in_track=base_routes_in_track)
             self.tracks.append(new_track)
             self.logger.info('track {} created'.format(i))
@@ -1092,1194 +1016,1194 @@ class RSSim(Game):
         self.logger.info('all junctions associated')
 
     def construct_base_routes(self):
-        self.base_routes[1][self.c['base_route_types']['left_entry_base_route']].junctions\
+        self.base_routes[1]['left_entry_base_route'].junctions\
             .append(self.junctions[2][1][self.c['crossover_types']['left_entry_crossover']])
-        self.base_routes[1][self.c['base_route_types']['left_entry_base_route']].junction_position.append([2, 1])
-        self.base_routes[1][self.c['base_route_types']['left_entry_base_route']].junctions \
+        self.base_routes[1]['left_entry_base_route'].junction_position.append([2, 1])
+        self.base_routes[1]['left_entry_base_route'].junctions \
             .append(self.junctions[1][21][self.c['switch_types']['left_entry_railroad_switch']])
-        self.base_routes[1][self.c['base_route_types']['left_entry_base_route']].junction_position.append(1)
+        self.base_routes[1]['left_entry_base_route'].junction_position.append(1)
 
-        self.base_routes[1][self.c['base_route_types']['right_entry_base_route']].junctions\
+        self.base_routes[1]['right_entry_base_route'].junctions\
             .append(self.junctions[1][2][self.c['crossover_types']['right_entry_crossover']])
-        self.base_routes[1][self.c['base_route_types']['right_entry_base_route']].junction_position.append([1, 1])
-        self.base_routes[1][self.c['base_route_types']['right_entry_base_route']].junctions \
+        self.base_routes[1]['right_entry_base_route'].junction_position.append([1, 1])
+        self.base_routes[1]['right_entry_base_route'].junctions \
             .append(self.junctions[1][29][self.c['switch_types']['right_entry_railroad_switch']])
-        self.base_routes[1][self.c['base_route_types']['right_entry_base_route']].junction_position.append(1)
+        self.base_routes[1]['right_entry_base_route'].junction_position.append(1)
 
-        self.base_routes[1][self.c['base_route_types']['left_exit_base_route']].junctions\
+        self.base_routes[1]['left_exit_base_route'].junctions\
             .append(self.junctions[1][21][self.c['switch_types']['left_exit_railroad_switch']])
-        self.base_routes[1][self.c['base_route_types']['left_exit_base_route']].junction_position.append(1)
-        self.base_routes[1][self.c['base_route_types']['left_exit_base_route']].junctions\
+        self.base_routes[1]['left_exit_base_route'].junction_position.append(1)
+        self.base_routes[1]['left_exit_base_route'].junctions\
             .append(self.junctions[2][1][self.c['crossover_types']['left_exit_crossover']])
-        self.base_routes[1][self.c['base_route_types']['left_exit_base_route']].junction_position.append([1, 1])
+        self.base_routes[1]['left_exit_base_route'].junction_position.append([1, 1])
 
-        self.base_routes[1][self.c['base_route_types']['right_exit_base_route']].junctions \
+        self.base_routes[1]['right_exit_base_route'].junctions \
             .append(self.junctions[1][29][self.c['switch_types']['right_exit_railroad_switch']])
-        self.base_routes[1][self.c['base_route_types']['right_exit_base_route']].junction_position.append(1)
-        self.base_routes[1][self.c['base_route_types']['right_exit_base_route']].junctions\
+        self.base_routes[1]['right_exit_base_route'].junction_position.append(1)
+        self.base_routes[1]['right_exit_base_route'].junctions\
             .append(self.junctions[1][2][self.c['crossover_types']['right_exit_crossover']])
-        self.base_routes[1][self.c['base_route_types']['right_exit_base_route']].junction_position.append([1, 2])
+        self.base_routes[1]['right_exit_base_route'].junction_position.append([1, 2])
 
-        self.base_routes[3][self.c['base_route_types']['left_entry_base_route']].junctions\
+        self.base_routes[3]['left_entry_base_route'].junctions\
             .append(self.junctions[2][1][self.c['crossover_types']['left_entry_crossover']])
-        self.base_routes[3][self.c['base_route_types']['left_entry_base_route']].junction_position.append([2, 1])
-        self.base_routes[3][self.c['base_route_types']['left_entry_base_route']].junctions \
+        self.base_routes[3]['left_entry_base_route'].junction_position.append([2, 1])
+        self.base_routes[3]['left_entry_base_route'].junctions \
             .append(self.junctions[1][21][self.c['switch_types']['left_entry_railroad_switch']])
-        self.base_routes[3][self.c['base_route_types']['left_entry_base_route']].junction_position.append(21)
-        self.base_routes[3][self.c['base_route_types']['left_entry_base_route']].junctions \
+        self.base_routes[3]['left_entry_base_route'].junction_position.append(21)
+        self.base_routes[3]['left_entry_base_route'].junctions \
             .append(self.junctions[21][3][self.c['switch_types']['left_entry_railroad_switch']])
-        self.base_routes[3][self.c['base_route_types']['left_entry_base_route']].junction_position.append(3)
+        self.base_routes[3]['left_entry_base_route'].junction_position.append(3)
 
-        self.base_routes[3][self.c['base_route_types']['right_entry_base_route']].junctions\
+        self.base_routes[3]['right_entry_base_route'].junctions\
             .append(self.junctions[1][2][self.c['crossover_types']['right_entry_crossover']])
-        self.base_routes[3][self.c['base_route_types']['right_entry_base_route']].junction_position.append([1, 1])
-        self.base_routes[3][self.c['base_route_types']['right_entry_base_route']].junctions \
+        self.base_routes[3]['right_entry_base_route'].junction_position.append([1, 1])
+        self.base_routes[3]['right_entry_base_route'].junctions \
             .append(self.junctions[1][29][self.c['switch_types']['right_entry_railroad_switch']])
-        self.base_routes[3][self.c['base_route_types']['right_entry_base_route']].junction_position.append(29)
-        self.base_routes[3][self.c['base_route_types']['right_entry_base_route']].junctions \
+        self.base_routes[3]['right_entry_base_route'].junction_position.append(29)
+        self.base_routes[3]['right_entry_base_route'].junctions \
             .append(self.junctions[29][3][self.c['switch_types']['right_entry_railroad_switch']])
-        self.base_routes[3][self.c['base_route_types']['right_entry_base_route']].junction_position.append(3)
+        self.base_routes[3]['right_entry_base_route'].junction_position.append(3)
 
-        self.base_routes[3][self.c['base_route_types']['left_exit_base_route']].junctions \
+        self.base_routes[3]['left_exit_base_route'].junctions \
             .append(self.junctions[21][3][self.c['switch_types']['left_exit_railroad_switch']])
-        self.base_routes[3][self.c['base_route_types']['left_exit_base_route']].junction_position.append(3)
-        self.base_routes[3][self.c['base_route_types']['left_exit_base_route']].junctions \
+        self.base_routes[3]['left_exit_base_route'].junction_position.append(3)
+        self.base_routes[3]['left_exit_base_route'].junctions \
             .append(self.junctions[1][21][self.c['switch_types']['left_exit_railroad_switch']])
-        self.base_routes[3][self.c['base_route_types']['left_exit_base_route']].junction_position.append(21)
-        self.base_routes[3][self.c['base_route_types']['left_exit_base_route']].junctions\
+        self.base_routes[3]['left_exit_base_route'].junction_position.append(21)
+        self.base_routes[3]['left_exit_base_route'].junctions\
             .append(self.junctions[2][1][self.c['crossover_types']['left_exit_crossover']])
-        self.base_routes[3][self.c['base_route_types']['left_exit_base_route']].junction_position.append([1, 1])
+        self.base_routes[3]['left_exit_base_route'].junction_position.append([1, 1])
 
-        self.base_routes[3][self.c['base_route_types']['right_exit_base_route']].junctions \
+        self.base_routes[3]['right_exit_base_route'].junctions \
             .append(self.junctions[29][3][self.c['switch_types']['right_exit_railroad_switch']])
-        self.base_routes[3][self.c['base_route_types']['right_exit_base_route']].junction_position.append(3)
-        self.base_routes[3][self.c['base_route_types']['right_exit_base_route']].junctions \
+        self.base_routes[3]['right_exit_base_route'].junction_position.append(3)
+        self.base_routes[3]['right_exit_base_route'].junctions \
             .append(self.junctions[1][29][self.c['switch_types']['right_exit_railroad_switch']])
-        self.base_routes[3][self.c['base_route_types']['right_exit_base_route']].junction_position.append(29)
-        self.base_routes[3][self.c['base_route_types']['right_exit_base_route']].junctions\
+        self.base_routes[3]['right_exit_base_route'].junction_position.append(29)
+        self.base_routes[3]['right_exit_base_route'].junctions\
             .append(self.junctions[1][2][self.c['crossover_types']['right_exit_crossover']])
-        self.base_routes[3][self.c['base_route_types']['right_exit_base_route']].junction_position.append([1, 2])
+        self.base_routes[3]['right_exit_base_route'].junction_position.append([1, 2])
 
         for i in range(5, 20, 4):
             # ----------- left entry ---------------
-            self.base_routes[i][self.c['base_route_types']['left_entry_base_route']].junctions \
+            self.base_routes[i]['left_entry_base_route'].junctions \
                 .append(self.junctions[2][1][self.c['crossover_types']['left_entry_crossover']])
-            self.base_routes[i][self.c['base_route_types']['left_entry_base_route']].junction_position.append([2, 1])
-            self.base_routes[i][self.c['base_route_types']['left_entry_base_route']].junctions \
+            self.base_routes[i]['left_entry_base_route'].junction_position.append([2, 1])
+            self.base_routes[i]['left_entry_base_route'].junctions \
                 .append(self.junctions[1][21][self.c['switch_types']['left_entry_railroad_switch']])
-            self.base_routes[i][self.c['base_route_types']['left_entry_base_route']].junction_position.append(21)
-            self.base_routes[i][self.c['base_route_types']['left_entry_base_route']].junctions \
+            self.base_routes[i]['left_entry_base_route'].junction_position.append(21)
+            self.base_routes[i]['left_entry_base_route'].junctions \
                 .append(self.junctions[21][3][self.c['switch_types']['left_entry_railroad_switch']])
-            self.base_routes[i][self.c['base_route_types']['left_entry_base_route']].junction_position.append(21)
+            self.base_routes[i]['left_entry_base_route'].junction_position.append(21)
             for j in range(5, i, 4):
-                self.base_routes[i][self.c['base_route_types']['left_entry_base_route']].junctions \
+                self.base_routes[i]['left_entry_base_route'].junctions \
                     .append(self.junctions[21][j][self.c['switch_types']['left_entry_railroad_switch']])
-                self.base_routes[i][self.c['base_route_types']['left_entry_base_route']].junction_position.append(21)
+                self.base_routes[i]['left_entry_base_route'].junction_position.append(21)
 
-            self.base_routes[i][self.c['base_route_types']['left_entry_base_route']].junctions \
+            self.base_routes[i]['left_entry_base_route'].junctions \
                 .append(self.junctions[21][i][self.c['switch_types']['left_entry_railroad_switch']])
-            self.base_routes[i][self.c['base_route_types']['left_entry_base_route']].junction_position.append(i)
-            self.base_routes[i][self.c['base_route_types']['left_entry_base_route']].junctions \
+            self.base_routes[i]['left_entry_base_route'].junction_position.append(i)
+            self.base_routes[i]['left_entry_base_route'].junctions \
                 .append(self.junctions[i][i + 2][self.c['switch_types']['left_entry_railroad_switch']])
-            self.base_routes[i][self.c['base_route_types']['left_entry_base_route']].junction_position.append(i)
+            self.base_routes[i]['left_entry_base_route'].junction_position.append(i)
 
             # ---------------- right entry --------------
-            self.base_routes[i][self.c['base_route_types']['right_entry_base_route']].junctions \
+            self.base_routes[i]['right_entry_base_route'].junctions \
                 .append(self.junctions[1][2][self.c['crossover_types']['right_entry_crossover']])
-            self.base_routes[i][self.c['base_route_types']['right_entry_base_route']].junction_position.append([1, 1])
-            self.base_routes[i][self.c['base_route_types']['right_entry_base_route']].junctions \
+            self.base_routes[i]['right_entry_base_route'].junction_position.append([1, 1])
+            self.base_routes[i]['right_entry_base_route'].junctions \
                 .append(self.junctions[1][29][self.c['switch_types']['right_entry_railroad_switch']])
-            self.base_routes[i][self.c['base_route_types']['right_entry_base_route']].junction_position.append(29)
-            self.base_routes[i][self.c['base_route_types']['right_entry_base_route']].junctions \
+            self.base_routes[i]['right_entry_base_route'].junction_position.append(29)
+            self.base_routes[i]['right_entry_base_route'].junctions \
                 .append(self.junctions[29][3][self.c['switch_types']['right_entry_railroad_switch']])
-            self.base_routes[i][self.c['base_route_types']['right_entry_base_route']].junction_position.append(29)
+            self.base_routes[i]['right_entry_base_route'].junction_position.append(29)
             for j in range(5, i, 4):
-                self.base_routes[i][self.c['base_route_types']['right_entry_base_route']].junctions \
+                self.base_routes[i]['right_entry_base_route'].junctions \
                     .append(self.junctions[29][j][self.c['switch_types']['right_entry_railroad_switch']])
-                self.base_routes[i][self.c['base_route_types']['right_entry_base_route']].junction_position.append(29)
+                self.base_routes[i]['right_entry_base_route'].junction_position.append(29)
 
-            self.base_routes[i][self.c['base_route_types']['right_entry_base_route']].junctions \
+            self.base_routes[i]['right_entry_base_route'].junctions \
                 .append(self.junctions[29][i][self.c['switch_types']['right_entry_railroad_switch']])
-            self.base_routes[i][self.c['base_route_types']['right_entry_base_route']].junction_position.append(i)
-            self.base_routes[i][self.c['base_route_types']['right_entry_base_route']].junctions \
+            self.base_routes[i]['right_entry_base_route'].junction_position.append(i)
+            self.base_routes[i]['right_entry_base_route'].junctions \
                 .append(self.junctions[i][i + 2][self.c['switch_types']['right_entry_railroad_switch']])
-            self.base_routes[i][self.c['base_route_types']['right_entry_base_route']].junction_position.append(i)
+            self.base_routes[i]['right_entry_base_route'].junction_position.append(i)
 
             # ------------------ left exit ---------------
-            self.base_routes[i][self.c['base_route_types']['left_exit_base_route']].junctions \
+            self.base_routes[i]['left_exit_base_route'].junctions \
                 .append(self.junctions[i][i + 2][self.c['switch_types']['left_exit_railroad_switch']])
-            self.base_routes[i][self.c['base_route_types']['left_exit_base_route']].junction_position.append(i)
-            self.base_routes[i][self.c['base_route_types']['left_exit_base_route']].junctions \
+            self.base_routes[i]['left_exit_base_route'].junction_position.append(i)
+            self.base_routes[i]['left_exit_base_route'].junctions \
                 .append(self.junctions[21][i][self.c['switch_types']['left_exit_railroad_switch']])
-            self.base_routes[i][self.c['base_route_types']['left_exit_base_route']].junction_position.append(i)
+            self.base_routes[i]['left_exit_base_route'].junction_position.append(i)
             for j in range(i - 4, 4, -4):
-                self.base_routes[i][self.c['base_route_types']['left_exit_base_route']].junctions \
+                self.base_routes[i]['left_exit_base_route'].junctions \
                     .append(self.junctions[21][j][self.c['switch_types']['left_exit_railroad_switch']])
-                self.base_routes[i][self.c['base_route_types']['left_exit_base_route']].junction_position.append(21)
+                self.base_routes[i]['left_exit_base_route'].junction_position.append(21)
 
-            self.base_routes[i][self.c['base_route_types']['left_exit_base_route']].junctions \
+            self.base_routes[i]['left_exit_base_route'].junctions \
                 .append(self.junctions[21][3][self.c['switch_types']['left_exit_railroad_switch']])
-            self.base_routes[i][self.c['base_route_types']['left_exit_base_route']].junction_position.append(21)
-            self.base_routes[i][self.c['base_route_types']['left_exit_base_route']].junctions \
+            self.base_routes[i]['left_exit_base_route'].junction_position.append(21)
+            self.base_routes[i]['left_exit_base_route'].junctions \
                 .append(self.junctions[1][21][self.c['switch_types']['left_exit_railroad_switch']])
-            self.base_routes[i][self.c['base_route_types']['left_exit_base_route']].junction_position.append(21)
-            self.base_routes[i][self.c['base_route_types']['left_exit_base_route']].junctions \
+            self.base_routes[i]['left_exit_base_route'].junction_position.append(21)
+            self.base_routes[i]['left_exit_base_route'].junctions \
                 .append(self.junctions[2][1][self.c['crossover_types']['left_exit_crossover']])
-            self.base_routes[i][self.c['base_route_types']['left_exit_base_route']].junction_position.append([1, 1])
+            self.base_routes[i]['left_exit_base_route'].junction_position.append([1, 1])
 
             # --------------- right exit --------------
-            self.base_routes[i][self.c['base_route_types']['right_exit_base_route']].junctions \
+            self.base_routes[i]['right_exit_base_route'].junctions \
                 .append(self.junctions[i][i + 2][self.c['switch_types']['right_exit_railroad_switch']])
-            self.base_routes[i][self.c['base_route_types']['right_exit_base_route']].junction_position.append(i)
-            self.base_routes[i][self.c['base_route_types']['right_exit_base_route']].junctions \
+            self.base_routes[i]['right_exit_base_route'].junction_position.append(i)
+            self.base_routes[i]['right_exit_base_route'].junctions \
                 .append(self.junctions[29][i][self.c['switch_types']['right_exit_railroad_switch']])
-            self.base_routes[i][self.c['base_route_types']['right_exit_base_route']].junction_position.append(i)
+            self.base_routes[i]['right_exit_base_route'].junction_position.append(i)
             for j in range(i - 4, 4, -4):
-                self.base_routes[i][self.c['base_route_types']['right_exit_base_route']].junctions \
+                self.base_routes[i]['right_exit_base_route'].junctions \
                     .append(self.junctions[29][j][self.c['switch_types']['right_exit_railroad_switch']])
-                self.base_routes[i][self.c['base_route_types']['right_exit_base_route']].junction_position.append(29)
+                self.base_routes[i]['right_exit_base_route'].junction_position.append(29)
 
-            self.base_routes[i][self.c['base_route_types']['right_exit_base_route']].junctions \
+            self.base_routes[i]['right_exit_base_route'].junctions \
                 .append(self.junctions[29][3][self.c['switch_types']['right_exit_railroad_switch']])
-            self.base_routes[i][self.c['base_route_types']['right_exit_base_route']].junction_position.append(29)
-            self.base_routes[i][self.c['base_route_types']['right_exit_base_route']].junctions \
+            self.base_routes[i]['right_exit_base_route'].junction_position.append(29)
+            self.base_routes[i]['right_exit_base_route'].junctions \
                 .append(self.junctions[1][29][self.c['switch_types']['right_exit_railroad_switch']])
-            self.base_routes[i][self.c['base_route_types']['right_exit_base_route']].junction_position.append(29)
-            self.base_routes[i][self.c['base_route_types']['right_exit_base_route']].junctions \
+            self.base_routes[i]['right_exit_base_route'].junction_position.append(29)
+            self.base_routes[i]['right_exit_base_route'].junctions \
                 .append(self.junctions[1][2][self.c['crossover_types']['right_exit_crossover']])
-            self.base_routes[i][self.c['base_route_types']['right_exit_base_route']].junction_position.append([1, 2])
+            self.base_routes[i]['right_exit_base_route'].junction_position.append([1, 2])
 
         for i in range(7, 20, 4):
             # ----------------- left entry ------------
-            self.base_routes[i][self.c['base_route_types']['left_entry_base_route']].junctions \
+            self.base_routes[i]['left_entry_base_route'].junctions \
                 .append(self.junctions[2][1][self.c['crossover_types']['left_entry_crossover']])
-            self.base_routes[i][self.c['base_route_types']['left_entry_base_route']].junction_position.append([2, 1])
-            self.base_routes[i][self.c['base_route_types']['left_entry_base_route']].junctions \
+            self.base_routes[i]['left_entry_base_route'].junction_position.append([2, 1])
+            self.base_routes[i]['left_entry_base_route'].junctions \
                 .append(self.junctions[1][21][self.c['switch_types']['left_entry_railroad_switch']])
-            self.base_routes[i][self.c['base_route_types']['left_entry_base_route']].junction_position.append(21)
-            self.base_routes[i][self.c['base_route_types']['left_entry_base_route']].junctions \
+            self.base_routes[i]['left_entry_base_route'].junction_position.append(21)
+            self.base_routes[i]['left_entry_base_route'].junctions \
                 .append(self.junctions[21][3][self.c['switch_types']['left_entry_railroad_switch']])
-            self.base_routes[i][self.c['base_route_types']['left_entry_base_route']].junction_position.append(21)
+            self.base_routes[i]['left_entry_base_route'].junction_position.append(21)
             for j in range(5, i - 2, 4):
-                self.base_routes[i][self.c['base_route_types']['left_entry_base_route']].junctions \
+                self.base_routes[i]['left_entry_base_route'].junctions \
                     .append(self.junctions[21][j][self.c['switch_types']['left_entry_railroad_switch']])
-                self.base_routes[i][self.c['base_route_types']['left_entry_base_route']].junction_position.append(21)
+                self.base_routes[i]['left_entry_base_route'].junction_position.append(21)
 
-            self.base_routes[i][self.c['base_route_types']['left_entry_base_route']].junctions \
+            self.base_routes[i]['left_entry_base_route'].junctions \
                 .append(self.junctions[21][i - 2][self.c['switch_types']['left_entry_railroad_switch']])
-            self.base_routes[i][self.c['base_route_types']['left_entry_base_route']].junction_position.append(i - 2)
-            self.base_routes[i][self.c['base_route_types']['left_entry_base_route']].junctions \
+            self.base_routes[i]['left_entry_base_route'].junction_position.append(i - 2)
+            self.base_routes[i]['left_entry_base_route'].junctions \
                 .append(self.junctions[i - 2][i][self.c['switch_types']['left_entry_railroad_switch']])
-            self.base_routes[i][self.c['base_route_types']['left_entry_base_route']].junction_position.append(i)
+            self.base_routes[i]['left_entry_base_route'].junction_position.append(i)
 
             # ---------------- right entry --------------
-            self.base_routes[i][self.c['base_route_types']['right_entry_base_route']].junctions \
+            self.base_routes[i]['right_entry_base_route'].junctions \
                 .append(self.junctions[1][2][self.c['crossover_types']['right_entry_crossover']])
-            self.base_routes[i][self.c['base_route_types']['right_entry_base_route']].junction_position.append([1, 1])
-            self.base_routes[i][self.c['base_route_types']['right_entry_base_route']].junctions \
+            self.base_routes[i]['right_entry_base_route'].junction_position.append([1, 1])
+            self.base_routes[i]['right_entry_base_route'].junctions \
                 .append(self.junctions[1][29][self.c['switch_types']['right_entry_railroad_switch']])
-            self.base_routes[i][self.c['base_route_types']['right_entry_base_route']].junction_position.append(29)
-            self.base_routes[i][self.c['base_route_types']['right_entry_base_route']].junctions \
+            self.base_routes[i]['right_entry_base_route'].junction_position.append(29)
+            self.base_routes[i]['right_entry_base_route'].junctions \
                 .append(self.junctions[29][3][self.c['switch_types']['right_entry_railroad_switch']])
-            self.base_routes[i][self.c['base_route_types']['right_entry_base_route']].junction_position.append(29)
+            self.base_routes[i]['right_entry_base_route'].junction_position.append(29)
             for j in range(5, i - 2, 4):
-                self.base_routes[i][self.c['base_route_types']['right_entry_base_route']].junctions \
+                self.base_routes[i]['right_entry_base_route'].junctions \
                     .append(self.junctions[29][j][self.c['switch_types']['right_entry_railroad_switch']])
-                self.base_routes[i][self.c['base_route_types']['right_entry_base_route']].junction_position.append(29)
+                self.base_routes[i]['right_entry_base_route'].junction_position.append(29)
 
-            self.base_routes[i][self.c['base_route_types']['right_entry_base_route']].junctions \
+            self.base_routes[i]['right_entry_base_route'].junctions \
                 .append(self.junctions[29][i - 2][self.c['switch_types']['right_entry_railroad_switch']])
-            self.base_routes[i][self.c['base_route_types']['right_entry_base_route']].junction_position.append(i - 2)
-            self.base_routes[i][self.c['base_route_types']['right_entry_base_route']].junctions \
+            self.base_routes[i]['right_entry_base_route'].junction_position.append(i - 2)
+            self.base_routes[i]['right_entry_base_route'].junctions \
                 .append(self.junctions[i - 2][i][self.c['switch_types']['right_entry_railroad_switch']])
-            self.base_routes[i][self.c['base_route_types']['right_entry_base_route']].junction_position.append(i)
+            self.base_routes[i]['right_entry_base_route'].junction_position.append(i)
 
             # ------------------ left exit ---------------
-            self.base_routes[i][self.c['base_route_types']['left_exit_base_route']].junctions \
+            self.base_routes[i]['left_exit_base_route'].junctions \
                 .append(self.junctions[i - 2][i][self.c['switch_types']['left_exit_railroad_switch']])
-            self.base_routes[i][self.c['base_route_types']['left_exit_base_route']].junction_position.append(i)
-            self.base_routes[i][self.c['base_route_types']['left_exit_base_route']].junctions \
+            self.base_routes[i]['left_exit_base_route'].junction_position.append(i)
+            self.base_routes[i]['left_exit_base_route'].junctions \
                 .append(self.junctions[21][i - 2][self.c['switch_types']['left_exit_railroad_switch']])
-            self.base_routes[i][self.c['base_route_types']['left_exit_base_route']].junction_position.append(i - 2)
+            self.base_routes[i]['left_exit_base_route'].junction_position.append(i - 2)
             for j in range(i - 6, 4, -4):
-                self.base_routes[i][self.c['base_route_types']['left_exit_base_route']].junctions \
+                self.base_routes[i]['left_exit_base_route'].junctions \
                     .append(self.junctions[21][j][self.c['switch_types']['left_exit_railroad_switch']])
-                self.base_routes[i][self.c['base_route_types']['left_exit_base_route']].junction_position.append(21)
+                self.base_routes[i]['left_exit_base_route'].junction_position.append(21)
 
-            self.base_routes[i][self.c['base_route_types']['left_exit_base_route']].junctions \
+            self.base_routes[i]['left_exit_base_route'].junctions \
                 .append(self.junctions[21][3][self.c['switch_types']['left_exit_railroad_switch']])
-            self.base_routes[i][self.c['base_route_types']['left_exit_base_route']].junction_position.append(21)
-            self.base_routes[i][self.c['base_route_types']['left_exit_base_route']].junctions \
+            self.base_routes[i]['left_exit_base_route'].junction_position.append(21)
+            self.base_routes[i]['left_exit_base_route'].junctions \
                 .append(self.junctions[1][21][self.c['switch_types']['left_exit_railroad_switch']])
-            self.base_routes[i][self.c['base_route_types']['left_exit_base_route']].junction_position.append(21)
-            self.base_routes[i][self.c['base_route_types']['left_exit_base_route']].junctions \
+            self.base_routes[i]['left_exit_base_route'].junction_position.append(21)
+            self.base_routes[i]['left_exit_base_route'].junctions \
                 .append(self.junctions[2][1][self.c['crossover_types']['left_exit_crossover']])
-            self.base_routes[i][self.c['base_route_types']['left_exit_base_route']].junction_position.append([1, 1])
+            self.base_routes[i]['left_exit_base_route'].junction_position.append([1, 1])
 
             # --------------- right exit --------------
-            self.base_routes[i][self.c['base_route_types']['right_exit_base_route']].junctions \
+            self.base_routes[i]['right_exit_base_route'].junctions \
                 .append(self.junctions[i - 2][i][self.c['switch_types']['right_exit_railroad_switch']])
-            self.base_routes[i][self.c['base_route_types']['right_exit_base_route']].junction_position.append(i)
-            self.base_routes[i][self.c['base_route_types']['right_exit_base_route']].junctions \
+            self.base_routes[i]['right_exit_base_route'].junction_position.append(i)
+            self.base_routes[i]['right_exit_base_route'].junctions \
                 .append(self.junctions[29][i - 2][self.c['switch_types']['right_exit_railroad_switch']])
-            self.base_routes[i][self.c['base_route_types']['right_exit_base_route']].junction_position.append(i - 2)
+            self.base_routes[i]['right_exit_base_route'].junction_position.append(i - 2)
             for j in range(i - 6, 4, -4):
-                self.base_routes[i][self.c['base_route_types']['right_exit_base_route']].junctions \
+                self.base_routes[i]['right_exit_base_route'].junctions \
                     .append(self.junctions[29][j][self.c['switch_types']['right_exit_railroad_switch']])
-                self.base_routes[i][self.c['base_route_types']['right_exit_base_route']].junction_position.append(29)
+                self.base_routes[i]['right_exit_base_route'].junction_position.append(29)
 
-            self.base_routes[i][self.c['base_route_types']['right_exit_base_route']].junctions \
+            self.base_routes[i]['right_exit_base_route'].junctions \
                 .append(self.junctions[29][3][self.c['switch_types']['right_exit_railroad_switch']])
-            self.base_routes[i][self.c['base_route_types']['right_exit_base_route']].junction_position.append(29)
-            self.base_routes[i][self.c['base_route_types']['right_exit_base_route']].junctions \
+            self.base_routes[i]['right_exit_base_route'].junction_position.append(29)
+            self.base_routes[i]['right_exit_base_route'].junctions \
                 .append(self.junctions[1][29][self.c['switch_types']['right_exit_railroad_switch']])
-            self.base_routes[i][self.c['base_route_types']['right_exit_base_route']].junction_position.append(29)
-            self.base_routes[i][self.c['base_route_types']['right_exit_base_route']].junctions \
+            self.base_routes[i]['right_exit_base_route'].junction_position.append(29)
+            self.base_routes[i]['right_exit_base_route'].junctions \
                 .append(self.junctions[1][2][self.c['crossover_types']['right_exit_crossover']])
-            self.base_routes[i][self.c['base_route_types']['right_exit_base_route']].junction_position.append([1, 2])
+            self.base_routes[i]['right_exit_base_route'].junction_position.append([1, 2])
 
         for i in (21, 23):
             # ------------- left entry ---------------
-            self.base_routes[i][self.c['base_route_types']['left_entry_base_route']].junctions \
+            self.base_routes[i]['left_entry_base_route'].junctions \
                 .append(self.junctions[2][1][self.c['crossover_types']['left_entry_crossover']])
-            self.base_routes[i][self.c['base_route_types']['left_entry_base_route']].junction_position.append([2, 1])
-            self.base_routes[i][self.c['base_route_types']['left_entry_base_route']].junctions \
+            self.base_routes[i]['left_entry_base_route'].junction_position.append([2, 1])
+            self.base_routes[i]['left_entry_base_route'].junctions \
                 .append(self.junctions[1][21][self.c['switch_types']['left_entry_railroad_switch']])
-            self.base_routes[i][self.c['base_route_types']['left_entry_base_route']].junction_position.append(21)
-            self.base_routes[i][self.c['base_route_types']['left_entry_base_route']].junctions \
+            self.base_routes[i]['left_entry_base_route'].junction_position.append(21)
+            self.base_routes[i]['left_entry_base_route'].junctions \
                 .append(self.junctions[21][3][self.c['switch_types']['left_entry_railroad_switch']])
-            self.base_routes[i][self.c['base_route_types']['left_entry_base_route']].junction_position.append(21)
-            self.base_routes[i][self.c['base_route_types']['left_entry_base_route']].junctions \
+            self.base_routes[i]['left_entry_base_route'].junction_position.append(21)
+            self.base_routes[i]['left_entry_base_route'].junctions \
                 .append(self.junctions[21][5][self.c['switch_types']['left_entry_railroad_switch']])
-            self.base_routes[i][self.c['base_route_types']['left_entry_base_route']].junction_position.append(21)
-            self.base_routes[i][self.c['base_route_types']['left_entry_base_route']].junctions \
+            self.base_routes[i]['left_entry_base_route'].junction_position.append(21)
+            self.base_routes[i]['left_entry_base_route'].junctions \
                 .append(self.junctions[21][9][self.c['switch_types']['left_entry_railroad_switch']])
-            self.base_routes[i][self.c['base_route_types']['left_entry_base_route']].junction_position.append(21)
-            self.base_routes[i][self.c['base_route_types']['left_entry_base_route']].junctions \
+            self.base_routes[i]['left_entry_base_route'].junction_position.append(21)
+            self.base_routes[i]['left_entry_base_route'].junctions \
                 .append(self.junctions[21][13][self.c['switch_types']['left_entry_railroad_switch']])
-            self.base_routes[i][self.c['base_route_types']['left_entry_base_route']].junction_position.append(21)
-            self.base_routes[i][self.c['base_route_types']['left_entry_base_route']].junctions \
+            self.base_routes[i]['left_entry_base_route'].junction_position.append(21)
+            self.base_routes[i]['left_entry_base_route'].junctions \
                 .append(self.junctions[21][17][self.c['switch_types']['left_entry_railroad_switch']])
-            self.base_routes[i][self.c['base_route_types']['left_entry_base_route']].junction_position.append(21)
-            self.base_routes[i][self.c['base_route_types']['left_entry_base_route']].junctions \
+            self.base_routes[i]['left_entry_base_route'].junction_position.append(21)
+            self.base_routes[i]['left_entry_base_route'].junctions \
                 .append(self.junctions[101][21][self.c['switch_types']['left_entry_railroad_switch']])
-            self.base_routes[i][self.c['base_route_types']['left_entry_base_route']].junction_position.append(21)
-            self.base_routes[i][self.c['base_route_types']['left_entry_base_route']].junctions \
+            self.base_routes[i]['left_entry_base_route'].junction_position.append(21)
+            self.base_routes[i]['left_entry_base_route'].junctions \
                 .append(self.junctions[21][23][self.c['crossover_types']['left_entry_crossover']])
-            self.base_routes[i][self.c['base_route_types']['left_entry_base_route']].junction_position.append([21, i])
+            self.base_routes[i]['left_entry_base_route'].junction_position.append([21, i])
 
             # ------------- left side entry ---------------
-            self.base_routes[i][self.c['base_route_types']['left_side_entry_base_route']].junctions \
+            self.base_routes[i]['left_side_entry_base_route'].junctions \
                 .append(self.junctions[101][103][self.c['crossover_types']['left_entry_crossover']])
-            self.base_routes[i][self.c['base_route_types']['left_side_entry_base_route']].junction_position \
+            self.base_routes[i]['left_side_entry_base_route'].junction_position \
                 .append([101, 101])
-            self.base_routes[i][self.c['base_route_types']['left_side_entry_base_route']].junctions \
+            self.base_routes[i]['left_side_entry_base_route'].junctions \
                 .append(self.junctions[101][21][self.c['switch_types']['left_entry_railroad_switch']])
-            self.base_routes[i][self.c['base_route_types']['left_side_entry_base_route']].junction_position.append(101)
-            self.base_routes[i][self.c['base_route_types']['left_side_entry_base_route']].junctions \
+            self.base_routes[i]['left_side_entry_base_route'].junction_position.append(101)
+            self.base_routes[i]['left_side_entry_base_route'].junctions \
                 .append(self.junctions[21][23][self.c['crossover_types']['left_entry_crossover']])
-            self.base_routes[i][self.c['base_route_types']['left_side_entry_base_route']].junction_position \
+            self.base_routes[i]['left_side_entry_base_route'].junction_position \
                 .append([21, i])
 
             # ------------- right entry ---------------
-            self.base_routes[i][self.c['base_route_types']['right_entry_base_route']].junctions \
+            self.base_routes[i]['right_entry_base_route'].junctions \
                 .append(self.junctions[1][2][self.c['crossover_types']['right_entry_crossover']])
-            self.base_routes[i][self.c['base_route_types']['right_entry_base_route']].junction_position.append([1, 1])
-            self.base_routes[i][self.c['base_route_types']['right_entry_base_route']].junctions \
+            self.base_routes[i]['right_entry_base_route'].junction_position.append([1, 1])
+            self.base_routes[i]['right_entry_base_route'].junctions \
                 .append(self.junctions[1][29][self.c['switch_types']['right_entry_railroad_switch']])
-            self.base_routes[i][self.c['base_route_types']['right_entry_base_route']].junction_position.append(29)
-            self.base_routes[i][self.c['base_route_types']['right_entry_base_route']].junctions \
+            self.base_routes[i]['right_entry_base_route'].junction_position.append(29)
+            self.base_routes[i]['right_entry_base_route'].junctions \
                 .append(self.junctions[29][3][self.c['switch_types']['right_entry_railroad_switch']])
-            self.base_routes[i][self.c['base_route_types']['right_entry_base_route']].junction_position.append(29)
-            self.base_routes[i][self.c['base_route_types']['right_entry_base_route']].junctions \
+            self.base_routes[i]['right_entry_base_route'].junction_position.append(29)
+            self.base_routes[i]['right_entry_base_route'].junctions \
                 .append(self.junctions[29][5][self.c['switch_types']['right_entry_railroad_switch']])
-            self.base_routes[i][self.c['base_route_types']['right_entry_base_route']].junction_position.append(29)
-            self.base_routes[i][self.c['base_route_types']['right_entry_base_route']].junctions \
+            self.base_routes[i]['right_entry_base_route'].junction_position.append(29)
+            self.base_routes[i]['right_entry_base_route'].junctions \
                 .append(self.junctions[29][9][self.c['switch_types']['right_entry_railroad_switch']])
-            self.base_routes[i][self.c['base_route_types']['right_entry_base_route']].junction_position.append(29)
-            self.base_routes[i][self.c['base_route_types']['right_entry_base_route']].junctions \
+            self.base_routes[i]['right_entry_base_route'].junction_position.append(29)
+            self.base_routes[i]['right_entry_base_route'].junctions \
                 .append(self.junctions[29][13][self.c['switch_types']['right_entry_railroad_switch']])
-            self.base_routes[i][self.c['base_route_types']['right_entry_base_route']].junction_position.append(29)
-            self.base_routes[i][self.c['base_route_types']['right_entry_base_route']].junctions \
+            self.base_routes[i]['right_entry_base_route'].junction_position.append(29)
+            self.base_routes[i]['right_entry_base_route'].junctions \
                 .append(self.junctions[29][17][self.c['switch_types']['right_entry_railroad_switch']])
-            self.base_routes[i][self.c['base_route_types']['right_entry_base_route']].junction_position.append(29)
-            self.base_routes[i][self.c['base_route_types']['right_entry_base_route']].junctions \
+            self.base_routes[i]['right_entry_base_route'].junction_position.append(29)
+            self.base_routes[i]['right_entry_base_route'].junctions \
                 .append(self.junctions[29][21][self.c['switch_types']['right_entry_railroad_switch']])
-            self.base_routes[i][self.c['base_route_types']['right_entry_base_route']].junction_position.append(21)
-            self.base_routes[i][self.c['base_route_types']['right_entry_base_route']].junctions \
+            self.base_routes[i]['right_entry_base_route'].junction_position.append(21)
+            self.base_routes[i]['right_entry_base_route'].junctions \
                 .append(self.junctions[21][23][self.c['switch_types']['right_entry_railroad_switch']])
-            self.base_routes[i][self.c['base_route_types']['right_entry_base_route']].junction_position.append(i)
+            self.base_routes[i]['right_entry_base_route'].junction_position.append(i)
 
             # ------------- left exit ---------------
-            self.base_routes[i][self.c['base_route_types']['left_exit_base_route']].junctions \
+            self.base_routes[i]['left_exit_base_route'].junctions \
                 .append(self.junctions[23][21][self.c['crossover_types']['left_exit_crossover']])
-            self.base_routes[i][self.c['base_route_types']['left_exit_base_route']].junction_position.append([i, 21])
-            self.base_routes[i][self.c['base_route_types']['left_exit_base_route']].junctions \
+            self.base_routes[i]['left_exit_base_route'].junction_position.append([i, 21])
+            self.base_routes[i]['left_exit_base_route'].junctions \
                 .append(self.junctions[101][21][self.c['switch_types']['left_exit_railroad_switch']])
-            self.base_routes[i][self.c['base_route_types']['left_exit_base_route']].junction_position.append(21)
-            self.base_routes[i][self.c['base_route_types']['left_exit_base_route']].junctions \
+            self.base_routes[i]['left_exit_base_route'].junction_position.append(21)
+            self.base_routes[i]['left_exit_base_route'].junctions \
                 .append(self.junctions[21][17][self.c['switch_types']['left_exit_railroad_switch']])
-            self.base_routes[i][self.c['base_route_types']['left_exit_base_route']].junction_position.append(21)
-            self.base_routes[i][self.c['base_route_types']['left_exit_base_route']].junctions \
+            self.base_routes[i]['left_exit_base_route'].junction_position.append(21)
+            self.base_routes[i]['left_exit_base_route'].junctions \
                 .append(self.junctions[21][13][self.c['switch_types']['left_exit_railroad_switch']])
-            self.base_routes[i][self.c['base_route_types']['left_exit_base_route']].junction_position.append(21)
-            self.base_routes[i][self.c['base_route_types']['left_exit_base_route']].junctions \
+            self.base_routes[i]['left_exit_base_route'].junction_position.append(21)
+            self.base_routes[i]['left_exit_base_route'].junctions \
                 .append(self.junctions[21][9][self.c['switch_types']['left_exit_railroad_switch']])
-            self.base_routes[i][self.c['base_route_types']['left_exit_base_route']].junction_position.append(21)
-            self.base_routes[i][self.c['base_route_types']['left_exit_base_route']].junctions \
+            self.base_routes[i]['left_exit_base_route'].junction_position.append(21)
+            self.base_routes[i]['left_exit_base_route'].junctions \
                 .append(self.junctions[21][5][self.c['switch_types']['left_exit_railroad_switch']])
-            self.base_routes[i][self.c['base_route_types']['left_exit_base_route']].junction_position.append(21)
-            self.base_routes[i][self.c['base_route_types']['left_exit_base_route']].junctions \
+            self.base_routes[i]['left_exit_base_route'].junction_position.append(21)
+            self.base_routes[i]['left_exit_base_route'].junctions \
                 .append(self.junctions[21][3][self.c['switch_types']['left_exit_railroad_switch']])
-            self.base_routes[i][self.c['base_route_types']['left_exit_base_route']].junction_position.append(21)
-            self.base_routes[i][self.c['base_route_types']['left_exit_base_route']].junctions \
+            self.base_routes[i]['left_exit_base_route'].junction_position.append(21)
+            self.base_routes[i]['left_exit_base_route'].junctions \
                 .append(self.junctions[1][21][self.c['switch_types']['left_exit_railroad_switch']])
-            self.base_routes[i][self.c['base_route_types']['left_exit_base_route']].junction_position.append(21)
-            self.base_routes[i][self.c['base_route_types']['left_exit_base_route']].junctions \
+            self.base_routes[i]['left_exit_base_route'].junction_position.append(21)
+            self.base_routes[i]['left_exit_base_route'].junctions \
                 .append(self.junctions[2][1][self.c['crossover_types']['left_exit_crossover']])
-            self.base_routes[i][self.c['base_route_types']['left_exit_base_route']].junction_position.append([1, 1])
+            self.base_routes[i]['left_exit_base_route'].junction_position.append([1, 1])
 
             # ------------- right exit ---------------
-            self.base_routes[i][self.c['base_route_types']['right_exit_base_route']].junctions \
+            self.base_routes[i]['right_exit_base_route'].junctions \
                 .append(self.junctions[21][23][self.c['switch_types']['right_exit_railroad_switch']])
-            self.base_routes[i][self.c['base_route_types']['right_exit_base_route']].junction_position.append(i)
-            self.base_routes[i][self.c['base_route_types']['right_exit_base_route']].junctions \
+            self.base_routes[i]['right_exit_base_route'].junction_position.append(i)
+            self.base_routes[i]['right_exit_base_route'].junctions \
                 .append(self.junctions[29][21][self.c['switch_types']['right_exit_railroad_switch']])
-            self.base_routes[i][self.c['base_route_types']['right_exit_base_route']].junction_position.append(21)
-            self.base_routes[i][self.c['base_route_types']['right_exit_base_route']].junctions \
+            self.base_routes[i]['right_exit_base_route'].junction_position.append(21)
+            self.base_routes[i]['right_exit_base_route'].junctions \
                 .append(self.junctions[29][17][self.c['switch_types']['right_exit_railroad_switch']])
-            self.base_routes[i][self.c['base_route_types']['right_exit_base_route']].junction_position.append(29)
-            self.base_routes[i][self.c['base_route_types']['right_exit_base_route']].junctions \
+            self.base_routes[i]['right_exit_base_route'].junction_position.append(29)
+            self.base_routes[i]['right_exit_base_route'].junctions \
                 .append(self.junctions[29][13][self.c['switch_types']['right_exit_railroad_switch']])
-            self.base_routes[i][self.c['base_route_types']['right_exit_base_route']].junction_position.append(29)
-            self.base_routes[i][self.c['base_route_types']['right_exit_base_route']].junctions \
+            self.base_routes[i]['right_exit_base_route'].junction_position.append(29)
+            self.base_routes[i]['right_exit_base_route'].junctions \
                 .append(self.junctions[29][9][self.c['switch_types']['right_exit_railroad_switch']])
-            self.base_routes[i][self.c['base_route_types']['right_exit_base_route']].junction_position.append(29)
-            self.base_routes[i][self.c['base_route_types']['right_exit_base_route']].junctions \
+            self.base_routes[i]['right_exit_base_route'].junction_position.append(29)
+            self.base_routes[i]['right_exit_base_route'].junctions \
                 .append(self.junctions[29][5][self.c['switch_types']['right_exit_railroad_switch']])
-            self.base_routes[i][self.c['base_route_types']['right_exit_base_route']].junction_position.append(29)
-            self.base_routes[i][self.c['base_route_types']['right_exit_base_route']].junctions \
+            self.base_routes[i]['right_exit_base_route'].junction_position.append(29)
+            self.base_routes[i]['right_exit_base_route'].junctions \
                 .append(self.junctions[29][3][self.c['switch_types']['right_exit_railroad_switch']])
-            self.base_routes[i][self.c['base_route_types']['right_exit_base_route']].junction_position.append(29)
-            self.base_routes[i][self.c['base_route_types']['right_exit_base_route']].junctions \
+            self.base_routes[i]['right_exit_base_route'].junction_position.append(29)
+            self.base_routes[i]['right_exit_base_route'].junctions \
                 .append(self.junctions[1][29][self.c['switch_types']['right_exit_railroad_switch']])
-            self.base_routes[i][self.c['base_route_types']['right_exit_base_route']].junction_position.append(29)
-            self.base_routes[i][self.c['base_route_types']['right_exit_base_route']].junctions \
+            self.base_routes[i]['right_exit_base_route'].junction_position.append(29)
+            self.base_routes[i]['right_exit_base_route'].junctions \
                 .append(self.junctions[1][2][self.c['crossover_types']['right_exit_crossover']])
-            self.base_routes[i][self.c['base_route_types']['right_exit_base_route']].junction_position.append([1, 2])
+            self.base_routes[i]['right_exit_base_route'].junction_position.append([1, 2])
 
         # ------------- left side exit ---------------
-        self.base_routes[21][self.c['base_route_types']['left_side_exit_base_route']].junctions \
+        self.base_routes[21]['left_side_exit_base_route'].junctions \
             .append(self.junctions[23][21][self.c['crossover_types']['left_exit_crossover']])
-        self.base_routes[21][self.c['base_route_types']['left_side_exit_base_route']].junction_position \
+        self.base_routes[21]['left_side_exit_base_route'].junction_position \
             .append([21, 21])
-        self.base_routes[21][self.c['base_route_types']['left_side_exit_base_route']].junctions \
+        self.base_routes[21]['left_side_exit_base_route'].junctions \
             .append(self.junctions[101][21][self.c['switch_types']['left_exit_railroad_switch']])
-        self.base_routes[21][self.c['base_route_types']['left_side_exit_base_route']].junction_position.append(101)
-        self.base_routes[21][self.c['base_route_types']['left_side_exit_base_route']].junctions \
+        self.base_routes[21]['left_side_exit_base_route'].junction_position.append(101)
+        self.base_routes[21]['left_side_exit_base_route'].junctions \
             .append(self.junctions[101][103][self.c['crossover_types']['left_exit_crossover']])
-        self.base_routes[21][self.c['base_route_types']['left_side_exit_base_route']].junction_position \
+        self.base_routes[21]['left_side_exit_base_route'].junction_position \
             .append([101, 103])
         # ------------- left side exit ---------------
-        self.base_routes[23][self.c['base_route_types']['left_side_exit_base_route']].junctions \
+        self.base_routes[23]['left_side_exit_base_route'].junctions \
             .append(self.junctions[23][21][self.c['crossover_types']['left_exit_crossover']])
-        self.base_routes[23][self.c['base_route_types']['left_side_exit_base_route']].junction_position \
+        self.base_routes[23]['left_side_exit_base_route'].junction_position \
             .append([23, 23])
-        self.base_routes[23][self.c['base_route_types']['left_side_exit_base_route']].junctions \
+        self.base_routes[23]['left_side_exit_base_route'].junctions \
             .append(self.junctions[103][29][self.c['switch_types']['left_exit_railroad_switch']])
-        self.base_routes[23][self.c['base_route_types']['left_side_exit_base_route']].junction_position.append(103)
-        self.base_routes[23][self.c['base_route_types']['left_side_exit_base_route']].junctions \
+        self.base_routes[23]['left_side_exit_base_route'].junction_position.append(103)
+        self.base_routes[23]['left_side_exit_base_route'].junctions \
             .append(self.junctions[101][103][self.c['crossover_types']['left_exit_crossover']])
-        self.base_routes[23][self.c['base_route_types']['left_side_exit_base_route']].junction_position \
+        self.base_routes[23]['left_side_exit_base_route'].junction_position \
             .append([103, 103])
 
         for i in (25, 27):
             # ------------- left side entry ---------------
-            self.base_routes[i][self.c['base_route_types']['left_side_entry_base_route']].junctions \
+            self.base_routes[i]['left_side_entry_base_route'].junctions \
                 .append(self.junctions[101][103][self.c['crossover_types']['left_entry_crossover']])
-            self.base_routes[i][self.c['base_route_types']['left_side_entry_base_route']].junction_position \
+            self.base_routes[i]['left_side_entry_base_route'].junction_position \
                 .append([101, 103])
-            self.base_routes[i][self.c['base_route_types']['left_side_entry_base_route']].junctions \
+            self.base_routes[i]['left_side_entry_base_route'].junctions \
                 .append(self.junctions[103][29][self.c['switch_types']['left_entry_railroad_switch']])
-            self.base_routes[i][self.c['base_route_types']['left_side_entry_base_route']].junction_position.append(29)
-            self.base_routes[i][self.c['base_route_types']['left_side_entry_base_route']].junctions \
+            self.base_routes[i]['left_side_entry_base_route'].junction_position.append(29)
+            self.base_routes[i]['left_side_entry_base_route'].junctions \
                 .append(self.junctions[29][27][self.c['switch_types']['left_entry_railroad_switch']])
-            self.base_routes[i][self.c['base_route_types']['left_side_entry_base_route']].junction_position.append(27)
-            self.base_routes[i][self.c['base_route_types']['left_side_entry_base_route']].junctions \
+            self.base_routes[i]['left_side_entry_base_route'].junction_position.append(27)
+            self.base_routes[i]['left_side_entry_base_route'].junctions \
                 .append(self.junctions[27][25][self.c['switch_types']['left_entry_railroad_switch']])
-            self.base_routes[i][self.c['base_route_types']['left_side_entry_base_route']].junction_position.append(i)
+            self.base_routes[i]['left_side_entry_base_route'].junction_position.append(i)
 
             # ------------- left side exit ---------------
-            self.base_routes[i][self.c['base_route_types']['left_side_exit_base_route']].junctions \
+            self.base_routes[i]['left_side_exit_base_route'].junctions \
                 .append(self.junctions[27][25][self.c['switch_types']['left_exit_railroad_switch']])
-            self.base_routes[i][self.c['base_route_types']['left_side_exit_base_route']].junction_position.append(i)
-            self.base_routes[i][self.c['base_route_types']['left_side_exit_base_route']].junctions \
+            self.base_routes[i]['left_side_exit_base_route'].junction_position.append(i)
+            self.base_routes[i]['left_side_exit_base_route'].junctions \
                 .append(self.junctions[29][27][self.c['switch_types']['left_exit_railroad_switch']])
-            self.base_routes[i][self.c['base_route_types']['left_side_exit_base_route']].junction_position.append(27)
-            self.base_routes[i][self.c['base_route_types']['left_side_exit_base_route']].junctions \
+            self.base_routes[i]['left_side_exit_base_route'].junction_position.append(27)
+            self.base_routes[i]['left_side_exit_base_route'].junctions \
                 .append(self.junctions[103][29][self.c['switch_types']['left_exit_railroad_switch']])
-            self.base_routes[i][self.c['base_route_types']['left_side_exit_base_route']].junction_position.append(29)
-            self.base_routes[i][self.c['base_route_types']['left_side_exit_base_route']].junctions \
+            self.base_routes[i]['left_side_exit_base_route'].junction_position.append(29)
+            self.base_routes[i]['left_side_exit_base_route'].junctions \
                 .append(self.junctions[101][103][self.c['crossover_types']['left_exit_crossover']])
-            self.base_routes[i][self.c['base_route_types']['left_side_exit_base_route']].junction_position \
+            self.base_routes[i]['left_side_exit_base_route'].junction_position \
                 .append([103, 103])
 
             # -------------- right entry --------------
-            self.base_routes[i][self.c['base_route_types']['right_entry_base_route']].junctions \
+            self.base_routes[i]['right_entry_base_route'].junctions \
                 .append(self.junctions[1][2][self.c['crossover_types']['right_entry_crossover']])
-            self.base_routes[i][self.c['base_route_types']['right_entry_base_route']].junction_position.append([1, 1])
-            self.base_routes[i][self.c['base_route_types']['right_entry_base_route']].junctions \
+            self.base_routes[i]['right_entry_base_route'].junction_position.append([1, 1])
+            self.base_routes[i]['right_entry_base_route'].junctions \
                 .append(self.junctions[1][29][self.c['switch_types']['right_entry_railroad_switch']])
-            self.base_routes[i][self.c['base_route_types']['right_entry_base_route']].junction_position.append(29)
-            self.base_routes[i][self.c['base_route_types']['right_entry_base_route']].junctions \
+            self.base_routes[i]['right_entry_base_route'].junction_position.append(29)
+            self.base_routes[i]['right_entry_base_route'].junctions \
                 .append(self.junctions[29][3][self.c['switch_types']['right_entry_railroad_switch']])
-            self.base_routes[i][self.c['base_route_types']['right_entry_base_route']].junction_position.append(29)
-            self.base_routes[i][self.c['base_route_types']['right_entry_base_route']].junctions \
+            self.base_routes[i]['right_entry_base_route'].junction_position.append(29)
+            self.base_routes[i]['right_entry_base_route'].junctions \
                 .append(self.junctions[29][5][self.c['switch_types']['right_entry_railroad_switch']])
-            self.base_routes[i][self.c['base_route_types']['right_entry_base_route']].junction_position.append(29)
-            self.base_routes[i][self.c['base_route_types']['right_entry_base_route']].junctions \
+            self.base_routes[i]['right_entry_base_route'].junction_position.append(29)
+            self.base_routes[i]['right_entry_base_route'].junctions \
                 .append(self.junctions[29][9][self.c['switch_types']['right_entry_railroad_switch']])
-            self.base_routes[i][self.c['base_route_types']['right_entry_base_route']].junction_position.append(29)
-            self.base_routes[i][self.c['base_route_types']['right_entry_base_route']].junctions \
+            self.base_routes[i]['right_entry_base_route'].junction_position.append(29)
+            self.base_routes[i]['right_entry_base_route'].junctions \
                 .append(self.junctions[29][13][self.c['switch_types']['right_entry_railroad_switch']])
-            self.base_routes[i][self.c['base_route_types']['right_entry_base_route']].junction_position.append(29)
-            self.base_routes[i][self.c['base_route_types']['right_entry_base_route']].junctions \
+            self.base_routes[i]['right_entry_base_route'].junction_position.append(29)
+            self.base_routes[i]['right_entry_base_route'].junctions \
                 .append(self.junctions[29][17][self.c['switch_types']['right_entry_railroad_switch']])
-            self.base_routes[i][self.c['base_route_types']['right_entry_base_route']].junction_position.append(29)
-            self.base_routes[i][self.c['base_route_types']['right_entry_base_route']].junctions \
+            self.base_routes[i]['right_entry_base_route'].junction_position.append(29)
+            self.base_routes[i]['right_entry_base_route'].junctions \
                 .append(self.junctions[29][21][self.c['switch_types']['right_entry_railroad_switch']])
-            self.base_routes[i][self.c['base_route_types']['right_entry_base_route']].junction_position.append(29)
-            self.base_routes[i][self.c['base_route_types']['right_entry_base_route']].junctions \
+            self.base_routes[i]['right_entry_base_route'].junction_position.append(29)
+            self.base_routes[i]['right_entry_base_route'].junctions \
                 .append(self.junctions[29][25][self.c['switch_types']['right_entry_railroad_switch']])
-            self.base_routes[i][self.c['base_route_types']['right_entry_base_route']].junction_position.append(25)
-            self.base_routes[i][self.c['base_route_types']['right_entry_base_route']].junctions \
+            self.base_routes[i]['right_entry_base_route'].junction_position.append(25)
+            self.base_routes[i]['right_entry_base_route'].junctions \
                 .append(self.junctions[25][27][self.c['switch_types']['right_entry_railroad_switch']])
-            self.base_routes[i][self.c['base_route_types']['right_entry_base_route']].junction_position.append(i)
+            self.base_routes[i]['right_entry_base_route'].junction_position.append(i)
 
             # -------------- right exit --------------
-            self.base_routes[i][self.c['base_route_types']['right_exit_base_route']].junctions \
+            self.base_routes[i]['right_exit_base_route'].junctions \
                 .append(self.junctions[25][27][self.c['switch_types']['right_exit_railroad_switch']])
-            self.base_routes[i][self.c['base_route_types']['right_exit_base_route']].junction_position.append(i)
-            self.base_routes[i][self.c['base_route_types']['right_exit_base_route']].junctions \
+            self.base_routes[i]['right_exit_base_route'].junction_position.append(i)
+            self.base_routes[i]['right_exit_base_route'].junctions \
                 .append(self.junctions[29][25][self.c['switch_types']['right_exit_railroad_switch']])
-            self.base_routes[i][self.c['base_route_types']['right_exit_base_route']].junction_position.append(25)
-            self.base_routes[i][self.c['base_route_types']['right_exit_base_route']].junctions \
+            self.base_routes[i]['right_exit_base_route'].junction_position.append(25)
+            self.base_routes[i]['right_exit_base_route'].junctions \
                 .append(self.junctions[29][21][self.c['switch_types']['right_exit_railroad_switch']])
-            self.base_routes[i][self.c['base_route_types']['right_exit_base_route']].junction_position.append(29)
-            self.base_routes[i][self.c['base_route_types']['right_exit_base_route']].junctions \
+            self.base_routes[i]['right_exit_base_route'].junction_position.append(29)
+            self.base_routes[i]['right_exit_base_route'].junctions \
                 .append(self.junctions[29][17][self.c['switch_types']['right_exit_railroad_switch']])
-            self.base_routes[i][self.c['base_route_types']['right_exit_base_route']].junction_position.append(29)
-            self.base_routes[i][self.c['base_route_types']['right_exit_base_route']].junctions \
+            self.base_routes[i]['right_exit_base_route'].junction_position.append(29)
+            self.base_routes[i]['right_exit_base_route'].junctions \
                 .append(self.junctions[29][13][self.c['switch_types']['right_exit_railroad_switch']])
-            self.base_routes[i][self.c['base_route_types']['right_exit_base_route']].junction_position.append(29)
-            self.base_routes[i][self.c['base_route_types']['right_exit_base_route']].junctions \
+            self.base_routes[i]['right_exit_base_route'].junction_position.append(29)
+            self.base_routes[i]['right_exit_base_route'].junctions \
                 .append(self.junctions[29][9][self.c['switch_types']['right_exit_railroad_switch']])
-            self.base_routes[i][self.c['base_route_types']['right_exit_base_route']].junction_position.append(29)
-            self.base_routes[i][self.c['base_route_types']['right_exit_base_route']].junctions \
+            self.base_routes[i]['right_exit_base_route'].junction_position.append(29)
+            self.base_routes[i]['right_exit_base_route'].junctions \
                 .append(self.junctions[29][5][self.c['switch_types']['right_exit_railroad_switch']])
-            self.base_routes[i][self.c['base_route_types']['right_exit_base_route']].junction_position.append(29)
-            self.base_routes[i][self.c['base_route_types']['right_exit_base_route']].junctions \
+            self.base_routes[i]['right_exit_base_route'].junction_position.append(29)
+            self.base_routes[i]['right_exit_base_route'].junctions \
                 .append(self.junctions[29][3][self.c['switch_types']['right_exit_railroad_switch']])
-            self.base_routes[i][self.c['base_route_types']['right_exit_base_route']].junction_position.append(29)
-            self.base_routes[i][self.c['base_route_types']['right_exit_base_route']].junctions \
+            self.base_routes[i]['right_exit_base_route'].junction_position.append(29)
+            self.base_routes[i]['right_exit_base_route'].junctions \
                 .append(self.junctions[1][29][self.c['switch_types']['right_exit_railroad_switch']])
-            self.base_routes[i][self.c['base_route_types']['right_exit_base_route']].junction_position.append(29)
-            self.base_routes[i][self.c['base_route_types']['right_exit_base_route']].junctions \
+            self.base_routes[i]['right_exit_base_route'].junction_position.append(29)
+            self.base_routes[i]['right_exit_base_route'].junctions \
                 .append(self.junctions[1][2][self.c['crossover_types']['right_exit_crossover']])
-            self.base_routes[i][self.c['base_route_types']['right_exit_base_route']].junction_position.append([1, 2])
+            self.base_routes[i]['right_exit_base_route'].junction_position.append([1, 2])
 
         for i in (29, 31):
             # ------------- left side entry ---------------
-            self.base_routes[i][self.c['base_route_types']['left_side_entry_base_route']].junctions \
+            self.base_routes[i]['left_side_entry_base_route'].junctions \
                 .append(self.junctions[101][103][self.c['crossover_types']['left_entry_crossover']])
-            self.base_routes[i][self.c['base_route_types']['left_side_entry_base_route']].junction_position \
+            self.base_routes[i]['left_side_entry_base_route'].junction_position \
                 .append([101, 103])
-            self.base_routes[i][self.c['base_route_types']['left_side_entry_base_route']].junctions \
+            self.base_routes[i]['left_side_entry_base_route'].junctions \
                 .append(self.junctions[103][29][self.c['switch_types']['left_entry_railroad_switch']])
-            self.base_routes[i][self.c['base_route_types']['left_side_entry_base_route']].junction_position.append(29)
-            self.base_routes[i][self.c['base_route_types']['left_side_entry_base_route']].junctions \
+            self.base_routes[i]['left_side_entry_base_route'].junction_position.append(29)
+            self.base_routes[i]['left_side_entry_base_route'].junctions \
                 .append(self.junctions[29][27][self.c['switch_types']['left_entry_railroad_switch']])
-            self.base_routes[i][self.c['base_route_types']['left_side_entry_base_route']].junction_position.append(29)
-            self.base_routes[i][self.c['base_route_types']['left_side_entry_base_route']].junctions \
+            self.base_routes[i]['left_side_entry_base_route'].junction_position.append(29)
+            self.base_routes[i]['left_side_entry_base_route'].junctions \
                 .append(self.junctions[29][31][self.c['switch_types']['left_entry_railroad_switch']])
-            self.base_routes[i][self.c['base_route_types']['left_side_entry_base_route']].junction_position.append(i)
+            self.base_routes[i]['left_side_entry_base_route'].junction_position.append(i)
 
             # ------------- left side exit ---------------
-            self.base_routes[i][self.c['base_route_types']['left_side_exit_base_route']].junctions \
+            self.base_routes[i]['left_side_exit_base_route'].junctions \
                 .append(self.junctions[29][31][self.c['switch_types']['left_exit_railroad_switch']])
-            self.base_routes[i][self.c['base_route_types']['left_side_exit_base_route']].junction_position.append(i)
-            self.base_routes[i][self.c['base_route_types']['left_side_exit_base_route']].junctions \
+            self.base_routes[i]['left_side_exit_base_route'].junction_position.append(i)
+            self.base_routes[i]['left_side_exit_base_route'].junctions \
                 .append(self.junctions[29][27][self.c['switch_types']['left_exit_railroad_switch']])
-            self.base_routes[i][self.c['base_route_types']['left_side_exit_base_route']].junction_position.append(29)
-            self.base_routes[i][self.c['base_route_types']['left_side_exit_base_route']].junctions \
+            self.base_routes[i]['left_side_exit_base_route'].junction_position.append(29)
+            self.base_routes[i]['left_side_exit_base_route'].junctions \
                 .append(self.junctions[103][29][self.c['switch_types']['left_exit_railroad_switch']])
-            self.base_routes[i][self.c['base_route_types']['left_side_exit_base_route']].junction_position.append(29)
-            self.base_routes[i][self.c['base_route_types']['left_side_exit_base_route']].junctions \
+            self.base_routes[i]['left_side_exit_base_route'].junction_position.append(29)
+            self.base_routes[i]['left_side_exit_base_route'].junctions \
                 .append(self.junctions[101][103][self.c['crossover_types']['left_exit_crossover']])
-            self.base_routes[i][self.c['base_route_types']['left_side_exit_base_route']].junction_position \
+            self.base_routes[i]['left_side_exit_base_route'].junction_position \
                 .append([103, 103])
 
             # -------------- right entry --------------
-            self.base_routes[i][self.c['base_route_types']['right_entry_base_route']].junctions \
+            self.base_routes[i]['right_entry_base_route'].junctions \
                 .append(self.junctions[1][2][self.c['crossover_types']['right_entry_crossover']])
-            self.base_routes[i][self.c['base_route_types']['right_entry_base_route']].junction_position.append([1, 1])
-            self.base_routes[i][self.c['base_route_types']['right_entry_base_route']].junctions \
+            self.base_routes[i]['right_entry_base_route'].junction_position.append([1, 1])
+            self.base_routes[i]['right_entry_base_route'].junctions \
                 .append(self.junctions[1][29][self.c['switch_types']['right_entry_railroad_switch']])
-            self.base_routes[i][self.c['base_route_types']['right_entry_base_route']].junction_position.append(29)
-            self.base_routes[i][self.c['base_route_types']['right_entry_base_route']].junctions \
+            self.base_routes[i]['right_entry_base_route'].junction_position.append(29)
+            self.base_routes[i]['right_entry_base_route'].junctions \
                 .append(self.junctions[29][3][self.c['switch_types']['right_entry_railroad_switch']])
-            self.base_routes[i][self.c['base_route_types']['right_entry_base_route']].junction_position.append(29)
-            self.base_routes[i][self.c['base_route_types']['right_entry_base_route']].junctions \
+            self.base_routes[i]['right_entry_base_route'].junction_position.append(29)
+            self.base_routes[i]['right_entry_base_route'].junctions \
                 .append(self.junctions[29][5][self.c['switch_types']['right_entry_railroad_switch']])
-            self.base_routes[i][self.c['base_route_types']['right_entry_base_route']].junction_position.append(29)
-            self.base_routes[i][self.c['base_route_types']['right_entry_base_route']].junctions \
+            self.base_routes[i]['right_entry_base_route'].junction_position.append(29)
+            self.base_routes[i]['right_entry_base_route'].junctions \
                 .append(self.junctions[29][9][self.c['switch_types']['right_entry_railroad_switch']])
-            self.base_routes[i][self.c['base_route_types']['right_entry_base_route']].junction_position.append(29)
-            self.base_routes[i][self.c['base_route_types']['right_entry_base_route']].junctions \
+            self.base_routes[i]['right_entry_base_route'].junction_position.append(29)
+            self.base_routes[i]['right_entry_base_route'].junctions \
                 .append(self.junctions[29][13][self.c['switch_types']['right_entry_railroad_switch']])
-            self.base_routes[i][self.c['base_route_types']['right_entry_base_route']].junction_position.append(29)
-            self.base_routes[i][self.c['base_route_types']['right_entry_base_route']].junctions \
+            self.base_routes[i]['right_entry_base_route'].junction_position.append(29)
+            self.base_routes[i]['right_entry_base_route'].junctions \
                 .append(self.junctions[29][17][self.c['switch_types']['right_entry_railroad_switch']])
-            self.base_routes[i][self.c['base_route_types']['right_entry_base_route']].junction_position.append(29)
-            self.base_routes[i][self.c['base_route_types']['right_entry_base_route']].junctions \
+            self.base_routes[i]['right_entry_base_route'].junction_position.append(29)
+            self.base_routes[i]['right_entry_base_route'].junctions \
                 .append(self.junctions[29][21][self.c['switch_types']['right_entry_railroad_switch']])
-            self.base_routes[i][self.c['base_route_types']['right_entry_base_route']].junction_position.append(29)
-            self.base_routes[i][self.c['base_route_types']['right_entry_base_route']].junctions \
+            self.base_routes[i]['right_entry_base_route'].junction_position.append(29)
+            self.base_routes[i]['right_entry_base_route'].junctions \
                 .append(self.junctions[29][25][self.c['switch_types']['right_entry_railroad_switch']])
-            self.base_routes[i][self.c['base_route_types']['right_entry_base_route']].junction_position.append(29)
-            self.base_routes[i][self.c['base_route_types']['right_entry_base_route']].junctions \
+            self.base_routes[i]['right_entry_base_route'].junction_position.append(29)
+            self.base_routes[i]['right_entry_base_route'].junctions \
                 .append(self.junctions[29][31][self.c['switch_types']['right_entry_railroad_switch']])
-            self.base_routes[i][self.c['base_route_types']['right_entry_base_route']].junction_position.append(i)
+            self.base_routes[i]['right_entry_base_route'].junction_position.append(i)
 
             # -------------- right exit --------------
-            self.base_routes[i][self.c['base_route_types']['right_exit_base_route']].junctions \
+            self.base_routes[i]['right_exit_base_route'].junctions \
                 .append(self.junctions[29][31][self.c['switch_types']['right_exit_railroad_switch']])
-            self.base_routes[i][self.c['base_route_types']['right_exit_base_route']].junction_position.append(i)
-            self.base_routes[i][self.c['base_route_types']['right_exit_base_route']].junctions \
+            self.base_routes[i]['right_exit_base_route'].junction_position.append(i)
+            self.base_routes[i]['right_exit_base_route'].junctions \
                 .append(self.junctions[29][25][self.c['switch_types']['right_exit_railroad_switch']])
-            self.base_routes[i][self.c['base_route_types']['right_exit_base_route']].junction_position.append(29)
-            self.base_routes[i][self.c['base_route_types']['right_exit_base_route']].junctions \
+            self.base_routes[i]['right_exit_base_route'].junction_position.append(29)
+            self.base_routes[i]['right_exit_base_route'].junctions \
                 .append(self.junctions[29][21][self.c['switch_types']['right_exit_railroad_switch']])
-            self.base_routes[i][self.c['base_route_types']['right_exit_base_route']].junction_position.append(29)
-            self.base_routes[i][self.c['base_route_types']['right_exit_base_route']].junctions \
+            self.base_routes[i]['right_exit_base_route'].junction_position.append(29)
+            self.base_routes[i]['right_exit_base_route'].junctions \
                 .append(self.junctions[29][17][self.c['switch_types']['right_exit_railroad_switch']])
-            self.base_routes[i][self.c['base_route_types']['right_exit_base_route']].junction_position.append(29)
-            self.base_routes[i][self.c['base_route_types']['right_exit_base_route']].junctions \
+            self.base_routes[i]['right_exit_base_route'].junction_position.append(29)
+            self.base_routes[i]['right_exit_base_route'].junctions \
                 .append(self.junctions[29][13][self.c['switch_types']['right_exit_railroad_switch']])
-            self.base_routes[i][self.c['base_route_types']['right_exit_base_route']].junction_position.append(29)
-            self.base_routes[i][self.c['base_route_types']['right_exit_base_route']].junctions \
+            self.base_routes[i]['right_exit_base_route'].junction_position.append(29)
+            self.base_routes[i]['right_exit_base_route'].junctions \
                 .append(self.junctions[29][9][self.c['switch_types']['right_exit_railroad_switch']])
-            self.base_routes[i][self.c['base_route_types']['right_exit_base_route']].junction_position.append(29)
-            self.base_routes[i][self.c['base_route_types']['right_exit_base_route']].junctions \
+            self.base_routes[i]['right_exit_base_route'].junction_position.append(29)
+            self.base_routes[i]['right_exit_base_route'].junctions \
                 .append(self.junctions[29][5][self.c['switch_types']['right_exit_railroad_switch']])
-            self.base_routes[i][self.c['base_route_types']['right_exit_base_route']].junction_position.append(29)
-            self.base_routes[i][self.c['base_route_types']['right_exit_base_route']].junctions \
+            self.base_routes[i]['right_exit_base_route'].junction_position.append(29)
+            self.base_routes[i]['right_exit_base_route'].junctions \
                 .append(self.junctions[29][3][self.c['switch_types']['right_exit_railroad_switch']])
-            self.base_routes[i][self.c['base_route_types']['right_exit_base_route']].junction_position.append(29)
-            self.base_routes[i][self.c['base_route_types']['right_exit_base_route']].junctions \
+            self.base_routes[i]['right_exit_base_route'].junction_position.append(29)
+            self.base_routes[i]['right_exit_base_route'].junctions \
                 .append(self.junctions[1][29][self.c['switch_types']['right_exit_railroad_switch']])
-            self.base_routes[i][self.c['base_route_types']['right_exit_base_route']].junction_position.append(29)
-            self.base_routes[i][self.c['base_route_types']['right_exit_base_route']].junctions \
+            self.base_routes[i]['right_exit_base_route'].junction_position.append(29)
+            self.base_routes[i]['right_exit_base_route'].junctions \
                 .append(self.junctions[1][2][self.c['crossover_types']['right_exit_crossover']])
-            self.base_routes[i][self.c['base_route_types']['right_exit_base_route']].junction_position.append([1, 2])
+            self.base_routes[i]['right_exit_base_route'].junction_position.append([1, 2])
 
         self.logger.info('trail points initialized for odd tracks')
 
-        self.base_routes[2][self.c['base_route_types']['left_entry_base_route']].junctions\
+        self.base_routes[2]['left_entry_base_route'].junctions\
             .append(self.junctions[2][1][self.c['crossover_types']['left_entry_crossover']])
-        self.base_routes[2][self.c['base_route_types']['left_entry_base_route']].junction_position.append([2, 2])
-        self.base_routes[2][self.c['base_route_types']['left_entry_base_route']].junctions \
+        self.base_routes[2]['left_entry_base_route'].junction_position.append([2, 2])
+        self.base_routes[2]['left_entry_base_route'].junctions \
             .append(self.junctions[2][30][self.c['switch_types']['left_entry_railroad_switch']])
-        self.base_routes[2][self.c['base_route_types']['left_entry_base_route']].junction_position.append(2)
+        self.base_routes[2]['left_entry_base_route'].junction_position.append(2)
 
-        self.base_routes[2][self.c['base_route_types']['right_entry_base_route']].junctions\
+        self.base_routes[2]['right_entry_base_route'].junctions\
             .append(self.junctions[1][2][self.c['crossover_types']['right_entry_crossover']])
-        self.base_routes[2][self.c['base_route_types']['right_entry_base_route']].junction_position.append([1, 2])
-        self.base_routes[2][self.c['base_route_types']['right_entry_base_route']].junctions \
+        self.base_routes[2]['right_entry_base_route'].junction_position.append([1, 2])
+        self.base_routes[2]['right_entry_base_route'].junctions \
             .append(self.junctions[2][22][self.c['switch_types']['right_entry_railroad_switch']])
-        self.base_routes[2][self.c['base_route_types']['right_entry_base_route']].junction_position.append(2)
+        self.base_routes[2]['right_entry_base_route'].junction_position.append(2)
 
-        self.base_routes[2][self.c['base_route_types']['left_exit_base_route']].junctions \
+        self.base_routes[2]['left_exit_base_route'].junctions \
             .append(self.junctions[2][30][self.c['switch_types']['left_exit_railroad_switch']])
-        self.base_routes[2][self.c['base_route_types']['left_exit_base_route']].junction_position.append(2)
-        self.base_routes[2][self.c['base_route_types']['left_exit_base_route']].junctions\
+        self.base_routes[2]['left_exit_base_route'].junction_position.append(2)
+        self.base_routes[2]['left_exit_base_route'].junctions\
             .append(self.junctions[2][1][self.c['crossover_types']['left_exit_crossover']])
-        self.base_routes[2][self.c['base_route_types']['left_exit_base_route']].junction_position.append([2, 1])
+        self.base_routes[2]['left_exit_base_route'].junction_position.append([2, 1])
 
-        self.base_routes[2][self.c['base_route_types']['right_exit_base_route']].junctions \
+        self.base_routes[2]['right_exit_base_route'].junctions \
             .append(self.junctions[2][22][self.c['switch_types']['right_exit_railroad_switch']])
-        self.base_routes[2][self.c['base_route_types']['right_exit_base_route']].junction_position.append(2)
-        self.base_routes[2][self.c['base_route_types']['right_exit_base_route']].junctions\
+        self.base_routes[2]['right_exit_base_route'].junction_position.append(2)
+        self.base_routes[2]['right_exit_base_route'].junctions\
             .append(self.junctions[1][2][self.c['crossover_types']['right_exit_crossover']])
-        self.base_routes[2][self.c['base_route_types']['right_exit_base_route']].junction_position.append([2, 2])
+        self.base_routes[2]['right_exit_base_route'].junction_position.append([2, 2])
 
-        self.base_routes[4][self.c['base_route_types']['left_entry_base_route']].junctions\
+        self.base_routes[4]['left_entry_base_route'].junctions\
             .append(self.junctions[2][1][self.c['crossover_types']['left_entry_crossover']])
-        self.base_routes[4][self.c['base_route_types']['left_entry_base_route']].junction_position.append([2, 2])
-        self.base_routes[4][self.c['base_route_types']['left_entry_base_route']].junctions \
+        self.base_routes[4]['left_entry_base_route'].junction_position.append([2, 2])
+        self.base_routes[4]['left_entry_base_route'].junctions \
             .append(self.junctions[2][30][self.c['switch_types']['left_entry_railroad_switch']])
-        self.base_routes[4][self.c['base_route_types']['left_entry_base_route']].junction_position.append(30)
-        self.base_routes[4][self.c['base_route_types']['left_entry_base_route']].junctions \
+        self.base_routes[4]['left_entry_base_route'].junction_position.append(30)
+        self.base_routes[4]['left_entry_base_route'].junctions \
             .append(self.junctions[30][4][self.c['switch_types']['left_entry_railroad_switch']])
-        self.base_routes[4][self.c['base_route_types']['left_entry_base_route']].junction_position.append(4)
+        self.base_routes[4]['left_entry_base_route'].junction_position.append(4)
 
-        self.base_routes[4][self.c['base_route_types']['right_entry_base_route']].junctions\
+        self.base_routes[4]['right_entry_base_route'].junctions\
             .append(self.junctions[1][2][self.c['crossover_types']['right_entry_crossover']])
-        self.base_routes[4][self.c['base_route_types']['right_entry_base_route']].junction_position.append([1, 2])
-        self.base_routes[4][self.c['base_route_types']['right_entry_base_route']].junctions \
+        self.base_routes[4]['right_entry_base_route'].junction_position.append([1, 2])
+        self.base_routes[4]['right_entry_base_route'].junctions \
             .append(self.junctions[2][22][self.c['switch_types']['right_entry_railroad_switch']])
-        self.base_routes[4][self.c['base_route_types']['right_entry_base_route']].junction_position.append(22)
-        self.base_routes[4][self.c['base_route_types']['right_entry_base_route']].junctions \
+        self.base_routes[4]['right_entry_base_route'].junction_position.append(22)
+        self.base_routes[4]['right_entry_base_route'].junctions \
             .append(self.junctions[22][4][self.c['switch_types']['right_entry_railroad_switch']])
-        self.base_routes[4][self.c['base_route_types']['right_entry_base_route']].junction_position.append(4)
+        self.base_routes[4]['right_entry_base_route'].junction_position.append(4)
 
-        self.base_routes[4][self.c['base_route_types']['left_exit_base_route']].junctions \
+        self.base_routes[4]['left_exit_base_route'].junctions \
             .append(self.junctions[30][4][self.c['switch_types']['left_exit_railroad_switch']])
-        self.base_routes[4][self.c['base_route_types']['left_exit_base_route']].junction_position.append(4)
-        self.base_routes[4][self.c['base_route_types']['left_exit_base_route']].junctions \
+        self.base_routes[4]['left_exit_base_route'].junction_position.append(4)
+        self.base_routes[4]['left_exit_base_route'].junctions \
             .append(self.junctions[2][30][self.c['switch_types']['left_exit_railroad_switch']])
-        self.base_routes[4][self.c['base_route_types']['left_exit_base_route']].junction_position.append(30)
-        self.base_routes[4][self.c['base_route_types']['left_exit_base_route']].junctions\
+        self.base_routes[4]['left_exit_base_route'].junction_position.append(30)
+        self.base_routes[4]['left_exit_base_route'].junctions\
             .append(self.junctions[2][1][self.c['crossover_types']['left_exit_crossover']])
-        self.base_routes[4][self.c['base_route_types']['left_exit_base_route']].junction_position.append([2, 1])
+        self.base_routes[4]['left_exit_base_route'].junction_position.append([2, 1])
 
-        self.base_routes[4][self.c['base_route_types']['right_exit_base_route']].junctions \
+        self.base_routes[4]['right_exit_base_route'].junctions \
             .append(self.junctions[22][4][self.c['switch_types']['right_exit_railroad_switch']])
-        self.base_routes[4][self.c['base_route_types']['right_exit_base_route']].junction_position.append(4)
-        self.base_routes[4][self.c['base_route_types']['right_exit_base_route']].junctions \
+        self.base_routes[4]['right_exit_base_route'].junction_position.append(4)
+        self.base_routes[4]['right_exit_base_route'].junctions \
             .append(self.junctions[2][22][self.c['switch_types']['right_exit_railroad_switch']])
-        self.base_routes[4][self.c['base_route_types']['right_exit_base_route']].junction_position.append(22)
-        self.base_routes[4][self.c['base_route_types']['right_exit_base_route']].junctions\
+        self.base_routes[4]['right_exit_base_route'].junction_position.append(22)
+        self.base_routes[4]['right_exit_base_route'].junctions\
             .append(self.junctions[1][2][self.c['crossover_types']['right_exit_crossover']])
-        self.base_routes[4][self.c['base_route_types']['right_exit_base_route']].junction_position.append([2, 2])
+        self.base_routes[4]['right_exit_base_route'].junction_position.append([2, 2])
 
         for i in range(6, 21, 4):
             # --------------- left entry -----------------
-            self.base_routes[i][self.c['base_route_types']['left_entry_base_route']].junctions \
+            self.base_routes[i]['left_entry_base_route'].junctions \
                 .append(self.junctions[2][1][self.c['crossover_types']['left_entry_crossover']])
-            self.base_routes[i][self.c['base_route_types']['left_entry_base_route']].junction_position.append([2, 2])
-            self.base_routes[i][self.c['base_route_types']['left_entry_base_route']].junctions \
+            self.base_routes[i]['left_entry_base_route'].junction_position.append([2, 2])
+            self.base_routes[i]['left_entry_base_route'].junctions \
                 .append(self.junctions[2][30][self.c['switch_types']['left_entry_railroad_switch']])
-            self.base_routes[i][self.c['base_route_types']['left_entry_base_route']].junction_position.append(30)
-            self.base_routes[i][self.c['base_route_types']['left_entry_base_route']].junctions \
+            self.base_routes[i]['left_entry_base_route'].junction_position.append(30)
+            self.base_routes[i]['left_entry_base_route'].junctions \
                 .append(self.junctions[30][4][self.c['switch_types']['left_entry_railroad_switch']])
-            self.base_routes[i][self.c['base_route_types']['left_entry_base_route']].junction_position.append(30)
+            self.base_routes[i]['left_entry_base_route'].junction_position.append(30)
             for j in range(6, i, 4):
-                self.base_routes[i][self.c['base_route_types']['left_entry_base_route']].junctions \
+                self.base_routes[i]['left_entry_base_route'].junctions \
                     .append(self.junctions[30][j][self.c['switch_types']['left_entry_railroad_switch']])
-                self.base_routes[i][self.c['base_route_types']['left_entry_base_route']].junction_position.append(30)
+                self.base_routes[i]['left_entry_base_route'].junction_position.append(30)
 
-            self.base_routes[i][self.c['base_route_types']['left_entry_base_route']].junctions \
+            self.base_routes[i]['left_entry_base_route'].junctions \
                 .append(self.junctions[30][i][self.c['switch_types']['left_entry_railroad_switch']])
-            self.base_routes[i][self.c['base_route_types']['left_entry_base_route']].junction_position.append(i)
-            self.base_routes[i][self.c['base_route_types']['left_entry_base_route']].junctions \
+            self.base_routes[i]['left_entry_base_route'].junction_position.append(i)
+            self.base_routes[i]['left_entry_base_route'].junctions \
                 .append(self.junctions[i][i + 2][self.c['switch_types']['left_entry_railroad_switch']])
-            self.base_routes[i][self.c['base_route_types']['left_entry_base_route']].junction_position.append(i)
+            self.base_routes[i]['left_entry_base_route'].junction_position.append(i)
 
             # --------------------- right entry ---------------
-            self.base_routes[i][self.c['base_route_types']['right_entry_base_route']].junctions \
+            self.base_routes[i]['right_entry_base_route'].junctions \
                 .append(self.junctions[1][2][self.c['crossover_types']['right_entry_crossover']])
-            self.base_routes[i][self.c['base_route_types']['right_entry_base_route']].junction_position.append([1, 2])
-            self.base_routes[i][self.c['base_route_types']['right_entry_base_route']].junctions \
+            self.base_routes[i]['right_entry_base_route'].junction_position.append([1, 2])
+            self.base_routes[i]['right_entry_base_route'].junctions \
                 .append(self.junctions[2][22][self.c['switch_types']['right_entry_railroad_switch']])
-            self.base_routes[i][self.c['base_route_types']['right_entry_base_route']].junction_position.append(22)
-            self.base_routes[i][self.c['base_route_types']['right_entry_base_route']].junctions \
+            self.base_routes[i]['right_entry_base_route'].junction_position.append(22)
+            self.base_routes[i]['right_entry_base_route'].junctions \
                 .append(self.junctions[22][4][self.c['switch_types']['right_entry_railroad_switch']])
-            self.base_routes[i][self.c['base_route_types']['right_entry_base_route']].junction_position.append(22)
+            self.base_routes[i]['right_entry_base_route'].junction_position.append(22)
             for j in range(6, i, 4):
-                self.base_routes[i][self.c['base_route_types']['right_entry_base_route']].junctions \
+                self.base_routes[i]['right_entry_base_route'].junctions \
                     .append(self.junctions[22][j][self.c['switch_types']['right_entry_railroad_switch']])
-                self.base_routes[i][self.c['base_route_types']['right_entry_base_route']].junction_position.append(22)
+                self.base_routes[i]['right_entry_base_route'].junction_position.append(22)
 
-            self.base_routes[i][self.c['base_route_types']['right_entry_base_route']].junctions \
+            self.base_routes[i]['right_entry_base_route'].junctions \
                 .append(self.junctions[22][i][self.c['switch_types']['right_entry_railroad_switch']])
-            self.base_routes[i][self.c['base_route_types']['right_entry_base_route']].junction_position.append(i)
-            self.base_routes[i][self.c['base_route_types']['right_entry_base_route']].junctions \
+            self.base_routes[i]['right_entry_base_route'].junction_position.append(i)
+            self.base_routes[i]['right_entry_base_route'].junctions \
                 .append(self.junctions[i][i + 2][self.c['switch_types']['right_entry_railroad_switch']])
-            self.base_routes[i][self.c['base_route_types']['right_entry_base_route']].junction_position.append(i)
+            self.base_routes[i]['right_entry_base_route'].junction_position.append(i)
 
             # ----------------- left exit ---------------
-            self.base_routes[i][self.c['base_route_types']['left_exit_base_route']].junctions \
+            self.base_routes[i]['left_exit_base_route'].junctions \
                 .append(self.junctions[i][i + 2][self.c['switch_types']['left_exit_railroad_switch']])
-            self.base_routes[i][self.c['base_route_types']['left_exit_base_route']].junction_position.append(i)
-            self.base_routes[i][self.c['base_route_types']['left_exit_base_route']].junctions \
+            self.base_routes[i]['left_exit_base_route'].junction_position.append(i)
+            self.base_routes[i]['left_exit_base_route'].junctions \
                 .append(self.junctions[30][i][self.c['switch_types']['left_exit_railroad_switch']])
-            self.base_routes[i][self.c['base_route_types']['left_exit_base_route']].junction_position.append(i)
+            self.base_routes[i]['left_exit_base_route'].junction_position.append(i)
             if i > 6:
                 for j in range(i - 4, 5, -4):
-                    self.base_routes[i][self.c['base_route_types']['left_exit_base_route']].junctions \
+                    self.base_routes[i]['left_exit_base_route'].junctions \
                         .append(self.junctions[30][j][self.c['switch_types']['left_exit_railroad_switch']])
-                    self.base_routes[i][self.c['base_route_types']['left_exit_base_route']].junction_position.append(30)
+                    self.base_routes[i]['left_exit_base_route'].junction_position.append(30)
 
-            self.base_routes[i][self.c['base_route_types']['left_exit_base_route']].junctions \
+            self.base_routes[i]['left_exit_base_route'].junctions \
                 .append(self.junctions[30][4][self.c['switch_types']['left_exit_railroad_switch']])
-            self.base_routes[i][self.c['base_route_types']['left_exit_base_route']].junction_position.append(30)
-            self.base_routes[i][self.c['base_route_types']['left_exit_base_route']].junctions \
+            self.base_routes[i]['left_exit_base_route'].junction_position.append(30)
+            self.base_routes[i]['left_exit_base_route'].junctions \
                 .append(self.junctions[2][30][self.c['switch_types']['left_exit_railroad_switch']])
-            self.base_routes[i][self.c['base_route_types']['left_exit_base_route']].junction_position.append(30)
-            self.base_routes[i][self.c['base_route_types']['left_exit_base_route']].junctions \
+            self.base_routes[i]['left_exit_base_route'].junction_position.append(30)
+            self.base_routes[i]['left_exit_base_route'].junctions \
                 .append(self.junctions[2][1][self.c['crossover_types']['left_exit_crossover']])
-            self.base_routes[i][self.c['base_route_types']['left_exit_base_route']].junction_position.append([2, 1])
+            self.base_routes[i]['left_exit_base_route'].junction_position.append([2, 1])
 
             # ---------------- right exit ------------------
-            self.base_routes[i][self.c['base_route_types']['right_exit_base_route']].junctions \
+            self.base_routes[i]['right_exit_base_route'].junctions \
                 .append(self.junctions[i][i + 2][self.c['switch_types']['right_exit_railroad_switch']])
-            self.base_routes[i][self.c['base_route_types']['right_exit_base_route']].junction_position.append(i)
-            self.base_routes[i][self.c['base_route_types']['right_exit_base_route']].junctions \
+            self.base_routes[i]['right_exit_base_route'].junction_position.append(i)
+            self.base_routes[i]['right_exit_base_route'].junctions \
                 .append(self.junctions[22][i][self.c['switch_types']['right_exit_railroad_switch']])
-            self.base_routes[i][self.c['base_route_types']['right_exit_base_route']].junction_position.append(i)
+            self.base_routes[i]['right_exit_base_route'].junction_position.append(i)
             if i > 6:
                 for j in range(i - 4, 5, -4):
-                    self.base_routes[i][self.c['base_route_types']['right_exit_base_route']].junctions \
+                    self.base_routes[i]['right_exit_base_route'].junctions \
                         .append(self.junctions[22][j][self.c['switch_types']['right_exit_railroad_switch']])
-                    self.base_routes[i][self.c['base_route_types']['right_exit_base_route']].junction_position.append(22)
+                    self.base_routes[i]['right_exit_base_route'].junction_position.append(22)
 
-            self.base_routes[i][self.c['base_route_types']['right_exit_base_route']].junctions \
+            self.base_routes[i]['right_exit_base_route'].junctions \
                 .append(self.junctions[22][4][self.c['switch_types']['right_exit_railroad_switch']])
-            self.base_routes[i][self.c['base_route_types']['right_exit_base_route']].junction_position.append(22)
-            self.base_routes[i][self.c['base_route_types']['right_exit_base_route']].junctions \
+            self.base_routes[i]['right_exit_base_route'].junction_position.append(22)
+            self.base_routes[i]['right_exit_base_route'].junctions \
                 .append(self.junctions[2][22][self.c['switch_types']['right_exit_railroad_switch']])
-            self.base_routes[i][self.c['base_route_types']['right_exit_base_route']].junction_position.append(22)
-            self.base_routes[i][self.c['base_route_types']['right_exit_base_route']].junctions \
+            self.base_routes[i]['right_exit_base_route'].junction_position.append(22)
+            self.base_routes[i]['right_exit_base_route'].junctions \
                 .append(self.junctions[1][2][self.c['crossover_types']['right_exit_crossover']])
-            self.base_routes[i][self.c['base_route_types']['right_exit_base_route']].junction_position.append([2, 2])
+            self.base_routes[i]['right_exit_base_route'].junction_position.append([2, 2])
 
         for i in range(8, 21, 4):
             # --------------- left entry -----------------
-            self.base_routes[i][self.c['base_route_types']['left_entry_base_route']].junctions \
+            self.base_routes[i]['left_entry_base_route'].junctions \
                 .append(self.junctions[2][1][self.c['crossover_types']['left_entry_crossover']])
-            self.base_routes[i][self.c['base_route_types']['left_entry_base_route']].junction_position.append([2, 2])
-            self.base_routes[i][self.c['base_route_types']['left_entry_base_route']].junctions \
+            self.base_routes[i]['left_entry_base_route'].junction_position.append([2, 2])
+            self.base_routes[i]['left_entry_base_route'].junctions \
                 .append(self.junctions[2][30][self.c['switch_types']['left_entry_railroad_switch']])
-            self.base_routes[i][self.c['base_route_types']['left_entry_base_route']].junction_position.append(30)
-            self.base_routes[i][self.c['base_route_types']['left_entry_base_route']].junctions \
+            self.base_routes[i]['left_entry_base_route'].junction_position.append(30)
+            self.base_routes[i]['left_entry_base_route'].junctions \
                 .append(self.junctions[30][4][self.c['switch_types']['left_entry_railroad_switch']])
-            self.base_routes[i][self.c['base_route_types']['left_entry_base_route']].junction_position.append(30)
+            self.base_routes[i]['left_entry_base_route'].junction_position.append(30)
             for j in range(6, i - 2, 4):
-                self.base_routes[i][self.c['base_route_types']['left_entry_base_route']].junctions \
+                self.base_routes[i]['left_entry_base_route'].junctions \
                     .append(self.junctions[30][j][self.c['switch_types']['left_entry_railroad_switch']])
-                self.base_routes[i][self.c['base_route_types']['left_entry_base_route']].junction_position.append(30)
+                self.base_routes[i]['left_entry_base_route'].junction_position.append(30)
 
-            self.base_routes[i][self.c['base_route_types']['left_entry_base_route']].junctions \
+            self.base_routes[i]['left_entry_base_route'].junctions \
                 .append(self.junctions[30][i - 2][self.c['switch_types']['left_entry_railroad_switch']])
-            self.base_routes[i][self.c['base_route_types']['left_entry_base_route']].junction_position.append(i - 2)
-            self.base_routes[i][self.c['base_route_types']['left_entry_base_route']].junctions \
+            self.base_routes[i]['left_entry_base_route'].junction_position.append(i - 2)
+            self.base_routes[i]['left_entry_base_route'].junctions \
                 .append(self.junctions[i - 2][i][self.c['switch_types']['left_entry_railroad_switch']])
-            self.base_routes[i][self.c['base_route_types']['left_entry_base_route']].junction_position.append(i)
+            self.base_routes[i]['left_entry_base_route'].junction_position.append(i)
 
             # --------------------- right entry ---------------
-            self.base_routes[i][self.c['base_route_types']['right_entry_base_route']].junctions \
+            self.base_routes[i]['right_entry_base_route'].junctions \
                 .append(self.junctions[1][2][self.c['crossover_types']['right_entry_crossover']])
-            self.base_routes[i][self.c['base_route_types']['right_entry_base_route']].junction_position.append([1, 2])
-            self.base_routes[i][self.c['base_route_types']['right_entry_base_route']].junctions \
+            self.base_routes[i]['right_entry_base_route'].junction_position.append([1, 2])
+            self.base_routes[i]['right_entry_base_route'].junctions \
                 .append(self.junctions[2][22][self.c['switch_types']['right_entry_railroad_switch']])
-            self.base_routes[i][self.c['base_route_types']['right_entry_base_route']].junction_position.append(22)
-            self.base_routes[i][self.c['base_route_types']['right_entry_base_route']].junctions \
+            self.base_routes[i]['right_entry_base_route'].junction_position.append(22)
+            self.base_routes[i]['right_entry_base_route'].junctions \
                 .append(self.junctions[22][4][self.c['switch_types']['right_entry_railroad_switch']])
-            self.base_routes[i][self.c['base_route_types']['right_entry_base_route']].junction_position.append(22)
+            self.base_routes[i]['right_entry_base_route'].junction_position.append(22)
             for j in range(6, i - 2, 4):
-                self.base_routes[i][self.c['base_route_types']['right_entry_base_route']].junctions \
+                self.base_routes[i]['right_entry_base_route'].junctions \
                     .append(self.junctions[22][j][self.c['switch_types']['right_entry_railroad_switch']])
-                self.base_routes[i][self.c['base_route_types']['right_entry_base_route']].junction_position.append(22)
+                self.base_routes[i]['right_entry_base_route'].junction_position.append(22)
 
-            self.base_routes[i][self.c['base_route_types']['right_entry_base_route']].junctions \
+            self.base_routes[i]['right_entry_base_route'].junctions \
                 .append(self.junctions[22][i - 2][self.c['switch_types']['right_entry_railroad_switch']])
-            self.base_routes[i][self.c['base_route_types']['right_entry_base_route']].junction_position.append(i - 2)
-            self.base_routes[i][self.c['base_route_types']['right_entry_base_route']].junctions \
+            self.base_routes[i]['right_entry_base_route'].junction_position.append(i - 2)
+            self.base_routes[i]['right_entry_base_route'].junctions \
                 .append(self.junctions[i - 2][i][self.c['switch_types']['right_entry_railroad_switch']])
-            self.base_routes[i][self.c['base_route_types']['right_entry_base_route']].junction_position.append(i)
+            self.base_routes[i]['right_entry_base_route'].junction_position.append(i)
 
             # ----------------- left exit ---------------
-            self.base_routes[i][self.c['base_route_types']['left_exit_base_route']].junctions \
+            self.base_routes[i]['left_exit_base_route'].junctions \
                 .append(self.junctions[i - 2][i][self.c['switch_types']['left_exit_railroad_switch']])
-            self.base_routes[i][self.c['base_route_types']['left_exit_base_route']].junction_position.append(i)
-            self.base_routes[i][self.c['base_route_types']['left_exit_base_route']].junctions \
+            self.base_routes[i]['left_exit_base_route'].junction_position.append(i)
+            self.base_routes[i]['left_exit_base_route'].junctions \
                 .append(self.junctions[30][i - 2][self.c['switch_types']['left_exit_railroad_switch']])
-            self.base_routes[i][self.c['base_route_types']['left_exit_base_route']].junction_position.append(i - 2)
+            self.base_routes[i]['left_exit_base_route'].junction_position.append(i - 2)
             if i > 8:
                 for j in range(i - 6, 5, -4):
-                    self.base_routes[i][self.c['base_route_types']['left_exit_base_route']].junctions \
+                    self.base_routes[i]['left_exit_base_route'].junctions \
                         .append(self.junctions[30][j][self.c['switch_types']['left_exit_railroad_switch']])
-                    self.base_routes[i][self.c['base_route_types']['left_exit_base_route']].junction_position.append(30)
+                    self.base_routes[i]['left_exit_base_route'].junction_position.append(30)
 
-            self.base_routes[i][self.c['base_route_types']['left_exit_base_route']].junctions \
+            self.base_routes[i]['left_exit_base_route'].junctions \
                 .append(self.junctions[30][4][self.c['switch_types']['left_exit_railroad_switch']])
-            self.base_routes[i][self.c['base_route_types']['left_exit_base_route']].junction_position.append(30)
-            self.base_routes[i][self.c['base_route_types']['left_exit_base_route']].junctions \
+            self.base_routes[i]['left_exit_base_route'].junction_position.append(30)
+            self.base_routes[i]['left_exit_base_route'].junctions \
                 .append(self.junctions[2][30][self.c['switch_types']['left_exit_railroad_switch']])
-            self.base_routes[i][self.c['base_route_types']['left_exit_base_route']].junction_position.append(30)
-            self.base_routes[i][self.c['base_route_types']['left_exit_base_route']].junctions \
+            self.base_routes[i]['left_exit_base_route'].junction_position.append(30)
+            self.base_routes[i]['left_exit_base_route'].junctions \
                 .append(self.junctions[2][1][self.c['crossover_types']['left_exit_crossover']])
-            self.base_routes[i][self.c['base_route_types']['left_exit_base_route']].junction_position.append([2, 1])
+            self.base_routes[i]['left_exit_base_route'].junction_position.append([2, 1])
 
             # ---------------- right exit ------------------
-            self.base_routes[i][self.c['base_route_types']['right_exit_base_route']].junctions \
+            self.base_routes[i]['right_exit_base_route'].junctions \
                 .append(self.junctions[i - 2][i][self.c['switch_types']['right_exit_railroad_switch']])
-            self.base_routes[i][self.c['base_route_types']['right_exit_base_route']].junction_position.append(i)
-            self.base_routes[i][self.c['base_route_types']['right_exit_base_route']].junctions \
+            self.base_routes[i]['right_exit_base_route'].junction_position.append(i)
+            self.base_routes[i]['right_exit_base_route'].junctions \
                 .append(self.junctions[22][i - 2][self.c['switch_types']['right_exit_railroad_switch']])
-            self.base_routes[i][self.c['base_route_types']['right_exit_base_route']].junction_position.append(i - 2)
+            self.base_routes[i]['right_exit_base_route'].junction_position.append(i - 2)
             if i > 8:
                 for j in range(i - 6, 5, -4):
-                    self.base_routes[i][self.c['base_route_types']['right_exit_base_route']].junctions \
+                    self.base_routes[i]['right_exit_base_route'].junctions \
                         .append(self.junctions[22][j][self.c['switch_types']['right_exit_railroad_switch']])
-                    self.base_routes[i][self.c['base_route_types']['right_exit_base_route']].junction_position\
+                    self.base_routes[i]['right_exit_base_route'].junction_position\
                         .append(22)
 
-            self.base_routes[i][self.c['base_route_types']['right_exit_base_route']].junctions \
+            self.base_routes[i]['right_exit_base_route'].junctions \
                 .append(self.junctions[22][4][self.c['switch_types']['right_exit_railroad_switch']])
-            self.base_routes[i][self.c['base_route_types']['right_exit_base_route']].junction_position.append(22)
-            self.base_routes[i][self.c['base_route_types']['right_exit_base_route']].junctions \
+            self.base_routes[i]['right_exit_base_route'].junction_position.append(22)
+            self.base_routes[i]['right_exit_base_route'].junctions \
                 .append(self.junctions[2][22][self.c['switch_types']['right_exit_railroad_switch']])
-            self.base_routes[i][self.c['base_route_types']['right_exit_base_route']].junction_position.append(22)
-            self.base_routes[i][self.c['base_route_types']['right_exit_base_route']].junctions \
+            self.base_routes[i]['right_exit_base_route'].junction_position.append(22)
+            self.base_routes[i]['right_exit_base_route'].junctions \
                 .append(self.junctions[1][2][self.c['crossover_types']['right_exit_crossover']])
-            self.base_routes[i][self.c['base_route_types']['right_exit_base_route']].junction_position.append([2, 2])
+            self.base_routes[i]['right_exit_base_route'].junction_position.append([2, 2])
 
         for i in (22, 24):
             # --------------- left entry -----------------
-            self.base_routes[i][self.c['base_route_types']['left_entry_base_route']].junctions \
+            self.base_routes[i]['left_entry_base_route'].junctions \
                 .append(self.junctions[2][1][self.c['crossover_types']['left_entry_crossover']])
-            self.base_routes[i][self.c['base_route_types']['left_entry_base_route']].junction_position.append([2, 2])
-            self.base_routes[i][self.c['base_route_types']['left_entry_base_route']].junctions \
+            self.base_routes[i]['left_entry_base_route'].junction_position.append([2, 2])
+            self.base_routes[i]['left_entry_base_route'].junctions \
                 .append(self.junctions[2][30][self.c['switch_types']['left_entry_railroad_switch']])
-            self.base_routes[i][self.c['base_route_types']['left_entry_base_route']].junction_position.append(30)
-            self.base_routes[i][self.c['base_route_types']['left_entry_base_route']].junctions \
+            self.base_routes[i]['left_entry_base_route'].junction_position.append(30)
+            self.base_routes[i]['left_entry_base_route'].junctions \
                 .append(self.junctions[30][4][self.c['switch_types']['left_entry_railroad_switch']])
-            self.base_routes[i][self.c['base_route_types']['left_entry_base_route']].junction_position.append(30)
-            self.base_routes[i][self.c['base_route_types']['left_entry_base_route']].junctions \
+            self.base_routes[i]['left_entry_base_route'].junction_position.append(30)
+            self.base_routes[i]['left_entry_base_route'].junctions \
                 .append(self.junctions[30][6][self.c['switch_types']['left_entry_railroad_switch']])
-            self.base_routes[i][self.c['base_route_types']['left_entry_base_route']].junction_position.append(30)
-            self.base_routes[i][self.c['base_route_types']['left_entry_base_route']].junctions \
+            self.base_routes[i]['left_entry_base_route'].junction_position.append(30)
+            self.base_routes[i]['left_entry_base_route'].junctions \
                 .append(self.junctions[30][10][self.c['switch_types']['left_entry_railroad_switch']])
-            self.base_routes[i][self.c['base_route_types']['left_entry_base_route']].junction_position.append(30)
-            self.base_routes[i][self.c['base_route_types']['left_entry_base_route']].junctions \
+            self.base_routes[i]['left_entry_base_route'].junction_position.append(30)
+            self.base_routes[i]['left_entry_base_route'].junctions \
                 .append(self.junctions[30][14][self.c['switch_types']['left_entry_railroad_switch']])
-            self.base_routes[i][self.c['base_route_types']['left_entry_base_route']].junction_position.append(30)
-            self.base_routes[i][self.c['base_route_types']['left_entry_base_route']].junctions \
+            self.base_routes[i]['left_entry_base_route'].junction_position.append(30)
+            self.base_routes[i]['left_entry_base_route'].junctions \
                 .append(self.junctions[30][18][self.c['switch_types']['left_entry_railroad_switch']])
-            self.base_routes[i][self.c['base_route_types']['left_entry_base_route']].junction_position.append(30)
-            self.base_routes[i][self.c['base_route_types']['left_entry_base_route']].junctions \
+            self.base_routes[i]['left_entry_base_route'].junction_position.append(30)
+            self.base_routes[i]['left_entry_base_route'].junctions \
                 .append(self.junctions[30][22][self.c['switch_types']['left_entry_railroad_switch']])
-            self.base_routes[i][self.c['base_route_types']['left_entry_base_route']].junction_position.append(22)
-            self.base_routes[i][self.c['base_route_types']['left_entry_base_route']].junctions \
+            self.base_routes[i]['left_entry_base_route'].junction_position.append(22)
+            self.base_routes[i]['left_entry_base_route'].junctions \
                 .append(self.junctions[22][24][self.c['switch_types']['left_entry_railroad_switch']])
-            self.base_routes[i][self.c['base_route_types']['left_entry_base_route']].junction_position.append(i)
+            self.base_routes[i]['left_entry_base_route'].junction_position.append(i)
 
             # --------------------- right entry ---------------
-            self.base_routes[i][self.c['base_route_types']['right_entry_base_route']].junctions \
+            self.base_routes[i]['right_entry_base_route'].junctions \
                 .append(self.junctions[1][2][self.c['crossover_types']['right_entry_crossover']])
-            self.base_routes[i][self.c['base_route_types']['right_entry_base_route']].junction_position.append([1, 2])
-            self.base_routes[i][self.c['base_route_types']['right_entry_base_route']].junctions \
+            self.base_routes[i]['right_entry_base_route'].junction_position.append([1, 2])
+            self.base_routes[i]['right_entry_base_route'].junctions \
                 .append(self.junctions[2][22][self.c['switch_types']['right_entry_railroad_switch']])
-            self.base_routes[i][self.c['base_route_types']['right_entry_base_route']].junction_position.append(22)
-            self.base_routes[i][self.c['base_route_types']['right_entry_base_route']].junctions \
+            self.base_routes[i]['right_entry_base_route'].junction_position.append(22)
+            self.base_routes[i]['right_entry_base_route'].junctions \
                 .append(self.junctions[22][4][self.c['switch_types']['right_entry_railroad_switch']])
-            self.base_routes[i][self.c['base_route_types']['right_entry_base_route']].junction_position.append(22)
-            self.base_routes[i][self.c['base_route_types']['right_entry_base_route']].junctions \
+            self.base_routes[i]['right_entry_base_route'].junction_position.append(22)
+            self.base_routes[i]['right_entry_base_route'].junctions \
                 .append(self.junctions[22][6][self.c['switch_types']['right_entry_railroad_switch']])
-            self.base_routes[i][self.c['base_route_types']['right_entry_base_route']].junction_position.append(22)
-            self.base_routes[i][self.c['base_route_types']['right_entry_base_route']].junctions \
+            self.base_routes[i]['right_entry_base_route'].junction_position.append(22)
+            self.base_routes[i]['right_entry_base_route'].junctions \
                 .append(self.junctions[22][10][self.c['switch_types']['right_entry_railroad_switch']])
-            self.base_routes[i][self.c['base_route_types']['right_entry_base_route']].junction_position.append(22)
-            self.base_routes[i][self.c['base_route_types']['right_entry_base_route']].junctions \
+            self.base_routes[i]['right_entry_base_route'].junction_position.append(22)
+            self.base_routes[i]['right_entry_base_route'].junctions \
                 .append(self.junctions[22][14][self.c['switch_types']['right_entry_railroad_switch']])
-            self.base_routes[i][self.c['base_route_types']['right_entry_base_route']].junction_position.append(22)
-            self.base_routes[i][self.c['base_route_types']['right_entry_base_route']].junctions \
+            self.base_routes[i]['right_entry_base_route'].junction_position.append(22)
+            self.base_routes[i]['right_entry_base_route'].junctions \
                 .append(self.junctions[22][18][self.c['switch_types']['right_entry_railroad_switch']])
-            self.base_routes[i][self.c['base_route_types']['right_entry_base_route']].junction_position.append(22)
-            self.base_routes[i][self.c['base_route_types']['right_entry_base_route']].junctions \
+            self.base_routes[i]['right_entry_base_route'].junction_position.append(22)
+            self.base_routes[i]['right_entry_base_route'].junctions \
                 .append(self.junctions[102][22][self.c['switch_types']['right_entry_railroad_switch']])
-            self.base_routes[i][self.c['base_route_types']['right_entry_base_route']].junction_position.append(22)
-            self.base_routes[i][self.c['base_route_types']['right_entry_base_route']].junctions \
+            self.base_routes[i]['right_entry_base_route'].junction_position.append(22)
+            self.base_routes[i]['right_entry_base_route'].junctions \
                 .append(self.junctions[22][24][self.c['crossover_types']['right_entry_crossover']])
-            self.base_routes[i][self.c['base_route_types']['right_entry_base_route']].junction_position.append([22, i])
+            self.base_routes[i]['right_entry_base_route'].junction_position.append([22, i])
 
             # ------------------ right side entry ----------------
-            self.base_routes[i][self.c['base_route_types']['right_side_entry_base_route']].junctions \
+            self.base_routes[i]['right_side_entry_base_route'].junctions \
                 .append(self.junctions[102][104][self.c['crossover_types']['right_entry_crossover']])
-            self.base_routes[i][self.c['base_route_types']['right_side_entry_base_route']].junction_position \
+            self.base_routes[i]['right_side_entry_base_route'].junction_position \
                 .append([102, 102])
-            self.base_routes[i][self.c['base_route_types']['right_side_entry_base_route']].junctions \
+            self.base_routes[i]['right_side_entry_base_route'].junctions \
                 .append(self.junctions[102][22][self.c['switch_types']['right_entry_railroad_switch']])
-            self.base_routes[i][self.c['base_route_types']['right_side_entry_base_route']].junction_position.append(102)
-            self.base_routes[i][self.c['base_route_types']['right_side_entry_base_route']].junctions \
+            self.base_routes[i]['right_side_entry_base_route'].junction_position.append(102)
+            self.base_routes[i]['right_side_entry_base_route'].junctions \
                 .append(self.junctions[22][24][self.c['crossover_types']['right_entry_crossover']])
-            self.base_routes[i][self.c['base_route_types']['right_side_entry_base_route']].junction_position \
+            self.base_routes[i]['right_side_entry_base_route'].junction_position \
                 .append([22, i])
 
             # ----------------- left exit ---------------
-            self.base_routes[i][self.c['base_route_types']['left_exit_base_route']].junctions \
+            self.base_routes[i]['left_exit_base_route'].junctions \
                 .append(self.junctions[22][24][self.c['switch_types']['left_exit_railroad_switch']])
-            self.base_routes[i][self.c['base_route_types']['left_exit_base_route']].junction_position.append(i)
-            self.base_routes[i][self.c['base_route_types']['left_exit_base_route']].junctions \
+            self.base_routes[i]['left_exit_base_route'].junction_position.append(i)
+            self.base_routes[i]['left_exit_base_route'].junctions \
                 .append(self.junctions[30][22][self.c['switch_types']['left_exit_railroad_switch']])
-            self.base_routes[i][self.c['base_route_types']['left_exit_base_route']].junction_position.append(22)
-            self.base_routes[i][self.c['base_route_types']['left_exit_base_route']].junctions \
+            self.base_routes[i]['left_exit_base_route'].junction_position.append(22)
+            self.base_routes[i]['left_exit_base_route'].junctions \
                 .append(self.junctions[30][18][self.c['switch_types']['left_exit_railroad_switch']])
-            self.base_routes[i][self.c['base_route_types']['left_exit_base_route']].junction_position.append(30)
-            self.base_routes[i][self.c['base_route_types']['left_exit_base_route']].junctions \
+            self.base_routes[i]['left_exit_base_route'].junction_position.append(30)
+            self.base_routes[i]['left_exit_base_route'].junctions \
                 .append(self.junctions[30][14][self.c['switch_types']['left_exit_railroad_switch']])
-            self.base_routes[i][self.c['base_route_types']['left_exit_base_route']].junction_position.append(30)
-            self.base_routes[i][self.c['base_route_types']['left_exit_base_route']].junctions \
+            self.base_routes[i]['left_exit_base_route'].junction_position.append(30)
+            self.base_routes[i]['left_exit_base_route'].junctions \
                 .append(self.junctions[30][10][self.c['switch_types']['left_exit_railroad_switch']])
-            self.base_routes[i][self.c['base_route_types']['left_exit_base_route']].junction_position.append(30)
-            self.base_routes[i][self.c['base_route_types']['left_exit_base_route']].junctions \
+            self.base_routes[i]['left_exit_base_route'].junction_position.append(30)
+            self.base_routes[i]['left_exit_base_route'].junctions \
                 .append(self.junctions[30][6][self.c['switch_types']['left_exit_railroad_switch']])
-            self.base_routes[i][self.c['base_route_types']['left_exit_base_route']].junction_position.append(30)
-            self.base_routes[i][self.c['base_route_types']['left_exit_base_route']].junctions \
+            self.base_routes[i]['left_exit_base_route'].junction_position.append(30)
+            self.base_routes[i]['left_exit_base_route'].junctions \
                 .append(self.junctions[30][4][self.c['switch_types']['left_exit_railroad_switch']])
-            self.base_routes[i][self.c['base_route_types']['left_exit_base_route']].junction_position.append(30)
-            self.base_routes[i][self.c['base_route_types']['left_exit_base_route']].junctions \
+            self.base_routes[i]['left_exit_base_route'].junction_position.append(30)
+            self.base_routes[i]['left_exit_base_route'].junctions \
                 .append(self.junctions[2][30][self.c['switch_types']['left_exit_railroad_switch']])
-            self.base_routes[i][self.c['base_route_types']['left_exit_base_route']].junction_position.append(30)
-            self.base_routes[i][self.c['base_route_types']['left_exit_base_route']].junctions \
+            self.base_routes[i]['left_exit_base_route'].junction_position.append(30)
+            self.base_routes[i]['left_exit_base_route'].junctions \
                 .append(self.junctions[2][1][self.c['crossover_types']['left_exit_crossover']])
-            self.base_routes[i][self.c['base_route_types']['left_exit_base_route']].junction_position.append([2, 1])
+            self.base_routes[i]['left_exit_base_route'].junction_position.append([2, 1])
 
             # ---------------- right exit ------------------
-            self.base_routes[i][self.c['base_route_types']['right_exit_base_route']].junctions \
+            self.base_routes[i]['right_exit_base_route'].junctions \
                 .append(self.junctions[24][22][self.c['crossover_types']['right_exit_crossover']])
-            self.base_routes[i][self.c['base_route_types']['right_exit_base_route']].junction_position.append([i, 22])
-            self.base_routes[i][self.c['base_route_types']['right_exit_base_route']].junctions \
+            self.base_routes[i]['right_exit_base_route'].junction_position.append([i, 22])
+            self.base_routes[i]['right_exit_base_route'].junctions \
                 .append(self.junctions[102][22][self.c['switch_types']['right_exit_railroad_switch']])
-            self.base_routes[i][self.c['base_route_types']['right_exit_base_route']].junction_position.append(22)
-            self.base_routes[i][self.c['base_route_types']['right_exit_base_route']].junctions \
+            self.base_routes[i]['right_exit_base_route'].junction_position.append(22)
+            self.base_routes[i]['right_exit_base_route'].junctions \
                 .append(self.junctions[22][18][self.c['switch_types']['right_exit_railroad_switch']])
-            self.base_routes[i][self.c['base_route_types']['right_exit_base_route']].junction_position.append(22)
-            self.base_routes[i][self.c['base_route_types']['right_exit_base_route']].junctions \
+            self.base_routes[i]['right_exit_base_route'].junction_position.append(22)
+            self.base_routes[i]['right_exit_base_route'].junctions \
                 .append(self.junctions[22][14][self.c['switch_types']['right_exit_railroad_switch']])
-            self.base_routes[i][self.c['base_route_types']['right_exit_base_route']].junction_position.append(22)
-            self.base_routes[i][self.c['base_route_types']['right_exit_base_route']].junctions \
+            self.base_routes[i]['right_exit_base_route'].junction_position.append(22)
+            self.base_routes[i]['right_exit_base_route'].junctions \
                 .append(self.junctions[22][10][self.c['switch_types']['right_exit_railroad_switch']])
-            self.base_routes[i][self.c['base_route_types']['right_exit_base_route']].junction_position.append(22)
-            self.base_routes[i][self.c['base_route_types']['right_exit_base_route']].junctions \
+            self.base_routes[i]['right_exit_base_route'].junction_position.append(22)
+            self.base_routes[i]['right_exit_base_route'].junctions \
                 .append(self.junctions[22][6][self.c['switch_types']['right_exit_railroad_switch']])
-            self.base_routes[i][self.c['base_route_types']['right_exit_base_route']].junction_position.append(22)
-            self.base_routes[i][self.c['base_route_types']['right_exit_base_route']].junctions \
+            self.base_routes[i]['right_exit_base_route'].junction_position.append(22)
+            self.base_routes[i]['right_exit_base_route'].junctions \
                 .append(self.junctions[22][4][self.c['switch_types']['right_exit_railroad_switch']])
-            self.base_routes[i][self.c['base_route_types']['right_exit_base_route']].junction_position.append(22)
-            self.base_routes[i][self.c['base_route_types']['right_exit_base_route']].junctions \
+            self.base_routes[i]['right_exit_base_route'].junction_position.append(22)
+            self.base_routes[i]['right_exit_base_route'].junctions \
                 .append(self.junctions[2][22][self.c['switch_types']['right_exit_railroad_switch']])
-            self.base_routes[i][self.c['base_route_types']['right_exit_base_route']].junction_position.append(22)
-            self.base_routes[i][self.c['base_route_types']['right_exit_base_route']].junctions \
+            self.base_routes[i]['right_exit_base_route'].junction_position.append(22)
+            self.base_routes[i]['right_exit_base_route'].junctions \
                 .append(self.junctions[1][2][self.c['crossover_types']['right_exit_crossover']])
-            self.base_routes[i][self.c['base_route_types']['right_exit_base_route']].junction_position.append([2, 2])
+            self.base_routes[i]['right_exit_base_route'].junction_position.append([2, 2])
 
         # ------------ right side exit ------------
-        self.base_routes[22][self.c['base_route_types']['right_side_exit_base_route']].junctions \
+        self.base_routes[22]['right_side_exit_base_route'].junctions \
             .append(self.junctions[24][22][self.c['crossover_types']['right_exit_crossover']])
-        self.base_routes[22][self.c['base_route_types']['right_side_exit_base_route']].junction_position \
+        self.base_routes[22]['right_side_exit_base_route'].junction_position \
             .append([22, 22])
-        self.base_routes[22][self.c['base_route_types']['right_side_exit_base_route']].junctions \
+        self.base_routes[22]['right_side_exit_base_route'].junctions \
             .append(self.junctions[102][22][self.c['switch_types']['right_exit_railroad_switch']])
-        self.base_routes[22][self.c['base_route_types']['right_side_exit_base_route']].junction_position.append(102)
-        self.base_routes[22][self.c['base_route_types']['right_side_exit_base_route']].junctions \
+        self.base_routes[22]['right_side_exit_base_route'].junction_position.append(102)
+        self.base_routes[22]['right_side_exit_base_route'].junctions \
             .append(self.junctions[102][104][self.c['crossover_types']['right_exit_crossover']])
-        self.base_routes[22][self.c['base_route_types']['right_side_exit_base_route']].junction_position \
+        self.base_routes[22]['right_side_exit_base_route'].junction_position \
             .append([102, 104])
 
         # ------------ right side exit ------------
-        self.base_routes[24][self.c['base_route_types']['right_side_exit_base_route']].junctions \
+        self.base_routes[24]['right_side_exit_base_route'].junctions \
             .append(self.junctions[24][22][self.c['crossover_types']['right_exit_crossover']])
-        self.base_routes[24][self.c['base_route_types']['right_side_exit_base_route']].junction_position \
+        self.base_routes[24]['right_side_exit_base_route'].junction_position \
             .append([24, 24])
-        self.base_routes[24][self.c['base_route_types']['right_side_exit_base_route']].junctions \
+        self.base_routes[24]['right_side_exit_base_route'].junctions \
             .append(self.junctions[104][30][self.c['switch_types']['right_exit_railroad_switch']])
-        self.base_routes[24][self.c['base_route_types']['right_side_exit_base_route']].junction_position.append(104)
-        self.base_routes[24][self.c['base_route_types']['right_side_exit_base_route']].junctions \
+        self.base_routes[24]['right_side_exit_base_route'].junction_position.append(104)
+        self.base_routes[24]['right_side_exit_base_route'].junctions \
             .append(self.junctions[102][104][self.c['crossover_types']['right_exit_crossover']])
-        self.base_routes[24][self.c['base_route_types']['right_side_exit_base_route']].junction_position \
+        self.base_routes[24]['right_side_exit_base_route'].junction_position \
             .append([104, 104])
 
         for i in (26, 28):
             # --------------- left entry -----------------
-            self.base_routes[i][self.c['base_route_types']['left_entry_base_route']].junctions \
+            self.base_routes[i]['left_entry_base_route'].junctions \
                 .append(self.junctions[2][1][self.c['crossover_types']['left_entry_crossover']])
-            self.base_routes[i][self.c['base_route_types']['left_entry_base_route']].junction_position.append([2, 2])
-            self.base_routes[i][self.c['base_route_types']['left_entry_base_route']].junctions \
+            self.base_routes[i]['left_entry_base_route'].junction_position.append([2, 2])
+            self.base_routes[i]['left_entry_base_route'].junctions \
                 .append(self.junctions[2][30][self.c['switch_types']['left_entry_railroad_switch']])
-            self.base_routes[i][self.c['base_route_types']['left_entry_base_route']].junction_position.append(30)
-            self.base_routes[i][self.c['base_route_types']['left_entry_base_route']].junctions \
+            self.base_routes[i]['left_entry_base_route'].junction_position.append(30)
+            self.base_routes[i]['left_entry_base_route'].junctions \
                 .append(self.junctions[30][4][self.c['switch_types']['left_entry_railroad_switch']])
-            self.base_routes[i][self.c['base_route_types']['left_entry_base_route']].junction_position.append(30)
-            self.base_routes[i][self.c['base_route_types']['left_entry_base_route']].junctions \
+            self.base_routes[i]['left_entry_base_route'].junction_position.append(30)
+            self.base_routes[i]['left_entry_base_route'].junctions \
                 .append(self.junctions[30][6][self.c['switch_types']['left_entry_railroad_switch']])
-            self.base_routes[i][self.c['base_route_types']['left_entry_base_route']].junction_position.append(30)
-            self.base_routes[i][self.c['base_route_types']['left_entry_base_route']].junctions \
+            self.base_routes[i]['left_entry_base_route'].junction_position.append(30)
+            self.base_routes[i]['left_entry_base_route'].junctions \
                 .append(self.junctions[30][10][self.c['switch_types']['left_entry_railroad_switch']])
-            self.base_routes[i][self.c['base_route_types']['left_entry_base_route']].junction_position.append(30)
-            self.base_routes[i][self.c['base_route_types']['left_entry_base_route']].junctions \
+            self.base_routes[i]['left_entry_base_route'].junction_position.append(30)
+            self.base_routes[i]['left_entry_base_route'].junctions \
                 .append(self.junctions[30][14][self.c['switch_types']['left_entry_railroad_switch']])
-            self.base_routes[i][self.c['base_route_types']['left_entry_base_route']].junction_position.append(30)
-            self.base_routes[i][self.c['base_route_types']['left_entry_base_route']].junctions \
+            self.base_routes[i]['left_entry_base_route'].junction_position.append(30)
+            self.base_routes[i]['left_entry_base_route'].junctions \
                 .append(self.junctions[30][18][self.c['switch_types']['left_entry_railroad_switch']])
-            self.base_routes[i][self.c['base_route_types']['left_entry_base_route']].junction_position.append(30)
-            self.base_routes[i][self.c['base_route_types']['left_entry_base_route']].junctions \
+            self.base_routes[i]['left_entry_base_route'].junction_position.append(30)
+            self.base_routes[i]['left_entry_base_route'].junctions \
                 .append(self.junctions[30][22][self.c['switch_types']['left_entry_railroad_switch']])
-            self.base_routes[i][self.c['base_route_types']['left_entry_base_route']].junction_position.append(30)
-            self.base_routes[i][self.c['base_route_types']['left_entry_base_route']].junctions \
+            self.base_routes[i]['left_entry_base_route'].junction_position.append(30)
+            self.base_routes[i]['left_entry_base_route'].junctions \
                 .append(self.junctions[30][26][self.c['switch_types']['left_entry_railroad_switch']])
-            self.base_routes[i][self.c['base_route_types']['left_entry_base_route']].junction_position.append(26)
-            self.base_routes[i][self.c['base_route_types']['left_entry_base_route']].junctions \
+            self.base_routes[i]['left_entry_base_route'].junction_position.append(26)
+            self.base_routes[i]['left_entry_base_route'].junctions \
                 .append(self.junctions[26][28][self.c['switch_types']['left_entry_railroad_switch']])
-            self.base_routes[i][self.c['base_route_types']['left_entry_base_route']].junction_position.append(i)
+            self.base_routes[i]['left_entry_base_route'].junction_position.append(i)
 
             # ------------------ right side entry ----------------
-            self.base_routes[i][self.c['base_route_types']['right_side_entry_base_route']].junctions \
+            self.base_routes[i]['right_side_entry_base_route'].junctions \
                 .append(self.junctions[102][104][self.c['crossover_types']['right_entry_crossover']])
-            self.base_routes[i][self.c['base_route_types']['right_side_entry_base_route']].junction_position \
+            self.base_routes[i]['right_side_entry_base_route'].junction_position \
                 .append([102, 104])
-            self.base_routes[i][self.c['base_route_types']['right_side_entry_base_route']].junctions \
+            self.base_routes[i]['right_side_entry_base_route'].junctions \
                 .append(self.junctions[104][30][self.c['switch_types']['right_entry_railroad_switch']])
-            self.base_routes[i][self.c['base_route_types']['right_side_entry_base_route']].junction_position.append(30)
-            self.base_routes[i][self.c['base_route_types']['right_side_entry_base_route']].junctions \
+            self.base_routes[i]['right_side_entry_base_route'].junction_position.append(30)
+            self.base_routes[i]['right_side_entry_base_route'].junctions \
                 .append(self.junctions[30][28][self.c['switch_types']['right_entry_railroad_switch']])
-            self.base_routes[i][self.c['base_route_types']['right_side_entry_base_route']].junction_position.append(28)
-            self.base_routes[i][self.c['base_route_types']['right_side_entry_base_route']].junctions \
+            self.base_routes[i]['right_side_entry_base_route'].junction_position.append(28)
+            self.base_routes[i]['right_side_entry_base_route'].junctions \
                 .append(self.junctions[28][26][self.c['switch_types']['right_entry_railroad_switch']])
-            self.base_routes[i][self.c['base_route_types']['right_side_entry_base_route']].junction_position.append(i)
+            self.base_routes[i]['right_side_entry_base_route'].junction_position.append(i)
 
             # ----------------- left exit ---------------
-            self.base_routes[i][self.c['base_route_types']['left_exit_base_route']].junctions \
+            self.base_routes[i]['left_exit_base_route'].junctions \
                 .append(self.junctions[26][28][self.c['switch_types']['left_exit_railroad_switch']])
-            self.base_routes[i][self.c['base_route_types']['left_exit_base_route']].junction_position.append(i)
-            self.base_routes[i][self.c['base_route_types']['left_exit_base_route']].junctions \
+            self.base_routes[i]['left_exit_base_route'].junction_position.append(i)
+            self.base_routes[i]['left_exit_base_route'].junctions \
                 .append(self.junctions[30][26][self.c['switch_types']['left_exit_railroad_switch']])
-            self.base_routes[i][self.c['base_route_types']['left_exit_base_route']].junction_position.append(26)
-            self.base_routes[i][self.c['base_route_types']['left_exit_base_route']].junctions \
+            self.base_routes[i]['left_exit_base_route'].junction_position.append(26)
+            self.base_routes[i]['left_exit_base_route'].junctions \
                 .append(self.junctions[30][22][self.c['switch_types']['left_exit_railroad_switch']])
-            self.base_routes[i][self.c['base_route_types']['left_exit_base_route']].junction_position.append(30)
-            self.base_routes[i][self.c['base_route_types']['left_exit_base_route']].junctions \
+            self.base_routes[i]['left_exit_base_route'].junction_position.append(30)
+            self.base_routes[i]['left_exit_base_route'].junctions \
                 .append(self.junctions[30][18][self.c['switch_types']['left_exit_railroad_switch']])
-            self.base_routes[i][self.c['base_route_types']['left_exit_base_route']].junction_position.append(30)
-            self.base_routes[i][self.c['base_route_types']['left_exit_base_route']].junctions \
+            self.base_routes[i]['left_exit_base_route'].junction_position.append(30)
+            self.base_routes[i]['left_exit_base_route'].junctions \
                 .append(self.junctions[30][14][self.c['switch_types']['left_exit_railroad_switch']])
-            self.base_routes[i][self.c['base_route_types']['left_exit_base_route']].junction_position.append(30)
-            self.base_routes[i][self.c['base_route_types']['left_exit_base_route']].junctions \
+            self.base_routes[i]['left_exit_base_route'].junction_position.append(30)
+            self.base_routes[i]['left_exit_base_route'].junctions \
                 .append(self.junctions[30][10][self.c['switch_types']['left_exit_railroad_switch']])
-            self.base_routes[i][self.c['base_route_types']['left_exit_base_route']].junction_position.append(30)
-            self.base_routes[i][self.c['base_route_types']['left_exit_base_route']].junctions \
+            self.base_routes[i]['left_exit_base_route'].junction_position.append(30)
+            self.base_routes[i]['left_exit_base_route'].junctions \
                 .append(self.junctions[30][6][self.c['switch_types']['left_exit_railroad_switch']])
-            self.base_routes[i][self.c['base_route_types']['left_exit_base_route']].junction_position.append(30)
-            self.base_routes[i][self.c['base_route_types']['left_exit_base_route']].junctions \
+            self.base_routes[i]['left_exit_base_route'].junction_position.append(30)
+            self.base_routes[i]['left_exit_base_route'].junctions \
                 .append(self.junctions[30][4][self.c['switch_types']['left_exit_railroad_switch']])
-            self.base_routes[i][self.c['base_route_types']['left_exit_base_route']].junction_position.append(30)
-            self.base_routes[i][self.c['base_route_types']['left_exit_base_route']].junctions \
+            self.base_routes[i]['left_exit_base_route'].junction_position.append(30)
+            self.base_routes[i]['left_exit_base_route'].junctions \
                 .append(self.junctions[2][30][self.c['switch_types']['left_exit_railroad_switch']])
-            self.base_routes[i][self.c['base_route_types']['left_exit_base_route']].junction_position.append(30)
-            self.base_routes[i][self.c['base_route_types']['left_exit_base_route']].junctions \
+            self.base_routes[i]['left_exit_base_route'].junction_position.append(30)
+            self.base_routes[i]['left_exit_base_route'].junctions \
                 .append(self.junctions[2][1][self.c['crossover_types']['left_exit_crossover']])
-            self.base_routes[i][self.c['base_route_types']['left_exit_base_route']].junction_position.append([2, 1])
+            self.base_routes[i]['left_exit_base_route'].junction_position.append([2, 1])
 
             # ------------ right side exit ------------
-            self.base_routes[i][self.c['base_route_types']['right_side_exit_base_route']].junctions \
+            self.base_routes[i]['right_side_exit_base_route'].junctions \
                 .append(self.junctions[28][26][self.c['switch_types']['right_exit_railroad_switch']])
-            self.base_routes[i][self.c['base_route_types']['right_side_exit_base_route']].junction_position.append(i)
-            self.base_routes[i][self.c['base_route_types']['right_side_exit_base_route']].junctions \
+            self.base_routes[i]['right_side_exit_base_route'].junction_position.append(i)
+            self.base_routes[i]['right_side_exit_base_route'].junctions \
                 .append(self.junctions[30][28][self.c['switch_types']['right_exit_railroad_switch']])
-            self.base_routes[i][self.c['base_route_types']['right_side_exit_base_route']].junction_position.append(28)
-            self.base_routes[i][self.c['base_route_types']['right_side_exit_base_route']].junctions \
+            self.base_routes[i]['right_side_exit_base_route'].junction_position.append(28)
+            self.base_routes[i]['right_side_exit_base_route'].junctions \
                 .append(self.junctions[104][30][self.c['switch_types']['right_exit_railroad_switch']])
-            self.base_routes[i][self.c['base_route_types']['right_side_exit_base_route']].junction_position.append(30)
-            self.base_routes[i][self.c['base_route_types']['right_side_exit_base_route']].junctions \
+            self.base_routes[i]['right_side_exit_base_route'].junction_position.append(30)
+            self.base_routes[i]['right_side_exit_base_route'].junctions \
                 .append(self.junctions[102][104][self.c['crossover_types']['right_exit_crossover']])
-            self.base_routes[i][self.c['base_route_types']['right_side_exit_base_route']].junction_position \
+            self.base_routes[i]['right_side_exit_base_route'].junction_position \
                 .append([104, 104])
 
         for i in (30, 32):
             # --------------- left entry -----------------
-            self.base_routes[i][self.c['base_route_types']['left_entry_base_route']].junctions \
+            self.base_routes[i]['left_entry_base_route'].junctions \
                 .append(self.junctions[2][1][self.c['crossover_types']['left_entry_crossover']])
-            self.base_routes[i][self.c['base_route_types']['left_entry_base_route']].junction_position.append([2, 2])
-            self.base_routes[i][self.c['base_route_types']['left_entry_base_route']].junctions \
+            self.base_routes[i]['left_entry_base_route'].junction_position.append([2, 2])
+            self.base_routes[i]['left_entry_base_route'].junctions \
                 .append(self.junctions[2][30][self.c['switch_types']['left_entry_railroad_switch']])
-            self.base_routes[i][self.c['base_route_types']['left_entry_base_route']].junction_position.append(30)
-            self.base_routes[i][self.c['base_route_types']['left_entry_base_route']].junctions \
+            self.base_routes[i]['left_entry_base_route'].junction_position.append(30)
+            self.base_routes[i]['left_entry_base_route'].junctions \
                 .append(self.junctions[30][4][self.c['switch_types']['left_entry_railroad_switch']])
-            self.base_routes[i][self.c['base_route_types']['left_entry_base_route']].junction_position.append(30)
-            self.base_routes[i][self.c['base_route_types']['left_entry_base_route']].junctions \
+            self.base_routes[i]['left_entry_base_route'].junction_position.append(30)
+            self.base_routes[i]['left_entry_base_route'].junctions \
                 .append(self.junctions[30][6][self.c['switch_types']['left_entry_railroad_switch']])
-            self.base_routes[i][self.c['base_route_types']['left_entry_base_route']].junction_position.append(30)
-            self.base_routes[i][self.c['base_route_types']['left_entry_base_route']].junctions \
+            self.base_routes[i]['left_entry_base_route'].junction_position.append(30)
+            self.base_routes[i]['left_entry_base_route'].junctions \
                 .append(self.junctions[30][10][self.c['switch_types']['left_entry_railroad_switch']])
-            self.base_routes[i][self.c['base_route_types']['left_entry_base_route']].junction_position.append(30)
-            self.base_routes[i][self.c['base_route_types']['left_entry_base_route']].junctions \
+            self.base_routes[i]['left_entry_base_route'].junction_position.append(30)
+            self.base_routes[i]['left_entry_base_route'].junctions \
                 .append(self.junctions[30][14][self.c['switch_types']['left_entry_railroad_switch']])
-            self.base_routes[i][self.c['base_route_types']['left_entry_base_route']].junction_position.append(30)
-            self.base_routes[i][self.c['base_route_types']['left_entry_base_route']].junctions \
+            self.base_routes[i]['left_entry_base_route'].junction_position.append(30)
+            self.base_routes[i]['left_entry_base_route'].junctions \
                 .append(self.junctions[30][18][self.c['switch_types']['left_entry_railroad_switch']])
-            self.base_routes[i][self.c['base_route_types']['left_entry_base_route']].junction_position.append(30)
-            self.base_routes[i][self.c['base_route_types']['left_entry_base_route']].junctions \
+            self.base_routes[i]['left_entry_base_route'].junction_position.append(30)
+            self.base_routes[i]['left_entry_base_route'].junctions \
                 .append(self.junctions[30][22][self.c['switch_types']['left_entry_railroad_switch']])
-            self.base_routes[i][self.c['base_route_types']['left_entry_base_route']].junction_position.append(30)
-            self.base_routes[i][self.c['base_route_types']['left_entry_base_route']].junctions \
+            self.base_routes[i]['left_entry_base_route'].junction_position.append(30)
+            self.base_routes[i]['left_entry_base_route'].junctions \
                 .append(self.junctions[30][26][self.c['switch_types']['left_entry_railroad_switch']])
-            self.base_routes[i][self.c['base_route_types']['left_entry_base_route']].junction_position.append(30)
-            self.base_routes[i][self.c['base_route_types']['left_entry_base_route']].junctions \
+            self.base_routes[i]['left_entry_base_route'].junction_position.append(30)
+            self.base_routes[i]['left_entry_base_route'].junctions \
                 .append(self.junctions[30][32][self.c['switch_types']['left_entry_railroad_switch']])
-            self.base_routes[i][self.c['base_route_types']['left_entry_base_route']].junction_position.append(i)
+            self.base_routes[i]['left_entry_base_route'].junction_position.append(i)
 
             # ------------------ right side entry ----------------
-            self.base_routes[i][self.c['base_route_types']['right_side_entry_base_route']].junctions \
+            self.base_routes[i]['right_side_entry_base_route'].junctions \
                 .append(self.junctions[102][104][self.c['crossover_types']['right_entry_crossover']])
-            self.base_routes[i][self.c['base_route_types']['right_side_entry_base_route']].junction_position \
+            self.base_routes[i]['right_side_entry_base_route'].junction_position \
                 .append([102, 104])
-            self.base_routes[i][self.c['base_route_types']['right_side_entry_base_route']].junctions \
+            self.base_routes[i]['right_side_entry_base_route'].junctions \
                 .append(self.junctions[104][30][self.c['switch_types']['right_entry_railroad_switch']])
-            self.base_routes[i][self.c['base_route_types']['right_side_entry_base_route']].junction_position.append(30)
-            self.base_routes[i][self.c['base_route_types']['right_side_entry_base_route']].junctions \
+            self.base_routes[i]['right_side_entry_base_route'].junction_position.append(30)
+            self.base_routes[i]['right_side_entry_base_route'].junctions \
                 .append(self.junctions[30][28][self.c['switch_types']['right_entry_railroad_switch']])
-            self.base_routes[i][self.c['base_route_types']['right_side_entry_base_route']].junction_position.append(30)
-            self.base_routes[i][self.c['base_route_types']['right_side_entry_base_route']].junctions \
+            self.base_routes[i]['right_side_entry_base_route'].junction_position.append(30)
+            self.base_routes[i]['right_side_entry_base_route'].junctions \
                 .append(self.junctions[30][32][self.c['switch_types']['right_entry_railroad_switch']])
-            self.base_routes[i][self.c['base_route_types']['right_side_entry_base_route']].junction_position.append(i)
+            self.base_routes[i]['right_side_entry_base_route'].junction_position.append(i)
 
             # ----------------- left exit ---------------
-            self.base_routes[i][self.c['base_route_types']['left_exit_base_route']].junctions \
+            self.base_routes[i]['left_exit_base_route'].junctions \
                 .append(self.junctions[30][32][self.c['switch_types']['left_exit_railroad_switch']])
-            self.base_routes[i][self.c['base_route_types']['left_exit_base_route']].junction_position.append(i)
-            self.base_routes[i][self.c['base_route_types']['left_exit_base_route']].junctions \
+            self.base_routes[i]['left_exit_base_route'].junction_position.append(i)
+            self.base_routes[i]['left_exit_base_route'].junctions \
                 .append(self.junctions[30][26][self.c['switch_types']['left_exit_railroad_switch']])
-            self.base_routes[i][self.c['base_route_types']['left_exit_base_route']].junction_position.append(30)
-            self.base_routes[i][self.c['base_route_types']['left_exit_base_route']].junctions \
+            self.base_routes[i]['left_exit_base_route'].junction_position.append(30)
+            self.base_routes[i]['left_exit_base_route'].junctions \
                 .append(self.junctions[30][22][self.c['switch_types']['left_exit_railroad_switch']])
-            self.base_routes[i][self.c['base_route_types']['left_exit_base_route']].junction_position.append(30)
-            self.base_routes[i][self.c['base_route_types']['left_exit_base_route']].junctions \
+            self.base_routes[i]['left_exit_base_route'].junction_position.append(30)
+            self.base_routes[i]['left_exit_base_route'].junctions \
                 .append(self.junctions[30][18][self.c['switch_types']['left_exit_railroad_switch']])
-            self.base_routes[i][self.c['base_route_types']['left_exit_base_route']].junction_position.append(30)
-            self.base_routes[i][self.c['base_route_types']['left_exit_base_route']].junctions \
+            self.base_routes[i]['left_exit_base_route'].junction_position.append(30)
+            self.base_routes[i]['left_exit_base_route'].junctions \
                 .append(self.junctions[30][14][self.c['switch_types']['left_exit_railroad_switch']])
-            self.base_routes[i][self.c['base_route_types']['left_exit_base_route']].junction_position.append(30)
-            self.base_routes[i][self.c['base_route_types']['left_exit_base_route']].junctions \
+            self.base_routes[i]['left_exit_base_route'].junction_position.append(30)
+            self.base_routes[i]['left_exit_base_route'].junctions \
                 .append(self.junctions[30][10][self.c['switch_types']['left_exit_railroad_switch']])
-            self.base_routes[i][self.c['base_route_types']['left_exit_base_route']].junction_position.append(30)
-            self.base_routes[i][self.c['base_route_types']['left_exit_base_route']].junctions \
+            self.base_routes[i]['left_exit_base_route'].junction_position.append(30)
+            self.base_routes[i]['left_exit_base_route'].junctions \
                 .append(self.junctions[30][6][self.c['switch_types']['left_exit_railroad_switch']])
-            self.base_routes[i][self.c['base_route_types']['left_exit_base_route']].junction_position.append(30)
-            self.base_routes[i][self.c['base_route_types']['left_exit_base_route']].junctions \
+            self.base_routes[i]['left_exit_base_route'].junction_position.append(30)
+            self.base_routes[i]['left_exit_base_route'].junctions \
                 .append(self.junctions[30][4][self.c['switch_types']['left_exit_railroad_switch']])
-            self.base_routes[i][self.c['base_route_types']['left_exit_base_route']].junction_position.append(30)
-            self.base_routes[i][self.c['base_route_types']['left_exit_base_route']].junctions \
+            self.base_routes[i]['left_exit_base_route'].junction_position.append(30)
+            self.base_routes[i]['left_exit_base_route'].junctions \
                 .append(self.junctions[2][30][self.c['switch_types']['left_exit_railroad_switch']])
-            self.base_routes[i][self.c['base_route_types']['left_exit_base_route']].junction_position.append(30)
-            self.base_routes[i][self.c['base_route_types']['left_exit_base_route']].junctions \
+            self.base_routes[i]['left_exit_base_route'].junction_position.append(30)
+            self.base_routes[i]['left_exit_base_route'].junctions \
                 .append(self.junctions[2][1][self.c['crossover_types']['left_exit_crossover']])
-            self.base_routes[i][self.c['base_route_types']['left_exit_base_route']].junction_position.append([2, 1])
+            self.base_routes[i]['left_exit_base_route'].junction_position.append([2, 1])
 
             # ------------ right side exit ------------
-            self.base_routes[i][self.c['base_route_types']['right_side_exit_base_route']].junctions \
+            self.base_routes[i]['right_side_exit_base_route'].junctions \
                 .append(self.junctions[30][32][self.c['switch_types']['right_exit_railroad_switch']])
-            self.base_routes[i][self.c['base_route_types']['right_side_exit_base_route']].junction_position.append(i)
-            self.base_routes[i][self.c['base_route_types']['right_side_exit_base_route']].junctions \
+            self.base_routes[i]['right_side_exit_base_route'].junction_position.append(i)
+            self.base_routes[i]['right_side_exit_base_route'].junctions \
                 .append(self.junctions[30][28][self.c['switch_types']['right_exit_railroad_switch']])
-            self.base_routes[i][self.c['base_route_types']['right_side_exit_base_route']].junction_position.append(30)
-            self.base_routes[i][self.c['base_route_types']['right_side_exit_base_route']].junctions \
+            self.base_routes[i]['right_side_exit_base_route'].junction_position.append(30)
+            self.base_routes[i]['right_side_exit_base_route'].junctions \
                 .append(self.junctions[104][30][self.c['switch_types']['right_exit_railroad_switch']])
-            self.base_routes[i][self.c['base_route_types']['right_side_exit_base_route']].junction_position.append(30)
-            self.base_routes[i][self.c['base_route_types']['right_side_exit_base_route']].junctions \
+            self.base_routes[i]['right_side_exit_base_route'].junction_position.append(30)
+            self.base_routes[i]['right_side_exit_base_route'].junctions \
                 .append(self.junctions[102][104][self.c['crossover_types']['right_exit_crossover']])
-            self.base_routes[i][self.c['base_route_types']['right_side_exit_base_route']].junction_position \
+            self.base_routes[i]['right_side_exit_base_route'].junction_position \
                 .append([104, 104])
 
         self.logger.info('trail points initialized for even tracks')

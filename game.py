@@ -196,32 +196,6 @@ class Game:
         self.c['graphics']['fps_display_update_interval'] \
             = self.game_config['graphics'].getfloat('fps_display_update_interval')
 
-        self.c['base_route_types'] = {}
-        self.c['base_route_types']['left_entry_base_route'] \
-            = self.game_config['base_route_types']['left_entry_base_route']
-        self.c['base_route_types']['left_exit_base_route'] \
-            = self.game_config['base_route_types']['left_exit_base_route']
-        self.c['base_route_types']['right_entry_base_route'] \
-            = self.game_config['base_route_types']['right_entry_base_route']
-        self.c['base_route_types']['right_exit_base_route'] \
-            = self.game_config['base_route_types']['right_exit_base_route']
-        self.c['base_route_types']['left_side_entry_base_route'] \
-            = self.game_config['base_route_types']['left_side_entry_base_route']
-        self.c['base_route_types']['left_side_exit_base_route'] \
-            = self.game_config['base_route_types']['left_side_exit_base_route']
-        self.c['base_route_types']['right_side_entry_base_route'] \
-            = self.game_config['base_route_types']['right_side_entry_base_route']
-        self.c['base_route_types']['right_side_exit_base_route'] \
-            = self.game_config['base_route_types']['right_side_exit_base_route']
-        self.c['base_route_types']['left_entry_platform_base_route'] \
-            = self.game_config['base_route_types']['left_entry_platform_base_route']
-        self.c['base_route_types']['right_entry_platform_base_route'] \
-            = self.game_config['base_route_types']['right_entry_platform_base_route']
-        self.c['base_route_types']['right_exit_platform_base_route'] \
-            = self.game_config['base_route_types']['right_exit_platform_base_route']
-        self.c['base_route_types']['left_exit_platform_base_route'] \
-            = self.game_config['base_route_types']['left_exit_platform_base_route']
-
         self.c['direction'] = {}
         self.c['direction']['left'] = self.game_config['direction'].getint('left')
         self.c['direction']['right'] = self.game_config['direction'].getint('right')
