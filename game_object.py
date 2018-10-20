@@ -83,16 +83,6 @@ class GameObject:
             = self.game_config['train_config'].getint('train_acceleration_factor_length')
         self.c['train_config']['train_maximum_speed'] = self.game_config['train_config'].getint('train_maximum_speed')
 
-        self.c['train_state_types'] = {}
-        self.c['train_state_types']['pass_through'] = self.game_config['train_state_types']['pass_through']
-        self.c['train_state_types']['approaching'] = self.game_config['train_state_types']['approaching']
-        self.c['train_state_types']['approaching_pass_through'] \
-            = self.game_config['train_state_types']['approaching_pass_through']
-        self.c['train_state_types']['pending_boarding'] = self.game_config['train_state_types']['pending_boarding']
-        self.c['train_state_types']['boarding_in_progress'] \
-            = self.game_config['train_state_types']['boarding_in_progress']
-        self.c['train_state_types']['boarding_complete'] = self.game_config['train_state_types']['boarding_complete']
-
         self.c['dispatcher_config'] = {}
         self.c['dispatcher_config']['tracks_ready'] = self.game_config['dispatcher_config'].getint('tracks_ready')
         main_priority_tracks_parsed = self.game_config['dispatcher_config']['main_priority_tracks'].split('|')

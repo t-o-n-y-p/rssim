@@ -52,7 +52,7 @@ class Train(GameObject):
         # by default train has far right position for this
         self.speed_factor_position = self.c['train_config']['train_acceleration_factor_length'] - 1
         self.logger.debug('set speed_factor_position: {}'.format(self.speed_factor_position))
-        if self.state == self.c['train_state_types']['approaching_pass_through']:
+        if self.state == 'approaching_pass_through':
             self.priority = 0
             self.boarding_time = 60
         else:
@@ -85,7 +85,7 @@ class Train(GameObject):
             self.boarding_lights_sprite \
                 = pyglet.sprite.Sprite(self.boarding_lights_image[self.current_direction][self.carts],
                                        batch=self.batch, group=self.boarding_lights_group)
-            if self.state == self.c['train_state_types']['boarding_in_progress']:
+            if self.state == 'boarding_in_progress':
                 self.boarding_lights_sprite.visible = True
             else:
                 self.boarding_lights_sprite.visible = False
@@ -255,7 +255,7 @@ class Train(GameObject):
 
         # while boarding is in progress, train does not move indeed
         self.logger.debug('state: {}'.format(self.state))
-        if self.state in self.c['train_state_types']['boarding_in_progress']:
+        if self.state == 'boarding_in_progress':
             self.speed = 0
             self.logger.debug('speed = 0')
             self.speed_factor_position = 0

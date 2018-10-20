@@ -333,7 +333,7 @@ class Dispatcher(GameObject):
             self.logger.debug('train id: {}'.format(i.train_id))
             self.logger.debug('train priority: {}'.format(i.priority))
             self.logger.debug('train state: {}'.format(i.state))
-            if i.state == self.c['train_state_types']['boarding_in_progress']:
+            if i.state == 'boarding_in_progress':
                 # if boarding is in progress, track is busy, but no route is assigned,
                 # so we need to override track settings
                 i.boarding_time -= 1
@@ -357,7 +357,7 @@ class Dispatcher(GameObject):
                 # when boarding time is expired, boarding is complete, and we unlock track settings
                 if i.boarding_time <= 0:
                     self.tracks[i.track_number - 1].override = False
-                    i.state = self.c['train_state_types']['boarding_complete']
+                    i.state = 'boarding_complete'
                     if i.boarding_lights_sprite is not None:
                         i.boarding_lights_sprite.visible = False
 
@@ -367,8 +367,8 @@ class Dispatcher(GameObject):
                 if i.carts_position[0] == i.train_route.destination_point_v2[i.carts]:
                     self.logger.debug('train {} reached route destination point'.format(i.train_id))
                     # if train arrives to the track, boarding begins
-                    if i.state == self.c['train_state_types']['pending_boarding']:
-                        i.state = self.c['train_state_types']['boarding_in_progress']
+                    if i.state == 'pending_boarding':
+                        i.state = 'boarding_in_progress'
                         if i.boarding_time > 60 and i.boarding_lights_sprite is not None:
                             i.boarding_lights_sprite.visible = True
 
@@ -382,7 +382,7 @@ class Dispatcher(GameObject):
                         i.complete_train_route()
 
                     # if train arrives to the end of exit route, it just goes away
-                    if i.state == self.c['train_state_types']['boarding_complete']:
+                    if i.state == 'boarding_complete':
                         self.logger.debug('train {} reached end of cycle'.format(i.train_id))
                         self.logger.info('train {} completed route: track {} {}'
                                          .format(i.train_id, i.train_route.track_number, i.train_route.route_type))
@@ -397,7 +397,7 @@ class Dispatcher(GameObject):
 
             # train is in approaching state if all tracks are busy,
             # so we wait for any compatible track to be available for this train
-            if i.state == self.c['train_state_types']['approaching'] and routes_created_inside_iteration == 0:
+            if i.state == 'approaching' and routes_created_inside_iteration == 0:
                 self.logger.debug('looking for route for train {}'.format(i.train_id))
                 route_for_new_train = None
                 for j in self.c['dispatcher_config']['main_priority_tracks'][i.direction][i.new_direction]:
@@ -416,7 +416,7 @@ class Dispatcher(GameObject):
                         self.tracks[j - 1].override = True
                         self.tracks[j - 1].busy = True
                         self.tracks[j - 1].last_entered_by = i.train_id
-                        i.state = self.c['train_state_types']['pending_boarding']
+                        i.state = 'pending_boarding'
                         self.logger.info('train {} status changed to {}'.format(i.train_id, i.state))
                         self.logger.info('train {} completed route: track {} {}'
                                          .format(i.train_id, i.train_route.track_number, i.train_route.route_type))
@@ -432,8 +432,7 @@ class Dispatcher(GameObject):
                 if route_for_new_train is None:
                     self.logger.debug('all tracks are busy, will try next time')
 
-            if i.state == self.c['train_state_types']['approaching_pass_through'] \
-                    and routes_created_inside_iteration == 0:
+            if i.state == 'approaching_pass_through' and routes_created_inside_iteration == 0:
                 self.logger.debug('looking for pass through route for train {}'.format(i.train_id))
                 for j in self.c['dispatcher_config']['pass_through_priority_tracks'][i.direction]:
                     r = self.train_routes[j][self.c['train_route_types']['entry_train_route'][i.direction]]
@@ -448,7 +447,7 @@ class Dispatcher(GameObject):
                         self.tracks[j - 1].override = True
                         self.tracks[j - 1].busy = True
                         self.tracks[j - 1].last_entered_by = i.train_id
-                        i.state = self.c['train_state_types']['pending_boarding']
+                        i.state = 'pending_boarding'
                         self.logger.info('train {} status changed to {}'.format(i.train_id, i.state))
                         self.logger.info('train {} completed route: track {} {}'
                                          .format(i.train_id, i.train_route.track_number, i.train_route.route_type))
@@ -537,7 +536,7 @@ class Dispatcher(GameObject):
                     route_for_new_train = self.train_routes[track_number][
                         self.c['train_route_types']['approaching_train_route'][direction]]
                     new_train = Train(carts=carts, train_route=route_for_new_train,
-                                      state=self.c['train_state_types']['approaching_pass_through'],
+                                      state='approaching_pass_through',
                                       direction=direction, new_direction=new_direction, current_direction=direction,
                                       train_id=self.train_counter,
                                       head_image=self.train_head_image, mid_image=self.train_mid_image,
@@ -559,7 +558,7 @@ class Dispatcher(GameObject):
                     route_for_new_train = self.train_routes[track_number][
                         self.c['train_route_types']['approaching_train_route'][direction]]
                     new_train = Train(carts=carts, train_route=route_for_new_train,
-                                      state=self.c['train_state_types']['approaching'],
+                                      state='approaching',
                                       direction=direction, new_direction=new_direction, current_direction=direction,
                                       train_id=self.train_counter,
                                       head_image=self.train_head_image, mid_image=self.train_mid_image,
