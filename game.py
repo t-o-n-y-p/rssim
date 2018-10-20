@@ -262,23 +262,6 @@ class Game:
                                                                  int(train_creation_timeout[2]),
                                                                  int(train_creation_timeout[3]))
 
-        self.c['switch_types'] = {}
-        self.c['switch_types']['left_entry_railroad_switch'] \
-            = self.game_config['switch_types']['left_entry_railroad_switch']
-        self.c['switch_types']['left_exit_railroad_switch'] \
-            = self.game_config['switch_types']['left_exit_railroad_switch']
-        self.c['switch_types']['right_entry_railroad_switch'] \
-            = self.game_config['switch_types']['right_entry_railroad_switch']
-        self.c['switch_types']['right_exit_railroad_switch'] \
-            = self.game_config['switch_types']['right_exit_railroad_switch']
-
-        self.c['crossover_types'] = {}
-        self.c['crossover_types']['left_entry_crossover'] = self.game_config['crossover_types']['left_entry_crossover']
-        self.c['crossover_types']['left_exit_crossover'] = self.game_config['crossover_types']['left_exit_crossover']
-        self.c['crossover_types']['right_entry_crossover'] \
-            = self.game_config['crossover_types']['right_entry_crossover']
-        self.c['crossover_types']['right_exit_crossover'] = self.game_config['crossover_types']['right_exit_crossover']
-
     def update(self):
         time_1 = time.perf_counter()
         for o in self.objects:
