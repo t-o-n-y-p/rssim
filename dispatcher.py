@@ -45,44 +45,32 @@ class Dispatcher(GameObject):
         self.boarding_lights_image = {}
         # ----------- left direction images -----------------
         self.train_head_image[self.c['direction']['left']] = \
-            pyglet.image.load('{}_head_{}.png'.format(self.c['train_config']['train_cart_image_path'],
-                                                      self.c['direction']['left']))
+            pyglet.image.load('img/cart_head_{}.png'.format(self.c['direction']['left']))
         self.train_mid_image[self.c['direction']['left']] = \
-            pyglet.image.load('{}_mid_{}.png'.format(self.c['train_config']['train_cart_image_path'],
-                                                     self.c['direction']['left']))
+            pyglet.image.load('img/cart_mid_{}.png'.format(self.c['direction']['left']))
         self.train_tail_image[self.c['direction']['left']] = \
-            pyglet.image.load('{}_tail_{}.png'.format(self.c['train_config']['train_cart_image_path'],
-                                                      self.c['direction']['left']))
+            pyglet.image.load('img/cart_tail_{}.png'.format(self.c['direction']['left']))
         # -------------------- right direction images ----------------------
         self.train_head_image[self.c['direction']['right']] = \
-            pyglet.image.load('{}_head_{}.png'.format(self.c['train_config']['train_cart_image_path'],
-                                                      self.c['direction']['right']))
+            pyglet.image.load('img/cart_head_{}.png'.format(self.c['direction']['right']))
         self.train_mid_image[self.c['direction']['right']] = \
-            pyglet.image.load('{}_mid_{}.png'.format(self.c['train_config']['train_cart_image_path'],
-                                                     self.c['direction']['right']))
+            pyglet.image.load('img/cart_mid_{}.png'.format(self.c['direction']['right']))
         self.train_tail_image[self.c['direction']['right']] = \
-            pyglet.image.load('{}_tail_{}.png'.format(self.c['train_config']['train_cart_image_path'],
-                                                      self.c['direction']['right']))
+            pyglet.image.load('img/cart_tail_{}.png'.format(self.c['direction']['right']))
         # ----------- left side direction images -----------------
         self.train_head_image[self.c['direction']['left_side']] = \
-            pyglet.image.load('{}_head_{}.png'.format(self.c['train_config']['train_cart_image_path'],
-                                                      self.c['direction']['left_side']))
+            pyglet.image.load('img/cart_head_{}.png'.format(self.c['direction']['left_side']))
         self.train_mid_image[self.c['direction']['left_side']] = \
-            pyglet.image.load('{}_mid_{}.png'.format(self.c['train_config']['train_cart_image_path'],
-                                                     self.c['direction']['left_side']))
+            pyglet.image.load('img/cart_mid_{}.png'.format(self.c['direction']['left_side']))
         self.train_tail_image[self.c['direction']['left_side']] = \
-            pyglet.image.load('{}_tail_{}.png'.format(self.c['train_config']['train_cart_image_path'],
-                                                      self.c['direction']['left_side']))
+            pyglet.image.load('img/cart_tail_{}.png'.format(self.c['direction']['left_side']))
         # -------------------- right side direction images ----------------------
         self.train_head_image[self.c['direction']['right_side']] = \
-            pyglet.image.load('{}_head_{}.png'.format(self.c['train_config']['train_cart_image_path'],
-                                                      self.c['direction']['right_side']))
+            pyglet.image.load('img/cart_head_{}.png'.format(self.c['direction']['right_side']))
         self.train_mid_image[self.c['direction']['right_side']] = \
-            pyglet.image.load('{}_mid_{}.png'.format(self.c['train_config']['train_cart_image_path'],
-                                                     self.c['direction']['right_side']))
+            pyglet.image.load('img/cart_mid_{}.png'.format(self.c['direction']['right_side']))
         self.train_tail_image[self.c['direction']['right_side']] = \
-            pyglet.image.load('{}_tail_{}.png'.format(self.c['train_config']['train_cart_image_path'],
-                                                      self.c['direction']['right_side']))
+            pyglet.image.load('img/cart_tail_{}.png'.format(self.c['direction']['right_side']))
         for i in (self.c['direction']['left'], self.c['direction']['right'],
                   self.c['direction']['left_side'], self.c['direction']['right_side']):
             self.train_head_image[i].anchor_x = self.train_head_image[i].width // 2

@@ -211,7 +211,6 @@ class Game:
             = self.game_config['train_route_types']['approaching_train_route'].split(',')
 
         self.c['train_config'] = {}
-        self.c['train_config']['train_cart_image_path'] = self.game_config['train_config']['train_cart_image_path']
         train_acceleration_factor = self.game_config['train_config']['train_acceleration_factor'].split(',')
         for i in range(len(train_acceleration_factor)):
             train_acceleration_factor[i] = int(train_acceleration_factor[i])

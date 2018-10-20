@@ -90,10 +90,6 @@ class Train(GameObject):
             else:
                 self.boarding_lights_sprite.visible = False
 
-        self.logger.debug('loaded cart images: {}_head.png, {}_mid.png, {}_tail.png'
-                          .format(self.c['train_config']['train_cart_image_path'],
-                                  self.c['train_config']['train_cart_image_path'],
-                                  self.c['train_config']['train_cart_image_path']))
         # when train route is assigned, we use carts_position list;
         # it contains relative carts position based on route trail points
         self.carts_position = []
