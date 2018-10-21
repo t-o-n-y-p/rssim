@@ -7,16 +7,16 @@ from exceptions import VideoAdapterNotSupportedException
 
 
 class MainMap(GameObject):
-    def __init__(self, batch, group):
-        super().__init__()
+    def __init__(self, batch, group, game_config):
+        super().__init__(game_config)
         self.logger = logging.getLogger('game.main_map')
         self.logger.debug('------- START INIT -------')
         # load background texture tile
         self.sprite = None
         try:
             self.sprite = pyglet.sprite.Sprite(pyglet.image.load('img/map/4/full_map.png'),
-                                               x=self.c['graphics']['base_offset'][0] + 120,
-                                               y=self.c['graphics']['base_offset'][1],
+                                               x=self.c.base_offset[0] + 120,
+                                               y=self.c.base_offset[1],
                                                batch=batch, group=group)
         except pyglet.gl.lib.GLException:
             raise VideoAdapterNotSupportedException

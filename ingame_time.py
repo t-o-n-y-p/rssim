@@ -16,8 +16,8 @@ def _game_is_not_paused(fn):
 
 
 class InGameTime(GameObject):
-    def __init__(self, batch, day_text_group):
-        super().__init__()
+    def __init__(self, batch, day_text_group, game_config):
+        super().__init__(game_config)
         self.logger = logging.getLogger('game.in-game_time')
         self.logger.debug('------- START INIT -------')
         self.config = configparser.RawConfigParser()
@@ -32,16 +32,16 @@ class InGameTime(GameObject):
         self.read_state()
         self.day_text = pyglet.text.Label('DAY {}'.format(self.day),
                                           font_name='Courier New', bold=True,
-                                          font_size=self.c['graphics']['day_font_size'],
-                                          color=self.c['graphics']['day_text_color'],
-                                          x=self.c['graphics']['screen_resolution'][0] - 141, y=85,
+                                          font_size=self.c.day_font_size,
+                                          color=self.c.day_text_color,
+                                          x=self.c.screen_resolution[0] - 141, y=85,
                                           anchor_x='center', anchor_y='center',
                                           batch=batch, group=day_text_group)
         self.time_text = pyglet.text.Label('0',
                                            font_name='Courier New', bold=True,
-                                           font_size=self.c['graphics']['day_font_size'],
-                                           color=self.c['graphics']['day_text_color'],
-                                           x=self.c['graphics']['screen_resolution'][0] - 141, y=45,
+                                           font_size=self.c.day_font_size,
+                                           color=self.c.day_text_color,
+                                           x=self.c.screen_resolution[0] - 141, y=45,
                                            anchor_x='center', anchor_y='center',
                                            batch=batch, group=day_text_group)
         self.logger.debug('------- END INIT -------')

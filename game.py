@@ -12,6 +12,7 @@ import pyglet
 
 from onboarding_tips import OnboardingTips
 from exceptions import VideoAdapterNotSupportedException
+from game_config import GameConfig
 
 
 def _game_window_is_active(fn):
@@ -35,19 +36,17 @@ class Game:
         self.logs_file = None
         self.manage_logs_config()
         self.logger.debug('main logger created')
-        self.c = {}
-        self.game_config = configparser.RawConfigParser()
-        self.game_config.read('game_config.ini')
-        self.parse_game_config()
+        self.c = GameConfig()
+        self.main_map_tiles = None
         # since map can be moved, all objects should also be moved, that's why we need base offset here
-        self.base_offset = self.c['graphics']['base_offset']
+        self.base_offset = self.c.base_offset
         self.logger.debug('base offset set: {} {}'.format(self.base_offset[0], self.base_offset[1]))
         self.game_paused = False
         self.logger.debug('game paused set: {}'.format(self.game_paused))
         self.objects = []
-        surface = pyglet.window.Window(width=self.c['graphics']['screen_resolution'][0],
-                                       height=self.c['graphics']['screen_resolution'][1],
-                                       caption=caption, style='borderless', vsync=self.c['graphics']['vsync'])
+        surface = pyglet.window.Window(width=self.c.screen_resolution[0],
+                                       height=self.c.screen_resolution[1],
+                                       caption=caption, style='borderless', vsync=self.c.vsync)
         self.surface = surface
         pyglet.gl.glEnable(pyglet.gl.GL_BLEND)
         pyglet.gl.glBlendFunc(pyglet.gl.GL_SRC_ALPHA, pyglet.gl.GL_ONE_MINUS_SRC_ALPHA)
@@ -66,23 +65,22 @@ class Game:
         self.game_window_position = win32gui.GetWindowRect(self.game_window_handler)
         self.absolute_mouse_pos = win32api.GetCursorPos()
         self.fps_display_label = None
-        if self.c['graphics']['fps_display_enabled']:
+        if self.c.fps_display_enabled:
             self.fps_display_label \
                 = pyglet.text.Label(text='0', font_name='Courier New',
-                                    font_size=self.c['graphics']['button_font_size'],
-                                    x=self.c['graphics']['screen_resolution'][0] - 75,
-                                    y=self.c['graphics']['screen_resolution'][1]
-                                    - self.c['graphics']['top_bar_height'] // 2,
+                                    font_size=self.c.button_font_size,
+                                    x=self.c.screen_resolution[0] - 75,
+                                    y=self.c.screen_resolution[1]
+                                    - self.c.top_bar_height // 2,
                                     anchor_x='right', anchor_y='center',
                                     batch=self.batch, group=self.buttons_text_and_borders_ordered_group)
 
         self.surface.set_icon(pyglet.image.load('icon.ico'))
         self.logger.debug('created screen with resolution {}'
-                          .format(self.c['graphics']['screen_resolution']))
+                          .format(self.c.screen_resolution))
         self.logger.debug('caption set: {}'.format(caption))
-        # pyglet.clock.set_fps_limit(self.c['graphics']['frame_rate'])
-        self.logger.debug('clock created')
-        self.main_map_tiles = None
+        # pyglet.clock.set_fps_limit(self.c.frame_rate)
+        # self.logger.debug('clock created')
         self.on_mouse_press_handlers = []
         self.on_mouse_release_handlers = []
         self.on_mouse_motion_handlers = []
@@ -94,12 +92,13 @@ class Game:
         mini_map_image = pyglet.image.load('img/mini_map/5/mini_map.png')
         self.mini_map_tip \
             = OnboardingTips(image=mini_map_image,
-                             x=self.c['graphics']['screen_resolution'][0] - mini_map_image.width,
-                             y=self.c['graphics']['screen_resolution'][1] - self.c['graphics']['top_bar_height']
+                             x=self.c.screen_resolution[0] - mini_map_image.width,
+                             y=self.c.screen_resolution[1] - self.c.top_bar_height
                              - 4 - mini_map_image.height,
                              tip_type='mini_map', batch=self.batch,
                              group=self.top_bottom_bars_ordered_group,
-                             viewport_border_group=self.buttons_general_borders_day_text_ordered_group)
+                             viewport_border_group=self.buttons_general_borders_day_text_ordered_group,
+                             game_config=self.c)
         self.mini_map_timer = 0
         self.dispatcher = None
         self.logger.warning('game init completed')
@@ -155,98 +154,6 @@ class Game:
         with open('logs_config.ini', 'w') as configfile:
             self.logs_config.write(configfile)
 
-    def parse_game_config(self):
-        self.c['graphics'] = {}
-        screen_resolution = self.game_config['graphics']['screen_resolution'].split(',')
-        self.c['graphics']['screen_resolution'] = (int(screen_resolution[0]), int(screen_resolution[1]))
-        self.c['graphics']['frame_rate'] = self.game_config['graphics'].getint('frame_rate')
-        self.c['graphics']['vsync'] = self.game_config['graphics'].getboolean('vsync')
-        map_resolution = self.game_config['graphics']['map_resolution'].split(',')
-        self.c['graphics']['map_resolution'] = (int(map_resolution[0]), int(map_resolution[1]))
-        base_offset_upper_left_limit = self.game_config['graphics']['base_offset_upper_left_limit'].split(',')
-        self.c['graphics']['base_offset_upper_left_limit'] = (int(base_offset_upper_left_limit[0]),
-                                                              int(base_offset_upper_left_limit[1]))
-        base_offset_lower_right_limit = self.game_config['graphics']['base_offset_lower_right_limit'].split(',')
-        self.c['graphics']['base_offset_lower_right_limit'] = (int(base_offset_lower_right_limit[0]),
-                                                               int(base_offset_lower_right_limit[1]))
-        base_offset = self.game_config['graphics']['base_offset'].split(',')
-        self.c['graphics']['base_offset'] = (int(base_offset[0]), int(base_offset[1]))
-        self.c['graphics']['top_bar_height'] = self.game_config['graphics'].getint('top_bar_height')
-        self.c['graphics']['bottom_bar_height'] = self.game_config['graphics'].getint('bottom_bar_height')
-        self.c['graphics']['bottom_bar_width'] = self.game_config['graphics'].getint('bottom_bar_width')
-        self.c['graphics']['font_name'] = self.game_config['graphics']['font_name']
-        self.c['graphics']['button_font_size'] = self.game_config['graphics'].getint('button_font_size')
-        self.c['graphics']['day_font_size'] = self.game_config['graphics'].getint('day_font_size')
-        button_text_color = self.game_config['graphics']['button_text_color'].split(',')
-        for i in range(len(button_text_color)):
-            button_text_color[i] = int(button_text_color[i])
-
-        self.c['graphics']['button_text_color'] = tuple(button_text_color)
-        bottom_bar_color = self.game_config['graphics']['bottom_bar_color'].split(',')
-        for i in range(len(bottom_bar_color)):
-            bottom_bar_color[i] = int(bottom_bar_color[i])
-
-        self.c['graphics']['bottom_bar_color'] = tuple(bottom_bar_color)
-        day_text_color = self.game_config['graphics']['day_text_color'].split(',')
-        for i in range(len(day_text_color)):
-            day_text_color[i] = int(day_text_color[i])
-
-        self.c['graphics']['day_text_color'] = tuple(day_text_color)
-        self.c['graphics']['fps_display_enabled'] = self.game_config['graphics'].getboolean('fps_display_enabled')
-        self.c['graphics']['fps_display_update_interval'] \
-            = self.game_config['graphics'].getfloat('fps_display_update_interval')
-
-        self.c['direction'] = {}
-        self.c['direction']['left'] = self.game_config['direction'].getint('left')
-        self.c['direction']['right'] = self.game_config['direction'].getint('right')
-        self.c['direction']['left_side'] = self.game_config['direction'].getint('left_side')
-        self.c['direction']['right_side'] = self.game_config['direction'].getint('right_side')
-
-        self.c['train_route_types'] = {}
-        self.c['train_route_types']['entry_train_route'] \
-            = self.game_config['train_route_types']['entry_train_route'].split(',')
-        self.c['train_route_types']['exit_train_route'] \
-            = self.game_config['train_route_types']['exit_train_route'].split(',')
-        self.c['train_route_types']['approaching_train_route'] \
-            = self.game_config['train_route_types']['approaching_train_route'].split(',')
-
-        self.c['train_config'] = {}
-        train_acceleration_factor = self.game_config['train_config']['train_acceleration_factor'].split(',')
-        for i in range(len(train_acceleration_factor)):
-            train_acceleration_factor[i] = int(train_acceleration_factor[i])
-
-        self.c['train_config']['train_acceleration_factor'] = tuple(train_acceleration_factor)
-        self.c['train_config']['train_maximum_speed'] = self.game_config['train_config'].getint('train_maximum_speed')
-
-        self.c['dispatcher_config'] = {}
-        main_priority_tracks_parsed = self.game_config['dispatcher_config']['main_priority_tracks'].split('|')
-        for i in range(len(main_priority_tracks_parsed)):
-            main_priority_tracks_parsed[i] = main_priority_tracks_parsed[i].split(',')
-            for j in range(len(main_priority_tracks_parsed[i])):
-                main_priority_tracks_parsed[i][j] = main_priority_tracks_parsed[i][j].split('-')
-                for k in range(len(main_priority_tracks_parsed[i][j])):
-                    main_priority_tracks_parsed[i][j][k] = int(main_priority_tracks_parsed[i][j][k])
-
-                main_priority_tracks_parsed[i][j] = tuple(main_priority_tracks_parsed[i][j])
-
-            main_priority_tracks_parsed[i] = tuple(main_priority_tracks_parsed[i])
-
-        self.c['dispatcher_config']['main_priority_tracks'] = tuple(main_priority_tracks_parsed)
-        pass_through_priority_tracks = self.game_config['dispatcher_config']['pass_through_priority_tracks'].split('|')
-        for i in range(len(pass_through_priority_tracks)):
-            pass_through_priority_tracks[i] = pass_through_priority_tracks[i].split(',')
-            for j in range(len(pass_through_priority_tracks[i])):
-                pass_through_priority_tracks[i][j] = int(pass_through_priority_tracks[i][j])
-
-            pass_through_priority_tracks[i] = tuple(pass_through_priority_tracks[i])
-
-        self.c['dispatcher_config']['pass_through_priority_tracks'] = tuple(pass_through_priority_tracks)
-        train_creation_timeout = self.game_config['dispatcher_config']['train_creation_timeout'].split(',')
-        self.c['dispatcher_config']['train_creation_timeout'] = (int(train_creation_timeout[0]),
-                                                                 int(train_creation_timeout[1]),
-                                                                 int(train_creation_timeout[2]),
-                                                                 int(train_creation_timeout[3]))
-
     def update(self):
         time_1 = time.perf_counter()
         for o in self.objects:
@@ -261,16 +168,15 @@ class Game:
 
     @_game_window_is_active
     def handle_mouse_press(self, x, y, button, modifiers):
-        y = self.c['graphics']['screen_resolution'][1] - y
-        if x in range(0, self.c['graphics']['screen_resolution'][0] - 70) \
-                and y in range(0, self.c['graphics']['top_bar_height']) and button == pyglet.window.mouse.LEFT:
+        y = self.c.screen_resolution[1] - y
+        if x in range(0, self.c.screen_resolution[0] - 70) \
+                and y in range(0, self.c.top_bar_height) and button == pyglet.window.mouse.LEFT:
             self.app_window_move_mode = True
             self.app_window_move_offset = (x, y)
 
-        if x in range(0, self.c['graphics']['screen_resolution'][0]) \
-                and y in range(self.c['graphics']['top_bar_height'],
-                               self.c['graphics']['screen_resolution'][1]
-                               - self.c['graphics']['bottom_bar_height']) and button == pyglet.window.mouse.LEFT:
+        if x in range(0, self.c.screen_resolution[0]) \
+                and y in range(self.c.top_bar_height, self.c.screen_resolution[1] - self.c.bottom_bar_height) \
+                and button == pyglet.window.mouse.LEFT:
             self.map_move_mode = True
             self.mini_map_tip.condition_met = True
 
@@ -290,14 +196,14 @@ class Game:
             self.base_offset = (self.base_offset[0] + dx, self.base_offset[1] + dy)
             self.logger.debug('new offset: {}'.format(self.base_offset))
             # but not beyond limits
-            if self.base_offset[0] > self.c['graphics']['base_offset_lower_right_limit'][0]:
-                self.base_offset = (self.c['graphics']['base_offset_lower_right_limit'][0], self.base_offset[1])
-            if self.base_offset[0] < self.c['graphics']['base_offset_upper_left_limit'][0]:
-                self.base_offset = (self.c['graphics']['base_offset_upper_left_limit'][0], self.base_offset[1])
-            if self.base_offset[1] > self.c['graphics']['base_offset_lower_right_limit'][1]:
-                self.base_offset = (self.base_offset[0], self.c['graphics']['base_offset_lower_right_limit'][1])
-            if self.base_offset[1] < self.c['graphics']['base_offset_upper_left_limit'][1]:
-                self.base_offset = (self.base_offset[0], self.c['graphics']['base_offset_upper_left_limit'][1])
+            if self.base_offset[0] > self.c.base_offset_lower_right_limit[0]:
+                self.base_offset = (self.c.base_offset_lower_right_limit[0], self.base_offset[1])
+            if self.base_offset[0] < self.c.base_offset_upper_left_limit[0]:
+                self.base_offset = (self.c.base_offset_upper_left_limit[0], self.base_offset[1])
+            if self.base_offset[1] > self.c.base_offset_lower_right_limit[1]:
+                self.base_offset = (self.base_offset[0], self.c.base_offset_lower_right_limit[1])
+            if self.base_offset[1] < self.c.base_offset_upper_left_limit[1]:
+                self.base_offset = (self.base_offset[0], self.c.base_offset_upper_left_limit[1])
 
             self.logger.debug('new limited offset: {}'.format(self.base_offset))
             self.main_map_tiles.update_sprite(self.base_offset)
@@ -328,7 +234,7 @@ class Game:
             self.surface.flip()
             self.logger.warning('frame ends')
             if self.fps_display_label is not None \
-                    and time.perf_counter() - fps_timer > self.c['graphics']['fps_display_update_interval']:
+                    and time.perf_counter() - fps_timer > self.c.fps_display_update_interval:
                 self.fps_display_label.text = str(round(float(1/(time_4 - time_1)))) + ' FPS'
                 fps_timer = time.perf_counter()
 

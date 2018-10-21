@@ -16,8 +16,8 @@ def _game_is_not_paused(fn):
 
 
 class BaseRoute(GameObject):
-    def __init__(self, track_number, route_type):
-        super().__init__()
+    def __init__(self, track_number, route_type, game_config):
+        super().__init__(game_config)
         self.logger = logging.getLogger('game.base_route_{}_{}'.format(track_number, route_type))
         self.logger.debug('------- START INIT -------')
         self.config = configparser.RawConfigParser()
@@ -37,17 +37,14 @@ class BaseRoute(GameObject):
 
     def read_state(self):
         self.logger.debug('------- START READING STATE -------')
-        if os.path.exists('user_cfg/base_route/track{}/track{}_{}.ini'.format(self.track_number,
-                                                                              self.track_number,
-                                                                              self.route_type)):
-            self.config.read('user_cfg/base_route/track{}/track{}_{}.ini'.format(self.track_number,
-                                                                                 self.track_number,
-                                                                                 self.route_type))
+        if os.path.exists('user_cfg/base_route/track{}/track{}_{}.ini'
+                          .format(self.track_number, self.track_number, self.route_type)):
+            self.config.read('user_cfg/base_route/track{}/track{}_{}.ini'
+                             .format(self.track_number, self.track_number, self.route_type))
             self.logger.debug('config parsed from user_cfg')
         else:
-            self.config.read('default_cfg/base_route/track{}/track{}_{}.ini'.format(self.track_number,
-                                                                                    self.track_number,
-                                                                                    self.route_type))
+            self.config.read('default_cfg/base_route/track{}/track{}_{}.ini'
+                             .format(self.track_number, self.track_number, self.route_type))
             self.logger.debug('config parsed from default_cfg')
         # parse user-related config
         self.route_config['force_busy'] = self.config['user_data'].getboolean('force_busy')

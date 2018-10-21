@@ -49,7 +49,7 @@ class RSSim(Game):
     def create_main_map(self):
         self.logger.debug('------- START CREATING BG IMAGE -------')
         try:
-            self.main_map_tiles = MainMap(batch=self.batch, group=self.map_ordered_group)
+            self.main_map_tiles = MainMap(batch=self.batch, group=self.map_ordered_group, game_config=self.c)
         except VideoAdapterNotSupportedException:
             raise VideoAdapterNotSupportedException
         self.logger.info('main map object created')
@@ -61,7 +61,7 @@ class RSSim(Game):
         # ------ BASE ROUTES AND SIGNALS ------
         # create main entry and main exit base routes and signals for them
         for j in ('left_entry_base_route', 'left_exit_base_route', 'right_entry_base_route', 'right_exit_base_route'):
-            self.base_routes[0][j] = BaseRoute(track_number=0, route_type=j)
+            self.base_routes[0][j] = BaseRoute(track_number=0, route_type=j, game_config=self.c)
             placement = self.base_routes[0][j].route_config['exit_signal_placement']
             self.logger.debug('placement = {}'.format(placement))
             flip_needed = self.base_routes[0][j].route_config['flip_needed']
@@ -69,7 +69,8 @@ class RSSim(Game):
             if placement is not None:
                 self.signals[0][j] = Signal(placement=placement, flip_needed=flip_needed,
                                             track_number=0, route_type=j,
-                                            batch=self.batch, signal_group=self.signals_and_trains_ordered_group)
+                                            batch=self.batch, signal_group=self.signals_and_trains_ordered_group,
+                                            game_config=self.c)
 
         self.logger.info('track 0 base routes and signals created')
         for j in ('left_entry_base_route', 'right_entry_base_route'):
@@ -90,33 +91,33 @@ class RSSim(Game):
             if i <= 20:
                 for k in ('left_entry_base_route', 'left_exit_base_route',
                           'right_entry_base_route', 'right_exit_base_route'):
-                    self.base_routes[i][k] = BaseRoute(track_number=i, route_type=k)
+                    self.base_routes[i][k] = BaseRoute(track_number=i, route_type=k, game_config=self.c)
 
             if i in (21, 23):
                 for k in ('left_entry_base_route', 'left_exit_base_route',
                           'left_side_entry_base_route', 'left_side_exit_base_route',
                           'right_entry_base_route', 'right_exit_base_route'):
-                    self.base_routes[i][k] = BaseRoute(track_number=i, route_type=k)
+                    self.base_routes[i][k] = BaseRoute(track_number=i, route_type=k, game_config=self.c)
 
             if i in (22, 24):
                 for k in ('left_entry_base_route', 'left_exit_base_route',
                           'right_side_entry_base_route', 'right_side_exit_base_route',
                           'right_entry_base_route', 'right_exit_base_route'):
-                    self.base_routes[i][k] = BaseRoute(track_number=i, route_type=k)
+                    self.base_routes[i][k] = BaseRoute(track_number=i, route_type=k, game_config=self.c)
 
             if i >= 25:
                 if i % 2 == 1:
                     for k in ('left_side_entry_base_route', 'left_side_exit_base_route',
                               'right_entry_base_route', 'right_exit_base_route'):
-                        self.base_routes[i][k] = BaseRoute(track_number=i, route_type=k)
+                        self.base_routes[i][k] = BaseRoute(track_number=i, route_type=k, game_config=self.c)
                 else:
                     for k in ('left_entry_base_route', 'left_exit_base_route',
                               'right_side_entry_base_route', 'right_side_exit_base_route'):
-                        self.base_routes[i][k] = BaseRoute(track_number=i, route_type=k)
+                        self.base_routes[i][k] = BaseRoute(track_number=i, route_type=k, game_config=self.c)
 
             for k in ('left_entry_platform_base_route', 'left_exit_platform_base_route',
                       'right_entry_platform_base_route', 'right_exit_platform_base_route'):
-                self.base_routes[i][k] = BaseRoute(track_number=i, route_type=k)
+                self.base_routes[i][k] = BaseRoute(track_number=i, route_type=k, game_config=self.c)
                 placement = self.base_routes[i][k].route_config['exit_signal_placement']
                 self.logger.debug('placement = {}'.format(placement))
                 flip_needed = self.base_routes[i][k].route_config['flip_needed']
@@ -124,7 +125,7 @@ class RSSim(Game):
                 if placement is not None:
                     self.signals[i][k] = Signal(placement=placement, flip_needed=flip_needed,
                                                 track_number=i, route_type=k, batch=self.batch,
-                                                signal_group=self.signals_and_trains_ordered_group)
+                                                signal_group=self.signals_and_trains_ordered_group, game_config=self.c)
 
             self.logger.debug('track {} base routes and signals created'.format(i))
 
@@ -134,7 +135,7 @@ class RSSim(Game):
 
         for j in ('left_side_entry_base_route', 'left_side_exit_base_route',
                   'right_side_entry_base_route', 'right_side_exit_base_route'):
-            self.base_routes[100][j] = BaseRoute(track_number=100, route_type=j)
+            self.base_routes[100][j] = BaseRoute(track_number=100, route_type=j, game_config=self.c)
             placement = self.base_routes[100][j].route_config['exit_signal_placement']
             self.logger.debug('placement = {}'.format(placement))
             flip_needed = self.base_routes[100][j].route_config['flip_needed']
@@ -142,7 +143,8 @@ class RSSim(Game):
             if placement is not None:
                 self.signals[100][j] = Signal(placement=placement, flip_needed=flip_needed,
                                               track_number=100, route_type=j,
-                                              batch=self.batch, signal_group=self.signals_and_trains_ordered_group)
+                                              batch=self.batch, signal_group=self.signals_and_trains_ordered_group,
+                                              game_config=self.c)
 
         for j in ('left_side_entry_base_route', 'right_side_entry_base_route'):
             # associate main entry/exit base route with its signal
@@ -211,24 +213,23 @@ class RSSim(Game):
         train_route_sections \
             = [self.base_routes[0][
                    '{}_base_route'
-                   .format(self.c['train_route_types']['entry_train_route'][self.c['direction']['left']])], ]
+                   .format(self.c.entry_train_route[self.c.direction_from_left_to_right])], ]
         train_route_sections_positions = [0, ]
-        self.train_routes[0][self.c['train_route_types']['approaching_train_route'][self.c['direction']['left']]] \
+        self.train_routes[0][self.c.approaching_train_route[self.c.direction_from_left_to_right]] \
             = TrainRoute(track_number=0,
-                         route_type=self.c['train_route_types']['approaching_train_route'][self.c['direction']['left']],
+                         route_type=self.c.approaching_train_route[self.c.direction_from_left_to_right],
                          supported_carts=[0, 20], train_route_sections=train_route_sections,
-                         train_route_sections_positions=train_route_sections_positions)
+                         train_route_sections_positions=train_route_sections_positions, game_config=self.c)
         train_route_sections \
             = [self.base_routes[0][
                    '{}_base_route'
-                   .format(self.c['train_route_types']['entry_train_route'][self.c['direction']['right']])], ]
+                   .format(self.c.entry_train_route[self.c.direction_from_right_to_left])], ]
         train_route_sections_positions = [0, ]
-        self.train_routes[0][self.c['train_route_types']['approaching_train_route'][self.c['direction']['right']]] \
+        self.train_routes[0][self.c.approaching_train_route[self.c.direction_from_right_to_left]] \
             = TrainRoute(track_number=0,
-                         route_type=self.c['train_route_types']['approaching_train_route'][
-                             self.c['direction']['right']],
+                         route_type=self.c.approaching_train_route[self.c.direction_from_right_to_left],
                          supported_carts=[0, 20], train_route_sections=train_route_sections,
-                         train_route_sections_positions=train_route_sections_positions)
+                         train_route_sections_positions=train_route_sections_positions, game_config=self.c)
         self.logger.info('approaching train routes created')
 
         for i in range(1, 33):
@@ -239,296 +240,268 @@ class RSSim(Game):
                                     self.base_routes[i]['right_entry_platform_base_route'],
                                     self.base_routes[i]['left_exit_platform_base_route'],
                                     self.base_routes[i]['right_exit_platform_base_route']]
-            new_track = Track(track_number=i, base_routes_in_track=base_routes_in_track)
+            new_track = Track(track_number=i, base_routes_in_track=base_routes_in_track, game_config=self.c)
             self.tracks.append(new_track)
             self.logger.info('track {} created'.format(i))
             # create entry train route
             # it includes main entry base route, specific entry base route and platform base route
             if i <= 24:
-                for k in (self.c['direction']['left'], self.c['direction']['right']):
+                for k in (self.c.direction_from_left_to_right, self.c.direction_from_right_to_left):
                     train_route_sections = [
                         self.base_routes[0]['{}_base_route'
-                                            .format(self.c['train_route_types']['entry_train_route'][k])], ]
+                                            .format(self.c.entry_train_route[k])], ]
                     train_route_sections.extend(
                         self.base_routes[i]['{}_base_route'
-                                            .format(self.c['train_route_types']['entry_train_route'][k])].junctions)
+                                            .format(self.c.entry_train_route[k])].junctions)
                     train_route_sections.extend([
                         self.base_routes[i]['{}_base_route'
-                                            .format(self.c['train_route_types']['entry_train_route'][k])],
+                                            .format(self.c.entry_train_route[k])],
                         self.base_routes[i]['{}_platform_base_route'
-                                            .format(self.c['train_route_types']['entry_train_route'][k])]])
+                                            .format(self.c.entry_train_route[k])]])
                     train_route_sections_positions = [0, ]
                     train_route_sections_positions.extend(
-                        self.base_routes[i]['{}_base_route'.format(self.c['train_route_types']['entry_train_route'][k])]
-                            .junction_position)
+                        self.base_routes[i]['{}_base_route'.format(self.c.entry_train_route[k])].junction_position)
                     train_route_sections_positions.extend([0, 0])
-                    self.train_routes[i][self.c['train_route_types']['entry_train_route'][k]] \
-                        = TrainRoute(track_number=i, route_type=self.c['train_route_types']['entry_train_route'][k],
+                    self.train_routes[i][self.c.entry_train_route[k]] \
+                        = TrainRoute(track_number=i, route_type=self.c.entry_train_route[k],
                                      supported_carts=self.tracks[i - 1].supported_carts,
                                      train_route_sections=train_route_sections,
-                                     train_route_sections_positions=train_route_sections_positions)
+                                     train_route_sections_positions=train_route_sections_positions, game_config=self.c)
                     self.logger.info('track {} {} train route created'.format(i, k))
 
                 # create exit train route
                 # it includes platform base route, specific exit base route and main exit base route
-                for m in (self.c['direction']['left'], self.c['direction']['right']):
+                for m in (self.c.direction_from_left_to_right, self.c.direction_from_right_to_left):
                     train_route_sections = [
                         self.base_routes[i]['{}_platform_base_route'
-                                            .format(self.c['train_route_types']['exit_train_route'][m])], ]
+                                            .format(self.c.exit_train_route[m])], ]
                     train_route_sections.extend(
                         self.base_routes[i]['{}_base_route'
-                                            .format(self.c['train_route_types']['exit_train_route'][m])].junctions)
+                                            .format(self.c.exit_train_route[m])].junctions)
                     train_route_sections.extend([
                         self.base_routes[i]['{}_base_route'
-                                            .format(self.c['train_route_types']['exit_train_route'][m])],
+                                            .format(self.c.exit_train_route[m])],
                         self.base_routes[0]['{}_base_route'
-                                            .format(self.c['train_route_types']['exit_train_route'][m])]])
+                                            .format(self.c.exit_train_route[m])]])
                     train_route_sections_positions = [0, ]
                     train_route_sections_positions.extend(
-                        self.base_routes[i]['{}_base_route'.format(self.c['train_route_types']['exit_train_route'][m])]
-                            .junction_position)
+                        self.base_routes[i]['{}_base_route'.format(self.c.exit_train_route[m])].junction_position)
                     train_route_sections_positions.extend([0, 0])
 
-                    self.train_routes[i][self.c['train_route_types']['exit_train_route'][m]] \
-                        = TrainRoute(track_number=i, route_type=self.c['train_route_types']['exit_train_route'][m],
+                    self.train_routes[i][self.c.exit_train_route[m]] \
+                        = TrainRoute(track_number=i, route_type=self.c.exit_train_route[m],
                                      supported_carts=self.tracks[i - 1].supported_carts,
                                      train_route_sections=train_route_sections,
-                                     train_route_sections_positions=train_route_sections_positions)
+                                     train_route_sections_positions=train_route_sections_positions, game_config=self.c)
                     self.logger.info('track {} {} train route created'.format(i, m))
 
             if i in (21, 23, 25, 27, 29, 31):
                 train_route_sections = [
                     self.base_routes[100]['{}_base_route'
-                        .format(self.c['train_route_types']['entry_train_route'][self.c['direction']['left_side']])], ]
+                        .format(self.c.entry_train_route[self.c.direction_from_left_to_right_side])], ]
                 train_route_sections.extend(
                     self.base_routes[i]['{}_base_route'
-                        .format(self.c['train_route_types']['entry_train_route'][self.c['direction']['left_side']])]
+                        .format(self.c.entry_train_route[self.c.direction_from_left_to_right_side])]
                         .junctions)
                 train_route_sections.extend([
                     self.base_routes[i]['{}_base_route'
-                        .format(self.c['train_route_types']['entry_train_route'][self.c['direction']['left_side']])],
+                        .format(self.c.entry_train_route[self.c.direction_from_left_to_right_side])],
                     self.base_routes[i]['{}_platform_base_route'
-                        .format(self.c['train_route_types']['entry_train_route'][self.c['direction']['left']])]])
+                        .format(self.c.entry_train_route[self.c.direction_from_left_to_right])]])
                 train_route_sections_positions = [0, ]
                 train_route_sections_positions.extend(
                     self.base_routes[i]['{}_base_route'
-                        .format(self.c['train_route_types']['entry_train_route'][self.c['direction']['left_side']])]
+                        .format(self.c.entry_train_route[self.c.direction_from_left_to_right_side])]
                         .junction_position)
                 train_route_sections_positions.extend([0, 0])
 
-                self.train_routes[i][self.c['train_route_types']['entry_train_route'][
-                    self.c['direction']['left_side']]] \
+                self.train_routes[i][self.c.entry_train_route[self.c.direction_from_left_to_right_side]] \
                     = TrainRoute(track_number=i,
-                                 route_type=self.c['train_route_types']['entry_train_route'][
-                                     self.c['direction']['left_side']],
+                                 route_type=self.c.entry_train_route[self.c.direction_from_left_to_right_side],
                                  supported_carts=self.tracks[i - 1].supported_carts,
                                  train_route_sections=train_route_sections,
-                                 train_route_sections_positions=train_route_sections_positions)
-                self.logger.info('track {} {} train route created'.format(i, self.c['direction']['left_side']))
+                                 train_route_sections_positions=train_route_sections_positions, game_config=self.c)
+                self.logger.info('track {} {} train route created'.format(i, self.c.direction_from_left_to_right_side))
 
                 train_route_sections = [
                     self.base_routes[i]['{}_platform_base_route'
-                        .format(self.c['train_route_types']['exit_train_route'][self.c['direction']['right']])], ]
+                        .format(self.c.exit_train_route[self.c.direction_from_right_to_left])], ]
                 train_route_sections.extend(
                     self.base_routes[i]['{}_base_route'
-                        .format(self.c['train_route_types']['exit_train_route'][self.c['direction']['right_side']])]
-                        .junctions)
+                        .format(self.c.exit_train_route[self.c.direction_from_right_to_left_side])].junctions)
                 train_route_sections.extend([
                     self.base_routes[i]['{}_base_route'
-                        .format(self.c['train_route_types']['exit_train_route'][self.c['direction']['right_side']])],
+                        .format(self.c.exit_train_route[self.c.direction_from_right_to_left_side])],
                     self.base_routes[100]['{}_base_route'
-                        .format(self.c['train_route_types']['exit_train_route'][self.c['direction']['right_side']])]])
+                        .format(self.c.exit_train_route[self.c.direction_from_right_to_left_side])]])
                 train_route_sections_positions = [0, ]
                 train_route_sections_positions.extend(
                     self.base_routes[i]['{}_base_route'
-                        .format(self.c['train_route_types']['exit_train_route'][self.c['direction']['right_side']])]
-                        .junction_position)
+                        .format(self.c.exit_train_route[self.c.direction_from_right_to_left_side])].junction_position)
                 train_route_sections_positions.extend([0, 0])
 
-                self.train_routes[i][self.c['train_route_types']['exit_train_route'][
-                    self.c['direction']['right_side']]] \
+                self.train_routes[i][self.c.exit_train_route[self.c.direction_from_right_to_left_side]] \
                     = TrainRoute(track_number=i,
-                                 route_type=self.c['train_route_types']['exit_train_route'][
-                                     self.c['direction']['right_side']],
+                                 route_type=self.c.exit_train_route[self.c.direction_from_right_to_left_side],
                                  supported_carts=self.tracks[i - 1].supported_carts,
                                  train_route_sections=train_route_sections,
-                                 train_route_sections_positions=train_route_sections_positions)
-                self.logger.info('track {} {} train route created'.format(i, self.c['direction']['right_side']))
+                                 train_route_sections_positions=train_route_sections_positions, game_config=self.c)
+                self.logger.info('track {} {} train route created'.format(i, self.c.direction_from_right_to_left_side))
                 if i >= 25:
                     train_route_sections = [
                         self.base_routes[0]['{}_base_route'
-                            .format(self.c['train_route_types']['entry_train_route'][self.c['direction']['right']])], ]
+                            .format(self.c.entry_train_route[self.c.direction_from_right_to_left])], ]
                     train_route_sections.extend(
                         self.base_routes[i]['{}_base_route'
-                            .format(self.c['train_route_types']['entry_train_route'][self.c['direction']['right']])]
+                            .format(self.c.entry_train_route[self.c.direction_from_right_to_left])]
                             .junctions)
                     train_route_sections.extend([
                         self.base_routes[i]['{}_base_route'
-                            .format(self.c['train_route_types']['entry_train_route'][self.c['direction']['right']])],
+                            .format(self.c.entry_train_route[self.c.direction_from_right_to_left])],
                         self.base_routes[i]['{}_platform_base_route'
-                            .format(self.c['train_route_types']['entry_train_route'][self.c['direction']['right']])]])
+                            .format(self.c.entry_train_route[self.c.direction_from_right_to_left])]])
                     train_route_sections_positions = [0, ]
                     train_route_sections_positions.extend(
                         self.base_routes[i]['{}_base_route'
-                            .format(self.c['train_route_types']['entry_train_route'][self.c['direction']['right']])]
+                            .format(self.c.entry_train_route[self.c.direction_from_right_to_left])]
                             .junction_position)
                     train_route_sections_positions.extend([0, 0])
 
-                    self.train_routes[i][self.c['train_route_types']['entry_train_route'][
-                        self.c['direction']['right']]] \
+                    self.train_routes[i][self.c.entry_train_route[self.c.direction_from_right_to_left]] \
                         = TrainRoute(track_number=i,
-                                     route_type=self.c['train_route_types']['entry_train_route'][
-                                         self.c['direction']['right']],
+                                     route_type=self.c.entry_train_route[self.c.direction_from_right_to_left],
                                      supported_carts=self.tracks[i - 1].supported_carts,
                                      train_route_sections=train_route_sections,
-                                     train_route_sections_positions=train_route_sections_positions)
-                    self.logger.info('track {} {} train route created'.format(i, self.c['direction']['right']))
+                                     train_route_sections_positions=train_route_sections_positions, game_config=self.c)
+                    self.logger.info('track {} {} train route created'.format(i, self.c.direction_from_right_to_left))
 
                     train_route_sections = [
                         self.base_routes[i]['{}_platform_base_route'
-                            .format(self.c['train_route_types']['exit_train_route'][self.c['direction']['left']])], ]
+                            .format(self.c.exit_train_route[self.c.direction_from_left_to_right])], ]
                     train_route_sections.extend(
                         self.base_routes[i]['{}_base_route'
-                            .format(self.c['train_route_types']['exit_train_route'][self.c['direction']['left']])]
+                            .format(self.c.exit_train_route[self.c.direction_from_left_to_right])]
                             .junctions)
                     train_route_sections.extend([
                         self.base_routes[i]['{}_base_route'
-                            .format(self.c['train_route_types']['exit_train_route'][self.c['direction']['left']])],
+                            .format(self.c.exit_train_route[self.c.direction_from_left_to_right])],
                         self.base_routes[0]['{}_base_route'
-                            .format(self.c['train_route_types']['exit_train_route'][self.c['direction']['left']])]])
+                            .format(self.c.exit_train_route[self.c.direction_from_left_to_right])]])
                     train_route_sections_positions = [0, ]
                     train_route_sections_positions.extend(
                         self.base_routes[i]['{}_base_route'
-                            .format(self.c['train_route_types']['exit_train_route'][self.c['direction']['left']])]
+                            .format(self.c.exit_train_route[self.c.direction_from_left_to_right])]
                             .junction_position)
                     train_route_sections_positions.extend([0, 0])
 
-                    self.train_routes[i][self.c['train_route_types']['exit_train_route'][
-                        self.c['direction']['left']]] \
+                    self.train_routes[i][self.c.exit_train_route[self.c.direction_from_left_to_right]] \
                         = TrainRoute(track_number=i,
-                                     route_type=self.c['train_route_types']['exit_train_route'][
-                                         self.c['direction']['left']],
+                                     route_type=self.c.exit_train_route[self.c.direction_from_left_to_right],
                                      supported_carts=self.tracks[i - 1].supported_carts,
                                      train_route_sections=train_route_sections,
-                                     train_route_sections_positions=train_route_sections_positions)
-                    self.logger.info('track {} {} train route created'.format(i, self.c['direction']['left']))
+                                     train_route_sections_positions=train_route_sections_positions, game_config=self.c)
+                    self.logger.info('track {} {} train route created'.format(i, self.c.direction_from_left_to_right))
 
             if i in (22, 24, 26, 28, 30, 32):
                 train_route_sections = [
                     self.base_routes[100]['{}_base_route'
-                        .format(self.c['train_route_types']['entry_train_route'][self.c['direction']['right_side']])], ]
+                        .format(self.c.entry_train_route[self.c.direction_from_right_to_left_side])], ]
                 train_route_sections.extend(
                     self.base_routes[i]['{}_base_route'
-                        .format(self.c['train_route_types']['entry_train_route'][self.c['direction']['right_side']])]
-                        .junctions)
+                        .format(self.c.entry_train_route[self.c.direction_from_right_to_left_side])].junctions)
                 train_route_sections.extend([
                     self.base_routes[i]['{}_base_route'
-                        .format(self.c['train_route_types']['entry_train_route'][self.c['direction']['right_side']])],
+                        .format(self.c.entry_train_route[self.c.direction_from_right_to_left_side])],
                     self.base_routes[i]['{}_platform_base_route'
-                        .format(self.c['train_route_types']['entry_train_route'][self.c['direction']['right']])]])
+                        .format(self.c.entry_train_route[self.c.direction_from_right_to_left])]])
                 train_route_sections_positions = [0, ]
                 train_route_sections_positions.extend(
                     self.base_routes[i]['{}_base_route'
-                        .format(self.c['train_route_types']['entry_train_route'][self.c['direction']['right_side']])]
-                        .junction_position)
+                        .format(self.c.entry_train_route[self.c.direction_from_right_to_left_side])].junction_position)
                 train_route_sections_positions.extend([0, 0])
 
-                self.train_routes[i][self.c['train_route_types']['entry_train_route'][
-                    self.c['direction']['right_side']]] \
+                self.train_routes[i][self.c.entry_train_route[self.c.direction_from_right_to_left_side]] \
                     = TrainRoute(track_number=i,
-                                 route_type=self.c['train_route_types']['entry_train_route'][
-                                     self.c['direction']['right_side']],
+                                 route_type=self.c.entry_train_route[self.c.direction_from_right_to_left_side],
                                  supported_carts=self.tracks[i - 1].supported_carts,
                                  train_route_sections=train_route_sections,
-                                 train_route_sections_positions=train_route_sections_positions)
-                self.logger.info('track {} {} train route created'.format(i, self.c['direction']['right_side']))
+                                 train_route_sections_positions=train_route_sections_positions, game_config=self.c)
+                self.logger.info('track {} {} train route created'.format(i, self.c.direction_from_right_to_left_side))
 
                 train_route_sections = [
                     self.base_routes[i]['{}_platform_base_route'
-                        .format(self.c['train_route_types']['exit_train_route'][self.c['direction']['left']])], ]
+                        .format(self.c.exit_train_route[self.c.direction_from_left_to_right])], ]
                 train_route_sections.extend(
                     self.base_routes[i]['{}_base_route'
-                        .format(self.c['train_route_types']['exit_train_route'][self.c['direction']['left_side']])]
-                        .junctions)
+                        .format(self.c.exit_train_route[self.c.direction_from_left_to_right_side])].junctions)
                 train_route_sections.extend([
                     self.base_routes[i]['{}_base_route'
-                        .format(self.c['train_route_types']['exit_train_route'][self.c['direction']['left_side']])],
+                        .format(self.c.exit_train_route[self.c.direction_from_left_to_right_side])],
                     self.base_routes[100]['{}_base_route'
-                        .format(self.c['train_route_types']['exit_train_route'][self.c['direction']['left_side']])]])
+                        .format(self.c.exit_train_route[self.c.direction_from_left_to_right_side])]])
                 train_route_sections_positions = [0, ]
                 train_route_sections_positions.extend(
                     self.base_routes[i]['{}_base_route'
-                        .format(self.c['train_route_types']['exit_train_route'][self.c['direction']['left_side']])]
-                        .junction_position)
+                        .format(self.c.exit_train_route[self.c.direction_from_left_to_right_side])].junction_position)
                 train_route_sections_positions.extend([0, 0])
 
-                self.train_routes[i][self.c['train_route_types']['exit_train_route'][
-                    self.c['direction']['left_side']]] \
+                self.train_routes[i][self.c.exit_train_route[self.c.direction_from_left_to_right_side]] \
                     = TrainRoute(track_number=i,
-                                 route_type=self.c['train_route_types']['exit_train_route'][
-                                     self.c['direction']['left_side']],
+                                 route_type=self.c.exit_train_route[self.c.direction_from_left_to_right_side],
                                  supported_carts=self.tracks[i - 1].supported_carts,
                                  train_route_sections=train_route_sections,
-                                 train_route_sections_positions=train_route_sections_positions)
-                self.logger.info('track {} {} train route created'.format(i, self.c['direction']['left_side']))
+                                 train_route_sections_positions=train_route_sections_positions, game_config=self.c)
+                self.logger.info('track {} {} train route created'.format(i, self.c.direction_from_left_to_right_side))
                 if i >= 26:
                     train_route_sections = [
                         self.base_routes[0]['{}_base_route'
-                            .format(self.c['train_route_types']['entry_train_route'][self.c['direction']['left']])], ]
+                            .format(self.c.entry_train_route[self.c.direction_from_left_to_right])], ]
                     train_route_sections.extend(
                         self.base_routes[i]['{}_base_route'
-                            .format(self.c['train_route_types']['entry_train_route'][self.c['direction']['left']])]
-                            .junctions)
+                            .format(self.c.entry_train_route[self.c.direction_from_left_to_right])].junctions)
                     train_route_sections.extend([
                         self.base_routes[i]['{}_base_route'
-                            .format(self.c['train_route_types']['entry_train_route'][self.c['direction']['left']])],
+                            .format(self.c.entry_train_route[self.c.direction_from_left_to_right])],
                         self.base_routes[i]['{}_platform_base_route'
-                            .format(self.c['train_route_types']['entry_train_route'][self.c['direction']['left']])]])
+                            .format(self.c.entry_train_route[self.c.direction_from_left_to_right])]])
                     train_route_sections_positions = [0, ]
                     train_route_sections_positions.extend(
                         self.base_routes[i]['{}_base_route'
-                            .format(self.c['train_route_types']['entry_train_route'][self.c['direction']['left']])]
-                            .junction_position)
+                            .format(self.c.entry_train_route[self.c.direction_from_left_to_right])].junction_position)
                     train_route_sections_positions.extend([0, 0])
 
-                    self.train_routes[i][self.c['train_route_types']['entry_train_route'][
-                        self.c['direction']['left']]] \
+                    self.train_routes[i][self.c.entry_train_route[self.c.direction_from_left_to_right]] \
                         = TrainRoute(track_number=i,
-                                     route_type=self.c['train_route_types']['entry_train_route'][
-                                         self.c['direction']['left']],
+                                     route_type=self.c.entry_train_route[self.c.direction_from_left_to_right],
                                      supported_carts=self.tracks[i - 1].supported_carts,
                                      train_route_sections=train_route_sections,
-                                     train_route_sections_positions=train_route_sections_positions)
-                    self.logger.info('track {} {} train route created'.format(i, self.c['direction']['left']))
+                                     train_route_sections_positions=train_route_sections_positions, game_config=self.c)
+                    self.logger.info('track {} {} train route created'.format(i, self.c.direction_from_left_to_right))
 
                     train_route_sections = [
                         self.base_routes[i]['{}_platform_base_route'
-                            .format(self.c['train_route_types']['exit_train_route'][self.c['direction']['right']])], ]
+                            .format(self.c.exit_train_route[self.c.direction_from_right_to_left])], ]
                     train_route_sections.extend(
                         self.base_routes[i]['{}_base_route'
-                            .format(self.c['train_route_types']['exit_train_route'][self.c['direction']['right']])]
-                            .junctions)
+                            .format(self.c.exit_train_route[self.c.direction_from_right_to_left])].junctions)
                     train_route_sections.extend([
                         self.base_routes[i]['{}_base_route'
-                            .format(self.c['train_route_types']['exit_train_route'][self.c['direction']['right']])],
+                            .format(self.c.exit_train_route[self.c.direction_from_right_to_left])],
                         self.base_routes[0]['{}_base_route'
-                            .format(self.c['train_route_types']['exit_train_route'][self.c['direction']['right']])]])
+                            .format(self.c.exit_train_route[self.c.direction_from_right_to_left])]])
                     train_route_sections_positions = [0, ]
                     train_route_sections_positions.extend(
                         self.base_routes[i]['{}_base_route'
-                            .format(self.c['train_route_types']['exit_train_route'][self.c['direction']['right']])]
-                            .junction_position)
+                            .format(self.c.exit_train_route[self.c.direction_from_right_to_left])].junction_position)
                     train_route_sections_positions.extend([0, 0])
 
-                    self.train_routes[i][self.c['train_route_types']['exit_train_route'][
-                        self.c['direction']['right']]] \
+                    self.train_routes[i][self.c.exit_train_route[self.c.direction_from_right_to_left]] \
                         = TrainRoute(track_number=i,
-                                     route_type=self.c['train_route_types']['exit_train_route'][
-                                         self.c['direction']['right']],
+                                     route_type=self.c.exit_train_route[self.c.direction_from_right_to_left],
                                      supported_carts=self.tracks[i - 1].supported_carts,
                                      train_route_sections=train_route_sections,
-                                     train_route_sections_positions=train_route_sections_positions)
-                    self.logger.info('track {} {} train route created'.format(i, self.c['direction']['right']))
+                                     train_route_sections_positions=train_route_sections_positions, game_config=self.c)
+                    self.logger.info('track {} {} train route created'.format(i, self.c.direction_from_right_to_left))
 
         for i in range(100):
             self.train_routes.append({})
@@ -536,34 +509,30 @@ class RSSim(Game):
         train_route_sections \
             = [self.base_routes[100][
                 '{}_base_route'
-                .format(self.c['train_route_types']['entry_train_route'][self.c['direction']['left_side']])], ]
+                .format(self.c.entry_train_route[self.c.direction_from_left_to_right_side])], ]
         train_route_sections_positions = [0, ]
-        self.train_routes[100][self.c['train_route_types']['approaching_train_route'][
-            self.c['direction']['left_side']]] \
+        self.train_routes[100][self.c.approaching_train_route[self.c.direction_from_left_to_right_side]] \
             = TrainRoute(track_number=100,
-                         route_type=self.c['train_route_types']['approaching_train_route'][
-                             self.c['direction']['left_side']],
+                         route_type=self.c.approaching_train_route[self.c.direction_from_left_to_right_side],
                          supported_carts=[0, 20], train_route_sections=train_route_sections,
-                         train_route_sections_positions=train_route_sections_positions)
+                         train_route_sections_positions=train_route_sections_positions, game_config=self.c)
 
         train_route_sections \
             = [self.base_routes[100][
                    '{}_base_route'
-                   .format(self.c['train_route_types']['entry_train_route'][self.c['direction']['right_side']])], ]
+                   .format(self.c.entry_train_route[self.c.direction_from_right_to_left_side])], ]
         train_route_sections_positions = [0, ]
-        self.train_routes[100][self.c['train_route_types']['approaching_train_route'][
-            self.c['direction']['right_side']]] \
+        self.train_routes[100][self.c.approaching_train_route[self.c.direction_from_right_to_left_side]] \
             = TrainRoute(track_number=100,
-                         route_type=self.c['train_route_types']['approaching_train_route'][
-                             self.c['direction']['right_side']],
+                         route_type=self.c.approaching_train_route[self.c.direction_from_right_to_left_side],
                          supported_carts=[0, 20], train_route_sections=train_route_sections,
-                         train_route_sections_positions=train_route_sections_positions)
+                         train_route_sections_positions=train_route_sections_positions, game_config=self.c)
 
         self.logger.info('tracks and train routes created')
         # ------ SORT THIS OUT ------
         # train routes and tracks are added to dispatcher which we create right now
         self.dispatcher = Dispatcher(batch=self.batch, group=self.signals_and_trains_ordered_group,
-                                     boarding_lights_group=self.boarding_lights_ordered_group)
+                                     boarding_lights_group=self.boarding_lights_ordered_group, game_config=self.c)
         for i in range(33):
             self.dispatcher.train_routes.append({})
             for p in self.train_routes[i]:
@@ -603,245 +572,368 @@ class RSSim(Game):
     def create_junctions(self):
         self.junctions[1] = {}
         self.junctions[1][2] = {}
-        self.junctions[1][2]['right_entry_crossover'] = Crossover(1, 2, 'right_entry_crossover')
-        self.junctions[1][2]['right_exit_crossover'] = Crossover(1, 2, 'right_exit_crossover')
+        self.junctions[1][2]['right_entry_crossover'] = Crossover(1, 2, 'right_entry_crossover', game_config=self.c)
+        self.junctions[1][2]['right_exit_crossover'] = Crossover(1, 2, 'right_exit_crossover', game_config=self.c)
         self.junctions[1][21] = {}
-        self.junctions[1][21]['left_entry_railroad_switch'] = RailroadSwitch(1, 21, 'left_entry_railroad_switch')
-        self.junctions[1][21]['left_exit_railroad_switch'] = RailroadSwitch(1, 21, 'left_exit_railroad_switch')
+        self.junctions[1][21]['left_entry_railroad_switch'] = RailroadSwitch(1, 21, 'left_entry_railroad_switch',
+                                                                             game_config=self.c)
+        self.junctions[1][21]['left_exit_railroad_switch'] = RailroadSwitch(1, 21, 'left_exit_railroad_switch',
+                                                                            game_config=self.c)
         self.junctions[1][29] = {}
-        self.junctions[1][29]['right_entry_railroad_switch'] = RailroadSwitch(1, 29, 'right_entry_railroad_switch')
-        self.junctions[1][29]['right_exit_railroad_switch'] = RailroadSwitch(1, 29, 'right_exit_railroad_switch')
+        self.junctions[1][29]['right_entry_railroad_switch'] = RailroadSwitch(1, 29, 'right_entry_railroad_switch',
+                                                                              game_config=self.c)
+        self.junctions[1][29]['right_exit_railroad_switch'] = RailroadSwitch(1, 29, 'right_exit_railroad_switch',
+                                                                             game_config=self.c)
         self.logger.debug('junctions for track 1 created')
 
         self.junctions[2] = {}
         self.junctions[2][1] = {}
-        self.junctions[2][1]['left_entry_crossover'] = Crossover(2, 1, 'left_entry_crossover')
-        self.junctions[2][1]['left_exit_crossover'] = Crossover(2, 1, 'left_exit_crossover')
+        self.junctions[2][1]['left_entry_crossover'] = Crossover(2, 1, 'left_entry_crossover', game_config=self.c)
+        self.junctions[2][1]['left_exit_crossover'] = Crossover(2, 1, 'left_exit_crossover', game_config=self.c)
         self.junctions[2][22] = {}
-        self.junctions[2][22]['right_entry_railroad_switch'] = RailroadSwitch(2, 22, 'right_entry_railroad_switch')
-        self.junctions[2][22]['right_exit_railroad_switch'] = RailroadSwitch(2, 22, 'right_exit_railroad_switch')
+        self.junctions[2][22]['right_entry_railroad_switch'] = RailroadSwitch(2, 22, 'right_entry_railroad_switch',
+                                                                              game_config=self.c)
+        self.junctions[2][22]['right_exit_railroad_switch'] = RailroadSwitch(2, 22, 'right_exit_railroad_switch',
+                                                                             game_config=self.c)
         self.junctions[2][30] = {}
-        self.junctions[2][30]['left_entry_railroad_switch'] = RailroadSwitch(2, 30, 'left_entry_railroad_switch')
-        self.junctions[2][30]['left_exit_railroad_switch'] = RailroadSwitch(2, 30, 'left_exit_railroad_switch')
+        self.junctions[2][30]['left_entry_railroad_switch'] = RailroadSwitch(2, 30, 'left_entry_railroad_switch',
+                                                                             game_config=self.c)
+        self.junctions[2][30]['left_exit_railroad_switch'] = RailroadSwitch(2, 30, 'left_exit_railroad_switch',
+                                                                            game_config=self.c)
         self.logger.debug('junctions for track 2 created')
 
         self.junctions[5] = {}
         self.junctions[5][7] = {}
-        self.junctions[5][7]['left_entry_railroad_switch'] = RailroadSwitch(5, 7, 'left_entry_railroad_switch')
-        self.junctions[5][7]['left_exit_railroad_switch'] = RailroadSwitch(5, 7, 'left_exit_railroad_switch')
-        self.junctions[5][7]['right_entry_railroad_switch'] = RailroadSwitch(5, 7, 'right_entry_railroad_switch')
-        self.junctions[5][7]['right_exit_railroad_switch'] = RailroadSwitch(5, 7, 'right_exit_railroad_switch')
+        self.junctions[5][7]['left_entry_railroad_switch'] = RailroadSwitch(5, 7, 'left_entry_railroad_switch',
+                                                                            game_config=self.c)
+        self.junctions[5][7]['left_exit_railroad_switch'] = RailroadSwitch(5, 7, 'left_exit_railroad_switch',
+                                                                           game_config=self.c)
+        self.junctions[5][7]['right_entry_railroad_switch'] = RailroadSwitch(5, 7, 'right_entry_railroad_switch',
+                                                                             game_config=self.c)
+        self.junctions[5][7]['right_exit_railroad_switch'] = RailroadSwitch(5, 7, 'right_exit_railroad_switch',
+                                                                            game_config=self.c)
 
         self.junctions[6] = {}
         self.junctions[6][8] = {}
-        self.junctions[6][8]['left_entry_railroad_switch'] = RailroadSwitch(6, 8, 'left_entry_railroad_switch')
-        self.junctions[6][8]['left_exit_railroad_switch'] = RailroadSwitch(6, 8, 'left_exit_railroad_switch')
-        self.junctions[6][8]['right_entry_railroad_switch'] = RailroadSwitch(6, 8, 'right_entry_railroad_switch')
-        self.junctions[6][8]['right_exit_railroad_switch'] = RailroadSwitch(6, 8, 'right_exit_railroad_switch')
+        self.junctions[6][8]['left_entry_railroad_switch'] = RailroadSwitch(6, 8, 'left_entry_railroad_switch',
+                                                                            game_config=self.c)
+        self.junctions[6][8]['left_exit_railroad_switch'] = RailroadSwitch(6, 8, 'left_exit_railroad_switch',
+                                                                           game_config=self.c)
+        self.junctions[6][8]['right_entry_railroad_switch'] = RailroadSwitch(6, 8, 'right_entry_railroad_switch',
+                                                                             game_config=self.c)
+        self.junctions[6][8]['right_exit_railroad_switch'] = RailroadSwitch(6, 8, 'right_exit_railroad_switch',
+                                                                            game_config=self.c)
 
         self.junctions[9] = {}
         self.junctions[9][11] = {}
-        self.junctions[9][11]['left_entry_railroad_switch'] = RailroadSwitch(9, 11, 'left_entry_railroad_switch')
-        self.junctions[9][11]['left_exit_railroad_switch'] = RailroadSwitch(9, 11, 'left_exit_railroad_switch')
-        self.junctions[9][11]['right_entry_railroad_switch'] = RailroadSwitch(9, 11, 'right_entry_railroad_switch')
-        self.junctions[9][11]['right_exit_railroad_switch'] = RailroadSwitch(9, 11, 'right_exit_railroad_switch')
+        self.junctions[9][11]['left_entry_railroad_switch'] = RailroadSwitch(9, 11, 'left_entry_railroad_switch',
+                                                                             game_config=self.c)
+        self.junctions[9][11]['left_exit_railroad_switch'] = RailroadSwitch(9, 11, 'left_exit_railroad_switch',
+                                                                            game_config=self.c)
+        self.junctions[9][11]['right_entry_railroad_switch'] = RailroadSwitch(9, 11, 'right_entry_railroad_switch',
+                                                                              game_config=self.c)
+        self.junctions[9][11]['right_exit_railroad_switch'] = RailroadSwitch(9, 11, 'right_exit_railroad_switch',
+                                                                             game_config=self.c)
 
         self.junctions[10] = {}
         self.junctions[10][12] = {}
-        self.junctions[10][12]['left_entry_railroad_switch'] = RailroadSwitch(10, 12, 'left_entry_railroad_switch')
-        self.junctions[10][12]['left_exit_railroad_switch'] = RailroadSwitch(10, 12, 'left_exit_railroad_switch')
-        self.junctions[10][12]['right_entry_railroad_switch'] = RailroadSwitch(10, 12, 'right_entry_railroad_switch')
-        self.junctions[10][12]['right_exit_railroad_switch'] = RailroadSwitch(10, 12, 'right_exit_railroad_switch')
+        self.junctions[10][12]['left_entry_railroad_switch'] = RailroadSwitch(10, 12, 'left_entry_railroad_switch',
+                                                                              game_config=self.c)
+        self.junctions[10][12]['left_exit_railroad_switch'] = RailroadSwitch(10, 12, 'left_exit_railroad_switch',
+                                                                             game_config=self.c)
+        self.junctions[10][12]['right_entry_railroad_switch'] = RailroadSwitch(10, 12, 'right_entry_railroad_switch',
+                                                                               game_config=self.c)
+        self.junctions[10][12]['right_exit_railroad_switch'] = RailroadSwitch(10, 12, 'right_exit_railroad_switch',
+                                                                              game_config=self.c)
 
         self.junctions[13] = {}
         self.junctions[13][15] = {}
-        self.junctions[13][15]['left_entry_railroad_switch'] = RailroadSwitch(13, 15, 'left_entry_railroad_switch')
-        self.junctions[13][15]['left_exit_railroad_switch'] = RailroadSwitch(13, 15, 'left_exit_railroad_switch')
-        self.junctions[13][15]['right_entry_railroad_switch'] = RailroadSwitch(13, 15, 'right_entry_railroad_switch')
-        self.junctions[13][15]['right_exit_railroad_switch'] = RailroadSwitch(13, 15, 'right_exit_railroad_switch')
+        self.junctions[13][15]['left_entry_railroad_switch'] = RailroadSwitch(13, 15, 'left_entry_railroad_switch',
+                                                                              game_config=self.c)
+        self.junctions[13][15]['left_exit_railroad_switch'] = RailroadSwitch(13, 15, 'left_exit_railroad_switch',
+                                                                             game_config=self.c)
+        self.junctions[13][15]['right_entry_railroad_switch'] = RailroadSwitch(13, 15, 'right_entry_railroad_switch',
+                                                                               game_config=self.c)
+        self.junctions[13][15]['right_exit_railroad_switch'] = RailroadSwitch(13, 15, 'right_exit_railroad_switch',
+                                                                              game_config=self.c)
 
         self.junctions[14] = {}
         self.junctions[14][16] = {}
-        self.junctions[14][16]['left_entry_railroad_switch'] = RailroadSwitch(14, 16, 'left_entry_railroad_switch')
-        self.junctions[14][16]['left_exit_railroad_switch'] = RailroadSwitch(14, 16, 'left_exit_railroad_switch')
-        self.junctions[14][16]['right_entry_railroad_switch'] = RailroadSwitch(14, 16, 'right_entry_railroad_switch')
-        self.junctions[14][16]['right_exit_railroad_switch'] = RailroadSwitch(14, 16, 'right_exit_railroad_switch')
+        self.junctions[14][16]['left_entry_railroad_switch'] = RailroadSwitch(14, 16, 'left_entry_railroad_switch',
+                                                                              game_config=self.c)
+        self.junctions[14][16]['left_exit_railroad_switch'] = RailroadSwitch(14, 16, 'left_exit_railroad_switch',
+                                                                             game_config=self.c)
+        self.junctions[14][16]['right_entry_railroad_switch'] = RailroadSwitch(14, 16, 'right_entry_railroad_switch',
+                                                                               game_config=self.c)
+        self.junctions[14][16]['right_exit_railroad_switch'] = RailroadSwitch(14, 16, 'right_exit_railroad_switch',
+                                                                              game_config=self.c)
 
         self.junctions[17] = {}
         self.junctions[17][19] = {}
-        self.junctions[17][19]['left_entry_railroad_switch'] = RailroadSwitch(17, 19, 'left_entry_railroad_switch')
-        self.junctions[17][19]['left_exit_railroad_switch'] = RailroadSwitch(17, 19, 'left_exit_railroad_switch')
-        self.junctions[17][19]['right_entry_railroad_switch'] = RailroadSwitch(17, 19, 'right_entry_railroad_switch')
-        self.junctions[17][19]['right_exit_railroad_switch'] = RailroadSwitch(17, 19, 'right_exit_railroad_switch')
+        self.junctions[17][19]['left_entry_railroad_switch'] = RailroadSwitch(17, 19, 'left_entry_railroad_switch',
+                                                                              game_config=self.c)
+        self.junctions[17][19]['left_exit_railroad_switch'] = RailroadSwitch(17, 19, 'left_exit_railroad_switch',
+                                                                             game_config=self.c)
+        self.junctions[17][19]['right_entry_railroad_switch'] = RailroadSwitch(17, 19, 'right_entry_railroad_switch',
+                                                                               game_config=self.c)
+        self.junctions[17][19]['right_exit_railroad_switch'] = RailroadSwitch(17, 19, 'right_exit_railroad_switch',
+                                                                              game_config=self.c)
 
         self.junctions[18] = {}
         self.junctions[18][20] = {}
-        self.junctions[18][20]['left_entry_railroad_switch'] = RailroadSwitch(18, 20, 'left_entry_railroad_switch')
-        self.junctions[18][20]['left_exit_railroad_switch'] = RailroadSwitch(18, 20, 'left_exit_railroad_switch')
-        self.junctions[18][20]['right_entry_railroad_switch'] = RailroadSwitch(18, 20, 'right_entry_railroad_switch')
-        self.junctions[18][20]['right_exit_railroad_switch'] = RailroadSwitch(18, 20, 'right_exit_railroad_switch')
+        self.junctions[18][20]['left_entry_railroad_switch'] = RailroadSwitch(18, 20, 'left_entry_railroad_switch',
+                                                                              game_config=self.c)
+        self.junctions[18][20]['left_exit_railroad_switch'] = RailroadSwitch(18, 20, 'left_exit_railroad_switch',
+                                                                             game_config=self.c)
+        self.junctions[18][20]['right_entry_railroad_switch'] = RailroadSwitch(18, 20, 'right_entry_railroad_switch',
+                                                                               game_config=self.c)
+        self.junctions[18][20]['right_exit_railroad_switch'] = RailroadSwitch(18, 20, 'right_exit_railroad_switch',
+                                                                              game_config=self.c)
 
         self.junctions[21] = {}
         self.junctions[21][3] = {}
-        self.junctions[21][3]['left_entry_railroad_switch'] = RailroadSwitch(21, 3, 'left_entry_railroad_switch')
-        self.junctions[21][3]['left_exit_railroad_switch'] = RailroadSwitch(21, 3, 'left_exit_railroad_switch')
+        self.junctions[21][3]['left_entry_railroad_switch'] = RailroadSwitch(21, 3, 'left_entry_railroad_switch',
+                                                                             game_config=self.c)
+        self.junctions[21][3]['left_exit_railroad_switch'] = RailroadSwitch(21, 3, 'left_exit_railroad_switch',
+                                                                            game_config=self.c)
         self.junctions[21][5] = {}
-        self.junctions[21][5]['left_entry_railroad_switch'] = RailroadSwitch(21, 5, 'left_entry_railroad_switch')
-        self.junctions[21][5]['left_exit_railroad_switch'] = RailroadSwitch(21, 5, 'left_exit_railroad_switch')
+        self.junctions[21][5]['left_entry_railroad_switch'] = RailroadSwitch(21, 5, 'left_entry_railroad_switch',
+                                                                             game_config=self.c)
+        self.junctions[21][5]['left_exit_railroad_switch'] = RailroadSwitch(21, 5, 'left_exit_railroad_switch',
+                                                                            game_config=self.c)
         self.junctions[21][9] = {}
-        self.junctions[21][9]['left_entry_railroad_switch'] = RailroadSwitch(21, 9, 'left_entry_railroad_switch')
-        self.junctions[21][9]['left_exit_railroad_switch'] = RailroadSwitch(21, 9, 'left_exit_railroad_switch')
+        self.junctions[21][9]['left_entry_railroad_switch'] = RailroadSwitch(21, 9, 'left_entry_railroad_switch',
+                                                                             game_config=self.c)
+        self.junctions[21][9]['left_exit_railroad_switch'] = RailroadSwitch(21, 9, 'left_exit_railroad_switch',
+                                                                            game_config=self.c)
         self.junctions[21][13] = {}
-        self.junctions[21][13]['left_entry_railroad_switch'] = RailroadSwitch(21, 13, 'left_entry_railroad_switch')
-        self.junctions[21][13]['left_exit_railroad_switch'] = RailroadSwitch(21, 13, 'left_exit_railroad_switch')
+        self.junctions[21][13]['left_entry_railroad_switch'] = RailroadSwitch(21, 13, 'left_entry_railroad_switch',
+                                                                              game_config=self.c)
+        self.junctions[21][13]['left_exit_railroad_switch'] = RailroadSwitch(21, 13, 'left_exit_railroad_switch',
+                                                                             game_config=self.c)
         self.junctions[21][17] = {}
-        self.junctions[21][17]['left_entry_railroad_switch'] = RailroadSwitch(21, 17, 'left_entry_railroad_switch')
-        self.junctions[21][17]['left_exit_railroad_switch'] = RailroadSwitch(21, 17, 'left_exit_railroad_switch')
+        self.junctions[21][17]['left_entry_railroad_switch'] = RailroadSwitch(21, 17, 'left_entry_railroad_switch',
+                                                                              game_config=self.c)
+        self.junctions[21][17]['left_exit_railroad_switch'] = RailroadSwitch(21, 17, 'left_exit_railroad_switch',
+                                                                             game_config=self.c)
         self.junctions[21][23] = {}
-        self.junctions[21][23]['right_entry_railroad_switch'] = RailroadSwitch(21, 23, 'right_entry_railroad_switch')
-        self.junctions[21][23]['right_exit_railroad_switch'] = RailroadSwitch(21, 23, 'right_exit_railroad_switch')
-        self.junctions[21][23]['left_entry_crossover'] = Crossover(21, 23, 'left_entry_crossover')
+        self.junctions[21][23]['right_entry_railroad_switch'] = RailroadSwitch(21, 23, 'right_entry_railroad_switch',
+                                                                               game_config=self.c)
+        self.junctions[21][23]['right_exit_railroad_switch'] = RailroadSwitch(21, 23, 'right_exit_railroad_switch',
+                                                                              game_config=self.c)
+        self.junctions[21][23]['left_entry_crossover'] = Crossover(21, 23, 'left_entry_crossover', game_config=self.c)
 
         self.junctions[22] = {}
         self.junctions[22][4] = {}
-        self.junctions[22][4]['right_entry_railroad_switch'] = RailroadSwitch(22, 4, 'right_entry_railroad_switch')
-        self.junctions[22][4]['right_exit_railroad_switch'] = RailroadSwitch(22, 4, 'right_exit_railroad_switch')
+        self.junctions[22][4]['right_entry_railroad_switch'] = RailroadSwitch(22, 4, 'right_entry_railroad_switch',
+                                                                              game_config=self.c)
+        self.junctions[22][4]['right_exit_railroad_switch'] = RailroadSwitch(22, 4, 'right_exit_railroad_switch',
+                                                                             game_config=self.c)
         self.junctions[22][6] = {}
-        self.junctions[22][6]['right_entry_railroad_switch'] = RailroadSwitch(22, 6, 'right_entry_railroad_switch')
-        self.junctions[22][6]['right_exit_railroad_switch'] = RailroadSwitch(22, 6, 'right_exit_railroad_switch')
+        self.junctions[22][6]['right_entry_railroad_switch'] = RailroadSwitch(22, 6, 'right_entry_railroad_switch',
+                                                                              game_config=self.c)
+        self.junctions[22][6]['right_exit_railroad_switch'] = RailroadSwitch(22, 6, 'right_exit_railroad_switch',
+                                                                             game_config=self.c)
         self.junctions[22][10] = {}
-        self.junctions[22][10]['right_entry_railroad_switch'] = RailroadSwitch(22, 10, 'right_entry_railroad_switch')
-        self.junctions[22][10]['right_exit_railroad_switch'] = RailroadSwitch(22, 10, 'right_exit_railroad_switch')
+        self.junctions[22][10]['right_entry_railroad_switch'] = RailroadSwitch(22, 10, 'right_entry_railroad_switch',
+                                                                               game_config=self.c)
+        self.junctions[22][10]['right_exit_railroad_switch'] = RailroadSwitch(22, 10, 'right_exit_railroad_switch',
+                                                                              game_config=self.c)
         self.junctions[22][14] = {}
-        self.junctions[22][14]['right_entry_railroad_switch'] = RailroadSwitch(22, 14, 'right_entry_railroad_switch')
-        self.junctions[22][14]['right_exit_railroad_switch'] = RailroadSwitch(22, 14, 'right_exit_railroad_switch')
+        self.junctions[22][14]['right_entry_railroad_switch'] = RailroadSwitch(22, 14, 'right_entry_railroad_switch',
+                                                                               game_config=self.c)
+        self.junctions[22][14]['right_exit_railroad_switch'] = RailroadSwitch(22, 14, 'right_exit_railroad_switch',
+                                                                              game_config=self.c)
         self.junctions[22][18] = {}
-        self.junctions[22][18]['right_entry_railroad_switch'] = RailroadSwitch(22, 18, 'right_entry_railroad_switch')
-        self.junctions[22][18]['right_exit_railroad_switch'] = RailroadSwitch(22, 18, 'right_exit_railroad_switch')
+        self.junctions[22][18]['right_entry_railroad_switch'] = RailroadSwitch(22, 18, 'right_entry_railroad_switch',
+                                                                               game_config=self.c)
+        self.junctions[22][18]['right_exit_railroad_switch'] = RailroadSwitch(22, 18, 'right_exit_railroad_switch',
+                                                                              game_config=self.c)
         self.junctions[22][24] = {}
-        self.junctions[22][24]['left_entry_railroad_switch'] = RailroadSwitch(22, 24, 'left_entry_railroad_switch')
-        self.junctions[22][24]['left_exit_railroad_switch'] = RailroadSwitch(22, 24, 'left_exit_railroad_switch')
-        self.junctions[22][24]['right_entry_crossover'] = Crossover(22, 24, 'right_entry_crossover')
+        self.junctions[22][24]['left_entry_railroad_switch'] = RailroadSwitch(22, 24, 'left_entry_railroad_switch',
+                                                                              game_config=self.c)
+        self.junctions[22][24]['left_exit_railroad_switch'] = RailroadSwitch(22, 24, 'left_exit_railroad_switch',
+                                                                             game_config=self.c)
+        self.junctions[22][24]['right_entry_crossover'] = Crossover(22, 24, 'right_entry_crossover', game_config=self.c)
 
         self.junctions[23] = {}
         self.junctions[23][21] = {}
-        self.junctions[23][21]['left_exit_crossover'] = Crossover(23, 21, 'left_exit_crossover')
+        self.junctions[23][21]['left_exit_crossover'] = Crossover(23, 21, 'left_exit_crossover', game_config=self.c)
 
         self.junctions[24] = {}
         self.junctions[24][22] = {}
-        self.junctions[24][22]['right_exit_crossover'] = Crossover(24, 22, 'right_exit_crossover')
+        self.junctions[24][22]['right_exit_crossover'] = Crossover(24, 22, 'right_exit_crossover', game_config=self.c)
 
         self.junctions[25] = {}
         self.junctions[25][27] = {}
-        self.junctions[25][27]['right_entry_railroad_switch'] = RailroadSwitch(25, 27, 'right_entry_railroad_switch')
-        self.junctions[25][27]['right_exit_railroad_switch'] = RailroadSwitch(25, 27, 'right_exit_railroad_switch')
+        self.junctions[25][27]['right_entry_railroad_switch'] = RailroadSwitch(25, 27, 'right_entry_railroad_switch',
+                                                                               game_config=self.c)
+        self.junctions[25][27]['right_exit_railroad_switch'] = RailroadSwitch(25, 27, 'right_exit_railroad_switch',
+                                                                              game_config=self.c)
 
         self.junctions[26] = {}
         self.junctions[26][28] = {}
-        self.junctions[26][28]['left_entry_railroad_switch'] = RailroadSwitch(26, 28, 'left_entry_railroad_switch')
-        self.junctions[26][28]['left_exit_railroad_switch'] = RailroadSwitch(26, 28, 'left_exit_railroad_switch')
+        self.junctions[26][28]['left_entry_railroad_switch'] = RailroadSwitch(26, 28, 'left_entry_railroad_switch',
+                                                                              game_config=self.c)
+        self.junctions[26][28]['left_exit_railroad_switch'] = RailroadSwitch(26, 28, 'left_exit_railroad_switch',
+                                                                             game_config=self.c)
 
         self.junctions[27] = {}
         self.junctions[27][25] = {}
-        self.junctions[27][25]['left_entry_railroad_switch'] = RailroadSwitch(27, 25, 'left_entry_railroad_switch')
-        self.junctions[27][25]['left_exit_railroad_switch'] = RailroadSwitch(27, 25, 'left_exit_railroad_switch')
+        self.junctions[27][25]['left_entry_railroad_switch'] = RailroadSwitch(27, 25, 'left_entry_railroad_switch',
+                                                                              game_config=self.c)
+        self.junctions[27][25]['left_exit_railroad_switch'] = RailroadSwitch(27, 25, 'left_exit_railroad_switch',
+                                                                             game_config=self.c)
 
         self.junctions[28] = {}
         self.junctions[28][26] = {}
-        self.junctions[28][26]['right_entry_railroad_switch'] = RailroadSwitch(28, 26, 'right_entry_railroad_switch')
-        self.junctions[28][26]['right_exit_railroad_switch'] = RailroadSwitch(28, 26, 'right_exit_railroad_switch')
+        self.junctions[28][26]['right_entry_railroad_switch'] = RailroadSwitch(28, 26, 'right_entry_railroad_switch',
+                                                                               game_config=self.c)
+        self.junctions[28][26]['right_exit_railroad_switch'] = RailroadSwitch(28, 26, 'right_exit_railroad_switch',
+                                                                              game_config=self.c)
 
         self.junctions[29] = {}
         self.junctions[29][3] = {}
-        self.junctions[29][3]['right_entry_railroad_switch'] = RailroadSwitch(29, 3, 'right_entry_railroad_switch')
-        self.junctions[29][3]['right_exit_railroad_switch'] = RailroadSwitch(29, 3, 'right_exit_railroad_switch')
+        self.junctions[29][3]['right_entry_railroad_switch'] = RailroadSwitch(29, 3, 'right_entry_railroad_switch',
+                                                                              game_config=self.c)
+        self.junctions[29][3]['right_exit_railroad_switch'] = RailroadSwitch(29, 3, 'right_exit_railroad_switch',
+                                                                             game_config=self.c)
         self.junctions[29][5] = {}
-        self.junctions[29][5]['right_entry_railroad_switch'] = RailroadSwitch(29, 5, 'right_entry_railroad_switch')
-        self.junctions[29][5]['right_exit_railroad_switch'] = RailroadSwitch(29, 5, 'right_exit_railroad_switch')
+        self.junctions[29][5]['right_entry_railroad_switch'] = RailroadSwitch(29, 5, 'right_entry_railroad_switch',
+                                                                              game_config=self.c)
+        self.junctions[29][5]['right_exit_railroad_switch'] = RailroadSwitch(29, 5, 'right_exit_railroad_switch',
+                                                                             game_config=self.c)
         self.logger.debug('junctions for track 3 created')
         self.junctions[29][9] = {}
-        self.junctions[29][9]['right_entry_railroad_switch'] = RailroadSwitch(29, 9, 'right_entry_railroad_switch')
-        self.junctions[29][9]['right_exit_railroad_switch'] = RailroadSwitch(29, 9, 'right_exit_railroad_switch')
+        self.junctions[29][9]['right_entry_railroad_switch'] = RailroadSwitch(29, 9, 'right_entry_railroad_switch',
+                                                                              game_config=self.c)
+        self.junctions[29][9]['right_exit_railroad_switch'] = RailroadSwitch(29, 9, 'right_exit_railroad_switch',
+                                                                             game_config=self.c)
         self.logger.debug('junctions for track 3 created')
         self.junctions[29][13] = {}
-        self.junctions[29][13]['right_entry_railroad_switch'] = RailroadSwitch(29, 13, 'right_entry_railroad_switch')
-        self.junctions[29][13]['right_exit_railroad_switch'] = RailroadSwitch(29, 13, 'right_exit_railroad_switch')
+        self.junctions[29][13]['right_entry_railroad_switch'] = RailroadSwitch(29, 13, 'right_entry_railroad_switch',
+                                                                               game_config=self.c)
+        self.junctions[29][13]['right_exit_railroad_switch'] = RailroadSwitch(29, 13, 'right_exit_railroad_switch',
+                                                                              game_config=self.c)
         self.junctions[29][17] = {}
-        self.junctions[29][17]['right_entry_railroad_switch'] = RailroadSwitch(29, 17, 'right_entry_railroad_switch')
-        self.junctions[29][17]['right_exit_railroad_switch'] = RailroadSwitch(29, 17, 'right_exit_railroad_switch')
+        self.junctions[29][17]['right_entry_railroad_switch'] = RailroadSwitch(29, 17, 'right_entry_railroad_switch',
+                                                                               game_config=self.c)
+        self.junctions[29][17]['right_exit_railroad_switch'] = RailroadSwitch(29, 17, 'right_exit_railroad_switch',
+                                                                              game_config=self.c)
         self.junctions[29][21] = {}
-        self.junctions[29][21]['right_entry_railroad_switch'] = RailroadSwitch(29, 21, 'right_entry_railroad_switch')
-        self.junctions[29][21]['right_exit_railroad_switch'] = RailroadSwitch(29, 21, 'right_exit_railroad_switch')
+        self.junctions[29][21]['right_entry_railroad_switch'] = RailroadSwitch(29, 21, 'right_entry_railroad_switch',
+                                                                               game_config=self.c)
+        self.junctions[29][21]['right_exit_railroad_switch'] = RailroadSwitch(29, 21, 'right_exit_railroad_switch',
+                                                                              game_config=self.c)
         self.junctions[29][25] = {}
-        self.junctions[29][25]['right_entry_railroad_switch'] = RailroadSwitch(29, 25, 'right_entry_railroad_switch')
-        self.junctions[29][25]['right_exit_railroad_switch'] = RailroadSwitch(29, 25, 'right_exit_railroad_switch')
+        self.junctions[29][25]['right_entry_railroad_switch'] = RailroadSwitch(29, 25, 'right_entry_railroad_switch',
+                                                                               game_config=self.c)
+        self.junctions[29][25]['right_exit_railroad_switch'] = RailroadSwitch(29, 25, 'right_exit_railroad_switch',
+                                                                              game_config=self.c)
         self.junctions[29][27] = {}
-        self.junctions[29][27]['left_entry_railroad_switch'] = RailroadSwitch(29, 27, 'left_entry_railroad_switch')
-        self.junctions[29][27]['left_exit_railroad_switch'] = RailroadSwitch(29, 27, 'left_exit_railroad_switch')
+        self.junctions[29][27]['left_entry_railroad_switch'] = RailroadSwitch(29, 27, 'left_entry_railroad_switch',
+                                                                              game_config=self.c)
+        self.junctions[29][27]['left_exit_railroad_switch'] = RailroadSwitch(29, 27, 'left_exit_railroad_switch',
+                                                                             game_config=self.c)
         self.junctions[29][31] = {}
-        self.junctions[29][31]['left_entry_railroad_switch'] = RailroadSwitch(29, 31, 'left_entry_railroad_switch')
-        self.junctions[29][31]['left_exit_railroad_switch'] = RailroadSwitch(29, 31, 'left_exit_railroad_switch')
-        self.junctions[29][31]['right_entry_railroad_switch'] = RailroadSwitch(29, 31, 'right_entry_railroad_switch')
-        self.junctions[29][31]['right_exit_railroad_switch'] = RailroadSwitch(29, 31, 'right_exit_railroad_switch')
+        self.junctions[29][31]['left_entry_railroad_switch'] = RailroadSwitch(29, 31, 'left_entry_railroad_switch',
+                                                                              game_config=self.c)
+        self.junctions[29][31]['left_exit_railroad_switch'] = RailroadSwitch(29, 31, 'left_exit_railroad_switch',
+                                                                             game_config=self.c)
+        self.junctions[29][31]['right_entry_railroad_switch'] = RailroadSwitch(29, 31, 'right_entry_railroad_switch',
+                                                                               game_config=self.c)
+        self.junctions[29][31]['right_exit_railroad_switch'] = RailroadSwitch(29, 31, 'right_exit_railroad_switch',
+                                                                              game_config=self.c)
         self.logger.debug('junctions for track 3 created')
 
         self.junctions[30] = {}
         self.junctions[30][4] = {}
-        self.junctions[30][4]['left_entry_railroad_switch'] = RailroadSwitch(30, 4, 'left_entry_railroad_switch')
-        self.junctions[30][4]['left_exit_railroad_switch'] = RailroadSwitch(30, 4, 'left_exit_railroad_switch')
+        self.junctions[30][4]['left_entry_railroad_switch'] = RailroadSwitch(30, 4, 'left_entry_railroad_switch',
+                                                                             game_config=self.c)
+        self.junctions[30][4]['left_exit_railroad_switch'] = RailroadSwitch(30, 4, 'left_exit_railroad_switch',
+                                                                            game_config=self.c)
         self.junctions[30][6] = {}
-        self.junctions[30][6]['left_entry_railroad_switch'] = RailroadSwitch(30, 6, 'left_entry_railroad_switch')
-        self.junctions[30][6]['left_exit_railroad_switch'] = RailroadSwitch(30, 6, 'left_exit_railroad_switch')
+        self.junctions[30][6]['left_entry_railroad_switch'] = RailroadSwitch(30, 6, 'left_entry_railroad_switch',
+                                                                             game_config=self.c)
+        self.junctions[30][6]['left_exit_railroad_switch'] = RailroadSwitch(30, 6, 'left_exit_railroad_switch',
+                                                                            game_config=self.c)
         self.junctions[30][10] = {}
-        self.junctions[30][10]['left_entry_railroad_switch'] = RailroadSwitch(30, 10, 'left_entry_railroad_switch')
-        self.junctions[30][10]['left_exit_railroad_switch'] = RailroadSwitch(30, 10, 'left_exit_railroad_switch')
+        self.junctions[30][10]['left_entry_railroad_switch'] = RailroadSwitch(30, 10, 'left_entry_railroad_switch',
+                                                                              game_config=self.c)
+        self.junctions[30][10]['left_exit_railroad_switch'] = RailroadSwitch(30, 10, 'left_exit_railroad_switch',
+                                                                             game_config=self.c)
         self.junctions[30][14] = {}
-        self.junctions[30][14]['left_entry_railroad_switch'] = RailroadSwitch(30, 14, 'left_entry_railroad_switch')
-        self.junctions[30][14]['left_exit_railroad_switch'] = RailroadSwitch(30, 14, 'left_exit_railroad_switch')
+        self.junctions[30][14]['left_entry_railroad_switch'] = RailroadSwitch(30, 14, 'left_entry_railroad_switch',
+                                                                              game_config=self.c)
+        self.junctions[30][14]['left_exit_railroad_switch'] = RailroadSwitch(30, 14, 'left_exit_railroad_switch',
+                                                                             game_config=self.c)
         self.junctions[30][18] = {}
-        self.junctions[30][18]['left_entry_railroad_switch'] = RailroadSwitch(30, 18, 'left_entry_railroad_switch')
-        self.junctions[30][18]['left_exit_railroad_switch'] = RailroadSwitch(30, 18, 'left_exit_railroad_switch')
+        self.junctions[30][18]['left_entry_railroad_switch'] = RailroadSwitch(30, 18, 'left_entry_railroad_switch',
+                                                                              game_config=self.c)
+        self.junctions[30][18]['left_exit_railroad_switch'] = RailroadSwitch(30, 18, 'left_exit_railroad_switch',
+                                                                             game_config=self.c)
         self.junctions[30][22] = {}
-        self.junctions[30][22]['left_entry_railroad_switch'] = RailroadSwitch(30, 22, 'left_entry_railroad_switch')
-        self.junctions[30][22]['left_exit_railroad_switch'] = RailroadSwitch(30, 22, 'left_exit_railroad_switch')
+        self.junctions[30][22]['left_entry_railroad_switch'] = RailroadSwitch(30, 22, 'left_entry_railroad_switch',
+                                                                              game_config=self.c)
+        self.junctions[30][22]['left_exit_railroad_switch'] = RailroadSwitch(30, 22, 'left_exit_railroad_switch',
+                                                                             game_config=self.c)
         self.junctions[30][26] = {}
-        self.junctions[30][26]['left_entry_railroad_switch'] = RailroadSwitch(30, 26, 'left_entry_railroad_switch')
-        self.junctions[30][26]['left_exit_railroad_switch'] = RailroadSwitch(30, 26, 'left_exit_railroad_switch')
+        self.junctions[30][26]['left_entry_railroad_switch'] = RailroadSwitch(30, 26, 'left_entry_railroad_switch',
+                                                                              game_config=self.c)
+        self.junctions[30][26]['left_exit_railroad_switch'] = RailroadSwitch(30, 26, 'left_exit_railroad_switch',
+                                                                             game_config=self.c)
         self.junctions[30][28] = {}
-        self.junctions[30][28]['right_entry_railroad_switch'] = RailroadSwitch(30, 28, 'right_entry_railroad_switch')
-        self.junctions[30][28]['right_exit_railroad_switch'] = RailroadSwitch(30, 28, 'right_exit_railroad_switch')
+        self.junctions[30][28]['right_entry_railroad_switch'] = RailroadSwitch(30, 28, 'right_entry_railroad_switch',
+                                                                               game_config=self.c)
+        self.junctions[30][28]['right_exit_railroad_switch'] = RailroadSwitch(30, 28, 'right_exit_railroad_switch',
+                                                                              game_config=self.c)
         self.junctions[30][32] = {}
-        self.junctions[30][32]['left_entry_railroad_switch'] = RailroadSwitch(30, 32, 'left_entry_railroad_switch')
-        self.junctions[30][32]['left_exit_railroad_switch'] = RailroadSwitch(30, 32, 'left_exit_railroad_switch')
-        self.junctions[30][32]['right_entry_railroad_switch'] = RailroadSwitch(30, 32, 'right_entry_railroad_switch')
-        self.junctions[30][32]['right_exit_railroad_switch'] = RailroadSwitch(30, 32, 'right_exit_railroad_switch')
+        self.junctions[30][32]['left_entry_railroad_switch'] = RailroadSwitch(30, 32, 'left_entry_railroad_switch',
+                                                                              game_config=self.c)
+        self.junctions[30][32]['left_exit_railroad_switch'] = RailroadSwitch(30, 32, 'left_exit_railroad_switch',
+                                                                             game_config=self.c)
+        self.junctions[30][32]['right_entry_railroad_switch'] = RailroadSwitch(30, 32, 'right_entry_railroad_switch',
+                                                                               game_config=self.c)
+        self.junctions[30][32]['right_exit_railroad_switch'] = RailroadSwitch(30, 32, 'right_exit_railroad_switch',
+                                                                              game_config=self.c)
         self.logger.debug('junctions for track 4 created')
 
         self.junctions[101] = {}
         self.junctions[101][21] = {}
-        self.junctions[101][21]['left_entry_railroad_switch'] = RailroadSwitch(101, 21, 'left_entry_railroad_switch')
-        self.junctions[101][21]['left_exit_railroad_switch'] = RailroadSwitch(101, 21, 'left_exit_railroad_switch')
+        self.junctions[101][21]['left_entry_railroad_switch'] = RailroadSwitch(101, 21, 'left_entry_railroad_switch',
+                                                                               game_config=self.c)
+        self.junctions[101][21]['left_exit_railroad_switch'] = RailroadSwitch(101, 21, 'left_exit_railroad_switch',
+                                                                              game_config=self.c)
         self.junctions[101][103] = {}
-        self.junctions[101][103]['left_entry_crossover'] = Crossover(101, 103, 'left_entry_crossover')
-        self.junctions[101][103]['left_exit_crossover'] = Crossover(101, 103, 'left_exit_crossover')
+        self.junctions[101][103]['left_entry_crossover'] = Crossover(101, 103, 'left_entry_crossover',
+                                                                     game_config=self.c)
+        self.junctions[101][103]['left_exit_crossover'] = Crossover(101, 103, 'left_exit_crossover', game_config=self.c)
 
         self.junctions[102] = {}
         self.junctions[102][22] = {}
-        self.junctions[102][22]['right_entry_railroad_switch'] = RailroadSwitch(102, 22, 'right_entry_railroad_switch')
-        self.junctions[102][22]['right_exit_railroad_switch'] = RailroadSwitch(102, 22, 'right_exit_railroad_switch')
+        self.junctions[102][22]['right_entry_railroad_switch'] = RailroadSwitch(102, 22, 'right_entry_railroad_switch',
+                                                                                game_config=self.c)
+        self.junctions[102][22]['right_exit_railroad_switch'] = RailroadSwitch(102, 22, 'right_exit_railroad_switch',
+                                                                               game_config=self.c)
         self.junctions[102][104] = {}
-        self.junctions[102][104]['right_entry_crossover'] = Crossover(102, 104, 'right_entry_crossover')
-        self.junctions[102][104]['right_exit_crossover'] = Crossover(102, 104, 'right_exit_crossover')
+        self.junctions[102][104]['right_entry_crossover'] = Crossover(102, 104, 'right_entry_crossover',
+                                                                      game_config=self.c)
+        self.junctions[102][104]['right_exit_crossover'] = Crossover(102, 104, 'right_exit_crossover',
+                                                                     game_config=self.c)
 
         self.junctions[103] = {}
         self.junctions[103][29] = {}
-        self.junctions[103][29]['left_entry_railroad_switch'] = RailroadSwitch(103, 29, 'left_entry_railroad_switch')
-        self.junctions[103][29]['left_exit_railroad_switch'] = RailroadSwitch(103, 29, 'left_exit_railroad_switch')
+        self.junctions[103][29]['left_entry_railroad_switch'] = RailroadSwitch(103, 29, 'left_entry_railroad_switch',
+                                                                               game_config=self.c)
+        self.junctions[103][29]['left_exit_railroad_switch'] = RailroadSwitch(103, 29, 'left_exit_railroad_switch',
+                                                                              game_config=self.c)
 
         self.junctions[104] = {}
         self.junctions[104][30] = {}
-        self.junctions[104][30]['right_entry_railroad_switch'] = RailroadSwitch(104, 30, 'right_entry_railroad_switch')
-        self.junctions[104][30]['right_exit_railroad_switch'] = RailroadSwitch(104, 30, 'right_exit_railroad_switch')
+        self.junctions[104][30]['right_entry_railroad_switch'] = RailroadSwitch(104, 30, 'right_entry_railroad_switch',
+                                                                                game_config=self.c)
+        self.junctions[104][30]['right_exit_railroad_switch'] = RailroadSwitch(104, 30, 'right_exit_railroad_switch',
+                                                                               game_config=self.c)
         self.logger.info('all junctions created')
 
         self.junctions[21][23]['left_entry_crossover'].dependency = self.junctions[23][21]['left_exit_crossover']
@@ -2068,11 +2160,12 @@ class RSSim(Game):
         saved_onboarding_image = pyglet.image.load('img/game_saved.png')
         self.saved_onboarding_tip \
             = OnboardingTips(image=saved_onboarding_image,
-                             x=self.c['graphics']['screen_resolution'][0] // 2 - saved_onboarding_image.width // 2,
-                             y=self.c['graphics']['screen_resolution'][1] // 2 - saved_onboarding_image.height // 2,
+                             x=self.c.screen_resolution[0] // 2 - saved_onboarding_image.width // 2,
+                             y=self.c.screen_resolution[1] // 2 - saved_onboarding_image.height // 2,
                              tip_type='game_saved', batch=self.batch,
                              group=self.top_bottom_bars_ordered_group,
-                             viewport_border_group=self.buttons_general_borders_day_text_ordered_group)
+                             viewport_border_group=self.buttons_general_borders_day_text_ordered_group,
+                             game_config=self.c)
         self.objects.append(self.saved_onboarding_tip)
         self.mini_map_tip.update_image(pyglet.image.load('img/mini_map/{}/mini_map.png'
                                                          .format(self.dispatcher.unlocked_tracks)))
@@ -2120,33 +2213,34 @@ class RSSim(Game):
             self.logger.critical('------- GAME SAVE END -------')
 
         self.objects.append(InGameTime(batch=self.batch,
-                                       day_text_group=self.buttons_general_borders_day_text_ordered_group))
+                                       day_text_group=self.buttons_general_borders_day_text_ordered_group,
+                                       game_config=self.c))
         self.logger.debug('time appended to global objects list')
         self.objects.append(TopAndBottomBar(batch=self.batch,
-                                            bar_group=self.top_bottom_bars_ordered_group,))
+                                            bar_group=self.top_bottom_bars_ordered_group, game_config=self.c))
         self.logger.debug('bottom bar appended to global objects list')
         stop_button = Button(position=(890, 7), button_size=(100, 40), text=['Pause', 'Resume'],
                              on_click=[pause_game, resume_game], draw_only_if_game_paused=False,
                              batch=self.batch, button_group=self.buttons_general_borders_day_text_ordered_group,
                              text_group=self.buttons_text_and_borders_ordered_group,
-                             borders_group=self.buttons_text_and_borders_ordered_group)
+                             borders_group=self.buttons_text_and_borders_ordered_group, game_config=self.c)
         save_button = Button(position=(780, 7), button_size=(100, 40), text=['Save', ], on_click=[save_game, ],
                              draw_only_if_game_paused=True,
                              batch=self.batch, button_group=self.buttons_general_borders_day_text_ordered_group,
                              text_group=self.buttons_text_and_borders_ordered_group,
-                             borders_group=self.buttons_text_and_borders_ordered_group)
-        close_button = Button(position=(self.c['graphics']['screen_resolution'][0] - 34,
-                                        self.c['graphics']['screen_resolution'][1] - 34), button_size=(34, 34),
+                             borders_group=self.buttons_text_and_borders_ordered_group, game_config=self.c)
+        close_button = Button(position=(self.c.screen_resolution[0] - 34,
+                                        self.c.screen_resolution[1] - 34), button_size=(34, 34),
                               text=['X', ], on_click=[close_game, ], draw_only_if_game_paused=False,
                               batch=self.batch, button_group=self.buttons_general_borders_day_text_ordered_group,
                               text_group=self.buttons_text_and_borders_ordered_group,
-                              borders_group=self.buttons_text_and_borders_ordered_group)
-        iconify_button = Button(position=(self.c['graphics']['screen_resolution'][0] - 66,
-                                          self.c['graphics']['screen_resolution'][1] - 34), button_size=(34, 34),
+                              borders_group=self.buttons_text_and_borders_ordered_group, game_config=self.c)
+        iconify_button = Button(position=(self.c.screen_resolution[0] - 66,
+                                          self.c.screen_resolution[1] - 34), button_size=(34, 34),
                                 text=['_', ], on_click=[iconify_game, ], draw_only_if_game_paused=False,
                                 batch=self.batch, button_group=self.buttons_general_borders_day_text_ordered_group,
                                 text_group=self.buttons_text_and_borders_ordered_group,
-                                borders_group=self.buttons_text_and_borders_ordered_group)
+                                borders_group=self.buttons_text_and_borders_ordered_group, game_config=self.c)
         self.on_mouse_press_handlers.append(stop_button.handle_mouse_press)
         self.on_mouse_press_handlers.append(save_button.handle_mouse_press)
         self.on_mouse_press_handlers.append(close_button.handle_mouse_press)

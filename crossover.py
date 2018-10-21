@@ -14,8 +14,8 @@ def _game_is_not_paused(fn):
 
 
 class Crossover(GameObject):
-    def __init__(self, straight_track_1, straight_track_2, direction):
-        super().__init__()
+    def __init__(self, straight_track_1, straight_track_2, direction, game_config):
+        super().__init__(game_config)
         self.logger = logging.getLogger('game.crossover_{}_{}_{}'.format(straight_track_1, straight_track_2, direction))
         self.logger.debug('------- START INIT -------')
         self.config = configparser.RawConfigParser()

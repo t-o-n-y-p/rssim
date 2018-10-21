@@ -19,8 +19,8 @@ def _game_is_not_paused(fn):
 class Train(GameObject):
     def __init__(self, carts, train_route, state, direction, new_direction, current_direction, train_id,
                  head_image, mid_image, boarding_lights_image, tail_image, batch, group, boarding_lights_group,
-                 load_all_carts_at_once=False):
-        super().__init__()
+                 game_config, load_all_carts_at_once=False):
+        super().__init__(game_config)
         self.logger = logging.getLogger('game.train_{}'.format(train_id))
         self.logger.debug('------- START INIT -------')
         self.config = None
@@ -43,15 +43,15 @@ class Train(GameObject):
                           .format(self.carts, self.train_route, self.state, self.direction, self.train_id))
         # all trains are created with maximum speed,
         # not accelerating and not decelerating
-        self.speed = self.c['train_config']['train_maximum_speed']
-        self.logger.debug('set maximum speed: {}'.format(self.c['train_config']['train_maximum_speed']))
+        self.speed = self.c.train_maximum_speed
+        self.logger.debug('set maximum speed: {}'.format(self.c.train_maximum_speed))
         self.speed_state = 'move'
         self.logger.debug('set speed_state: {}'.format(self.speed_state))
         # train_acceleration_factor tuple includes absolute shifts
         # for acceleration and deceleration (in reversed order);
         # by default train has far right position for this
-        self.speed_factor_position = len(self.c['train_config']['train_acceleration_factor']) - 1
-        self.speed_factor_position_limit = len(self.c['train_config']['train_acceleration_factor']) - 1
+        self.speed_factor_position = len(self.c.train_acceleration_factor) - 1
+        self.speed_factor_position_limit = len(self.c.train_acceleration_factor) - 1
         self.logger.debug('set speed_factor_position: {}'.format(self.speed_factor_position))
         if self.state == 'approaching_pass_through':
             self.priority = 0
@@ -260,10 +260,10 @@ class Train(GameObject):
         else:
             # as soon as entry route is assigned, train knows its track number
             if self.train_route.route_type \
-                    in (self.c['train_route_types']['entry_train_route'][self.c['direction']['left']],
-                        self.c['train_route_types']['entry_train_route'][self.c['direction']['right']],
-                        self.c['train_route_types']['entry_train_route'][self.c['direction']['left_side']],
-                        self.c['train_route_types']['entry_train_route'][self.c['direction']['right_side']]):
+                    in (self.c.entry_train_route[self.c.direction_from_left_to_right],
+                        self.c.entry_train_route[self.c.direction_from_right_to_left],
+                        self.c.entry_train_route[self.c.direction_from_left_to_right_side],
+                        self.c.entry_train_route[self.c.direction_from_right_to_left_side]):
                 self.track_number = self.train_route.track_number
 
             self.logger.debug('track_number: {}'.format(self.track_number))
@@ -284,12 +284,10 @@ class Train(GameObject):
                 self.logger.debug('train reached red signal, speed state = {}'.format(self.speed_state))
             # if it is time to decelerate train, do this;
             elif self.stop_point - self.carts_position[0] \
-                    <= self.c['train_config']['train_acceleration_factor'][self.speed_factor_position]:
+                    <= self.c.train_acceleration_factor[self.speed_factor_position]:
                 self.speed_state = 'decelerate'
                 self.logger.debug('distance less than {}, time to decelerate, speed state = {}'
-                                  .format(self.c['train_config']['train_acceleration_factor'][
-                                                                                self.speed_factor_position],
-                                          'decelerate'))
+                                  .format(self.c.train_acceleration_factor[self.speed_factor_position], 'decelerate'))
             # if there is some free track space ahead and train is not at maximum speed,
             # accelerate
             else:
@@ -315,8 +313,8 @@ class Train(GameObject):
                     self.logger.debug('train has reached maximum speed')
                 else:
                     self.speed \
-                        = self.c['train_config']['train_acceleration_factor'][self.speed_factor_position + 1] \
-                        - self.c['train_config']['train_acceleration_factor'][self.speed_factor_position]
+                        = self.c.train_acceleration_factor[self.speed_factor_position + 1] \
+                        - self.c.train_acceleration_factor[self.speed_factor_position]
                     self.logger.debug('speed: {}'.format(self.speed))
                     self.speed_factor_position += 1
                     self.logger.debug('new speed_factor_position: {}'.format(self.speed_factor_position))
@@ -324,7 +322,7 @@ class Train(GameObject):
             # just stay at maximum speed here
             if self.speed_state == 'move':
                 self.logger.debug('train is at maximum speed')
-                self.speed = self.c['train_config']['train_maximum_speed']
+                self.speed = self.c.train_maximum_speed
                 self.logger.debug('speed: {}'.format(self.speed))
 
             # how to decelerate:
@@ -336,8 +334,8 @@ class Train(GameObject):
                 self.logger.debug('speed_factor_position limit: {}'
                                   .format(self.speed_factor_position_limit))
                 self.speed \
-                    = self.c['train_config']['train_acceleration_factor'][self.speed_factor_position + 1] \
-                    - self.c['train_config']['train_acceleration_factor'][self.speed_factor_position]
+                    = self.c.train_acceleration_factor[self.speed_factor_position + 1] \
+                    - self.c.train_acceleration_factor[self.speed_factor_position]
                 self.logger.debug('speed: {}'.format(self.speed))
 
             # just stay sill here
@@ -413,13 +411,13 @@ class Train(GameObject):
         y = base_offset[1] + dot[1]
         self.logger.debug('dot for cart {}: {}'.format(cart_number, dot))
         if self.cart_sprites[cart_number].visible \
-                and (x not in range(-150, self.c['graphics']['screen_resolution'][0] + 150)
-                     or y not in range(-100, self.c['graphics']['screen_resolution'][0] + 100)):
+                and (x not in range(-150, self.c.screen_resolution[0] + 150)
+                     or y not in range(-100, self.c.screen_resolution[0] + 100)):
             self.cart_sprites[cart_number].visible = False
 
         if not self.cart_sprites[cart_number].visible \
-                and (x in range(-150, self.c['graphics']['screen_resolution'][0] + 150)
-                     and y in range(-100, self.c['graphics']['screen_resolution'][0] + 100)):
+                and (x in range(-150, self.c.screen_resolution[0] + 150)
+                     and y in range(-100, self.c.screen_resolution[0] + 100)):
             self.cart_sprites[cart_number].visible = True
 
         if self.cart_sprites[cart_number].visible:
@@ -433,13 +431,13 @@ class Train(GameObject):
         x = base_offset[0] + self.carts_position_abs[cart_number][0]
         y = base_offset[1] + self.carts_position_abs[cart_number][1]
         if self.cart_sprites[cart_number].visible \
-                and (x not in range(-150, self.c['graphics']['screen_resolution'][0] + 150)
-                     or y not in range(-25, self.c['graphics']['screen_resolution'][0] + 25)):
+                and (x not in range(-150, self.c.screen_resolution[0] + 150)
+                     or y not in range(-25, self.c.screen_resolution[0] + 25)):
             self.cart_sprites[cart_number].visible = False
 
         if not self.cart_sprites[cart_number].visible \
-                and (x in range(-150, self.c['graphics']['screen_resolution'][0] + 150)
-                     and y in range(-25, self.c['graphics']['screen_resolution'][0] + 25)):
+                and (x in range(-150, self.c.screen_resolution[0] + 150)
+                     and y in range(-25, self.c.screen_resolution[0] + 25)):
             self.cart_sprites[cart_number].visible = True
 
         if self.cart_sprites[cart_number].visible:

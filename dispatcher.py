@@ -19,8 +19,8 @@ def _game_is_not_paused(fn):
 
 
 class Dispatcher(GameObject):
-    def __init__(self, batch, group, boarding_lights_group):
-        super().__init__()
+    def __init__(self, batch, group, boarding_lights_group, game_config):
+        super().__init__(game_config)
         self.logger = logging.getLogger('game.dispatcher')
         self.logger.debug('------- START INIT -------')
         self.config = configparser.RawConfigParser()
@@ -44,35 +44,35 @@ class Dispatcher(GameObject):
         self.train_tail_image = {}
         self.boarding_lights_image = {}
         # ----------- left direction images -----------------
-        self.train_head_image[self.c['direction']['left']] = \
-            pyglet.image.load('img/cart_head_{}.png'.format(self.c['direction']['left']))
-        self.train_mid_image[self.c['direction']['left']] = \
-            pyglet.image.load('img/cart_mid_{}.png'.format(self.c['direction']['left']))
-        self.train_tail_image[self.c['direction']['left']] = \
-            pyglet.image.load('img/cart_tail_{}.png'.format(self.c['direction']['left']))
+        self.train_head_image[self.c.direction_from_left_to_right] = \
+            pyglet.image.load('img/cart_head_{}.png'.format(self.c.direction_from_left_to_right))
+        self.train_mid_image[self.c.direction_from_left_to_right] = \
+            pyglet.image.load('img/cart_mid_{}.png'.format(self.c.direction_from_left_to_right))
+        self.train_tail_image[self.c.direction_from_left_to_right] = \
+            pyglet.image.load('img/cart_tail_{}.png'.format(self.c.direction_from_left_to_right))
         # -------------------- right direction images ----------------------
-        self.train_head_image[self.c['direction']['right']] = \
-            pyglet.image.load('img/cart_head_{}.png'.format(self.c['direction']['right']))
-        self.train_mid_image[self.c['direction']['right']] = \
-            pyglet.image.load('img/cart_mid_{}.png'.format(self.c['direction']['right']))
-        self.train_tail_image[self.c['direction']['right']] = \
-            pyglet.image.load('img/cart_tail_{}.png'.format(self.c['direction']['right']))
+        self.train_head_image[self.c.direction_from_right_to_left] = \
+            pyglet.image.load('img/cart_head_{}.png'.format(self.c.direction_from_right_to_left))
+        self.train_mid_image[self.c.direction_from_right_to_left] = \
+            pyglet.image.load('img/cart_mid_{}.png'.format(self.c.direction_from_right_to_left))
+        self.train_tail_image[self.c.direction_from_right_to_left] = \
+            pyglet.image.load('img/cart_tail_{}.png'.format(self.c.direction_from_right_to_left))
         # ----------- left side direction images -----------------
-        self.train_head_image[self.c['direction']['left_side']] = \
-            pyglet.image.load('img/cart_head_{}.png'.format(self.c['direction']['left_side']))
-        self.train_mid_image[self.c['direction']['left_side']] = \
-            pyglet.image.load('img/cart_mid_{}.png'.format(self.c['direction']['left_side']))
-        self.train_tail_image[self.c['direction']['left_side']] = \
-            pyglet.image.load('img/cart_tail_{}.png'.format(self.c['direction']['left_side']))
+        self.train_head_image[self.c.direction_from_left_to_right_side] = \
+            pyglet.image.load('img/cart_head_{}.png'.format(self.c.direction_from_left_to_right_side))
+        self.train_mid_image[self.c.direction_from_left_to_right_side] = \
+            pyglet.image.load('img/cart_mid_{}.png'.format(self.c.direction_from_left_to_right_side))
+        self.train_tail_image[self.c.direction_from_left_to_right_side] = \
+            pyglet.image.load('img/cart_tail_{}.png'.format(self.c.direction_from_left_to_right_side))
         # -------------------- right side direction images ----------------------
-        self.train_head_image[self.c['direction']['right_side']] = \
-            pyglet.image.load('img/cart_head_{}.png'.format(self.c['direction']['right_side']))
-        self.train_mid_image[self.c['direction']['right_side']] = \
-            pyglet.image.load('img/cart_mid_{}.png'.format(self.c['direction']['right_side']))
-        self.train_tail_image[self.c['direction']['right_side']] = \
-            pyglet.image.load('img/cart_tail_{}.png'.format(self.c['direction']['right_side']))
-        for i in (self.c['direction']['left'], self.c['direction']['right'],
-                  self.c['direction']['left_side'], self.c['direction']['right_side']):
+        self.train_head_image[self.c.direction_from_right_to_left_side] = \
+            pyglet.image.load('img/cart_head_{}.png'.format(self.c.direction_from_right_to_left_side))
+        self.train_mid_image[self.c.direction_from_right_to_left_side] = \
+            pyglet.image.load('img/cart_mid_{}.png'.format(self.c.direction_from_right_to_left_side))
+        self.train_tail_image[self.c.direction_from_right_to_left_side] = \
+            pyglet.image.load('img/cart_tail_{}.png'.format(self.c.direction_from_right_to_left_side))
+        for i in (self.c.direction_from_left_to_right, self.c.direction_from_right_to_left,
+                  self.c.direction_from_left_to_right_side, self.c.direction_from_right_to_left_side):
             self.train_head_image[i].anchor_x = self.train_head_image[i].width // 2
             self.train_head_image[i].anchor_y = self.train_head_image[i].height // 2
             self.train_mid_image[i].anchor_x = self.train_mid_image[i].width // 2
@@ -80,35 +80,35 @@ class Dispatcher(GameObject):
             self.train_tail_image[i].anchor_x = self.train_tail_image[i].width // 2
             self.train_tail_image[i].anchor_y = self.train_tail_image[i].height // 2
 
-        self.boarding_lights_image[self.c['direction']['left']] = []
-        self.boarding_lights_image[self.c['direction']['right']] = []
-        self.boarding_lights_image[self.c['direction']['left_side']] = []
-        self.boarding_lights_image[self.c['direction']['right_side']] = []
+        self.boarding_lights_image[self.c.direction_from_left_to_right] = []
+        self.boarding_lights_image[self.c.direction_from_right_to_left] = []
+        self.boarding_lights_image[self.c.direction_from_left_to_right_side] = []
+        self.boarding_lights_image[self.c.direction_from_right_to_left_side] = []
         for i in range(6):
-            self.boarding_lights_image[self.c['direction']['left']].append(None)
-            self.boarding_lights_image[self.c['direction']['right']].append(None)
-            self.boarding_lights_image[self.c['direction']['left_side']].append(None)
-            self.boarding_lights_image[self.c['direction']['right_side']].append(None)
+            self.boarding_lights_image[self.c.direction_from_left_to_right].append(None)
+            self.boarding_lights_image[self.c.direction_from_right_to_left].append(None)
+            self.boarding_lights_image[self.c.direction_from_left_to_right_side].append(None)
+            self.boarding_lights_image[self.c.direction_from_right_to_left_side].append(None)
 
         for i in range(6, 21):
-            self.boarding_lights_image[self.c['direction']['left']]\
+            self.boarding_lights_image[self.c.direction_from_left_to_right]\
                 .append(pyglet.image.load('img/boarding_lights/day/{}.png'.format(i)))
-            self.boarding_lights_image[self.c['direction']['left']][i].anchor_x \
-                = self.boarding_lights_image[self.c['direction']['left']][i].width - 126
-            self.boarding_lights_image[self.c['direction']['left']][i].anchor_y = 20
-            self.boarding_lights_image[self.c['direction']['left_side']]\
+            self.boarding_lights_image[self.c.direction_from_left_to_right][i].anchor_x \
+                = self.boarding_lights_image[self.c.direction_from_left_to_right][i].width - 126
+            self.boarding_lights_image[self.c.direction_from_left_to_right][i].anchor_y = 20
+            self.boarding_lights_image[self.c.direction_from_left_to_right_side]\
                 .append(pyglet.image.load('img/boarding_lights/day/{}.png'.format(i)))
-            self.boarding_lights_image[self.c['direction']['left_side']][i].anchor_x \
-                = self.boarding_lights_image[self.c['direction']['left_side']][i].width - 126
-            self.boarding_lights_image[self.c['direction']['left_side']][i].anchor_y = 20
-            self.boarding_lights_image[self.c['direction']['right']]\
+            self.boarding_lights_image[self.c.direction_from_left_to_right_side][i].anchor_x \
+                = self.boarding_lights_image[self.c.direction_from_left_to_right_side][i].width - 126
+            self.boarding_lights_image[self.c.direction_from_left_to_right_side][i].anchor_y = 20
+            self.boarding_lights_image[self.c.direction_from_right_to_left]\
                 .append(pyglet.image.load('img/boarding_lights/day/{}.png'.format(i)))
-            self.boarding_lights_image[self.c['direction']['right']][i].anchor_x = 125
-            self.boarding_lights_image[self.c['direction']['right']][i].anchor_y = 20
-            self.boarding_lights_image[self.c['direction']['right_side']]\
+            self.boarding_lights_image[self.c.direction_from_right_to_left][i].anchor_x = 125
+            self.boarding_lights_image[self.c.direction_from_right_to_left][i].anchor_y = 20
+            self.boarding_lights_image[self.c.direction_from_right_to_left_side]\
                 .append(pyglet.image.load('img/boarding_lights/day/{}.png'.format(i)))
-            self.boarding_lights_image[self.c['direction']['right_side']][i].anchor_x = 125
-            self.boarding_lights_image[self.c['direction']['right_side']][i].anchor_y = 20
+            self.boarding_lights_image[self.c.direction_from_right_to_left_side][i].anchor_x = 125
+            self.boarding_lights_image[self.c.direction_from_right_to_left_side][i].anchor_y = 20
 
         self.mini_map_tip = None
         self.logger.debug('------- END INIT -------')
@@ -181,7 +181,7 @@ class Dispatcher(GameObject):
                                         boarding_lights_image=self.boarding_lights_image,
                                         tail_image=self.train_tail_image,
                                         batch=self.batch, group=self.group,
-                                        boarding_lights_group=self.boarding_lights_group,
+                                        boarding_lights_group=self.boarding_lights_group, game_config=self.c,
                                         load_all_carts_at_once=True)
                 else:
                     saved_train = Train(carts=train_carts, train_route=None, state=train_state,
@@ -193,7 +193,7 @@ class Dispatcher(GameObject):
                                         boarding_lights_image=self.boarding_lights_image,
                                         tail_image=self.train_tail_image,
                                         batch=self.batch, group=self.group,
-                                        boarding_lights_group=self.boarding_lights_group,
+                                        boarding_lights_group=self.boarding_lights_group, game_config=self.c,
                                         load_all_carts_at_once=True)
 
                 self.logger.info('train {} created'.format(i))
@@ -336,7 +336,7 @@ class Dispatcher(GameObject):
 
                 if i.boarding_time <= 60 and i.train_route is None and routes_created_inside_iteration == 0:
                     i.assign_new_train_route(self.train_routes[i.track_number][
-                                                self.c['train_route_types']['exit_train_route'][i.new_direction]
+                                                self.c.exit_train_route[i.new_direction]
                                              ])
                     routes_created_inside_iteration += 1
                     self.logger.info('train {} new route assigned: track {} {}'
@@ -388,8 +388,8 @@ class Dispatcher(GameObject):
             if i.state == 'approaching' and routes_created_inside_iteration == 0:
                 self.logger.debug('looking for route for train {}'.format(i.train_id))
                 route_for_new_train = None
-                for j in self.c['dispatcher_config']['main_priority_tracks'][i.direction][i.new_direction]:
-                    r = self.train_routes[j][self.c['train_route_types']['entry_train_route'][i.direction]]
+                for j in self.c.main_priority_tracks[i.direction][i.new_direction]:
+                    r = self.train_routes[j][self.c.entry_train_route[i.direction]]
                     self.logger.debug('checking track {}'.format(j))
                     self.logger.debug('track in busy: {}'.format(self.tracks[j - 1].busy))
                     self.logger.debug('opened: {}'.format(r.opened))
@@ -422,8 +422,8 @@ class Dispatcher(GameObject):
 
             if i.state == 'approaching_pass_through' and routes_created_inside_iteration == 0:
                 self.logger.debug('looking for pass through route for train {}'.format(i.train_id))
-                for j in self.c['dispatcher_config']['pass_through_priority_tracks'][i.direction]:
-                    r = self.train_routes[j][self.c['train_route_types']['entry_train_route'][i.direction]]
+                for j in self.c.pass_through_priority_tracks[i.direction]:
+                    r = self.train_routes[j][self.c.entry_train_route[i.direction]]
                     self.logger.debug('checking track {}'.format(j))
                     self.logger.debug('track in busy: {}'.format(self.tracks[j - 1].busy))
                     self.logger.debug('opened: {}'.format(r.opened))
@@ -451,35 +451,35 @@ class Dispatcher(GameObject):
         # it's time to check if we can spawn more trains
         if routes_created_inside_iteration == 0:
             self.logger.debug('since no routes assigned, we can create new train')
-            self.create_new_trains(self.c['direction']['left'], 0, range(6, 21),
-                                   [self.c['direction']['right_side'],
-                                    self.c['direction']['left_side'],
-                                    self.c['direction']['left_side'],
-                                    self.c['direction']['left'],
-                                    self.c['direction']['left']]
+            self.create_new_trains(self.c.direction_from_left_to_right, 0, range(6, 21),
+                                   [self.c.direction_from_right_to_left_side,
+                                    self.c.direction_from_left_to_right_side,
+                                    self.c.direction_from_left_to_right_side,
+                                    self.c.direction_from_left_to_right,
+                                    self.c.direction_from_left_to_right]
                                    )
-            self.create_new_trains(self.c['direction']['right'], 0, range(6, 21),
-                                   [self.c['direction']['left_side'],
-                                    self.c['direction']['right_side'],
-                                    self.c['direction']['right_side'],
-                                    self.c['direction']['right'],
-                                    self.c['direction']['right']]
+            self.create_new_trains(self.c.direction_from_right_to_left, 0, range(6, 21),
+                                   [self.c.direction_from_left_to_right_side,
+                                    self.c.direction_from_right_to_left_side,
+                                    self.c.direction_from_right_to_left_side,
+                                    self.c.direction_from_right_to_left,
+                                    self.c.direction_from_right_to_left]
                                    )
             if not self.tracks[20].locked:
-                self.create_new_trains(self.c['direction']['left_side'], 100, range(6, 11),
-                                       [self.c['direction']['right_side'],
-                                        self.c['direction']['right_side'],
-                                        self.c['direction']['right'],
-                                        self.c['direction']['left'],
-                                        self.c['direction']['left']]
+                self.create_new_trains(self.c.direction_from_left_to_right_side, 100, range(6, 11),
+                                       [self.c.direction_from_right_to_left_side,
+                                        self.c.direction_from_right_to_left_side,
+                                        self.c.direction_from_right_to_left,
+                                        self.c.direction_from_left_to_right,
+                                        self.c.direction_from_left_to_right]
                                        )
             if not self.tracks[21].locked:
-                self.create_new_trains(self.c['direction']['right_side'], 100, range(6, 11),
-                                       [self.c['direction']['left_side'],
-                                        self.c['direction']['left_side'],
-                                        self.c['direction']['left'],
-                                        self.c['direction']['right'],
-                                        self.c['direction']['right']]
+                self.create_new_trains(self.c.direction_from_right_to_left_side, 100, range(6, 11),
+                                       [self.c.direction_from_left_to_right_side,
+                                        self.c.direction_from_left_to_right_side,
+                                        self.c.direction_from_left_to_right,
+                                        self.c.direction_from_right_to_left,
+                                        self.c.direction_from_right_to_left]
                                        )
 
         self.logger.debug('------- DISPATCHER UPDATE END -------')
@@ -497,7 +497,7 @@ class Dispatcher(GameObject):
     def create_new_trains(self, direction, track_number, carts_choice_list, new_direction_choice_list):
         self.logger.debug('------- START CREATING NEW TRAINS -------')
         entry_busy = self.train_routes[track_number][
-            self.c['train_route_types']['approaching_train_route'][direction]
+            self.c.approaching_train_route[direction]
         ].train_route_sections[0].route_config['busy']
         self.logger.debug('entry is busy: {}'.format(entry_busy))
         # we wait until main entry is free
@@ -505,8 +505,8 @@ class Dispatcher(GameObject):
             self.train_timer[direction] += 1
             self.logger.debug('train_timer: {}'.format(self.train_timer[direction]))
             self.logger.debug('train_creation_timeout: {}'
-                              .format(self.c['dispatcher_config']['train_creation_timeout'][direction]))
-            if self.train_timer[direction] >= self.c['dispatcher_config']['train_creation_timeout'][direction]:
+                              .format(self.c.train_creation_timeout[direction]))
+            if self.train_timer[direction] >= self.c.train_creation_timeout[direction]:
                 self.train_timer[direction] = 0
                 self.logger.debug('timer flushed')
                 # randomly choose number of carts for train
@@ -521,8 +521,7 @@ class Dispatcher(GameObject):
                 if carts < self.supported_carts[0]:
                     self.logger.debug('{}-cart trains are not supported for now, assign pass through route'
                                       .format(carts))
-                    route_for_new_train = self.train_routes[track_number][
-                        self.c['train_route_types']['approaching_train_route'][direction]]
+                    route_for_new_train = self.train_routes[track_number][self.c.approaching_train_route[direction]]
                     new_train = Train(carts=carts, train_route=route_for_new_train,
                                       state='approaching_pass_through',
                                       direction=direction, new_direction=new_direction, current_direction=direction,
@@ -531,7 +530,7 @@ class Dispatcher(GameObject):
                                       boarding_lights_image=self.boarding_lights_image,
                                       tail_image=self.train_tail_image,
                                       batch=self.batch, group=self.group,
-                                      boarding_lights_group=self.boarding_lights_group)
+                                      boarding_lights_group=self.boarding_lights_group, game_config=self.c)
                     self.train_ids.append(self.train_counter)
                     new_train.train_route.open_train_route(new_train.train_id, new_train.priority)
                     new_train.train_route.set_stop_points(new_train.carts)
@@ -543,8 +542,7 @@ class Dispatcher(GameObject):
                 else:
                     self.logger.debug('{}-cart trains are supported, assign route'
                                       .format(carts))
-                    route_for_new_train = self.train_routes[track_number][
-                        self.c['train_route_types']['approaching_train_route'][direction]]
+                    route_for_new_train = self.train_routes[track_number][self.c.approaching_train_route[direction]]
                     new_train = Train(carts=carts, train_route=route_for_new_train,
                                       state='approaching',
                                       direction=direction, new_direction=new_direction, current_direction=direction,
@@ -553,7 +551,7 @@ class Dispatcher(GameObject):
                                       boarding_lights_image=self.boarding_lights_image,
                                       tail_image=self.train_tail_image,
                                       batch=self.batch, group=self.group,
-                                      boarding_lights_group=self.boarding_lights_group)
+                                      boarding_lights_group=self.boarding_lights_group, game_config=self.c)
                     self.train_ids.append(self.train_counter)
                     new_train.train_route.open_train_route(new_train.train_id, new_train.priority)
                     new_train.init_train_position()

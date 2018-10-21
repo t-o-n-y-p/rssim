@@ -16,8 +16,8 @@ def _game_is_not_paused(fn):
 
 
 class Signal(GameObject):
-    def __init__(self, placement, flip_needed, track_number, route_type, batch, signal_group):
-        super().__init__()
+    def __init__(self, placement, flip_needed, track_number, route_type, batch, signal_group, game_config):
+        super().__init__(game_config)
         self.logger = logging.getLogger('game.signal_{}_{}'.format(route_type, track_number))
         self.logger.debug('------- START INIT -------')
         self.config = configparser.RawConfigParser()

@@ -15,8 +15,8 @@ def _allowed_to_be_drawn(fn):
 
 class Button(GameObject):
     def __init__(self, position, button_size, text, on_click, draw_only_if_game_paused,
-                 batch, button_group, text_group, borders_group):
-        super().__init__()
+                 batch, button_group, text_group, borders_group, game_config):
+        super().__init__(game_config)
         self.logger = logging.getLogger('game.{} button'.format(text[0]))
         self.logger.debug('------- START INIT -------')
         self.draw_only_if_game_paused = draw_only_if_game_paused
@@ -54,8 +54,8 @@ class Button(GameObject):
                                                   batch=self.batch, group=self.borders_group)
         self.text = text
         self.text_object_actual = pyglet.text.Label(text[0],
-                                                    font_name=self.c['graphics']['font_name'],
-                                                    font_size=self.c['graphics']['button_font_size'],
+                                                    font_name=self.c.font_name,
+                                                    font_size=self.c.button_font_size,
                                                     x=self.position[0] + self.button_size[0] // 2,
                                                     y=self.position[1] + self.button_size[1] // 2,
                                                     anchor_x='center', anchor_y='center',
@@ -102,8 +102,8 @@ class Button(GameObject):
 
             if self.text_object_actual is None:
                 self.text_object_actual = pyglet.text.Label(self.text_object_actual_text,
-                                                            font_name=self.c['graphics']['font_name'],
-                                                            font_size=self.c['graphics']['button_font_size'],
+                                                            font_name=self.c.font_name,
+                                                            font_size=self.c.button_font_size,
                                                             x=self.position[0] + self.button_size[0] // 2,
                                                             y=self.position[1] + self.button_size[1] // 2,
                                                             anchor_x='center', anchor_y='center',

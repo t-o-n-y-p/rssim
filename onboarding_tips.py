@@ -6,8 +6,8 @@ from game_object import GameObject
 
 
 class OnboardingTips(GameObject):
-    def __init__(self, image, x, y, tip_type, batch, group, viewport_border_group):
-        super().__init__()
+    def __init__(self, image, x, y, tip_type, batch, group, viewport_border_group, game_config):
+        super().__init__(game_config)
         self.logger = logging.getLogger('game.onboarding_tip_{}'.format(tip_type))
         self.logger.debug('------- START INIT -------')
         self.tip_type = tip_type
@@ -45,10 +45,10 @@ class OnboardingTips(GameObject):
                     self.viewport_border.opacity = 0
                 else:
                     self.viewport_border.position = (self.x + round((-1) * base_offset[0]
-                                                                    / self.c['graphics']['map_resolution'][0]
+                                                                    / self.c.map_resolution[0]
                                                                     * self.sprite.width),
                                                      self.y + round((-1) * base_offset[1]
-                                                                    / self.c['graphics']['map_resolution'][1]
+                                                                    / self.c.map_resolution[1]
                                                                     * self.sprite.height))
                     if self.viewport_border.opacity < 255:
                         self.viewport_border.opacity += 15

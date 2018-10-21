@@ -17,8 +17,9 @@ def _game_is_not_paused(fn):
 
 
 class TrainRoute(GameObject):
-    def __init__(self, track_number, route_type, supported_carts, train_route_sections, train_route_sections_positions):
-        super().__init__()
+    def __init__(self, track_number, route_type, supported_carts, train_route_sections, train_route_sections_positions,
+                 game_config):
+        super().__init__(game_config)
         self.logger = logging.getLogger('game.train_route_{}_{}'.format(track_number, route_type))
         self.logger.debug('------- START INIT -------')
         self.config = configparser.RawConfigParser()
