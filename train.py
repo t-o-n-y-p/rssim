@@ -194,38 +194,42 @@ class Train(GameObject):
         self.logger.debug('------- START INIT TRAIN POSITION -------')
         self.logger.info('train position initialized')
 
-    def complete_train_route(self):
+    def complete_train_route(self, convert_carts_positions=True):
         self.logger.debug('------- START COMPLETE_TRAIN_ROUTE FUNCTION -------')
         # when train reaches route destination point,
         # we close the route and convert carts positions to absolute for next route
         self.train_route.close_train_route()
-        self.logger.debug('converting cart positions to absolute')
-        self.carts_position_abs.clear()
-        for i in self.carts_position:
-            dot = self.train_route.trail_points_v2[i]
-            self.carts_position_abs.append([dot[0], dot[1]])
+        if convert_carts_positions:
+            self.logger.debug('converting cart positions to absolute')
+            self.carts_position_abs.clear()
+            for i in self.carts_position:
+                dot = self.train_route.trail_points_v2[i]
+                self.carts_position_abs.append([dot[0], dot[1]])
 
-        self.logger.debug('cart positions converted to absolute: {}'.format(self.carts_position_abs))
-        self.carts_position.clear()
-        self.logger.debug('relative cart positions cleared')
+            self.logger.debug('cart positions converted to absolute: {}'.format(self.carts_position_abs))
+            self.carts_position.clear()
+            self.logger.debug('relative cart positions cleared')
+
         self.train_route = None
         self.logger.debug('train route cleared')
         self.logger.debug('------- END COMPLETE_TRAIN_ROUTE FUNCTION -------')
         self.logger.info('train route completed')
 
-    def assign_new_train_route(self, new_train_route):
+    def assign_new_train_route(self, new_train_route, convert_carts_positions=True):
         self.logger.debug('------- START ASSIGNING NEW TRAIN ROUTE -------')
         # when new route is assigned,
         # we open the route and convert carts positions to relative
         self.train_route = new_train_route
         self.train_route.open_train_route(self.train_id, self.priority)
-        self.carts_position.clear()
-        self.logger.debug('converting cart positions to relative')
-        for i in self.carts_position_abs:
-            self.carts_position.append(abs(i[0] - self.train_route.trail_points_v2[0][0]))
+        if convert_carts_positions:
+            self.carts_position.clear()
+            self.logger.debug('converting cart positions to relative')
+            for i in self.carts_position_abs:
+                self.carts_position.append(abs(i[0] - self.train_route.trail_points_v2[0][0]))
 
-        self.logger.debug('cart positions converted to relative: {}'.format(self.carts_position))
-        self.carts_position_abs.clear()
+            self.logger.debug('cart positions converted to relative: {}'.format(self.carts_position))
+            self.carts_position_abs.clear()
+
         self.stop_point = self.train_route.stop_point_v2[self.carts]
         self.logger.debug('absolute cart positions cleared')
         self.logger.debug('------- END ASSIGNING NEW TRAIN ROUTE -------')

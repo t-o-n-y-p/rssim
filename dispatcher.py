@@ -408,8 +408,8 @@ class Dispatcher(GameObject):
                         self.logger.info('train {} status changed to {}'.format(i.train_id, i.state))
                         self.logger.info('train {} completed route: track {} {}'
                                          .format(i.train_id, i.train_route.track_number, i.train_route.route_type))
-                        i.complete_train_route()
-                        i.assign_new_train_route(route_for_new_train)
+                        i.complete_train_route(convert_carts_positions=False)
+                        i.assign_new_train_route(route_for_new_train, convert_carts_positions=False)
                         routes_created_inside_iteration += 1
                         self.logger.debug('routes_created_inside_iteration: {}'
                                           .format(routes_created_inside_iteration))
@@ -439,8 +439,8 @@ class Dispatcher(GameObject):
                         self.logger.info('train {} status changed to {}'.format(i.train_id, i.state))
                         self.logger.info('train {} completed route: track {} {}'
                                          .format(i.train_id, i.train_route.track_number, i.train_route.route_type))
-                        i.complete_train_route()
-                        i.assign_new_train_route(route_for_new_train)
+                        i.complete_train_route(convert_carts_positions=False)
+                        i.assign_new_train_route(route_for_new_train, convert_carts_positions=False)
                         routes_created_inside_iteration += 1
                         self.logger.debug('routes_created_inside_iteration: {}'
                                           .format(routes_created_inside_iteration))
