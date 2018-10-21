@@ -1,6 +1,6 @@
 rssim.py run requires:
 
-python 3.7
+python 3.7.1
 
 pyglet 1.3.2
 
