@@ -216,12 +216,9 @@ class Game:
             train_acceleration_factor[i] = int(train_acceleration_factor[i])
 
         self.c['train_config']['train_acceleration_factor'] = tuple(train_acceleration_factor)
-        self.c['train_config']['train_acceleration_factor_length'] \
-            = self.game_config['train_config'].getint('train_acceleration_factor_length')
         self.c['train_config']['train_maximum_speed'] = self.game_config['train_config'].getint('train_maximum_speed')
 
         self.c['dispatcher_config'] = {}
-        self.c['dispatcher_config']['tracks_ready'] = self.game_config['dispatcher_config'].getint('tracks_ready')
         main_priority_tracks_parsed = self.game_config['dispatcher_config']['main_priority_tracks'].split('|')
         for i in range(len(main_priority_tracks_parsed)):
             main_priority_tracks_parsed[i] = main_priority_tracks_parsed[i].split(',')

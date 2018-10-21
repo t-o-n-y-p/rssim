@@ -50,7 +50,8 @@ class Train(GameObject):
         # train_acceleration_factor tuple includes absolute shifts
         # for acceleration and deceleration (in reversed order);
         # by default train has far right position for this
-        self.speed_factor_position = self.c['train_config']['train_acceleration_factor_length'] - 1
+        self.speed_factor_position = len(self.c['train_config']['train_acceleration_factor']) - 1
+        self.speed_factor_position_limit = len(self.c['train_config']['train_acceleration_factor']) - 1
         self.logger.debug('set speed_factor_position: {}'.format(self.speed_factor_position))
         if self.state == 'approaching_pass_through':
             self.priority = 0
@@ -308,8 +309,8 @@ class Train(GameObject):
             if self.speed_state == 'accelerate':
                 self.logger.debug('speed_factor_position: {}'.format(self.speed_factor_position))
                 self.logger.debug('speed_factor_position limit: {}'
-                                  .format(self.c['train_config']['train_acceleration_factor_length']))
-                if self.speed_factor_position == self.c['train_config']['train_acceleration_factor_length'] - 1:
+                                  .format(self.speed_factor_position_limit))
+                if self.speed_factor_position == self.speed_factor_position_limit:
                     self.speed_state = 'move'
                     self.logger.debug('train has reached maximum speed')
                 else:
@@ -333,7 +334,7 @@ class Train(GameObject):
                 self.speed_factor_position -= 1
                 self.logger.debug('speed_factor_position: {}'.format(self.speed_factor_position))
                 self.logger.debug('speed_factor_position limit: {}'
-                                  .format(self.c['train_config']['train_acceleration_factor_length']))
+                                  .format(self.speed_factor_position_limit))
                 self.speed \
                     = self.c['train_config']['train_acceleration_factor'][self.speed_factor_position + 1] \
                     - self.c['train_config']['train_acceleration_factor'][self.speed_factor_position]

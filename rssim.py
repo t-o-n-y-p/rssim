@@ -84,7 +84,7 @@ class RSSim(Game):
 
         self.logger.info('track 0 base routes and signals associated')
         # create all other base routes and signals for platform routes
-        for i in range(1, self.c['dispatcher_config']['tracks_ready'] + 1):
+        for i in range(1, 33):
             self.base_routes.append({})
             self.signals.append({})
             if i <= 20:
@@ -160,7 +160,7 @@ class RSSim(Game):
 
         self.construct_base_routes()
 
-        for i in range(1, self.c['dispatcher_config']['tracks_ready'] + 1):
+        for i in range(1, 33):
             # associate platform base route with its signal
             self.base_routes[i]['right_exit_platform_base_route'].route_config['exit_signal'] \
                 = self.signals[i]['right_exit_platform_base_route']
@@ -175,7 +175,7 @@ class RSSim(Game):
 
         self.logger.info('all base routes and signals associated')
         # fill opened and busy route lists for signals
-        for i in range(1, self.c['dispatcher_config']['tracks_ready'] + 1):
+        for i in range(1, 33):
             # for every platform signal, opened list includes exit base route
             # which begins behind the signal
             # for main entry signals, opened list includes all entry base routes
@@ -231,7 +231,7 @@ class RSSim(Game):
                          train_route_sections_positions=train_route_sections_positions)
         self.logger.info('approaching train routes created')
 
-        for i in range(1, self.c['dispatcher_config']['tracks_ready'] + 1):
+        for i in range(1, 33):
             self.train_routes.append({})
             # create track object
             # it includes all 4 base routes
@@ -564,7 +564,7 @@ class RSSim(Game):
         # train routes and tracks are added to dispatcher which we create right now
         self.dispatcher = Dispatcher(batch=self.batch, group=self.signals_and_trains_ordered_group,
                                      boarding_lights_group=self.boarding_lights_ordered_group)
-        for i in range(self.c['dispatcher_config']['tracks_ready'] + 1):
+        for i in range(33):
             self.dispatcher.train_routes.append({})
             for p in self.train_routes[i]:
                 self.dispatcher.train_routes[i].update({p: self.train_routes[i][p]})
@@ -579,11 +579,11 @@ class RSSim(Game):
             self.logger.debug('train route {} {} appended to dispatcher'.format(100, p))
 
         self.logger.info('all train routes appended to dispatcher')
-        for i in range(self.c['dispatcher_config']['tracks_ready']):
+        for i in range(32):
             self.dispatcher.tracks.append(self.tracks[i])
             self.logger.debug('track {} appended to dispatcher'.format(i + 1))
 
-        for i in range(self.c['dispatcher_config']['tracks_ready'] + 1):
+        for i in range(33):
             for n in self.signals[i]:
                 self.dispatcher.signals.append(self.signals[i][n])
                 self.logger.debug('signal {} {} appended to dispatcher'.format(i, n))
