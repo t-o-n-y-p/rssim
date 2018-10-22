@@ -5,6 +5,14 @@ import pyglet
 from game_object import GameObject
 
 
+def _for_mini_map(fn):
+    def _update_if_tip_is_mini_map(*args, **kwargs):
+        if args[0].tip_type == 'mini_map':
+            fn(*args, **kwargs)
+
+    return _update_if_tip_is_mini_map
+
+
 class OnboardingTips(GameObject):
     def __init__(self, image, x, y, tip_type, batch, group, viewport_border_group, game_config):
         super().__init__(game_config)
@@ -73,3 +81,7 @@ class OnboardingTips(GameObject):
 
     def update_image(self, new_base_image):
         self.image = new_base_image
+
+    @_for_mini_map
+    def on_track_unlock(self, track):
+        self.image = pyglet.image.load('img/mini_map/{}/mini_map.png'.format(track))

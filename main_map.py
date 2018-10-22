@@ -27,3 +27,6 @@ class MainMap(GameObject):
 
     def update_sprite(self, base_offset):
         self.sprite.position = (base_offset[0] + 120, base_offset[1])
+
+    def on_track_unlock(self, track):
+        self.sprite.image = pyglet.image.load('img/map/{}/full_map.png'.format(track))

@@ -89,7 +89,7 @@ class Game:
         self.app_window_move_mode = False
         self.map_move_mode = False
         self.app_window_move_offset = ()
-        mini_map_image = pyglet.image.load('img/mini_map/5/mini_map.png')
+        mini_map_image = pyglet.image.load('img/mini_map/4/mini_map.png')
         self.mini_map_tip \
             = OnboardingTips(image=mini_map_image,
                              x=self.c.screen_resolution[0] - mini_map_image.width,

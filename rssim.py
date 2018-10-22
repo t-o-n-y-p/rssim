@@ -2167,8 +2167,6 @@ class RSSim(Game):
                              viewport_border_group=self.buttons_general_borders_day_text_ordered_group,
                              game_config=self.c)
         self.objects.append(self.saved_onboarding_tip)
-        self.mini_map_tip.update_image(pyglet.image.load('img/mini_map/{}/mini_map.png'
-                                                         .format(self.dispatcher.unlocked_tracks)))
         self.dispatcher.mini_map_tip = self.mini_map_tip
         self.objects.append(self.mini_map_tip)
         self.logger.debug('saved_onboarding_tip appended to global objects list')

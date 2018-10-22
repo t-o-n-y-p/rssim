@@ -38,7 +38,6 @@ class Dispatcher(GameObject):
         # next train ID, used by signals to distinguish trains
         self.train_counter = None
         self.supported_carts = []
-        self.unlocked_tracks = 4
         self.train_head_image = {}
         self.train_mid_image = {}
         self.train_tail_image = {}
@@ -123,7 +122,6 @@ class Dispatcher(GameObject):
             self.config.read('default_cfg/dispatcher/config.ini')
             self.logger.debug('config parsed from default_cfg')
 
-        self.unlocked_tracks = self.config['user_data'].getint('unlocked_tracks')
         train_timer_parsed = self.config['user_data']['train_timer'].split(',')
         self.train_timer = [int(train_timer_parsed[0]), int(train_timer_parsed[1]),
                             int(train_timer_parsed[2]), int(train_timer_parsed[3])]
@@ -256,7 +254,6 @@ class Dispatcher(GameObject):
             os.mkdir('user_cfg/dispatcher')
             self.logger.debug('created user_cfg/dispatcher folder')
 
-        self.config['user_data']['unlocked_tracks'] = str(self.unlocked_tracks)
         self.config['user_data']['train_timer'] \
             = str(self.train_timer[0]) + ',' + str(self.train_timer[1]) + ',' \
             + str(self.train_timer[2]) + ',' + str(self.train_timer[3])
@@ -303,17 +300,6 @@ class Dispatcher(GameObject):
             s.update(game_paused)
 
         self.logger.debug('------- DISPATCHER UPDATE START -------')
-        for z3 in self.tracks:
-            if not z3.locked:
-                if z3.supported_carts[0] in range(1, self.supported_carts[0]):
-                    self.supported_carts[0] = z3.supported_carts[0]
-
-                if z3.track_number > self.unlocked_tracks:
-                    self.unlocked_tracks = z3.track_number
-                    if self.mini_map_tip is not None:
-                        self.mini_map_tip.update_image(pyglet.image.load('img/mini_map/{}/mini_map.png'
-                                                       .format(self.unlocked_tracks)))
-
         self.logger.debug('supported_carts: {}'.format(self.supported_carts))
         routes_created_inside_iteration = 0
         self.trains = sorted(self.trains, key=attrgetter('priority'), reverse=True)
