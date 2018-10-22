@@ -425,8 +425,7 @@ class Train(GameObject):
             self.cart_sprites[cart_number].visible = True
 
         if self.cart_sprites[cart_number].visible:
-            self.cart_sprites[cart_number].position = (x, y)
-            self.cart_sprites[cart_number].rotation = dot[2]
+            self.cart_sprites[cart_number].update(x, y, dot[2])
 
         if cart_number == 1 and self.boarding_lights_sprite.visible:
             self.boarding_lights_sprite.position = (x, y)
@@ -445,8 +444,7 @@ class Train(GameObject):
             self.cart_sprites[cart_number].visible = True
 
         if self.cart_sprites[cart_number].visible:
-            self.cart_sprites[cart_number].position = (x, y)
-            self.cart_sprites[cart_number].rotation = 0
+            self.cart_sprites[cart_number].update(x, y, 0)
 
         if cart_number == 1 and self.boarding_lights_sprite.visible:
             self.boarding_lights_sprite.position = (x, y)
