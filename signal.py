@@ -44,6 +44,7 @@ class Signal(GameObject):
 
         self.base_route_opened_list = []
         self.base_route_exit = None
+        self.base_route_opened = None
         self.read_state()
         self.sprite = None
         self.sprite = pyglet.sprite.Sprite(self.image[self.state],
@@ -112,15 +113,13 @@ class Signal(GameObject):
     @_game_is_not_paused
     def update(self, game_paused):
         self.logger.debug('-------UPDATE START-------')
-        busy_logical = False
-        opened_by = []
-        entered_by = []
 
         if not self.base_route_exit.route_config['opened']:
             self.priority = 0
             if self.state == 'green_signal':
                 self.state = 'red_signal'
                 self.sprite.image = self.image[self.state]
+                self.base_route_opened = None
                 if self.flip_needed:
                     self.sprite.rotation = 180.0
 
@@ -128,10 +127,11 @@ class Signal(GameObject):
         else:
             self.priority = self.base_route_exit.priority
             for i in self.base_route_opened_list:
-                if i.route_config['opened']:
-                    opened_by.append(i.route_config['last_opened_by'])
+                if i.route_config['opened'] and i.route_config['last_opened_by'] \
+                        == self.base_route_exit.route_config['last_opened_by']:
+                    self.base_route_opened = i
 
-            if self.base_route_exit.route_config['last_opened_by'] not in opened_by:
+            if self.base_route_opened is None:
                 if self.state == 'green_signal':
                     self.state = 'red_signal'
                     self.sprite.image = self.image[self.state]
@@ -140,16 +140,13 @@ class Signal(GameObject):
 
                 self.logger.debug('route through signal is not opened, signal is RED')
             else:
-                for i in self.base_route_opened_list:
-                    if i.route_config['opened'] and i.route_config['last_opened_by'] \
-                            == self.base_route_exit.route_config['last_opened_by']:
-                        i.update_base_route_state()
-                        busy_logical = busy_logical or i.route_config['busy']
-                        entered_by.append(i.route_config['last_entered_by'])
+                self.base_route_opened.update_base_route_state()
 
                 self.logger.debug('approaching train: {}'.format(self.base_route_exit.route_config['last_opened_by']))
-                self.logger.debug('its route is busy by train: {}'.format(entered_by))
-                if busy_logical and self.base_route_exit.route_config['last_opened_by'] not in entered_by:
+                self.logger.debug('its route is busy by train: {}'
+                                  .format(self.base_route_opened.route_config['last_entered_by']))
+                if self.base_route_opened.route_config['busy'] and self.base_route_exit.route_config['last_opened_by'] \
+                        != self.base_route_opened.route_config['last_entered_by']:
                     if self.state == 'green_signal':
                         self.state = 'red_signal'
                         self.sprite.image = self.image[self.state]
@@ -164,14 +161,9 @@ class Signal(GameObject):
                         if self.flip_needed:
                             self.sprite.rotation = 180.0
 
-                    self.logger.debug('route through signal is opened and free, signal is GREEN')
-                    for i in self.base_route_opened_list:
-                        if i.route_config['opened'] and i.route_config['last_opened_by'] \
-                                == self.base_route_exit.route_config['last_opened_by'] \
-                                and not i.route_config['busy']:
-                            i.enter_base_route(self.base_route_exit.route_config['last_opened_by'])
-                            self.logger.debug('train {} is allowed to pass'
-                                              .format(self.base_route_exit.route_config['last_opened_by']))
+                        self.base_route_opened.enter_base_route(self.base_route_exit.route_config['last_opened_by'])
+                        self.logger.debug('train {} is allowed to pass'
+                                          .format(self.base_route_exit.route_config['last_opened_by']))
 
         self.logger.debug('-------UPDATE END-------')
         self.logger.info('signal updated')
