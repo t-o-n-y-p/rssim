@@ -85,6 +85,7 @@ class Game:
         self.on_mouse_release_handlers = []
         self.on_mouse_motion_handlers = []
         self.on_mouse_drag_handlers = []
+        self.on_mouse_leave_handlers = []
         self.surface.set_location(0, 0)
         self.app_window_move_mode = False
         self.map_move_mode = False
@@ -135,6 +136,11 @@ class Game:
         def on_mouse_drag(x, y, dx, dy, button, modifiers):
             for i in self.on_mouse_drag_handlers:
                 i(x, y, dx, dy, button, modifiers)
+
+        @surface.event
+        def on_mouse_leave(x, y):
+            for i in self.on_mouse_leave_handlers:
+                i(x, y)
 
     def manage_logs_config(self):
         self.logs_config.read('logs_config.ini')

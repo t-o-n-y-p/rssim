@@ -15,9 +15,9 @@ def _allowed_to_be_drawn(fn):
 
 class Button(GameObject):
     def __init__(self, position, button_size, text, on_click, draw_only_if_game_paused,
-                 batch, button_group, text_group, borders_group, game_config):
+                 batch, button_group, text_group, borders_group, game_config, logs_description):
         super().__init__(game_config)
-        self.logger = logging.getLogger('game.{} button'.format(text[0]))
+        self.logger = logging.getLogger('game.{}_button'.format(logs_description))
         self.logger.debug('------- START INIT -------')
         self.draw_only_if_game_paused = draw_only_if_game_paused
         self.logger.debug('draw only if game paused set: {}'.format(self.draw_only_if_game_paused))
@@ -161,3 +161,9 @@ class Button(GameObject):
                 self.text_object_actual_text = self.text[0]
                 self.text_object_actual.text = self.text[0]
                 self.logger.debug('button has only 1 text, so it remains the same')
+
+    @_allowed_to_be_drawn
+    def handle_mouse_leave(self, x, y):
+        self.state = 'normal'
+        self.vertex_list.colors = (0, 0, 0, 255, 0, 0, 0, 255, 0, 0, 0, 255, 0, 0, 0, 255)
+        self.logger.debug('cursor is not on the button')

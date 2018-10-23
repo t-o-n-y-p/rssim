@@ -2157,16 +2157,6 @@ class RSSim(Game):
         self.logger.info('trail points initialized for even tracks')
 
     def create_onboarding_tips(self):
-        saved_onboarding_image = pyglet.image.load('img/game_saved.png')
-        self.saved_onboarding_tip \
-            = OnboardingTips(image=saved_onboarding_image,
-                             x=self.c.screen_resolution[0] // 2 - saved_onboarding_image.width // 2,
-                             y=self.c.screen_resolution[1] // 2 - saved_onboarding_image.height // 2,
-                             tip_type='game_saved', batch=self.batch,
-                             group=self.top_bottom_bars_ordered_group,
-                             viewport_border_group=self.buttons_general_borders_day_text_ordered_group,
-                             game_config=self.c)
-        self.objects.append(self.saved_onboarding_tip)
         self.dispatcher.mini_map_tip = self.mini_map_tip
         self.objects.append(self.mini_map_tip)
         self.logger.debug('saved_onboarding_tip appended to global objects list')
@@ -2181,11 +2171,22 @@ class RSSim(Game):
 
         def resume_game(button):
             self.game_paused = False
-            self.saved_onboarding_tip.condition_met = False
-            self.saved_onboarding_tip.return_rect_area = True
             self.logger.critical('------- GAME IS RESUMED -------')
 
         def close_game(button):
+            for i in self.objects:
+                i.save_state()
+
+            for x in range(len(self.base_routes)):
+                for y in self.base_routes[x]:
+                    if self.base_routes[x][y] is not None:
+                        self.base_routes[x][y].save_state()
+
+            for u in self.junctions:
+                for v in self.junctions[u]:
+                    for w in self.junctions[u][v]:
+                        self.junctions[u][v][w].save_state()
+
             self.surface.close()
             sys.exit()
 
@@ -2207,63 +2208,61 @@ class RSSim(Game):
                     for w in self.junctions[u][v]:
                         self.junctions[u][v][w].save_state()
 
-            self.saved_onboarding_tip.condition_met = True
             self.logger.critical('------- GAME SAVE END -------')
 
-        self.objects.append(InGameTime(batch=self.batch,
-                                       day_text_group=self.buttons_general_borders_day_text_ordered_group,
-                                       game_config=self.c))
         self.logger.debug('time appended to global objects list')
         self.objects.append(TopAndBottomBar(batch=self.batch,
                                             bar_group=self.top_bottom_bars_ordered_group, game_config=self.c))
         self.logger.debug('bottom bar appended to global objects list')
-        stop_button = Button(position=(890, 7), button_size=(100, 40), text=['Pause', 'Resume'],
-                             on_click=[pause_game, resume_game], draw_only_if_game_paused=False,
+        stop_button = Button(position=(self.c.screen_resolution[0] - 80, 0), button_size=(80, 80),
+                             text=['‖', '►'], on_click=[pause_game, resume_game],
+                             draw_only_if_game_paused=False,
                              batch=self.batch, button_group=self.buttons_general_borders_day_text_ordered_group,
                              text_group=self.buttons_text_and_borders_ordered_group,
-                             borders_group=self.buttons_text_and_borders_ordered_group, game_config=self.c)
-        save_button = Button(position=(780, 7), button_size=(100, 40), text=['Save', ], on_click=[save_game, ],
-                             draw_only_if_game_paused=True,
-                             batch=self.batch, button_group=self.buttons_general_borders_day_text_ordered_group,
-                             text_group=self.buttons_text_and_borders_ordered_group,
-                             borders_group=self.buttons_text_and_borders_ordered_group, game_config=self.c)
+                             borders_group=self.buttons_text_and_borders_ordered_group, game_config=self.c,
+                             logs_description='pause/resume')
         close_button = Button(position=(self.c.screen_resolution[0] - 34,
                                         self.c.screen_resolution[1] - 34), button_size=(34, 34),
                               text=['X', ], on_click=[close_game, ], draw_only_if_game_paused=False,
                               batch=self.batch, button_group=self.buttons_general_borders_day_text_ordered_group,
                               text_group=self.buttons_text_and_borders_ordered_group,
-                              borders_group=self.buttons_text_and_borders_ordered_group, game_config=self.c)
-        iconify_button = Button(position=(self.c.screen_resolution[0] - 66,
-                                          self.c.screen_resolution[1] - 34), button_size=(34, 34),
-                                text=['_', ], on_click=[iconify_game, ], draw_only_if_game_paused=False,
+                              borders_group=self.buttons_text_and_borders_ordered_group, game_config=self.c,
+                              logs_description='close')
+        iconify_button = Button(position=(self.c.screen_resolution[0] - 66, self.c.screen_resolution[1] - 34),
+                                button_size=(34, 34), text=['_', ], on_click=[iconify_game, ],
+                                draw_only_if_game_paused=False,
                                 batch=self.batch, button_group=self.buttons_general_borders_day_text_ordered_group,
                                 text_group=self.buttons_text_and_borders_ordered_group,
-                                borders_group=self.buttons_text_and_borders_ordered_group, game_config=self.c)
+                                borders_group=self.buttons_text_and_borders_ordered_group, game_config=self.c,
+                                logs_description='iconify')
         self.on_mouse_press_handlers.append(stop_button.handle_mouse_press)
-        self.on_mouse_press_handlers.append(save_button.handle_mouse_press)
         self.on_mouse_press_handlers.append(close_button.handle_mouse_press)
         self.on_mouse_press_handlers.append(iconify_button.handle_mouse_press)
         self.on_mouse_press_handlers.append(self.handle_mouse_press)
 
         self.on_mouse_release_handlers.append(stop_button.handle_mouse_release)
-        self.on_mouse_release_handlers.append(save_button.handle_mouse_release)
         self.on_mouse_release_handlers.append(close_button.handle_mouse_release)
         self.on_mouse_release_handlers.append(iconify_button.handle_mouse_release)
         self.on_mouse_release_handlers.append(self.handle_mouse_release)
 
         self.on_mouse_motion_handlers.append(stop_button.handle_mouse_motion)
-        self.on_mouse_motion_handlers.append(save_button.handle_mouse_motion)
         self.on_mouse_motion_handlers.append(close_button.handle_mouse_motion)
         self.on_mouse_motion_handlers.append(iconify_button.handle_mouse_motion)
+
+        self.on_mouse_leave_handlers.append(stop_button.handle_mouse_leave)
+        self.on_mouse_leave_handlers.append(close_button.handle_mouse_leave)
+        self.on_mouse_leave_handlers.append(iconify_button.handle_mouse_leave)
 
         self.on_mouse_drag_handlers.append(self.handle_mouse_drag)
         self.logger.debug('save button button handler appended to global mouse handlers list')
         self.objects.append(stop_button)
         self.logger.debug('pause/resume button appended to global objects list')
-        self.objects.append(save_button)
         self.objects.append(close_button)
         self.objects.append(iconify_button)
         self.logger.debug('save button appended to global objects list')
+        self.objects.append(InGameTime(batch=self.batch,
+                                       day_text_group=self.buttons_general_borders_day_text_ordered_group,
+                                       game_config=self.c, auto_save_function=save_game))
         self.logger.debug('------- END CREATING BUTTONS -------')
         self.logger.warning('all buttons created')
 

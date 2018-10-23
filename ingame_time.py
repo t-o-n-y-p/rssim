@@ -16,7 +16,7 @@ def _game_is_not_paused(fn):
 
 
 class InGameTime(GameObject):
-    def __init__(self, batch, day_text_group, game_config):
+    def __init__(self, batch, day_text_group, game_config, auto_save_function):
         super().__init__(game_config)
         self.logger = logging.getLogger('game.in-game_time')
         self.logger.debug('------- START INIT -------')
@@ -34,16 +34,17 @@ class InGameTime(GameObject):
                                           font_name='Courier New', bold=True,
                                           font_size=self.c.day_font_size,
                                           color=self.c.day_text_color,
-                                          x=self.c.screen_resolution[0] - 141, y=85,
+                                          x=self.c.screen_resolution[0] - 181, y=57,
                                           anchor_x='center', anchor_y='center',
                                           batch=batch, group=day_text_group)
         self.time_text = pyglet.text.Label('0',
                                            font_name='Courier New', bold=True,
                                            font_size=self.c.day_font_size,
                                            color=self.c.day_text_color,
-                                           x=self.c.screen_resolution[0] - 141, y=45,
+                                           x=self.c.screen_resolution[0] - 181, y=26,
                                            anchor_x='center', anchor_y='center',
                                            batch=batch, group=day_text_group)
+        self.auto_save_function = auto_save_function
         self.logger.debug('------- END INIT -------')
         self.logger.warning('time init completed')
 
@@ -124,6 +125,9 @@ class InGameTime(GameObject):
         if self.epoch_timestamp % 345600 == 0:
             self.day += 1
             self.day_text.text = 'DAY {}'.format(self.day)
+
+        if self.epoch_timestamp % 28800 == 0:
+            self.auto_save_function(None)
 
         self.logger.debug('------- TIME UPDATE END -------')
         self.logger.info('time updated')
