@@ -14,3 +14,8 @@ cx_Freeze 5.1.1 with py3.7 fix
 
 -------------------------------------------
 
+New in this build:
+- implemented auto save each 2 ingame hours and when user closes gamr window
+- updated artwork
+- optimized game
+- fixes
