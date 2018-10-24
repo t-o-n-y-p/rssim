@@ -25,6 +25,7 @@ class Dispatcher(GameObject):
         self.logger.debug('------- START INIT -------')
         self.config = configparser.RawConfigParser()
         self.logger.debug('config parser created')
+        self.game_progress = None
         # timer since main entry was left by previous train before creating new one
         self.train_timer = []
         self.trains = []
@@ -336,6 +337,7 @@ class Dispatcher(GameObject):
                         i.boarding_lights_sprite.visible = False
 
                     self.logger.info('train {} status changed to {}'.format(i.train_id, i.state))
+                    self.game_progress.add_exp(10)
 
             if len(i.carts_position) > 0:
                 if i.carts_position[0] == i.train_route.destination_point_v2[i.carts]:

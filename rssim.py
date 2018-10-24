@@ -15,9 +15,9 @@ from train_route import TrainRoute
 from button import Button
 from top_and_bottom_bar import TopAndBottomBar
 from ingame_time import InGameTime
-from onboarding_tips import OnboardingTips
 from railroad_switch import RailroadSwitch
 from crossover import Crossover
+from game_progress import GameProgress
 
 
 class RSSim(Game):
@@ -31,6 +31,7 @@ class RSSim(Game):
         self.junctions = {}
         self.tracks = []
         self.dispatcher = None
+        self.game_progress = None
         # we create background image object first to be drawn first
         try:
             self.create_main_map()
@@ -564,7 +565,13 @@ class RSSim(Game):
         self.logger.info('all tracks appended to dispatcher')
         # now we add dispatcher itself to generic objects list
         self.dispatcher.read_state()
+        self.game_progress = GameProgress(main_map=self.main_map_tiles, mini_map=self.mini_map_tip, game_config=self.c,
+                                          batch=self.batch,
+                                          inactive_group=self.buttons_general_borders_day_text_ordered_group,
+                                          active_group=self.buttons_text_and_borders_ordered_group)
+        self.dispatcher.game_progress = self.game_progress
         self.objects.append(self.dispatcher)
+        self.objects.append(self.game_progress)
         self.logger.info('dispatcher appended to global objects list')
         self.logger.debug('------- START CREATING INFRASTRUCTURE -------')
         self.logger.warning('all infrastructure created')
