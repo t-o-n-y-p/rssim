@@ -53,8 +53,13 @@ class GameProgress(GameObject):
         self.mini_map.on_track_unlock(track)
         self.unlocked_tracks = track
 
+    def add_exp(self, exp):
+        self.exp += exp
+        self.accumulated_exp += exp
+
     @_game_is_not_paused
     def update(self, game_paused):
         if self.accumulated_exp >= self.c.player_progress[self.level]:
             self.exp = self.accumulated_exp - self.c.player_progress[self.level]
             self.level += 1
+
