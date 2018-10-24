@@ -14,3 +14,7 @@ cx_Freeze 5.1.1 with py3.7 fix
 
 -------------------------------------------
 
+New in this build:
+- updated artwork
+- implemented experience (right now it adds hardcoded 10 exp per each train)
+- fixes
