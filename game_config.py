@@ -18,10 +18,11 @@ class GameConfig:
         self.bottom_bar_height = 54
         self.bottom_bar_width = 1000
         self.font_name = 'Arial'
-        self.button_font_size = 16
-        self.day_font_size = 24
+        self.iconify_close_button_font_size = 16
+        self.play_pause_button_font_size = 32
+        self.day_font_size = 22
         self.button_text_color = (255, 255, 255, 255)
-        self.day_text_color = (205, 0, 0, 255)
+        self.day_text_color = (255, 255, 255, 255)
         self.fps_display_enabled = self.game_config['graphics'].getboolean('fps_display_enabled')
         self.fps_display_update_interval = self.game_config['graphics'].getfloat('fps_display_update_interval')
 

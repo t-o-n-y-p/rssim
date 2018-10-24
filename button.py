@@ -14,7 +14,7 @@ def _allowed_to_be_drawn(fn):
 
 
 class Button(GameObject):
-    def __init__(self, position, button_size, text, on_click, draw_only_if_game_paused,
+    def __init__(self, position, button_size, text, font_size, on_click, draw_only_if_game_paused,
                  batch, button_group, text_group, borders_group, game_config, logs_description):
         super().__init__(game_config)
         self.logger = logging.getLogger('game.{}_button'.format(logs_description))
@@ -53,9 +53,10 @@ class Button(GameObject):
         self.border_sprite = pyglet.sprite.Sprite(self.border_sprite_image, x=self.position[0], y=self.position[1],
                                                   batch=self.batch, group=self.borders_group)
         self.text = text
+        self.font_size = font_size
         self.text_object_actual = pyglet.text.Label(text[0],
                                                     font_name=self.c.font_name,
-                                                    font_size=self.c.button_font_size,
+                                                    font_size=self.font_size,
                                                     x=self.position[0] + self.button_size[0] // 2,
                                                     y=self.position[1] + self.button_size[1] // 2,
                                                     anchor_x='center', anchor_y='center',
@@ -103,7 +104,7 @@ class Button(GameObject):
             if self.text_object_actual is None:
                 self.text_object_actual = pyglet.text.Label(self.text_object_actual_text,
                                                             font_name=self.c.font_name,
-                                                            font_size=self.c.button_font_size,
+                                                            font_size=self.font_size,
                                                             x=self.position[0] + self.button_size[0] // 2,
                                                             y=self.position[1] + self.button_size[1] // 2,
                                                             anchor_x='center', anchor_y='center',

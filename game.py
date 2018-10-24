@@ -68,7 +68,7 @@ class Game:
         if self.c.fps_display_enabled:
             self.fps_display_label \
                 = pyglet.text.Label(text='0', font_name='Courier New',
-                                    font_size=self.c.button_font_size,
+                                    font_size=self.c.iconify_close_button_font_size,
                                     x=self.c.screen_resolution[0] - 75,
                                     y=self.c.screen_resolution[1]
                                     - self.c.top_bar_height // 2,
