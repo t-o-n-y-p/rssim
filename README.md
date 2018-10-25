@@ -14,3 +14,6 @@ cx_Freeze 5.1.1 with py3.7 fix
 
 -------------------------------------------
 
+New in this build:
+- updated artwork: new font
+- minor fixes and improvements
