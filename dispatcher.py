@@ -330,7 +330,7 @@ class Dispatcher(GameObject):
                         i.boarding_lights_sprite.visible = False
 
                     self.logger.info('train {} status changed to {}'.format(i.train_id, i.state))
-                    self.game_progress.add_exp(10000000.0)
+                    self.game_progress.add_exp(10.0)
 
             if len(i.carts_position) > 0:
                 if i.carts_position[0] == i.train_route.destination_point_v2[i.carts]:
