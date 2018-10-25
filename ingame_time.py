@@ -29,16 +29,17 @@ class InGameTime(GameObject):
         self.minute = None
         self.minute_string = ''
         self.logger.debug('created text object for days counter')
+        pyglet.resource.add_font('perfo-bold.ttf')
         self.read_state()
         self.day_text = pyglet.text.Label('DAY {}'.format(self.day),
-                                          font_name='Courier New', bold=True,
+                                          font_name='Perfo', bold=True,
                                           font_size=self.c.day_font_size,
                                           color=self.c.day_text_color,
                                           x=self.c.screen_resolution[0] - 181, y=57,
                                           anchor_x='center', anchor_y='center',
                                           batch=batch, group=day_text_group)
         self.time_text = pyglet.text.Label('0',
-                                           font_name='Courier New', bold=True,
+                                           font_name='Perfo', bold=True,
                                            font_size=self.c.day_font_size,
                                            color=self.c.day_text_color,
                                            x=self.c.screen_resolution[0] - 181, y=26,
@@ -93,10 +94,8 @@ class InGameTime(GameObject):
         self.logger.info('time state saved to file user_cfg/epoch_time.ini')
 
     def update_sprite(self, base_offset):
-        if self.epoch_timestamp % 240 in range(0, 60) or self.epoch_timestamp % 240 in range(120, 180):
-            self.time_text.text = self.hour_string + ':' + self.minute_string
-        else:
-            self.time_text.text = self.hour_string + ' ' + self.minute_string
+        if self.epoch_timestamp % 240 == 0:
+            self.time_text.text = self.hour_string + ' : ' + self.minute_string
 
     @_game_is_not_paused
     def update(self, game_paused):

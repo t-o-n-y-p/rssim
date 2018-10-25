@@ -7,7 +7,7 @@ executables = [Executable('rssim.py',
                           base='Win32GUI',
                           icon='icon.ico')]
 
-include_files = ['img', 'default_cfg', 'logs_config.ini', 'game_config.ini', 'icon.ico']
+include_files = ['img', 'default_cfg', 'logs_config.ini', 'game_config.ini', 'icon.ico', 'perfo-bold.ttf']
 
 includes = ['pyglet',
             'pyglet.app',
@@ -40,7 +40,7 @@ os.environ['TCL_LIBRARY'] = r'{}\tcl\tcl8.6'.format(sys.exec_prefix)
 os.environ['TK_LIBRARY'] = r'{}\tcl\tk8.6'.format(sys.exec_prefix)
 
 setup(name='Railway Station Simulator',
-      version='0.8.5',
+      version='0.8.6',
       description='Railway Station Simulator',
       executables=executables,
       options=options)
