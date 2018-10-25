@@ -30,6 +30,8 @@ class Track(GameObject):
         self.last_entered_by = 0
         self.override = False
         self.supported_carts = None
+        self.unlock_condition_from_level = None
+        self.unlock_condition_from_previous_track = None
         self.read_state()
         self.logger.debug('------- END INIT -------')
         self.logger.warning('track init completed')
@@ -54,6 +56,10 @@ class Track(GameObject):
         self.logger.debug('override: {}'.format(self.override))
         supported_carts_parsed = self.config['track_config']['supported_carts'].split(',')
         self.supported_carts = (int(supported_carts_parsed[0]), int(supported_carts_parsed[1]))
+        self.unlock_condition_from_level = self.config['user_data'].getboolean('unlock_condition_from_level')
+        self.unlock_condition_from_previous_track \
+            = self.config['user_data'].getboolean('unlock_condition_from_previous_track')
+
         self.logger.debug('------- END READING STATE -------')
         self.logger.info('track state initialized')
 
@@ -76,6 +82,9 @@ class Track(GameObject):
         self.logger.debug('last_entered_by: {}'.format(self.config['user_data']['last_entered_by']))
         self.config['user_data']['override'] = str(self.override)
         self.logger.debug('override: {}'.format(self.config['user_data']['override']))
+        self.config['user_data']['unlock_condition_from_level'] = str(self.unlock_condition_from_level)
+        self.config['user_data']['unlock_condition_from_previous_track'] \
+            = str(self.unlock_condition_from_previous_track)
 
         with open('user_cfg/tracks/track{}.ini'.format(self.track_number), 'w') as configfile:
             self.config.write(configfile)

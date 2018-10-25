@@ -31,14 +31,14 @@ class InGameTime(GameObject):
         self.logger.debug('created text object for days counter')
         pyglet.resource.add_font('perfo-bold.ttf')
         self.read_state()
-        self.day_text = pyglet.text.Label('DAY {}'.format(self.day),
+        self.day_text = pyglet.text.Label('DAY  {}'.format(self.day),
                                           font_name='Perfo', bold=True,
                                           font_size=self.c.day_font_size,
                                           color=self.c.day_text_color,
                                           x=self.c.screen_resolution[0] - 181, y=57,
                                           anchor_x='center', anchor_y='center',
                                           batch=batch, group=day_text_group)
-        self.time_text = pyglet.text.Label('0',
+        self.time_text = pyglet.text.Label(self.hour_string + ' : ' + self.minute_string,
                                            font_name='Perfo', bold=True,
                                            font_size=self.c.day_font_size,
                                            color=self.c.day_text_color,
@@ -123,7 +123,7 @@ class InGameTime(GameObject):
 
         if self.epoch_timestamp % 345600 == 0:
             self.day += 1
-            self.day_text.text = 'DAY {}'.format(self.day)
+            self.day_text.text = 'DAY  {}'.format(self.day)
 
         if self.epoch_timestamp % 28800 == 0:
             self.auto_save_function(None)

@@ -38,7 +38,6 @@ class Dispatcher(GameObject):
         self.boarding_lights_group = boarding_lights_group
         # next train ID, used by signals to distinguish trains
         self.train_counter = None
-        self.supported_carts = []
         self.train_head_image = {}
         self.train_mid_image = {}
         self.train_tail_image = {}
@@ -129,9 +128,6 @@ class Dispatcher(GameObject):
         self.logger.debug('train_timer: {}'.format(self.train_timer))
         self.train_counter = self.config['user_data'].getint('train_counter')
         self.logger.debug('train_counter: {}'.format(self.train_counter))
-        supported_carts_parsed = self.config['user_data']['supported_carts'].split(',')
-        self.supported_carts = [int(supported_carts_parsed[0]), int(supported_carts_parsed[1])]
-        self.logger.debug('supported_carts: {}'.format(self.supported_carts))
         self.logger.info('dispatcher config parsed')
 
         if self.config['user_data']['train_ids'] == 'None':
@@ -272,8 +268,6 @@ class Dispatcher(GameObject):
         self.logger.debug('train_ids: {}'.format(self.config['user_data']['train_ids']))
         self.config['user_data']['train_counter'] = str(self.train_counter)
         self.logger.debug('train_counter: {}'.format(self.config['user_data']['train_counter']))
-        self.config['user_data']['supported_carts'] = str(self.supported_carts[0])+','+str(self.supported_carts[1])
-        self.logger.debug('supported_carts: {}'.format(self.config['user_data']['supported_carts']))
 
         with open('user_cfg/dispatcher/config.ini', 'w') as configfile:
             self.config.write(configfile)
@@ -301,7 +295,6 @@ class Dispatcher(GameObject):
             s.update(game_paused)
 
         self.logger.debug('------- DISPATCHER UPDATE START -------')
-        self.logger.debug('supported_carts: {}'.format(self.supported_carts))
         routes_created_inside_iteration = 0
         self.trains = sorted(self.trains, key=attrgetter('priority'), reverse=True)
         for i in self.trains:
@@ -337,7 +330,7 @@ class Dispatcher(GameObject):
                         i.boarding_lights_sprite.visible = False
 
                     self.logger.info('train {} status changed to {}'.format(i.train_id, i.state))
-                    self.game_progress.add_exp(10)
+                    self.game_progress.add_exp(10000000.0)
 
             if len(i.carts_position) > 0:
                 if i.carts_position[0] == i.train_route.destination_point_v2[i.carts]:
@@ -506,7 +499,7 @@ class Dispatcher(GameObject):
                     new_direction = direction
 
                 self.logger.debug('carts: {}'.format(carts))
-                if carts < self.supported_carts[0]:
+                if carts < self.game_progress.supported_carts[0]:
                     self.logger.debug('{}-cart trains are not supported for now, assign pass through route'
                                       .format(carts))
                     route_for_new_train = self.train_routes[track_number][self.c.approaching_train_route[direction]]
