@@ -9,7 +9,7 @@ from game_object import GameObject
 
 def _maximum_level_not_reached(fn):
     def _add_exp_if_max_level_not_reached(*args, **kwargs):
-        if args[0].level < 100:
+        if args[0].level < args[0].c.maximum_level:
             fn(*args, **kwargs)
 
     return _add_exp_if_max_level_not_reached
@@ -30,13 +30,15 @@ class GameProgress(GameObject):
         self.config = configparser.RawConfigParser()
         self.unlocked_tracks = 4
         self.level = 0
-        self.exp = 0
-        self.accumulated_exp = 0
+        self.exp = 0.0
+        self.accumulated_exp = 0.0
+        self.money = 0.0
         self.percent = 0
         self.supported_carts = None
         self.main_map = main_map
         self.mini_map = mini_map
         self.tracks = None
+        pyglet.resource.add_font('perfo-bold.ttf')
         self.progress_bar_inactive_image = pyglet.image.load('img/progress_bar_inactive.png')
         self.progress_bar_inactive = pyglet.sprite.Sprite(self.progress_bar_inactive_image,
                                                           x=10, y=10, batch=batch, group=inactive_group)
@@ -45,9 +47,12 @@ class GameProgress(GameObject):
                                                         x=10, y=10, batch=batch, group=active_group)
         self.progress_bar_active.image = self.progress_bar_active_image.get_region(0, 0, 1, 10)
         self.read_state()
-        self.level_text = pyglet.text.Label('Level {}'.format(self.level), font_name=self.c.font_name,
-                                            font_size=self.c.level_font_size, x=110, y=40, anchor_x='center',
-                                            anchor_y='center', batch=batch, group=active_group)
+        self.level_text = pyglet.text.Label('LEVEL {}'.format(self.level), font_name='Perfo', bold=True,
+                                            font_size=self.c.level_font_size, x=110, y=40,
+                                            anchor_x='center', anchor_y='center', batch=batch, group=active_group)
+        self.money_text = pyglet.text.Label('{0:0>9} ¤'.format(int(self.money)), font_name='Perfo', bold=True,
+                                            color=(0, 192, 0, 255), font_size=self.c.level_font_size, x=360, y=40,
+                                            anchor_x='center', anchor_y='center', batch=batch, group=active_group)
 
     def read_state(self):
         if os.path.exists('user_cfg/game_progress.ini'):
@@ -61,6 +66,7 @@ class GameProgress(GameObject):
         self.level = self.config['user_data'].getint('level')
         self.exp = self.config['user_data'].getfloat('exp')
         self.accumulated_exp = self.config['user_data'].getfloat('accumulated_exp')
+        self.money = self.config['user_data'].getfloat('money')
         supported_carts_parsed = self.config['user_data']['supported_carts'].split(',')
         self.supported_carts = (int(supported_carts_parsed[0]), int(supported_carts_parsed[1]))
         self.update_exp_progress_sprite()
@@ -70,6 +76,7 @@ class GameProgress(GameObject):
         self.config['user_data']['level'] = str(self.level)
         self.config['user_data']['exp'] = str(self.exp)
         self.config['user_data']['accumulated_exp'] = str(self.accumulated_exp)
+        self.config['user_data']['money'] = str(self.money)
         self.config['user_data']['supported_carts'] = str(self.supported_carts[0]) + ',' + str(self.supported_carts[1])
 
         with open('user_cfg/game_progress.ini', 'w') as configfile:
@@ -88,19 +95,23 @@ class GameProgress(GameObject):
         self.accumulated_exp += exp
         self.update_exp_progress_sprite()
 
+    def add_money(self, money):
+        self.money += money
+        self.money_text.text = '{0:0>9} ¤'.format(int(self.money))
+
     @_maximum_level_not_reached
     @_level_up
     def update(self, game_paused):
         self.exp = self.accumulated_exp - self.c.accumulated_player_progress[self.level]
         self.level += 1
-        if self.level == 100:
+        if self.level == self.c.maximum_level:
             self.exp = 0.0
 
-        self.level_text.text = 'Level {}'.format(self.level)
+        self.level_text.text = 'LEVEL {}'.format(self.level)
         self.update_exp_progress_sprite()
 
     def update_exp_progress_sprite(self):
-        if self.level < 100:
+        if self.level < self.c.maximum_level:
             self.percent = int(self.exp / self.c.player_progress[self.level] * 100)
             if self.percent > 100:
                 self.percent = 100

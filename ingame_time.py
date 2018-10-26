@@ -25,9 +25,7 @@ class InGameTime(GameObject):
         self.epoch_timestamp = None
         self.day = None
         self.hour = None
-        self.hour_string = ''
         self.minute = None
-        self.minute_string = ''
         self.logger.debug('created text object for days counter')
         pyglet.resource.add_font('perfo-bold.ttf')
         self.read_state()
@@ -38,7 +36,7 @@ class InGameTime(GameObject):
                                           x=self.c.screen_resolution[0] - 181, y=57,
                                           anchor_x='center', anchor_y='center',
                                           batch=batch, group=day_text_group)
-        self.time_text = pyglet.text.Label(self.hour_string + ' : ' + self.minute_string,
+        self.time_text = pyglet.text.Label('{0:0>2}'.format(self.hour) + ' : ' + '{0:0>2}'.format(self.minute),
                                            font_name='Perfo', bold=True,
                                            font_size=self.c.day_font_size,
                                            color=self.c.day_text_color,
@@ -66,16 +64,6 @@ class InGameTime(GameObject):
         self.logger.debug('hour: {}'.format(self.hour))
         self.minute = ((self.epoch_timestamp % 345600) % 14400) // 240
         self.logger.debug('minute: {}'.format(self.minute))
-        if self.minute < 10:
-            self.minute_string = '0' + str(self.minute)
-        else:
-            self.minute_string = str(self.minute)
-
-        if self.hour < 10:
-            self.hour_string = '0' + str(self.hour)
-        else:
-            self.hour_string = str(self.hour)
-
         self.logger.debug('------- END READING STATE -------')
         self.logger.info('time state initialized')
 
@@ -95,7 +83,7 @@ class InGameTime(GameObject):
 
     def update_sprite(self, base_offset):
         if self.epoch_timestamp % 240 == 0:
-            self.time_text.text = self.hour_string + ' : ' + self.minute_string
+            self.time_text.text = '{0:0>2}'.format(self.hour) + ' : ' + '{0:0>2}'.format(self.minute)
 
     @_game_is_not_paused
     def update(self, game_paused):
@@ -106,20 +94,10 @@ class InGameTime(GameObject):
             if self.minute % 60 == 0:
                 self.minute = 0
 
-            if self.minute < 10:
-                self.minute_string = '0' + str(self.minute)
-            else:
-                self.minute_string = str(self.minute)
-
         if self.epoch_timestamp % 14400 == 0:
             self.hour += 1
             if self.hour % 24 == 0:
                 self.hour = 0
-
-            if self.hour < 10:
-                self.hour_string = '0' + str(self.hour)
-            else:
-                self.hour_string = str(self.hour)
 
         if self.epoch_timestamp % 345600 == 0:
             self.day += 1
