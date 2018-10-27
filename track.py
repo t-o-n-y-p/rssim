@@ -62,6 +62,8 @@ class Track(GameObject):
         self.unlock_condition_from_level = self.config['user_data'].getboolean('unlock_condition_from_level')
         self.unlock_condition_from_previous_track \
             = self.config['user_data'].getboolean('unlock_condition_from_previous_track')
+        self.unlock_available = self.config['user_data'].getboolean('unlock_available')
+        self.price = self.config['track_config'].getint('price')
 
         self.logger.debug('------- END READING STATE -------')
         self.logger.info('track state initialized')
@@ -88,6 +90,7 @@ class Track(GameObject):
         self.config['user_data']['unlock_condition_from_level'] = str(self.unlock_condition_from_level)
         self.config['user_data']['unlock_condition_from_previous_track'] \
             = str(self.unlock_condition_from_previous_track)
+        self.config['user_data']['unlock_available'] = str(self.unlock_available)
 
         with open('user_cfg/tracks/track{}.ini'.format(self.track_number), 'w') as configfile:
             self.config.write(configfile)

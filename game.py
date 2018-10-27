@@ -23,6 +23,14 @@ def _game_window_is_active(fn):
     return _handle_if_game_window_is_active
 
 
+def _left_button(fn):
+    def _handle_mouse_if_left_button_was_clicked(*args, **kwargs):
+        if args[3] == pyglet.window.mouse.LEFT:
+            fn(*args, **kwargs)
+
+    return _handle_mouse_if_left_button_was_clicked
+
+
 class Game:
     def __init__(self, caption):
         max_texture_size = ctypes.c_long(0)
@@ -173,25 +181,24 @@ class Game:
         self.logger.critical('updating: {} sec'.format(time_2 - time_1))
 
     @_game_window_is_active
+    @_left_button
     def handle_mouse_press(self, x, y, button, modifiers):
         y = self.c.screen_resolution[1] - y
-        if x in range(0, self.c.screen_resolution[0] - 70) \
-                and y in range(0, self.c.top_bar_height) and button == pyglet.window.mouse.LEFT:
+        if x in range(0, self.c.screen_resolution[0] - 70) and y in range(0, self.c.top_bar_height):
             self.app_window_move_mode = True
             self.app_window_move_offset = (x, y)
 
         if x in range(0, self.c.screen_resolution[0]) \
-                and y in range(self.c.top_bar_height, self.c.screen_resolution[1] - self.c.bottom_bar_height) \
-                and button == pyglet.window.mouse.LEFT:
+                and y in range(self.c.top_bar_height, self.c.screen_resolution[1] - self.c.bottom_bar_height):
             self.map_move_mode = True
             self.mini_map_tip.condition_met = True
 
     @_game_window_is_active
+    @_left_button
     def handle_mouse_release(self, x, y, button, modifiers):
-        if button == pyglet.window.mouse.LEFT:
-            self.app_window_move_mode = False
-            self.map_move_mode = False
-            self.mini_map_timer = time.time()
+        self.app_window_move_mode = False
+        self.map_move_mode = False
+        self.mini_map_timer = time.time()
 
     @_game_window_is_active
     def handle_mouse_drag(self, x, y, dx, dy, buttons, modifiers):
@@ -227,7 +234,6 @@ class Game:
                                   win32con.SWP_NOREDRAW)
 
     def run(self):
-        # pyglet.app.run()
         fps_timer = 0.0
         while True:
             self.logger.warning('frame begins')
