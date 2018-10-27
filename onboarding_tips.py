@@ -14,7 +14,8 @@ def _for_mini_map(fn):
 
 
 class OnboardingTips(GameObject):
-    def __init__(self, image, x, y, tip_type, batch, group, viewport_border_group, game_config):
+    def __init__(self, image, x, y, primary_text, price_text, tip_type, batch, group, viewport_border_group,
+                 game_config):
         super().__init__(game_config)
         self.logger = logging.getLogger('game.onboarding_tip_{}'.format(tip_type))
         self.logger.debug('------- START INIT -------')
@@ -30,6 +31,12 @@ class OnboardingTips(GameObject):
         self.logger.debug('image loaded: {}'.format(image))
         self.condition_met = False
         self.logger.debug('condition_met: {}'.format(self.condition_met))
+        if self.tip_type != 'mini_map':
+            self.primary_text = primary_text
+            self.price_text = price_text
+            self.main_text_label = None
+            self.price_text_label = None
+
         self.logger.debug('------- END INIT -------')
         self.logger.warning('tip init completed')
 
@@ -78,9 +85,6 @@ class OnboardingTips(GameObject):
 
         self.logger.debug('------- END DRAWING -------')
         self.logger.info('onboarding tip drawing processed')
-
-    def update_image(self, new_base_image):
-        self.image = new_base_image
 
     @_for_mini_map
     def on_track_unlock(self, track):

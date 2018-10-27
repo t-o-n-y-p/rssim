@@ -104,7 +104,7 @@ class GameProgress(GameObject):
         self.mini_map.on_track_unlock(track)
         self.unlocked_tracks = track
         self.supported_carts = self.tracks[track - 1].supported_carts
-        self.tracks[track].unlock_condition_from_previous_track = True
+        self.tracks[track].on_unlock_condition_from_previous_track()
 
     @_maximum_level_not_reached
     def add_exp(self, exp):
@@ -127,7 +127,7 @@ class GameProgress(GameObject):
 
         self.level_text.text = 'LEVEL {}'.format(self.level)
         for i in self.c.unlocked_tracks[self.level]:
-            self.tracks[i - 1].unlock_condition_from_level = True
+            self.tracks[i - 1].on_unlock_condition_from_level()
 
         self.update_exp_progress_sprite()
 

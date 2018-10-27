@@ -35,6 +35,9 @@ class Track(GameObject):
         self.unlock_condition_from_previous_track = None
         self.unlock_available = False
         self.game_progress = None
+        self.not_enough_money_tip = None
+        self.unlock_button = None
+        self.under_construction_tip = None
         self.read_state()
         self.logger.debug('------- END INIT -------')
         self.logger.warning('track init completed')
@@ -115,15 +118,41 @@ class Track(GameObject):
             self.busy = busy_1
             self.logger.debug('busy: {}'.format(self.busy))
 
+        if self.unlock_available:
+            if self.game_progress.money < self.price and not self.not_enough_money_tip.condition_met:
+                self.unlock_button.on_button_is_not_visible()
+                self.not_enough_money_tip.condition_met = True
+            else:
+                self.unlock_button.on_button_is_visible()
+                self.not_enough_money_tip.condition_met = False
+
         if self.under_construction:
+            if not self.under_construction_tip.condition_met:
+                self.under_construction_tip.condition_met = True
+
             self.logger.info('base route is under construction')
             self.construction_time -= 1
             self.logger.info('construction_time left: {}'.format(self.construction_time))
             if self.construction_time <= 0:
                 self.locked = False
                 self.under_construction = False
+                self.under_construction_tip.condition_met = False
                 self.game_progress.on_track_unlock(self.track_number)
                 self.logger.info('route unlocked and is no longer under construction')
 
         self.logger.debug('------- TRACK UPDATE END -------')
         self.logger.info('track updated')
+
+    def on_unlock_condition_from_previous_track(self):
+        self.unlock_condition_from_previous_track = True
+        if self.unlock_condition_from_level and self.unlock_condition_from_previous_track:
+            self.unlock_condition_from_level = False
+            self.unlock_condition_from_previous_track = False
+            self.unlock_available = True
+
+    def on_unlock_condition_from_level(self):
+        self.unlock_condition_from_level = True
+        if self.unlock_condition_from_level and self.unlock_condition_from_previous_track:
+            self.unlock_condition_from_level = False
+            self.unlock_condition_from_previous_track = False
+            self.unlock_available = True

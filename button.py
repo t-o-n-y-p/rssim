@@ -39,14 +39,12 @@ def _button_is_pressed(fn):
 
 
 class Button(GameObject):
-    def __init__(self, position, button_size, text, font_size, on_click, draw_only_if_game_paused,
+    def __init__(self, position, button_size, text, font_size, on_click, is_visible,
                  batch, button_group, text_group, borders_group, game_config, logs_description):
         super().__init__(game_config)
         self.logger = logging.getLogger('game.{}_button'.format(logs_description))
         self.logger.debug('------- START INIT -------')
-        self.draw_only_if_game_paused = draw_only_if_game_paused
-        self.logger.debug('draw only if game paused set: {}'.format(self.draw_only_if_game_paused))
-        self.is_visible = False
+        self.is_visible = is_visible
         self.logger.debug('allowed_to_be_drawn set: {}'.format(self.is_visible))
         self.state = 'normal'
         self.logger.debug('state set: {}'.format(self.state))
@@ -91,57 +89,52 @@ class Button(GameObject):
         self.text_object_actual_text = self.text[0]
         self.logger.debug('text objects set: {}'.format(self.text))
         self.logger.debug('current text set: {}'.format(self.text[0]))
+        if self.is_visible:
+            self.on_button_is_visible()
+        else:
+            self.on_button_is_not_visible()
+
         self.logger.debug('------- END INIT -------')
         self.logger.warning('button init completed')
 
+    def on_button_is_visible(self):
+        self.is_visible = True
+        if self.vertex_list is None:
+            self.vertex_list = self.batch.add(4, pyglet.gl.GL_QUADS, self.button_group,
+                                              ('v2i/static', (self.position[0],
+                                                              self.position[1],
+                                                              self.position[0] + self.button_size[0] - 1,
+                                                              self.position[1],
+                                                              self.position[0] + self.button_size[0] - 1,
+                                                              self.position[1] + self.button_size[1] - 1,
+                                                              self.position[0],
+                                                              self.position[1] + self.button_size[1] - 1)),
+                                              ('c4B', (0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0)))
+
+        self.border_sprite.visible = True
+
+        if self.text_object_actual is None:
+            self.text_object_actual = pyglet.text.Label(self.text_object_actual_text, font_name=self.c.font_name,
+                                                        font_size=self.font_size,
+                                                        x=self.position[0] + self.button_size[0] // 2,
+                                                        y=self.position[1] + self.button_size[1] // 2,
+                                                        anchor_x='center', anchor_y='center', batch=self.batch,
+                                                        group=self.text_group)
+
+    def on_button_is_not_visible(self):
+        self.is_visible = False
+        if self.vertex_list is not None:
+            self.vertex_list.delete()
+            self.vertex_list = None
+
+        self.border_sprite.visible = False
+
+        if self.text_object_actual is not None:
+            self.text_object_actual.delete()
+            self.text_object_actual = None
+
     def update(self, game_paused):
-        self.logger.debug('------- START UPDATING -------')
-        if not game_paused and self.draw_only_if_game_paused:
-            self.is_visible = False
-            if self.vertex_list is not None:
-                self.vertex_list.delete()
-                self.vertex_list = None
-
-            self.border_sprite.visible = False
-
-            if self.text_object_actual is not None:
-                self.text_object_actual.delete()
-                self.text_object_actual = None
-            self.logger.debug('game is not paused and this button is drawn only if game paused')
-            self.logger.debug('so hide the button')
-        else:
-            self.is_visible = True
-            if self.vertex_list is None:
-                self.vertex_list \
-                    = self.batch.add(4, pyglet.gl.GL_QUADS, self.button_group,
-                                     ('v2i/static',
-                                      (self.position[0],
-                                       self.position[1],
-                                       self.position[0] + self.button_size[0] - 1,
-                                       self.position[1],
-                                       self.position[0] + self.button_size[0] - 1,
-                                       self.position[1] + self.button_size[1] - 1,
-                                       self.position[0],
-                                       self.position[1] + self.button_size[1] - 1)),
-                                     ('c4B', (0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0))
-                                     )
-
-            self.border_sprite.visible = True
-
-            if self.text_object_actual is None:
-                self.text_object_actual = pyglet.text.Label(self.text_object_actual_text,
-                                                            font_name=self.c.font_name,
-                                                            font_size=self.font_size,
-                                                            x=self.position[0] + self.button_size[0] // 2,
-                                                            y=self.position[1] + self.button_size[1] // 2,
-                                                            anchor_x='center', anchor_y='center',
-                                                            batch=self.batch, group=self.text_group)
-
-            self.logger.info('button is always present on the screen')
-            self.logger.info('so it is not hidden')
-
-        self.logger.debug('------- END UPDATING -------')
-        self.logger.info('button updated')
+        pass
 
     @_button_is_visible
     def handle_mouse_motion(self, x, y, dx, dy):
