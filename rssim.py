@@ -570,6 +570,9 @@ class RSSim(Game):
                                           inactive_group=self.buttons_general_borders_day_text_ordered_group,
                                           active_group=self.buttons_text_and_borders_ordered_group)
         self.game_progress.tracks = self.tracks
+        for i in self.tracks:
+            i.game_progress = self.game_progress
+
         self.dispatcher.game_progress = self.game_progress
         self.objects.append(self.dispatcher)
         self.objects.append(self.game_progress)

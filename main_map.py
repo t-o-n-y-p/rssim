@@ -12,9 +12,9 @@ class MainMap(GameObject):
         self.logger = logging.getLogger('game.main_map')
         self.logger.debug('------- START INIT -------')
         # load background texture tile
-        self.sprite = None
+        self.sprite_image = pyglet.image.load('img/map/4/full_map.png')
         try:
-            self.sprite = pyglet.sprite.Sprite(pyglet.image.load('img/map/4/full_map.png'),
+            self.sprite = pyglet.sprite.Sprite(self.sprite_image,
                                                x=self.c.base_offset[0] + 120,
                                                y=self.c.base_offset[1],
                                                batch=batch, group=group)

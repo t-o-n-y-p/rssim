@@ -29,9 +29,12 @@ class Track(GameObject):
         self.busy = False
         self.last_entered_by = 0
         self.override = False
+        self.price = 0
         self.supported_carts = None
         self.unlock_condition_from_level = None
         self.unlock_condition_from_previous_track = None
+        self.unlock_available = False
+        self.game_progress = None
         self.read_state()
         self.logger.debug('------- END INIT -------')
         self.logger.warning('track init completed')
@@ -116,6 +119,7 @@ class Track(GameObject):
             if self.construction_time <= 0:
                 self.locked = False
                 self.under_construction = False
+                self.game_progress.on_track_unlock(self.track_number)
                 self.logger.info('route unlocked and is no longer under construction')
 
         self.logger.debug('------- TRACK UPDATE END -------')
