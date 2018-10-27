@@ -102,8 +102,7 @@ class Game:
         self.mini_map_tip = Tip(image=mini_map_image,
                                 x=self.c.screen_resolution[0] - mini_map_image.width,
                                 y=self.c.screen_resolution[1] - self.c.top_bar_height - 4 - mini_map_image.height,
-                                primary_text='', price_text='', tip_type='mini_map',
-                                batch=self.batch, group=self.top_bottom_bars_ordered_group,
+                                tip_type='mini_map', batch=self.batch, group=self.top_bottom_bars_ordered_group,
                                 viewport_border_group=self.buttons_general_borders_day_text_ordered_group,
                                 game_config=self.c)
         self.mini_map_timer = 0

@@ -14,8 +14,8 @@ def _for_mini_map(fn):
 
 
 class Tip(GameObject):
-    def __init__(self, image, x, y, primary_text, price_text, tip_type, batch, group, viewport_border_group,
-                 game_config):
+    def __init__(self, image, x, y, tip_type, batch, group, viewport_border_group, game_config,
+                 primary_text='', price_text=''):
         super().__init__(game_config)
         self.logger = logging.getLogger('game.onboarding_tip_{}'.format(tip_type))
         self.logger.debug('------- START INIT -------')
