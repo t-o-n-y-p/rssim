@@ -13,7 +13,7 @@ def _for_mini_map(fn):
     return _update_if_tip_is_mini_map
 
 
-class OnboardingTips(GameObject):
+class Tip(GameObject):
     def __init__(self, image, x, y, primary_text, price_text, tip_type, batch, group, viewport_border_group,
                  game_config):
         super().__init__(game_config)
@@ -31,7 +31,7 @@ class OnboardingTips(GameObject):
         self.logger.debug('image loaded: {}'.format(image))
         self.condition_met = False
         self.logger.debug('condition_met: {}'.format(self.condition_met))
-        if self.tip_type != 'mini_map':
+        if self.tip_type in ('not_enough_money', 'track_under_construction'):
             self.primary_text = primary_text
             self.price_text = price_text
             self.main_text_label = None

@@ -3,6 +3,8 @@ import configparser
 import os
 
 from game_object import GameObject
+from tip import Tip
+from button import Button
 
 
 def _game_is_not_paused(fn):
