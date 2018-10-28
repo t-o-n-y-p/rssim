@@ -496,6 +496,12 @@ class Dispatcher(GameObject):
                 carts = random.choice(carts_choice_list)
                 if carts <= 10:
                     new_direction = random.choice(new_direction_choice_list)
+                    if new_direction == self.c.direction_from_right_to_left_side and self.tracks[20].locked:
+                        new_direction = direction
+
+                    if new_direction == self.c.direction_from_left_to_right_side and self.tracks[21].locked:
+                        new_direction = direction
+
                 else:
                     new_direction = direction
 
