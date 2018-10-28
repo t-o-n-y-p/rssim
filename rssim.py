@@ -2176,7 +2176,6 @@ class RSSim(Game):
         self.objects.append(self.mini_map_tip)
         for i in self.tracks:
             self.objects.append(i.not_enough_money_tip)
-            self.objects.append(i.unlock_track_tip)
             self.objects.append(i.under_construction_tip)
 
         self.logger.debug('saved_onboarding_tip appended to global objects list')

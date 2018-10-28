@@ -26,6 +26,7 @@ class Track(GameObject):
             self.game_progress.add_money((-1)*self.price)
             button.on_button_is_not_visible()
             self.unlock_available = False
+            self.not_enough_money_tip.condition_met = False
             self.under_construction = True
 
         super().__init__(game_config)
@@ -50,7 +51,7 @@ class Track(GameObject):
         self.game_progress = None
         self.read_state()
         self.unlock_button = Button(position=(195, 81), button_size=(250, 30),
-                                    text=['', ],
+                                    text=['Unlock track {}                     '.format(self.track_number), ],
                                     font_size=self.c.unlock_tip_font_size, on_click=[start_track_construction, ],
                                     is_visible=False, batch=batch,
                                     button_group=button_group, text_group=text_group, borders_group=borders_group,
@@ -65,11 +66,6 @@ class Track(GameObject):
                                           tip_type='track_under_construction', batch=batch, group=tip_group,
                                           viewport_border_group=text_group, game_config=self.c,
                                           primary_text='Building track {}, some time left'.format(self.track_number))
-        self.unlock_track_tip = Tip(pyglet.image.load('img/track_tip.png'), x=195, y=81,
-                                    tip_type='not_enough_money', batch=batch, group=tip_group,
-                                    viewport_border_group=text_group, game_config=self.c,
-                                    primary_text='Unlock track {}                     '.format(self.track_number),
-                                    price_text='                      {} ¤'.format(self.price))
         self.logger.debug('------- END INIT -------')
         self.logger.warning('track init completed')
 
@@ -154,17 +150,15 @@ class Track(GameObject):
             if self.game_progress.money < self.price:
                 if self.unlock_button.is_visible:
                     self.unlock_button.on_button_is_not_visible()
-                    self.unlock_track_tip.condition_met = False
-
-                if not self.not_enough_money_tip.condition_met:
-                    self.not_enough_money_tip.condition_met = True
+                    self.not_enough_money_tip.primary_text_label.text = 'Get                    to unlock track {}'\
+                                                                        .format(self.track_number),
+                    self.not_enough_money_tip.price_text_label.text = '  {} ¤                        '\
+                                                                      .format(self.price)
             else:
                 if not self.unlock_button.is_visible:
                     self.unlock_button.on_button_is_visible()
-                    self.unlock_track_tip.condition_met = True
-
-                if self.not_enough_money_tip.condition_met:
-                    self.not_enough_money_tip.condition_met = False
+                    self.not_enough_money_tip.primary_text_label.text = ''
+                    self.not_enough_money_tip.price_text_label.text = '                      {} ¤'.format(self.price)
 
         if self.under_construction:
             if not self.under_construction_tip.condition_met:
@@ -189,6 +183,7 @@ class Track(GameObject):
             self.unlock_condition_from_level = False
             self.unlock_condition_from_previous_track = False
             self.unlock_available = True
+            self.not_enough_money_tip.condition_met = True
             self.game_progress.money_target = self.price
             self.game_progress.update_money_progress_sprite()
 
@@ -198,5 +193,6 @@ class Track(GameObject):
             self.unlock_condition_from_level = False
             self.unlock_condition_from_previous_track = False
             self.unlock_available = True
+            self.not_enough_money_tip.condition_met = True
             self.game_progress.money_target = self.price
             self.game_progress.update_money_progress_sprite()
