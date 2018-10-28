@@ -50,7 +50,7 @@ class Track(GameObject):
         self.game_progress = None
         self.read_state()
         self.unlock_button = Button(position=(195, 81), button_size=(250, 30),
-                                    text=['Unlock track {}                     '.format(self.track_number), ],
+                                    text=['', ],
                                     font_size=self.c.unlock_tip_font_size, on_click=[start_track_construction, ],
                                     is_visible=False, batch=batch,
                                     button_group=button_group, text_group=text_group, borders_group=borders_group,
@@ -68,6 +68,7 @@ class Track(GameObject):
         self.unlock_track_tip = Tip(pyglet.image.load('img/track_tip.png'), x=195, y=81,
                                     tip_type='not_enough_money', batch=batch, group=tip_group,
                                     viewport_border_group=text_group, game_config=self.c,
+                                    primary_text='Unlock track {}                     '.format(self.track_number),
                                     price_text='                      {} ¤'.format(self.price))
         self.logger.debug('------- END INIT -------')
         self.logger.warning('track init completed')

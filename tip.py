@@ -116,15 +116,16 @@ class Tip(GameObject):
                     if self.price_text_label is not None:
                         self.price_text_label.color = (0, 192, 0, self.text_opacity)
 
-                    if self.text_opacity <= 0:
-                        if self.primary_text_label is not None:
-                            self.primary_text_label.delete()
+                if self.text_opacity <= 0:
+                    self.text_opacity = 0
+                    if self.primary_text_label is not None:
+                        self.primary_text_label.delete()
 
-                        if self.price_text_label is not None:
-                            self.price_text_label.delete()
+                    if self.price_text_label is not None:
+                        self.price_text_label.delete()
 
-                        self.primary_text_label = None
-                        self.price_text_label = None
+                    self.primary_text_label = None
+                    self.price_text_label = None
 
             self.logger.debug('condition not met, no need to show tip')
 

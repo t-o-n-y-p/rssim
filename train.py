@@ -1,7 +1,6 @@
 import configparser
 import logging
 import os
-import time
 
 import pyglet
 
