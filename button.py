@@ -40,8 +40,7 @@ def _button_is_pressed(fn):
 
 class Button(GameObject):
     def __init__(self, position, button_size, text, font_size, on_click, is_visible,
-                 batch, button_group, text_group, borders_group, game_config, logs_description,
-                 background_enabled=False):
+                 batch, button_group, text_group, borders_group, game_config, logs_description):
         super().__init__(game_config)
         self.logger = logging.getLogger('game.{}_button'.format(logs_description))
         self.logger.debug('------- START INIT -------')
@@ -55,7 +54,6 @@ class Button(GameObject):
         self.button_group = button_group
         self.text_group = text_group
         self.borders_group = borders_group
-        self.background_enabled = background_enabled
         self.logger.debug('position set: {}'.format(self.position))
         self.text_objects = []
         self.on_click = on_click
@@ -75,9 +73,6 @@ class Button(GameObject):
                                         self.position[1] + self.button_size[1] - 1)),
                         ('c4B', (0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0))
                         )
-        if self.background_enabled:
-            self.vertex_list.colors = (0, 0, 0, 245, 0, 0, 0, 245, 0, 0, 0, 245, 0, 0, 0, 245)
-
         self.border_sprite_image = pyglet.image.load('img/button_border_{}_{}.png'
                                                      .format(self.button_size[0], self.button_size[1]))
         self.border_sprite = pyglet.sprite.Sprite(self.border_sprite_image, x=self.position[0], y=self.position[1],
@@ -116,9 +111,6 @@ class Button(GameObject):
                                                               self.position[1] + self.button_size[1] - 1)),
                                               ('c4B', (0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0)))
 
-            if self.background_enabled:
-                self.vertex_list.colors = (0, 0, 0, 245, 0, 0, 0, 245, 0, 0, 0, 245, 0, 0, 0, 245)
-
         self.border_sprite.visible = True
 
         if self.text_object_actual is None:
@@ -155,10 +147,7 @@ class Button(GameObject):
         else:
             if self.state != 'normal':
                 self.state = 'normal'
-                if self.background_enabled:
-                    self.vertex_list.colors = (0, 0, 0, 245, 0, 0, 0, 245, 0, 0, 0, 245, 0, 0, 0, 245)
-                else:
-                    self.vertex_list.colors = (0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0)
+                self.vertex_list.colors = (0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0)
                 self.logger.debug('cursor is not on the button')
 
     @_button_is_visible
@@ -187,19 +176,19 @@ class Button(GameObject):
 
         if self.text_object_actual_text == self.text[0] and len(self.text) == 2:
             self.text_object_actual_text = self.text[1]
-            self.text_object_actual.text = self.text[1]
+            if self.text_object_actual is not None:
+                self.text_object_actual.text = self.text[1]
+
             self.logger.info('button is switched to second text')
         else:
             self.text_object_actual_text = self.text[0]
-            self.text_object_actual.text = self.text[0]
+            if self.text_object_actual is not None:
+                self.text_object_actual.text = self.text[0]
+
             self.logger.debug('button has only 1 text, so it remains the same')
 
     @_button_is_visible
     def handle_mouse_leave(self, x, y):
         self.state = 'normal'
-        if self.background_enabled:
-            self.vertex_list.colors = (0, 0, 0, 245, 0, 0, 0, 245, 0, 0, 0, 245, 0, 0, 0, 245)
-        else:
-            self.vertex_list.colors = (0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0)
-
+        self.vertex_list.colors = (0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0)
         self.logger.debug('cursor is not on the button')

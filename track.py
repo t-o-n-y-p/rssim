@@ -18,7 +18,7 @@ def _game_is_not_paused(fn):
 
 
 class Track(GameObject):
-    def __init__(self, track_number, base_routes_in_track, batch, button_tip_group, text_group, borders_group,
+    def __init__(self, track_number, base_routes_in_track, batch, tip_group, button_group, text_group, borders_group,
                  game_config):
         def start_track_construction(button):
             self.game_progress.money_target = 0
@@ -50,22 +50,25 @@ class Track(GameObject):
         self.game_progress = None
         self.read_state()
         self.unlock_button = Button(position=(195, 81), button_size=(250, 30),
-                                    text=['Unlock track {}'.format(self.track_number), ],
+                                    text=['Unlock track {}                     '.format(self.track_number), ],
                                     font_size=self.c.unlock_tip_font_size, on_click=[start_track_construction, ],
                                     is_visible=False, batch=batch,
-                                    button_group=button_tip_group, text_group=text_group, borders_group=borders_group,
-                                    game_config=self.c, logs_description='track{}_unlock'.format(self.track_number),
-                                    background_enabled=True)
+                                    button_group=button_group, text_group=text_group, borders_group=borders_group,
+                                    game_config=self.c, logs_description='track{}_unlock'.format(self.track_number))
         self.not_enough_money_tip = Tip(pyglet.image.load('img/track_tip.png'), x=195, y=81,
-                                        tip_type='not_enough_money', batch=batch, group=button_tip_group,
+                                        tip_type='not_enough_money', batch=batch, group=tip_group,
                                         viewport_border_group=text_group, game_config=self.c,
-                                        primary_text='Get                   to unlock track {}'
+                                        primary_text='Get                    to unlock track {}'
                                         .format(self.track_number),
-                                        price_text='   {} ¤                        '.format(self.price))
+                                        price_text='  {} ¤                        '.format(self.price))
         self.under_construction_tip = Tip(pyglet.image.load('img/track_tip.png'), x=195, y=81,
-                                          tip_type='track_under_construction', batch=batch, group=button_tip_group,
+                                          tip_type='track_under_construction', batch=batch, group=tip_group,
                                           viewport_border_group=text_group, game_config=self.c,
                                           primary_text='Building track {}, some time left'.format(self.track_number))
+        self.unlock_track_tip = Tip(pyglet.image.load('img/track_tip.png'), x=195, y=81,
+                                    tip_type='not_enough_money', batch=batch, group=tip_group,
+                                    viewport_border_group=text_group, game_config=self.c,
+                                    price_text='                      {} ¤'.format(self.price))
         self.logger.debug('------- END INIT -------')
         self.logger.warning('track init completed')
 
@@ -150,12 +153,14 @@ class Track(GameObject):
             if self.game_progress.money < self.price:
                 if self.unlock_button.is_visible:
                     self.unlock_button.on_button_is_not_visible()
+                    self.unlock_track_tip.condition_met = False
 
                 if not self.not_enough_money_tip.condition_met:
                     self.not_enough_money_tip.condition_met = True
             else:
                 if not self.unlock_button.is_visible:
                     self.unlock_button.on_button_is_visible()
+                    self.unlock_track_tip.condition_met = True
 
                 if self.not_enough_money_tip.condition_met:
                     self.not_enough_money_tip.condition_met = False

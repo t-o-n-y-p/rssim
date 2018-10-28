@@ -47,13 +47,6 @@ class Signal(GameObject):
         self.base_route_opened = None
         self.read_state()
         self.sprite = None
-        self.sprite = pyglet.sprite.Sprite(self.image[self.state],
-                                           x=self.placement[0], y=self.placement[1],
-                                           batch=self.batch, group=self.signal_group)
-        if self.flip_needed:
-            self.sprite.rotation = 180.0
-            self.logger.debug('base image flipped')
-
         self.logger.debug('------- END INIT -------')
         self.logger.warning('signal init completed')
 
@@ -104,9 +97,20 @@ class Signal(GameObject):
         self.logger.debug('signal is not invisible, drawing')
         signal_position = (base_offset[0] + self.placement[0],
                            base_offset[1] + self.placement[1])
-        self.logger.debug('signal base image is in place')
-        self.sprite.position = signal_position
-        self.logger.debug('signal light image is in place')
+        if signal_position[0] not in range(-15, self.c.screen_resolution[0] + 15) \
+                or signal_position[1] not in range(-15, self.c.screen_resolution[1] + 15):
+            if self.sprite is not None:
+                self.sprite.delete()
+                self.sprite = None
+
+        else:
+            self.sprite = pyglet.sprite.Sprite(self.image[self.state],
+                                               x=self.placement[0], y=self.placement[1],
+                                               batch=self.batch, group=self.signal_group)
+            self.sprite.position = signal_position
+            if self.flip_needed:
+                self.sprite.rotation = 180.0
+
         self.logger.info('signal image is in place')
         self.logger.debug('------- END DRAWING -------')
 
@@ -118,10 +122,12 @@ class Signal(GameObject):
             self.priority = 0
             if self.state == 'green_signal':
                 self.state = 'red_signal'
-                self.sprite.image = self.image[self.state]
+                if self.sprite is not None:
+                    self.sprite.image = self.image[self.state]
+                    if self.flip_needed:
+                        self.sprite.rotation = 180.0
+
                 self.base_route_opened = None
-                if self.flip_needed:
-                    self.sprite.rotation = 180.0
 
             self.logger.debug('no train approaching, signal is RED')
         else:
@@ -134,9 +140,10 @@ class Signal(GameObject):
             if self.base_route_opened is None:
                 if self.state == 'green_signal':
                     self.state = 'red_signal'
-                    self.sprite.image = self.image[self.state]
-                    if self.flip_needed:
-                        self.sprite.rotation = 180.0
+                    if self.sprite is not None:
+                        self.sprite.image = self.image[self.state]
+                        if self.flip_needed:
+                            self.sprite.rotation = 180.0
 
                 self.logger.debug('route through signal is not opened, signal is RED')
             else:
@@ -149,17 +156,19 @@ class Signal(GameObject):
                         != self.base_route_opened.route_config['last_entered_by']:
                     if self.state == 'green_signal':
                         self.state = 'red_signal'
-                        self.sprite.image = self.image[self.state]
-                        if self.flip_needed:
-                            self.sprite.rotation = 180.0
+                        if self.sprite is not None:
+                            self.sprite.image = self.image[self.state]
+                            if self.flip_needed:
+                                self.sprite.rotation = 180.0
 
                     self.logger.debug('route through signal is opened but busy by another train, signal is RED')
                 else:
                     if self.state == 'red_signal':
                         self.state = 'green_signal'
-                        self.sprite.image = self.image[self.state]
-                        if self.flip_needed:
-                            self.sprite.rotation = 180.0
+                        if self.sprite is not None:
+                            self.sprite.image = self.image[self.state]
+                            if self.flip_needed:
+                                self.sprite.rotation = 180.0
 
                         self.base_route_opened.enter_base_route(self.base_route_exit.route_config['last_opened_by'])
                         self.logger.debug('train {} is allowed to pass'

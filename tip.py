@@ -33,7 +33,7 @@ class Tip(GameObject):
         self.logger.debug('condition_met: {}'.format(self.condition_met))
         self.primary_text_label = None
         self.price_text_label = None
-        if self.tip_type in ('not_enough_money', 'track_under_construction'):
+        if self.tip_type in ('not_enough_money', 'enough_money', 'track_under_construction'):
             self.primary_text = primary_text
             self.price_text = price_text
             self.text_opacity = 0
@@ -53,27 +53,32 @@ class Tip(GameObject):
                 if self.sprite.opacity < 255:
                     self.sprite.opacity += 15
 
-            if self.tip_type in ('not_enough_money', 'track_under_construction'):
-                if self.primary_text_label is None or self.price_text_label is None:
+            if self.tip_type in ('not_enough_money', 'enough_money', 'track_under_construction'):
+                if self.primary_text_label is None and self.primary_text != '':
                     self.primary_text_label \
                         = pyglet.text.Label(self.primary_text, font_name=self.c.font_name,
                                             font_size=self.c.unlock_tip_font_size, color=(255, 255, 255, 0),
                                             x=self.x + self.image.width // 2, y=self.y + self.image.height // 2,
                                             anchor_x='center', anchor_y='center', align='center', batch=self.batch,
                                             group=self.viewport_border_group)
+
+                if self.price_text_label is None and self.price_text != '':
                     self.price_text_label \
                         = pyglet.text.Label(self.price_text, font_name=self.c.font_name,
                                             font_size=self.c.unlock_tip_font_size, color=(0, 192, 0, 0),
                                             x=self.x + self.image.width // 2, y=self.y + self.image.height // 2,
                                             anchor_x='center', anchor_y='center', align='center', batch=self.batch,
                                             group=self.viewport_border_group)
-                else:
-                    if self.text_opacity < 255:
-                        self.text_opacity += 15
+
+                if self.text_opacity < 255:
+                    self.text_opacity += 15
+                    if self.primary_text_label is not None:
                         self.primary_text_label.color = (255, 255, 255, self.text_opacity)
+
+                    if self.price_text_label is not None:
                         self.price_text_label.color = (0, 192, 0, self.text_opacity)
 
-            if self.tip_type == 'mini_map':
+            elif self.tip_type == 'mini_map':
                 if self.viewport_border is None:
                     self.viewport_border = pyglet.sprite.Sprite(pyglet.image.load('img/viewport_border.png'),
                                                                 batch=self.batch,
@@ -102,14 +107,22 @@ class Tip(GameObject):
                     if self.viewport_border.opacity <= 0:
                         self.viewport_border.delete()
                         self.viewport_border = None
-            elif self.tip_type in ('not_enough_money', 'track_under_construction'):
-                if self.primary_text_label is not None or self.price_text_label is not None:
+            elif self.tip_type in ('not_enough_money', 'enough_money', 'track_under_construction'):
+                if self.text_opacity > 0:
                     self.text_opacity -= 15
-                    self.primary_text_label.color = (255, 255, 255, self.text_opacity)
-                    self.price_text_label.color = (0, 192, 0, self.text_opacity)
+                    if self.primary_text_label is not None:
+                        self.primary_text_label.color = (255, 255, 255, self.text_opacity)
+
+                    if self.price_text_label is not None:
+                        self.price_text_label.color = (0, 192, 0, self.text_opacity)
+
                     if self.text_opacity <= 0:
-                        self.primary_text_label.delete()
-                        self.price_text_label.delete()
+                        if self.primary_text_label is not None:
+                            self.primary_text_label.delete()
+
+                        if self.price_text_label is not None:
+                            self.price_text_label.delete()
+
                         self.primary_text_label = None
                         self.price_text_label = None
 

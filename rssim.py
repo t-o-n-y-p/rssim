@@ -242,7 +242,8 @@ class RSSim(Game):
                                     self.base_routes[i]['left_exit_platform_base_route'],
                                     self.base_routes[i]['right_exit_platform_base_route']]
             new_track = Track(track_number=i, base_routes_in_track=base_routes_in_track,
-                              batch=self.batch, button_tip_group=self.buttons_general_borders_day_text_ordered_group,
+                              batch=self.batch, tip_group=self.top_bottom_bars_ordered_group,
+                              button_group=self.buttons_general_borders_day_text_ordered_group,
                               text_group=self.buttons_text_and_borders_ordered_group,
                               borders_group=self.buttons_text_and_borders_ordered_group, game_config=self.c)
             self.tracks.append(new_track)
@@ -2175,6 +2176,7 @@ class RSSim(Game):
         self.objects.append(self.mini_map_tip)
         for i in self.tracks:
             self.objects.append(i.not_enough_money_tip)
+            self.objects.append(i.unlock_track_tip)
             self.objects.append(i.under_construction_tip)
 
         self.logger.debug('saved_onboarding_tip appended to global objects list')
