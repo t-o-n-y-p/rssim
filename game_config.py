@@ -22,6 +22,7 @@ class GameConfig:
         self.play_pause_button_font_size = 32
         self.day_font_size = 22
         self.level_font_size = 22
+        self.unlock_tip_font_size = 11
         self.button_text_color = (255, 255, 255, 255)
         self.day_text_color = (255, 255, 255, 255)
         self.fps_display_enabled = self.game_config['graphics'].getboolean('fps_display_enabled')

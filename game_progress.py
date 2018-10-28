@@ -61,7 +61,7 @@ class GameProgress(GameObject):
         self.progress_bar_money_active = pyglet.sprite.Sprite(self.progress_bar_money_active_image,
                                                               x=220, y=10, batch=batch, group=active_group)
         self.progress_bar_money_active.image = self.progress_bar_money_active_image.get_region(0, 0, 1, 10)
-        self.money_target = 50000
+        self.money_target = 0
         self.read_state()
         self.level_text = pyglet.text.Label('LEVEL {}'.format(self.level), font_name='Perfo', bold=True,
                                             font_size=self.c.level_font_size, x=110, y=40,
@@ -83,6 +83,7 @@ class GameProgress(GameObject):
         self.exp = self.config['user_data'].getfloat('exp')
         self.accumulated_exp = self.config['user_data'].getfloat('accumulated_exp')
         self.money = self.config['user_data'].getfloat('money')
+        self.money_target = self.config['user_data'].getint('money_target')
         supported_carts_parsed = self.config['user_data']['supported_carts'].split(',')
         self.supported_carts = (int(supported_carts_parsed[0]), int(supported_carts_parsed[1]))
         self.update_exp_progress_sprite()
@@ -94,6 +95,7 @@ class GameProgress(GameObject):
         self.config['user_data']['exp'] = str(self.exp)
         self.config['user_data']['accumulated_exp'] = str(self.accumulated_exp)
         self.config['user_data']['money'] = str(self.money)
+        self.config['user_data']['money_target'] = str(self.money_target)
         self.config['user_data']['supported_carts'] = str(self.supported_carts[0]) + ',' + str(self.supported_carts[1])
 
         with open('user_cfg/game_progress.ini', 'w') as configfile:
@@ -103,7 +105,7 @@ class GameProgress(GameObject):
         self.main_map.on_track_unlock(track)
         self.mini_map.on_track_unlock(track)
         self.unlocked_tracks = track
-        self.supported_carts = self.tracks[track - 1].supported_carts
+        self.supported_carts = (self.tracks[track - 1].supported_carts[0], 20)
         self.tracks[track].on_unlock_condition_from_previous_track()
 
     @_maximum_level_not_reached
@@ -174,3 +176,8 @@ class GameProgress(GameObject):
 
         self.progress_bar_money_inactive.image = image_region
         self.progress_bar_money_inactive.position = (220 + self.money_percent * 2, 10)
+
+    def erase_money_progress(self):
+        self.progress_bar_money_active.image = self.progress_bar_money_active_image.get_region(0, 0, 1, 10)
+        self.progress_bar_money_inactive.image = self.progress_bar_inactive_image.get_region(0, 0, 200, 60)
+        self.progress_bar_money_inactive.position = (220, 10)

@@ -330,8 +330,8 @@ class Dispatcher(GameObject):
                         i.boarding_lights_sprite.visible = False
 
                     self.logger.info('train {} status changed to {}'.format(i.train_id, i.state))
-                    self.game_progress.add_exp(100.0)
-                    self.game_progress.add_money(256.0)
+                    self.game_progress.add_exp(10000.0)
+                    self.game_progress.add_money(2000.0)
 
             if len(i.carts_position) > 0:
                 if i.carts_position[0] == i.train_route.destination_point_v2[i.carts]:
@@ -501,6 +501,7 @@ class Dispatcher(GameObject):
 
                 self.logger.debug('carts: {}'.format(carts))
                 if carts < self.game_progress.supported_carts[0]:
+                    new_direction = direction
                     self.logger.debug('{}-cart trains are not supported for now, assign pass through route'
                                       .format(carts))
                     route_for_new_train = self.train_routes[track_number][self.c.approaching_train_route[direction]]
@@ -515,7 +516,6 @@ class Dispatcher(GameObject):
                                       boarding_lights_group=self.boarding_lights_group, game_config=self.c)
                     self.train_ids.append(self.train_counter)
                     new_train.train_route.open_train_route(new_train.train_id, new_train.priority)
-                    new_train.train_route.set_stop_points(new_train.carts)
                     new_train.init_train_position()
                     self.logger.info('train created. id {}, track {}, route = {}, status = {}'
                                      .format(new_train.train_id, new_train.train_route.track_number,

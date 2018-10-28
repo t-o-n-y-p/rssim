@@ -40,7 +40,8 @@ def _button_is_pressed(fn):
 
 class Button(GameObject):
     def __init__(self, position, button_size, text, font_size, on_click, is_visible,
-                 batch, button_group, text_group, borders_group, game_config, logs_description):
+                 batch, button_group, text_group, borders_group, game_config, logs_description,
+                 background_enabled=False):
         super().__init__(game_config)
         self.logger = logging.getLogger('game.{}_button'.format(logs_description))
         self.logger.debug('------- START INIT -------')
@@ -54,6 +55,7 @@ class Button(GameObject):
         self.button_group = button_group
         self.text_group = text_group
         self.borders_group = borders_group
+        self.background_enabled = background_enabled
         self.logger.debug('position set: {}'.format(self.position))
         self.text_objects = []
         self.on_click = on_click
@@ -73,6 +75,9 @@ class Button(GameObject):
                                         self.position[1] + self.button_size[1] - 1)),
                         ('c4B', (0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0))
                         )
+        if self.background_enabled:
+            self.vertex_list.colors = (0, 0, 0, 245, 0, 0, 0, 245, 0, 0, 0, 245, 0, 0, 0, 245)
+
         self.border_sprite_image = pyglet.image.load('img/button_border_{}_{}.png'
                                                      .format(self.button_size[0], self.button_size[1]))
         self.border_sprite = pyglet.sprite.Sprite(self.border_sprite_image, x=self.position[0], y=self.position[1],
@@ -111,6 +116,9 @@ class Button(GameObject):
                                                               self.position[1] + self.button_size[1] - 1)),
                                               ('c4B', (0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0)))
 
+            if self.background_enabled:
+                self.vertex_list.colors = (0, 0, 0, 245, 0, 0, 0, 245, 0, 0, 0, 245, 0, 0, 0, 245)
+
         self.border_sprite.visible = True
 
         if self.text_object_actual is None:
@@ -142,12 +150,15 @@ class Button(GameObject):
                 and y in range(self.position[1] + 2, self.position[1] + self.button_size[1] - 2):
             if self.state != 'pressed':
                 self.state = 'hover'
-                self.vertex_list.colors = (127, 0, 0, 127, 127, 0, 0, 127, 127, 0, 0, 127, 127, 0, 0, 127)
+                self.vertex_list.colors = (127, 0, 0, 255, 127, 0, 0, 255, 127, 0, 0, 255, 127, 0, 0, 255)
                 self.logger.info('cursor is on the button')
         else:
             if self.state != 'normal':
                 self.state = 'normal'
-                self.vertex_list.colors = (0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0)
+                if self.background_enabled:
+                    self.vertex_list.colors = (0, 0, 0, 245, 0, 0, 0, 245, 0, 0, 0, 245, 0, 0, 0, 245)
+                else:
+                    self.vertex_list.colors = (0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0)
                 self.logger.debug('cursor is not on the button')
 
     @_button_is_visible
@@ -155,7 +166,7 @@ class Button(GameObject):
     @_left_button
     def handle_mouse_press(self, x, y, button, modifiers):
         self.state = 'pressed'
-        self.vertex_list.colors = (191, 0, 0, 127, 191, 0, 0, 127, 191, 0, 0, 127, 191, 0, 0, 127)
+        self.vertex_list.colors = (191, 0, 0, 255, 191, 0, 0, 255, 191, 0, 0, 255, 191, 0, 0, 255)
         self.logger.info('cursor is on the button and user holds mouse button')
 
     @_button_is_visible
@@ -163,7 +174,7 @@ class Button(GameObject):
     @_left_button
     def handle_mouse_release(self, x, y, button, modifiers):
         self.state = 'hover'
-        self.vertex_list.colors = (127, 0, 0, 127, 127, 0, 0, 127, 127, 0, 0, 127, 127, 0, 0, 127)
+        self.vertex_list.colors = (127, 0, 0, 255, 127, 0, 0, 255, 127, 0, 0, 255, 127, 0, 0, 255)
         self.logger.info('cursor is on the button and user released mouse button')
         self.logger.info('start onclick action')
         self.on_click_actual(self)
@@ -186,5 +197,9 @@ class Button(GameObject):
     @_button_is_visible
     def handle_mouse_leave(self, x, y):
         self.state = 'normal'
-        self.vertex_list.colors = (0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0)
+        if self.background_enabled:
+            self.vertex_list.colors = (0, 0, 0, 245, 0, 0, 0, 245, 0, 0, 0, 245, 0, 0, 0, 245)
+        else:
+            self.vertex_list.colors = (0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0)
+
         self.logger.debug('cursor is not on the button')

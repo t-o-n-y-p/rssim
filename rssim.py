@@ -241,7 +241,10 @@ class RSSim(Game):
                                     self.base_routes[i]['right_entry_platform_base_route'],
                                     self.base_routes[i]['left_exit_platform_base_route'],
                                     self.base_routes[i]['right_exit_platform_base_route']]
-            new_track = Track(track_number=i, base_routes_in_track=base_routes_in_track, game_config=self.c)
+            new_track = Track(track_number=i, base_routes_in_track=base_routes_in_track,
+                              batch=self.batch, button_tip_group=self.buttons_general_borders_day_text_ordered_group,
+                              text_group=self.buttons_text_and_borders_ordered_group,
+                              borders_group=self.buttons_text_and_borders_ordered_group, game_config=self.c)
             self.tracks.append(new_track)
             self.logger.info('track {} created'.format(i))
             # create entry train route
@@ -2170,6 +2173,10 @@ class RSSim(Game):
     def create_onboarding_tips(self):
         self.dispatcher.mini_map_tip = self.mini_map_tip
         self.objects.append(self.mini_map_tip)
+        for i in self.tracks:
+            self.objects.append(i.not_enough_money_tip)
+            self.objects.append(i.under_construction_tip)
+
         self.logger.debug('saved_onboarding_tip appended to global objects list')
         self.logger.info('all tips appended to global objects list')
 
@@ -2270,6 +2277,13 @@ class RSSim(Game):
         self.logger.debug('pause/resume button appended to global objects list')
         self.objects.append(close_button)
         self.objects.append(iconify_button)
+        for i in self.tracks:
+            self.on_mouse_press_handlers.append(i.unlock_button.handle_mouse_press)
+            self.on_mouse_release_handlers.append(i.unlock_button.handle_mouse_release)
+            self.on_mouse_motion_handlers.append(i.unlock_button.handle_mouse_motion)
+            self.on_mouse_leave_handlers.append(i.unlock_button.handle_mouse_leave)
+            self.objects.append(i.unlock_button)
+
         self.logger.debug('save button appended to global objects list')
         self.objects.append(InGameTime(batch=self.batch,
                                        day_text_group=self.buttons_general_borders_day_text_ordered_group,

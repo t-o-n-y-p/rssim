@@ -2,6 +2,8 @@ import logging
 import configparser
 import os
 
+import pyglet
+
 from game_object import GameObject
 from tip import Tip
 from button import Button
@@ -16,7 +18,16 @@ def _game_is_not_paused(fn):
 
 
 class Track(GameObject):
-    def __init__(self, track_number, base_routes_in_track, game_config):
+    def __init__(self, track_number, base_routes_in_track, batch, button_tip_group, text_group, borders_group,
+                 game_config):
+        def start_track_construction(button):
+            self.game_progress.money_target = 0
+            self.game_progress.erase_money_progress()
+            self.game_progress.add_money((-1)*self.price)
+            button.on_button_is_not_visible()
+            self.unlock_available = False
+            self.under_construction = True
+
         super().__init__(game_config)
         self.logger = logging.getLogger('game.track_{}'.format(track_number))
         self.logger.debug('------- START INIT -------')
@@ -37,10 +48,24 @@ class Track(GameObject):
         self.unlock_condition_from_previous_track = None
         self.unlock_available = False
         self.game_progress = None
-        self.not_enough_money_tip = None
-        self.unlock_button = None
-        self.under_construction_tip = None
         self.read_state()
+        self.unlock_button = Button(position=(195, 81), button_size=(250, 30),
+                                    text=['Unlock track {}'.format(self.track_number), ],
+                                    font_size=self.c.unlock_tip_font_size, on_click=[start_track_construction, ],
+                                    is_visible=False, batch=batch,
+                                    button_group=button_tip_group, text_group=text_group, borders_group=borders_group,
+                                    game_config=self.c, logs_description='track{}_unlock'.format(self.track_number),
+                                    background_enabled=True)
+        self.not_enough_money_tip = Tip(pyglet.image.load('img/track_tip.png'), x=195, y=81,
+                                        tip_type='not_enough_money', batch=batch, group=button_tip_group,
+                                        viewport_border_group=text_group, game_config=self.c,
+                                        primary_text='Get                   to unlock track {}'
+                                        .format(self.track_number),
+                                        price_text='   {} ¤                        '.format(self.price))
+        self.under_construction_tip = Tip(pyglet.image.load('img/track_tip.png'), x=195, y=81,
+                                          tip_type='track_under_construction', batch=batch, group=button_tip_group,
+                                          viewport_border_group=text_group, game_config=self.c,
+                                          primary_text='Building track {}, some time left'.format(self.track_number))
         self.logger.debug('------- END INIT -------')
         self.logger.warning('track init completed')
 
@@ -56,6 +81,7 @@ class Track(GameObject):
         self.locked = self.config['user_data'].getboolean('locked')
         self.under_construction = self.config['user_data'].getboolean('under_construction')
         self.construction_time = self.config['user_data'].getint('construction_time')
+        self.construction_time //= 100
         self.busy = self.config['user_data'].getboolean('busy')
         self.logger.debug('busy: {}'.format(self.busy))
         self.last_entered_by = self.config['user_data'].getint('last_entered_by')
@@ -121,12 +147,18 @@ class Track(GameObject):
             self.logger.debug('busy: {}'.format(self.busy))
 
         if self.unlock_available:
-            if self.game_progress.money < self.price and not self.not_enough_money_tip.condition_met:
-                self.unlock_button.on_button_is_not_visible()
-                self.not_enough_money_tip.condition_met = True
+            if self.game_progress.money < self.price:
+                if self.unlock_button.is_visible:
+                    self.unlock_button.on_button_is_not_visible()
+
+                if not self.not_enough_money_tip.condition_met:
+                    self.not_enough_money_tip.condition_met = True
             else:
-                self.unlock_button.on_button_is_visible()
-                self.not_enough_money_tip.condition_met = False
+                if not self.unlock_button.is_visible:
+                    self.unlock_button.on_button_is_visible()
+
+                if self.not_enough_money_tip.condition_met:
+                    self.not_enough_money_tip.condition_met = False
 
         if self.under_construction:
             if not self.under_construction_tip.condition_met:
@@ -151,6 +183,8 @@ class Track(GameObject):
             self.unlock_condition_from_level = False
             self.unlock_condition_from_previous_track = False
             self.unlock_available = True
+            self.game_progress.money_target = self.price
+            self.game_progress.update_money_progress_sprite()
 
     def on_unlock_condition_from_level(self):
         self.unlock_condition_from_level = True
@@ -158,3 +192,5 @@ class Track(GameObject):
             self.unlock_condition_from_level = False
             self.unlock_condition_from_previous_track = False
             self.unlock_available = True
+            self.game_progress.money_target = self.price
+            self.game_progress.update_money_progress_sprite()
