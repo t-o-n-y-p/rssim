@@ -15,6 +15,14 @@ def _game_is_not_paused(fn):
     return _update_if_game_is_not_paused
 
 
+def _signal_is_not_locked(fn):
+    def _update_sprite_if_signal_is_not_locked(*args, **kwargs):
+        if not args[0].locked:
+            fn(*args, **kwargs)
+
+    return _update_sprite_if_signal_is_not_locked
+
+
 class Signal(GameObject):
     def __init__(self, placement, flip_needed, track_number, route_type, batch, signal_group, game_config):
         super().__init__(game_config)
@@ -48,7 +56,6 @@ class Signal(GameObject):
         self.locked = None
         self.read_state()
         self.sprite = None
-        self.base_offset = self.c.base_offset
         self.logger.debug('------- END INIT -------')
         self.logger.warning('signal init completed')
 
@@ -97,8 +104,7 @@ class Signal(GameObject):
     def update_sprite(self, base_offset):
         self.logger.debug('------- START DRAWING -------')
         self.logger.debug('signal is not invisible, drawing')
-        self.base_offset = base_offset
-        signal_position = (self.base_offset[0] + self.placement[0], self.base_offset[1] + self.placement[1])
+        signal_position = (base_offset[0] + self.placement[0], base_offset[1] + self.placement[1])
         if signal_position[0] not in range(-15, self.c.screen_resolution[0] + 15) \
                 or signal_position[1] not in range(-15, self.c.screen_resolution[1] + 15):
             if self.sprite is not None:
@@ -121,9 +127,9 @@ class Signal(GameObject):
         self.logger.debug('------- END DRAWING -------')
 
     @_game_is_not_paused
+    @_signal_is_not_locked
     def update(self, game_paused):
         self.logger.debug('-------UPDATE START-------')
-
         if not self.base_route_exit.route_config['opened']:
             self.priority = 0
             if self.state == 'green_signal':
