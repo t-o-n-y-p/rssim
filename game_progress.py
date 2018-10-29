@@ -55,6 +55,7 @@ class GameProgress(GameObject):
         self.main_map = main_map
         self.mini_map = mini_map
         self.tracks = None
+        self.signals = None
         pyglet.resource.add_font('perfo-bold.ttf')
         self.progress_bar_inactive_image = pyglet.image.load('img/progress_bar_inactive.png')
         self.progress_bar_exp_inactive = pyglet.sprite.Sprite(self.progress_bar_inactive_image,

@@ -246,6 +246,21 @@ class RSSim(Game):
                               button_group=self.buttons_general_borders_day_text_ordered_group,
                               text_group=self.buttons_text_and_borders_ordered_group,
                               borders_group=self.buttons_text_and_borders_ordered_group, game_config=self.c)
+            if i == 1:
+                new_track.signals_to_unlock.append(self.signals[0]['right_entry_base_route'])
+            elif i == 2:
+                new_track.signals_to_unlock.append(self.signals[0]['left_entry_base_route'])
+            elif i == 21:
+                new_track.signals_to_unlock.append(self.signals[100]['left_side_entry_base_route'])
+            elif i == 22:
+                new_track.signals_to_unlock.append(self.signals[100]['right_side_entry_base_route'])
+
+            for j in self.signals[i]:
+                new_track.signals_to_unlock.append(self.signals[i][j])
+
+            for a in new_track.signals_to_unlock:
+                a.locked = new_track.locked
+
             self.tracks.append(new_track)
             self.logger.info('track {} created'.format(i))
             # create entry train route

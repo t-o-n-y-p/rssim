@@ -49,6 +49,7 @@ class Track(GameObject):
         self.unlock_condition_from_previous_track = None
         self.unlock_available = False
         self.game_progress = None
+        self.signals_to_unlock = []
         self.read_state()
         self.unlock_button = Button(position=(195, 81), button_size=(250, 30),
                                     text=['Unlock track {}                     '.format(self.track_number), ],
@@ -62,10 +63,6 @@ class Track(GameObject):
                                         primary_text='Get                    to unlock track {}'
                                         .format(self.track_number),
                                         price_text='  {} ¤                        '.format(self.price))
-        self.under_construction_tip = Tip(pyglet.image.load('img/track_tip.png'), x=195, y=81,
-                                          tip_type='track_under_construction', batch=batch, group=tip_group,
-                                          viewport_border_group=text_group, game_config=self.c,
-                                          primary_text='Building track {}, some time left'.format(self.track_number))
         if self.construction_time // 14400 > 0:
             self.under_construction_tip = Tip(pyglet.image.load('img/track_tip.png'), x=195, y=81,
                                               tip_type='track_under_construction', batch=batch, group=tip_group,
@@ -195,6 +192,9 @@ class Track(GameObject):
             self.logger.info('construction_time left: {}'.format(self.construction_time))
             if self.construction_time <= 0:
                 self.locked = False
+                for j in self.signals_to_unlock:
+                    j.on_unlock()
+
                 self.under_construction = False
                 self.under_construction_tip.condition_met = False
                 self.game_progress.on_track_unlock(self.track_number)
