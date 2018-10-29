@@ -15,19 +15,6 @@ def _game_is_not_paused(fn):
     return _update_if_game_is_not_paused
 
 
-def _signal_is_not_locked(fn):
-    def _update_sprite_if_signal_is_not_locked(*args, **kwargs):
-        if args[0].locked:
-            if args[0].sprite is not None:
-                args[0].sprite.delete()
-                args[0].sprite = None
-
-        else:
-            fn(*args, **kwargs)
-
-    return _update_sprite_if_signal_is_not_locked
-
-
 class Signal(GameObject):
     def __init__(self, placement, flip_needed, track_number, route_type, batch, signal_group, game_config):
         super().__init__(game_config)
@@ -107,7 +94,6 @@ class Signal(GameObject):
         self.logger.info('signal state saved to file user_cfg/signals/track{}/track{}_{}.ini'
                          .format(self.track_number, self.track_number, self.route_type))
 
-    @_signal_is_not_locked
     def update_sprite(self, base_offset):
         self.logger.debug('------- START DRAWING -------')
         self.logger.debug('signal is not invisible, drawing')
@@ -122,9 +108,12 @@ class Signal(GameObject):
         else:
             if self.sprite is None:
                 self.sprite = pyglet.sprite.Sprite(self.image[self.state],
-                                                   x=self.placement[0], y=self.placement[1],
+                                                   x=signal_position[0], y=signal_position[1],
                                                    batch=self.batch, group=self.signal_group)
-            self.sprite.position = signal_position
+            else:
+                self.sprite.position = signal_position
+
+            self.sprite.visible = not self.locked
             if self.flip_needed:
                 self.sprite.rotation = 180.0
 
@@ -132,7 +121,6 @@ class Signal(GameObject):
         self.logger.debug('------- END DRAWING -------')
 
     @_game_is_not_paused
-    @_signal_is_not_locked
     def update(self, game_paused):
         self.logger.debug('-------UPDATE START-------')
 
@@ -197,4 +185,5 @@ class Signal(GameObject):
 
     def on_unlock(self):
         self.locked = False
-        self.update_sprite(self.base_offset)
+        if self.sprite is not None:
+            self.sprite.visible = True
