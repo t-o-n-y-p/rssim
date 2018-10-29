@@ -23,7 +23,7 @@ class Track(GameObject):
         def start_track_construction(button):
             self.game_progress.money_target = 0
             self.game_progress.erase_money_progress()
-            self.game_progress.add_money((-1)*self.price)
+            self.game_progress.pay_money(self.price)
             button.on_button_is_not_visible()
             self.unlock_available = False
             self.not_enough_money_tip.condition_met = False
@@ -66,6 +66,20 @@ class Track(GameObject):
                                           tip_type='track_under_construction', batch=batch, group=tip_group,
                                           viewport_border_group=text_group, game_config=self.c,
                                           primary_text='Building track {}, some time left'.format(self.track_number))
+        if self.construction_time // 14400 > 0:
+            self.under_construction_tip = Tip(pyglet.image.load('img/track_tip.png'), x=195, y=81,
+                                              tip_type='track_under_construction', batch=batch, group=tip_group,
+                                              viewport_border_group=text_group, game_config=self.c,
+                                              primary_text='Building track {}, {}h {}m left'
+                                              .format(self.track_number, self.construction_time // 14400,
+                                                      (self.construction_time // 240) % 60))
+        else:
+            self.under_construction_tip = Tip(pyglet.image.load('img/track_tip.png'), x=195, y=81,
+                                              tip_type='track_under_construction', batch=batch, group=tip_group,
+                                              viewport_border_group=text_group, game_config=self.c,
+                                              primary_text='Building track {}, {}m left'
+                                              .format(self.track_number, self.construction_time // 240))
+
         self.logger.debug('------- END INIT -------')
         self.logger.warning('track init completed')
 
@@ -163,6 +177,18 @@ class Track(GameObject):
         if self.under_construction:
             if not self.under_construction_tip.condition_met:
                 self.under_construction_tip.condition_met = True
+
+            if self.under_construction_tip.primary_text_label is not None:
+                if self.construction_time % 240 == 0:
+                    if self.construction_time // 14400 > 0:
+                        self.under_construction_tip.primary_text_label.text \
+                            = 'Building track {}, {}h {}m left'\
+                            .format(self.track_number, self.construction_time // 14400,
+                                    (self.construction_time // 240) % 60)
+                    else:
+                        self.under_construction_tip.primary_text_label.text \
+                            = 'Building track {}, {}m left'\
+                            .format(self.track_number, self.construction_time // 240)
 
             self.logger.info('base route is under construction')
             self.construction_time -= 1

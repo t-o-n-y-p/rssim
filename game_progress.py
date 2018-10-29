@@ -31,6 +31,14 @@ def _level_up(fn):
     return _update_exp_progress_if_level_up
 
 
+def _maximum_money_not_reached(fn):
+    def _add_money_if_maximum_money_is_not_reached(*args, **kwargs):
+        if args[0].money < 99999999.0:
+            fn(*args, **kwargs)
+
+    return _add_money_if_maximum_money_is_not_reached
+
+
 class GameProgress(GameObject):
     def __init__(self, main_map, mini_map, game_config, batch, inactive_group, active_group):
         super().__init__(game_config)
@@ -114,8 +122,16 @@ class GameProgress(GameObject):
         self.accumulated_exp += exp
         self.update_exp_progress_sprite()
 
+    @_maximum_money_not_reached
     def add_money(self, money):
         self.money += money
+        if self.money > 99999999.01:
+            self.money = 99999999.01
+        self.money_text.text = '{0:0>8} ¤'.format(int(self.money))
+        self.update_money_progress_sprite()
+
+    def pay_money(self, money):
+        self.money -= money
         self.money_text.text = '{0:0>8} ¤'.format(int(self.money))
         self.update_money_progress_sprite()
 
