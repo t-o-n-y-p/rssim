@@ -45,7 +45,7 @@ class Game:
         self.manage_logs_config()
         self.logger.debug('main logger created')
         self.c = GameConfig()
-        self.main_map_tiles = None
+        self.main_map = None
         # since map can be moved, all objects should also be moved, that's why we need base offset here
         self.base_offset = self.c.base_offset
         self.logger.debug('base offset set: {} {}'.format(self.base_offset[0], self.base_offset[1]))
@@ -216,7 +216,7 @@ class Game:
                 self.base_offset = (self.base_offset[0], self.c.base_offset_upper_left_limit[1])
 
             self.logger.debug('new limited offset: {}'.format(self.base_offset))
-            self.main_map_tiles.update_sprite(self.base_offset)
+            self.main_map.update_sprite(self.base_offset)
             for s in self.dispatcher.signals:
                 s.update_sprite(self.base_offset)
 

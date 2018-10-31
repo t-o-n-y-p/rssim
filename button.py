@@ -55,41 +55,17 @@ class Button(GameObject):
         self.text_group = text_group
         self.borders_group = borders_group
         self.logger.debug('position set: {}'.format(self.position))
-        self.text_objects = []
         self.on_click = on_click
         self.map_move_mode = map_move_mode
-        self.on_click_actual = self.on_click[0]
-        self.logger.debug('on click action set: {}'.format(self.on_click_actual))
         pyglet.gl.glEnable(pyglet.gl.GL_BLEND)
         pyglet.gl.glBlendFunc(pyglet.gl.GL_SRC_ALPHA, pyglet.gl.GL_ONE_MINUS_SRC_ALPHA)
-        self.vertex_list \
-            = batch.add(4, pyglet.gl.GL_QUADS, button_group,
-                        ('v2i/static', (self.position[0],
-                                        self.position[1],
-                                        self.position[0] + self.button_size[0] - 1,
-                                        self.position[1],
-                                        self.position[0] + self.button_size[0] - 1,
-                                        self.position[1] + self.button_size[1] - 1,
-                                        self.position[0],
-                                        self.position[1] + self.button_size[1] - 1)),
-                        ('c4B', (0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0))
-                        )
+        self.vertex_list = None
         self.border_sprite_image = pyglet.image.load('img/button_border_{}_{}.png'
                                                      .format(self.button_size[0], self.button_size[1]))
-        self.border_sprite = pyglet.sprite.Sprite(self.border_sprite_image, x=self.position[0], y=self.position[1],
-                                                  batch=self.batch, group=self.borders_group)
+        self.border_sprite = None
         self.text = text
         self.font_size = font_size
-        self.text_object_actual = pyglet.text.Label(text[0],
-                                                    font_name=self.c.font_name,
-                                                    font_size=self.font_size,
-                                                    x=self.position[0] + self.button_size[0] // 2,
-                                                    y=self.position[1] + self.button_size[1] // 2,
-                                                    anchor_x='center', anchor_y='center',
-                                                    batch=self.batch, group=self.text_group)
-        self.text_object_actual_text = self.text[0]
-        self.logger.debug('text objects set: {}'.format(self.text))
-        self.logger.debug('current text set: {}'.format(self.text[0]))
+        self.text_object = None
         if self.is_visible:
             self.on_button_is_visible()
         else:
@@ -112,15 +88,16 @@ class Button(GameObject):
                                                               self.position[1] + self.button_size[1] - 1)),
                                               ('c4B', (0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0)))
 
-        self.border_sprite.visible = True
+        if self.border_sprite is None:
+            self.border_sprite = pyglet.sprite.Sprite(self.border_sprite_image, x=self.position[0], y=self.position[1],
+                                                      batch=self.batch, group=self.borders_group)
 
-        if self.text_object_actual is None:
-            self.text_object_actual = pyglet.text.Label(self.text_object_actual_text, font_name=self.c.font_name,
-                                                        font_size=self.font_size,
-                                                        x=self.position[0] + self.button_size[0] // 2,
-                                                        y=self.position[1] + self.button_size[1] // 2,
-                                                        anchor_x='center', anchor_y='center', batch=self.batch,
-                                                        group=self.text_group)
+        if self.text_object is None:
+            self.text_object = pyglet.text.Label(self.text, font_name=self.c.font_name, font_size=self.font_size,
+                                                 x=self.position[0] + self.button_size[0] // 2,
+                                                 y=self.position[1] + self.button_size[1] // 2,
+                                                 anchor_x='center', anchor_y='center', batch=self.batch,
+                                                 group=self.text_group)
 
     def on_button_is_not_visible(self):
         self.is_visible = False
@@ -128,11 +105,13 @@ class Button(GameObject):
             self.vertex_list.delete()
             self.vertex_list = None
 
-        self.border_sprite.visible = False
+        if self.border_sprite is not None:
+            self.border_sprite.delete()
+            self.border_sprite = None
 
-        if self.text_object_actual is not None:
-            self.text_object_actual.delete()
-            self.text_object_actual = None
+        if self.text_object is not None:
+            self.text_object.delete()
+            self.text_object = None
 
     def update(self, game_paused):
         pass
@@ -169,26 +148,7 @@ class Button(GameObject):
         self.vertex_list.colors = (127, 0, 0, 255, 127, 0, 0, 255, 127, 0, 0, 255, 127, 0, 0, 255)
         self.logger.info('cursor is on the button and user released mouse button')
         self.logger.info('start onclick action')
-        self.on_click_actual(self)
-        if self.on_click_actual == self.on_click[0] and len(self.on_click) == 2:
-            self.on_click_actual = self.on_click[1]
-            self.logger.info('button is switched to second action')
-        else:
-            self.on_click_actual = self.on_click[0]
-            self.logger.debug('button has only 1 action, so it remains the same')
-
-        if self.text_object_actual_text == self.text[0] and len(self.text) == 2:
-            self.text_object_actual_text = self.text[1]
-            if self.text_object_actual is not None:
-                self.text_object_actual.text = self.text[1]
-
-            self.logger.info('button is switched to second text')
-        else:
-            self.text_object_actual_text = self.text[0]
-            if self.text_object_actual is not None:
-                self.text_object_actual.text = self.text[0]
-
-            self.logger.debug('button has only 1 text, so it remains the same')
+        self.on_click(self)
 
     @_button_is_visible
     def handle_mouse_leave(self, x, y):

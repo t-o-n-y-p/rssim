@@ -50,8 +50,8 @@ class Track(GameObject):
         self.game_progress = game_progress
         self.signals_to_unlock = []
         self.unlock_button = Button(position=(195, 81), button_size=(250, 30),
-                                    text=['Unlock track {}                     '.format(self.track_number), ],
-                                    font_size=self.c.unlock_tip_font_size, on_click=[start_track_construction, ],
+                                    text='Unlock track {}                     '.format(self.track_number),
+                                    font_size=self.c.unlock_tip_font_size, on_click=start_track_construction,
                                     is_visible=False, batch=batch,
                                     button_group=button_group, text_group=text_group, borders_group=borders_group,
                                     game_config=self.c, logs_description='track{}_unlock'.format(self.track_number),
