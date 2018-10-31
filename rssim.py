@@ -1,4 +1,5 @@
 import sys
+import os
 
 import win32api
 import win32con
@@ -53,6 +54,11 @@ class RSSim(Game):
             self.main_map_tiles = MainMap(batch=self.batch, group=self.map_ordered_group, game_config=self.c)
         except VideoAdapterNotSupportedException:
             raise VideoAdapterNotSupportedException
+
+        self.game_progress = GameProgress(main_map=self.main_map_tiles, mini_map=self.mini_map_tip, game_config=self.c,
+                                          batch=self.batch,
+                                          inactive_group=self.buttons_general_borders_day_text_ordered_group,
+                                          active_group=self.buttons_text_and_borders_ordered_group)
         self.logger.info('main map object created')
         self.logger.debug('main map object appended')
         self.logger.debug('------- END CREATING BG IMAGE -------')
@@ -245,7 +251,8 @@ class RSSim(Game):
                               batch=self.batch, tip_group=self.top_bottom_bars_ordered_group,
                               button_group=self.buttons_general_borders_day_text_ordered_group,
                               text_group=self.buttons_text_and_borders_ordered_group,
-                              borders_group=self.buttons_text_and_borders_ordered_group, game_config=self.c)
+                              borders_group=self.buttons_text_and_borders_ordered_group, game_config=self.c,
+                              map_move_mode=self.map_move_mode, game_progress=self.game_progress)
             if i == 1:
                 new_track.signals_to_unlock.append(self.signals[0]['right_entry_base_route'])
             elif i == 2:
@@ -584,10 +591,6 @@ class RSSim(Game):
         self.logger.info('all tracks appended to dispatcher')
         # now we add dispatcher itself to generic objects list
         self.dispatcher.read_state()
-        self.game_progress = GameProgress(main_map=self.main_map_tiles, mini_map=self.mini_map_tip, game_config=self.c,
-                                          batch=self.batch,
-                                          inactive_group=self.buttons_general_borders_day_text_ordered_group,
-                                          active_group=self.buttons_text_and_borders_ordered_group)
         self.game_progress.tracks = self.tracks
         for i in self.tracks:
             i.game_progress = self.game_progress
@@ -2208,6 +2211,12 @@ class RSSim(Game):
             self.logger.critical('------- GAME IS RESUMED -------')
 
         def close_game(button):
+            if os.path.exists('user_cfg/trains'):
+                for j in os.listdir('user_cfg/trains'):
+                    os.remove('user_cfg/trains/' + j)
+
+                os.rmdir('user_cfg/trains')
+
             for i in self.objects:
                 i.save_state()
 
@@ -2229,6 +2238,12 @@ class RSSim(Game):
 
         def save_game(button):
             self.logger.critical('------- GAME SAVE START -------')
+            if os.path.exists('user_cfg/trains'):
+                for j in os.listdir('user_cfg/trains'):
+                    os.remove('user_cfg/trains/' + j)
+
+                os.rmdir('user_cfg/trains')
+
             for i in self.objects:
                 i.save_state()
 
@@ -2248,51 +2263,53 @@ class RSSim(Game):
         self.objects.append(TopAndBottomBar(batch=self.batch,
                                             bar_group=self.top_bottom_bars_ordered_group, game_config=self.c))
         self.logger.debug('bottom bar appended to global objects list')
-        stop_button = Button(position=(self.c.screen_resolution[0] - 80, 0), button_size=(80, 80),
-                             text=['‖', '►'], font_size=self.c.play_pause_button_font_size,
-                             on_click=[pause_game, resume_game], is_visible=True,
-                             batch=self.batch, button_group=self.buttons_general_borders_day_text_ordered_group,
-                             text_group=self.buttons_text_and_borders_ordered_group,
-                             borders_group=self.buttons_text_and_borders_ordered_group, game_config=self.c,
-                             logs_description='pause/resume')
-        close_button = Button(position=(self.c.screen_resolution[0] - 34, self.c.screen_resolution[1] - 34),
-                              button_size=(34, 34), text=['X', ], font_size=self.c.iconify_close_button_font_size,
-                              on_click=[close_game, ], is_visible=True,
-                              batch=self.batch, button_group=self.buttons_general_borders_day_text_ordered_group,
-                              text_group=self.buttons_text_and_borders_ordered_group,
-                              borders_group=self.buttons_text_and_borders_ordered_group, game_config=self.c,
-                              logs_description='close')
-        iconify_button = Button(position=(self.c.screen_resolution[0] - 66, self.c.screen_resolution[1] - 34),
-                                button_size=(34, 34), text=['_', ], font_size=self.c.iconify_close_button_font_size,
-                                on_click=[iconify_game, ], is_visible=True,
-                                batch=self.batch, button_group=self.buttons_general_borders_day_text_ordered_group,
-                                text_group=self.buttons_text_and_borders_ordered_group,
-                                borders_group=self.buttons_text_and_borders_ordered_group, game_config=self.c,
-                                logs_description='iconify')
-        self.on_mouse_press_handlers.append(stop_button.handle_mouse_press)
-        self.on_mouse_press_handlers.append(close_button.handle_mouse_press)
-        self.on_mouse_press_handlers.append(iconify_button.handle_mouse_press)
+        self.stop_button = Button(position=(self.c.screen_resolution[0] - 80, 0), button_size=(80, 80),
+                                  text=['‖', '►'], font_size=self.c.play_pause_button_font_size,
+                                  on_click=[pause_game, resume_game], is_visible=True,
+                                  batch=self.batch, button_group=self.buttons_general_borders_day_text_ordered_group,
+                                  text_group=self.buttons_text_and_borders_ordered_group,
+                                  borders_group=self.buttons_text_and_borders_ordered_group, game_config=self.c,
+                                  logs_description='pause/resume', map_move_mode=self.map_move_mode)
+        self.close_button = Button(position=(self.c.screen_resolution[0] - 34, self.c.screen_resolution[1] - 34),
+                                   button_size=(34, 34), text=['X', ], font_size=self.c.iconify_close_button_font_size,
+                                   on_click=[close_game, ], is_visible=True,
+                                   batch=self.batch, button_group=self.buttons_general_borders_day_text_ordered_group,
+                                   text_group=self.buttons_text_and_borders_ordered_group,
+                                   borders_group=self.buttons_text_and_borders_ordered_group, game_config=self.c,
+                                   logs_description='close', map_move_mode=self.map_move_mode)
+        self.iconify_button = Button(position=(self.c.screen_resolution[0] - 66, self.c.screen_resolution[1] - 34),
+                                     button_size=(34, 34), text=['_', ],
+                                     font_size=self.c.iconify_close_button_font_size,
+                                     on_click=[iconify_game, ], is_visible=True,
+                                     batch=self.batch, button_group=self.buttons_general_borders_day_text_ordered_group,
+                                     text_group=self.buttons_text_and_borders_ordered_group,
+                                     borders_group=self.buttons_text_and_borders_ordered_group, game_config=self.c,
+                                     logs_description='iconify', map_move_mode=self.map_move_mode)
+
         self.on_mouse_press_handlers.append(self.handle_mouse_press)
+        self.on_mouse_press_handlers.append(self.stop_button.handle_mouse_press)
+        self.on_mouse_press_handlers.append(self.close_button.handle_mouse_press)
+        self.on_mouse_press_handlers.append(self.iconify_button.handle_mouse_press)
 
-        self.on_mouse_release_handlers.append(stop_button.handle_mouse_release)
-        self.on_mouse_release_handlers.append(close_button.handle_mouse_release)
-        self.on_mouse_release_handlers.append(iconify_button.handle_mouse_release)
         self.on_mouse_release_handlers.append(self.handle_mouse_release)
+        self.on_mouse_release_handlers.append(self.stop_button.handle_mouse_release)
+        self.on_mouse_release_handlers.append(self.close_button.handle_mouse_release)
+        self.on_mouse_release_handlers.append(self.iconify_button.handle_mouse_release)
 
-        self.on_mouse_motion_handlers.append(stop_button.handle_mouse_motion)
-        self.on_mouse_motion_handlers.append(close_button.handle_mouse_motion)
-        self.on_mouse_motion_handlers.append(iconify_button.handle_mouse_motion)
+        self.on_mouse_motion_handlers.append(self.stop_button.handle_mouse_motion)
+        self.on_mouse_motion_handlers.append(self.close_button.handle_mouse_motion)
+        self.on_mouse_motion_handlers.append(self.iconify_button.handle_mouse_motion)
 
-        self.on_mouse_leave_handlers.append(stop_button.handle_mouse_leave)
-        self.on_mouse_leave_handlers.append(close_button.handle_mouse_leave)
-        self.on_mouse_leave_handlers.append(iconify_button.handle_mouse_leave)
+        self.on_mouse_leave_handlers.append(self.stop_button.handle_mouse_leave)
+        self.on_mouse_leave_handlers.append(self.close_button.handle_mouse_leave)
+        self.on_mouse_leave_handlers.append(self.iconify_button.handle_mouse_leave)
 
         self.on_mouse_drag_handlers.append(self.handle_mouse_drag)
         self.logger.debug('save button button handler appended to global mouse handlers list')
-        self.objects.append(stop_button)
+        self.objects.append(self.stop_button)
         self.logger.debug('pause/resume button appended to global objects list')
-        self.objects.append(close_button)
-        self.objects.append(iconify_button)
+        self.objects.append(self.close_button)
+        self.objects.append(self.iconify_button)
         for i in self.tracks:
             self.on_mouse_press_handlers.append(i.unlock_button.handle_mouse_press)
             self.on_mouse_release_handlers.append(i.unlock_button.handle_mouse_release)

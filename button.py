@@ -40,7 +40,7 @@ def _button_is_pressed(fn):
 
 class Button(GameObject):
     def __init__(self, position, button_size, text, font_size, on_click, is_visible,
-                 batch, button_group, text_group, borders_group, game_config, logs_description):
+                 batch, button_group, text_group, borders_group, game_config, logs_description, map_move_mode):
         super().__init__(game_config)
         self.logger = logging.getLogger('game.{}_button'.format(logs_description))
         self.logger.debug('------- START INIT -------')
@@ -57,6 +57,7 @@ class Button(GameObject):
         self.logger.debug('position set: {}'.format(self.position))
         self.text_objects = []
         self.on_click = on_click
+        self.map_move_mode = map_move_mode
         self.on_click_actual = self.on_click[0]
         self.logger.debug('on click action set: {}'.format(self.on_click_actual))
         pyglet.gl.glEnable(pyglet.gl.GL_BLEND)
@@ -157,8 +158,10 @@ class Button(GameObject):
         self.state = 'pressed'
         self.vertex_list.colors = (191, 0, 0, 255, 191, 0, 0, 255, 191, 0, 0, 255, 191, 0, 0, 255)
         self.logger.info('cursor is on the button and user holds mouse button')
+        self.map_move_mode[0] = False
 
     @_button_is_visible
+    @_cursor_is_over_the_button
     @_button_is_pressed
     @_left_button
     def handle_mouse_release(self, x, y, button, modifiers):

@@ -116,12 +116,12 @@ class Signal(GameObject):
                 self.sprite = pyglet.sprite.Sprite(self.image[self.state],
                                                    x=signal_position[0], y=signal_position[1],
                                                    batch=self.batch, group=self.signal_group)
+                self.sprite.visible = not self.locked
+                if self.flip_needed:
+                    self.sprite.rotation = 180.0
+
             else:
                 self.sprite.position = signal_position
-
-            self.sprite.visible = not self.locked
-            if self.flip_needed:
-                self.sprite.rotation = 180.0
 
         self.logger.info('signal image is in place')
         self.logger.debug('------- END DRAWING -------')

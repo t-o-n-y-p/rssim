@@ -195,6 +195,7 @@ class GameProgress(GameObject):
         self.progress_bar_money_inactive.position = (220 + self.money_percent * 2, 10)
 
     def erase_money_progress(self):
+        self.money_target = 0
         self.progress_bar_money_active.image = self.progress_bar_money_active_image.get_region(0, 0, 1, 10)
         self.progress_bar_money_inactive.image = self.progress_bar_inactive_image.get_region(0, 0, 200, 60)
         self.progress_bar_money_inactive.position = (220, 10)

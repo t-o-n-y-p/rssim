@@ -19,15 +19,14 @@ def _game_is_not_paused(fn):
 
 class Track(GameObject):
     def __init__(self, track_number, base_routes_in_track, batch, tip_group, button_group, text_group, borders_group,
-                 game_config):
+                 game_config, map_move_mode, game_progress):
         def start_track_construction(button):
-            self.game_progress.money_target = 0
             self.game_progress.erase_money_progress()
             self.game_progress.pay_money(self.price)
             button.on_button_is_not_visible()
             self.unlock_available = False
             self.not_enough_money_tip.condition_met = False
-            self.under_construction = True
+            self.on_under_construction_available()
 
         super().__init__(game_config)
         self.logger = logging.getLogger('game.track_{}'.format(track_number))
@@ -48,35 +47,26 @@ class Track(GameObject):
         self.unlock_condition_from_level = None
         self.unlock_condition_from_previous_track = None
         self.unlock_available = False
-        self.game_progress = None
+        self.game_progress = game_progress
         self.signals_to_unlock = []
-        self.read_state()
         self.unlock_button = Button(position=(195, 81), button_size=(250, 30),
                                     text=['Unlock track {}                     '.format(self.track_number), ],
                                     font_size=self.c.unlock_tip_font_size, on_click=[start_track_construction, ],
                                     is_visible=False, batch=batch,
                                     button_group=button_group, text_group=text_group, borders_group=borders_group,
-                                    game_config=self.c, logs_description='track{}_unlock'.format(self.track_number))
+                                    game_config=self.c, logs_description='track{}_unlock'.format(self.track_number),
+                                    map_move_mode=map_move_mode)
         self.not_enough_money_tip = Tip(pyglet.image.load('img/track_tip.png'), x=195, y=81,
                                         tip_type='not_enough_money', batch=batch, group=tip_group,
                                         viewport_border_group=text_group, game_config=self.c,
                                         primary_text='Get                    to unlock track {}'
                                         .format(self.track_number),
-                                        price_text='  {} ¤                        '.format(self.price))
-        if self.construction_time // 14400 > 0:
-            self.under_construction_tip = Tip(pyglet.image.load('img/track_tip.png'), x=195, y=81,
-                                              tip_type='track_under_construction', batch=batch, group=tip_group,
-                                              viewport_border_group=text_group, game_config=self.c,
-                                              primary_text='Building track {}, {}h {}m left'
-                                              .format(self.track_number, self.construction_time // 14400,
-                                                      (self.construction_time // 240) % 60))
-        else:
-            self.under_construction_tip = Tip(pyglet.image.load('img/track_tip.png'), x=195, y=81,
-                                              tip_type='track_under_construction', batch=batch, group=tip_group,
-                                              viewport_border_group=text_group, game_config=self.c,
-                                              primary_text='Building track {}, {}m left'
-                                              .format(self.track_number, self.construction_time // 240))
-
+                                        price_text='  0 ¤                        ')
+        self.under_construction_tip = Tip(pyglet.image.load('img/track_tip.png'), x=195, y=81,
+                                          tip_type='track_under_construction', batch=batch, group=tip_group,
+                                          viewport_border_group=text_group, game_config=self.c,
+                                          primary_text='Building track {}'.format(self.track_number))
+        self.read_state()
         self.logger.debug('------- END INIT -------')
         self.logger.warning('track init completed')
 
@@ -92,7 +82,7 @@ class Track(GameObject):
         self.locked = self.config['user_data'].getboolean('locked')
         self.under_construction = self.config['user_data'].getboolean('under_construction')
         self.construction_time = self.config['user_data'].getint('construction_time')
-        self.construction_time //= 100
+        self.construction_time //= 10
         self.busy = self.config['user_data'].getboolean('busy')
         self.logger.debug('busy: {}'.format(self.busy))
         self.last_entered_by = self.config['user_data'].getint('last_entered_by')
@@ -106,6 +96,12 @@ class Track(GameObject):
             = self.config['user_data'].getboolean('unlock_condition_from_previous_track')
         self.unlock_available = self.config['user_data'].getboolean('unlock_available')
         self.price = self.config['track_config'].getint('price')
+
+        if self.unlock_available:
+            self.on_unlock_available()
+
+        if self.under_construction:
+            self.on_under_construction_available()
 
         self.logger.debug('------- END READING STATE -------')
         self.logger.info('track state initialized')
@@ -162,7 +158,7 @@ class Track(GameObject):
                 if self.unlock_button.is_visible:
                     self.unlock_button.on_button_is_not_visible()
                     self.not_enough_money_tip.primary_text_label.text = 'Get                    to unlock track {}'\
-                                                                        .format(self.track_number),
+                                                                        .format(self.track_number)
                     self.not_enough_money_tip.price_text_label.text = '  {} ¤                        '\
                                                                       .format(self.price)
             else:
@@ -172,20 +168,16 @@ class Track(GameObject):
                     self.not_enough_money_tip.price_text_label.text = '                      {} ¤'.format(self.price)
 
         if self.under_construction:
-            if not self.under_construction_tip.condition_met:
-                self.under_construction_tip.condition_met = True
-
-            if self.under_construction_tip.primary_text_label is not None:
-                if self.construction_time % 240 == 0:
-                    if self.construction_time // 14400 > 0:
-                        self.under_construction_tip.primary_text_label.text \
-                            = 'Building track {}, {}h {}m left'\
-                            .format(self.track_number, self.construction_time // 14400,
-                                    (self.construction_time // 240) % 60)
-                    else:
-                        self.under_construction_tip.primary_text_label.text \
-                            = 'Building track {}, {}m left'\
-                            .format(self.track_number, self.construction_time // 240)
+            if self.construction_time % 240 == 0:
+                if self.construction_time // 14400 > 0:
+                    self.under_construction_tip.primary_text_label.text \
+                        = 'Building track {}, {}h {}m left'\
+                          .format(self.track_number, self.construction_time // 14400,
+                                  (self.construction_time // 240) % 60)
+                else:
+                    self.under_construction_tip.primary_text_label.text \
+                        = 'Building track {}, {}m left'\
+                          .format(self.track_number, self.construction_time // 240)
 
             self.logger.info('base route is under construction')
             self.construction_time -= 1
@@ -205,20 +197,43 @@ class Track(GameObject):
 
     def on_unlock_condition_from_previous_track(self):
         self.unlock_condition_from_previous_track = True
-        if self.unlock_condition_from_level and self.unlock_condition_from_previous_track:
+        if self.unlock_condition_from_level:
             self.unlock_condition_from_level = False
             self.unlock_condition_from_previous_track = False
-            self.unlock_available = True
-            self.not_enough_money_tip.condition_met = True
-            self.game_progress.money_target = self.price
-            self.game_progress.update_money_progress_sprite()
+            self.on_unlock_available()
 
     def on_unlock_condition_from_level(self):
         self.unlock_condition_from_level = True
-        if self.unlock_condition_from_level and self.unlock_condition_from_previous_track:
+        if self.unlock_condition_from_previous_track:
             self.unlock_condition_from_level = False
             self.unlock_condition_from_previous_track = False
-            self.unlock_available = True
-            self.not_enough_money_tip.condition_met = True
-            self.game_progress.money_target = self.price
-            self.game_progress.update_money_progress_sprite()
+            self.on_unlock_available()
+
+    def on_unlock_available(self):
+        self.unlock_available = True
+        self.not_enough_money_tip.condition_met = True
+        self.not_enough_money_tip.update_sprite([0, 0])
+        if self.game_progress.money < self.price:
+            self.not_enough_money_tip.primary_text_label.text = 'Get                    to unlock track {}'\
+                                                                .format(self.track_number)
+            self.not_enough_money_tip.price_text_label.text = '  {} ¤                        '.format(self.price)
+        else:
+            self.not_enough_money_tip.primary_text_label.text = ''
+            self.not_enough_money_tip.price_text_label.text = '                      {} ¤'.format(self.price)
+
+        self.game_progress.money_target = self.price
+        self.game_progress.update_money_progress_sprite()
+
+    def on_under_construction_available(self):
+        self.under_construction = True
+        self.under_construction_tip.condition_met = True
+        self.under_construction_tip.update_sprite([0, 0])
+        if self.construction_time % 240 == 0:
+            if self.construction_time // 14400 > 0:
+                self.under_construction_tip.primary_text_label.text \
+                    = 'Building track {}, {}h {}m left'\
+                      .format(self.track_number, self.construction_time // 14400, (self.construction_time // 240) % 60)
+            else:
+                self.under_construction_tip.primary_text_label.text \
+                    = 'Building track {}, {}m left'\
+                      .format(self.track_number, self.construction_time // 240)

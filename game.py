@@ -96,7 +96,7 @@ class Game:
         self.on_mouse_leave_handlers = []
         self.surface.set_location(0, 0)
         self.app_window_move_mode = False
-        self.map_move_mode = False
+        self.map_move_mode = [False, ]
         self.app_window_move_offset = ()
         mini_map_image = pyglet.image.load('img/mini_map/4/mini_map.png')
         self.mini_map_tip = Tip(image=mini_map_image,
@@ -170,7 +170,7 @@ class Game:
         for o in self.objects:
             o.update(self.game_paused)
 
-        if self.mini_map_tip.condition_met and not self.map_move_mode:
+        if self.mini_map_tip.condition_met and not self.map_move_mode[0]:
             if time.time() - self.mini_map_timer > 1:
                 self.mini_map_tip.condition_met = False
 
@@ -187,19 +187,19 @@ class Game:
 
         if x in range(0, self.c.screen_resolution[0]) \
                 and y in range(self.c.top_bar_height, self.c.screen_resolution[1] - self.c.bottom_bar_height):
-            self.map_move_mode = True
-            self.mini_map_tip.condition_met = True
+            self.map_move_mode[0] = True
 
     @_game_window_is_active
     @_left_button
     def handle_mouse_release(self, x, y, button, modifiers):
         self.app_window_move_mode = False
-        self.map_move_mode = False
+        self.map_move_mode[0] = False
         self.mini_map_timer = time.time()
 
     @_game_window_is_active
     def handle_mouse_drag(self, x, y, dx, dy, buttons, modifiers):
-        if self.map_move_mode:
+        if self.map_move_mode[0]:
+            self.mini_map_tip.condition_met = True
             # if left mouse button is pressed and user moves mouse, we move entire map with all its content
             self.logger.debug('user drags map')
             self.logger.debug('old offset: {}'.format(self.base_offset))
