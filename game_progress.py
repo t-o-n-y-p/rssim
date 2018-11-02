@@ -57,13 +57,13 @@ class GameProgress(GameObject):
         self.tracks = None
         self.signals = None
         pyglet.resource.add_font('perfo-bold.ttf')
-        self.progress_bar_inactive_image = pyglet.image.load('img/progress_bar_inactive.png')
+        self.progress_bar_inactive_image = pyglet.image.load('img/game_progress_bars/progress_bar_inactive.png')
         self.progress_bar_exp_inactive = pyglet.sprite.Sprite(self.progress_bar_inactive_image,
                                                               x=10, y=10, batch=batch, group=inactive_group)
         self.progress_bar_money_inactive = pyglet.sprite.Sprite(self.progress_bar_inactive_image,
                                                                 x=220, y=10, batch=batch, group=inactive_group)
-        self.progress_bar_exp_active_image = pyglet.image.load('img/progress_bar_active.png')
-        self.progress_bar_money_active_image = pyglet.image.load('img/progress_bar_money_active.png')
+        self.progress_bar_exp_active_image = pyglet.image.load('img/game_progress_bars/progress_bar_active.png')
+        self.progress_bar_money_active_image = pyglet.image.load('img/game_progress_bars/progress_bar_money_active.png')
         self.progress_bar_exp_active = pyglet.sprite.Sprite(self.progress_bar_exp_active_image,
                                                             x=10, y=10, batch=batch, group=active_group)
         self.progress_bar_exp_active.image = self.progress_bar_exp_active_image.get_region(0, 0, 1, 10)

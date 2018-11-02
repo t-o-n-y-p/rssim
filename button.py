@@ -60,7 +60,7 @@ class Button(GameObject):
         pyglet.gl.glEnable(pyglet.gl.GL_BLEND)
         pyglet.gl.glBlendFunc(pyglet.gl.GL_SRC_ALPHA, pyglet.gl.GL_ONE_MINUS_SRC_ALPHA)
         self.vertex_list = None
-        self.border_sprite_image = pyglet.image.load('img/button_border_{}_{}.png'
+        self.border_sprite_image = pyglet.image.load('img/button_borders/button_border_{}_{}.png'
                                                      .format(self.button_size[0], self.button_size[1]))
         self.border_sprite = None
         self.text = text
@@ -122,7 +122,7 @@ class Button(GameObject):
                 and y in range(self.position[1] + 2, self.position[1] + self.button_size[1] - 2):
             if self.state != 'pressed':
                 self.state = 'hover'
-                self.vertex_list.colors = (127, 0, 0, 255, 127, 0, 0, 255, 127, 0, 0, 255, 127, 0, 0, 255)
+                self.vertex_list.colors = (127, 0, 0, 191, 127, 0, 0, 191, 127, 0, 0, 191, 127, 0, 0, 191)
                 self.logger.info('cursor is on the button')
         else:
             if self.state != 'normal':
@@ -135,7 +135,7 @@ class Button(GameObject):
     @_left_button
     def handle_mouse_press(self, x, y, button, modifiers):
         self.state = 'pressed'
-        self.vertex_list.colors = (191, 0, 0, 255, 191, 0, 0, 255, 191, 0, 0, 255, 191, 0, 0, 255)
+        self.vertex_list.colors = (191, 0, 0, 191, 191, 0, 0, 191, 191, 0, 0, 191, 191, 0, 0, 191)
         self.logger.info('cursor is on the button and user holds mouse button')
         self.map_move_mode[0] = False
 
@@ -145,7 +145,7 @@ class Button(GameObject):
     @_left_button
     def handle_mouse_release(self, x, y, button, modifiers):
         self.state = 'hover'
-        self.vertex_list.colors = (127, 0, 0, 255, 127, 0, 0, 255, 127, 0, 0, 255, 127, 0, 0, 255)
+        self.vertex_list.colors = (127, 0, 0, 191, 127, 0, 0, 191, 127, 0, 0, 191, 127, 0, 0, 191)
         self.logger.info('cursor is on the button and user released mouse button')
         self.logger.info('start onclick action')
         self.on_click(self)

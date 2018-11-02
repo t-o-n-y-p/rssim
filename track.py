@@ -228,12 +228,11 @@ class Track(GameObject):
         self.under_construction = True
         self.under_construction_tip.condition_met = True
         self.under_construction_tip.update_sprite([0, 0])
-        if self.construction_time % 240 == 0:
-            if self.construction_time // 14400 > 0:
-                self.under_construction_tip.primary_text_label.text \
-                    = 'Building track {}, {}h {}m left'\
-                      .format(self.track_number, self.construction_time // 14400, (self.construction_time // 240) % 60)
-            else:
-                self.under_construction_tip.primary_text_label.text \
-                    = 'Building track {}, {}m left'\
-                      .format(self.track_number, self.construction_time // 240)
+        if self.construction_time // 14400 > 0:
+            self.under_construction_tip.primary_text_label.text \
+                = 'Building track {}, {}h {}m left'\
+                  .format(self.track_number, self.construction_time // 14400, (self.construction_time // 240) % 60)
+        else:
+            self.under_construction_tip.primary_text_label.text \
+                = 'Building track {}, {}m left'\
+                  .format(self.track_number, self.construction_time // 240)

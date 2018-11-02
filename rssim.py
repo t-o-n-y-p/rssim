@@ -13,7 +13,7 @@ from signal import Signal
 from track import Track
 from train_route import TrainRoute
 from button import Button
-from top_and_bottom_bar import TopAndBottomBar
+from main_frame import MainFrame
 from ingame_time import InGameTime
 from railroad_switch import RailroadSwitch
 from crossover import Crossover
@@ -2267,8 +2267,8 @@ class RSSim(Game):
             self.logger.critical('------- GAME SAVE END -------')
 
         self.logger.debug('time appended to global objects list')
-        self.objects.append(TopAndBottomBar(batch=self.batch,
-                                            bar_group=self.top_bottom_bars_ordered_group, game_config=self.c))
+        self.objects.append(MainFrame(batch=self.batch,
+                                      main_frame_group=self.top_bottom_bars_ordered_group, game_config=self.c))
         self.logger.debug('bottom bar appended to global objects list')
         self.pause_button = Button(position=(self.c.screen_resolution[0] - 80, 0), button_size=(80, 80),
                                    text='‖', font_size=self.c.play_pause_button_font_size,

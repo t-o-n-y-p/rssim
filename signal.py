@@ -43,8 +43,8 @@ class Signal(GameObject):
                           .format(self.track_number, self.route_type, self.placement, self.flip_needed))
         # initialize signal state
         self.state = 'red_signal'
-        self.image = {'red_signal': pyglet.image.load('img/signal_red.png'),
-                      'green_signal': pyglet.image.load('img/signal_green.png')}
+        self.image = {'red_signal': pyglet.image.load('img/signals/signal_red.png'),
+                      'green_signal': pyglet.image.load('img/signals/signal_green.png')}
         self.image['red_signal'].anchor_x = 5
         self.image['red_signal'].anchor_y = 5
         self.image['green_signal'].anchor_x = 5
