@@ -41,7 +41,9 @@ class Dispatcher(GameObject):
         self.train_head_image = {}
         self.train_mid_image = {}
         self.train_tail_image = {}
-        self.boarding_lights_image = {}
+        self.boarding_lights_image = pyglet.image.load('img/boarding_lights/boarding_lights_day.png')
+        self.boarding_lights_image.anchor_x = self.boarding_lights_image.width // 2
+        self.boarding_lights_image.anchor_y = self.boarding_lights_image.height // 2
         # ----------- left direction images -----------------
         self.train_head_image[self.c.direction_from_left_to_right] = \
             pyglet.image.load('img/cart_head_{}.png'.format(self.c.direction_from_left_to_right))
@@ -78,36 +80,6 @@ class Dispatcher(GameObject):
             self.train_mid_image[i].anchor_y = self.train_mid_image[i].height // 2
             self.train_tail_image[i].anchor_x = self.train_tail_image[i].width // 2
             self.train_tail_image[i].anchor_y = self.train_tail_image[i].height // 2
-
-        self.boarding_lights_image[self.c.direction_from_left_to_right] = []
-        self.boarding_lights_image[self.c.direction_from_right_to_left] = []
-        self.boarding_lights_image[self.c.direction_from_left_to_right_side] = []
-        self.boarding_lights_image[self.c.direction_from_right_to_left_side] = []
-        for i in range(6):
-            self.boarding_lights_image[self.c.direction_from_left_to_right].append(None)
-            self.boarding_lights_image[self.c.direction_from_right_to_left].append(None)
-            self.boarding_lights_image[self.c.direction_from_left_to_right_side].append(None)
-            self.boarding_lights_image[self.c.direction_from_right_to_left_side].append(None)
-
-        for i in range(6, 21):
-            self.boarding_lights_image[self.c.direction_from_left_to_right]\
-                .append(pyglet.image.load('img/boarding_lights/day/{}.png'.format(i)))
-            self.boarding_lights_image[self.c.direction_from_left_to_right][i].anchor_x \
-                = self.boarding_lights_image[self.c.direction_from_left_to_right][i].width - 126
-            self.boarding_lights_image[self.c.direction_from_left_to_right][i].anchor_y = 20
-            self.boarding_lights_image[self.c.direction_from_left_to_right_side]\
-                .append(pyglet.image.load('img/boarding_lights/day/{}.png'.format(i)))
-            self.boarding_lights_image[self.c.direction_from_left_to_right_side][i].anchor_x \
-                = self.boarding_lights_image[self.c.direction_from_left_to_right_side][i].width - 126
-            self.boarding_lights_image[self.c.direction_from_left_to_right_side][i].anchor_y = 20
-            self.boarding_lights_image[self.c.direction_from_right_to_left]\
-                .append(pyglet.image.load('img/boarding_lights/day/{}.png'.format(i)))
-            self.boarding_lights_image[self.c.direction_from_right_to_left][i].anchor_x = 125
-            self.boarding_lights_image[self.c.direction_from_right_to_left][i].anchor_y = 20
-            self.boarding_lights_image[self.c.direction_from_right_to_left_side]\
-                .append(pyglet.image.load('img/boarding_lights/day/{}.png'.format(i)))
-            self.boarding_lights_image[self.c.direction_from_right_to_left_side][i].anchor_x = 125
-            self.boarding_lights_image[self.c.direction_from_right_to_left_side][i].anchor_y = 20
 
         self.mini_map_tip = None
         self.logger.debug('------- END INIT -------')
@@ -176,8 +148,7 @@ class Dispatcher(GameObject):
                                         boarding_lights_image=self.boarding_lights_image,
                                         tail_image=self.train_tail_image,
                                         batch=self.batch, group=self.group,
-                                        boarding_lights_group=self.boarding_lights_group, game_config=self.c,
-                                        load_all_carts_at_once=True)
+                                        boarding_lights_group=self.boarding_lights_group, game_config=self.c)
                 else:
                     saved_train = Train(carts=train_carts, train_route=None, state=train_state,
                                         direction=train_direction,
@@ -188,9 +159,7 @@ class Dispatcher(GameObject):
                                         boarding_lights_image=self.boarding_lights_image,
                                         tail_image=self.train_tail_image,
                                         batch=self.batch, group=self.group,
-                                        boarding_lights_group=self.boarding_lights_group, game_config=self.c,
-                                        load_all_carts_at_once=True)
-
+                                        boarding_lights_group=self.boarding_lights_group, game_config=self.c)
                 self.logger.info('train {} created'.format(i))
                 if train_config['user_data']['track_number'] == 'None':
                     saved_train.track_number = None
@@ -326,9 +295,6 @@ class Dispatcher(GameObject):
                 if i.boarding_time <= 0:
                     self.tracks[i.track_number - 1].override = False
                     i.state = 'boarding_complete'
-                    if i.boarding_lights_sprite is not None:
-                        i.boarding_lights_sprite.visible = False
-
                     self.logger.info('train {} status changed to {}'.format(i.train_id, i.state))
                     self.game_progress.add_exp(10000.0)
                     self.game_progress.add_money(2000.0)
@@ -339,9 +305,6 @@ class Dispatcher(GameObject):
                     # if train arrives to the track, boarding begins
                     if i.state == 'pending_boarding':
                         i.state = 'boarding_in_progress'
-                        if i.boarding_time > 60 and i.boarding_lights_sprite is not None:
-                            i.boarding_lights_sprite.visible = True
-
                         self.logger.debug('train {} boarding begins'.format(i.train_id))
                         self.tracks[i.track_number - 1].override = True
                         self.tracks[i.track_number - 1].busy = True
@@ -360,7 +323,12 @@ class Dispatcher(GameObject):
                         self.logger.info('train {} successfully processed and is about to be removed'
                                          .format(i.train_id))
                         for j in i.cart_sprites:
-                            j.delete()
+                            if j is not None:
+                                j.delete()
+
+                        for j in i.boarding_light_sprites:
+                            if j is not None:
+                                j.delete()
 
                         self.train_ids.remove(i.train_id)
                         self.trains.remove(i)
