@@ -87,11 +87,11 @@ class Dispatcher(GameObject):
 
     def read_state(self):
         self.logger.debug('------- START READING STATE -------')
-        if os.path.exists('user_cfg/dispatcher/config.ini'):
-            self.config.read('user_cfg/dispatcher/config.ini')
+        if os.path.exists('user_cfg/dispatcher.ini'):
+            self.config.read('user_cfg/dispatcher.ini')
             self.logger.debug('config parsed from user_cfg')
         else:
-            self.config.read('default_cfg/dispatcher/config.ini')
+            self.config.read('default_cfg/dispatcher.ini')
             self.logger.debug('config parsed from default_cfg')
 
         train_timer_parsed = self.config['user_data']['train_timer'].split(',')
@@ -216,10 +216,6 @@ class Dispatcher(GameObject):
             os.mkdir('user_cfg')
             self.logger.debug('created user_cfg folder')
 
-        if not os.path.exists('user_cfg/dispatcher'):
-            os.mkdir('user_cfg/dispatcher')
-            self.logger.debug('created user_cfg/dispatcher folder')
-
         self.config['user_data']['train_timer'] \
             = str(self.train_timer[0]) + ',' + str(self.train_timer[1]) + ',' \
             + str(self.train_timer[2]) + ',' + str(self.train_timer[3])
@@ -238,11 +234,11 @@ class Dispatcher(GameObject):
         self.config['user_data']['train_counter'] = str(self.train_counter)
         self.logger.debug('train_counter: {}'.format(self.config['user_data']['train_counter']))
 
-        with open('user_cfg/dispatcher/config.ini', 'w') as configfile:
+        with open('user_cfg/dispatcher.ini', 'w') as configfile:
             self.config.write(configfile)
 
         self.logger.debug('------- END SAVING STATE -------')
-        self.logger.info('dispatcher state saved to file user_cfg/dispatcher/config.ini')
+        self.logger.info('dispatcher state saved to file user_cfg/dispatcher.ini')
 
         for i in self.signals:
             i.save_state()

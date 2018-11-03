@@ -15,7 +15,7 @@ def _game_is_not_paused(fn):
     return _update_if_game_is_not_paused
 
 
-class InGameTime(GameObject):
+class GameTime(GameObject):
     def __init__(self, batch, day_text_group, game_config, auto_save_function):
         super().__init__(game_config)
         self.logger = logging.getLogger('game.in-game_time')

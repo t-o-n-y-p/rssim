@@ -14,7 +14,7 @@ from track import Track
 from train_route import TrainRoute
 from button import Button
 from main_frame import MainFrame
-from ingame_time import InGameTime
+from game_time import GameTime
 from railroad_switch import RailroadSwitch
 from crossover import Crossover
 from game_progress import GameProgress
@@ -2337,9 +2337,9 @@ class RSSim(Game):
             self.objects.append(i.unlock_button)
 
         self.logger.debug('save button appended to global objects list')
-        self.objects.append(InGameTime(batch=self.batch,
-                                       day_text_group=self.buttons_general_borders_day_text_ordered_group,
-                                       game_config=self.c, auto_save_function=save_game))
+        self.objects.append(GameTime(batch=self.batch,
+                                     day_text_group=self.buttons_general_borders_day_text_ordered_group,
+                                     game_config=self.c, auto_save_function=save_game))
         self.logger.debug('------- END CREATING BUTTONS -------')
         self.logger.warning('all buttons created')
 
