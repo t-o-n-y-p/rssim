@@ -9,7 +9,6 @@ from pyglet.text import Label
 from pyglet.resource import add_font
 
 from game_object import GameObject
-from button import Button
 
 
 def _game_is_not_paused(fn):
@@ -51,6 +50,7 @@ class Scheduler(GameObject):
                                         x=0, y=0, batch=self.batch, group=self.group)
         self.background_sprite.opacity = 0
         self.read_state()
+        self.departure_text = ['West City', 'East City', 'North-West City', 'South-East City']
 
     def read_state(self):
         if path.exists('user_cfg/scheduler.ini'):
@@ -116,61 +116,56 @@ class Scheduler(GameObject):
 
         if self.game_time.epoch_timestamp >= self.base_schedule[0][1]:
             self.dispatcher.on_create_train(self.base_schedule.pop(0))
+            self.adjust_schedule_on_remove()
 
     def update_sprite(self, base_offset):
         if self.is_activated:
             if self.background_sprite.opacity < 255:
                 self.background_sprite.opacity += 15
+
+            for i in range(min(len(self.base_schedule), 26)):
+                if self.base_schedule[i][1] < self.game_time.epoch_timestamp + 14400 \
+                        and len(self.base_schedule_sprites) < (i + 1) * 5:
+                    self.base_schedule_sprites.append(Label('{0:0>6}'.format(self.base_schedule[i][0]),
+                                                            font_name='Perfo', bold=True,
+                                                            font_size=18, color=self.c.day_text_color,
+                                                            x=94 + 640 * (i // 13), y=501 - (i % 13) * 27,
+                                                            anchor_x='center', anchor_y='center', batch=self.batch,
+                                                            group=self.text_group))
+                    self.base_schedule_sprites.append(Label('{0:0>2} : {1:0>2}'
+                                                            .format((self.base_schedule[i][1] // 14400 + 12) % 24,
+                                                                    (self.base_schedule[i][1] // 240) % 60),
+                                                            font_name='Perfo', bold=True, font_size=18,
+                                                            color=self.c.day_text_color, x=200 + 640 * (i // 13),
+                                                            y=501 - (i % 13) * 27, anchor_x='center', anchor_y='center',
+                                                            batch=self.batch, group=self.text_group))
+                    self.base_schedule_sprites.append(Label(self.departure_text[self.base_schedule[i][2]],
+                                                            font_name='Perfo', bold=True,
+                                                            font_size=18, color=self.c.day_text_color,
+                                                            x=346 + 640 * (i // 13), y=501 - (i % 13) * 27,
+                                                            anchor_x='center', anchor_y='center', batch=self.batch,
+                                                            group=self.text_group))
+                    self.base_schedule_sprites.append(Label('{0:0>2}'.format(self.base_schedule[i][4]),
+                                                            font_name='Perfo', bold=True,
+                                                            font_size=18, color=self.c.day_text_color,
+                                                            x=470 + 640 * (i // 13), y=501 - (i % 13) * 27,
+                                                            anchor_x='center', anchor_y='center', batch=self.batch,
+                                                            group=self.text_group))
+                    self.base_schedule_sprites.append(Label('{0:0>2} : {1:0>2}'
+                                                            .format(self.base_schedule[i][5] // 240,
+                                                                    (self.base_schedule[i][5] // 4) % 60),
+                                                            font_name='Perfo', bold=True, font_size=18,
+                                                            color=self.c.day_text_color, x=550 + 640 * (i // 13),
+                                                            y=501 - (i % 13) * 27, anchor_x='center', anchor_y='center',
+                                                            batch=self.batch, group=self.text_group))
+                    break
         else:
             if self.background_sprite.opacity > 0:
                 self.background_sprite.opacity -= 15
 
     def on_board_activate(self):
         self.is_activated = True
-        counter = 0
-        departure = ''
         self.base_schedule_sprites = []
-        while self.base_schedule[counter][1] < self.game_time.epoch_timestamp + 14400 \
-                and counter < len(self.base_schedule) and counter < 26:
-            self.base_schedule_sprites.append(Label('{0:0>6}'.format(self.base_schedule[counter][0]),
-                                                    font_name='Perfo', bold=True, font_size=18,
-                                                    color=self.c.day_text_color, x=94 + 640 * (counter // 13),
-                                                    y=501 - counter * 27, anchor_x='center', anchor_y='center',
-                                                    batch=self.batch, group=self.text_group))
-            self.base_schedule_sprites.append(Label('{0:0>2} : {1:0>2}'
-                                                    .format((self.base_schedule[counter][1] // 14400 + 12) % 24,
-                                                            (self.base_schedule[counter][1] // 240) % 60),
-                                                    font_name='Perfo', bold=True, font_size=18,
-                                                    color=self.c.day_text_color, x=200 + 640 * (counter // 13),
-                                                    y=501 - counter * 27, anchor_x='center', anchor_y='center',
-                                                    batch=self.batch, group=self.text_group))
-            if self.base_schedule[counter][2] == 0:
-                departure = 'West City'
-            elif self.base_schedule[counter][2] == 1:
-                departure = 'East City'
-            elif self.base_schedule[counter][2] == 2:
-                departure = 'North-West City'
-            elif self.base_schedule[counter][2] == 3:
-                departure = 'South-East City'
-
-            self.base_schedule_sprites.append(Label(departure,
-                                                    font_name='Perfo', bold=True, font_size=18,
-                                                    color=self.c.day_text_color, x=346 + 640 * (counter // 13),
-                                                    y=501 - counter * 27, anchor_x='center', anchor_y='center',
-                                                    batch=self.batch, group=self.text_group))
-            self.base_schedule_sprites.append(Label('{0:0>2}'.format(self.base_schedule[counter][4]),
-                                                    font_name='Perfo', bold=True, font_size=18,
-                                                    color=self.c.day_text_color, x=470 + 640 * (counter // 13),
-                                                    y=501 - counter * 27, anchor_x='center', anchor_y='center',
-                                                    batch=self.batch, group=self.text_group))
-            self.base_schedule_sprites.append(Label('{0:0>2} : {1:0>2}'
-                                                    .format(self.base_schedule[counter][5] // 240,
-                                                            (self.base_schedule[counter][5] // 4) % 60),
-                                                    font_name='Perfo', bold=True, font_size=18,
-                                                    color=self.c.day_text_color, x=550 + 640 * (counter // 13),
-                                                    y=501 - counter * 27, anchor_x='center', anchor_y='center',
-                                                    batch=self.batch, group=self.text_group))
-            counter += 1
 
     def on_board_deactivate(self):
         self.is_activated = False
@@ -178,3 +173,24 @@ class Scheduler(GameObject):
             i.delete()
 
         self.base_schedule_sprites.clear()
+
+    @_schedule_board_is_activated
+    def adjust_schedule_on_remove(self):
+        if len(self.base_schedule_sprites) > 5:
+            for i in range(len(self.base_schedule_sprites) // 5 - 1):
+                self.base_schedule_sprites[i * 5].text = self.base_schedule_sprites[(i + 1) * 5].text
+                self.base_schedule_sprites[i * 5 + 1].text = self.base_schedule_sprites[(i + 1) * 5 + 1].text
+                self.base_schedule_sprites[i * 5 + 2].text = self.base_schedule_sprites[(i + 1) * 5 + 2].text
+                self.base_schedule_sprites[i * 5 + 3].text = self.base_schedule_sprites[(i + 1) * 5 + 3].text
+                self.base_schedule_sprites[i * 5 + 4].text = self.base_schedule_sprites[(i + 1) * 5 + 4].text
+
+            self.base_schedule_sprites[-5].delete()
+            self.base_schedule_sprites[-4].delete()
+            self.base_schedule_sprites[-3].delete()
+            self.base_schedule_sprites[-2].delete()
+            self.base_schedule_sprites[-1].delete()
+            self.base_schedule_sprites.pop(-5)
+            self.base_schedule_sprites.pop(-4)
+            self.base_schedule_sprites.pop(-3)
+            self.base_schedule_sprites.pop(-2)
+            self.base_schedule_sprites.pop(-1)
