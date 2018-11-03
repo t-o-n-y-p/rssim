@@ -27,7 +27,6 @@ class Dispatcher(GameObject):
         self.logger.debug('config parser created')
         self.game_progress = None
         # timer since main entry was left by previous train before creating new one
-        self.train_timer = []
         self.trains = []
         self.train_ids = []
         self.train_routes = []
@@ -37,7 +36,6 @@ class Dispatcher(GameObject):
         self.group = group
         self.boarding_lights_group = boarding_lights_group
         # next train ID, used by signals to distinguish trains
-        self.train_counter = None
         self.train_head_image = {}
         self.train_mid_image = {}
         self.train_tail_image = {}
@@ -94,14 +92,6 @@ class Dispatcher(GameObject):
         else:
             self.config.read('default_cfg/dispatcher.ini')
             self.logger.debug('config parsed from default_cfg')
-
-        train_timer_parsed = self.config['user_data']['train_timer'].split(',')
-        self.train_timer = [int(train_timer_parsed[0]), int(train_timer_parsed[1]),
-                            int(train_timer_parsed[2]), int(train_timer_parsed[3])]
-        self.logger.debug('train_timer: {}'.format(self.train_timer))
-        self.train_counter = self.config['user_data'].getint('train_counter')
-        self.logger.debug('train_counter: {}'.format(self.train_counter))
-        self.logger.info('dispatcher config parsed')
 
         if self.config['user_data']['train_ids'] == 'None':
             self.trains = []
@@ -219,10 +209,6 @@ class Dispatcher(GameObject):
             mkdir('user_cfg')
             self.logger.debug('created user_cfg folder')
 
-        self.config['user_data']['train_timer'] \
-            = str(self.train_timer[0]) + ',' + str(self.train_timer[1]) + ',' \
-            + str(self.train_timer[2]) + ',' + str(self.train_timer[3])
-        self.logger.debug('train_timer: {}'.format(self.config['user_data']['train_timer']))
         if len(self.train_ids) == 0:
             self.config['user_data']['train_ids'] = 'None'
         else:
@@ -234,8 +220,6 @@ class Dispatcher(GameObject):
             self.config['user_data']['train_ids'] = combined_string
 
         self.logger.debug('train_ids: {}'.format(self.config['user_data']['train_ids']))
-        self.config['user_data']['train_counter'] = str(self.train_counter)
-        self.logger.debug('train_counter: {}'.format(self.config['user_data']['train_counter']))
 
         with open('user_cfg/dispatcher.ini', 'w') as configfile:
             self.config.write(configfile)
@@ -416,8 +400,8 @@ class Dispatcher(GameObject):
                 i.update_sprite(base_offset)
 
     def on_create_train(self, train_info):
-        if train_info[3] < self.game_progress.supported_carts[0]:
-            train_info[2] = train_info[1]
+        if train_info[4] < self.game_progress.supported_carts[0]:
+            train_info[3] = train_info[2]
             state = 'approaching_pass_through'
             boarding_time = 5
             exp = 0.0
@@ -425,30 +409,29 @@ class Dispatcher(GameObject):
             self.logger.debug('{}-cart trains are not supported, assign pass through route'.format(train_info[3]))
         else:
             state = 'approaching'
-            boarding_time = train_info[4]
-            exp = train_info[5]
-            money = train_info[6]
+            boarding_time = train_info[5]
+            exp = train_info[6]
+            money = train_info[7]
 
-        if train_info[1] in (0, 1):
-            route_for_new_train = self.train_routes[0][self.c.approaching_train_route[train_info[1]]]
+        if train_info[2] in (0, 1):
+            route_for_new_train = self.train_routes[0][self.c.approaching_train_route[train_info[2]]]
         else:
-            route_for_new_train = self.train_routes[100][self.c.approaching_train_route[train_info[1]]]
+            route_for_new_train = self.train_routes[100][self.c.approaching_train_route[train_info[2]]]
 
-        new_train = Train(carts=train_info[3], train_route=route_for_new_train, state=state,
-                          direction=train_info[1], new_direction=train_info[2], current_direction=train_info[1],
-                          train_id=self.train_counter, head_image=self.train_head_image,
+        new_train = Train(carts=train_info[4], train_route=route_for_new_train, state=state,
+                          direction=train_info[2], new_direction=train_info[3], current_direction=train_info[2],
+                          train_id=train_info[0], head_image=self.train_head_image,
                           mid_image=self.train_mid_image, boarding_lights_image=self.boarding_lights_image,
                           tail_image=self.train_tail_image, batch=self.batch, group=self.group,
                           boarding_lights_group=self.boarding_lights_group, game_config=self.c)
         new_train.boarding_time = boarding_time
         new_train.exp = exp
         new_train.money = money
-        self.train_ids.append(self.train_counter)
+        self.train_ids.append(train_info[0])
         new_train.train_route.open_train_route(new_train.train_id, new_train.priority)
         new_train.init_train_position()
         self.logger.info('train created. id {}, track {}, route = {}, status = {}'
                          .format(new_train.train_id, new_train.train_route.track_number,
                                  new_train.train_route.route_type, new_train.state))
-        self.train_counter += 1
         self.trains.append(new_train)
         self.logger.debug('train {} appended'.format(new_train.train_id))

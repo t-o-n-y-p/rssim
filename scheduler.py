@@ -33,6 +33,7 @@ class Scheduler(GameObject):
         self.game_progress = None
         self.dispatcher = None
         self.next_cycle_start_time = 0
+        self.train_counter = 0
         seed()
         self.read_state()
 
@@ -44,6 +45,7 @@ class Scheduler(GameObject):
             self.config.read('default_cfg/scheduler.ini')
             self.logger.debug('config parsed from default_cfg')
 
+        self.train_counter = self.config['user_data'].getint('train_counter')
         self.next_cycle_start_time = self.config['user_data'].getint('next_cycle_start_time')
         if self.config['user_data']['base_schedule'] == 'None':
             self.base_schedule = []
@@ -51,9 +53,9 @@ class Scheduler(GameObject):
             base_schedule_parsed = self.config['user_data']['base_schedule'].split('|')
             for i in range(len(base_schedule_parsed)):
                 base_schedule_parsed[i] = base_schedule_parsed[i].split(',')
-                for j in range(5):
+                for j in range(6):
                     base_schedule_parsed[i][j] = int(base_schedule_parsed[i][j])
-                for j in (5, 6):
+                for j in (6, 7):
                     base_schedule_parsed[i][j] = float(base_schedule_parsed[i][j])
 
             self.base_schedule = base_schedule_parsed
@@ -63,6 +65,7 @@ class Scheduler(GameObject):
             mkdir('user_cfg')
             self.logger.debug('created user_cfg folder')
 
+        self.config['user_data']['train_counter'] = str(self.train_counter)
         self.config['user_data']['next_cycle_start_time'] = str(self.next_cycle_start_time)
         base_schedule_string = ''
         for i in range(len(self.base_schedule)):
@@ -87,13 +90,14 @@ class Scheduler(GameObject):
             for i in self.c.schedule_options[self.game_progress.level]:
                 carts = choice(i[3])
                 self.base_schedule.append(
-                    (self.next_cycle_start_time + choice(i[0]), i[1], choice(i[2]), carts,
+                    (self.train_counter, self.next_cycle_start_time + choice(i[0]), i[1], choice(i[2]), carts,
                      self.c.frame_per_cart[self.game_progress.level] * carts,
                      self.c.exp_per_cart[self.game_progress.level] * carts,
                      self.c.money_per_cart[self.game_progress.level] * carts)
                 )
+                self.train_counter += 1
 
             self.next_cycle_start_time += self.c.schedule_cycle_length[self.game_progress.level]
 
-        if self.game_time.epoch_timestamp >= self.base_schedule[0][0]:
+        if self.game_time.epoch_timestamp >= self.base_schedule[0][1]:
             self.dispatcher.on_create_train(self.base_schedule.pop(0))
