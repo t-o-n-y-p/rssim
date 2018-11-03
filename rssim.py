@@ -2211,15 +2211,15 @@ class RSSim(Game):
         self.logger.debug('------- START CREATING BUTTONS -------')
 
         def pause_game(button):
-            button.on_button_is_not_visible()
+            button.on_button_is_deactivated()
             self.game_paused = True
-            self.resume_button.on_button_is_visible()
+            self.resume_button.on_button_is_activated()
             self.logger.critical('------- GAME IS PAUSED -------')
 
         def resume_game(button):
-            button.on_button_is_not_visible()
+            button.on_button_is_deactivated()
             self.game_paused = False
-            self.pause_button.on_button_is_visible()
+            self.pause_button.on_button_is_activated()
             self.logger.critical('------- GAME IS RESUMED -------')
 
         def close_game(button):
@@ -2277,21 +2277,21 @@ class RSSim(Game):
         self.logger.debug('bottom bar appended to global objects list')
         self.pause_button = Button(position=(self.c.screen_resolution[0] - 80, 0), button_size=(80, 80),
                                    text='‖', font_size=self.c.play_pause_button_font_size,
-                                   on_click=pause_game, is_visible=True,
+                                   on_click=pause_game, is_activated=True,
                                    batch=self.batch, button_group=self.buttons_general_borders_day_text_ordered_group,
                                    text_group=self.buttons_text_and_borders_ordered_group,
                                    borders_group=self.buttons_text_and_borders_ordered_group, game_config=self.c,
                                    logs_description='pause/resume', map_move_mode=self.map_move_mode)
         self.resume_button = Button(position=(self.c.screen_resolution[0] - 80, 0), button_size=(80, 80),
                                     text='►', font_size=self.c.play_pause_button_font_size,
-                                    on_click=resume_game, is_visible=False,
+                                    on_click=resume_game, is_activated=False,
                                     batch=self.batch, button_group=self.buttons_general_borders_day_text_ordered_group,
                                     text_group=self.buttons_text_and_borders_ordered_group,
                                     borders_group=self.buttons_text_and_borders_ordered_group, game_config=self.c,
                                     logs_description='pause/resume', map_move_mode=self.map_move_mode)
         self.close_button = Button(position=(self.c.screen_resolution[0] - 34, self.c.screen_resolution[1] - 34),
                                    button_size=(34, 34), text='X', font_size=self.c.iconify_close_button_font_size,
-                                   on_click=close_game, is_visible=True,
+                                   on_click=close_game, is_activated=True,
                                    batch=self.batch, button_group=self.buttons_general_borders_day_text_ordered_group,
                                    text_group=self.buttons_text_and_borders_ordered_group,
                                    borders_group=self.buttons_text_and_borders_ordered_group, game_config=self.c,
@@ -2299,7 +2299,7 @@ class RSSim(Game):
         self.iconify_button = Button(position=(self.c.screen_resolution[0] - 66, self.c.screen_resolution[1] - 34),
                                      button_size=(34, 34), text='_',
                                      font_size=self.c.iconify_close_button_font_size,
-                                     on_click=iconify_game, is_visible=True,
+                                     on_click=iconify_game, is_activated=True,
                                      batch=self.batch, button_group=self.buttons_general_borders_day_text_ordered_group,
                                      text_group=self.buttons_text_and_borders_ordered_group,
                                      borders_group=self.buttons_text_and_borders_ordered_group, game_config=self.c,

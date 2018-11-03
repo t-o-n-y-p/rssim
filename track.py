@@ -23,7 +23,7 @@ class Track(GameObject):
         def start_track_construction(button):
             self.game_progress.erase_money_progress()
             self.game_progress.pay_money(self.price)
-            button.on_button_is_not_visible()
+            button.on_button_is_not_activated()
             self.unlock_available = False
             self.not_enough_money_tip.condition_met = False
             self.on_under_construction_available()
@@ -52,7 +52,7 @@ class Track(GameObject):
         self.unlock_button = Button(position=(195, 81), button_size=(250, 30),
                                     text='Unlock track {}                     '.format(self.track_number),
                                     font_size=self.c.unlock_tip_font_size, on_click=start_track_construction,
-                                    is_visible=False, batch=batch,
+                                    is_activated=False, batch=batch,
                                     button_group=button_group, text_group=text_group, borders_group=borders_group,
                                     game_config=self.c, logs_description='track{}_unlock'.format(self.track_number),
                                     map_move_mode=map_move_mode)
@@ -154,15 +154,15 @@ class Track(GameObject):
 
         if self.unlock_available:
             if self.game_progress.money < self.price:
-                if self.unlock_button.is_visible:
-                    self.unlock_button.on_button_is_not_visible()
+                if self.unlock_button.is_activated:
+                    self.unlock_button.on_button_is_deactivated()
                     self.not_enough_money_tip.primary_text_label.text = 'Get                    to unlock track {}'\
                                                                         .format(self.track_number)
                     self.not_enough_money_tip.price_text_label.text = '  {} ¤                        '\
                                                                       .format(self.price)
             else:
-                if not self.unlock_button.is_visible:
-                    self.unlock_button.on_button_is_visible()
+                if not self.unlock_button.is_activated:
+                    self.unlock_button.on_button_is_activated()
                     self.not_enough_money_tip.primary_text_label.text = ''
                     self.not_enough_money_tip.price_text_label.text = '                      {} ¤'.format(self.price)
 

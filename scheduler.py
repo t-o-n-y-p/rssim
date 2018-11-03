@@ -14,15 +14,6 @@ def _game_is_not_paused(fn):
     return _update_if_game_is_not_paused
 
 
-def _more_trains_needed(fn):
-    def _generate_more_trains_if_needed(*args, **kwargs):
-        if args[0].game_time.epoch_timestamp + args[0].c.schedule_cycle_length[args[0].game_progress.level] \
-                >= args[0].next_cycle_start_time:
-            fn(*args, **kwargs)
-
-    return _generate_more_trains_if_needed
-
-
 class Scheduler(GameObject):
     def __init__(self, game_config):
         super().__init__(game_config)

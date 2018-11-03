@@ -9,12 +9,12 @@ from pyglet.window import mouse
 from game_object import GameObject
 
 
-def _button_is_visible(fn):
-    def _handle_mouse_if_is_visible(*args, **kwargs):
-        if args[0].is_visible:
+def _button_is_activated(fn):
+    def _handle_mouse_if_is_activated(*args, **kwargs):
+        if args[0].is_activated:
             fn(*args, **kwargs)
 
-    return _handle_mouse_if_is_visible
+    return _handle_mouse_if_is_activated
 
 
 def _left_button(fn):
@@ -43,13 +43,12 @@ def _button_is_pressed(fn):
 
 
 class Button(GameObject):
-    def __init__(self, position, button_size, text, font_size, on_click, is_visible,
+    def __init__(self, position, button_size, text, font_size, on_click, is_activated,
                  batch, button_group, text_group, borders_group, game_config, logs_description, map_move_mode):
         super().__init__(game_config)
         self.logger = getLogger('game.{}_button'.format(logs_description))
         self.logger.debug('------- START INIT -------')
-        self.is_visible = is_visible
-        self.logger.debug('allowed_to_be_drawn set: {}'.format(self.is_visible))
+        self.is_activated = is_activated
         self.state = 'normal'
         self.logger.debug('state set: {}'.format(self.state))
         self.position = position
@@ -70,16 +69,16 @@ class Button(GameObject):
         self.text = text
         self.font_size = font_size
         self.text_object = None
-        if self.is_visible:
-            self.on_button_is_visible()
+        if self.is_activated:
+            self.on_button_is_activated()
         else:
-            self.on_button_is_not_visible()
+            self.on_button_is_deactivated()
 
         self.logger.debug('------- END INIT -------')
         self.logger.warning('button init completed')
 
-    def on_button_is_visible(self):
-        self.is_visible = True
+    def on_button_is_activated(self):
+        self.is_activated = True
         if self.vertex_list is None:
             self.vertex_list = self.batch.add(4, gl.GL_QUADS, self.button_group,
                                               ('v2i/static', (self.position[0],
@@ -103,8 +102,8 @@ class Button(GameObject):
                                      anchor_x='center', anchor_y='center', batch=self.batch,
                                      group=self.text_group)
 
-    def on_button_is_not_visible(self):
-        self.is_visible = False
+    def on_button_is_deactivated(self):
+        self.is_activated = False
         if self.vertex_list is not None:
             self.vertex_list.delete()
             self.vertex_list = None
@@ -120,7 +119,7 @@ class Button(GameObject):
     def update(self, game_paused):
         pass
 
-    @_button_is_visible
+    @_button_is_activated
     def handle_mouse_motion(self, x, y, dx, dy):
         if x in range(self.position[0] + 2, self.position[0] + self.button_size[0] - 2) \
                 and y in range(self.position[1] + 2, self.position[1] + self.button_size[1] - 2):
@@ -134,7 +133,7 @@ class Button(GameObject):
                 self.vertex_list.colors = (0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0)
                 self.logger.debug('cursor is not on the button')
 
-    @_button_is_visible
+    @_button_is_activated
     @_cursor_is_over_the_button
     @_left_button
     def handle_mouse_press(self, x, y, button, modifiers):
@@ -143,7 +142,7 @@ class Button(GameObject):
         self.logger.info('cursor is on the button and user holds mouse button')
         self.map_move_mode[0] = False
 
-    @_button_is_visible
+    @_button_is_activated
     @_cursor_is_over_the_button
     @_button_is_pressed
     @_left_button
@@ -154,7 +153,7 @@ class Button(GameObject):
         self.logger.info('start onclick action')
         self.on_click(self)
 
-    @_button_is_visible
+    @_button_is_activated
     def handle_mouse_leave(self, x, y):
         self.state = 'normal'
         self.vertex_list.colors = (0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0)

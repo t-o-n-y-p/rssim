@@ -66,10 +66,11 @@ class Game:
         self.signals_and_trains_ordered_group = OrderedGroup(1)
         self.boarding_lights_ordered_group = OrderedGroup(2)
         self.twilight_ordered_group = OrderedGroup(3)  # reserved for future use
-        self.top_bottom_bars_ordered_group = OrderedGroup(4)
-        self.buttons_general_borders_day_text_ordered_group = OrderedGroup(5)
-        self.buttons_text_and_borders_ordered_group = OrderedGroup(6)
-        self.loading_shadow_ordered_group = OrderedGroup(7)
+        self.twilight_artifacts_ordered_group = OrderedGroup(4)  # reserved for future use
+        self.top_bottom_bars_ordered_group = OrderedGroup(5)
+        self.buttons_general_borders_day_text_ordered_group = OrderedGroup(6)
+        self.buttons_text_and_borders_ordered_group = OrderedGroup(7)
+        self.loading_shadow_ordered_group = OrderedGroup(8)
         self.surface.dispatch_event('on_draw')
         self.surface.flip()
         self.game_window_handler = GetActiveWindow()
