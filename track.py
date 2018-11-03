@@ -82,7 +82,6 @@ class Track(GameObject):
         self.locked = self.config['user_data'].getboolean('locked')
         self.under_construction = self.config['user_data'].getboolean('under_construction')
         self.construction_time = self.config['user_data'].getint('construction_time')
-        self.construction_time //= 10
         self.busy = self.config['user_data'].getboolean('busy')
         self.logger.debug('busy: {}'.format(self.busy))
         self.last_entered_by = self.config['user_data'].getint('last_entered_by')

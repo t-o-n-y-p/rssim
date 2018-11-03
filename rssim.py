@@ -18,6 +18,7 @@ from game_time import GameTime
 from railroad_switch import RailroadSwitch
 from crossover import Crossover
 from game_progress import GameProgress
+from scheduler import Scheduler
 
 
 class RSSim(Game):
@@ -32,6 +33,7 @@ class RSSim(Game):
         self.tracks = []
         self.dispatcher = None
         self.game_progress = None
+        self.game_time = None
         # we create background image object first to be drawn first
         try:
             self.create_main_map()
@@ -53,15 +55,13 @@ class RSSim(Game):
 
     def create_main_map(self):
         self.logger.debug('------- START CREATING BG IMAGE -------')
-        try:
-            self.main_map = MainMap(batch=self.batch, group=self.map_ordered_group, game_config=self.c)
-        except VideoAdapterNotSupportedException:
-            raise VideoAdapterNotSupportedException
-
+        self.main_map = MainMap(batch=self.batch, group=self.map_ordered_group, game_config=self.c)
         self.game_progress = GameProgress(main_map=self.main_map, mini_map=self.mini_map_tip, game_config=self.c,
                                           batch=self.batch,
                                           inactive_group=self.buttons_general_borders_day_text_ordered_group,
                                           active_group=self.buttons_text_and_borders_ordered_group)
+        self.game_time = GameTime(batch=self.batch, day_text_group=self.buttons_general_borders_day_text_ordered_group,
+                                  game_config=self.c)
         self.logger.info('main map object created')
         self.logger.debug('main map object appended')
         self.logger.debug('------- END CREATING BG IMAGE -------')
@@ -561,6 +561,7 @@ class RSSim(Game):
         self.logger.info('tracks and train routes created')
         # ------ SORT THIS OUT ------
         # train routes and tracks are added to dispatcher which we create right now
+        self.scheduler = Scheduler(game_config=self.c)
         self.dispatcher = Dispatcher(batch=self.batch, group=self.signals_and_trains_ordered_group,
                                      boarding_lights_group=self.boarding_lights_ordered_group, game_config=self.c)
         for i in range(33):
@@ -599,6 +600,10 @@ class RSSim(Game):
             i.game_progress = self.game_progress
 
         self.dispatcher.game_progress = self.game_progress
+        self.scheduler.game_progress = self.game_progress
+        self.scheduler.game_time = self.game_time
+        self.scheduler.dispatcher = self.dispatcher
+        self.objects.append(self.scheduler)
         self.objects.append(self.dispatcher)
         self.objects.append(self.game_progress)
         self.logger.info('dispatcher appended to global objects list')
@@ -2337,9 +2342,8 @@ class RSSim(Game):
             self.objects.append(i.unlock_button)
 
         self.logger.debug('save button appended to global objects list')
-        self.objects.append(GameTime(batch=self.batch,
-                                     day_text_group=self.buttons_general_borders_day_text_ordered_group,
-                                     game_config=self.c, auto_save_function=save_game))
+        self.game_time.auto_save_function = save_game
+        self.objects.append(self.game_time)
         self.logger.debug('------- END CREATING BUTTONS -------')
         self.logger.warning('all buttons created')
 

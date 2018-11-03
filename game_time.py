@@ -17,7 +17,7 @@ def _game_is_not_paused(fn):
 
 
 class GameTime(GameObject):
-    def __init__(self, batch, day_text_group, game_config, auto_save_function):
+    def __init__(self, batch, day_text_group, game_config):
         super().__init__(game_config)
         self.logger = getLogger('game.in-game_time')
         self.logger.debug('------- START INIT -------')
@@ -37,7 +37,7 @@ class GameTime(GameObject):
                                font_name='Perfo', bold=True, font_size=self.c.day_font_size,
                                color=self.c.day_text_color, x=self.c.screen_resolution[0] - 181, y=26,
                                anchor_x='center', anchor_y='center', batch=batch, group=day_text_group)
-        self.auto_save_function = auto_save_function
+        self.auto_save_function = None
         self.logger.debug('------- END INIT -------')
         self.logger.warning('time init completed')
 

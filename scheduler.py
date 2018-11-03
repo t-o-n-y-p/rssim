@@ -1,6 +1,7 @@
 from configparser import RawConfigParser
 from logging import getLogger
 from os import path, mkdir
+from random import seed, choice
 
 from game_object import GameObject
 
@@ -30,7 +31,9 @@ class Scheduler(GameObject):
         self.base_schedule = []
         self.game_time = None
         self.game_progress = None
+        self.dispatcher = None
         self.next_cycle_start_time = 0
+        seed()
         self.read_state()
 
     def read_state(self):
@@ -40,3 +43,57 @@ class Scheduler(GameObject):
         else:
             self.config.read('default_cfg/scheduler.ini')
             self.logger.debug('config parsed from default_cfg')
+
+        self.next_cycle_start_time = self.config['user_data'].getint('next_cycle_start_time')
+        if self.config['user_data']['base_schedule'] == 'None':
+            self.base_schedule = []
+        else:
+            base_schedule_parsed = self.config['user_data']['base_schedule'].split('|')
+            for i in range(len(base_schedule_parsed)):
+                base_schedule_parsed[i] = base_schedule_parsed[i].split(',')
+                for j in range(5):
+                    base_schedule_parsed[i][j] = int(base_schedule_parsed[i][j])
+                for j in (5, 6):
+                    base_schedule_parsed[i][j] = float(base_schedule_parsed[i][j])
+
+            self.base_schedule = base_schedule_parsed
+
+    def save_state(self):
+        if not path.exists('user_cfg'):
+            mkdir('user_cfg')
+            self.logger.debug('created user_cfg folder')
+
+        self.config['user_data']['next_cycle_start_time'] = str(self.next_cycle_start_time)
+        base_schedule_string = ''
+        for i in range(len(self.base_schedule)):
+            for j in self.base_schedule[i]:
+                base_schedule_string += '{},'.format(j)
+
+            base_schedule_string = base_schedule_string[0:len(base_schedule_string)-1] + '|'
+
+        if len(base_schedule_string) > 0:
+            base_schedule_string = base_schedule_string[0:len(base_schedule_string)-1]
+            self.config['user_data']['base_schedule'] = base_schedule_string
+        else:
+            self.config['user_data']['base_schedule'] = 'None'
+
+        with open('user_cfg/scheduler.ini', 'w') as configfile:
+            self.config.write(configfile)
+
+    @_game_is_not_paused
+    def update(self, game_paused):
+        if self.game_time.epoch_timestamp + self.c.schedule_cycle_length[self.game_progress.level] \
+                >= self.next_cycle_start_time:
+            for i in self.c.schedule_options[self.game_progress.level]:
+                carts = choice(i[3])
+                self.base_schedule.append(
+                    (self.next_cycle_start_time + choice(i[0]), i[1], choice(i[2]), carts,
+                     self.c.frame_per_cart[self.game_progress.level] * carts,
+                     self.c.exp_per_cart[self.game_progress.level] * carts,
+                     self.c.money_per_cart[self.game_progress.level] * carts)
+                )
+
+            self.next_cycle_start_time += self.c.schedule_cycle_length[self.game_progress.level]
+
+        if self.game_time.epoch_timestamp >= self.base_schedule[0][0]:
+            self.dispatcher.on_create_train(self.base_schedule.pop(0))

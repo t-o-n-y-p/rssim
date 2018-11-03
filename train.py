@@ -52,12 +52,13 @@ class Train(GameObject):
         self.speed_factor_position = len(self.c.train_acceleration_factor) - 1
         self.speed_factor_position_limit = len(self.c.train_acceleration_factor) - 1
         self.logger.debug('set speed_factor_position: {}'.format(self.speed_factor_position))
+        self.boarding_time = 5
+        self.exp = 0.0
+        self.money = 0.0
         if self.state == 'approaching_pass_through':
             self.priority = 10000000
-            self.boarding_time = 5
         else:
             self.priority = 0
-            self.boarding_time = self.carts * 300
 
         if self.train_route is not None:
             if self.train_route.train_route_sections[0].route_config['force_busy'] \
@@ -65,7 +66,6 @@ class Train(GameObject):
                 self.train_route.train_route_sections[0].priority = self.priority
 
         self.logger.debug('set priority: {}'.format(self.priority))
-        self.logger.debug('set boarding_time: {}'.format(self.boarding_time))
         self.cart_sprites = []
         self.boarding_light_sprites = []
         self.cart_sprites.append(None)
@@ -139,6 +139,8 @@ class Train(GameObject):
         self.config['user_data']['priority'] = str(self.priority)
         self.logger.debug('priority: {}'.format(self.config['user_data']['priority']))
         self.config['user_data']['boarding_time'] = str(self.boarding_time)
+        self.config['user_data']['exp'] = str(self.exp)
+        self.config['user_data']['money'] = str(self.money)
         self.logger.debug('boarding_time: {}'.format(self.config['user_data']['boarding_time']))
         if len(self.carts_position) == 0:
             self.config['user_data']['carts_position'] = 'None'
