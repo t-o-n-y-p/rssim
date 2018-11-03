@@ -1,8 +1,8 @@
-import configparser
-import logging
-import os
+from configparser import RawConfigParser
+from logging import getLogger
+from os import path, mkdir
 
-import pyglet
+from pyglet.sprite import Sprite
 
 from game_object import GameObject
 
@@ -20,7 +20,7 @@ class Train(GameObject):
                  head_image, mid_image, boarding_lights_image, tail_image, batch, group, boarding_lights_group,
                  game_config):
         super().__init__(game_config)
-        self.logger = logging.getLogger('game.train_{}'.format(train_id))
+        self.logger = getLogger('game.train_{}'.format(train_id))
         self.logger.debug('------- START INIT -------')
         self.config = None
         self.track_number = None
@@ -92,16 +92,16 @@ class Train(GameObject):
 
     def save_state(self):
         self.logger.debug('------- START SAVING STATE -------')
-        if not os.path.exists('user_cfg'):
-            os.mkdir('user_cfg')
+        if not path.exists('user_cfg'):
+            mkdir('user_cfg')
             self.logger.debug('created user_cfg folder')
 
-        if not os.path.exists('user_cfg/trains'):
-            os.mkdir('user_cfg/trains')
+        if not path.exists('user_cfg/trains'):
+            mkdir('user_cfg/trains')
             self.logger.debug('created user_cf/trains folder')
 
         if self.config is None:
-            self.config = configparser.RawConfigParser()
+            self.config = RawConfigParser()
             self.config['user_data'] = {}
             self.logger.debug('config parser created')
 
@@ -391,17 +391,16 @@ class Train(GameObject):
             and y in range(-100, self.c.screen_resolution[0] + 100)) \
                 and self.cart_sprites[cart_number] is None:
             if cart_number == 0:
-                self.cart_sprites[cart_number] = pyglet.sprite.Sprite(self.head_image[self.current_direction],
-                                                                      batch=self.batch, group=self.group)
+                self.cart_sprites[cart_number] = Sprite(self.head_image[self.current_direction],
+                                                        batch=self.batch, group=self.group)
             elif cart_number == self.carts - 1:
-                self.cart_sprites[cart_number] = pyglet.sprite.Sprite(self.tail_image[self.current_direction],
-                                                                      batch=self.batch, group=self.group)
+                self.cart_sprites[cart_number] = Sprite(self.tail_image[self.current_direction],
+                                                        batch=self.batch, group=self.group)
             else:
-                self.cart_sprites[cart_number] = pyglet.sprite.Sprite(self.mid_image[self.current_direction],
-                                                                      batch=self.batch, group=self.group)
-                self.boarding_light_sprites[cart_number] = pyglet.sprite.Sprite(self.boarding_lights_image,
-                                                                                batch=self.batch,
-                                                                                group=self.boarding_lights_group)
+                self.cart_sprites[cart_number] = Sprite(self.mid_image[self.current_direction],
+                                                        batch=self.batch, group=self.group)
+                self.boarding_light_sprites[cart_number] = Sprite(self.boarding_lights_image,
+                                                                  batch=self.batch, group=self.boarding_lights_group)
 
         if self.boarding_light_sprites[cart_number] is not None:
             self.boarding_light_sprites[cart_number].visible = False
@@ -428,17 +427,16 @@ class Train(GameObject):
             and y in range(-25, self.c.screen_resolution[0] + 25)) \
                 and self.cart_sprites[cart_number] is None:
             if cart_number == 0:
-                self.cart_sprites[cart_number] = pyglet.sprite.Sprite(self.head_image[self.current_direction],
-                                                                      batch=self.batch, group=self.group)
+                self.cart_sprites[cart_number] = Sprite(self.head_image[self.current_direction],
+                                                        batch=self.batch, group=self.group)
             elif cart_number == self.carts - 1:
-                self.cart_sprites[cart_number] = pyglet.sprite.Sprite(self.tail_image[self.current_direction],
-                                                                      batch=self.batch, group=self.group)
+                self.cart_sprites[cart_number] = Sprite(self.tail_image[self.current_direction],
+                                                        batch=self.batch, group=self.group)
             else:
-                self.cart_sprites[cart_number] = pyglet.sprite.Sprite(self.mid_image[self.current_direction],
-                                                                      batch=self.batch, group=self.group)
-                self.boarding_light_sprites[cart_number] = pyglet.sprite.Sprite(self.boarding_lights_image,
-                                                                                batch=self.batch,
-                                                                                group=self.boarding_lights_group)
+                self.cart_sprites[cart_number] = Sprite(self.mid_image[self.current_direction],
+                                                        batch=self.batch, group=self.group)
+                self.boarding_light_sprites[cart_number] = Sprite(self.boarding_lights_image,
+                                                                  batch=self.batch, group=self.boarding_lights_group)
 
         if self.boarding_light_sprites[cart_number] is not None:
             if self.state == 'boarding_in_progress' and self.boarding_time > 5:
@@ -462,4 +460,3 @@ class Train(GameObject):
 
         if self.cart_sprites[self.carts - 1] is not None:
             self.cart_sprites[self.carts - 1].image = self.tail_image[self.current_direction]
-

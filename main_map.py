@@ -1,6 +1,6 @@
 from logging import getLogger
 
-from pyglet.image import load
+from pyglet import image
 from pyglet.sprite import Sprite
 
 from game_object import GameObject
@@ -12,7 +12,7 @@ class MainMap(GameObject):
         self.logger = getLogger('game.main_map')
         self.logger.debug('------- START INIT -------')
         # load background texture tile
-        self.sprite_image = load('img/map/4/full_map.png')
+        self.sprite_image = image.load('img/map/4/full_map.png')
         self.sprite = Sprite(self.sprite_image, x=self.c.base_offset[0] + 120, y=self.c.base_offset[1],
                              batch=batch, group=group)
 
@@ -24,4 +24,4 @@ class MainMap(GameObject):
         self.sprite.position = (base_offset[0] + 120, base_offset[1])
 
     def on_track_unlock(self, track):
-        self.sprite.image = load('img/map/{}/full_map.png'.format(track))
+        self.sprite.image = image.load('img/map/{}/full_map.png'.format(track))

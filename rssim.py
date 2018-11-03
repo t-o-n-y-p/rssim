@@ -1,7 +1,7 @@
-import sys
-import os
+from sys import exit
+from os import path, listdir, remove, rmdir
 
-import win32api
+from win32api import MessageBoxEx
 import win32con
 
 from base_route import BaseRoute
@@ -2218,11 +2218,11 @@ class RSSim(Game):
             self.logger.critical('------- GAME IS RESUMED -------')
 
         def close_game(button):
-            if os.path.exists('user_cfg/trains'):
-                for j in os.listdir('user_cfg/trains'):
-                    os.remove('user_cfg/trains/' + j)
+            if path.exists('user_cfg/trains'):
+                for j in listdir('user_cfg/trains'):
+                    remove('user_cfg/trains/' + j)
 
-                os.rmdir('user_cfg/trains')
+                rmdir('user_cfg/trains')
 
             for i in self.objects:
                 i.save_state()
@@ -2238,18 +2238,18 @@ class RSSim(Game):
                         self.junctions[u][v][w].save_state()
 
             self.surface.close()
-            sys.exit()
+            exit()
 
         def iconify_game(button):
             self.surface.minimize()
 
         def save_game(button):
             self.logger.critical('------- GAME SAVE START -------')
-            if os.path.exists('user_cfg/trains'):
-                for j in os.listdir('user_cfg/trains'):
-                    os.remove('user_cfg/trains/' + j)
+            if path.exists('user_cfg/trains'):
+                for j in listdir('user_cfg/trains'):
+                    remove('user_cfg/trains/' + j)
 
-                os.rmdir('user_cfg/trains')
+                rmdir('user_cfg/trains')
 
             for i in self.objects:
                 i.save_state()
@@ -2351,10 +2351,10 @@ def main():
         if e.surface is not None:
             e.surface.close()
 
-        win32api.MessageBoxEx(win32con.NULL, e.text, e.caption,
-                              win32con.MB_OK | win32con.MB_ICONERROR | win32con.MB_DEFBUTTON1
-                              | win32con.MB_SYSTEMMODAL | win32con.MB_SETFOREGROUND, 0)
-        sys.exit()
+        MessageBoxEx(win32con.NULL, e.text, e.caption,
+                     win32con.MB_OK | win32con.MB_ICONERROR | win32con.MB_DEFBUTTON1
+                     | win32con.MB_SYSTEMMODAL | win32con.MB_SETFOREGROUND, 0)
+        exit()
 
 
 if __name__ == '__main__':

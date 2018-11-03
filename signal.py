@@ -1,8 +1,9 @@
-import configparser
-import os
-import logging
+from configparser import RawConfigParser
+from logging import getLogger
+from os import path, mkdir
 
-import pyglet
+from pyglet import image
+from pyglet import sprite
 
 from game_object import GameObject
 
@@ -26,9 +27,9 @@ def _signal_is_not_locked(fn):
 class Signal(GameObject):
     def __init__(self, placement, flip_needed, track_number, route_type, batch, signal_group, game_config):
         super().__init__(game_config)
-        self.logger = logging.getLogger('game.signal_{}_{}'.format(route_type, track_number))
+        self.logger = getLogger('game.signal_{}_{}'.format(route_type, track_number))
         self.logger.debug('------- START INIT -------')
-        self.config = configparser.RawConfigParser()
+        self.config = RawConfigParser()
         self.logger.debug('config parser created')
         self.track_number = track_number
         self.route_type = route_type
@@ -43,8 +44,8 @@ class Signal(GameObject):
                           .format(self.track_number, self.route_type, self.placement, self.flip_needed))
         # initialize signal state
         self.state = 'red_signal'
-        self.image = {'red_signal': pyglet.image.load('img/signals/signal_red.png'),
-                      'green_signal': pyglet.image.load('img/signals/signal_green.png')}
+        self.image = {'red_signal': image.load('img/signals/signal_red.png'),
+                      'green_signal': image.load('img/signals/signal_green.png')}
         self.image['red_signal'].anchor_x = 5
         self.image['red_signal'].anchor_y = 5
         self.image['green_signal'].anchor_x = 5
@@ -61,7 +62,7 @@ class Signal(GameObject):
 
     def read_state(self):
         self.logger.debug('------- START READING STATE -------')
-        if os.path.exists('user_cfg/signals/track{}/track{}_{}.ini'
+        if path.exists('user_cfg/signals/track{}/track{}_{}.ini'
                           .format(self.track_number, self.track_number, self.route_type)):
             self.config.read('user_cfg/signals/track{}/track{}_{}.ini'
                              .format(self.track_number, self.track_number, self.route_type))
@@ -78,16 +79,16 @@ class Signal(GameObject):
 
     def save_state(self):
         self.logger.debug('------- START SAVING STATE -------')
-        if not os.path.exists('user_cfg'):
-            os.mkdir('user_cfg')
+        if not path.exists('user_cfg'):
+            mkdir('user_cfg')
             self.logger.debug('created user_cfg folder')
 
-        if not os.path.exists('user_cfg/signals'):
-            os.mkdir('user_cfg/signals')
+        if not path.exists('user_cfg/signals'):
+            mkdir('user_cfg/signals')
             self.logger.debug('created user_cfg/signals folder')
 
-        if not os.path.exists('user_cfg/signals/track{}'.format(self.track_number)):
-            os.mkdir('user_cfg/signals/track{}'.format(self.track_number))
+        if not path.exists('user_cfg/signals/track{}'.format(self.track_number)):
+            mkdir('user_cfg/signals/track{}'.format(self.track_number))
             self.logger.debug('created user_cfg/signals/track{} folder'.format(self.track_number))
 
         self.config['user_data']['state'] = self.state
@@ -113,9 +114,8 @@ class Signal(GameObject):
 
         else:
             if self.sprite is None:
-                self.sprite = pyglet.sprite.Sprite(self.image[self.state],
-                                                   x=signal_position[0], y=signal_position[1],
-                                                   batch=self.batch, group=self.signal_group)
+                self.sprite = sprite.Sprite(self.image[self.state], x=signal_position[0], y=signal_position[1],
+                                            batch=self.batch, group=self.signal_group)
                 self.sprite.visible = not self.locked
                 if self.flip_needed:
                     self.sprite.rotation = 180.0

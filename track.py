@@ -1,8 +1,8 @@
-import logging
-import configparser
-import os
+from configparser import RawConfigParser
+from logging import getLogger
+from os import path, mkdir
 
-import pyglet
+from pyglet.image import load
 
 from game_object import GameObject
 from tip import Tip
@@ -29,9 +29,9 @@ class Track(GameObject):
             self.on_under_construction_available()
 
         super().__init__(game_config)
-        self.logger = logging.getLogger('game.track_{}'.format(track_number))
+        self.logger = getLogger('game.track_{}'.format(track_number))
         self.logger.debug('------- START INIT -------')
-        self.config = configparser.RawConfigParser()
+        self.config = RawConfigParser()
         self.logger.debug('config parser created')
         self.track_number = track_number
         self.base_routes = base_routes_in_track
@@ -56,13 +56,13 @@ class Track(GameObject):
                                     button_group=button_group, text_group=text_group, borders_group=borders_group,
                                     game_config=self.c, logs_description='track{}_unlock'.format(self.track_number),
                                     map_move_mode=map_move_mode)
-        self.not_enough_money_tip = Tip(pyglet.image.load('img/track_tip.png'), x=195, y=81,
+        self.not_enough_money_tip = Tip(load('img/track_tip.png'), x=195, y=81,
                                         tip_type='not_enough_money', batch=batch, group=tip_group,
                                         viewport_border_group=text_group, game_config=self.c,
                                         primary_text='Get                    to unlock track {}'
                                         .format(self.track_number),
                                         price_text='  0 ¤                        ')
-        self.under_construction_tip = Tip(pyglet.image.load('img/track_tip.png'), x=195, y=81,
+        self.under_construction_tip = Tip(load('img/track_tip.png'), x=195, y=81,
                                           tip_type='track_under_construction', batch=batch, group=tip_group,
                                           viewport_border_group=text_group, game_config=self.c,
                                           primary_text='Building track {}'.format(self.track_number))
@@ -72,7 +72,7 @@ class Track(GameObject):
 
     def read_state(self):
         self.logger.debug('------- START READING STATE -------')
-        if os.path.exists('user_cfg/tracks/track{}.ini'.format(self.track_number)):
+        if path.exists('user_cfg/tracks/track{}.ini'.format(self.track_number)):
             self.config.read('user_cfg/tracks/track{}.ini'.format(self.track_number))
             self.logger.debug('config parsed from user_cfg')
         else:
@@ -108,12 +108,12 @@ class Track(GameObject):
 
     def save_state(self):
         self.logger.debug('------- START SAVING STATE -------')
-        if not os.path.exists('user_cfg'):
-            os.mkdir('user_cfg')
+        if not path.exists('user_cfg'):
+            mkdir('user_cfg')
             self.logger.debug('created user_cfg folder')
 
-        if not os.path.exists('user_cfg/tracks'):
-            os.mkdir('user_cfg/tracks')
+        if not path.exists('user_cfg/tracks'):
+            mkdir('user_cfg/tracks')
             self.logger.debug('created user_cfg/tracks folder')
 
         self.config['user_data']['locked'] = str(self.locked)

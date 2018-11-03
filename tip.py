@@ -1,6 +1,8 @@
-import logging
+from logging import getLogger
 
-import pyglet
+from pyglet.image import load
+from pyglet.sprite import Sprite
+from pyglet.text import Label
 
 from game_object import GameObject
 
@@ -17,7 +19,7 @@ class Tip(GameObject):
     def __init__(self, image, x, y, tip_type, batch, group, viewport_border_group, game_config,
                  primary_text='', price_text=''):
         super().__init__(game_config)
-        self.logger = logging.getLogger('game.onboarding_tip_{}'.format(tip_type))
+        self.logger = getLogger('game.onboarding_tip_{}'.format(tip_type))
         self.logger.debug('------- START INIT -------')
         self.tip_type = tip_type
         self.image = image
@@ -28,6 +30,7 @@ class Tip(GameObject):
         self.y = y
         self.sprite = None
         self.viewport_border = None
+        self.viewport_border_image = load('img/viewport_border.png')
         self.logger.debug('image loaded: {}'.format(image))
         self.condition_met = False
         self.logger.debug('condition_met: {}'.format(self.condition_met))
@@ -45,8 +48,7 @@ class Tip(GameObject):
         self.logger.debug('------- START DRAWING -------')
         if self.condition_met:
             if self.sprite is None:
-                self.sprite = pyglet.sprite.Sprite(self.image, x=self.x, y=self.y,
-                                                   batch=self.batch, group=self.group)
+                self.sprite = Sprite(self.image, x=self.x, y=self.y, batch=self.batch, group=self.group)
                 self.sprite.opacity = 0
                 self.logger.debug('condition met, we need to show tip')
             else:
@@ -56,19 +58,19 @@ class Tip(GameObject):
             if self.tip_type in ('not_enough_money', 'enough_money', 'track_under_construction'):
                 if self.primary_text_label is None and self.primary_text != '':
                     self.primary_text_label \
-                        = pyglet.text.Label(self.primary_text, font_name=self.c.font_name,
-                                            font_size=self.c.unlock_tip_font_size, color=(255, 255, 255, 0),
-                                            x=self.x + self.image.width // 2, y=self.y + self.image.height // 2,
-                                            anchor_x='center', anchor_y='center', align='center', batch=self.batch,
-                                            group=self.viewport_border_group)
+                        = Label(self.primary_text, font_name=self.c.font_name,
+                                font_size=self.c.unlock_tip_font_size, color=(255, 255, 255, 0),
+                                x=self.x + self.image.width // 2, y=self.y + self.image.height // 2,
+                                anchor_x='center', anchor_y='center', align='center', batch=self.batch,
+                                group=self.viewport_border_group)
 
                 if self.price_text_label is None and self.price_text != '':
                     self.price_text_label \
-                        = pyglet.text.Label(self.price_text, font_name=self.c.font_name,
-                                            font_size=self.c.unlock_tip_font_size, color=(0, 192, 0, 0),
-                                            x=self.x + self.image.width // 2, y=self.y + self.image.height // 2,
-                                            anchor_x='center', anchor_y='center', align='center', batch=self.batch,
-                                            group=self.viewport_border_group)
+                        = Label(self.price_text, font_name=self.c.font_name,
+                                font_size=self.c.unlock_tip_font_size, color=(0, 192, 0, 0),
+                                x=self.x + self.image.width // 2, y=self.y + self.image.height // 2,
+                                anchor_x='center', anchor_y='center', align='center', batch=self.batch,
+                                group=self.viewport_border_group)
 
                 if self.text_opacity < 255:
                     self.text_opacity += 15
@@ -80,9 +82,8 @@ class Tip(GameObject):
 
             elif self.tip_type == 'mini_map':
                 if self.viewport_border is None:
-                    self.viewport_border = pyglet.sprite.Sprite(pyglet.image.load('img/viewport_border.png'),
-                                                                batch=self.batch,
-                                                                group=self.viewport_border_group)
+                    self.viewport_border = Sprite(self.viewport_border_image, batch=self.batch,
+                                                  group=self.viewport_border_group)
                     self.viewport_border.opacity = 0
                 else:
                     self.viewport_border.position = (self.x + round((-1) * base_offset[0]
@@ -134,4 +135,4 @@ class Tip(GameObject):
 
     @_for_mini_map
     def on_track_unlock(self, track):
-        self.image = pyglet.image.load('img/mini_map/{}/mini_map.png'.format(track))
+        self.image = load('img/mini_map/{}/mini_map.png'.format(track))

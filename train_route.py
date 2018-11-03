@@ -1,6 +1,6 @@
-import configparser
-import os
-import logging
+from configparser import RawConfigParser
+from logging import getLogger
+from os import path, mkdir
 
 from game_object import GameObject
 from base_route import BaseRoute
@@ -20,9 +20,9 @@ class TrainRoute(GameObject):
     def __init__(self, track_number, route_type, supported_carts, train_route_sections, train_route_sections_positions,
                  game_config):
         super().__init__(game_config)
-        self.logger = logging.getLogger('game.train_route_{}_{}'.format(track_number, route_type))
+        self.logger = getLogger('game.train_route_{}_{}'.format(track_number, route_type))
         self.logger.debug('------- START INIT -------')
-        self.config = configparser.RawConfigParser()
+        self.config = RawConfigParser()
         self.logger.debug('config parser created')
         self.route_type = route_type
         self.track_number = track_number
@@ -65,7 +65,7 @@ class TrainRoute(GameObject):
 
     def read_state(self):
         self.logger.debug('------- START READING STATE -------')
-        if os.path.exists('user_cfg/train_route/track{}/track{}_{}.ini'
+        if path.exists('user_cfg/train_route/track{}/track{}_{}.ini'
                           .format(self.track_number, self.track_number, self.route_type)):
             self.config.read('user_cfg/train_route/track{}/track{}_{}.ini'
                              .format(self.track_number, self.track_number, self.route_type))
@@ -115,16 +115,16 @@ class TrainRoute(GameObject):
 
     def save_state(self):
         self.logger.debug('------- START SAVING STATE -------')
-        if not os.path.exists('user_cfg'):
-            os.mkdir('user_cfg')
+        if not path.exists('user_cfg'):
+            mkdir('user_cfg')
             self.logger.debug('created user_cfg folder')
 
-        if not os.path.exists('user_cfg/train_route'):
-            os.mkdir('user_cfg/train_route')
+        if not path.exists('user_cfg/train_route'):
+            mkdir('user_cfg/train_route')
             self.logger.debug('created user_cfg/train_route folder')
 
-        if not os.path.exists('user_cfg/train_route/track{}'.format(self.track_number)):
-            os.mkdir('user_cfg/train_route/track{}'.format(self.track_number))
+        if not path.exists('user_cfg/train_route/track{}'.format(self.track_number)):
+            mkdir('user_cfg/train_route/track{}'.format(self.track_number))
             self.logger.debug('created user_cfg/train_route/track{} folder'.format(self.track_number))
 
         self.config['user_data']['opened'] = str(self.opened)
