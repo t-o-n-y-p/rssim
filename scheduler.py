@@ -34,6 +34,7 @@ class Scheduler(GameObject):
         self.logger = getLogger('game.scheduler')
         self.config = RawConfigParser()
         self.base_schedule = []
+        self.base_schedule_sprites = []
         self.game_time = None
         self.game_progress = None
         self.dispatcher = None
@@ -126,6 +127,54 @@ class Scheduler(GameObject):
 
     def on_board_activate(self):
         self.is_activated = True
+        counter = 0
+        departure = ''
+        self.base_schedule_sprites = []
+        while self.base_schedule[counter][1] < self.game_time.epoch_timestamp + 14400 \
+                and counter < len(self.base_schedule) and counter < 26:
+            self.base_schedule_sprites.append(Label('{0:0>6}'.format(self.base_schedule[counter][0]),
+                                                    font_name='Perfo', bold=True, font_size=18,
+                                                    color=self.c.day_text_color, x=94 + 640 * (counter // 13),
+                                                    y=501 - counter * 27, anchor_x='center', anchor_y='center',
+                                                    batch=self.batch, group=self.text_group))
+            self.base_schedule_sprites.append(Label('{0:0>2} : {1:0>2}'
+                                                    .format((self.base_schedule[counter][1] // 14400 + 12) % 24,
+                                                            (self.base_schedule[counter][1] // 240) % 60),
+                                                    font_name='Perfo', bold=True, font_size=18,
+                                                    color=self.c.day_text_color, x=200 + 640 * (counter // 13),
+                                                    y=501 - counter * 27, anchor_x='center', anchor_y='center',
+                                                    batch=self.batch, group=self.text_group))
+            if self.base_schedule[counter][2] == 0:
+                departure = 'West City'
+            elif self.base_schedule[counter][2] == 1:
+                departure = 'East City'
+            elif self.base_schedule[counter][2] == 2:
+                departure = 'North-West City'
+            elif self.base_schedule[counter][2] == 3:
+                departure = 'South-East City'
+
+            self.base_schedule_sprites.append(Label(departure,
+                                                    font_name='Perfo', bold=True, font_size=18,
+                                                    color=self.c.day_text_color, x=346 + 640 * (counter // 13),
+                                                    y=501 - counter * 27, anchor_x='center', anchor_y='center',
+                                                    batch=self.batch, group=self.text_group))
+            self.base_schedule_sprites.append(Label('{0:0>2}'.format(self.base_schedule[counter][4]),
+                                                    font_name='Perfo', bold=True, font_size=18,
+                                                    color=self.c.day_text_color, x=470 + 640 * (counter // 13),
+                                                    y=501 - counter * 27, anchor_x='center', anchor_y='center',
+                                                    batch=self.batch, group=self.text_group))
+            self.base_schedule_sprites.append(Label('{0:0>2} : {1:0>2}'
+                                                    .format(self.base_schedule[counter][5] // 240,
+                                                            (self.base_schedule[counter][5] // 4) % 60),
+                                                    font_name='Perfo', bold=True, font_size=18,
+                                                    color=self.c.day_text_color, x=550 + 640 * (counter // 13),
+                                                    y=501 - counter * 27, anchor_x='center', anchor_y='center',
+                                                    batch=self.batch, group=self.text_group))
+            counter += 1
 
     def on_board_deactivate(self):
         self.is_activated = False
+        for i in self.base_schedule_sprites:
+            i.delete()
+
+        self.base_schedule_sprites.clear()
