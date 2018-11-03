@@ -1,6 +1,6 @@
-import configparser
-import os
-import logging
+from configparser import RawConfigParser
+from logging import getLogger
+from os import path, mkdir
 
 from game_object import GameObject
 
@@ -16,9 +16,9 @@ def _game_is_not_paused(fn):
 class Crossover(GameObject):
     def __init__(self, straight_track_1, straight_track_2, direction, game_config):
         super().__init__(game_config)
-        self.logger = logging.getLogger('game.crossover_{}_{}_{}'.format(straight_track_1, straight_track_2, direction))
+        self.logger = getLogger('game.crossover_{}_{}_{}'.format(straight_track_1, straight_track_2, direction))
         self.logger.debug('------- START INIT -------')
-        self.config = configparser.RawConfigParser()
+        self.config = RawConfigParser()
         self.logger.debug('config parser created')
         self.straight_track_1 = straight_track_1
         self.straight_track_2 = straight_track_2
@@ -36,8 +36,8 @@ class Crossover(GameObject):
 
     def read_state(self):
         self.logger.debug('------- START READING STATE -------')
-        if os.path.exists('user_cfg/crossovers/crossover_{}_{}_{}.ini'
-                          .format(self.straight_track_1, self.straight_track_2, self.direction)):
+        if path.exists('user_cfg/crossovers/crossover_{}_{}_{}.ini'
+                       .format(self.straight_track_1, self.straight_track_2, self.direction)):
             self.config.read('user_cfg/crossovers/crossover_{}_{}_{}.ini'
                              .format(self.straight_track_1, self.straight_track_2, self.direction))
             self.logger.debug('config parsed from user_cfg')
@@ -117,12 +117,12 @@ class Crossover(GameObject):
 
     def save_state(self):
         self.logger.debug('------- START SAVING STATE -------')
-        if not os.path.exists('user_cfg'):
-            os.mkdir('user_cfg')
+        if not path.exists('user_cfg'):
+            mkdir('user_cfg')
             self.logger.debug('created user_cfg folder')
 
-        if not os.path.exists('user_cfg/crossovers'):
-            os.mkdir('user_cfg/crossovers')
+        if not path.exists('user_cfg/crossovers'):
+            mkdir('user_cfg/crossovers')
             self.logger.debug('created user_cfg/crossovers folder')
 
         self.config['user_data']['busy_{}_{}'.format(self.straight_track_1, self.straight_track_1)] \

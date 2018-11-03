@@ -1,14 +1,18 @@
-import configparser
-import io
-import logging
-import os
-import time
-import ctypes
+from configparser import RawConfigParser
+from io import StringIO
+from logging import StreamHandler, Formatter, getLogger
+from os import path, mkdir
+from time import time, perf_counter
+from ctypes import c_long
 
-import win32api
-import win32gui
-import win32con
-import pyglet
+from win32api import GetCursorPos
+from win32gui import GetActiveWindow, GetWindowRect, SetWindowPos
+from win32con import HWND_TOP, SWP_NOREDRAW
+from pyglet import gl
+from pyglet.image import load
+from pyglet.text import Label
+from pyglet.graphics import Batch, OrderedGroup
+from pyglet.window import Window, mouse
 
 from tip import Tip
 from exceptions import VideoAdapterNotSupportedException
@@ -25,7 +29,7 @@ def _game_window_is_active(fn):
 
 def _left_button(fn):
     def _handle_mouse_if_left_button_was_clicked(*args, **kwargs):
-        if args[3] == pyglet.window.mouse.LEFT:
+        if args[3] == mouse.LEFT:
             fn(*args, **kwargs)
 
     return _handle_mouse_if_left_button_was_clicked
@@ -33,14 +37,14 @@ def _left_button(fn):
 
 class Game:
     def __init__(self, caption):
-        max_texture_size = ctypes.c_long(0)
-        pyglet.gl.glGetIntegerv(pyglet.gl.GL_MAX_TEXTURE_SIZE, max_texture_size)
+        max_texture_size = c_long(0)
+        gl.glGetIntegerv(gl.GL_MAX_TEXTURE_SIZE, max_texture_size)
         if max_texture_size.value < 8192:
             raise VideoAdapterNotSupportedException
 
-        self.logs_config = configparser.RawConfigParser()
-        self.logger = logging.getLogger('game')
-        self.logs_stream = io.StringIO()
+        self.logs_config = RawConfigParser()
+        self.logger = getLogger('game')
+        self.logs_stream = StringIO()
         self.logs_file = None
         self.manage_logs_config()
         self.logger.debug('main logger created')
@@ -52,38 +56,34 @@ class Game:
         self.game_paused = False
         self.logger.debug('game paused set: {}'.format(self.game_paused))
         self.objects = []
-        surface = pyglet.window.Window(width=self.c.screen_resolution[0],
-                                       height=self.c.screen_resolution[1],
-                                       caption=caption, style='borderless', vsync=self.c.vsync)
+        surface = Window(width=self.c.screen_resolution[0], height=self.c.screen_resolution[1],
+                         caption=caption, style='borderless', vsync=self.c.vsync)
         self.surface = surface
-        pyglet.gl.glEnable(pyglet.gl.GL_BLEND)
-        pyglet.gl.glBlendFunc(pyglet.gl.GL_SRC_ALPHA, pyglet.gl.GL_ONE_MINUS_SRC_ALPHA)
-        self.batch = pyglet.graphics.Batch()
-        self.map_ordered_group = pyglet.graphics.OrderedGroup(0)
-        self.signals_and_trains_ordered_group = pyglet.graphics.OrderedGroup(1)
-        self.boarding_lights_ordered_group = pyglet.graphics.OrderedGroup(2)
-        self.twilight_ordered_group = pyglet.graphics.OrderedGroup(3)  # reserved for future use
-        self.top_bottom_bars_ordered_group = pyglet.graphics.OrderedGroup(4)
-        self.buttons_general_borders_day_text_ordered_group = pyglet.graphics.OrderedGroup(5)
-        self.buttons_text_and_borders_ordered_group = pyglet.graphics.OrderedGroup(6)
-        self.loading_shadow_ordered_group = pyglet.graphics.OrderedGroup(7)
+        gl.glEnable(gl.GL_BLEND)
+        gl.glBlendFunc(gl.GL_SRC_ALPHA, gl.GL_ONE_MINUS_SRC_ALPHA)
+        self.batch = Batch()
+        self.map_ordered_group = OrderedGroup(0)
+        self.signals_and_trains_ordered_group = OrderedGroup(1)
+        self.boarding_lights_ordered_group = OrderedGroup(2)
+        self.twilight_ordered_group = OrderedGroup(3)  # reserved for future use
+        self.top_bottom_bars_ordered_group = OrderedGroup(4)
+        self.buttons_general_borders_day_text_ordered_group = OrderedGroup(5)
+        self.buttons_text_and_borders_ordered_group = OrderedGroup(6)
+        self.loading_shadow_ordered_group = OrderedGroup(7)
         self.surface.dispatch_event('on_draw')
         self.surface.flip()
-        self.game_window_handler = win32gui.GetActiveWindow()
-        self.game_window_position = win32gui.GetWindowRect(self.game_window_handler)
-        self.absolute_mouse_pos = win32api.GetCursorPos()
+        self.game_window_handler = GetActiveWindow()
+        self.game_window_position = GetWindowRect(self.game_window_handler)
+        self.absolute_mouse_pos = GetCursorPos()
         self.fps_display_label = None
         if self.c.fps_display_enabled:
-            self.fps_display_label \
-                = pyglet.text.Label(text='0', font_name='Courier New',
-                                    font_size=self.c.iconify_close_button_font_size,
-                                    x=self.c.screen_resolution[0] - 75,
-                                    y=self.c.screen_resolution[1]
-                                    - self.c.top_bar_height // 2,
-                                    anchor_x='right', anchor_y='center',
-                                    batch=self.batch, group=self.buttons_text_and_borders_ordered_group)
-
-        self.surface.set_icon(pyglet.image.load('icon.ico'))
+            self.fps_display_label = Label(text='0 FPS', font_name='Courier New',
+                                           font_size=self.c.iconify_close_button_font_size,
+                                           x=self.c.screen_resolution[0] - 75,
+                                           y=self.c.screen_resolution[1] - self.c.top_bar_height // 2,
+                                           anchor_x='right', anchor_y='center',
+                                           batch=self.batch, group=self.buttons_text_and_borders_ordered_group)
+        self.surface.set_icon(load('icon.ico'))
         self.logger.debug('created screen with resolution {}'
                           .format(self.c.screen_resolution))
         self.logger.debug('caption set: {}'.format(caption))
@@ -98,7 +98,7 @@ class Game:
         self.app_window_move_mode = False
         self.map_move_mode = [False, ]
         self.app_window_move_offset = ()
-        mini_map_image = pyglet.image.load('img/mini_map/4/mini_map.png')
+        mini_map_image = load('img/mini_map/4/mini_map.png')
         self.mini_map_tip = Tip(image=mini_map_image,
                                 x=self.c.screen_resolution[0] - mini_map_image.width,
                                 y=self.c.screen_resolution[1] - self.c.top_bar_height - 4 - mini_map_image.height,
@@ -111,14 +111,14 @@ class Game:
 
         @surface.event
         def on_draw():
-            time_1 = time.perf_counter()
+            time_1 = perf_counter()
             for o in self.objects:
                 o.update_sprite(self.base_offset)
 
-            time_2 = time.perf_counter()
+            time_2 = perf_counter()
             self.surface.clear()
             self.batch.draw()
-            time_3 = time.perf_counter()
+            time_3 = perf_counter()
             self.logger.critical('updating sprites: {} sec'.format(time_2 - time_1))
             self.logger.critical('drawing sprites: {} sec'.format(time_3 - time_2))
 
@@ -149,14 +149,14 @@ class Game:
 
     def manage_logs_config(self):
         self.logs_config.read('logs_config.ini')
-        if not os.path.exists('logs'):
-            os.mkdir('logs')
+        if not path.exists('logs'):
+            mkdir('logs')
 
         self.logger.setLevel(self.logs_config['logs_config']['level'])
         session = self.logs_config['logs_config'].getint('session')
-        logs_handler = logging.StreamHandler(stream=self.logs_stream)
+        logs_handler = StreamHandler(stream=self.logs_stream)
         # logs_handler = logging.FileHandler('logs/logs_session_{}.log'.format(session))
-        logs_handler.setFormatter(logging.Formatter('%(asctime)s - %(name)s - %(levelname)s - %(message)s'))
+        logs_handler.setFormatter(Formatter('%(asctime)s - %(name)s - %(levelname)s - %(message)s'))
         self.logger.addHandler(logs_handler)
         self.logs_file = open('logs/session_{}.log'.format(session), 'w')
         session += 1
@@ -166,15 +166,15 @@ class Game:
             self.logs_config.write(configfile)
 
     def update(self):
-        time_1 = time.perf_counter()
+        time_1 = perf_counter()
         for o in self.objects:
             o.update(self.game_paused)
 
         if self.mini_map_tip.condition_met and not self.map_move_mode[0]:
-            if time.time() - self.mini_map_timer > 1:
+            if time() - self.mini_map_timer > 1:
                 self.mini_map_tip.condition_met = False
 
-        time_2 = time.perf_counter()
+        time_2 = perf_counter()
         self.logger.critical('updating: {} sec'.format(time_2 - time_1))
 
     @_game_window_is_active
@@ -194,7 +194,7 @@ class Game:
     def handle_mouse_release(self, x, y, button, modifiers):
         self.app_window_move_mode = False
         self.map_move_mode[0] = False
-        self.mini_map_timer = time.time()
+        self.mini_map_timer = time()
 
     @_game_window_is_active
     def handle_mouse_drag(self, x, y, dx, dy, buttons, modifiers):
@@ -221,31 +221,31 @@ class Game:
                 s.update_sprite(self.base_offset)
 
         if self.app_window_move_mode:
-            self.absolute_mouse_pos = win32api.GetCursorPos()
-            self.game_window_position = win32gui.GetWindowRect(self.game_window_handler)
-            win32gui.SetWindowPos(self.game_window_handler, win32con.HWND_TOP,
-                                  self.absolute_mouse_pos[0] - self.app_window_move_offset[0],
-                                  self.absolute_mouse_pos[1] - self.app_window_move_offset[1],
-                                  self.game_window_position[2] - self.game_window_position[0],
-                                  self.game_window_position[3] - self.game_window_position[1],
-                                  win32con.SWP_NOREDRAW)
+            self.absolute_mouse_pos = GetCursorPos()
+            self.game_window_position = GetWindowRect(self.game_window_handler)
+            SetWindowPos(self.game_window_handler, HWND_TOP,
+                         self.absolute_mouse_pos[0] - self.app_window_move_offset[0],
+                         self.absolute_mouse_pos[1] - self.app_window_move_offset[1],
+                         self.game_window_position[2] - self.game_window_position[0],
+                         self.game_window_position[3] - self.game_window_position[1],
+                         SWP_NOREDRAW)
 
     def run(self):
         fps_timer = 0.0
         while True:
             self.logger.warning('frame begins')
-            time_1 = time.perf_counter()
+            time_1 = perf_counter()
             # pyglet.clock.tick()
             self.surface.dispatch_events()
             self.update()
             self.surface.dispatch_event('on_draw')
-            time_4 = time.perf_counter()
+            time_4 = perf_counter()
             self.surface.flip()
             self.logger.warning('frame ends')
             if self.fps_display_label is not None \
-                    and time.perf_counter() - fps_timer > self.c.fps_display_update_interval:
+                    and perf_counter() - fps_timer > self.c.fps_display_update_interval:
                 self.fps_display_label.text = str(round(float(1/(time_4 - time_1)))) + ' FPS'
-                fps_timer = time.perf_counter()
+                fps_timer = perf_counter()
 
             new_lines = self.logs_stream.getvalue()
             self.logs_stream.seek(0, 0)

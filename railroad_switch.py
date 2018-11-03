@@ -1,6 +1,6 @@
-import logging
-import configparser
-import os
+from configparser import RawConfigParser
+from logging import getLogger
+from os import path, mkdir
 
 from game_object import GameObject
 
@@ -16,14 +16,14 @@ def _game_is_not_paused(fn):
 class RailroadSwitch(GameObject):
     def __init__(self, straight_track, side_track, direction, game_config):
         super().__init__(game_config)
-        self.logger = logging.getLogger('game.switch_{}_{}_{}'.format(straight_track, side_track, direction))
+        self.logger = getLogger('game.switch_{}_{}_{}'.format(straight_track, side_track, direction))
         self.logger.debug('------- START INIT -------')
         self.straight_track = straight_track
         self.side_track = side_track
         self.direction = direction
         self.logger.debug('straight and side tracks and direction set: {} {} {}'
                           .format(self.straight_track, self.side_track, self.direction))
-        self.config = configparser.RawConfigParser()
+        self.config = RawConfigParser()
         self.logger.debug('config parser created')
         self.dependency = None
         self.busy = False
@@ -36,7 +36,7 @@ class RailroadSwitch(GameObject):
 
     def read_state(self):
         self.logger.debug('------- START READING STATE -------')
-        if os.path.exists('user_cfg/switches/switch_{}_{}_{}.ini'
+        if path.exists('user_cfg/switches/switch_{}_{}_{}.ini'
                           .format(self.straight_track, self.side_track, self.direction)):
             self.config.read('user_cfg/switches/switch_{}_{}_{}.ini'
                              .format(self.straight_track, self.side_track, self.direction))
@@ -61,12 +61,12 @@ class RailroadSwitch(GameObject):
 
     def save_state(self):
         self.logger.debug('------- START SAVING STATE -------')
-        if not os.path.exists('user_cfg'):
-            os.mkdir('user_cfg')
+        if not path.exists('user_cfg'):
+            mkdir('user_cfg')
             self.logger.debug('created user_cfg folder')
 
-        if not os.path.exists('user_cfg/switches'):
-            os.mkdir('user_cfg/switches')
+        if not path.exists('user_cfg/switches'):
+            mkdir('user_cfg/switches')
             self.logger.debug('created user_cfg/switches folder')
 
         self.config['user_data']['busy'] = str(self.busy)

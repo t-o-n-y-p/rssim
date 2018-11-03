@@ -1,8 +1,9 @@
-import logging
-import configparser
-import os
+from configparser import RawConfigParser
+from logging import getLogger
+from os import path, mkdir
 
-import pyglet
+from pyglet.resource import add_font
+from pyglet.text import Label
 
 from game_object import GameObject
 
@@ -18,38 +19,31 @@ def _game_is_not_paused(fn):
 class GameTime(GameObject):
     def __init__(self, batch, day_text_group, game_config, auto_save_function):
         super().__init__(game_config)
-        self.logger = logging.getLogger('game.in-game_time')
+        self.logger = getLogger('game.in-game_time')
         self.logger.debug('------- START INIT -------')
-        self.config = configparser.RawConfigParser()
+        self.config = RawConfigParser()
         self.logger.debug('config parser created')
         self.epoch_timestamp = None
         self.day = None
         self.hour = None
         self.minute = None
         self.logger.debug('created text object for days counter')
-        pyglet.resource.add_font('perfo-bold.ttf')
+        add_font('perfo-bold.ttf')
         self.read_state()
-        self.day_text = pyglet.text.Label('DAY  {}'.format(self.day),
-                                          font_name='Perfo', bold=True,
-                                          font_size=self.c.day_font_size,
-                                          color=self.c.day_text_color,
-                                          x=self.c.screen_resolution[0] - 181, y=57,
-                                          anchor_x='center', anchor_y='center',
-                                          batch=batch, group=day_text_group)
-        self.time_text = pyglet.text.Label('{0:0>2}'.format(self.hour) + ' : ' + '{0:0>2}'.format(self.minute),
-                                           font_name='Perfo', bold=True,
-                                           font_size=self.c.day_font_size,
-                                           color=self.c.day_text_color,
-                                           x=self.c.screen_resolution[0] - 181, y=26,
-                                           anchor_x='center', anchor_y='center',
-                                           batch=batch, group=day_text_group)
+        self.day_text = Label('DAY  {}'.format(self.day), font_name='Perfo', bold=True, font_size=self.c.day_font_size,
+                              color=self.c.day_text_color, x=self.c.screen_resolution[0] - 181, y=57,
+                              anchor_x='center', anchor_y='center', batch=batch, group=day_text_group)
+        self.time_text = Label('{0:0>2}'.format(self.hour) + ' : ' + '{0:0>2}'.format(self.minute),
+                               font_name='Perfo', bold=True, font_size=self.c.day_font_size,
+                               color=self.c.day_text_color, x=self.c.screen_resolution[0] - 181, y=26,
+                               anchor_x='center', anchor_y='center', batch=batch, group=day_text_group)
         self.auto_save_function = auto_save_function
         self.logger.debug('------- END INIT -------')
         self.logger.warning('time init completed')
 
     def read_state(self):
         self.logger.debug('------- START READING STATE -------')
-        if os.path.exists('user_cfg/epoch_time.ini'):
+        if path.exists('user_cfg/epoch_time.ini'):
             self.config.read('user_cfg/epoch_time.ini')
             self.logger.debug('config parsed from user_cfg')
         else:
@@ -69,8 +63,8 @@ class GameTime(GameObject):
 
     def save_state(self):
         self.logger.debug('------- START SAVING STATE -------')
-        if not os.path.exists('user_cfg'):
-            os.mkdir('user_cfg')
+        if not path.exists('user_cfg'):
+            mkdir('user_cfg')
             self.logger.debug('created user_cfg folder')
 
         self.config['user_data']['epoch_timestamp'] = str(self.epoch_timestamp)

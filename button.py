@@ -1,6 +1,10 @@
-import logging
+from logging import getLogger
 
-import pyglet
+from pyglet import gl
+from pyglet.image import load
+from pyglet.sprite import Sprite
+from pyglet.text import Label
+from pyglet.window import mouse
 
 from game_object import GameObject
 
@@ -15,7 +19,7 @@ def _button_is_visible(fn):
 
 def _left_button(fn):
     def _handle_mouse_if_left_button_was_clicked(*args, **kwargs):
-        if args[3] == pyglet.window.mouse.LEFT:
+        if args[3] == mouse.LEFT:
             fn(*args, **kwargs)
 
     return _handle_mouse_if_left_button_was_clicked
@@ -42,7 +46,7 @@ class Button(GameObject):
     def __init__(self, position, button_size, text, font_size, on_click, is_visible,
                  batch, button_group, text_group, borders_group, game_config, logs_description, map_move_mode):
         super().__init__(game_config)
-        self.logger = logging.getLogger('game.{}_button'.format(logs_description))
+        self.logger = getLogger('game.{}_button'.format(logs_description))
         self.logger.debug('------- START INIT -------')
         self.is_visible = is_visible
         self.logger.debug('allowed_to_be_drawn set: {}'.format(self.is_visible))
@@ -57,11 +61,11 @@ class Button(GameObject):
         self.logger.debug('position set: {}'.format(self.position))
         self.on_click = on_click
         self.map_move_mode = map_move_mode
-        pyglet.gl.glEnable(pyglet.gl.GL_BLEND)
-        pyglet.gl.glBlendFunc(pyglet.gl.GL_SRC_ALPHA, pyglet.gl.GL_ONE_MINUS_SRC_ALPHA)
+        gl.glEnable(gl.GL_BLEND)
+        gl.glBlendFunc(gl.GL_SRC_ALPHA, gl.GL_ONE_MINUS_SRC_ALPHA)
         self.vertex_list = None
-        self.border_sprite_image = pyglet.image.load('img/button_borders/button_border_{}_{}.png'
-                                                     .format(self.button_size[0], self.button_size[1]))
+        self.border_sprite_image = load('img/button_borders/button_border_{}_{}.png'
+                                        .format(self.button_size[0], self.button_size[1]))
         self.border_sprite = None
         self.text = text
         self.font_size = font_size
@@ -77,7 +81,7 @@ class Button(GameObject):
     def on_button_is_visible(self):
         self.is_visible = True
         if self.vertex_list is None:
-            self.vertex_list = self.batch.add(4, pyglet.gl.GL_QUADS, self.button_group,
+            self.vertex_list = self.batch.add(4, gl.GL_QUADS, self.button_group,
                                               ('v2i/static', (self.position[0],
                                                               self.position[1],
                                                               self.position[0] + self.button_size[0] - 1,
@@ -89,15 +93,15 @@ class Button(GameObject):
                                               ('c4B', (0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0)))
 
         if self.border_sprite is None:
-            self.border_sprite = pyglet.sprite.Sprite(self.border_sprite_image, x=self.position[0], y=self.position[1],
-                                                      batch=self.batch, group=self.borders_group)
+            self.border_sprite = Sprite(self.border_sprite_image, x=self.position[0], y=self.position[1],
+                                        batch=self.batch, group=self.borders_group)
 
         if self.text_object is None:
-            self.text_object = pyglet.text.Label(self.text, font_name=self.c.font_name, font_size=self.font_size,
-                                                 x=self.position[0] + self.button_size[0] // 2,
-                                                 y=self.position[1] + self.button_size[1] // 2,
-                                                 anchor_x='center', anchor_y='center', batch=self.batch,
-                                                 group=self.text_group)
+            self.text_object = Label(self.text, font_name=self.c.font_name, font_size=self.font_size,
+                                     x=self.position[0] + self.button_size[0] // 2,
+                                     y=self.position[1] + self.button_size[1] // 2,
+                                     anchor_x='center', anchor_y='center', batch=self.batch,
+                                     group=self.text_group)
 
     def on_button_is_not_visible(self):
         self.is_visible = False

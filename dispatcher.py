@@ -1,10 +1,10 @@
-import configparser
-import os
-import random
-import logging
+from configparser import RawConfigParser
+from logging import getLogger
+from os import path, mkdir
+from random import seed, choice
 from operator import attrgetter
 
-import pyglet
+from pyglet.image import load
 
 from game_object import GameObject
 from train import Train
@@ -21,9 +21,9 @@ def _game_is_not_paused(fn):
 class Dispatcher(GameObject):
     def __init__(self, batch, group, boarding_lights_group, game_config):
         super().__init__(game_config)
-        self.logger = logging.getLogger('game.dispatcher')
+        self.logger = getLogger('game.dispatcher')
         self.logger.debug('------- START INIT -------')
-        self.config = configparser.RawConfigParser()
+        self.config = RawConfigParser()
         self.logger.debug('config parser created')
         self.game_progress = None
         # timer since main entry was left by previous train before creating new one
@@ -41,37 +41,37 @@ class Dispatcher(GameObject):
         self.train_head_image = {}
         self.train_mid_image = {}
         self.train_tail_image = {}
-        self.boarding_lights_image = pyglet.image.load('img/boarding_lights/boarding_lights_day.png')
+        self.boarding_lights_image = load('img/boarding_lights/boarding_lights_day.png')
         self.boarding_lights_image.anchor_x = self.boarding_lights_image.width // 2
         self.boarding_lights_image.anchor_y = self.boarding_lights_image.height // 2
         # ----------- left direction images -----------------
         self.train_head_image[self.c.direction_from_left_to_right] = \
-            pyglet.image.load('img/cart_head_{}.png'.format(self.c.direction_from_left_to_right))
+            load('img/cart_head_{}.png'.format(self.c.direction_from_left_to_right))
         self.train_mid_image[self.c.direction_from_left_to_right] = \
-            pyglet.image.load('img/cart_mid_{}.png'.format(self.c.direction_from_left_to_right))
+            load('img/cart_mid_{}.png'.format(self.c.direction_from_left_to_right))
         self.train_tail_image[self.c.direction_from_left_to_right] = \
-            pyglet.image.load('img/cart_tail_{}.png'.format(self.c.direction_from_left_to_right))
+            load('img/cart_tail_{}.png'.format(self.c.direction_from_left_to_right))
         # -------------------- right direction images ----------------------
         self.train_head_image[self.c.direction_from_right_to_left] = \
-            pyglet.image.load('img/cart_head_{}.png'.format(self.c.direction_from_right_to_left))
+            load('img/cart_head_{}.png'.format(self.c.direction_from_right_to_left))
         self.train_mid_image[self.c.direction_from_right_to_left] = \
-            pyglet.image.load('img/cart_mid_{}.png'.format(self.c.direction_from_right_to_left))
+            load('img/cart_mid_{}.png'.format(self.c.direction_from_right_to_left))
         self.train_tail_image[self.c.direction_from_right_to_left] = \
-            pyglet.image.load('img/cart_tail_{}.png'.format(self.c.direction_from_right_to_left))
+            load('img/cart_tail_{}.png'.format(self.c.direction_from_right_to_left))
         # ----------- left side direction images -----------------
         self.train_head_image[self.c.direction_from_left_to_right_side] = \
-            pyglet.image.load('img/cart_head_{}.png'.format(self.c.direction_from_left_to_right_side))
+            load('img/cart_head_{}.png'.format(self.c.direction_from_left_to_right_side))
         self.train_mid_image[self.c.direction_from_left_to_right_side] = \
-            pyglet.image.load('img/cart_mid_{}.png'.format(self.c.direction_from_left_to_right_side))
+            load('img/cart_mid_{}.png'.format(self.c.direction_from_left_to_right_side))
         self.train_tail_image[self.c.direction_from_left_to_right_side] = \
-            pyglet.image.load('img/cart_tail_{}.png'.format(self.c.direction_from_left_to_right_side))
+            load('img/cart_tail_{}.png'.format(self.c.direction_from_left_to_right_side))
         # -------------------- right side direction images ----------------------
         self.train_head_image[self.c.direction_from_right_to_left_side] = \
-            pyglet.image.load('img/cart_head_{}.png'.format(self.c.direction_from_right_to_left_side))
+            load('img/cart_head_{}.png'.format(self.c.direction_from_right_to_left_side))
         self.train_mid_image[self.c.direction_from_right_to_left_side] = \
-            pyglet.image.load('img/cart_mid_{}.png'.format(self.c.direction_from_right_to_left_side))
+            load('img/cart_mid_{}.png'.format(self.c.direction_from_right_to_left_side))
         self.train_tail_image[self.c.direction_from_right_to_left_side] = \
-            pyglet.image.load('img/cart_tail_{}.png'.format(self.c.direction_from_right_to_left_side))
+            load('img/cart_tail_{}.png'.format(self.c.direction_from_right_to_left_side))
         for i in (self.c.direction_from_left_to_right, self.c.direction_from_right_to_left,
                   self.c.direction_from_left_to_right_side, self.c.direction_from_right_to_left_side):
             self.train_head_image[i].anchor_x = self.train_head_image[i].width // 2
@@ -82,12 +82,13 @@ class Dispatcher(GameObject):
             self.train_tail_image[i].anchor_y = self.train_tail_image[i].height // 2
 
         self.mini_map_tip = None
+        seed()
         self.logger.debug('------- END INIT -------')
         self.logger.warning('dispatcher init completed')
 
     def read_state(self):
         self.logger.debug('------- START READING STATE -------')
-        if os.path.exists('user_cfg/dispatcher.ini'):
+        if path.exists('user_cfg/dispatcher.ini'):
             self.config.read('user_cfg/dispatcher.ini')
             self.logger.debug('config parsed from user_cfg')
         else:
@@ -115,7 +116,7 @@ class Dispatcher(GameObject):
             self.logger.debug('train ids found in config: {}'.format(self.train_ids))
             for i in self.train_ids:
                 self.logger.debug('reading config for train {}'.format(i))
-                train_config = configparser.RawConfigParser()
+                train_config = RawConfigParser()
                 train_config.read('user_cfg/trains/train{}.ini'.format(i))
                 self.logger.debug('config parsed from user_cfg')
                 train_carts = train_config['user_data'].getint('carts')
@@ -212,8 +213,8 @@ class Dispatcher(GameObject):
 
     def save_state(self):
         self.logger.debug('------- START SAVING STATE -------')
-        if not os.path.exists('user_cfg'):
-            os.mkdir('user_cfg')
+        if not path.exists('user_cfg'):
+            mkdir('user_cfg')
             self.logger.debug('created user_cfg folder')
 
         self.config['user_data']['train_timer'] \
@@ -456,10 +457,9 @@ class Dispatcher(GameObject):
                 self.train_timer[direction] = 0
                 self.logger.debug('timer flushed')
                 # randomly choose number of carts for train
-                random.seed()
-                carts = random.choice(carts_choice_list)
+                carts = choice(carts_choice_list)
                 if carts <= 10:
-                    new_direction = random.choice(new_direction_choice_list)
+                    new_direction = choice(new_direction_choice_list)
                     if new_direction == self.c.direction_from_right_to_left_side and self.tracks[20].locked:
                         new_direction = direction
 

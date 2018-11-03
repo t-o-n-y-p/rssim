@@ -1,8 +1,11 @@
-import logging
-import configparser
-import os
+from configparser import RawConfigParser
+from logging import getLogger
+from os import path, mkdir
 
-import pyglet
+from pyglet.image import load
+from pyglet.text import Label
+from pyglet.sprite import Sprite
+from pyglet.resource import add_font
 
 from game_object import GameObject
 
@@ -42,8 +45,8 @@ def _maximum_money_not_reached(fn):
 class GameProgress(GameObject):
     def __init__(self, main_map, mini_map, game_config, batch, inactive_group, active_group):
         super().__init__(game_config)
-        self.logger = logging.getLogger('game.game_progress')
-        self.config = configparser.RawConfigParser()
+        self.logger = getLogger('game.game_progress')
+        self.config = RawConfigParser()
         self.unlocked_tracks = 4
         self.level = 0
         self.exp = 0.0
@@ -56,31 +59,31 @@ class GameProgress(GameObject):
         self.mini_map = mini_map
         self.tracks = None
         self.signals = None
-        pyglet.resource.add_font('perfo-bold.ttf')
-        self.progress_bar_inactive_image = pyglet.image.load('img/game_progress_bars/progress_bar_inactive.png')
-        self.progress_bar_exp_inactive = pyglet.sprite.Sprite(self.progress_bar_inactive_image,
-                                                              x=10, y=10, batch=batch, group=inactive_group)
-        self.progress_bar_money_inactive = pyglet.sprite.Sprite(self.progress_bar_inactive_image,
-                                                                x=220, y=10, batch=batch, group=inactive_group)
-        self.progress_bar_exp_active_image = pyglet.image.load('img/game_progress_bars/progress_bar_active.png')
-        self.progress_bar_money_active_image = pyglet.image.load('img/game_progress_bars/progress_bar_money_active.png')
-        self.progress_bar_exp_active = pyglet.sprite.Sprite(self.progress_bar_exp_active_image,
-                                                            x=10, y=10, batch=batch, group=active_group)
+        add_font('perfo-bold.ttf')
+        self.progress_bar_inactive_image = load('img/game_progress_bars/progress_bar_inactive.png')
+        self.progress_bar_exp_inactive = Sprite(self.progress_bar_inactive_image,
+                                                x=10, y=10, batch=batch, group=inactive_group)
+        self.progress_bar_money_inactive = Sprite(self.progress_bar_inactive_image,
+                                                  x=220, y=10, batch=batch, group=inactive_group)
+        self.progress_bar_exp_active_image = load('img/game_progress_bars/progress_bar_active.png')
+        self.progress_bar_money_active_image = load('img/game_progress_bars/progress_bar_money_active.png')
+        self.progress_bar_exp_active = Sprite(self.progress_bar_exp_active_image,
+                                              x=10, y=10, batch=batch, group=active_group)
         self.progress_bar_exp_active.image = self.progress_bar_exp_active_image.get_region(0, 0, 1, 10)
-        self.progress_bar_money_active = pyglet.sprite.Sprite(self.progress_bar_money_active_image,
-                                                              x=220, y=10, batch=batch, group=active_group)
+        self.progress_bar_money_active = Sprite(self.progress_bar_money_active_image,
+                                                x=220, y=10, batch=batch, group=active_group)
         self.progress_bar_money_active.image = self.progress_bar_money_active_image.get_region(0, 0, 1, 10)
         self.money_target = 0
         self.read_state()
-        self.level_text = pyglet.text.Label('LEVEL {}'.format(self.level), font_name='Perfo', bold=True,
-                                            font_size=self.c.level_font_size, x=110, y=40,
-                                            anchor_x='center', anchor_y='center', batch=batch, group=active_group)
-        self.money_text = pyglet.text.Label('{0:0>8} ¤'.format(int(self.money)), font_name='Perfo', bold=True,
-                                            color=(0, 192, 0, 255), font_size=self.c.level_font_size, x=320, y=40,
-                                            anchor_x='center', anchor_y='center', batch=batch, group=active_group)
+        self.level_text = Label('LEVEL {}'.format(self.level), font_name='Perfo', bold=True,
+                                font_size=self.c.level_font_size, x=110, y=40,
+                                anchor_x='center', anchor_y='center', batch=batch, group=active_group)
+        self.money_text = Label('{0:0>8} ¤'.format(int(self.money)), font_name='Perfo', bold=True,
+                                color=(0, 192, 0, 255), font_size=self.c.level_font_size, x=320, y=40,
+                                anchor_x='center', anchor_y='center', batch=batch, group=active_group)
 
     def read_state(self):
-        if os.path.exists('user_cfg/game_progress.ini'):
+        if path.exists('user_cfg/game_progress.ini'):
             self.config.read('user_cfg/game_progress.ini')
             self.logger.debug('config parsed from user_cfg')
         else:
@@ -99,6 +102,10 @@ class GameProgress(GameObject):
         self.update_money_progress_sprite()
 
     def save_state(self):
+        if not path.exists('user_cfg'):
+            mkdir('user_cfg')
+            self.logger.debug('created user_cfg folder')
+
         self.config['user_data']['unlocked_tracks'] = str(self.unlocked_tracks)
         self.config['user_data']['level'] = str(self.level)
         self.config['user_data']['exp'] = str(self.exp)

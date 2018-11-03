@@ -1,6 +1,6 @@
-import configparser
-import logging
-import os
+from configparser import RawConfigParser
+from logging import getLogger
+from os import path, mkdir
 
 from game_object import GameObject
 from railroad_switch import RailroadSwitch
@@ -18,9 +18,9 @@ def _game_is_not_paused(fn):
 class BaseRoute(GameObject):
     def __init__(self, track_number, route_type, game_config):
         super().__init__(game_config)
-        self.logger = logging.getLogger('game.base_route_{}_{}'.format(track_number, route_type))
+        self.logger = getLogger('game.base_route_{}_{}'.format(track_number, route_type))
         self.logger.debug('------- START INIT -------')
-        self.config = configparser.RawConfigParser()
+        self.config = RawConfigParser()
         self.logger.debug('config parser created')
         self.route_type = route_type
         self.logger.debug('route type set: {}'.format(self.route_type))
@@ -37,8 +37,8 @@ class BaseRoute(GameObject):
 
     def read_state(self):
         self.logger.debug('------- START READING STATE -------')
-        if os.path.exists('user_cfg/base_route/track{}/track{}_{}.ini'
-                          .format(self.track_number, self.track_number, self.route_type)):
+        if path.exists('user_cfg/base_route/track{}/track{}_{}.ini'
+                       .format(self.track_number, self.track_number, self.route_type)):
             self.config.read('user_cfg/base_route/track{}/track{}_{}.ini'
                              .format(self.track_number, self.track_number, self.route_type))
             self.logger.debug('config parsed from user_cfg')
@@ -77,16 +77,16 @@ class BaseRoute(GameObject):
 
     def save_state(self):
         self.logger.debug('------- START SAVING STATE -------')
-        if not os.path.exists('user_cfg'):
-            os.mkdir('user_cfg')
+        if not path.exists('user_cfg'):
+            mkdir('user_cfg')
             self.logger.debug('created user_cfg folder')
 
-        if not os.path.exists('user_cfg/base_route'):
-            os.mkdir('user_cfg/base_route')
+        if not path.exists('user_cfg/base_route'):
+            mkdir('user_cfg/base_route')
             self.logger.debug('created user_cfg/base_route folder')
 
-        if not os.path.exists('user_cfg/base_route/track{}'.format(self.track_number)):
-            os.mkdir('user_cfg/base_route/track{}'.format(self.track_number))
+        if not path.exists('user_cfg/base_route/track{}'.format(self.track_number)):
+            mkdir('user_cfg/base_route/track{}'.format(self.track_number))
             self.logger.debug('created user_cfg/base_route/track{} folder'.format(self.track_number))
 
         self.config['user_data']['force_busy'] = str(self.route_config['force_busy'])

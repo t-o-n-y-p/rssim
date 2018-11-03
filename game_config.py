@@ -1,9 +1,9 @@
-import configparser
+from configparser import RawConfigParser
 
 
 class GameConfig:
     def __init__(self):
-        self.game_config = configparser.RawConfigParser()
+        self.game_config = RawConfigParser()
         self.game_config.read('game_config.ini')
 
         screen_resolution_parsed = self.game_config['graphics']['screen_resolution'].split(',')
