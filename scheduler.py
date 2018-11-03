@@ -3,7 +3,13 @@ from logging import getLogger
 from os import path, mkdir
 from random import seed, choice
 
+from pyglet.image import load
+from pyglet.sprite import Sprite
+from pyglet.text import Label
+from pyglet.resource import add_font
+
 from game_object import GameObject
+from button import Button
 
 
 def _game_is_not_paused(fn):
@@ -14,8 +20,16 @@ def _game_is_not_paused(fn):
     return _update_if_game_is_not_paused
 
 
+def _schedule_board_is_activated(fn):
+    def _update_sprite_if_schedule_board_is_activated(*args, **kwargs):
+        if args[0].is_activated:
+            fn(*args, **kwargs)
+
+    return _update_sprite_if_schedule_board_is_activated
+
+
 class Scheduler(GameObject):
-    def __init__(self, game_config):
+    def __init__(self, game_config, batch, group, text_group):
         super().__init__(game_config)
         self.logger = getLogger('game.scheduler')
         self.config = RawConfigParser()
@@ -26,6 +40,15 @@ class Scheduler(GameObject):
         self.next_cycle_start_time = 0
         self.train_counter = 0
         seed()
+        self.batch = batch
+        self.group = group
+        self.text_group = text_group
+        self.is_activated = False
+        add_font('perfo-bold.ttf')
+        self.background_sprite = Sprite(load('img/main_frame/schedule_{}_{}.png'
+                                             .format(self.c.screen_resolution[0], self.c.screen_resolution[1])),
+                                        x=0, y=0, batch=self.batch, group=self.group)
+        self.background_sprite.opacity = 0
         self.read_state()
 
     def read_state(self):
@@ -92,3 +115,17 @@ class Scheduler(GameObject):
 
         if self.game_time.epoch_timestamp >= self.base_schedule[0][1]:
             self.dispatcher.on_create_train(self.base_schedule.pop(0))
+
+    def update_sprite(self, base_offset):
+        if self.is_activated:
+            if self.background_sprite.opacity < 255:
+                self.background_sprite.opacity += 15
+        else:
+            if self.background_sprite.opacity > 0:
+                self.background_sprite.opacity -= 15
+
+    def on_board_activate(self):
+        self.is_activated = True
+
+    def on_board_deactivate(self):
+        self.is_activated = False

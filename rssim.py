@@ -32,14 +32,11 @@ class RSSim(Game):
         self.junctions = {}
         self.tracks = []
         self.dispatcher = None
+        self.scheduler = None
         self.game_progress = None
         self.game_time = None
         # we create background image object first to be drawn first
-        try:
-            self.create_main_map()
-        except VideoAdapterNotSupportedException as e:
-            e.surface = self.surface
-            raise e
+        self.create_main_map()
         # we create routes, signals and dispatcher and link them to each other correctly
         self.create_infrastructure()
         self.saved_onboarding_tip = None
@@ -48,6 +45,8 @@ class RSSim(Game):
         self.resume_button = None
         self.close_button = None
         self.iconify_button = None
+        self.open_schedule_button = None
+        self.close_schedule_button = None
         self.create_buttons()
         self.logger.debug('map drag event appended')
         self.logger.debug('------- END INIT -------')
@@ -561,7 +560,8 @@ class RSSim(Game):
         self.logger.info('tracks and train routes created')
         # ------ SORT THIS OUT ------
         # train routes and tracks are added to dispatcher which we create right now
-        self.scheduler = Scheduler(game_config=self.c)
+        self.scheduler = Scheduler(game_config=self.c, batch=self.batch, group=self.top_bottom_bars_ordered_group,
+                                   text_group=self.buttons_general_borders_day_text_ordered_group)
         self.dispatcher = Dispatcher(batch=self.batch, group=self.signals_and_trains_ordered_group,
                                      boarding_lights_group=self.boarding_lights_ordered_group, game_config=self.c)
         for i in range(33):
@@ -2222,6 +2222,16 @@ class RSSim(Game):
             self.pause_button.on_button_is_activated()
             self.logger.critical('------- GAME IS RESUMED -------')
 
+        def open_schedule(button):
+            button.on_button_is_deactivated()
+            self.scheduler.on_board_activate()
+            self.close_schedule_button.on_button_is_activated()
+
+        def close_schedule(button):
+            button.on_button_is_deactivated()
+            self.scheduler.on_board_deactivate()
+            self.open_schedule_button.on_button_is_activated()
+
         def close_game(button):
             if path.exists('user_cfg/trains'):
                 for j in listdir('user_cfg/trains'):
@@ -2304,28 +2314,54 @@ class RSSim(Game):
                                      text_group=self.buttons_text_and_borders_ordered_group,
                                      borders_group=self.buttons_text_and_borders_ordered_group, game_config=self.c,
                                      logs_description='iconify', map_move_mode=self.map_move_mode)
+        self.open_schedule_button = Button(position=(self.c.screen_resolution[0] - 480, 0), button_size=(200, 80),
+                                           text='Open Schedule', font_size=self.c.iconify_close_button_font_size,
+                                           on_click=open_schedule, is_activated=True,
+                                           batch=self.batch,
+                                           button_group=self.buttons_general_borders_day_text_ordered_group,
+                                           text_group=self.buttons_text_and_borders_ordered_group,
+                                           borders_group=self.buttons_text_and_borders_ordered_group,
+                                           game_config=self.c, logs_description='open_schedule',
+                                           map_move_mode=self.map_move_mode)
+        self.close_schedule_button = Button(position=(self.c.screen_resolution[0] - 480, 0), button_size=(200, 80),
+                                            text='Close Schedule', font_size=self.c.iconify_close_button_font_size,
+                                            on_click=close_schedule, is_activated=False,
+                                            batch=self.batch,
+                                            button_group=self.buttons_general_borders_day_text_ordered_group,
+                                            text_group=self.buttons_text_and_borders_ordered_group,
+                                            borders_group=self.buttons_text_and_borders_ordered_group,
+                                            game_config=self.c, logs_description='close_schedule',
+                                            map_move_mode=self.map_move_mode)
 
         self.on_mouse_press_handlers.append(self.handle_mouse_press)
         self.on_mouse_press_handlers.append(self.pause_button.handle_mouse_press)
         self.on_mouse_press_handlers.append(self.resume_button.handle_mouse_press)
         self.on_mouse_press_handlers.append(self.close_button.handle_mouse_press)
         self.on_mouse_press_handlers.append(self.iconify_button.handle_mouse_press)
+        self.on_mouse_press_handlers.append(self.open_schedule_button.handle_mouse_press)
+        self.on_mouse_press_handlers.append(self.close_schedule_button.handle_mouse_press)
 
         self.on_mouse_release_handlers.append(self.handle_mouse_release)
         self.on_mouse_release_handlers.append(self.pause_button.handle_mouse_release)
         self.on_mouse_release_handlers.append(self.resume_button.handle_mouse_release)
         self.on_mouse_release_handlers.append(self.close_button.handle_mouse_release)
         self.on_mouse_release_handlers.append(self.iconify_button.handle_mouse_release)
+        self.on_mouse_release_handlers.append(self.open_schedule_button.handle_mouse_release)
+        self.on_mouse_release_handlers.append(self.close_schedule_button.handle_mouse_release)
 
         self.on_mouse_motion_handlers.append(self.pause_button.handle_mouse_motion)
         self.on_mouse_motion_handlers.append(self.resume_button.handle_mouse_motion)
         self.on_mouse_motion_handlers.append(self.close_button.handle_mouse_motion)
         self.on_mouse_motion_handlers.append(self.iconify_button.handle_mouse_motion)
+        self.on_mouse_motion_handlers.append(self.open_schedule_button.handle_mouse_motion)
+        self.on_mouse_motion_handlers.append(self.close_schedule_button.handle_mouse_motion)
 
         self.on_mouse_leave_handlers.append(self.pause_button.handle_mouse_leave)
         self.on_mouse_leave_handlers.append(self.resume_button.handle_mouse_leave)
         self.on_mouse_leave_handlers.append(self.close_button.handle_mouse_leave)
         self.on_mouse_leave_handlers.append(self.iconify_button.handle_mouse_leave)
+        self.on_mouse_leave_handlers.append(self.open_schedule_button.handle_mouse_leave)
+        self.on_mouse_leave_handlers.append(self.close_schedule_button.handle_mouse_leave)
 
         self.on_mouse_drag_handlers.append(self.handle_mouse_drag)
         self.logger.debug('save button button handler appended to global mouse handlers list')
@@ -2334,6 +2370,8 @@ class RSSim(Game):
         self.logger.debug('pause/resume button appended to global objects list')
         self.objects.append(self.close_button)
         self.objects.append(self.iconify_button)
+        self.objects.append(self.open_schedule_button)
+        self.objects.append(self.close_schedule_button)
         for i in self.tracks:
             self.on_mouse_press_handlers.append(i.unlock_button.handle_mouse_press)
             self.on_mouse_release_handlers.append(i.unlock_button.handle_mouse_release)
@@ -2352,9 +2390,6 @@ def main():
     try:
         RSSim().run()
     except VideoAdapterNotSupportedException as e:
-        if e.surface is not None:
-            e.surface.close()
-
         MessageBoxEx(win32con.NULL, e.text, e.caption,
                      win32con.MB_OK | win32con.MB_ICONERROR | win32con.MB_DEFBUTTON1
                      | win32con.MB_SYSTEMMODAL | win32con.MB_SETFOREGROUND, 0)
