@@ -115,8 +115,18 @@ class Scheduler(GameObject):
             self.next_cycle_start_time += self.c.schedule_cycle_length[self.game_progress.level]
 
         if self.game_time.epoch_timestamp >= self.base_schedule[0][1]:
-            self.dispatcher.on_create_train(self.base_schedule.pop(0))
-            self.adjust_schedule_on_remove()
+            if self.base_schedule[0][2] in (0, 1):
+                entry_busy = self.dispatcher.train_routes[0][
+                    self.c.approaching_train_route[self.base_schedule[0][2]]
+                ].train_route_sections[0].route_config['busy']
+            else:
+                entry_busy = self.dispatcher.train_routes[100][
+                    self.c.approaching_train_route[self.base_schedule[0][2]]
+                ].train_route_sections[0].route_config['busy']
+
+            if not entry_busy:
+                self.dispatcher.on_create_train(self.base_schedule.pop(0))
+                self.adjust_schedule_on_remove()
 
     def update_sprite(self, base_offset):
         if self.is_activated:
