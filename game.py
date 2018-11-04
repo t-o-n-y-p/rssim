@@ -50,6 +50,7 @@ class Game:
         self.logger.debug('main logger created')
         self.c = GameConfig()
         self.main_map = None
+        self.scheduler = None
         # since map can be moved, all objects should also be moved, that's why we need base offset here
         self.base_offset = self.c.base_offset
         self.logger.debug('base offset set: {} {}'.format(self.base_offset[0], self.base_offset[1]))
@@ -186,7 +187,7 @@ class Game:
             self.app_window_move_mode = True
             self.app_window_move_offset = (x, y)
 
-        if x in range(0, self.c.screen_resolution[0]) \
+        if not self.scheduler.is_activated and x in range(0, self.c.screen_resolution[0]) \
                 and y in range(self.c.top_bar_height, self.c.screen_resolution[1] - self.c.bottom_bar_height):
             self.map_move_mode[0] = True
 
