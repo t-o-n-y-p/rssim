@@ -174,7 +174,7 @@ class Game:
 
         if self.mini_map_tip.condition_met and not self.map_move_mode[0]:
             if time() - self.mini_map_timer > 1:
-                self.mini_map_tip.condition_met = False
+                self.mini_map_tip.on_condition_not_met()
 
         time_2 = perf_counter()
         self.logger.critical('updating: {} sec'.format(time_2 - time_1))
@@ -190,6 +190,7 @@ class Game:
         if not self.scheduler.is_activated and x in range(0, self.c.screen_resolution[0]) \
                 and y in range(self.c.top_bar_height, self.c.screen_resolution[1] - self.c.bottom_bar_height):
             self.map_move_mode[0] = True
+            self.mini_map_tip.on_condition_met()
 
     @_game_window_is_active
     @_left_button
@@ -201,7 +202,6 @@ class Game:
     @_game_window_is_active
     def handle_mouse_drag(self, x, y, dx, dy, buttons, modifiers):
         if self.map_move_mode[0]:
-            self.mini_map_tip.condition_met = True
             # if left mouse button is pressed and user moves mouse, we move entire map with all its content
             self.logger.debug('user drags map')
             self.logger.debug('old offset: {}'.format(self.base_offset))

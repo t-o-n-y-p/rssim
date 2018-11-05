@@ -2224,7 +2224,7 @@ class RSSim(Game):
 
         def open_schedule(button):
             button.on_button_is_deactivated()
-            self.mini_map_tip.condition_met = False
+            self.mini_map_tip.on_condition_not_met()
             self.scheduler.on_board_activate()
             self.close_schedule_button.on_button_is_activated()
 
