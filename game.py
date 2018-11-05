@@ -14,7 +14,7 @@ from pyglet.text import Label
 from pyglet.graphics import Batch, OrderedGroup
 from pyglet.window import Window, mouse
 
-from tip import Tip
+from mini_map import MiniMap
 from exceptions import VideoAdapterNotSupportedException
 from game_config import GameConfig
 
@@ -101,12 +101,12 @@ class Game:
         self.map_move_mode = [False, ]
         self.app_window_move_offset = ()
         mini_map_image = load('img/mini_map/4/mini_map.png')
-        self.mini_map_tip = Tip(image=mini_map_image,
-                                x=self.c.screen_resolution[0] - mini_map_image.width,
-                                y=self.c.screen_resolution[1] - self.c.top_bar_height - 4 - mini_map_image.height,
-                                tip_type='mini_map', batch=self.batch, group=self.top_bottom_bars_ordered_group,
-                                viewport_border_group=self.buttons_general_borders_day_text_ordered_group,
-                                game_config=self.c)
+        self.mini_map_tip = MiniMap(image=mini_map_image,
+                                    x=self.c.screen_resolution[0] - mini_map_image.width,
+                                    y=self.c.screen_resolution[1] - self.c.top_bar_height - 4 - mini_map_image.height,
+                                    batch=self.batch, group=self.top_bottom_bars_ordered_group,
+                                    viewport_border_group=self.buttons_general_borders_day_text_ordered_group,
+                                    game_config=self.c)
         self.mini_map_timer = 0
         self.dispatcher = None
         self.logger.warning('game init completed')
