@@ -235,7 +235,7 @@ class Game:
     def run(self):
         fps_timer = 0.0
         while True:
-            self.logger.warning('frame begins')
+            self.logger.info('frame begins')
             time_1 = perf_counter()
             # pyglet.clock.tick()
             self.surface.dispatch_events()
@@ -243,7 +243,7 @@ class Game:
             self.surface.dispatch_event('on_draw')
             time_4 = perf_counter()
             self.surface.flip()
-            self.logger.warning('frame ends')
+            self.logger.info('frame ends')
             if self.fps_display_label is not None \
                     and perf_counter() - fps_timer > self.c.fps_display_update_interval:
                 self.fps_display_label.text = str(round(float(1/(time_4 - time_1)))) + ' FPS'
