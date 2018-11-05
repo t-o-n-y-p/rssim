@@ -121,8 +121,8 @@ class Game:
             self.surface.clear()
             self.batch.draw()
             time_3 = perf_counter()
-            self.logger.critical('updating sprites: {} sec'.format(time_2 - time_1))
-            self.logger.critical('drawing sprites: {} sec'.format(time_3 - time_2))
+            self.logger.warning('updating sprites: {} sec'.format(time_2 - time_1))
+            self.logger.warning('drawing sprites: {} sec'.format(time_3 - time_2))
 
         @surface.event
         def on_mouse_press(x, y, button, modifiers):
@@ -177,7 +177,7 @@ class Game:
                 self.mini_map_tip.on_condition_not_met()
 
         time_2 = perf_counter()
-        self.logger.critical('updating: {} sec'.format(time_2 - time_1))
+        self.logger.warning('updating: {} sec'.format(time_2 - time_1))
 
     @_game_window_is_active
     @_left_button
