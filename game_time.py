@@ -54,9 +54,9 @@ class GameTime(GameObject):
         self.logger.debug('epoch_timestamp: {}'.format(self.epoch_timestamp))
         self.day = 1 + self.epoch_timestamp // 345600
         self.logger.debug('day: {}'.format(self.day))
-        self.hour = 12 + (self.epoch_timestamp % 345600) // 14400
+        self.hour = (self.epoch_timestamp // 14400 + 12) % 24
         self.logger.debug('hour: {}'.format(self.hour))
-        self.minute = ((self.epoch_timestamp % 345600) % 14400) // 240
+        self.minute = (self.epoch_timestamp // 240) % 60
         self.logger.debug('minute: {}'.format(self.minute))
         self.logger.debug('------- END READING STATE -------')
         self.logger.info('time state initialized')
@@ -77,21 +77,17 @@ class GameTime(GameObject):
 
     def update_sprite(self, base_offset):
         if self.epoch_timestamp % 240 == 0:
-            self.time_text.text = '{0:0>2}'.format(self.hour) + ' : ' + '{0:0>2}'.format(self.minute)
+            self.time_text.text = '{0:0>2} : {1:0>2}'.format(self.hour, self.minute)
 
     @_game_is_not_paused
     def update(self, game_paused):
         self.logger.debug('------- TIME UPDATE START -------')
         self.epoch_timestamp += 1
         if self.epoch_timestamp % 240 == 0:
-            self.minute += 1
-            if self.minute % 60 == 0:
-                self.minute = 0
+            self.minute = (self.minute + 1) % 60
 
         if self.epoch_timestamp % 14400 == 0:
-            self.hour += 1
-            if self.hour % 24 == 0:
-                self.hour = 0
+            self.hour = (self.hour + 1) % 24
 
         if self.epoch_timestamp % 345600 == 0:
             self.day += 1
