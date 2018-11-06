@@ -133,41 +133,33 @@ class Scheduler(GameObject):
             if self.background_sprite.opacity < 255:
                 self.background_sprite.opacity += 15
 
-            for i in range(min(len(self.base_schedule), 26)):
+            for i in range(min(len(self.base_schedule), 32)):
                 if self.base_schedule[i][1] < self.game_time.epoch_timestamp + 14400 \
-                        and len(self.base_schedule_sprites) < (i + 1) * 5:
-                    self.base_schedule_sprites.append(Label('{0:0>6}'.format(self.base_schedule[i][0]),
+                        and len(self.base_schedule_sprites) < (i + 1) * 3:
+                    self.base_schedule_sprites.append(Label('{0:0>6}   {1:0>2} : {2:0>2}'
+                                                            .format(self.base_schedule[i][0],
+                                                                    (self.base_schedule[i][1] // 14400 + 12) % 24,
+                                                                    (self.base_schedule[i][1] // 240) % 60),
                                                             font_name='Perfo', bold=True,
                                                             font_size=18, color=self.c.day_text_color,
-                                                            x=94 + 640 * (i // 13), y=501 - (i % 13) * 27,
+                                                            x=145 + 640 * (i // 16), y=555 - (i % 16) * 27,
                                                             anchor_x='center', anchor_y='center', batch=self.batch,
                                                             group=self.text_group))
-                    self.base_schedule_sprites.append(Label('{0:0>2} : {1:0>2}'
-                                                            .format((self.base_schedule[i][1] // 14400 + 12) % 24,
-                                                                    (self.base_schedule[i][1] // 240) % 60),
-                                                            font_name='Perfo', bold=True, font_size=18,
-                                                            color=self.c.day_text_color, x=200 + 640 * (i // 13),
-                                                            y=501 - (i % 13) * 27, anchor_x='center', anchor_y='center',
-                                                            batch=self.batch, group=self.text_group))
                     self.base_schedule_sprites.append(Label(self.departure_text[self.base_schedule[i][2]],
                                                             font_name='Perfo', bold=True,
                                                             font_size=18, color=self.c.day_text_color,
-                                                            x=346 + 640 * (i // 13), y=501 - (i % 13) * 27,
+                                                            x=346 + 640 * (i // 16), y=555 - (i % 16) * 27,
                                                             anchor_x='center', anchor_y='center', batch=self.batch,
                                                             group=self.text_group))
-                    self.base_schedule_sprites.append(Label('{0:0>2}'.format(self.base_schedule[i][4]),
+                    self.base_schedule_sprites.append(Label('{0:0>2}   {1:0>2} : {2:0>2}'
+                                                            .format(self.base_schedule[i][4],
+                                                                    self.base_schedule[i][5] // 240,
+                                                                    (self.base_schedule[i][5] // 4) % 60),
                                                             font_name='Perfo', bold=True,
                                                             font_size=18, color=self.c.day_text_color,
-                                                            x=470 + 640 * (i // 13), y=501 - (i % 13) * 27,
+                                                            x=522 + 640 * (i // 16), y=555 - (i % 16) * 27,
                                                             anchor_x='center', anchor_y='center', batch=self.batch,
                                                             group=self.text_group))
-                    self.base_schedule_sprites.append(Label('{0:0>2} : {1:0>2}'
-                                                            .format(self.base_schedule[i][5] // 240,
-                                                                    (self.base_schedule[i][5] // 4) % 60),
-                                                            font_name='Perfo', bold=True, font_size=18,
-                                                            color=self.c.day_text_color, x=550 + 640 * (i // 13),
-                                                            y=501 - (i % 13) * 27, anchor_x='center', anchor_y='center',
-                                                            batch=self.batch, group=self.text_group))
                     break
         else:
             if self.background_sprite.opacity > 0:
@@ -186,21 +178,15 @@ class Scheduler(GameObject):
 
     @_schedule_board_is_activated
     def adjust_schedule_on_remove(self):
-        if len(self.base_schedule_sprites) > 5:
-            for i in range(len(self.base_schedule_sprites) // 5 - 1):
-                self.base_schedule_sprites[i * 5].text = self.base_schedule_sprites[(i + 1) * 5].text
-                self.base_schedule_sprites[i * 5 + 1].text = self.base_schedule_sprites[(i + 1) * 5 + 1].text
-                self.base_schedule_sprites[i * 5 + 2].text = self.base_schedule_sprites[(i + 1) * 5 + 2].text
-                self.base_schedule_sprites[i * 5 + 3].text = self.base_schedule_sprites[(i + 1) * 5 + 3].text
-                self.base_schedule_sprites[i * 5 + 4].text = self.base_schedule_sprites[(i + 1) * 5 + 4].text
+        if len(self.base_schedule_sprites) > 3:
+            for i in range(len(self.base_schedule_sprites) // 3 - 1):
+                self.base_schedule_sprites[i * 3].text = self.base_schedule_sprites[(i + 1) * 3].text
+                self.base_schedule_sprites[i * 3 + 1].text = self.base_schedule_sprites[(i + 1) * 3 + 1].text
+                self.base_schedule_sprites[i * 3 + 2].text = self.base_schedule_sprites[(i + 1) * 3 + 2].text
 
-            self.base_schedule_sprites[-5].delete()
-            self.base_schedule_sprites[-4].delete()
             self.base_schedule_sprites[-3].delete()
             self.base_schedule_sprites[-2].delete()
             self.base_schedule_sprites[-1].delete()
-            self.base_schedule_sprites.pop(-5)
-            self.base_schedule_sprites.pop(-4)
             self.base_schedule_sprites.pop(-3)
             self.base_schedule_sprites.pop(-2)
             self.base_schedule_sprites.pop(-1)
