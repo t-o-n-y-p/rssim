@@ -57,9 +57,10 @@ class RSSim(Game):
         self.main_map = MainMap(batch=self.batch, group=self.map_ordered_group, game_config=self.c)
         self.game_progress = GameProgress(main_map=self.main_map, mini_map=self.mini_map_tip, game_config=self.c,
                                           batch=self.batch,
-                                          inactive_group=self.buttons_general_borders_day_text_ordered_group,
+                                          inactive_group=self.button_background_viewport_border_day_text_ordered_group,
                                           active_group=self.buttons_text_and_borders_ordered_group)
-        self.game_time = GameTime(batch=self.batch, day_text_group=self.buttons_general_borders_day_text_ordered_group,
+        self.game_time = GameTime(batch=self.batch,
+                                  day_text_group=self.button_background_viewport_border_day_text_ordered_group,
                                   game_config=self.c)
         self.logger.info('main map object created')
         self.logger.debug('main map object appended')
@@ -250,8 +251,8 @@ class RSSim(Game):
                                     self.base_routes[i]['left_exit_platform_base_route'],
                                     self.base_routes[i]['right_exit_platform_base_route']]
             new_track = Track(track_number=i, base_routes_in_track=base_routes_in_track,
-                              batch=self.batch, tip_group=self.top_bottom_bars_ordered_group,
-                              button_group=self.buttons_general_borders_day_text_ordered_group,
+                              batch=self.batch, tip_group=self.tips_ordered_group,
+                              button_group=self.button_background_viewport_border_day_text_ordered_group,
                               text_group=self.buttons_text_and_borders_ordered_group,
                               borders_group=self.buttons_text_and_borders_ordered_group, game_config=self.c,
                               map_move_mode=self.map_move_mode, game_progress=self.game_progress)
@@ -560,8 +561,8 @@ class RSSim(Game):
         self.logger.info('tracks and train routes created')
         # ------ SORT THIS OUT ------
         # train routes and tracks are added to dispatcher which we create right now
-        self.scheduler = Scheduler(game_config=self.c, batch=self.batch, group=self.top_bottom_bars_ordered_group,
-                                   text_group=self.buttons_general_borders_day_text_ordered_group)
+        self.scheduler = Scheduler(game_config=self.c, batch=self.batch, group=self.main_frame_ordered_group,
+                                   text_group=self.button_background_viewport_border_day_text_ordered_group)
         self.dispatcher = Dispatcher(batch=self.batch, group=self.signals_and_trains_ordered_group,
                                      boarding_lights_group=self.boarding_lights_ordered_group, game_config=self.c)
         for i in range(33):
@@ -2284,26 +2285,29 @@ class RSSim(Game):
 
         self.logger.debug('time appended to global objects list')
         self.objects.append(MainFrame(batch=self.batch,
-                                      main_frame_group=self.top_bottom_bars_ordered_group, game_config=self.c))
+                                      main_frame_group=self.main_frame_ordered_group, game_config=self.c))
         self.logger.debug('bottom bar appended to global objects list')
         self.pause_button = Button(position=(self.c.screen_resolution[0] - 80, 0), button_size=(80, 80),
                                    text='‖', font_size=self.c.play_pause_button_font_size,
                                    on_click=pause_game, is_activated=True,
-                                   batch=self.batch, button_group=self.buttons_general_borders_day_text_ordered_group,
+                                   batch=self.batch,
+                                   button_group=self.button_background_viewport_border_day_text_ordered_group,
                                    text_group=self.buttons_text_and_borders_ordered_group,
                                    borders_group=self.buttons_text_and_borders_ordered_group, game_config=self.c,
                                    logs_description='pause/resume', map_move_mode=self.map_move_mode)
         self.resume_button = Button(position=(self.c.screen_resolution[0] - 80, 0), button_size=(80, 80),
                                     text='►', font_size=self.c.play_pause_button_font_size,
                                     on_click=resume_game, is_activated=False,
-                                    batch=self.batch, button_group=self.buttons_general_borders_day_text_ordered_group,
+                                    batch=self.batch,
+                                    button_group=self.button_background_viewport_border_day_text_ordered_group,
                                     text_group=self.buttons_text_and_borders_ordered_group,
                                     borders_group=self.buttons_text_and_borders_ordered_group, game_config=self.c,
                                     logs_description='pause/resume', map_move_mode=self.map_move_mode)
         self.close_button = Button(position=(self.c.screen_resolution[0] - 34, self.c.screen_resolution[1] - 34),
                                    button_size=(34, 34), text='X', font_size=self.c.iconify_close_button_font_size,
                                    on_click=close_game, is_activated=True,
-                                   batch=self.batch, button_group=self.buttons_general_borders_day_text_ordered_group,
+                                   batch=self.batch,
+                                   button_group=self.button_background_viewport_border_day_text_ordered_group,
                                    text_group=self.buttons_text_and_borders_ordered_group,
                                    borders_group=self.buttons_text_and_borders_ordered_group, game_config=self.c,
                                    logs_description='close', map_move_mode=self.map_move_mode)
@@ -2311,7 +2315,8 @@ class RSSim(Game):
                                      button_size=(34, 34), text='_',
                                      font_size=self.c.iconify_close_button_font_size,
                                      on_click=iconify_game, is_activated=True,
-                                     batch=self.batch, button_group=self.buttons_general_borders_day_text_ordered_group,
+                                     batch=self.batch,
+                                     button_group=self.button_background_viewport_border_day_text_ordered_group,
                                      text_group=self.buttons_text_and_borders_ordered_group,
                                      borders_group=self.buttons_text_and_borders_ordered_group, game_config=self.c,
                                      logs_description='iconify', map_move_mode=self.map_move_mode)
@@ -2319,7 +2324,7 @@ class RSSim(Game):
                                            text='Open Schedule', font_size=self.c.iconify_close_button_font_size,
                                            on_click=open_schedule, is_activated=True,
                                            batch=self.batch,
-                                           button_group=self.buttons_general_borders_day_text_ordered_group,
+                                           button_group=self.button_background_viewport_border_day_text_ordered_group,
                                            text_group=self.buttons_text_and_borders_ordered_group,
                                            borders_group=self.buttons_text_and_borders_ordered_group,
                                            game_config=self.c, logs_description='open_schedule',
@@ -2328,7 +2333,7 @@ class RSSim(Game):
                                             text='Close Schedule', font_size=self.c.iconify_close_button_font_size,
                                             on_click=close_schedule, is_activated=False,
                                             batch=self.batch,
-                                            button_group=self.buttons_general_borders_day_text_ordered_group,
+                                            button_group=self.button_background_viewport_border_day_text_ordered_group,
                                             text_group=self.buttons_text_and_borders_ordered_group,
                                             borders_group=self.buttons_text_and_borders_ordered_group,
                                             game_config=self.c, logs_description='close_schedule',

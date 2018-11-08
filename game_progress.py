@@ -156,7 +156,6 @@ class GameProgress(GameObject):
             self.tracks[i - 1].on_unlock_condition_from_level()
 
         self.update_exp_progress_sprite()
-        self.logger.critical('level {} reached. money = {}'.format(self.level, self.money))
 
     def update_exp_progress_sprite(self):
         if self.level < self.c.maximum_level:

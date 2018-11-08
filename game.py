@@ -51,6 +51,8 @@ class Game:
         self.c = GameConfig()
         self.main_map = None
         self.scheduler = None
+        self.game_progress = None
+        self.game_time = None
         # since map can be moved, all objects should also be moved, that's why we need base offset here
         self.base_offset = self.c.base_offset
         self.logger.debug('base offset set: {} {}'.format(self.base_offset[0], self.base_offset[1]))
@@ -68,10 +70,11 @@ class Game:
         self.boarding_lights_ordered_group = OrderedGroup(2)
         self.twilight_ordered_group = OrderedGroup(3)  # reserved for future use
         self.twilight_artifacts_ordered_group = OrderedGroup(4)  # reserved for future use
-        self.top_bottom_bars_ordered_group = OrderedGroup(5)
-        self.buttons_general_borders_day_text_ordered_group = OrderedGroup(6)
-        self.buttons_text_and_borders_ordered_group = OrderedGroup(7)
-        self.loading_shadow_ordered_group = OrderedGroup(8)
+        self.main_frame_ordered_group = OrderedGroup(5)
+        self.tips_ordered_group = OrderedGroup(6)
+        self.button_background_viewport_border_day_text_ordered_group = OrderedGroup(7)
+        self.buttons_text_and_borders_ordered_group = OrderedGroup(8)
+        self.loading_shadow_ordered_group = OrderedGroup(9)
         self.surface.dispatch_event('on_draw')
         self.surface.flip()
         self.game_window_handler = GetActiveWindow()
@@ -104,8 +107,8 @@ class Game:
         self.mini_map_tip = MiniMap(image=mini_map_image,
                                     x=self.c.screen_resolution[0] - mini_map_image.width,
                                     y=self.c.screen_resolution[1] - self.c.top_bar_height - 4 - mini_map_image.height,
-                                    batch=self.batch, group=self.top_bottom_bars_ordered_group,
-                                    viewport_border_group=self.buttons_general_borders_day_text_ordered_group,
+                                    batch=self.batch, group=self.tips_ordered_group,
+                                    viewport_border_group=self.button_background_viewport_border_day_text_ordered_group,
                                     game_config=self.c)
         self.mini_map_timer = 0
         self.dispatcher = None
@@ -121,8 +124,8 @@ class Game:
             self.surface.clear()
             self.batch.draw()
             time_3 = perf_counter()
-            self.logger.warning('updating sprites: {} sec'.format(time_2 - time_1))
-            self.logger.warning('drawing sprites: {} sec'.format(time_3 - time_2))
+            self.logger.info('updating sprites: {} sec'.format(time_2 - time_1))
+            self.logger.info('drawing sprites: {} sec'.format(time_3 - time_2))
 
         @surface.event
         def on_mouse_press(x, y, button, modifiers):
@@ -177,7 +180,7 @@ class Game:
                 self.mini_map_tip.on_condition_not_met()
 
         time_2 = perf_counter()
-        self.logger.warning('updating: {} sec'.format(time_2 - time_1))
+        self.logger.info('updating: {} sec'.format(time_2 - time_1))
 
     @_game_window_is_active
     @_left_button

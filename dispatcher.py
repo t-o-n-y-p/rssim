@@ -394,7 +394,7 @@ class Dispatcher(GameObject):
             self.tracks[q3].update(game_paused)
 
     def update_sprite(self, base_offset):
-        self.logger.warning('number of trains: {}'.format(len(self.trains)))
+        self.logger.info('number of trains: {}'.format(len(self.trains)))
         for i in self.trains:
             if i.train_id in self.train_ids:
                 i.update_sprite(base_offset)
