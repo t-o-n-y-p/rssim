@@ -114,7 +114,7 @@ class Scheduler(GameObject):
                 self.train_counter += 1
 
             self.next_cycle_start_time += self.c.schedule_cycle_length[self.game_progress.level]
-            self.base_schedule = sorted(self.base_schedule, key=itemgetter[1])
+            self.base_schedule = sorted(self.base_schedule, key=itemgetter(1))
 
         for i in range(len(self.base_schedule)):
             if self.game_time.epoch_timestamp >= self.base_schedule[i][1]:
