@@ -116,17 +116,17 @@ class Scheduler(GameObject):
 
         for i in range(len(self.base_schedule)):
             if self.game_time.epoch_timestamp >= self.base_schedule[i][1]:
-                if self.base_schedule[0][2] in (0, 1):
+                if self.base_schedule[i][2] in (0, 1):
                     entry_busy = self.dispatcher.train_routes[0][
-                        self.c.approaching_train_route[self.base_schedule[0][2]]
+                        self.c.approaching_train_route[self.base_schedule[i][2]]
                     ].train_route_sections[0].route_config['busy']
                 else:
                     entry_busy = self.dispatcher.train_routes[100][
-                        self.c.approaching_train_route[self.base_schedule[0][2]]
+                        self.c.approaching_train_route[self.base_schedule[i][2]]
                     ].train_route_sections[0].route_config['busy']
 
                 if not entry_busy:
-                    self.dispatcher.on_create_train(self.base_schedule.pop(0))
+                    self.dispatcher.on_create_train(self.base_schedule.pop(i))
                     self.adjust_schedule_on_remove()
                     break
 
