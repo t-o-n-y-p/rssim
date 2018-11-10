@@ -20,10 +20,7 @@ class GameTime(GameObject):
     def __init__(self, batch, day_text_group, game_config):
         super().__init__(game_config)
         self.logger = getLogger('game.game_time')
-        self.progress_logger = getLogger('debug_time_log')
-        logs_handler = FileHandler('logs/debug_time_log.log')
-        logs_handler.setFormatter(Formatter('%(asctime)s - %(name)s - %(levelname)s - %(message)s'))
-        self.progress_logger.addHandler(logs_handler)
+        self.progress_logger = getLogger('debug_progress_log')
         self.logger.debug('------- START INIT -------')
         self.config = RawConfigParser()
         self.logger.debug('config parser created')
