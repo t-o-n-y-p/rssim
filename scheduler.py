@@ -129,7 +129,7 @@ class Scheduler(GameObject):
 
                 if not entry_busy:
                     self.dispatcher.on_create_train(self.base_schedule.pop(i))
-                    self.adjust_schedule_on_remove()
+                    self.adjust_schedule_on_remove(i)
                     break
 
             else:
@@ -178,9 +178,9 @@ class Scheduler(GameObject):
         self.base_schedule_sprites.clear()
 
     @_schedule_board_is_activated
-    def adjust_schedule_on_remove(self):
-        if len(self.base_schedule_sprites) > 2:
-            for i in range(len(self.base_schedule_sprites) // 2 - 1):
+    def adjust_schedule_on_remove(self, position):
+        if len(self.base_schedule_sprites) > (position + 1) * 2:
+            for i in range(position * 2, len(self.base_schedule_sprites) // 2 - 1):
                 self.base_schedule_sprites[i * 2].text = self.base_schedule_sprites[(i + 1) * 2].text
                 self.base_schedule_sprites[i * 2 + 1].text = self.base_schedule_sprites[(i + 1) * 2 + 1].text
 
