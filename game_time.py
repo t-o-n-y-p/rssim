@@ -1,5 +1,5 @@
 from configparser import RawConfigParser
-from logging import getLogger
+from logging import getLogger, FileHandler, Formatter
 from os import path, mkdir
 
 from pyglet.resource import add_font
@@ -19,7 +19,11 @@ def _game_is_not_paused(fn):
 class GameTime(GameObject):
     def __init__(self, batch, day_text_group, game_config):
         super().__init__(game_config)
-        self.logger = getLogger('game.in-game_time')
+        self.logger = getLogger('game.game_time')
+        self.progress_logger = getLogger('debug_time_log')
+        logs_handler = FileHandler('logs/debug_time_log.log')
+        logs_handler.setFormatter(Formatter('%(asctime)s - %(name)s - %(levelname)s - %(message)s'))
+        self.progress_logger.addHandler(logs_handler)
         self.logger.debug('------- START INIT -------')
         self.config = RawConfigParser()
         self.logger.debug('config parser created')
@@ -92,6 +96,7 @@ class GameTime(GameObject):
         if self.epoch_timestamp % 345600 == 0:
             self.day += 1
             self.day_text.text = 'DAY  {}'.format(self.day)
+            self.progress_logger.critical('day {} reached'.format(self.day))
 
         if self.epoch_timestamp % 28800 == 0:
             self.auto_save_function(None)
