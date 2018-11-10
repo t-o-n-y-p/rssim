@@ -111,7 +111,7 @@ class Scheduler(GameObject):
                      self.c.exp_per_cart[self.game_progress.level] * carts,
                      self.c.money_per_cart[self.game_progress.level] * carts)
                 )
-                self.train_counter += 1
+                self.train_counter = (self.train_counter + 1) % 1000000
 
             self.next_cycle_start_time += self.c.schedule_cycle_length[self.game_progress.level]
             self.base_schedule = sorted(self.base_schedule, key=itemgetter(1))
