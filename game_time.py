@@ -1,5 +1,5 @@
 from configparser import RawConfigParser
-from logging import getLogger, FileHandler, Formatter
+from logging import getLogger
 from os import path, mkdir
 
 from pyglet.resource import add_font
@@ -20,7 +20,6 @@ class GameTime(GameObject):
     def __init__(self, batch, day_text_group, game_config):
         super().__init__(game_config)
         self.logger = getLogger('game.game_time')
-        self.progress_logger = getLogger('debug_progress_log')
         self.logger.debug('------- START INIT -------')
         self.config = RawConfigParser()
         self.logger.debug('config parser created')
@@ -93,7 +92,6 @@ class GameTime(GameObject):
         if self.epoch_timestamp % 345600 == 0:
             self.day += 1
             self.day_text.text = 'DAY  {}'.format(self.day)
-            self.progress_logger.critical('day {} reached'.format(self.day))
 
         if self.epoch_timestamp % 28800 == 0:
             self.auto_save_function(None)

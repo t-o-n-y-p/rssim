@@ -1,5 +1,5 @@
 from configparser import RawConfigParser
-from logging import getLogger, FileHandler, Formatter
+from logging import getLogger
 from os import path, mkdir
 
 from pyglet.image import load
@@ -46,10 +46,6 @@ class GameProgress(GameObject):
     def __init__(self, main_map, mini_map, game_config, batch, inactive_group, active_group):
         super().__init__(game_config)
         self.logger = getLogger('game.game_progress')
-        self.progress_logger = getLogger('debug_progress_log')
-        logs_handler = FileHandler('logs/debug_progress_log.log')
-        logs_handler.setFormatter(Formatter('%(asctime)s - %(name)s - %(levelname)s - %(message)s'))
-        self.progress_logger.addHandler(logs_handler)
         self.config = RawConfigParser()
         self.unlocked_tracks = 4
         self.level = 0
@@ -156,7 +152,6 @@ class GameProgress(GameObject):
             self.exp = 0.0
 
         self.level_text.text = 'LEVEL {}'.format(self.level)
-        self.progress_logger.critical('level {} reached. money = {}'.format(self.level, self.money))
         for i in self.c.unlocked_tracks[self.level]:
             self.tracks[i - 1].on_unlock_condition_from_level()
 
