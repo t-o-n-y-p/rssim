@@ -16,6 +16,14 @@ def _game_is_not_paused(fn):
     return _update_if_game_is_not_paused
 
 
+def _train_has_passed_train_route_section(fn):
+    def _allow_other_trains_to_pass_if_train_has_passed_train_route_section(*args, **kwargs):
+        if args[2] >= args[0].checkpoints_v2[args[0].current_checkpoint]:
+            fn(*args, **kwargs)
+
+    return _allow_other_trains_to_pass_if_train_has_passed_train_route_section
+
+
 class TrainRoute(GameObject):
     def __init__(self, track_number, route_type, supported_carts, train_route_sections, train_route_sections_positions,
                  game_config):
@@ -169,28 +177,21 @@ class TrainRoute(GameObject):
         self.train_route_sections[-1].update_base_route_state()
 
     @_game_is_not_paused
+    @_train_has_passed_train_route_section
     def update_train_route_sections(self, game_paused, last_cart_position):
-        self.logger.debug('------- TRAIN ROUTE UPDATE START -------')
-        self.logger.debug('last cart position = {}'.format(last_cart_position))
-        self.logger.debug('current checkpoint number {}: {}'
-                          .format(self.current_checkpoint, self.checkpoints_v2[self.current_checkpoint]))
-        if last_cart_position >= self.checkpoints_v2[self.current_checkpoint]:
-            if type(self.train_route_sections[self.current_checkpoint]) == BaseRoute:
-                self.train_route_sections[self.current_checkpoint].route_config['force_busy'] = False
-                self.train_route_sections[self.current_checkpoint].route_config['opened'] = False
-                self.train_route_sections[self.current_checkpoint].update_base_route_state()
-            elif type(self.train_route_sections[self.current_checkpoint]) == RailroadSwitch:
-                self.train_route_sections[self.current_checkpoint].force_busy = False
-                self.train_route_sections[self.current_checkpoint].update(False)
-                self.train_route_sections[self.current_checkpoint].dependency.update(False)
-            elif type(self.train_route_sections[self.current_checkpoint]) == Crossover:
-                self.train_route_sections[self.current_checkpoint].force_busy[
-                    self.train_route_sections_positions[self.current_checkpoint][0]
-                ][self.train_route_sections_positions[self.current_checkpoint][1]] = False
-                self.train_route_sections[self.current_checkpoint].update(False)
-                self.train_route_sections[self.current_checkpoint].dependency.update(False)
+        if type(self.train_route_sections[self.current_checkpoint]) == BaseRoute:
+            self.train_route_sections[self.current_checkpoint].route_config['force_busy'] = False
+            self.train_route_sections[self.current_checkpoint].route_config['opened'] = False
+            self.train_route_sections[self.current_checkpoint].update_base_route_state()
+        elif type(self.train_route_sections[self.current_checkpoint]) == RailroadSwitch:
+            self.train_route_sections[self.current_checkpoint].force_busy = False
+            self.train_route_sections[self.current_checkpoint].update(False)
+            self.train_route_sections[self.current_checkpoint].dependency.update(False)
+        elif type(self.train_route_sections[self.current_checkpoint]) == Crossover:
+            self.train_route_sections[self.current_checkpoint].force_busy[
+                self.train_route_sections_positions[self.current_checkpoint][0]
+            ][self.train_route_sections_positions[self.current_checkpoint][1]] = False
+            self.train_route_sections[self.current_checkpoint].update(False)
+            self.train_route_sections[self.current_checkpoint].dependency.update(False)
 
-            self.current_checkpoint += 1
-
-        self.logger.debug('------- TRAIN ROUTE UPDATE END -------')
-        self.logger.info('train route updated')
+        self.current_checkpoint += 1
