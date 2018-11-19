@@ -400,34 +400,41 @@ class Dispatcher(GameObject):
                 i.update_sprite(base_offset)
 
     def on_create_train(self, train_info):
-        if train_info[4] < self.game_progress.supported_carts[0]:
-            train_info[3] = train_info[2]
+        if train_info['carts'] < self.game_progress.supported_carts[0]:
+            train_info['new_direction'] = train_info['direction']
             state = 'approaching_pass_through'
             boarding_time = 5
             exp = 0.0
             money = 0.0
-            self.logger.debug('{}-cart trains are not supported, assign pass through route'.format(train_info[3]))
+            self.logger.debug('{}-cart trains are not supported, assign pass through route'.format(train_info['carts']))
         else:
             state = 'approaching'
-            boarding_time = train_info[5]
-            exp = train_info[6]
-            money = train_info[7]
+            boarding_time = train_info['boarding_time']
+            exp = train_info['exp']
+            money = train_info['money']
 
-        if train_info[2] in (0, 1):
-            route_for_new_train = self.train_routes[0][self.c.approaching_train_route[train_info[2]]]
+        if train_info['new_direction'] == 3 and self.tracks[20].locked:
+            train_info['new_direction'] = train_info['direction']
+
+        if train_info['new_direction'] == 2 and self.tracks[21].locked:
+            train_info['new_direction'] = train_info['direction']
+
+        if train_info['direction'] in (0, 1):
+            route_for_new_train = self.train_routes[0][self.c.approaching_train_route[train_info['direction']]]
         else:
-            route_for_new_train = self.train_routes[100][self.c.approaching_train_route[train_info[2]]]
+            route_for_new_train = self.train_routes[100][self.c.approaching_train_route[train_info['direction']]]
 
-        new_train = Train(carts=train_info[4], train_route=route_for_new_train, state=state,
-                          direction=train_info[2], new_direction=train_info[3], current_direction=train_info[2],
-                          train_id=train_info[0], head_image=self.train_head_image,
+        new_train = Train(carts=train_info['carts'], train_route=route_for_new_train, state=state,
+                          direction=train_info['direction'], new_direction=train_info['new_direction'],
+                          current_direction=train_info['direction'],
+                          train_id=train_info['train_id'], head_image=self.train_head_image,
                           mid_image=self.train_mid_image, boarding_lights_image=self.boarding_lights_image,
                           tail_image=self.train_tail_image, batch=self.batch, group=self.group,
                           boarding_lights_group=self.boarding_lights_group, game_config=self.c)
         new_train.boarding_time = boarding_time
         new_train.exp = exp
         new_train.money = money
-        self.train_ids.append(train_info[0])
+        self.train_ids.append(train_info['train_id'])
         new_train.train_route.open_train_route(new_train.train_id, new_train.priority)
         new_train.init_train_position()
         self.logger.info('train created. id {}, track {}, route = {}, status = {}'

@@ -74,7 +74,13 @@ class Scheduler(GameObject):
                 for j in (6, 7):
                     base_schedule_parsed[i][j] = float(base_schedule_parsed[i][j])
 
-            self.base_schedule = base_schedule_parsed
+            for i in range(len(base_schedule_parsed)):
+                self.base_schedule.append(
+                    {'train_id': base_schedule_parsed[i][0], 'arrival': base_schedule_parsed[i][1],
+                     'direction': base_schedule_parsed[i][2], 'new_direction': base_schedule_parsed[i][3],
+                     'carts': base_schedule_parsed[i][4], 'boarding_time': base_schedule_parsed[i][5],
+                     'exp': base_schedule_parsed[i][6], 'money': base_schedule_parsed[i][7]}
+                )
 
     def save_state(self):
         if not path.exists('user_cfg'):
@@ -86,7 +92,7 @@ class Scheduler(GameObject):
         base_schedule_string = ''
         for i in range(len(self.base_schedule)):
             for j in self.base_schedule[i]:
-                base_schedule_string += '{},'.format(j)
+                base_schedule_string += '{},'.format(self.base_schedule[i][j])
 
             base_schedule_string = base_schedule_string[0:len(base_schedule_string)-1] + '|'
 
@@ -106,25 +112,26 @@ class Scheduler(GameObject):
             for i in self.c.schedule_options[self.game_progress.level]:
                 carts = choice(i[3])
                 self.base_schedule.append(
-                    (self.train_counter, self.next_cycle_start_time + choice(i[0]), i[1], choice(i[2]), carts,
-                     self.c.frame_per_cart[self.game_progress.level] * carts,
-                     self.c.exp_per_cart[self.game_progress.level] * carts,
-                     self.c.money_per_cart[self.game_progress.level] * carts)
+                    {'train_id': self.train_counter, 'arrival': self.next_cycle_start_time + choice(i[0]),
+                     'direction': i[1], 'new_direction': choice(i[2]), 'carts': carts,
+                     'boarding_time': self.c.frame_per_cart[self.game_progress.level] * carts,
+                     'exp': self.c.exp_per_cart[self.game_progress.level] * carts,
+                     'money': self.c.money_per_cart[self.game_progress.level] * carts}
                 )
                 self.train_counter = (self.train_counter + 1) % 1000000
 
             self.next_cycle_start_time += self.c.schedule_cycle_length[self.game_progress.level]
-            self.base_schedule = sorted(self.base_schedule, key=itemgetter(1))
+            self.base_schedule = sorted(self.base_schedule, key=itemgetter('arrival'))
 
         for i in range(len(self.base_schedule)):
-            if self.game_time.epoch_timestamp >= self.base_schedule[i][1]:
-                if self.base_schedule[i][2] in (0, 1):
+            if self.game_time.epoch_timestamp >= self.base_schedule[i]['arrival']:
+                if self.base_schedule[i]['direction'] in (0, 1):
                     entry_busy = self.dispatcher.train_routes[0][
-                        self.c.approaching_train_route[self.base_schedule[i][2]]
+                        self.c.approaching_train_route[self.base_schedule[i]['direction']]
                     ].train_route_sections[0].route_config['busy']
                 else:
                     entry_busy = self.dispatcher.train_routes[100][
-                        self.c.approaching_train_route[self.base_schedule[i][2]]
+                        self.c.approaching_train_route[self.base_schedule[i]['direction']]
                     ].train_route_sections[0].route_config['busy']
 
                 if not entry_busy:
@@ -141,21 +148,21 @@ class Scheduler(GameObject):
                 self.background_sprite.opacity += 15
 
             for i in range(min(len(self.base_schedule), 32)):
-                if self.base_schedule[i][1] < self.game_time.epoch_timestamp + 14400 \
+                if self.base_schedule[i]['arrival'] < self.game_time.epoch_timestamp + 14400 \
                         and len(self.base_schedule_sprites) < (i + 1) * 2:
                     self.base_schedule_sprites.append(
                         Label('{0:0>6}   {1:0>2} : {2:0>2}                           {3:0>2}   {4:0>2} : {5:0>2}'
-                              .format(self.base_schedule[i][0],
-                                      (self.base_schedule[i][1] // 14400 + 12) % 24,
-                                      (self.base_schedule[i][1] // 240) % 60,
-                                      self.base_schedule[i][4],
-                                      self.base_schedule[i][5] // 240,
-                                      (self.base_schedule[i][5] // 4) % 60),
+                              .format(self.base_schedule[i]['train_id'],
+                                      (self.base_schedule[i]['arrival'] // 14400 + 12) % 24,
+                                      (self.base_schedule[i]['arrival'] // 240) % 60,
+                                      self.base_schedule[i]['carts'],
+                                      self.base_schedule[i]['boarding_time'] // 240,
+                                      (self.base_schedule[i]['boarding_time'] // 4) % 60),
                               font_name='Perfo', bold=True, font_size=18, color=self.c.day_text_color,
                               x=320 + 640 * (i // 16), y=555 - (i % 16) * 27, anchor_x='center', anchor_y='center',
                               batch=self.batch, group=self.text_group)
                     )
-                    self.base_schedule_sprites.append(Label(self.departure_text[self.base_schedule[i][2]],
+                    self.base_schedule_sprites.append(Label(self.departure_text[self.base_schedule[i]['direction']],
                                                             font_name='Perfo', bold=True,
                                                             font_size=18, color=self.c.day_text_color,
                                                             x=353 + 640 * (i // 16), y=555 - (i % 16) * 27,
@@ -179,13 +186,11 @@ class Scheduler(GameObject):
 
     @_schedule_board_is_activated
     def adjust_schedule_on_remove(self, position):
-        if len(self.base_schedule_sprites) > (position + 1) * 2:
-            for i in range(position * 2, len(self.base_schedule_sprites) // 2 - 1):
-                self.base_schedule_sprites[i * 2].text = self.base_schedule_sprites[(i + 1) * 2].text
-                self.base_schedule_sprites[i * 2 + 1].text = self.base_schedule_sprites[(i + 1) * 2 + 1].text
+        for i in range(position * 2, len(self.base_schedule_sprites) // 2 - 1):
+            self.base_schedule_sprites[i * 2].text = self.base_schedule_sprites[(i + 1) * 2].text
+            self.base_schedule_sprites[i * 2 + 1].text = self.base_schedule_sprites[(i + 1) * 2 + 1].text
 
-        if len(self.base_schedule_sprites) > 0:
-            self.base_schedule_sprites[-2].delete()
-            self.base_schedule_sprites[-1].delete()
-            self.base_schedule_sprites.pop(-2)
-            self.base_schedule_sprites.pop(-1)
+        self.base_schedule_sprites[-2].delete()
+        self.base_schedule_sprites[-1].delete()
+        self.base_schedule_sprites.pop(-2)
+        self.base_schedule_sprites.pop(-1)
