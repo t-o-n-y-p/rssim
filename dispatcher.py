@@ -413,13 +413,13 @@ class Dispatcher(GameObject):
             exp = train_info['exp']
             money = train_info['money']
 
-        if train_info['new_direction'] == 3 and self.tracks[20].locked:
+        if train_info['new_direction'] == self.c.direction_from_right_to_left_side and self.tracks[20].locked:
             train_info['new_direction'] = train_info['direction']
 
-        if train_info['new_direction'] == 2 and self.tracks[21].locked:
+        if train_info['new_direction'] == self.c.direction_from_left_to_right_side and self.tracks[21].locked:
             train_info['new_direction'] = train_info['direction']
 
-        if train_info['direction'] in (0, 1):
+        if train_info['direction'] in (self.c.direction_from_left_to_right, self.c.direction_from_right_to_left):
             route_for_new_train = self.train_routes[0][self.c.approaching_train_route[train_info['direction']]]
         else:
             route_for_new_train = self.train_routes[100][self.c.approaching_train_route[train_info['direction']]]

@@ -110,22 +110,26 @@ class Scheduler(GameObject):
         if self.game_time.epoch_timestamp + self.c.schedule_cycle_length[self.game_progress.level] \
                 >= self.next_cycle_start_time:
             for i in self.c.schedule_options[self.game_progress.level]:
-                carts = choice(i[3])
-                self.base_schedule.append(
-                    {'train_id': self.train_counter, 'arrival': self.next_cycle_start_time + choice(i[0]),
-                     'direction': i[1], 'new_direction': choice(i[2]), 'carts': carts,
-                     'boarding_time': self.c.frame_per_cart[self.game_progress.level] * carts,
-                     'exp': self.c.exp_per_cart[self.game_progress.level] * carts,
-                     'money': self.c.money_per_cart[self.game_progress.level] * carts}
-                )
-                self.train_counter = (self.train_counter + 1) % 1000000
+                if i[1] in (self.c.direction_from_left_to_right, self.c.direction_from_right_to_left) \
+                        or (i[1] == self.c.direction_from_left_to_right_side and not self.dispatcher.tracks[20].locked)\
+                        or (i[1] == self.c.direction_from_right_to_left_side and not self.dispatcher.tracks[21].locked):
+                    carts = choice(i[3])
+                    self.base_schedule.append(
+                        {'train_id': self.train_counter, 'arrival': self.next_cycle_start_time + choice(i[0]),
+                         'direction': i[1], 'new_direction': choice(i[2]), 'carts': carts,
+                         'boarding_time': self.c.frame_per_cart[self.game_progress.level] * carts,
+                         'exp': self.c.exp_per_cart[self.game_progress.level] * carts,
+                         'money': self.c.money_per_cart[self.game_progress.level] * carts}
+                    )
+                    self.train_counter = (self.train_counter + 1) % 1000000
 
             self.next_cycle_start_time += self.c.schedule_cycle_length[self.game_progress.level]
             self.base_schedule = sorted(self.base_schedule, key=itemgetter('arrival'))
 
         for i in range(len(self.base_schedule)):
             if self.game_time.epoch_timestamp >= self.base_schedule[i]['arrival']:
-                if self.base_schedule[i]['direction'] in (0, 1):
+                if self.base_schedule[i]['direction'] in (self.c.direction_from_left_to_right,
+                                                          self.c.direction_from_right_to_left):
                     entry_busy = self.dispatcher.train_routes[0][
                         self.c.approaching_train_route[self.base_schedule[i]['direction']]
                     ].train_route_sections[0].route_config['busy']
