@@ -134,12 +134,11 @@ class Signal(GameObject):
             self.priority = 0
             if self.state == 'green_signal':
                 self.state = 'red_signal'
+                self.base_route_opened = None
                 if self.sprite is not None:
                     self.sprite.image = self.image[self.state]
                     if self.flip_needed:
                         self.sprite.rotation = 180.0
-
-                self.base_route_opened = None
 
             self.logger.debug('no train approaching, signal is RED')
         else:
@@ -152,6 +151,7 @@ class Signal(GameObject):
             if self.base_route_opened is None:
                 if self.state == 'green_signal':
                     self.state = 'red_signal'
+                    self.base_route_opened = None
                     if self.sprite is not None:
                         self.sprite.image = self.image[self.state]
                         if self.flip_needed:
@@ -168,6 +168,7 @@ class Signal(GameObject):
                         != self.base_route_opened.route_config['last_entered_by']:
                     if self.state == 'green_signal':
                         self.state = 'red_signal'
+                        self.base_route_opened = None
                         if self.sprite is not None:
                             self.sprite.image = self.image[self.state]
                             if self.flip_needed:
