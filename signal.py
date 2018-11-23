@@ -24,6 +24,22 @@ def _signal_is_not_locked(fn):
     return _update_sprite_if_signal_is_not_locked
 
 
+def _signal_is_not_already_green(fn):
+    def _update_if_signal_is_not_already_green(*args, **kwargs):
+        if args[0].state == 'red_signal':
+            fn(*args, **kwargs)
+
+    return _update_if_signal_is_not_already_green
+
+
+def _signal_is_not_already_red(fn):
+    def _update_if_signal_is_not_already_red(*args, **kwargs):
+        if args[0].state == 'green_signal':
+            fn(*args, **kwargs)
+
+    return _update_if_signal_is_not_already_red
+
+
 class Signal(GameObject):
     def __init__(self, placement, flip_needed, track_number, route_type, batch, signal_group, game_config):
         super().__init__(game_config)
@@ -132,15 +148,7 @@ class Signal(GameObject):
         self.logger.debug('-------UPDATE START-------')
         if not self.base_route_exit.route_config['opened']:
             self.priority = 0
-            if self.state == 'green_signal':
-                self.state = 'red_signal'
-                self.base_route_opened = None
-                if self.sprite is not None:
-                    self.sprite.image = self.image[self.state]
-                    if self.flip_needed:
-                        self.sprite.rotation = 180.0
-
-            self.logger.debug('no train approaching, signal is RED')
+            self.on_switch_to_red()
         else:
             self.priority = self.base_route_exit.priority
             for i in self.base_route_opened_list:
@@ -149,43 +157,17 @@ class Signal(GameObject):
                     self.base_route_opened = i
 
             if self.base_route_opened is None:
-                if self.state == 'green_signal':
-                    self.state = 'red_signal'
-                    self.base_route_opened = None
-                    if self.sprite is not None:
-                        self.sprite.image = self.image[self.state]
-                        if self.flip_needed:
-                            self.sprite.rotation = 180.0
-
-                self.logger.debug('route through signal is not opened, signal is RED')
+                self.on_switch_to_red()
             else:
                 self.base_route_opened.update_base_route_state()
-
                 self.logger.debug('approaching train: {}'.format(self.base_route_exit.route_config['last_opened_by']))
                 self.logger.debug('its route is busy by train: {}'
                                   .format(self.base_route_opened.route_config['last_entered_by']))
                 if self.base_route_opened.route_config['busy'] and self.base_route_exit.route_config['last_opened_by'] \
                         != self.base_route_opened.route_config['last_entered_by']:
-                    if self.state == 'green_signal':
-                        self.state = 'red_signal'
-                        self.base_route_opened = None
-                        if self.sprite is not None:
-                            self.sprite.image = self.image[self.state]
-                            if self.flip_needed:
-                                self.sprite.rotation = 180.0
-
-                    self.logger.debug('route through signal is opened but busy by another train, signal is RED')
+                    self.on_switch_to_red()
                 else:
-                    if self.state == 'red_signal':
-                        self.state = 'green_signal'
-                        if self.sprite is not None:
-                            self.sprite.image = self.image[self.state]
-                            if self.flip_needed:
-                                self.sprite.rotation = 180.0
-
-                        self.base_route_opened.enter_base_route(self.base_route_exit.route_config['last_opened_by'])
-                        self.logger.debug('train {} is allowed to pass'
-                                          .format(self.base_route_exit.route_config['last_opened_by']))
+                    self.on_switch_to_green()
 
         self.logger.debug('-------UPDATE END-------')
         self.logger.info('signal updated')
@@ -194,3 +176,23 @@ class Signal(GameObject):
         self.locked = False
         if self.sprite is not None:
             self.sprite.visible = True
+
+    @_signal_is_not_already_green
+    def on_switch_to_green(self):
+        self.state = 'green_signal'
+        if self.sprite is not None:
+            self.sprite.image = self.image[self.state]
+            if self.flip_needed:
+                self.sprite.rotation = 180.0
+
+        self.base_route_opened.enter_base_route(self.base_route_exit.route_config['last_opened_by'])
+        self.logger.debug('train {} is allowed to pass'.format(self.base_route_exit.route_config['last_opened_by']))
+
+    @_signal_is_not_already_red
+    def on_switch_to_red(self):
+        self.state = 'red_signal'
+        self.base_route_opened = None
+        if self.sprite is not None:
+            self.sprite.image = self.image[self.state]
+            if self.flip_needed:
+                self.sprite.rotation = 180.0
