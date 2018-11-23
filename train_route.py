@@ -25,7 +25,7 @@ def _train_has_passed_train_route_section(fn):
 
 
 class TrainRoute(GameObject):
-    def __init__(self, track_number, route_type, supported_carts, train_route_sections, train_route_sections_positions,
+    def __init__(self, track_number, route_type, supported_cars, train_route_sections, train_route_sections_positions,
                  game_config):
         super().__init__(game_config)
         self.logger = getLogger('game.train_route_{}_{}'.format(track_number, route_type))
@@ -64,9 +64,9 @@ class TrainRoute(GameObject):
         self.logger.debug('checkpoints_v2 = {}'.format(self.checkpoints_v2))
         self.current_checkpoint = 0
         self.signal = self.train_route_sections[0].route_config['exit_signal']
-        # number of supported carts is decided below
-        self.supported_carts = supported_carts
-        self.logger.debug('supported carts: {}'.format(self.supported_carts))
+        # number of supported cars is decided below
+        self.supported_cars = supported_cars
+        self.logger.debug('supported cars: {}'.format(self.supported_cars))
         self.read_state()
         self.logger.debug('------- END INIT -------')
         self.logger.warning('train route init completed')
@@ -74,7 +74,7 @@ class TrainRoute(GameObject):
     def read_state(self):
         self.logger.debug('------- START READING STATE -------')
         if path.exists('user_cfg/train_route/track{}/track{}_{}.ini'
-                          .format(self.track_number, self.track_number, self.route_type)):
+                       .format(self.track_number, self.track_number, self.route_type)):
             self.config.read('user_cfg/train_route/track{}/track{}_{}.ini'
                              .format(self.track_number, self.track_number, self.route_type))
             self.logger.debug('config parsed from user_cfg')
@@ -178,7 +178,7 @@ class TrainRoute(GameObject):
 
     @_game_is_not_paused
     @_train_has_passed_train_route_section
-    def update_train_route_sections(self, game_paused, last_cart_position):
+    def update_train_route_sections(self, game_paused, last_car_position):
         if type(self.train_route_sections[self.current_checkpoint]) == BaseRoute:
             self.train_route_sections[self.current_checkpoint].route_config['force_busy'] = False
             self.train_route_sections[self.current_checkpoint].route_config['opened'] = False

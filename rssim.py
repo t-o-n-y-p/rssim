@@ -228,7 +228,7 @@ class RSSim(Game):
         self.train_routes[0][self.c.approaching_train_route[self.c.direction_from_left_to_right]] \
             = TrainRoute(track_number=0,
                          route_type=self.c.approaching_train_route[self.c.direction_from_left_to_right],
-                         supported_carts=[0, 20], train_route_sections=train_route_sections,
+                         supported_cars=[0, 20], train_route_sections=train_route_sections,
                          train_route_sections_positions=train_route_sections_positions, game_config=self.c)
         train_route_sections \
             = [self.base_routes[0][
@@ -238,7 +238,7 @@ class RSSim(Game):
         self.train_routes[0][self.c.approaching_train_route[self.c.direction_from_right_to_left]] \
             = TrainRoute(track_number=0,
                          route_type=self.c.approaching_train_route[self.c.direction_from_right_to_left],
-                         supported_carts=[0, 20], train_route_sections=train_route_sections,
+                         supported_cars=[0, 20], train_route_sections=train_route_sections,
                          train_route_sections_positions=train_route_sections_positions, game_config=self.c)
         self.logger.info('approaching train routes created')
 
@@ -294,7 +294,7 @@ class RSSim(Game):
                     train_route_sections_positions.extend([0, 0])
                     self.train_routes[i][self.c.entry_train_route[k]] \
                         = TrainRoute(track_number=i, route_type=self.c.entry_train_route[k],
-                                     supported_carts=self.tracks[i - 1].supported_carts,
+                                     supported_cars=self.tracks[i - 1].supported_cars,
                                      train_route_sections=train_route_sections,
                                      train_route_sections_positions=train_route_sections_positions, game_config=self.c)
                     self.logger.info('track {} {} train route created'.format(i, k))
@@ -320,7 +320,7 @@ class RSSim(Game):
 
                     self.train_routes[i][self.c.exit_train_route[m]] \
                         = TrainRoute(track_number=i, route_type=self.c.exit_train_route[m],
-                                     supported_carts=self.tracks[i - 1].supported_carts,
+                                     supported_cars=self.tracks[i - 1].supported_cars,
                                      train_route_sections=train_route_sections,
                                      train_route_sections_positions=train_route_sections_positions, game_config=self.c)
                     self.logger.info('track {} {} train route created'.format(i, m))
@@ -348,7 +348,7 @@ class RSSim(Game):
                 self.train_routes[i][self.c.entry_train_route[self.c.direction_from_left_to_right_side]] \
                     = TrainRoute(track_number=i,
                                  route_type=self.c.entry_train_route[self.c.direction_from_left_to_right_side],
-                                 supported_carts=self.tracks[i - 1].supported_carts,
+                                 supported_cars=self.tracks[i - 1].supported_cars,
                                  train_route_sections=train_route_sections,
                                  train_route_sections_positions=train_route_sections_positions, game_config=self.c)
                 self.logger.info('track {} {} train route created'.format(i, self.c.direction_from_left_to_right_side))
@@ -373,7 +373,7 @@ class RSSim(Game):
                 self.train_routes[i][self.c.exit_train_route[self.c.direction_from_right_to_left_side]] \
                     = TrainRoute(track_number=i,
                                  route_type=self.c.exit_train_route[self.c.direction_from_right_to_left_side],
-                                 supported_carts=self.tracks[i - 1].supported_carts,
+                                 supported_cars=self.tracks[i - 1].supported_cars,
                                  train_route_sections=train_route_sections,
                                  train_route_sections_positions=train_route_sections_positions, game_config=self.c)
                 self.logger.info('track {} {} train route created'.format(i, self.c.direction_from_right_to_left_side))
@@ -400,7 +400,7 @@ class RSSim(Game):
                     self.train_routes[i][self.c.entry_train_route[self.c.direction_from_right_to_left]] \
                         = TrainRoute(track_number=i,
                                      route_type=self.c.entry_train_route[self.c.direction_from_right_to_left],
-                                     supported_carts=self.tracks[i - 1].supported_carts,
+                                     supported_cars=self.tracks[i - 1].supported_cars,
                                      train_route_sections=train_route_sections,
                                      train_route_sections_positions=train_route_sections_positions, game_config=self.c)
                     self.logger.info('track {} {} train route created'.format(i, self.c.direction_from_right_to_left))
@@ -427,7 +427,7 @@ class RSSim(Game):
                     self.train_routes[i][self.c.exit_train_route[self.c.direction_from_left_to_right]] \
                         = TrainRoute(track_number=i,
                                      route_type=self.c.exit_train_route[self.c.direction_from_left_to_right],
-                                     supported_carts=self.tracks[i - 1].supported_carts,
+                                     supported_cars=self.tracks[i - 1].supported_cars,
                                      train_route_sections=train_route_sections,
                                      train_route_sections_positions=train_route_sections_positions, game_config=self.c)
                     self.logger.info('track {} {} train route created'.format(i, self.c.direction_from_left_to_right))
@@ -453,7 +453,7 @@ class RSSim(Game):
                 self.train_routes[i][self.c.entry_train_route[self.c.direction_from_right_to_left_side]] \
                     = TrainRoute(track_number=i,
                                  route_type=self.c.entry_train_route[self.c.direction_from_right_to_left_side],
-                                 supported_carts=self.tracks[i - 1].supported_carts,
+                                 supported_cars=self.tracks[i - 1].supported_cars,
                                  train_route_sections=train_route_sections,
                                  train_route_sections_positions=train_route_sections_positions, game_config=self.c)
                 self.logger.info('track {} {} train route created'.format(i, self.c.direction_from_right_to_left_side))
@@ -478,7 +478,7 @@ class RSSim(Game):
                 self.train_routes[i][self.c.exit_train_route[self.c.direction_from_left_to_right_side]] \
                     = TrainRoute(track_number=i,
                                  route_type=self.c.exit_train_route[self.c.direction_from_left_to_right_side],
-                                 supported_carts=self.tracks[i - 1].supported_carts,
+                                 supported_cars=self.tracks[i - 1].supported_cars,
                                  train_route_sections=train_route_sections,
                                  train_route_sections_positions=train_route_sections_positions, game_config=self.c)
                 self.logger.info('track {} {} train route created'.format(i, self.c.direction_from_left_to_right_side))
@@ -503,7 +503,7 @@ class RSSim(Game):
                     self.train_routes[i][self.c.entry_train_route[self.c.direction_from_left_to_right]] \
                         = TrainRoute(track_number=i,
                                      route_type=self.c.entry_train_route[self.c.direction_from_left_to_right],
-                                     supported_carts=self.tracks[i - 1].supported_carts,
+                                     supported_cars=self.tracks[i - 1].supported_cars,
                                      train_route_sections=train_route_sections,
                                      train_route_sections_positions=train_route_sections_positions, game_config=self.c)
                     self.logger.info('track {} {} train route created'.format(i, self.c.direction_from_left_to_right))
@@ -528,7 +528,7 @@ class RSSim(Game):
                     self.train_routes[i][self.c.exit_train_route[self.c.direction_from_right_to_left]] \
                         = TrainRoute(track_number=i,
                                      route_type=self.c.exit_train_route[self.c.direction_from_right_to_left],
-                                     supported_carts=self.tracks[i - 1].supported_carts,
+                                     supported_cars=self.tracks[i - 1].supported_cars,
                                      train_route_sections=train_route_sections,
                                      train_route_sections_positions=train_route_sections_positions, game_config=self.c)
                     self.logger.info('track {} {} train route created'.format(i, self.c.direction_from_right_to_left))
@@ -544,7 +544,7 @@ class RSSim(Game):
         self.train_routes[100][self.c.approaching_train_route[self.c.direction_from_left_to_right_side]] \
             = TrainRoute(track_number=100,
                          route_type=self.c.approaching_train_route[self.c.direction_from_left_to_right_side],
-                         supported_carts=[0, 20], train_route_sections=train_route_sections,
+                         supported_cars=[0, 20], train_route_sections=train_route_sections,
                          train_route_sections_positions=train_route_sections_positions, game_config=self.c)
 
         train_route_sections \
@@ -555,7 +555,7 @@ class RSSim(Game):
         self.train_routes[100][self.c.approaching_train_route[self.c.direction_from_right_to_left_side]] \
             = TrainRoute(track_number=100,
                          route_type=self.c.approaching_train_route[self.c.direction_from_right_to_left_side],
-                         supported_carts=[0, 20], train_route_sections=train_route_sections,
+                         supported_cars=[0, 20], train_route_sections=train_route_sections,
                          train_route_sections_positions=train_route_sections_positions, game_config=self.c)
 
         self.logger.info('tracks and train routes created')

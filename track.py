@@ -43,7 +43,7 @@ class Track(GameObject):
         self.last_entered_by = 0
         self.override = False
         self.price = 0
-        self.supported_carts = None
+        self.supported_cars = None
         self.unlock_condition_from_level = None
         self.unlock_condition_from_previous_track = None
         self.unlock_available = False
@@ -89,8 +89,8 @@ class Track(GameObject):
         self.logger.debug('last_entered_by: {}'.format(self.last_entered_by))
         self.override = self.config['user_data'].getboolean('override')
         self.logger.debug('override: {}'.format(self.override))
-        supported_carts_parsed = self.config['track_config']['supported_carts'].split(',')
-        self.supported_carts = (int(supported_carts_parsed[0]), int(supported_carts_parsed[1]))
+        supported_cars_parsed = self.config['track_config']['supported_cars'].split(',')
+        self.supported_cars = (int(supported_cars_parsed[0]), int(supported_cars_parsed[1]))
         self.unlock_condition_from_level = self.config['user_data'].getboolean('unlock_condition_from_level')
         self.unlock_condition_from_previous_track \
             = self.config['user_data'].getboolean('unlock_condition_from_previous_track')

@@ -78,7 +78,7 @@ class Scheduler(GameObject):
                 self.base_schedule.append(
                     {'train_id': base_schedule_parsed[i][0], 'arrival': base_schedule_parsed[i][1],
                      'direction': base_schedule_parsed[i][2], 'new_direction': base_schedule_parsed[i][3],
-                     'carts': base_schedule_parsed[i][4], 'boarding_time': base_schedule_parsed[i][5],
+                     'cars': base_schedule_parsed[i][4], 'boarding_time': base_schedule_parsed[i][5],
                      'exp': base_schedule_parsed[i][6], 'money': base_schedule_parsed[i][7]}
                 )
 
@@ -113,13 +113,13 @@ class Scheduler(GameObject):
                 if i[1] in (self.c.direction_from_left_to_right, self.c.direction_from_right_to_left) \
                         or (i[1] == self.c.direction_from_left_to_right_side and not self.dispatcher.tracks[20].locked)\
                         or (i[1] == self.c.direction_from_right_to_left_side and not self.dispatcher.tracks[21].locked):
-                    carts = choice(i[3])
+                    cars = choice(i[3])
                     self.base_schedule.append(
                         {'train_id': self.train_counter, 'arrival': self.next_cycle_start_time + choice(i[0]),
-                         'direction': i[1], 'new_direction': choice(i[2]), 'carts': carts,
-                         'boarding_time': self.c.frame_per_cart[self.game_progress.level] * carts,
-                         'exp': self.c.exp_per_cart[self.game_progress.level] * carts,
-                         'money': self.c.money_per_cart[self.game_progress.level] * carts}
+                         'direction': i[1], 'new_direction': choice(i[2]), 'cars': cars,
+                         'boarding_time': self.c.frame_per_car[self.game_progress.level] * cars,
+                         'exp': self.c.exp_per_car[self.game_progress.level] * cars,
+                         'money': self.c.money_per_car[self.game_progress.level] * cars}
                     )
                     self.train_counter = (self.train_counter + 1) % 1000000
 
@@ -159,7 +159,7 @@ class Scheduler(GameObject):
                               .format(self.base_schedule[i]['train_id'],
                                       (self.base_schedule[i]['arrival'] // 14400 + 12) % 24,
                                       (self.base_schedule[i]['arrival'] // 240) % 60,
-                                      self.base_schedule[i]['carts'],
+                                      self.base_schedule[i]['cars'],
                                       self.base_schedule[i]['boarding_time'] // 240,
                                       (self.base_schedule[i]['boarding_time'] // 4) % 60),
                               font_name='Perfo', bold=True, font_size=18, color=self.c.day_text_color,

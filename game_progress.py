@@ -54,7 +54,7 @@ class GameProgress(GameObject):
         self.money = 0.0
         self.exp_percent = 0
         self.money_percent = 0
-        self.supported_carts = None
+        self.supported_cars = None
         self.main_map = main_map
         self.mini_map = mini_map
         self.tracks = None
@@ -96,8 +96,8 @@ class GameProgress(GameObject):
         self.accumulated_exp = self.config['user_data'].getfloat('accumulated_exp')
         self.money = self.config['user_data'].getfloat('money')
         self.money_target = self.config['user_data'].getint('money_target')
-        supported_carts_parsed = self.config['user_data']['supported_carts'].split(',')
-        self.supported_carts = (int(supported_carts_parsed[0]), int(supported_carts_parsed[1]))
+        supported_cars_parsed = self.config['user_data']['supported_cars'].split(',')
+        self.supported_cars = (int(supported_cars_parsed[0]), int(supported_cars_parsed[1]))
         self.update_exp_progress_sprite()
         self.update_money_progress_sprite()
 
@@ -112,7 +112,7 @@ class GameProgress(GameObject):
         self.config['user_data']['accumulated_exp'] = str(self.accumulated_exp)
         self.config['user_data']['money'] = str(self.money)
         self.config['user_data']['money_target'] = str(self.money_target)
-        self.config['user_data']['supported_carts'] = str(self.supported_carts[0]) + ',' + str(self.supported_carts[1])
+        self.config['user_data']['supported_cars'] = str(self.supported_cars[0]) + ',' + str(self.supported_cars[1])
 
         with open('user_cfg/game_progress.ini', 'w') as configfile:
             self.config.write(configfile)
@@ -121,7 +121,7 @@ class GameProgress(GameObject):
         self.main_map.on_track_unlock(track)
         self.mini_map.on_track_unlock(track)
         self.unlocked_tracks = track
-        self.supported_carts = (self.tracks[track - 1].supported_carts[0], 20)
+        self.supported_cars = (self.tracks[track - 1].supported_cars[0], 20)
         self.tracks[track].on_unlock_condition_from_previous_track()
 
     @_maximum_level_not_reached

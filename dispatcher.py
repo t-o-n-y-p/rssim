@@ -44,32 +44,32 @@ class Dispatcher(GameObject):
         self.boarding_lights_image.anchor_y = self.boarding_lights_image.height // 2
         # ----------- left direction images -----------------
         self.train_head_image[self.c.direction_from_left_to_right] = \
-            load('img/cart_head_{}.png'.format(self.c.direction_from_left_to_right))
+            load('img/car_head_{}.png'.format(self.c.direction_from_left_to_right))
         self.train_mid_image[self.c.direction_from_left_to_right] = \
-            load('img/cart_mid_{}.png'.format(self.c.direction_from_left_to_right))
+            load('img/car_mid_{}.png'.format(self.c.direction_from_left_to_right))
         self.train_tail_image[self.c.direction_from_left_to_right] = \
-            load('img/cart_tail_{}.png'.format(self.c.direction_from_left_to_right))
+            load('img/car_tail_{}.png'.format(self.c.direction_from_left_to_right))
         # -------------------- right direction images ----------------------
         self.train_head_image[self.c.direction_from_right_to_left] = \
-            load('img/cart_head_{}.png'.format(self.c.direction_from_right_to_left))
+            load('img/car_head_{}.png'.format(self.c.direction_from_right_to_left))
         self.train_mid_image[self.c.direction_from_right_to_left] = \
-            load('img/cart_mid_{}.png'.format(self.c.direction_from_right_to_left))
+            load('img/car_mid_{}.png'.format(self.c.direction_from_right_to_left))
         self.train_tail_image[self.c.direction_from_right_to_left] = \
-            load('img/cart_tail_{}.png'.format(self.c.direction_from_right_to_left))
+            load('img/car_tail_{}.png'.format(self.c.direction_from_right_to_left))
         # ----------- left side direction images -----------------
         self.train_head_image[self.c.direction_from_left_to_right_side] = \
-            load('img/cart_head_{}.png'.format(self.c.direction_from_left_to_right_side))
+            load('img/car_head_{}.png'.format(self.c.direction_from_left_to_right_side))
         self.train_mid_image[self.c.direction_from_left_to_right_side] = \
-            load('img/cart_mid_{}.png'.format(self.c.direction_from_left_to_right_side))
+            load('img/car_mid_{}.png'.format(self.c.direction_from_left_to_right_side))
         self.train_tail_image[self.c.direction_from_left_to_right_side] = \
-            load('img/cart_tail_{}.png'.format(self.c.direction_from_left_to_right_side))
+            load('img/car_tail_{}.png'.format(self.c.direction_from_left_to_right_side))
         # -------------------- right side direction images ----------------------
         self.train_head_image[self.c.direction_from_right_to_left_side] = \
-            load('img/cart_head_{}.png'.format(self.c.direction_from_right_to_left_side))
+            load('img/car_head_{}.png'.format(self.c.direction_from_right_to_left_side))
         self.train_mid_image[self.c.direction_from_right_to_left_side] = \
-            load('img/cart_mid_{}.png'.format(self.c.direction_from_right_to_left_side))
+            load('img/car_mid_{}.png'.format(self.c.direction_from_right_to_left_side))
         self.train_tail_image[self.c.direction_from_right_to_left_side] = \
-            load('img/cart_tail_{}.png'.format(self.c.direction_from_right_to_left_side))
+            load('img/car_tail_{}.png'.format(self.c.direction_from_right_to_left_side))
         for i in (self.c.direction_from_left_to_right, self.c.direction_from_right_to_left,
                   self.c.direction_from_left_to_right_side, self.c.direction_from_right_to_left_side):
             self.train_head_image[i].anchor_x = self.train_head_image[i].width // 2
@@ -109,8 +109,8 @@ class Dispatcher(GameObject):
                 train_config = RawConfigParser()
                 train_config.read('user_cfg/trains/train{}.ini'.format(i))
                 self.logger.debug('config parsed from user_cfg')
-                train_carts = train_config['user_data'].getint('carts')
-                self.logger.debug('carts: {}'.format(train_carts))
+                train_cars = train_config['user_data'].getint('cars')
+                self.logger.debug('cars: {}'.format(train_cars))
                 if train_config['user_data']['train_route_track_number'] == 'None':
                     train_route_track_number = None
                 else:
@@ -129,7 +129,7 @@ class Dispatcher(GameObject):
                 train_new_direction = train_config['user_data'].getint('new_direction')
                 self.logger.debug('direction: {}'.format(train_direction))
                 if train_route_track_number is not None and train_route_type is not None:
-                    saved_train = Train(carts=train_carts,
+                    saved_train = Train(cars=train_cars,
                                         train_route=self.train_routes[train_route_track_number][train_route_type],
                                         state=train_state, direction=train_direction,
                                         new_direction=train_new_direction, current_direction=train_direction,
@@ -141,7 +141,7 @@ class Dispatcher(GameObject):
                                         batch=self.batch, group=self.group,
                                         boarding_lights_group=self.boarding_lights_group, game_config=self.c)
                 else:
-                    saved_train = Train(carts=train_carts, train_route=None, state=train_state,
+                    saved_train = Train(cars=train_cars, train_route=None, state=train_state,
                                         direction=train_direction,
                                         new_direction=train_new_direction, current_direction=train_direction,
                                         train_id=i,
@@ -170,29 +170,29 @@ class Dispatcher(GameObject):
                 saved_train.exp = train_config['user_data'].getfloat('exp')
                 saved_train.money = train_config['user_data'].getfloat('money')
                 self.logger.debug('boarding_time: {}'.format(saved_train.boarding_time))
-                if train_config['user_data']['carts_position'] == 'None':
-                    saved_train.carts_position = []
-                    self.logger.debug('carts_position is empty: in this case carts_position_abs must not be empty')
+                if train_config['user_data']['cars_position'] == 'None':
+                    saved_train.cars_position = []
+                    self.logger.debug('cars_position is empty: in this case cars_position_abs must not be empty')
                 else:
-                    carts_position_parsed = train_config['user_data']['carts_position'].split(',')
-                    for j in range(len(carts_position_parsed)):
-                        carts_position_parsed[j] = int(carts_position_parsed[j])
+                    cars_position_parsed = train_config['user_data']['cars_position'].split(',')
+                    for j in range(len(cars_position_parsed)):
+                        cars_position_parsed[j] = int(cars_position_parsed[j])
 
-                    saved_train.carts_position = carts_position_parsed
-                    self.logger.debug('carts_position: {}'.format(saved_train.carts_position))
+                    saved_train.cars_position = cars_position_parsed
+                    self.logger.debug('cars_position: {}'.format(saved_train.cars_position))
 
-                if train_config['user_data']['carts_position_abs'] == 'None':
-                    saved_train.carts_position_abs = []
-                    self.logger.debug('carts_position_abs is empty: in this case carts_position must not be empty')
+                if train_config['user_data']['cars_position_abs'] == 'None':
+                    saved_train.cars_position_abs = []
+                    self.logger.debug('cars_position_abs is empty: in this case cars_position must not be empty')
                 else:
-                    carts_position_abs_parsed = train_config['user_data']['carts_position_abs'].split('|')
-                    for j in range(len(carts_position_abs_parsed)):
-                        carts_position_abs_parsed[j] = carts_position_abs_parsed[j].split(',')
-                        for k in range(len(carts_position_abs_parsed[j])):
-                            carts_position_abs_parsed[j][k] = int(carts_position_abs_parsed[j][k])
+                    cars_position_abs_parsed = train_config['user_data']['cars_position_abs'].split('|')
+                    for j in range(len(cars_position_abs_parsed)):
+                        cars_position_abs_parsed[j] = cars_position_abs_parsed[j].split(',')
+                        for k in range(len(cars_position_abs_parsed[j])):
+                            cars_position_abs_parsed[j][k] = int(cars_position_abs_parsed[j][k])
 
-                    saved_train.carts_position_abs = carts_position_abs_parsed
-                    self.logger.debug('carts_position_abs: {}'.format(saved_train.carts_position_abs))
+                    saved_train.cars_position_abs = cars_position_abs_parsed
+                    self.logger.debug('cars_position_abs: {}'.format(saved_train.cars_position_abs))
 
                 saved_train.config = train_config
                 self.logger.info('train {} config ready'.format(i))
@@ -282,8 +282,8 @@ class Dispatcher(GameObject):
                     self.game_progress.add_exp(i.exp)
                     self.game_progress.add_money(i.money)
 
-            if len(i.carts_position) > 0:
-                if i.carts_position[0] == i.train_route.destination_point_v2[i.carts]:
+            if len(i.cars_position) > 0:
+                if i.cars_position[0] == i.train_route.destination_point_v2[i.cars]:
                     self.logger.debug('train {} reached route destination point'.format(i.train_id))
                     # if train arrives to the track, boarding begins
                     if i.state == 'pending_boarding':
@@ -305,7 +305,7 @@ class Dispatcher(GameObject):
                         i.complete_train_route()
                         self.logger.info('train {} successfully processed and is about to be removed'
                                          .format(i.train_id))
-                        for j in i.cart_sprites:
+                        for j in i.car_sprites:
                             if j is not None:
                                 j.delete()
 
@@ -326,11 +326,11 @@ class Dispatcher(GameObject):
                     self.logger.debug('checking track {}'.format(j))
                     self.logger.debug('track in busy: {}'.format(self.tracks[j - 1].busy))
                     self.logger.debug('opened: {}'.format(r.opened))
-                    self.logger.debug('train carts: {}; route supports: {}'.format(i.carts, r.supported_carts))
+                    self.logger.debug('train cars: {}; route supports: {}'.format(i.cars, r.supported_cars))
                     # if compatible track is finally available,
                     # we open entry route for our train and leave loop
-                    if i.carts in range(self.tracks[j - 1].supported_carts[0],
-                                        self.tracks[j - 1].supported_carts[1] + 1) and not r.opened \
+                    if i.cars in range(self.tracks[j - 1].supported_cars[0],
+                                       self.tracks[j - 1].supported_cars[1] + 1) and not r.opened \
                             and not self.tracks[j - 1].locked and not self.tracks[j - 1].busy:
                         self.logger.debug('all requirements met')
                         route_for_new_train = r
@@ -341,8 +341,8 @@ class Dispatcher(GameObject):
                         self.logger.info('train {} status changed to {}'.format(i.train_id, i.state))
                         self.logger.info('train {} completed route: track {} {}'
                                          .format(i.train_id, i.train_route.track_number, i.train_route.route_type))
-                        i.complete_train_route(convert_carts_positions=False)
-                        i.assign_new_train_route(route_for_new_train, convert_carts_positions=False)
+                        i.complete_train_route(convert_cars_positions=False)
+                        i.assign_new_train_route(route_for_new_train, convert_cars_positions=False)
                         routes_created_inside_iteration += 1
                         self.logger.debug('routes_created_inside_iteration: {}'
                                           .format(routes_created_inside_iteration))
@@ -372,8 +372,8 @@ class Dispatcher(GameObject):
                         self.logger.info('train {} status changed to {}'.format(i.train_id, i.state))
                         self.logger.info('train {} completed route: track {} {}'
                                          .format(i.train_id, i.train_route.track_number, i.train_route.route_type))
-                        i.complete_train_route(convert_carts_positions=False)
-                        i.assign_new_train_route(route_for_new_train, convert_carts_positions=False)
+                        i.complete_train_route(convert_cars_positions=False)
+                        i.assign_new_train_route(route_for_new_train, convert_cars_positions=False)
                         routes_created_inside_iteration += 1
                         self.logger.debug('routes_created_inside_iteration: {}'
                                           .format(routes_created_inside_iteration))
@@ -388,7 +388,7 @@ class Dispatcher(GameObject):
             if q4.train_id in self.train_ids:
                 q4.update(game_paused)
                 if q4.train_route is not None:
-                    q4.train_route.update_train_route_sections(game_paused, q4.carts_position[-1])
+                    q4.train_route.update_train_route_sections(game_paused, q4.cars_position[-1])
 
         for q3 in range(len(self.tracks)):
             self.tracks[q3].update(game_paused)
@@ -400,13 +400,13 @@ class Dispatcher(GameObject):
                 i.update_sprite(base_offset)
 
     def on_create_train(self, train_info):
-        if train_info['carts'] < self.game_progress.supported_carts[0]:
+        if train_info['cars'] < self.game_progress.supported_cars[0]:
             train_info['new_direction'] = train_info['direction']
             state = 'approaching_pass_through'
             boarding_time = 5
             exp = 0.0
             money = 0.0
-            self.logger.debug('{}-cart trains are not supported, assign pass through route'.format(train_info['carts']))
+            self.logger.debug('{}-car trains are not supported, assign pass through route'.format(train_info['cars']))
         else:
             state = 'approaching'
             boarding_time = train_info['boarding_time']
@@ -424,7 +424,7 @@ class Dispatcher(GameObject):
         else:
             route_for_new_train = self.train_routes[100][self.c.approaching_train_route[train_info['direction']]]
 
-        new_train = Train(carts=train_info['carts'], train_route=route_for_new_train, state=state,
+        new_train = Train(cars=train_info['cars'], train_route=route_for_new_train, state=state,
                           direction=train_info['direction'], new_direction=train_info['new_direction'],
                           current_direction=train_info['direction'],
                           train_id=train_info['train_id'], head_image=self.train_head_image,

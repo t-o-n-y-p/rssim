@@ -16,7 +16,7 @@ def _game_is_not_paused(fn):
 
 
 class Train(GameObject):
-    def __init__(self, carts, train_route, state, direction, new_direction, current_direction, train_id,
+    def __init__(self, cars, train_route, state, direction, new_direction, current_direction, train_id,
                  head_image, mid_image, boarding_lights_image, tail_image, batch, group, boarding_lights_group,
                  game_config):
         super().__init__(game_config)
@@ -24,7 +24,7 @@ class Train(GameObject):
         self.logger.debug('------- START INIT -------')
         self.config = None
         self.track_number = None
-        self.carts = carts
+        self.cars = cars
         self.train_route = train_route
         self.state = state
         self.direction = direction
@@ -38,8 +38,8 @@ class Train(GameObject):
         self.mid_image = mid_image
         self.tail_image = tail_image
         self.boarding_lights_image = boarding_lights_image
-        self.logger.debug('{} carts, route {}, state {}, direction {}, train_id {}'
-                          .format(self.carts, self.train_route, self.state, self.direction, self.train_id))
+        self.logger.debug('{} cars, route {}, state {}, direction {}, train_id {}'
+                          .format(self.cars, self.train_route, self.state, self.direction, self.train_id))
         # all trains are created with maximum speed,
         # not accelerating and not decelerating
         self.speed = self.c.train_maximum_speed
@@ -66,26 +66,26 @@ class Train(GameObject):
                 self.train_route.train_route_sections[0].priority = self.priority
 
         self.logger.debug('set priority: {}'.format(self.priority))
-        self.cart_sprites = []
+        self.car_sprites = []
         self.boarding_light_sprites = []
-        self.cart_sprites.append(None)
-        for i in range(1, self.carts - 1):
-            self.cart_sprites.append(None)
+        self.car_sprites.append(None)
+        for i in range(1, self.cars - 1):
+            self.car_sprites.append(None)
 
-        self.cart_sprites.append(None)
+        self.car_sprites.append(None)
 
         self.boarding_light_sprites.append(None)
-        for i in range(1, self.carts - 1):
+        for i in range(1, self.cars - 1):
             self.boarding_light_sprites.append(None)
 
         self.boarding_light_sprites.append(None)
 
-        # when train route is assigned, we use carts_position list;
-        # it contains relative carts position based on route trail points
-        self.carts_position = []
-        # when train route is not assigned, we use carts_position_abs list;
-        # it contains absolute carts position on the map
-        self.carts_position_abs = []
+        # when train route is assigned, we use cars_position list;
+        # it contains relative cars position based on route trail points
+        self.cars_position = []
+        # when train route is not assigned, we use cars_position_abs list;
+        # it contains absolute cars position on the map
+        self.cars_position_abs = []
         self.stop_point = None
         self.logger.debug('------- END INIT -------')
         self.logger.warning('train init completed')
@@ -105,8 +105,8 @@ class Train(GameObject):
             self.config['user_data'] = {}
             self.logger.debug('config parser created')
 
-        self.config['user_data']['carts'] = str(self.carts)
-        self.logger.debug('carts: {}'.format(self.config['user_data']['carts']))
+        self.config['user_data']['cars'] = str(self.cars)
+        self.logger.debug('cars: {}'.format(self.config['user_data']['cars']))
         if self.train_route is not None:
             self.config['user_data']['train_route_track_number'] = str(self.train_route.track_number)
             self.config['user_data']['train_route_type'] = str(self.train_route.route_type)
@@ -142,29 +142,29 @@ class Train(GameObject):
         self.config['user_data']['exp'] = str(self.exp)
         self.config['user_data']['money'] = str(self.money)
         self.logger.debug('boarding_time: {}'.format(self.config['user_data']['boarding_time']))
-        if len(self.carts_position) == 0:
-            self.config['user_data']['carts_position'] = 'None'
+        if len(self.cars_position) == 0:
+            self.config['user_data']['cars_position'] = 'None'
         else:
             combined_string = ''
-            for i in self.carts_position:
+            for i in self.cars_position:
                 combined_string += '{},'.format(i)
 
             combined_string = combined_string[0:len(combined_string) - 1]
-            self.config['user_data']['carts_position'] = combined_string
+            self.config['user_data']['cars_position'] = combined_string
 
-        self.logger.debug('carts_position: {}'.format(self.config['user_data']['carts_position']))
+        self.logger.debug('cars_position: {}'.format(self.config['user_data']['cars_position']))
 
-        if len(self.carts_position_abs) == 0:
-            self.config['user_data']['carts_position_abs'] = 'None'
+        if len(self.cars_position_abs) == 0:
+            self.config['user_data']['cars_position_abs'] = 'None'
         else:
             combined_string = ''
-            for i in self.carts_position_abs:
+            for i in self.cars_position_abs:
                 combined_string += '{},{}|'.format(i[0], i[1])
 
             combined_string = combined_string[0:len(combined_string) - 1]
-            self.config['user_data']['carts_position_abs'] = combined_string
+            self.config['user_data']['cars_position_abs'] = combined_string
 
-        self.logger.debug('carts_position_abs: {}'.format(self.config['user_data']['carts_position_abs']))
+        self.logger.debug('cars_position_abs: {}'.format(self.config['user_data']['cars_position_abs']))
 
         with open('user_cfg/trains/train{}.ini'.format(self.train_id), 'w') as configfile:
             self.config.write(configfile)
@@ -174,74 +174,74 @@ class Train(GameObject):
 
     def init_train_position(self):
         self.logger.debug('------- START INIT TRAIN POSITION -------')
-        # each cart position is based on front and back chassis position
-        start_point_parsed = self.train_route.start_point_v2[self.carts]
+        # each car position is based on front and back chassis position
+        start_point_parsed = self.train_route.start_point_v2[self.cars]
         self.logger.debug('start point: {}'.format(start_point_parsed))
-        for i in range(self.carts):
-            self.carts_position.append(start_point_parsed - i * 251)
+        for i in range(self.cars):
+            self.cars_position.append(start_point_parsed - i * 251)
 
-        self.logger.debug('carts_position: {}'.format(self.carts_position))
+        self.logger.debug('cars_position: {}'.format(self.cars_position))
         self.logger.debug('------- START INIT TRAIN POSITION -------')
         self.logger.info('train position initialized')
 
-    def complete_train_route(self, convert_carts_positions=True):
+    def complete_train_route(self, convert_cars_positions=True):
         self.logger.debug('------- START COMPLETE_TRAIN_ROUTE FUNCTION -------')
         # when train reaches route destination point,
-        # we close the route and convert carts positions to absolute for next route
+        # we close the route and convert cars positions to absolute for next route
         self.train_route.close_train_route()
-        if convert_carts_positions:
-            self.logger.debug('converting cart positions to absolute')
-            self.carts_position_abs.clear()
-            for i in self.carts_position:
+        if convert_cars_positions:
+            self.logger.debug('converting car positions to absolute')
+            self.cars_position_abs.clear()
+            for i in self.cars_position:
                 dot = self.train_route.trail_points_v2[i]
-                self.carts_position_abs.append([dot[0], dot[1]])
+                self.cars_position_abs.append([dot[0], dot[1]])
 
-            self.logger.debug('cart positions converted to absolute: {}'.format(self.carts_position_abs))
-            self.carts_position.clear()
-            self.logger.debug('relative cart positions cleared')
+            self.logger.debug('car positions converted to absolute: {}'.format(self.cars_position_abs))
+            self.cars_position.clear()
+            self.logger.debug('relative car positions cleared')
 
         self.train_route = None
         self.logger.debug('train route cleared')
         self.logger.debug('------- END COMPLETE_TRAIN_ROUTE FUNCTION -------')
         self.logger.info('train route completed')
 
-    def assign_new_train_route(self, new_train_route, convert_carts_positions=True):
+    def assign_new_train_route(self, new_train_route, convert_cars_positions=True):
         self.logger.debug('------- START ASSIGNING NEW TRAIN ROUTE -------')
         # when new route is assigned,
-        # we open the route and convert carts positions to relative
+        # we open the route and convert cars positions to relative
         self.train_route = new_train_route
         self.train_route.open_train_route(self.train_id, self.priority)
-        if convert_carts_positions:
-            self.carts_position.clear()
-            self.logger.debug('converting cart positions to relative')
-            for i in self.carts_position_abs:
-                self.carts_position.append(abs(i[0] - self.train_route.trail_points_v2[0][0]))
+        if convert_cars_positions:
+            self.cars_position.clear()
+            self.logger.debug('converting car positions to relative')
+            for i in self.cars_position_abs:
+                self.cars_position.append(abs(i[0] - self.train_route.trail_points_v2[0][0]))
 
-            self.logger.debug('cart positions converted to relative: {}'.format(self.carts_position))
-            self.carts_position_abs.clear()
+            self.logger.debug('car positions converted to relative: {}'.format(self.cars_position))
+            self.cars_position_abs.clear()
 
-        self.stop_point = self.train_route.stop_point_v2[self.carts]
-        self.logger.debug('absolute cart positions cleared')
+        self.stop_point = self.train_route.stop_point_v2[self.cars]
+        self.logger.debug('absolute car positions cleared')
         self.logger.debug('------- END ASSIGNING NEW TRAIN ROUTE -------')
         self.logger.info('train route assigned')
 
     @_game_is_not_paused
     def update(self, game_paused):
         self.logger.debug('------- TRAIN UPDATE START -------')
-        self.logger.debug('carts: {}'.format(self.carts))
-        if self.carts < 9:
+        self.logger.debug('cars: {}'.format(self.cars))
+        if self.cars < 9:
             self.priority += 1
             self.logger.debug('increased priority by 1')
-        elif self.carts < 12:
+        elif self.cars < 12:
             self.priority += 2
             self.logger.debug('increased priority by 2')
-        elif self.carts < 15:
+        elif self.cars < 15:
             self.priority += 3
             self.logger.debug('increased priority by 3')
-        elif self.carts < 18:
+        elif self.cars < 18:
             self.priority += 4
             self.logger.debug('increased priority by 4')
-        elif self.carts < 21:
+        elif self.cars < 21:
             self.priority += 5
             self.logger.debug('increased priority by 5')
 
@@ -270,20 +270,20 @@ class Train(GameObject):
 
             # stop point is updated based on signal state
             if self.train_route.signal.state == 'red_signal' \
-                    and self.carts_position[0] <= self.train_route.stop_point_v2[self.carts]:
-                self.stop_point = self.train_route.stop_point_v2[self.carts]
+                    and self.cars_position[0] <= self.train_route.stop_point_v2[self.cars]:
+                self.stop_point = self.train_route.stop_point_v2[self.cars]
             else:
-                self.stop_point = self.train_route.destination_point_v2[self.carts]
+                self.stop_point = self.train_route.destination_point_v2[self.cars]
 
             self.logger.debug('stop point: {}'.format(self.stop_point))
 
             # if train has reached red signal, stop it
-            self.logger.debug('first cart position: {}'.format(self.carts_position[0]))
-            if self.carts_position[0] == self.stop_point:
+            self.logger.debug('first car position: {}'.format(self.cars_position[0]))
+            if self.cars_position[0] == self.stop_point:
                 self.speed_state = 'stop'
                 self.logger.debug('train reached red signal, speed state = {}'.format(self.speed_state))
             # if it is time to decelerate train, do this;
-            elif self.stop_point - self.carts_position[0] \
+            elif self.stop_point - self.cars_position[0] \
                     <= self.c.train_acceleration_factor[self.speed_factor_position]:
                 self.speed_state = 'decelerate'
                 self.logger.debug('distance less than {}, time to decelerate, speed state = {}'
@@ -346,11 +346,11 @@ class Train(GameObject):
                 self.logger.debug('speed_factor_position = 0')
 
             # apply changes
-            self.logger.debug('cart old position: {}'.format(self.carts_position))
-            for i in range(len(self.carts_position)):
-                self.carts_position[i] += self.speed
+            self.logger.debug('car old position: {}'.format(self.cars_position))
+            for i in range(len(self.cars_position)):
+                self.cars_position[i] += self.speed
 
-            self.logger.debug('cart new position: {}'.format(self.carts_position))
+            self.logger.debug('car new position: {}'.format(self.cars_position))
 
         self.logger.debug('------- TRAIN UPDATE END -------')
         self.logger.info('train updated')
@@ -360,105 +360,103 @@ class Train(GameObject):
         # calculate middle point and axis,
         # but for relative position we need to convert it to absolute positions
         self.logger.debug('------- START DRAWING -------')
-        if len(self.carts_position_abs) > 0:
+        if len(self.cars_position_abs) > 0:
             self.logger.debug('using absolute positions')
-            for i in range(len(self.carts_position_abs)):
-                self.update_single_cart_sprite_abs(i, base_offset)
-                self.logger.debug('cart {} is in place'.format(i + 1))
+            for i in range(len(self.cars_position_abs)):
+                self.update_single_car_sprite_abs(i, base_offset)
+                self.logger.debug('car {} is in place'.format(i + 1))
 
         else:
             self.logger.debug('using relative positions')
-            for i in range(len(self.carts_position)):
-                self.update_single_cart_sprite(i, base_offset)
-                self.logger.debug('cart {} is in place'.format(i + 1))
+            for i in range(len(self.cars_position)):
+                self.update_single_car_sprite(i, base_offset)
+                self.logger.debug('car {} is in place'.format(i + 1))
 
         self.logger.debug('------- END DRAWING -------')
         self.logger.info('train is in place')
 
-    def update_single_cart_sprite(self, cart_number, base_offset):
-        dot = self.train_route.trail_points_v2[self.carts_position[cart_number]]
+    def update_single_car_sprite(self, car_number, base_offset):
+        dot = self.train_route.trail_points_v2[self.cars_position[car_number]]
         x = base_offset[0] + dot[0]
         y = base_offset[1] + dot[1]
-        self.logger.debug('dot for cart {}: {}'.format(cart_number, dot))
-        if (x not in range(-150, self.c.screen_resolution[0] + 150)
-            or y not in range(-100, self.c.screen_resolution[0] + 100)) \
-                and self.cart_sprites[cart_number] is not None:
-            self.cart_sprites[cart_number].delete()
-            self.cart_sprites[cart_number] = None
-            if cart_number in range(1, self.carts - 1):
-                self.boarding_light_sprites[cart_number].delete()
-                self.boarding_light_sprites[cart_number] = None
+        self.logger.debug('dot for car {}: {}'.format(car_number, dot))
+        if not self.car_is_visible(x, y, dx=150, dy=100) and self.car_sprites[car_number] is not None:
+            self.car_sprites[car_number].delete()
+            self.car_sprites[car_number] = None
+            if car_number in range(1, self.cars - 1):
+                self.boarding_light_sprites[car_number].delete()
+                self.boarding_light_sprites[car_number] = None
 
-        if (x in range(-150, self.c.screen_resolution[0] + 150)
-            and y in range(-100, self.c.screen_resolution[0] + 100)) \
-                and self.cart_sprites[cart_number] is None:
-            if cart_number == 0:
-                self.cart_sprites[cart_number] = Sprite(self.head_image[self.current_direction],
-                                                        batch=self.batch, group=self.group)
-            elif cart_number == self.carts - 1:
-                self.cart_sprites[cart_number] = Sprite(self.tail_image[self.current_direction],
-                                                        batch=self.batch, group=self.group)
+        if self.car_is_visible(x, y, dx=150, dy=100) and self.car_sprites[car_number] is None:
+            if car_number == 0:
+                self.car_sprites[car_number] = Sprite(self.head_image[self.current_direction],
+                                                      batch=self.batch, group=self.group)
+            elif car_number == self.cars - 1:
+                self.car_sprites[car_number] = Sprite(self.tail_image[self.current_direction],
+                                                      batch=self.batch, group=self.group)
             else:
-                self.cart_sprites[cart_number] = Sprite(self.mid_image[self.current_direction],
-                                                        batch=self.batch, group=self.group)
-                self.boarding_light_sprites[cart_number] = Sprite(self.boarding_lights_image,
-                                                                  batch=self.batch, group=self.boarding_lights_group)
+                self.car_sprites[car_number] = Sprite(self.mid_image[self.current_direction],
+                                                      batch=self.batch, group=self.group)
+                self.boarding_light_sprites[car_number] = Sprite(self.boarding_lights_image,
+                                                                 batch=self.batch, group=self.boarding_lights_group)
 
-        if self.boarding_light_sprites[cart_number] is not None:
-            self.boarding_light_sprites[cart_number].visible = False
+        if self.boarding_light_sprites[car_number] is not None:
+            self.boarding_light_sprites[car_number].visible = False
 
-        if self.cart_sprites[cart_number] is not None:
-            self.cart_sprites[cart_number].update(x, y, dot[2])
+        if self.car_sprites[car_number] is not None:
+            self.car_sprites[car_number].update(x, y, dot[2])
 
-        if self.boarding_light_sprites[cart_number] is not None:
-            self.boarding_light_sprites[cart_number].position = (x, y)
+        if self.boarding_light_sprites[car_number] is not None:
+            self.boarding_light_sprites[car_number].position = (x, y)
 
-    def update_single_cart_sprite_abs(self, cart_number, base_offset):
-        x = base_offset[0] + self.carts_position_abs[cart_number][0]
-        y = base_offset[1] + self.carts_position_abs[cart_number][1]
-        if (x not in range(-150, self.c.screen_resolution[0] + 150)
-            or y not in range(-25, self.c.screen_resolution[0] + 25)) \
-                and self.cart_sprites[cart_number] is not None:
-            self.cart_sprites[cart_number].delete()
-            self.cart_sprites[cart_number] = None
-            if cart_number in range(1, self.carts - 1):
-                self.boarding_light_sprites[cart_number].delete()
-                self.boarding_light_sprites[cart_number] = None
+    def update_single_car_sprite_abs(self, car_number, base_offset):
+        x = base_offset[0] + self.cars_position_abs[car_number][0]
+        y = base_offset[1] + self.cars_position_abs[car_number][1]
+        if not self.car_is_visible(x, y, dx=150, dy=25) and self.car_sprites[car_number] is not None:
+            self.car_sprites[car_number].delete()
+            self.car_sprites[car_number] = None
+            if car_number in range(1, self.cars - 1):
+                self.boarding_light_sprites[car_number].delete()
+                self.boarding_light_sprites[car_number] = None
 
-        if (x in range(-150, self.c.screen_resolution[0] + 150)
-            and y in range(-25, self.c.screen_resolution[0] + 25)) \
-                and self.cart_sprites[cart_number] is None:
-            if cart_number == 0:
-                self.cart_sprites[cart_number] = Sprite(self.head_image[self.current_direction],
-                                                        batch=self.batch, group=self.group)
-            elif cart_number == self.carts - 1:
-                self.cart_sprites[cart_number] = Sprite(self.tail_image[self.current_direction],
-                                                        batch=self.batch, group=self.group)
+        if self.car_is_visible(x, y, dx=150, dy=25) and self.car_sprites[car_number] is None:
+            if car_number == 0:
+                self.car_sprites[car_number] = Sprite(self.head_image[self.current_direction],
+                                                      batch=self.batch, group=self.group)
+            elif car_number == self.cars - 1:
+                self.car_sprites[car_number] = Sprite(self.tail_image[self.current_direction],
+                                                      batch=self.batch, group=self.group)
             else:
-                self.cart_sprites[cart_number] = Sprite(self.mid_image[self.current_direction],
-                                                        batch=self.batch, group=self.group)
-                self.boarding_light_sprites[cart_number] = Sprite(self.boarding_lights_image,
-                                                                  batch=self.batch, group=self.boarding_lights_group)
+                self.car_sprites[car_number] = Sprite(self.mid_image[self.current_direction],
+                                                      batch=self.batch, group=self.group)
+                self.boarding_light_sprites[car_number] = Sprite(self.boarding_lights_image,
+                                                                 batch=self.batch, group=self.boarding_lights_group)
 
-        if self.boarding_light_sprites[cart_number] is not None:
+        if self.boarding_light_sprites[car_number] is not None:
             if self.state == 'boarding_in_progress' and self.boarding_time > 5:
-                self.boarding_light_sprites[cart_number].visible = True
+                self.boarding_light_sprites[car_number].visible = True
             else:
-                self.boarding_light_sprites[cart_number].visible = False
+                self.boarding_light_sprites[car_number].visible = False
 
-        if self.cart_sprites[cart_number] is not None:
-            self.cart_sprites[cart_number].update(x, y, 0)
+        if self.car_sprites[car_number] is not None:
+            self.car_sprites[car_number].update(x, y, 0)
 
-        if self.boarding_light_sprites[cart_number] is not None:
-            self.boarding_light_sprites[cart_number].position = (x, y)
+        if self.boarding_light_sprites[car_number] is not None:
+            self.boarding_light_sprites[car_number].position = (x, y)
 
     def switch_direction(self):
         self.current_direction = self.new_direction
-        self.carts_position_abs = list(reversed(self.carts_position_abs))
-        self.cart_sprites[0].image = self.head_image[self.current_direction]
-        for i in range(1, self.carts - 1):
-            if self.cart_sprites[i] is not None:
-                self.cart_sprites[i].image = self.mid_image[self.current_direction]
+        self.cars_position_abs = list(reversed(self.cars_position_abs))
+        self.car_sprites[0].image = self.head_image[self.current_direction]
+        for i in range(1, self.cars - 1):
+            if self.car_sprites[i] is not None:
+                self.car_sprites[i].image = self.mid_image[self.current_direction]
 
-        if self.cart_sprites[self.carts - 1] is not None:
-            self.cart_sprites[self.carts - 1].image = self.tail_image[self.current_direction]
+        if self.car_sprites[self.cars - 1] is not None:
+            self.car_sprites[self.cars - 1].image = self.tail_image[self.current_direction]
+
+    def car_is_visible(self, x, y, dx, dy):
+        if x in range(-dx, self.c.screen_resolution[0] + dx) and y in range(-dy, self.c.screen_resolution[0] + dy):
+            return True
+        else:
+            return False
