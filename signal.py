@@ -17,11 +17,11 @@ def _game_is_not_paused(fn):
 
 
 def _signal_is_not_locked(fn):
-    def _update_sprite_if_signal_is_not_locked(*args, **kwargs):
+    def _update_if_signal_is_not_locked(*args, **kwargs):
         if not args[0].locked:
             fn(*args, **kwargs)
 
-    return _update_sprite_if_signal_is_not_locked
+    return _update_if_signal_is_not_locked
 
 
 def _signal_is_not_already_green(fn):
@@ -79,7 +79,7 @@ class Signal(GameObject):
     def read_state(self):
         self.logger.debug('------- START READING STATE -------')
         if path.exists('user_cfg/signals/track{}/track{}_{}.ini'
-                          .format(self.track_number, self.track_number, self.route_type)):
+                       .format(self.track_number, self.track_number, self.route_type)):
             self.config.read('user_cfg/signals/track{}/track{}_{}.ini'
                              .format(self.track_number, self.track_number, self.route_type))
             self.logger.debug('config parsed from user_cfg')

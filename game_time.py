@@ -16,6 +16,14 @@ def _game_is_not_paused(fn):
     return _update_if_game_is_not_paused
 
 
+def _one_minute_has_passed(fn):
+    def _update_if_one_minute_has_passed(*args, **kwargs):
+        if args[0].epoch_timestamp % 240 == 0:
+            fn(*args, **kwargs)
+
+    return _update_if_one_minute_has_passed
+
+
 class GameTime(GameObject):
     def __init__(self, batch, day_text_group, game_config):
         super().__init__(game_config)
@@ -75,9 +83,9 @@ class GameTime(GameObject):
         self.logger.debug('------- END SAVING STATE -------')
         self.logger.info('time state saved to file user_cfg/epoch_time.ini')
 
+    @_one_minute_has_passed
     def update_sprite(self, base_offset):
-        if self.epoch_timestamp % 240 == 0:
-            self.time_text.text = '{0:0>2} : {1:0>2}'.format(self.hour, self.minute)
+        self.time_text.text = '{0:0>2} : {1:0>2}'.format(self.hour, self.minute)
 
     @_game_is_not_paused
     def update(self, game_paused):
