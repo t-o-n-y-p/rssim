@@ -447,7 +447,9 @@ class Train(GameObject):
     def switch_direction(self):
         self.current_direction = self.new_direction
         self.cars_position_abs = list(reversed(self.cars_position_abs))
-        self.car_sprites[0].image = self.head_image[self.current_direction]
+        if self.car_sprites[0] is not None:
+            self.car_sprites[0].image = self.head_image[self.current_direction]
+
         for i in range(1, self.cars - 1):
             if self.car_sprites[i] is not None:
                 self.car_sprites[i].image = self.mid_image[self.current_direction]
