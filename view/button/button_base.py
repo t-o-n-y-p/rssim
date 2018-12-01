@@ -46,14 +46,14 @@ def _button_is_pressed(fn):
 
 
 class Button:
-    def __init__(self, game_config, surface, batch, groups):
+    def __init__(self, user_db_connection, surface, batch, groups):
         self.is_activated = False
         self.to_activate_on_controller_init = None
         self.state = 'normal'
         self.surface = surface
         self.batch = batch
         self.groups = groups
-        self.game_config = game_config
+        self.user_db_connection = user_db_connection
         self.paired_button = None
         self.border_sprite_image = None
         self.border_sprite = None

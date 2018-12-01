@@ -1,5 +1,6 @@
 from ctypes import c_long
 from sys import exit
+import sqlite3
 
 from pyglet import gl
 from pyglet.window import Window
@@ -20,6 +21,7 @@ class RSSim:
             raise VideoAdapterNotSupportedException
 
         self.game_config = GameConfig()
+        self.user_db_connection = sqlite3.connect('db/user.db').cursor()
         gl.glEnable(gl.GL_BLEND)
         gl.glBlendFunc(gl.GL_SRC_ALPHA, gl.GL_ONE_MINUS_SRC_ALPHA)
         self.batch = Batch()
@@ -47,8 +49,8 @@ class RSSim:
                          caption='Railway Station Simulator', style='borderless', fullscreen=False,
                          vsync=self.game_config.vsync)
         self.surface = surface
-        self.app_controller = create_app(game_config=self.game_config, surface=self.surface, batch=self.batch,
-                                         groups=self.groups)
+        self.app_controller = create_app(user_db_connection=self.user_db_connection, surface=self.surface,
+                                         batch=self.batch, groups=self.groups)
 
         @surface.event
         def on_draw():

@@ -5,7 +5,7 @@ from .button import CloseGameButton, IconifyGameButton, FullscreenButton, Restor
 
 
 class AppView(View):
-    def __init__(self, game_config, surface, batch, groups):
+    def __init__(self, user_db_connection, surface, batch, groups):
         def on_close_game(button):
             self.controller.on_close_game()
 
@@ -22,18 +22,19 @@ class AppView(View):
             button.paired_button.on_activate()
             self.controller.on_fullscreen_mode_turned_off()
 
-        super().__init__(game_config, surface, batch, groups)
+        super().__init__(user_db_connection, surface, batch, groups)
         self.screen_resolution = None
         self.main_frame = None
         self.main_frame_sprite = None
-        self.buttons.append(CloseGameButton(game_config=self.game_config, surface=self.surface, batch=self.batch,
-                                            groups=self.groups, on_click_action=on_close_game))
-        self.buttons.append(IconifyGameButton(game_config=self.game_config, surface=self.surface, batch=self.batch,
-                                              groups=self.groups, on_click_action=on_iconify_game))
-        fullscreen_button = FullscreenButton(game_config=self.game_config, surface=self.surface, batch=self.batch,
-                                             groups=self.groups, on_click_action=on_app_window_fullscreen)
-        restore_button = RestoreButton(game_config=self.game_config, surface=self.surface, batch=self.batch,
-                                       groups=self.groups, on_click_action=on_app_window_restore)
+        self.buttons.append(CloseGameButton(user_db_connection=self.user_db_connection, surface=self.surface,
+                                            batch=self.batch, groups=self.groups, on_click_action=on_close_game))
+        self.buttons.append(IconifyGameButton(user_db_connection=self.user_db_connection, surface=self.surface,
+                                              batch=self.batch, groups=self.groups, on_click_action=on_iconify_game))
+        fullscreen_button = FullscreenButton(user_db_connection=self.user_db_connection, surface=self.surface,
+                                             batch=self.batch, groups=self.groups,
+                                             on_click_action=on_app_window_fullscreen)
+        restore_button = RestoreButton(user_db_connection=self.user_db_connection, surface=self.surface,
+                                       batch=self.batch, groups=self.groups, on_click_action=on_app_window_restore)
         fullscreen_button.paired_button = restore_button
         restore_button.paired_button = fullscreen_button
         self.buttons.append(fullscreen_button)

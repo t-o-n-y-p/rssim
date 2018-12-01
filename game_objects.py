@@ -3,10 +3,10 @@ from model import AppModel
 from view import AppView
 
 
-def create_app(game_config, surface, batch, groups):
+def create_app(user_db_connection, surface, batch, groups):
     controller = AppController()
-    model = AppModel(game_config)
-    view = AppView(game_config, surface, batch, groups)
+    model = AppModel(user_db_connection)
+    view = AppView(user_db_connection, surface, batch, groups)
     controller.model = model
     controller.view = view
     view.on_assign_controller(controller)

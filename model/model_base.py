@@ -15,10 +15,10 @@ def _model_is_not_activated(fn):
 
 
 class Model:
-    def __init__(self, game_config):
+    def __init__(self, user_db_connection):
         self.view = None
         self.is_activated = False
-        self.game_config = game_config
+        self.user_db_connection = user_db_connection
 
     def on_update(self):
         pass
