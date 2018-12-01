@@ -15,9 +15,8 @@ def _view_is_not_activated(fn):
 
 
 class View:
-    def __init__(self, user_db_connection, surface, batch, groups):
+    def __init__(self, surface, batch, groups):
         self.controller = None
-        self.user_db_connection = user_db_connection
         self.surface = surface
         self.batch = batch
         self.groups = groups

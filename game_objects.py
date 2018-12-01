@@ -6,7 +6,7 @@ from view import AppView
 def create_app(user_db_connection, surface, batch, groups):
     controller = AppController()
     model = AppModel(user_db_connection)
-    view = AppView(user_db_connection, surface, batch, groups)
+    view = AppView(surface, batch, groups)
     controller.model = model
     controller.view = view
     view.on_assign_controller(controller)
