@@ -8,7 +8,6 @@ from pyglet.graphics import Batch, OrderedGroup
 from win32api import MessageBoxEx
 import win32con
 
-from game_config import GameConfig
 from exceptions import VideoAdapterNotSupportedException
 from game_objects import create_app
 
@@ -20,7 +19,6 @@ class RSSim:
         if max_texture_size.value < 8192:
             raise VideoAdapterNotSupportedException
 
-        self.game_config = GameConfig()
         self.user_db_connection = sqlite3.connect('db/user.db').cursor()
         gl.glEnable(gl.GL_BLEND)
         gl.glBlendFunc(gl.GL_SRC_ALPHA, gl.GL_ONE_MINUS_SRC_ALPHA)
@@ -45,9 +43,13 @@ class RSSim:
         self.groups['exp_money_time'] = numbered_groups[7]
         self.groups['button_text'] = numbered_groups[8]
         self.groups['button_border'] = numbered_groups[8]
-        surface = Window(width=self.game_config.screen_resolution[0], height=self.game_config.screen_resolution[1],
-                         caption='Railway Station Simulator', style='borderless', fullscreen=False,
-                         vsync=self.game_config.vsync)
+        self.user_db_connection.execute('SELECT app_width, app_height FROM graphics_config')
+        screen_resolution = self.user_db_connection.fetchone()
+        self.user_db_connection.execute('SELECT fullscreen FROM graphics_config')
+        fullscreen_mode = bool(self.user_db_connection.fetchone()[0])
+        surface = Window(width=screen_resolution[0], height=screen_resolution[1],
+                         caption='Railway Station Simulator', style='borderless', fullscreen=fullscreen_mode,
+                         vsync=False)
         self.surface = surface
         self.app_controller = create_app(user_db_connection=self.user_db_connection, surface=self.surface,
                                          batch=self.batch, groups=self.groups)
