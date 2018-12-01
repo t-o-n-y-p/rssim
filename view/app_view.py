@@ -9,8 +9,7 @@ from .button import CloseGameButton, IconifyGameButton, FullscreenButton, Restor
 class AppView(View):
     def __init__(self, game_config, surface, batch, groups):
         def on_close_game(button):
-            self.surface.close()
-            exit()
+            self.controller.on_deactivate()
 
         def on_iconify_game(button):
             self.surface.minimize()
@@ -36,7 +35,7 @@ class AppView(View):
         fullscreen_button = FullscreenButton(game_config=self.game_config, surface=self.surface, batch=self.batch,
                                              groups=self.groups, on_click_action=on_app_window_fullscreen)
         restore_button = RestoreButton(game_config=self.game_config, surface=self.surface, batch=self.batch,
-                                          groups=self.groups, on_click_action=on_app_window_restore)
+                                       groups=self.groups, on_click_action=on_app_window_restore)
         fullscreen_button.paired_button = restore_button
         restore_button.paired_button = fullscreen_button
         self.buttons.append(fullscreen_button)
@@ -65,6 +64,8 @@ class AppView(View):
 
     def on_deactivate(self):
         self.is_activated = False
+        for b in self.buttons:
+            b.on_deactivate()
 
     def on_change_screen_resolution(self, screen_resolution):
         self.screen_resolution = screen_resolution
@@ -72,3 +73,6 @@ class AppView(View):
                                                                             self.screen_resolution[1]))
         if self.is_activated:
             self.main_frame_sprite.image = self.main_frame
+
+        for b in self.buttons:
+            b.on_position_changed((self.screen_resolution[0] - b.x_margin, self.screen_resolution[1] - b.y_margin))

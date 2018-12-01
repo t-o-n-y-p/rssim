@@ -1,3 +1,22 @@
+from sys import exit
+
+
+def _controller_is_activated(fn):
+    def _handle_if_controller_is_activated(*args, **kwargs):
+        if args[0].is_activated:
+            fn(*args, **kwargs)
+
+    return _handle_if_controller_is_activated
+
+
+def _controller_is_not_activated(fn):
+    def _handle_if_controller_is_not_activated(*args, **kwargs):
+        if not args[0].is_activated:
+            fn(*args, **kwargs)
+
+    return _handle_if_controller_is_not_activated
+
+
 class Controller:
     def __init__(self, parent_controller=None):
         self.model = None
@@ -24,6 +43,7 @@ class Controller:
         for controller in self.child_controllers:
             controller.on_update_view()
 
+    @_controller_is_not_activated
     def on_activate(self):
         self.is_activated = True
         self.model.on_activate()
@@ -31,12 +51,16 @@ class Controller:
         for controller in self.init_controllers:
             controller.on_activate()
 
+    @_controller_is_activated
     def on_deactivate(self):
         self.is_activated = False
         self.model.on_deactivate()
         self.view.on_deactivate()
         for controller in self.child_controllers:
             controller.on_deactivate()
+
+        if self.parent_controller is None:
+            exit()
 
     def on_activate_child_controller(self, controller):
         if controller in self.exclusive_child_controllers:

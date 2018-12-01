@@ -1,3 +1,19 @@
+def _view_is_activated(fn):
+    def _handle_if_view_is_activated(*args, **kwargs):
+        if args[0].is_activated:
+            fn(*args, **kwargs)
+
+    return _handle_if_view_is_activated
+
+
+def _view_is_not_activated(fn):
+    def _handle_if_view_is_not_activated(*args, **kwargs):
+        if not args[0].is_activated:
+            fn(*args, **kwargs)
+
+    return _handle_if_view_is_not_activated
+
+
 class View:
     def __init__(self, game_config, surface, batch, groups):
         self.controller = None
@@ -11,9 +27,11 @@ class View:
     def on_update(self):
         pass
 
+    @_view_is_not_activated
     def on_activate(self):
         pass
 
+    @_view_is_activated
     def on_deactivate(self):
         pass
 

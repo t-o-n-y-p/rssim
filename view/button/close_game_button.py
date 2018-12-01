@@ -14,6 +14,9 @@ class CloseGameButton(Button):
         self.font_name = 'Webdings'
         self.is_bold = False
         self.font_size = 16
-        self.position = (self.game_config.screen_resolution[0] - 34, self.game_config.screen_resolution[1] - 34)
+        self.x_margin = 34
+        self.y_margin = 34
+        self.position = (self.game_config.screen_resolution[0] - self.x_margin,
+                         self.game_config.screen_resolution[1] - self.y_margin)
         self.button_size = (34, 34)
         self.on_click_action = on_click_action

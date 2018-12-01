@@ -4,12 +4,20 @@ from pyglet.text import Label
 from pyglet.window import mouse
 
 
+def _button_is_not_activated(fn):
+    def _handle_if_is_not_activated(*args, **kwargs):
+        if not args[0].is_activated:
+            fn(*args, **kwargs)
+
+    return _handle_if_is_not_activated
+
+
 def _button_is_activated(fn):
-    def _handle_mouse_if_is_activated(*args, **kwargs):
+    def _handle_if_is_activated(*args, **kwargs):
         if args[0].is_activated:
             fn(*args, **kwargs)
 
-    return _handle_mouse_if_is_activated
+    return _handle_if_is_activated
 
 
 def _left_mouse_button(fn):
@@ -61,6 +69,7 @@ class Button:
         self.hand_cursor = self.surface.get_system_mouse_cursor(surface.CURSOR_HAND)
         self.default_cursor = self.surface.get_system_mouse_cursor(surface.CURSOR_DEFAULT)
 
+    @_button_is_not_activated
     def on_activate(self):
         self.is_activated = True
         self.vertex_list = self.batch.add(4, gl.GL_QUADS, self.groups['button_background'],
@@ -81,6 +90,7 @@ class Button:
                                      anchor_x='center', anchor_y='center', batch=self.batch,
                                      group=self.groups['button_text'])
 
+    @_button_is_activated
     def on_deactivate(self):
         self.is_activated = False
         self.vertex_list.delete()
