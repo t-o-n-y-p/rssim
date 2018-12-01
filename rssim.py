@@ -44,7 +44,8 @@ class RSSim:
         self.groups['button_text'] = numbered_groups[8]
         self.groups['button_border'] = numbered_groups[8]
         surface = Window(width=self.game_config.screen_resolution[0], height=self.game_config.screen_resolution[1],
-                         caption='Railway Station Simulator', style='borderless', vsync=self.game_config.vsync)
+                         caption='Railway Station Simulator', style='borderless', fullscreen=False,
+                         vsync=self.game_config.vsync)
         self.surface = surface
         self.app_controller = create_app(game_config=self.game_config, surface=self.surface, batch=self.batch,
                                          groups=self.groups)

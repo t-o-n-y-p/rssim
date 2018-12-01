@@ -2,7 +2,7 @@ from .button_base import Button
 from pyglet.image import load
 
 
-class IconifyGameButton(Button):
+class FullscreenButton(Button):
     def __init__(self, game_config, surface, batch, groups, on_click_action):
         super().__init__(game_config, surface, batch, groups)
         self.is_activated = True
@@ -10,10 +10,10 @@ class IconifyGameButton(Button):
         self.border_sprite = None
         self.vertex_list = None
         self.text_object = None
-        self.text = ''
+        self.text = ''
         self.font_name = 'Webdings'
         self.is_bold = False
         self.font_size = 16
-        self.position = (self.game_config.screen_resolution[0] - 98, self.game_config.screen_resolution[1] - 34)
+        self.position = (self.game_config.screen_resolution[0] - 66, self.game_config.screen_resolution[1] - 34)
         self.button_size = (34, 34)
         self.on_click_action = on_click_action

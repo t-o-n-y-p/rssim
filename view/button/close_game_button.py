@@ -17,4 +17,3 @@ class CloseGameButton(Button):
         self.position = (self.game_config.screen_resolution[0] - 34, self.game_config.screen_resolution[1] - 34)
         self.button_size = (34, 34)
         self.on_click_action = on_click_action
-        self.on_activate()

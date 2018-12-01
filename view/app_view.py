@@ -3,7 +3,7 @@ from sys import exit
 from .view_base import View
 from pyglet.image import load
 from pyglet.sprite import Sprite
-from .button import CloseGameButton, IconifyGameButton
+from .button import CloseGameButton, IconifyGameButton, FullscreenButton, RestoreButton
 
 
 class AppView(View):
@@ -15,6 +15,16 @@ class AppView(View):
         def on_iconify_game(button):
             self.surface.minimize()
 
+        def on_app_window_fullscreen(button):
+            button.on_deactivate()
+            button.paired_button.on_activate()
+            self.surface.set_fullscreen(fullscreen=True)
+
+        def on_app_window_restore(button):
+            button.on_deactivate()
+            button.paired_button.on_activate()
+            self.surface.set_fullscreen(fullscreen=False)
+
         super().__init__(game_config, surface, batch, groups)
         self.is_activated = True
         self.screen_resolution = self.game_config.screen_resolution
@@ -24,6 +34,14 @@ class AppView(View):
                                             groups=self.groups, on_click_action=on_close_game))
         self.buttons.append(IconifyGameButton(game_config=self.game_config, surface=self.surface, batch=self.batch,
                                               groups=self.groups, on_click_action=on_iconify_game))
+        fullscreen_button = FullscreenButton(game_config=self.game_config, surface=self.surface, batch=self.batch,
+                                             groups=self.groups, on_click_action=on_app_window_fullscreen)
+        restore_button = RestoreButton(game_config=self.game_config, surface=self.surface, batch=self.batch,
+                                          groups=self.groups, on_click_action=on_app_window_restore)
+        fullscreen_button.paired_button = restore_button
+        restore_button.paired_button = fullscreen_button
+        self.buttons.append(fullscreen_button)
+        self.buttons.append(restore_button)
 
     def on_update(self):
         if self.is_activated and self.main_frame_sprite.opacity < 255:
@@ -42,6 +60,9 @@ class AppView(View):
                                                                             self.screen_resolution[1]))
         self.main_frame_sprite = Sprite(self.main_frame, x=0, y=0, batch=self.batch, group=self.groups['main_frame'])
         self.main_frame_sprite.opacity = 0
+        for b in self.buttons:
+            if b.is_activated:
+                b.on_activate()
 
     def on_deactivate(self):
         self.is_activated = False
