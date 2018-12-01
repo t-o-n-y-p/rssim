@@ -30,15 +30,15 @@ class AppView(View):
                                             batch=self.batch, groups=self.groups, on_click_action=on_close_game))
         self.buttons.append(IconifyGameButton(surface=self.surface,
                                               batch=self.batch, groups=self.groups, on_click_action=on_iconify_game))
-        fullscreen_button = FullscreenButton(surface=self.surface,
-                                             batch=self.batch, groups=self.groups,
-                                             on_click_action=on_app_window_fullscreen)
-        restore_button = RestoreButton(surface=self.surface,
-                                       batch=self.batch, groups=self.groups, on_click_action=on_app_window_restore)
-        fullscreen_button.paired_button = restore_button
-        restore_button.paired_button = fullscreen_button
-        self.buttons.append(fullscreen_button)
-        self.buttons.append(restore_button)
+        self.fullscreen_button = FullscreenButton(surface=self.surface,
+                                                  batch=self.batch, groups=self.groups,
+                                                  on_click_action=on_app_window_fullscreen)
+        self.restore_button = RestoreButton(surface=self.surface,
+                                            batch=self.batch, groups=self.groups, on_click_action=on_app_window_restore)
+        self.fullscreen_button.paired_button = self.restore_button
+        self.restore_button.paired_button = self.fullscreen_button
+        self.buttons.append(self.fullscreen_button)
+        self.buttons.append(self.restore_button)
 
     def on_update(self):
         if self.is_activated and self.main_frame_sprite.opacity < 255:
@@ -79,3 +79,4 @@ class AppView(View):
 
     def on_fullscreen_mode_turned_off(self):
         self.surface.set_fullscreen(fullscreen=False)
+        self.surface.set_size(self.screen_resolution[0], self.screen_resolution[1])
