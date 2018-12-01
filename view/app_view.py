@@ -1,5 +1,3 @@
-from sys import exit
-
 from .view_base import View
 from pyglet.image import load
 from pyglet.sprite import Sprite
@@ -17,15 +15,15 @@ class AppView(View):
         def on_app_window_fullscreen(button):
             button.on_deactivate()
             button.paired_button.on_activate()
-            self.surface.set_fullscreen(fullscreen=True)
+            self.controller.on_fullscreen_mode_turned_on()
 
         def on_app_window_restore(button):
             button.on_deactivate()
             button.paired_button.on_activate()
-            self.surface.set_fullscreen(fullscreen=False)
+            self.controller.on_fullscreen_mode_turned_off()
 
         super().__init__(game_config, surface, batch, groups)
-        self.screen_resolution = self.game_config.screen_resolution
+        self.screen_resolution = None
         self.main_frame = None
         self.main_frame_sprite = None
         self.buttons.append(CloseGameButton(game_config=self.game_config, surface=self.surface, batch=self.batch,
@@ -54,8 +52,6 @@ class AppView(View):
 
     def on_activate(self):
         self.is_activated = True
-        self.main_frame = load('img/main_frame/main_frame_{}_{}.png'.format(self.screen_resolution[0],
-                                                                            self.screen_resolution[1]))
         self.main_frame_sprite = Sprite(self.main_frame, x=0, y=0, batch=self.batch, group=self.groups['main_frame'])
         self.main_frame_sprite.opacity = 0
         for b in self.buttons:
@@ -76,3 +72,9 @@ class AppView(View):
 
         for b in self.buttons:
             b.on_position_changed((self.screen_resolution[0] - b.x_margin, self.screen_resolution[1] - b.y_margin))
+
+    def on_fullscreen_mode_turned_on(self):
+        self.surface.set_fullscreen(fullscreen=True)
+
+    def on_fullscreen_mode_turned_off(self):
+        self.surface.set_fullscreen(fullscreen=False)
