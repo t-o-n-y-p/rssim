@@ -39,7 +39,8 @@ def _button_is_pressed(fn):
 
 class Button:
     def __init__(self, game_config, surface, batch, groups):
-        self.is_activated = None
+        self.is_activated = False
+        self.to_activate_on_controller_init = None
         self.state = 'normal'
         self.surface = surface
         self.batch = batch

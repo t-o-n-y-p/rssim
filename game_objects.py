@@ -9,7 +9,9 @@ def create_app(game_config, surface, batch, groups):
     view = AppView(game_config, surface, batch, groups)
     controller.model = model
     controller.view = view
-    controller.on_activate()
+    if controller.to_be_activated_during_startup:
+        controller.on_activate()
+
     view.on_assign_controller(controller)
     model.on_assign_view(view)
     return controller

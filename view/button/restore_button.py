@@ -5,7 +5,7 @@ from pyglet.image import load
 class RestoreButton(Button):
     def __init__(self, game_config, surface, batch, groups, on_click_action):
         super().__init__(game_config, surface, batch, groups)
-        self.is_activated = False
+        self.to_activate_on_controller_init = False
         self.border_sprite_image = load('img/button_borders/button_border_34_34.png')
         self.border_sprite = None
         self.vertex_list = None

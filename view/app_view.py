@@ -26,7 +26,6 @@ class AppView(View):
             self.surface.set_fullscreen(fullscreen=False)
 
         super().__init__(game_config, surface, batch, groups)
-        self.is_activated = True
         self.screen_resolution = self.game_config.screen_resolution
         self.main_frame = None
         self.main_frame_sprite = None
@@ -61,7 +60,7 @@ class AppView(View):
         self.main_frame_sprite = Sprite(self.main_frame, x=0, y=0, batch=self.batch, group=self.groups['main_frame'])
         self.main_frame_sprite.opacity = 0
         for b in self.buttons:
-            if b.is_activated:
+            if b.to_activate_on_controller_init:
                 b.on_activate()
 
     def on_deactivate(self):
@@ -69,5 +68,7 @@ class AppView(View):
 
     def on_change_screen_resolution(self, screen_resolution):
         self.screen_resolution = screen_resolution
-        self.main_frame_sprite.image = load('img/main_frame/main_frame_{}_{}.png'.format(self.screen_resolution[0],
-                                                                                         self.screen_resolution[1]))
+        self.main_frame = load('img/main_frame/main_frame_{}_{}.png'.format(self.screen_resolution[0],
+                                                                            self.screen_resolution[1]))
+        if self.is_activated:
+            self.main_frame_sprite.image = self.main_frame

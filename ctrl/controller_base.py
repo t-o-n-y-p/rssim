@@ -2,6 +2,8 @@ class Controller:
     def __init__(self, parent_controller=None):
         self.model = None
         self.view = None
+        self.to_be_activated_during_startup = None
+        self.is_activated = False
         self.parent_controller = parent_controller
         self.child_controllers = []
         self.exclusive_child_controllers = []
@@ -23,12 +25,14 @@ class Controller:
             controller.on_update_view()
 
     def on_activate(self):
+        self.is_activated = True
         self.model.on_activate()
         self.view.on_activate()
         for controller in self.init_controllers:
             controller.on_activate()
 
     def on_deactivate(self):
+        self.is_activated = False
         self.model.on_deactivate()
         self.view.on_deactivate()
         for controller in self.child_controllers:

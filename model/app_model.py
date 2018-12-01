@@ -5,7 +5,6 @@ class AppModel(Model):
     def __init__(self, game_config):
         super().__init__(game_config)
         self.screen_resolution = None
-        self.is_activated = True
 
     def on_activate(self):
         self.is_activated = True

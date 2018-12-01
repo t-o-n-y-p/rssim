@@ -5,7 +5,7 @@ class View:
         self.surface = surface
         self.batch = batch
         self.groups = groups
-        self.is_activated = None
+        self.is_activated = False
         self.buttons = []
 
     def on_update(self):
