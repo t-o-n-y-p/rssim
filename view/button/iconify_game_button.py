@@ -10,8 +10,9 @@ class IconifyGameButton(Button):
         self.border_sprite = None
         self.vertex_list = None
         self.text_object = None
-        self.text = '_'
-        self.font_name = 'Arial'
+        self.text = ''
+        self.font_name = 'Webdings'
+        self.is_bold = False
         self.font_size = 16
         self.position = (self.game_config.screen_resolution[0] - 66, self.game_config.screen_resolution[1] - 34)
         self.button_size = (34, 34)

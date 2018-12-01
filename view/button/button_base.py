@@ -52,6 +52,7 @@ class Button:
         self.text_object = None
         self.text = None
         self.font_name = None
+        self.is_bold = None
         self.font_size = None
         self.position = ()
         self.button_size = ()
@@ -73,9 +74,9 @@ class Button:
         self.border_sprite = Sprite(self.border_sprite_image, x=self.position[0], y=self.position[1], batch=self.batch,
                                     group=self.groups['button_border'])
         if self.text not in (None, ''):
-            self.text_object = Label(self.text, font_name=self.font_name, font_size=self.font_size,
+            self.text_object = Label(self.text, font_name=self.font_name, bold=self.is_bold, font_size=self.font_size,
                                      x=self.position[0] + self.button_size[0] // 2,
-                                     y=self.position[1] + self.button_size[1] // 2,
+                                     y=self.position[1] + self.button_size[1] // 2 + 1,
                                      anchor_x='center', anchor_y='center', batch=self.batch,
                                      group=self.groups['button_text'])
 
