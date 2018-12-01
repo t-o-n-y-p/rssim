@@ -7,7 +7,7 @@ from .button import CloseGameButton, IconifyGameButton, FullscreenButton, Restor
 class AppView(View):
     def __init__(self, game_config, surface, batch, groups):
         def on_close_game(button):
-            self.controller.on_deactivate()
+            self.controller.on_close_game()
 
         def on_iconify_game(button):
             self.surface.minimize()

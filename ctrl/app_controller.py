@@ -11,3 +11,6 @@ class AppController(Controller):
 
     def on_fullscreen_mode_turned_off(self):
         self.model.on_fullscreen_mode_turned_off()
+
+    def on_close_game(self):
+        self.on_deactivate()
