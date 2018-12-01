@@ -7,7 +7,7 @@ executables = [Executable('rssim.py',
                           base='Win32GUI',
                           icon='icon.ico')]
 
-include_files = ['ctrl', 'default_cfg', 'model', 'view', 'game_config.ini', 'icon.ico', 'perfo-bold.ttf']
+include_files = ['default_cfg', 'img', 'game_config.ini', 'icon.ico', 'perfo-bold.ttf']
 
 includes = ['pyglet',
             'pyglet.app',
@@ -26,7 +26,8 @@ includes = ['pyglet',
             'pyglet.resource',
             'pyglet.sprite',
             'pyglet.text', 'pyglet.text.formats',
-            'pyglet.window', 'pyglet.window.carbon', 'pyglet.window.cocoa', 'pyglet.window.win32', 'pyglet.window.xlib']
+            'pyglet.window', 'pyglet.window.carbon', 'pyglet.window.cocoa', 'pyglet.window.win32', 'pyglet.window.xlib',
+            'ctrl', 'model', 'view']
 
 options = {
     'build_exe': {
