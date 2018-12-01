@@ -69,39 +69,25 @@ class Controller:
 
         controller.on_activate()
 
-    def on_append_handlers_from_buttons(self):
-        on_mouse_motion_handlers = []
-        on_mouse_press_handlers = []
-        on_mouse_release_handlers = []
-        on_mouse_leave_handlers = []
-        for b in self.view.buttons:
-            on_mouse_motion_handlers.append(b.handle_mouse_motion)
-            on_mouse_press_handlers.append(b.handle_mouse_press)
-            on_mouse_release_handlers.append(b.handle_mouse_release)
-            on_mouse_leave_handlers.append(b.handle_mouse_leave)
+    def on_append_handlers(self, on_mouse_motion_handlers=None, on_mouse_press_handlers=None,
+                           on_mouse_release_handlers=None, on_mouse_drag_handlers=None, on_mouse_leave_handlers=None):
+        if on_mouse_motion_handlers is not None:
+            self.on_mouse_motion_handlers.extend(on_mouse_motion_handlers)
 
-        self.on_mouse_motion_handlers.extend(on_mouse_motion_handlers)
-        self.on_mouse_press_handlers.extend(on_mouse_press_handlers)
-        self.on_mouse_release_handlers.extend(on_mouse_release_handlers)
-        self.on_mouse_leave_handlers.extend(on_mouse_leave_handlers)
-        if self.parent_controller is not None:
-            self.parent_controller\
-                .on_append_handlers_from_child_controller(on_mouse_motion_handlers=on_mouse_motion_handlers,
-                                                          on_mouse_press_handlers=on_mouse_press_handlers,
-                                                          on_mouse_release_handlers=on_mouse_release_handlers,
-                                                          on_mouse_leave_handlers=on_mouse_leave_handlers)
+        if on_mouse_press_handlers is not None:
+            self.on_mouse_press_handlers.extend(on_mouse_press_handlers)
 
-    def on_append_handlers_from_child_controller(self, on_mouse_motion_handlers=None, on_mouse_press_handlers=None,
-                                                 on_mouse_release_handlers=None, on_mouse_drag_handlers=None,
-                                                 on_mouse_leave_handlers=None):
-        self.on_mouse_motion_handlers.extend(on_mouse_motion_handlers)
-        self.on_mouse_press_handlers.extend(on_mouse_press_handlers)
-        self.on_mouse_release_handlers.extend(on_mouse_release_handlers)
-        self.on_mouse_drag_handlers.extend(on_mouse_drag_handlers)
-        self.on_mouse_leave_handlers.extend(on_mouse_leave_handlers)
+        if on_mouse_release_handlers is not None:
+            self.on_mouse_release_handlers.extend(on_mouse_release_handlers)
+
+        if on_mouse_drag_handlers is not None:
+            self.on_mouse_drag_handlers.extend(on_mouse_drag_handlers)
+
+        if on_mouse_leave_handlers is not None:
+            self.on_mouse_leave_handlers.extend(on_mouse_leave_handlers)
+
         if self.parent_controller is not None:
-            self.parent_controller\
-                .on_append_handlers_from_child_controller(on_mouse_motion_handlers=on_mouse_motion_handlers,
-                                                          on_mouse_press_handlers=on_mouse_press_handlers,
-                                                          on_mouse_release_handlers=on_mouse_release_handlers,
-                                                          on_mouse_leave_handlers=on_mouse_leave_handlers)
+            self.parent_controller.on_append_handlers(on_mouse_motion_handlers=on_mouse_motion_handlers,
+                                                      on_mouse_press_handlers=on_mouse_press_handlers,
+                                                      on_mouse_release_handlers=on_mouse_release_handlers,
+                                                      on_mouse_leave_handlers=on_mouse_leave_handlers)
