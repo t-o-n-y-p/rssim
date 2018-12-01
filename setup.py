@@ -7,7 +7,7 @@ executables = [Executable('rssim.py',
                           base='Win32GUI',
                           icon='icon.ico')]
 
-include_files = ['db', 'img', 'game_config.ini', 'icon.ico', 'perfo-bold.ttf']
+include_files = ['db', 'img', 'icon.ico', 'perfo-bold.ttf']
 
 includes = ['pyglet',
             'pyglet.app',
