@@ -53,8 +53,11 @@ class AppView(View):
 
     def on_activate(self):
         self.is_activated = True
-        self.main_frame_sprite = Sprite(self.main_frame, x=0, y=0, batch=self.batch, group=self.groups['main_frame'])
-        self.main_frame_sprite.opacity = 0
+        if self.main_frame_sprite is None:
+            self.main_frame_sprite = Sprite(self.main_frame, x=0, y=0, batch=self.batch,
+                                            group=self.groups['main_frame'])
+            self.main_frame_sprite.opacity = 0
+
         for b in self.buttons:
             if b.to_activate_on_controller_init:
                 b.on_activate()
