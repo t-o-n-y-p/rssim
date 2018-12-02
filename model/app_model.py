@@ -28,24 +28,30 @@ class AppModel(Model):
 
     def on_assign_view(self, view):
         self.view = view
-        self.view.on_change_screen_resolution(self.screen_resolution)
+        self.view.on_change_screen_resolution(self.screen_resolution, set_size=False)
         if self.fullscreen_mode:
             self.view.restore_button.on_activate()
         else:
             self.view.fullscreen_button.on_activate()
 
     def on_fullscreen_mode_turned_on(self):
-        self.screen_resolution = self.fullscreen_resolution
-        self.view.on_change_screen_resolution(self.screen_resolution)
         self.fullscreen_mode = True
-        self.user_db_cursor.execute('UPDATE graphics_config SET fullscreen = ?', (1,))
-        self.user_db_connection.commit()
+        self.save_state()
         self.view.on_fullscreen_mode_turned_on()
 
     def on_fullscreen_mode_turned_off(self):
-        self.screen_resolution = self.windowed_resolution
-        self.view.on_change_screen_resolution(self.screen_resolution)
         self.fullscreen_mode = False
-        self.user_db_cursor.execute('UPDATE graphics_config SET fullscreen = ?', (0,))
-        self.user_db_connection.commit()
+        self.save_state()
         self.view.on_fullscreen_mode_turned_off()
+
+    def on_change_screen_resolution(self, screen_resolution):
+        self.screen_resolution = screen_resolution
+        self.view.on_change_screen_resolution(self.screen_resolution)
+
+    def save_state(self):
+        if self.fullscreen_mode:
+            self.user_db_cursor.execute('UPDATE graphics_config SET fullscreen = 1')
+        else:
+            self.user_db_cursor.execute('UPDATE graphics_config SET fullscreen = 0')
+
+        self.user_db_connection.commit()

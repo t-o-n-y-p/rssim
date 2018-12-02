@@ -34,3 +34,6 @@ class Model:
 
     def on_assign_view(self, view):
         pass
+
+    def save_state(self):
+        pass

@@ -64,8 +64,11 @@ class AppView(View):
         for b in self.buttons:
             b.on_deactivate()
 
-    def on_change_screen_resolution(self, screen_resolution):
+    def on_change_screen_resolution(self, screen_resolution, set_size=True):
         self.screen_resolution = screen_resolution
+        if set_size:
+            self.surface.set_size(self.screen_resolution[0], self.screen_resolution[1])
+
         self.main_frame = load('img/main_frame/main_frame_{}_{}.png'.format(self.screen_resolution[0],
                                                                             self.screen_resolution[1]))
         if self.is_activated:
@@ -79,4 +82,3 @@ class AppView(View):
 
     def on_fullscreen_mode_turned_off(self):
         self.surface.set_fullscreen(fullscreen=False)
-        self.surface.set_size(self.screen_resolution[0], self.screen_resolution[1])
