@@ -11,3 +11,12 @@ class GameController(Controller):
         for controller in self.child_controllers:
             controller.on_change_screen_resolution(screen_resolution)
 
+    def on_pause_game(self):
+        self.model.on_pause_game()
+        for controller in self.child_controllers:
+            controller.on_pause_game()
+
+    def on_resume_game(self):
+        self.model.on_resume_game()
+        for controller in self.child_controllers:
+            controller.on_resume_game()

@@ -1,14 +1,33 @@
 from .view_base import View
 from pyglet.image import load
 from pyglet.sprite import Sprite
+from .button import PauseGameButton, ResumeGameButton
 
 
 class GameView(View):
     def __init__(self, surface, batch, groups):
+        def on_pause_game(button):
+            button.on_deactivate()
+            button.paired_button.on_activate()
+            self.controller.on_pause_game()
+
+        def on_resume_game(button):
+            button.on_deactivate()
+            button.paired_button.on_activate()
+            self.controller.on_resume_game()
+
         super().__init__(surface, batch, groups)
         self.screen_resolution = None
         self.game_frame = load('img/main_frame/game_frame_1280_720.png')
         self.game_frame_sprite = None
+        self.pause_game_button = PauseGameButton(surface=self.surface, batch=self.batch, groups=self.groups,
+                                                 on_click_action=on_pause_game)
+        self.resume_game_button = ResumeGameButton(surface=self.surface, batch=self.batch, groups=self.groups,
+                                                   on_click_action=on_resume_game)
+        self.pause_game_button.paired_button = self.resume_game_button
+        self.resume_game_button.paired_button = self.pause_game_button
+        self.buttons.append(self.pause_game_button)
+        self.buttons.append(self.resume_game_button)
 
     def on_update(self):
         if self.is_activated and self.game_frame_sprite.opacity < 255:
@@ -46,3 +65,9 @@ class GameView(View):
 
         for b in self.buttons:
             b.on_position_changed((self.screen_resolution[0] - b.x_margin, 0))
+
+    def on_pause_game(self):
+        pass
+
+    def on_resume_game(self):
+        pass

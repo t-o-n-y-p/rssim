@@ -26,15 +26,14 @@ class AppView(View):
         self.screen_resolution = None
         self.main_frame = load('img/main_frame/main_frame_1280_720.png')
         self.main_frame_sprite = None
-        self.buttons.append(CloseGameButton(surface=self.surface,
-                                            batch=self.batch, groups=self.groups, on_click_action=on_close_game))
-        self.buttons.append(IconifyGameButton(surface=self.surface,
-                                              batch=self.batch, groups=self.groups, on_click_action=on_iconify_game))
-        self.fullscreen_button = FullscreenButton(surface=self.surface,
-                                                  batch=self.batch, groups=self.groups,
+        self.buttons.append(CloseGameButton(surface=self.surface, batch=self.batch, groups=self.groups,
+                                            on_click_action=on_close_game))
+        self.buttons.append(IconifyGameButton(surface=self.surface, batch=self.batch, groups=self.groups,
+                                              on_click_action=on_iconify_game))
+        self.fullscreen_button = FullscreenButton(surface=self.surface, batch=self.batch, groups=self.groups,
                                                   on_click_action=on_app_window_fullscreen)
-        self.restore_button = RestoreButton(surface=self.surface,
-                                            batch=self.batch, groups=self.groups, on_click_action=on_app_window_restore)
+        self.restore_button = RestoreButton(surface=self.surface, batch=self.batch, groups=self.groups,
+                                            on_click_action=on_app_window_restore)
         self.fullscreen_button.paired_button = self.restore_button
         self.restore_button.paired_button = self.fullscreen_button
         self.buttons.append(self.fullscreen_button)
