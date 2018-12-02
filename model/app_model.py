@@ -28,7 +28,6 @@ class AppModel(Model):
 
     def on_assign_view(self, view):
         self.view = view
-        self.view.on_change_screen_resolution(self.screen_resolution, set_size=False)
         if self.fullscreen_mode:
             self.view.restore_button.on_activate()
         else:
@@ -44,9 +43,9 @@ class AppModel(Model):
         self.save_state()
         self.view.on_fullscreen_mode_turned_off()
 
-    def on_change_screen_resolution(self, screen_resolution):
+    def on_change_screen_resolution(self, screen_resolution, fullscreen_mode):
         self.screen_resolution = screen_resolution
-        self.view.on_change_screen_resolution(self.screen_resolution)
+        self.view.on_change_screen_resolution(self.screen_resolution, fullscreen=fullscreen_mode)
 
     def save_state(self):
         if self.fullscreen_mode:

@@ -62,7 +62,7 @@ class Button:
         self.font_name = None
         self.is_bold = None
         self.font_size = None
-        self.position = ()
+        self.position = (0, 0)
         self.button_size = ()
         self.on_click_action = None
         self.hand_cursor = self.surface.get_system_mouse_cursor(surface.CURSOR_HAND)

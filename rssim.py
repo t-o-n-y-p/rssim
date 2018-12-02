@@ -9,7 +9,7 @@ from win32api import MessageBoxEx, GetSystemMetrics
 import win32con
 
 from exceptions import VideoAdapterNotSupportedException
-from game_objects import create_app
+from game_objects import create_app, create_game
 
 
 class RSSim:
@@ -70,6 +70,14 @@ class RSSim:
         self.surface = surface
         self.app_controller = create_app(user_db_connection=self.user_db_connection, user_db_cursor=self.user_db_cursor,
                                          surface=self.surface, batch=self.batch, groups=self.groups)
+        self.game_controller = create_game(user_db_connection=self.user_db_connection,
+                                           user_db_cursor=self.user_db_cursor,
+                                           surface=self.surface, batch=self.batch, groups=self.groups,
+                                           parent_controller=self.app_controller)
+        if fullscreen_mode:
+            self.app_controller.on_change_screen_resolution(fullscreen_resolution, fullscreen_mode)
+        else:
+            self.app_controller.on_change_screen_resolution(windowed_resolution, fullscreen_mode)
 
         @surface.event
         def on_draw():
