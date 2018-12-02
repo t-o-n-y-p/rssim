@@ -5,10 +5,10 @@ import sqlite3
 from pyglet import gl
 from pyglet.window import Window
 from pyglet.graphics import Batch, OrderedGroup
-from win32api import MessageBoxEx
+from win32api import MessageBoxEx, GetSystemMetrics
 import win32con
 
-from exceptions import VideoAdapterNotSupportedException
+from exceptions import VideoAdapterNotSupportedException, MonitorNotSupportedException
 from game_objects import create_app, create_game
 
 
@@ -18,6 +18,9 @@ class RSSim:
         gl.glGetIntegerv(gl.GL_MAX_TEXTURE_SIZE, max_texture_size)
         if max_texture_size.value < 8192:
             raise VideoAdapterNotSupportedException
+
+        if GetSystemMetrics(0) < 1280 or GetSystemMetrics(1) < 720:
+            raise MonitorNotSupportedException
 
         self.user_db_connection = sqlite3.connect('db/user.db')
         self.user_db_cursor = self.user_db_connection.cursor()
@@ -102,7 +105,7 @@ class RSSim:
 def main():
     try:
         RSSim().run()
-    except VideoAdapterNotSupportedException as e:
+    except (VideoAdapterNotSupportedException, MonitorNotSupportedException) as e:
         MessageBoxEx(win32con.NULL, e.text, e.caption,
                      win32con.MB_OK | win32con.MB_ICONERROR | win32con.MB_DEFBUTTON1
                      | win32con.MB_SYSTEMMODAL | win32con.MB_SETFOREGROUND, 0)
