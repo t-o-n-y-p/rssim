@@ -11,9 +11,6 @@ def create_app(user_db_connection, user_db_cursor, surface, batch, groups):
     controller.view = view
     view.on_assign_controller(controller)
     model.on_assign_view(view)
-    if controller.to_be_activated_during_startup:
-        controller.on_activate()
-
     return controller
 
 
@@ -28,7 +25,4 @@ def create_game(user_db_connection, user_db_cursor, surface, batch, groups, pare
     controller.view = view
     view.on_assign_controller(controller)
     model.on_assign_view(view)
-    if controller.to_be_activated_during_startup:
-        controller.on_activate()
-
     return controller

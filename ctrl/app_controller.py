@@ -4,7 +4,6 @@ from .controller_base import Controller
 class AppController(Controller):
     def __init__(self):
         super().__init__()
-        self.to_be_activated_during_startup = True
 
     def on_fullscreen_mode_turned_on(self):
         self.on_change_screen_resolution(self.model.fullscreen_resolution, fullscreen_mode=False)

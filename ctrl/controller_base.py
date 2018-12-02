@@ -21,7 +21,6 @@ class Controller:
     def __init__(self, parent_controller=None):
         self.model = None
         self.view = None
-        self.to_be_activated_during_startup = None
         self.is_activated = False
         self.parent_controller = parent_controller
         self.child_controllers = []

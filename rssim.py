@@ -5,7 +5,7 @@ import sqlite3
 from pyglet import gl
 from pyglet.window import Window
 from pyglet.graphics import Batch, OrderedGroup
-from win32api import MessageBoxEx, GetSystemMetrics
+from win32api import MessageBoxEx
 import win32con
 
 from exceptions import VideoAdapterNotSupportedException
@@ -44,40 +44,21 @@ class RSSim:
         self.groups['exp_money_time'] = numbered_groups[7]
         self.groups['button_text'] = numbered_groups[8]
         self.groups['button_border'] = numbered_groups[8]
-        self.user_db_cursor.execute('SELECT app_width, app_height FROM screen_resolution_config')
-        screen_resolution_config = self.user_db_cursor.fetchall()
-        i = 0
-        while screen_resolution_config[i][0] <= GetSystemMetrics(0) \
-                and screen_resolution_config[i][1] <= GetSystemMetrics(1) \
-                and i < len(screen_resolution_config):
-            i += 1
-
-        fullscreen_resolution = screen_resolution_config[i - 1]
-        self.user_db_cursor.execute('SELECT fullscreen FROM graphics_config')
-        fullscreen_mode = bool(self.user_db_cursor.fetchone()[0])
-        self.user_db_cursor.execute('SELECT app_width, app_height FROM graphics_config')
-        windowed_resolution = self.user_db_cursor.fetchone()
-        surface = None
-        if fullscreen_mode:
-            surface = Window(width=fullscreen_resolution[0], height=fullscreen_resolution[1],
-                             caption='Railway Station Simulator', style='borderless', fullscreen=fullscreen_mode,
-                             vsync=False)
-        else:
-            surface = Window(width=windowed_resolution[0], height=windowed_resolution[1],
-                             caption='Railway Station Simulator', style='borderless', fullscreen=fullscreen_mode,
-                             vsync=False)
-
+        surface = Window(width=1280, height=720, caption='Railway Station Simulator', style='borderless',
+                         fullscreen=False, vsync=False)
         self.surface = surface
-        self.app_controller = create_app(user_db_connection=self.user_db_connection, user_db_cursor=self.user_db_cursor,
+        self.app_controller = create_app(user_db_connection=self.user_db_connection,
+                                         user_db_cursor=self.user_db_cursor,
                                          surface=self.surface, batch=self.batch, groups=self.groups)
         self.game_controller = create_game(user_db_connection=self.user_db_connection,
                                            user_db_cursor=self.user_db_cursor,
                                            surface=self.surface, batch=self.batch, groups=self.groups,
                                            parent_controller=self.app_controller)
-        if fullscreen_mode:
-            self.app_controller.on_change_screen_resolution(fullscreen_resolution, fullscreen_mode)
-        else:
-            self.app_controller.on_change_screen_resolution(windowed_resolution, fullscreen_mode)
+        self.app_controller.on_activate()
+        self.app_controller.on_change_screen_resolution(self.app_controller.model.screen_resolution,
+                                                        self.app_controller.model.fullscreen_mode)
+        if self.app_controller.model.fullscreen_mode:
+            self.app_controller.on_fullscreen_mode_turned_on()
 
         @surface.event
         def on_draw():
