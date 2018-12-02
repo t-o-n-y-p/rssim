@@ -23,7 +23,6 @@ class AppView(View):
             self.controller.on_fullscreen_mode_turned_off()
 
         super().__init__(surface, batch, groups)
-        self.screen_resolution = None
         self.main_frame = load('img/main_frame/main_frame_1280_720.png')
         self.main_frame_sprite = None
         self.buttons.append(CloseGameButton(surface=self.surface, batch=self.batch, groups=self.groups,
@@ -67,17 +66,15 @@ class AppView(View):
             b.on_deactivate()
 
     def on_change_screen_resolution(self, screen_resolution, fullscreen):
-        self.screen_resolution = screen_resolution
         if not fullscreen:
-            self.surface.set_size(self.screen_resolution[0], self.screen_resolution[1])
+            self.surface.set_size(screen_resolution[0], screen_resolution[1])
 
-        self.main_frame = load('img/main_frame/main_frame_{}_{}.png'.format(self.screen_resolution[0],
-                                                                            self.screen_resolution[1]))
+        self.main_frame = load('img/main_frame/main_frame_{}_{}.png'.format(screen_resolution[0], screen_resolution[1]))
         if self.is_activated:
             self.main_frame_sprite.image = self.main_frame
 
         for b in self.buttons:
-            b.on_position_changed((self.screen_resolution[0] - b.x_margin, self.screen_resolution[1] - b.y_margin))
+            b.on_position_changed((screen_resolution[0] - b.x_margin, screen_resolution[1] - b.y_margin))
 
     def on_fullscreen_mode_turned_on(self):
         self.surface.set_fullscreen(fullscreen=True)

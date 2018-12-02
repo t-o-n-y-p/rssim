@@ -9,7 +9,7 @@ from win32api import MessageBoxEx, GetSystemMetrics
 import win32con
 
 from exceptions import VideoAdapterNotSupportedException, MonitorNotSupportedException
-from game_objects import create_app, create_game
+from game_objects import create_app, create_game, create_map
 
 
 class RSSim:
@@ -57,6 +57,10 @@ class RSSim:
                                            user_db_cursor=self.user_db_cursor,
                                            surface=self.surface, batch=self.batch, groups=self.groups,
                                            parent_controller=self.app_controller)
+        self.map_controller = create_map(user_db_connection=self.user_db_connection,
+                                         user_db_cursor=self.user_db_cursor,
+                                         surface=self.surface, batch=self.batch, groups=self.groups,
+                                         parent_controller=self.game_controller)
         self.app_controller.on_activate()
         self.app_controller.on_change_screen_resolution(self.app_controller.model.screen_resolution,
                                                         self.app_controller.model.fullscreen_mode)

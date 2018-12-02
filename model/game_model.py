@@ -4,7 +4,7 @@ from .model_base import Model
 class GameModel(Model):
     def __init__(self, user_db_connection, user_db_cursor):
         super().__init__(user_db_connection, user_db_cursor)
-        self.screen_resolution = None
+        self.screen_resolution = (1280, 720)
         self.game_paused = False
 
     def on_activate(self):
