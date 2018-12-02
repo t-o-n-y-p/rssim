@@ -1,5 +1,6 @@
-from .model_base import Model
 from win32api import GetSystemMetrics
+
+from .model_base import Model
 
 
 class AppModel(Model):

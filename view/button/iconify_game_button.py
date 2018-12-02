@@ -1,5 +1,6 @@
-from .button_base import Button
 from pyglet.image import load
+
+from .button_base import Button
 
 
 class IconifyGameButton(Button):

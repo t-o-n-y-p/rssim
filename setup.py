@@ -1,6 +1,8 @@
-from cx_Freeze import setup, Executable
 import os
 import sys
+
+from cx_Freeze import setup, Executable
+
 
 executables = [Executable('rssim.py',
                           targetName='rssim.exe',

@@ -1,6 +1,7 @@
-from .view_base import View
 from pyglet.image import load
 from pyglet.sprite import Sprite
+
+from .view_base import View
 
 
 def _view_is_activated(fn):
