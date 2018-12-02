@@ -20,4 +20,7 @@ class AppController(Controller):
         self.on_change_screen_resolution(self.model.windowed_resolution)
 
     def on_close_game(self):
+        for controller in self.child_controllers:
+            controller.on_deactivate()
         self.on_deactivate()
+
