@@ -90,4 +90,5 @@ class Controller:
             self.parent_controller.on_append_handlers(on_mouse_motion_handlers=on_mouse_motion_handlers,
                                                       on_mouse_press_handlers=on_mouse_press_handlers,
                                                       on_mouse_release_handlers=on_mouse_release_handlers,
+                                                      on_mouse_drag_handlers=on_mouse_drag_handlers,
                                                       on_mouse_leave_handlers=on_mouse_leave_handlers)
