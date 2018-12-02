@@ -1,4 +1,4 @@
-def _model_is_activated(fn):
+def _model_is_active(fn):
     def _handle_if_model_is_activated(*args, **kwargs):
         if args[0].is_activated:
             fn(*args, **kwargs)
@@ -6,7 +6,7 @@ def _model_is_activated(fn):
     return _handle_if_model_is_activated
 
 
-def _model_is_not_activated(fn):
+def _model_is_not_active(fn):
     def _handle_if_model_is_not_activated(*args, **kwargs):
         if not args[0].is_activated:
             fn(*args, **kwargs)
@@ -24,11 +24,11 @@ class Model:
     def on_update(self):
         pass
 
-    @_model_is_not_activated
+    @_model_is_not_active
     def on_activate(self):
         pass
 
-    @_model_is_activated
+    @_model_is_active
     def on_deactivate(self):
         pass
 

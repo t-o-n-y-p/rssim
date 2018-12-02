@@ -1,4 +1,4 @@
-def _view_is_activated(fn):
+def _view_is_active(fn):
     def _handle_if_view_is_activated(*args, **kwargs):
         if args[0].is_activated:
             fn(*args, **kwargs)
@@ -6,7 +6,7 @@ def _view_is_activated(fn):
     return _handle_if_view_is_activated
 
 
-def _view_is_not_activated(fn):
+def _view_is_not_active(fn):
     def _handle_if_view_is_not_activated(*args, **kwargs):
         if not args[0].is_activated:
             fn(*args, **kwargs)
@@ -22,15 +22,20 @@ class View:
         self.groups = groups
         self.is_activated = False
         self.buttons = []
+        self.on_mouse_press_handlers = []
+        self.on_mouse_release_handlers = []
+        self.on_mouse_motion_handlers = []
+        self.on_mouse_drag_handlers = []
+        self.on_mouse_leave_handlers = []
 
     def on_update(self):
         pass
 
-    @_view_is_not_activated
+    @_view_is_not_active
     def on_activate(self):
         pass
 
-    @_view_is_activated
+    @_view_is_active
     def on_deactivate(self):
         pass
 
@@ -50,3 +55,8 @@ class View:
                                            on_mouse_press_handlers=on_mouse_press_handlers,
                                            on_mouse_release_handlers=on_mouse_release_handlers,
                                            on_mouse_leave_handlers=on_mouse_leave_handlers)
+        self.controller.on_append_handlers(on_mouse_motion_handlers=self.on_mouse_motion_handlers,
+                                           on_mouse_press_handlers=self.on_mouse_press_handlers,
+                                           on_mouse_release_handlers=self.on_mouse_release_handlers,
+                                           on_mouse_drag_handlers=self.on_mouse_drag_handlers,
+                                           on_mouse_leave_handlers=self.on_mouse_leave_handlers)
