@@ -51,12 +51,12 @@ class View:
             on_mouse_release_handlers.append(b.handle_mouse_release)
             on_mouse_leave_handlers.append(b.handle_mouse_leave)
 
-        self.controller.on_append_handlers(on_mouse_motion_handlers=on_mouse_motion_handlers,
-                                           on_mouse_press_handlers=on_mouse_press_handlers,
-                                           on_mouse_release_handlers=on_mouse_release_handlers,
-                                           on_mouse_leave_handlers=on_mouse_leave_handlers)
         self.controller.on_append_handlers(on_mouse_motion_handlers=self.on_mouse_motion_handlers,
                                            on_mouse_press_handlers=self.on_mouse_press_handlers,
                                            on_mouse_release_handlers=self.on_mouse_release_handlers,
                                            on_mouse_drag_handlers=self.on_mouse_drag_handlers,
                                            on_mouse_leave_handlers=self.on_mouse_leave_handlers)
+        self.controller.on_append_handlers(on_mouse_motion_handlers=on_mouse_motion_handlers,
+                                           on_mouse_press_handlers=on_mouse_press_handlers,
+                                           on_mouse_release_handlers=on_mouse_release_handlers,
+                                           on_mouse_leave_handlers=on_mouse_leave_handlers)
