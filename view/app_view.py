@@ -1,6 +1,7 @@
 from pyglet.image import load
 from pyglet.sprite import Sprite
 from pyglet.window import mouse
+from pyglet.text import Label
 from win32api import GetCursorPos
 from win32gui import GetActiveWindow, GetWindowRect, SetWindowPos
 from win32con import HWND_TOP, SWP_NOREDRAW
@@ -69,6 +70,9 @@ class AppView(View):
 
         super().__init__(surface, batch, groups)
         self.main_frame = load('img/main_frame/main_frame_1280_720.png')
+        self.title_label = Label('Railway Station Simulator', font_name='Arial', font_size=14,
+                                 x=10, y=703, anchor_x='left', anchor_y='center', batch=self.batch,
+                                 group=self.groups['button_text'])
         self.main_frame_sprite = None
         self.buttons.append(CloseGameButton(surface=self.surface, batch=self.batch, groups=self.groups,
                                             on_click_action=on_close_game))
@@ -104,6 +108,9 @@ class AppView(View):
 
     def on_activate(self):
         self.is_activated = True
+        self.title_label = Label('Railway Station Simulator', font_name='Arial', font_size=14,
+                                 x=10, y=703, anchor_x='left', anchor_y='center', batch=self.batch,
+                                 group=self.groups['button_text'])
         if self.main_frame_sprite is None:
             self.main_frame_sprite = Sprite(self.main_frame, x=0, y=0, batch=self.batch,
                                             group=self.groups['main_frame'])
@@ -115,6 +122,8 @@ class AppView(View):
 
     def on_deactivate(self):
         self.is_activated = False
+        self.title_label.delete()
+        self.title_label = None
         for b in self.buttons:
             b.on_deactivate()
 
@@ -126,6 +135,11 @@ class AppView(View):
         if self.is_activated:
             self.main_frame_sprite.image = self.main_frame
 
+        self.title_label.delete()
+        self.title_label = None
+        self.title_label = Label('Railway Station Simulator', font_name='Arial', font_size=14,
+                                 x=10, y=screen_resolution[1] - 17, anchor_x='left', anchor_y='center',
+                                 batch=self.batch, group=self.groups['button_text'])
         for b in self.buttons:
             b.on_position_changed((screen_resolution[0] - b.x_margin, screen_resolution[1] - b.y_margin))
 
