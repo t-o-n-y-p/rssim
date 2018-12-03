@@ -12,14 +12,14 @@ class AppModel(Model):
         self.fullscreen_mode = bool(self.user_db_cursor.fetchone()[0])
         self.config_db_cursor.execute('SELECT app_width, app_height FROM screen_resolution_config')
         self.screen_resolution_config = self.config_db_cursor.fetchall()
-        i = 0
-        while self.screen_resolution_config[i][0] <= GetSystemMetrics(0) \
-                and self.screen_resolution_config[i][1] <= GetSystemMetrics(1) \
-                and i < len(self.screen_resolution_config):
-            i += 1
+        self.fullscreen_mode_available = False
+        self.fullscreen_resolution = (0, 0)
+        self.screen_resolution = (0, 0)
+        if (GetSystemMetrics(0), GetSystemMetrics(1)) in self.screen_resolution_config:
+            self.fullscreen_mode_available = True
+            self.fullscreen_resolution = (GetSystemMetrics(0), GetSystemMetrics(1))
 
-        self.fullscreen_resolution = self.screen_resolution_config[i - 1]
-        if self.fullscreen_mode:
+        if self.fullscreen_mode and self.fullscreen_mode_available:
             self.screen_resolution = self.fullscreen_resolution
         else:
             self.screen_resolution = self.windowed_resolution
@@ -46,6 +46,9 @@ class AppModel(Model):
 
     def on_change_screen_resolution(self, screen_resolution, fullscreen_mode):
         self.screen_resolution = screen_resolution
+        if fullscreen_mode and not self.fullscreen_mode_available:
+            self.on_fullscreen_mode_turned_off()
+
         self.view.on_change_screen_resolution(self.screen_resolution, fullscreen=fullscreen_mode)
 
     def save_state(self):
