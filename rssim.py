@@ -1,11 +1,11 @@
-from ctypes import c_long
+from ctypes import c_long, windll
 from sys import exit
 import sqlite3
 
 from pyglet import gl
 from pyglet.window import Window
 from pyglet.graphics import Batch, OrderedGroup
-from win32api import MessageBoxEx, GetSystemMetrics
+from win32api import MessageBoxEx
 import win32con
 
 from exceptions import VideoAdapterNotSupportedException, MonitorNotSupportedException
@@ -19,7 +19,7 @@ class RSSim:
         if max_texture_size.value < 8192:
             raise VideoAdapterNotSupportedException
 
-        if GetSystemMetrics(0) < 1280 or GetSystemMetrics(1) < 720:
+        if windll.user32.GetSystemMetrics(0) < 1280 or windll.user32.GetSystemMetrics(1) < 720:
             raise MonitorNotSupportedException
 
         self.user_db_connection = sqlite3.connect('db/user.db')

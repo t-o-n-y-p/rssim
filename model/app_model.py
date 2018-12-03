@@ -1,4 +1,4 @@
-from win32api import GetSystemMetrics
+from ctypes import windll
 
 from .model_base import Model
 
@@ -23,9 +23,9 @@ class AppModel(Model):
         self.fullscreen_mode_available = False
         self.fullscreen_resolution = (0, 0)
         self.screen_resolution = (0, 0)
-        if (GetSystemMetrics(0), GetSystemMetrics(1)) in self.screen_resolution_config:
+        if (windll.user32.GetSystemMetrics(0), windll.user32.GetSystemMetrics(1)) in self.screen_resolution_config:
             self.fullscreen_mode_available = True
-            self.fullscreen_resolution = (GetSystemMetrics(0), GetSystemMetrics(1))
+            self.fullscreen_resolution = (windll.user32.GetSystemMetrics(0), windll.user32.GetSystemMetrics(1))
 
         if self.fullscreen_mode and self.fullscreen_mode_available:
             self.screen_resolution = self.fullscreen_resolution
