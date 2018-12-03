@@ -3,6 +3,14 @@ from win32api import GetSystemMetrics
 from .model_base import Model
 
 
+def _fullscreen_mode_available(fn):
+    def _turn_fullscren_mode_on_if_available(*args, **kwargs):
+        if args[0].fullscreen_mode_available:
+            fn(*args, **kwargs)
+
+    return _turn_fullscren_mode_on_if_available
+
+
 class AppModel(Model):
     def __init__(self, user_db_connection, user_db_cursor, config_db_cursor):
         super().__init__(user_db_connection, user_db_cursor, config_db_cursor)
@@ -34,6 +42,7 @@ class AppModel(Model):
         else:
             self.view.fullscreen_button.on_activate()
 
+    @_fullscreen_mode_available
     def on_fullscreen_mode_turned_on(self):
         self.fullscreen_mode = True
         self.save_state()
