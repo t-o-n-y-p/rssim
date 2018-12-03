@@ -2,8 +2,8 @@ from .model_base import Model
 
 
 class MapModel(Model):
-    def __init__(self, user_db_connection, user_db_cursor):
-        super().__init__(user_db_connection, user_db_cursor)
+    def __init__(self, user_db_connection, user_db_cursor, config_db_cursor):
+        super().__init__(user_db_connection, user_db_cursor, config_db_cursor)
         self.screen_resolution = (1280, 720)
         self.base_offset = (-3440, -1440)
         self.base_offset_lower_left_limit = (0, 0)

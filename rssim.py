@@ -24,6 +24,8 @@ class RSSim:
 
         self.user_db_connection = sqlite3.connect('db/user.db')
         self.user_db_cursor = self.user_db_connection.cursor()
+        self.config_db_connection = sqlite3.connect('db/config.db')
+        self.config_db_cursor = self.config_db_connection.cursor()
         gl.glEnable(gl.GL_BLEND)
         gl.glBlendFunc(gl.GL_SRC_ALPHA, gl.GL_ONE_MINUS_SRC_ALPHA)
         self.batch = Batch()
@@ -51,14 +53,14 @@ class RSSim:
                          fullscreen=False, vsync=False)
         self.surface = surface
         self.app_controller = create_app(user_db_connection=self.user_db_connection,
-                                         user_db_cursor=self.user_db_cursor,
+                                         user_db_cursor=self.user_db_cursor, config_db_cursor=self.config_db_cursor,
                                          surface=self.surface, batch=self.batch, groups=self.groups)
         self.game_controller = create_game(user_db_connection=self.user_db_connection,
-                                           user_db_cursor=self.user_db_cursor,
+                                           user_db_cursor=self.user_db_cursor, config_db_cursor=self.config_db_cursor,
                                            surface=self.surface, batch=self.batch, groups=self.groups,
                                            parent_controller=self.app_controller)
         self.map_controller = create_map(user_db_connection=self.user_db_connection,
-                                         user_db_cursor=self.user_db_cursor,
+                                         user_db_cursor=self.user_db_cursor, config_db_cursor=self.config_db_cursor,
                                          surface=self.surface, batch=self.batch, groups=self.groups,
                                          parent_controller=self.game_controller)
         self.app_controller.on_activate()
