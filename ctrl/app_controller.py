@@ -7,14 +7,17 @@ class AppController(Controller):
     def __init__(self):
         super().__init__()
         self.game = None
+        self.settings = None
 
     def on_update_model(self):
         self.model.on_update()
         self.game.on_update_model()
+        self.settings.on_update_model()
 
     def on_update_view(self):
         self.view.on_update()
         self.game.on_update_view()
+        self.settings.on_update_view()
 
     def on_activate(self):
         self.is_activated = True
@@ -35,6 +38,7 @@ class AppController(Controller):
     def on_change_screen_resolution(self, screen_resolution, fullscreen_mode):
         self.model.on_change_screen_resolution(screen_resolution, fullscreen_mode)
         self.game.on_change_screen_resolution(screen_resolution)
+        self.settings.on_change_screen_resolution(screen_resolution)
 
     def on_fullscreen_mode_turned_off(self):
         self.model.on_fullscreen_mode_turned_off()
@@ -43,3 +47,14 @@ class AppController(Controller):
     def on_close_game(self):
         self.on_deactivate()
         exit()
+
+    def on_activate_main_menu_view(self):
+        pass
+
+    def on_activate_game_view(self):
+        self.game.view.on_activate()
+
+    def on_deactivate_current_view(self):
+        if self.game.view.is_activated:
+            self.game.view.on_deactivate()
+            self.settings.navigated_from_game = True

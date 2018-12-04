@@ -7,7 +7,7 @@ from win32gui import GetActiveWindow, GetWindowRect, SetWindowPos
 from win32con import HWND_TOP, SWP_NOREDRAW
 
 from .view_base import View
-from .button import CloseGameButton, IconifyGameButton, FullscreenButton, RestoreButton
+from .button import CloseGameButton, IconifyGameButton, FullscreenButton, RestoreButton, OpenSettingsButton
 
 
 def _game_window_is_active(fn):
@@ -68,6 +68,9 @@ class AppView(View):
             button.paired_button.on_activate()
             self.controller.on_fullscreen_mode_turned_off()
 
+        def on_open_settings(button):
+            self.controller.settings.on_activate()
+
         super().__init__(surface, batch, groups)
         self.main_frame = load('img/main_frame/main_frame_1280_720.png')
         self.title_label = None
@@ -80,10 +83,13 @@ class AppView(View):
                                                   on_click_action=on_app_window_fullscreen)
         self.restore_button = RestoreButton(surface=self.surface, batch=self.batch, groups=self.groups,
                                             on_click_action=on_app_window_restore)
+        self.open_settings_button = OpenSettingsButton(surface=self.surface, batch=self.batch, groups=self.groups,
+                                                       on_click_action=on_open_settings)
         self.fullscreen_button.paired_button = self.restore_button
         self.restore_button.paired_button = self.fullscreen_button
         self.buttons.append(self.fullscreen_button)
         self.buttons.append(self.restore_button)
+        self.buttons.append(self.open_settings_button)
         self.app_window_move_mode = False
         self.app_window_move_offset = (0, 0)
         self.game_window_handler = GetActiveWindow()
@@ -138,6 +144,7 @@ class AppView(View):
         self.title_label = Label('Railway Station Simulator', font_name='Arial', font_size=13,
                                  x=10, y=screen_resolution[1] - 17, anchor_x='left', anchor_y='center',
                                  batch=self.batch, group=self.groups['button_text'])
+        self.open_settings_button.y_margin = screen_resolution[1]
         for b in self.buttons:
             b.on_position_changed((screen_resolution[0] - b.x_margin, screen_resolution[1] - b.y_margin))
 

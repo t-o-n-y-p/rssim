@@ -85,7 +85,7 @@ class Button:
         if self.text not in (None, ''):
             self.text_object = Label(self.text, font_name=self.font_name, bold=self.is_bold, font_size=self.font_size,
                                      x=self.position[0] + self.button_size[0] // 2,
-                                     y=self.position[1] + self.button_size[1] // 2 + 1,
+                                     y=self.position[1] + self.button_size[1] // 2,
                                      anchor_x='center', anchor_y='center', batch=self.batch,
                                      group=self.groups['button_text'])
 
@@ -114,7 +114,7 @@ class Button:
                 self.text_object = Label(self.text, font_name=self.font_name, bold=self.is_bold,
                                          font_size=self.font_size,
                                          x=self.position[0] + self.button_size[0] // 2,
-                                         y=self.position[1] + self.button_size[1] // 2 + 1,
+                                         y=self.position[1] + self.button_size[1] // 2,
                                          anchor_x='center', anchor_y='center', batch=self.batch,
                                          group=self.groups['button_text'])
 
