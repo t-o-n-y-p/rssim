@@ -52,9 +52,12 @@ class AppController(Controller):
         pass
 
     def on_activate_game_view(self):
-        self.game.view.on_activate()
+        self.game.on_activate_view()
 
     def on_deactivate_current_view(self):
         if self.game.view.is_activated:
-            self.game.view.on_deactivate()
+            self.game.on_deactivate_view()
             self.settings.navigated_from_game = True
+
+    def on_activate_open_settings_button(self):
+        self.view.open_settings_button.on_activate()

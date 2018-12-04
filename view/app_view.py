@@ -69,6 +69,7 @@ class AppView(View):
             self.controller.on_fullscreen_mode_turned_off()
 
         def on_open_settings(button):
+            button.on_deactivate()
             self.controller.settings.on_activate()
 
         super().__init__(surface, batch, groups)

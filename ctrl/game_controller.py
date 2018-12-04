@@ -40,3 +40,11 @@ class GameController(Controller):
 
     def on_unlock_track(self, track_number):
         self.map.on_unlock_track(track_number)
+
+    def on_activate_view(self):
+        self.view.on_activate()
+        self.map.on_activate_view()
+
+    def on_deactivate_view(self):
+        self.view.on_deactivate()
+        self.map.on_deactivate_view()
