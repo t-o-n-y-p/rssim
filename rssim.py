@@ -52,22 +52,19 @@ class RSSim:
         surface = Window(width=1280, height=720, caption='Railway Station Simulator', style='borderless',
                          fullscreen=False, vsync=False)
         self.surface = surface
-        self.app_controller = create_app(user_db_connection=self.user_db_connection,
-                                         user_db_cursor=self.user_db_cursor, config_db_cursor=self.config_db_cursor,
-                                         surface=self.surface, batch=self.batch, groups=self.groups)
-        self.game_controller = create_game(user_db_connection=self.user_db_connection,
-                                           user_db_cursor=self.user_db_cursor, config_db_cursor=self.config_db_cursor,
-                                           surface=self.surface, batch=self.batch, groups=self.groups,
-                                           parent_controller=self.app_controller)
-        self.map_controller = create_map(user_db_connection=self.user_db_connection,
-                                         user_db_cursor=self.user_db_cursor, config_db_cursor=self.config_db_cursor,
-                                         surface=self.surface, batch=self.batch, groups=self.groups,
-                                         parent_controller=self.game_controller)
-        self.app_controller.on_activate()
-        self.app_controller.on_change_screen_resolution(self.app_controller.model.screen_resolution,
-                                                        self.app_controller.model.fullscreen_mode)
-        if self.app_controller.model.fullscreen_mode:
-            self.app_controller.on_fullscreen_mode_turned_on()
+        self.app = create_app(user_db_connection=self.user_db_connection, user_db_cursor=self.user_db_cursor,
+                              config_db_cursor=self.config_db_cursor,
+                              surface=self.surface, batch=self.batch, groups=self.groups)
+        self.game = create_game(user_db_connection=self.user_db_connection, user_db_cursor=self.user_db_cursor,
+                                config_db_cursor=self.config_db_cursor,
+                                surface=self.surface, batch=self.batch, groups=self.groups, app=self.app)
+        self.map = create_map(user_db_connection=self.user_db_connection, user_db_cursor=self.user_db_cursor,
+                              config_db_cursor=self.config_db_cursor,
+                              surface=self.surface, batch=self.batch, groups=self.groups, game=self.game)
+        self.app.on_activate()
+        self.app.on_change_screen_resolution(self.app.model.screen_resolution, self.app.model.fullscreen_mode)
+        if self.app.model.fullscreen_mode:
+            self.app.on_fullscreen_mode_turned_on()
 
         @surface.event
         def on_draw():
@@ -76,34 +73,34 @@ class RSSim:
 
         @surface.event
         def on_mouse_press(x, y, button, modifiers):
-            for h in self.app_controller.on_mouse_press_handlers:
+            for h in self.app.on_mouse_press_handlers:
                 h(x, y, button, modifiers)
 
         @surface.event
         def on_mouse_release(x, y, button, modifiers):
-            for h in self.app_controller.on_mouse_release_handlers:
+            for h in self.app.on_mouse_release_handlers:
                 h(x, y, button, modifiers)
 
         @surface.event
         def on_mouse_motion(x, y, dx, dy):
-            for h in self.app_controller.on_mouse_motion_handlers:
+            for h in self.app.on_mouse_motion_handlers:
                 h(x, y, dx, dy)
 
         @surface.event
         def on_mouse_drag(x, y, dx, dy, button, modifiers):
-            for h in self.app_controller.on_mouse_drag_handlers:
+            for h in self.app.on_mouse_drag_handlers:
                 h(x, y, dx, dy, button, modifiers)
 
         @surface.event
         def on_mouse_leave(x, y):
-            for h in self.app_controller.on_mouse_leave_handlers:
+            for h in self.app.on_mouse_leave_handlers:
                 h(x, y)
 
     def run(self):
         while True:
             self.surface.dispatch_events()
-            self.app_controller.on_update_model()
-            self.app_controller.on_update_view()
+            self.app.on_update_model()
+            self.app.on_update_view()
             self.surface.dispatch_event('on_draw')
             self.surface.flip()
 

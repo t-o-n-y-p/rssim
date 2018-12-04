@@ -14,11 +14,9 @@ def create_app(user_db_connection, user_db_cursor, config_db_cursor, surface, ba
     return controller
 
 
-def create_game(user_db_connection, user_db_cursor, config_db_cursor, surface, batch, groups, parent_controller):
-    controller = GameController(parent_controller)
-    parent_controller.init_controllers.append(controller)
-    parent_controller.child_controllers.append(controller)
-    parent_controller.exclusive_child_controllers.append(controller)
+def create_game(user_db_connection, user_db_cursor, config_db_cursor, surface, batch, groups, app):
+    controller = GameController(app)
+    app.game = controller
     model = GameModel(user_db_connection, user_db_cursor, config_db_cursor)
     view = GameView(surface, batch, groups)
     controller.model = model
@@ -28,10 +26,9 @@ def create_game(user_db_connection, user_db_cursor, config_db_cursor, surface, b
     return controller
 
 
-def create_map(user_db_connection, user_db_cursor, config_db_cursor, surface, batch, groups, parent_controller):
-    controller = MapController(parent_controller)
-    parent_controller.init_controllers.append(controller)
-    parent_controller.child_controllers.append(controller)
+def create_map(user_db_connection, user_db_cursor, config_db_cursor, surface, batch, groups, game):
+    controller = MapController(game)
+    game.map = controller
     model = MapModel(user_db_connection, user_db_cursor, config_db_cursor)
     view = MapView(surface, batch, groups)
     controller.model = model

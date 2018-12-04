@@ -70,9 +70,7 @@ class AppView(View):
 
         super().__init__(surface, batch, groups)
         self.main_frame = load('img/main_frame/main_frame_1280_720.png')
-        self.title_label = Label('Railway Station Simulator', font_name='Arial', font_size=14,
-                                 x=10, y=703, anchor_x='left', anchor_y='center', batch=self.batch,
-                                 group=self.groups['button_text'])
+        self.title_label = None
         self.main_frame_sprite = None
         self.buttons.append(CloseGameButton(surface=self.surface, batch=self.batch, groups=self.groups,
                                             on_click_action=on_close_game))

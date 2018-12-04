@@ -1,6 +1,3 @@
-from sys import exit
-
-
 def _controller_is_active(fn):
     def _handle_if_controller_is_activated(*args, **kwargs):
         if args[0].is_activated:
@@ -23,9 +20,6 @@ class Controller:
         self.view = None
         self.is_activated = False
         self.parent_controller = parent_controller
-        self.child_controllers = []
-        self.exclusive_child_controllers = []
-        self.init_controllers = []
         self.on_mouse_press_handlers = []
         self.on_mouse_release_handlers = []
         self.on_mouse_motion_handlers = []
@@ -33,40 +27,18 @@ class Controller:
         self.on_mouse_leave_handlers = []
 
     def on_update_model(self):
-        self.model.on_update()
-        for controller in self.child_controllers:
-            controller.on_update_model()
+        pass
 
     def on_update_view(self):
-        self.view.on_update()
-        for controller in self.child_controllers:
-            controller.on_update_view()
+        pass
 
     @_controller_is_not_active
     def on_activate(self):
-        self.is_activated = True
-        self.model.on_activate()
-        self.view.on_activate()
-        for controller in self.init_controllers:
-            controller.on_activate()
+        pass
 
     @_controller_is_active
     def on_deactivate(self):
-        self.is_activated = False
-        self.model.on_deactivate()
-        self.view.on_deactivate()
-        for controller in self.child_controllers:
-            controller.on_deactivate()
-
-        if self.parent_controller is None:
-            exit()
-
-    def on_activate_child_controller(self, controller):
-        if controller in self.exclusive_child_controllers:
-            for c in self.exclusive_child_controllers:
-                c.on_deactivate()
-
-        controller.on_activate()
+        pass
 
     def on_append_handlers(self, on_mouse_motion_handlers=None, on_mouse_press_handlers=None,
                            on_mouse_release_handlers=None, on_mouse_drag_handlers=None, on_mouse_leave_handlers=None):
