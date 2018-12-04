@@ -106,7 +106,7 @@ class AppView(View):
 
     def on_activate(self):
         self.is_activated = True
-        self.title_label = Label('Railway Station Simulator', font_name='Arial', font_size=14,
+        self.title_label = Label('Railway Station Simulator', font_name='Arial', font_size=13,
                                  x=10, y=703, anchor_x='left', anchor_y='center', batch=self.batch,
                                  group=self.groups['button_text'])
         if self.main_frame_sprite is None:
@@ -135,7 +135,7 @@ class AppView(View):
 
         self.title_label.delete()
         self.title_label = None
-        self.title_label = Label('Railway Station Simulator', font_name='Arial', font_size=14,
+        self.title_label = Label('Railway Station Simulator', font_name='Arial', font_size=13,
                                  x=10, y=screen_resolution[1] - 17, anchor_x='left', anchor_y='center',
                                  batch=self.batch, group=self.groups['button_text'])
         for b in self.buttons:
