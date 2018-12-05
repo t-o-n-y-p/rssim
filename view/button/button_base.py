@@ -65,6 +65,8 @@ class Button:
         self.position = (0, 0)
         self.button_size = ()
         self.on_click_action = None
+        self.on_hover_action = None
+        self.on_leave_action = None
         self.hand_cursor = self.surface.get_system_mouse_cursor(surface.CURSOR_HAND)
         self.default_cursor = self.surface.get_system_mouse_cursor(surface.CURSOR_DEFAULT)
 
@@ -126,11 +128,15 @@ class Button:
                 self.state = 'hover'
                 self.vertex_list.colors = (127, 0, 0, 191, 127, 0, 0, 191, 127, 0, 0, 191, 127, 0, 0, 191)
                 self.surface.set_mouse_cursor(self.hand_cursor)
+                if self.on_hover_action is not None:
+                    self.on_hover_action()
         else:
             if self.state != 'normal':
                 self.state = 'normal'
                 self.vertex_list.colors = (0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0)
                 self.surface.set_mouse_cursor(self.default_cursor)
+                if self.on_leave_action is not None:
+                    self.on_leave_action()
 
     @_button_is_activated
     @_cursor_is_over_the_button

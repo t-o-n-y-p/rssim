@@ -1,11 +1,36 @@
 from pyglet.image import load
 from pyglet.sprite import Sprite
+from pyglet.window import mouse
 
 from .view_base import View
 from .button import ZoomInButton, ZoomOutButton
 
 
-def _view_is_activated(fn):
+def _map_move_mode_available(fn):
+    def _turn_on_move_mode_if_map_move_mode_available(*args, **kwargs):
+        if args[0].map_move_mode_available:
+            fn(*args, **kwargs)
+
+    return _turn_on_move_mode_if_map_move_mode_available
+
+
+def _map_move_mode_enabled(fn):
+    def _turn_on_move_mode_if_map_move_mode_enabled(*args, **kwargs):
+        if args[0].map_move_mode:
+            fn(*args, **kwargs)
+
+    return _turn_on_move_mode_if_map_move_mode_enabled
+
+
+def _left_button(fn):
+    def _handle_mouse_if_left_button_was_clicked(*args, **kwargs):
+        if args[3] == mouse.LEFT:
+            fn(*args, **kwargs)
+
+    return _handle_mouse_if_left_button_was_clicked
+
+
+def _view_is_active(fn):
     def _handle_if_view_is_activated(*args, **kwargs):
         if args[0].is_activated:
             fn(*args, **kwargs)
@@ -25,19 +50,34 @@ class MapView(View):
             button.paired_button.on_activate()
             self.controller.on_zoom_out()
 
+        def on_leave_action():
+            self.map_move_mode_available = True
+
+        def on_hover_action():
+            self.map_move_mode_available = False
+
         super().__init__(surface, batch, groups)
         self.main_map = load('img/map/4/full_map.png')
         self.main_map_sprite = None
         self.default_base_offset = (-3440, -1440)
+        self.base_offset = (-3440, -1440)
         self.zoom_factor = 1.0
+        self.zoom_out_activated = False
         self.zoom_in_button = ZoomInButton(surface=self.surface, batch=self.batch, groups=self.groups,
-                                           on_click_action=on_zoom_in_button)
+                                           on_click_action=on_zoom_in_button, on_hover_action=on_hover_action,
+                                           on_leave_action=on_leave_action)
         self.zoom_out_button = ZoomOutButton(surface=self.surface, batch=self.batch, groups=self.groups,
-                                             on_click_action=on_zoom_out_button)
+                                             on_click_action=on_zoom_out_button, on_hover_action=on_hover_action,
+                                             on_leave_action=on_leave_action)
         self.zoom_in_button.paired_button = self.zoom_out_button
         self.zoom_out_button.paired_button = self.zoom_in_button
         self.buttons.append(self.zoom_in_button)
         self.buttons.append(self.zoom_out_button)
+        self.map_move_mode_available = True
+        self.map_move_mode = False
+        self.on_mouse_press_handlers.append(self.handle_mouse_press)
+        self.on_mouse_release_handlers.append(self.handle_mouse_release)
+        self.on_mouse_drag_handlers.append(self.handle_mouse_drag)
 
     def on_update(self):
         if self.is_activated and self.main_map_sprite.opacity < 255:
@@ -53,13 +93,15 @@ class MapView(View):
     def on_activate(self):
         self.is_activated = True
         if self.main_map_sprite is None:
-            self.main_map_sprite = Sprite(self.main_map, x=self.default_base_offset[0], y=self.default_base_offset[1],
+            self.main_map_sprite = Sprite(self.main_map, x=self.base_offset[0], y=self.base_offset[1],
                                           batch=self.batch, group=self.groups['main_map'])
             self.main_map_sprite.opacity = 0
+            self.main_map_sprite.scale = self.zoom_factor
 
-        for b in self.buttons:
-            if b.to_activate_on_controller_init:
-                b.on_activate()
+        if self.zoom_out_activated:
+            self.zoom_in_button.on_activate()
+        else:
+            self.zoom_out_button.on_activate()
 
     def on_deactivate(self):
         self.is_activated = False
@@ -68,9 +110,10 @@ class MapView(View):
         for b in self.buttons:
             b.on_deactivate()
 
-    @_view_is_activated
     def on_change_base_offset(self, new_base_offset):
-        self.main_map_sprite.position = new_base_offset
+        self.base_offset = new_base_offset
+        if self.is_activated:
+            self.main_map_sprite.position = new_base_offset
 
     def on_change_default_base_offset(self, new_default_base_offset):
         self.default_base_offset = new_default_base_offset
@@ -82,14 +125,30 @@ class MapView(View):
 
     def on_zoom_in(self):
         self.zoom_factor = 1.0
+        self.zoom_out_activated = False
         if self.is_activated:
             self.main_map_sprite.scale = 1.0
 
     def on_zoom_out(self):
         self.zoom_factor = 0.5
+        self.zoom_out_activated = True
         if self.is_activated:
             self.main_map_sprite.scale = 0.5
 
     def on_change_screen_resolution(self, screen_resolution):
         for b in self.buttons:
             b.on_position_changed((0, screen_resolution[1] - b.y_margin))
+
+    @_left_button
+    @_view_is_active
+    @_map_move_mode_available
+    def handle_mouse_press(self, x, y, button, modifiers):
+        self.map_move_mode = True
+
+    @_map_move_mode_enabled
+    def handle_mouse_drag(self, x, y, dx, dy, buttons, modifiers):
+        self.controller.on_change_base_offset((self.base_offset[0] + dx, self.base_offset[1] + dy))
+
+    @_left_button
+    def handle_mouse_release(self, x, y, button, modifiers):
+        self.map_move_mode = False

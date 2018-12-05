@@ -70,4 +70,5 @@ class MapModel(Model):
 
     def on_change_base_offset(self, new_base_offset):
         self.base_offset = new_base_offset
-        self.view.on_change_base_offset(new_base_offset)
+        self.check_base_offset_limits()
+        self.view.on_change_base_offset(self.base_offset)
