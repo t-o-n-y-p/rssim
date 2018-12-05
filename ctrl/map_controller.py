@@ -24,8 +24,8 @@ class MapController(Controller):
     def on_change_screen_resolution(self, screen_resolution):
         self.model.on_change_screen_resolution(screen_resolution)
 
-    def on_move_map(self, dx, dy):
-        self.model.on_change_base_offset(dx, dy)
+    def on_change_base_offset(self, new_base_offset):
+        self.model.on_change_base_offset(new_base_offset)
 
     def on_pause_game(self):
         pass
@@ -41,3 +41,9 @@ class MapController(Controller):
 
     def on_deactivate_view(self):
         self.view.on_deactivate()
+
+    def on_zoom_in(self):
+        self.model.on_zoom_in()
+
+    def on_zoom_out(self):
+        self.model.on_zoom_out()
