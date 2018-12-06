@@ -1,5 +1,7 @@
 from pyglet.image import load
 from pyglet.sprite import Sprite
+from pyglet.text import Label
+from pyglet.resource import add_font
 
 from .view_base import View
 from .button import PauseGameButton, ResumeGameButton
@@ -29,6 +31,10 @@ class GameView(View):
         self.resume_game_button.paired_button = self.pause_game_button
         self.buttons.append(self.pause_game_button)
         self.buttons.append(self.resume_game_button)
+        add_font('perfo-bold.ttf')
+        self.day_sprite = None
+        self.time_sprite = None
+        self.game_time = 0
 
     def on_update(self):
         if self.is_activated and self.game_frame_sprite.opacity < 255:
@@ -48,12 +54,26 @@ class GameView(View):
                                             group=self.groups['main_frame'])
             self.game_frame_sprite.opacity = 0
 
+        self.day_sprite = Label(f'DAY  {1 + self.game_time // 345600}', font_name='Perfo', bold=True, font_size=22,
+                                color=(255, 255, 255, 255), x=self.screen_resolution[0] - 181, y=57,
+                                anchor_x='center', anchor_y='center', batch=self.batch,
+                                group=self.groups['button_text'])
+        self.time_sprite = Label('{0:0>2} : {1:0>2}'.format((self.game_time // 14400 + 12) % 24,
+                                                            (self.game_time // 240) % 60),
+                                 font_name='Perfo', bold=True, font_size=22, color=(255, 255, 255, 255),
+                                 x=self.screen_resolution[0] - 181, y=26, anchor_x='center', anchor_y='center',
+                                 batch=self.batch, group=self.groups['button_text'])
+
         for b in self.buttons:
             if b.to_activate_on_controller_init:
                 b.on_activate()
 
     def on_deactivate(self):
         self.is_activated = False
+        self.day_sprite.delete()
+        self.day_sprite = None
+        self.time_sprite.delete()
+        self.time_sprite = None
         for b in self.buttons:
             b.on_deactivate()
 
@@ -71,3 +91,10 @@ class GameView(View):
 
     def on_resume_game(self):
         pass
+
+    def on_update_game_time(self, game_time):
+        self.game_time = game_time
+        if self.is_activated:
+            self.time_sprite.text = '{0:0>2} : {1:0>2}'.format((self.game_time // 14400 + 12) % 24,
+                                                               (self.game_time // 240) % 60)
+            self.day_sprite.text = f'DAY  {1 + self.game_time // 345600}'

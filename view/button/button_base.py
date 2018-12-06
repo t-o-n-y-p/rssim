@@ -2,6 +2,7 @@ from pyglet import gl
 from pyglet.sprite import Sprite
 from pyglet.text import Label
 from pyglet.window import mouse
+from pyglet.resource import add_font
 
 
 def _button_is_not_activated(fn):
@@ -59,6 +60,7 @@ class Button:
         self.vertex_list = None
         self.text_object = None
         self.text = None
+        add_font('perfo-bold.ttf')
         self.font_name = None
         self.is_bold = None
         self.font_size = None

@@ -11,10 +11,10 @@ class ZoomInButton(Button):
         self.border_sprite = None
         self.vertex_list = None
         self.text_object = None
-        self.text = '<<>>'
-        self.font_name = 'Arial'
-        self.is_bold = False
-        self.font_size = 22
+        self.text = '< >'
+        self.font_name = 'Perfo'
+        self.is_bold = True
+        self.font_size = 32
         self.y_margin = 112
         self.button_size = (80, 80)
         self.on_click_action = on_click_action
