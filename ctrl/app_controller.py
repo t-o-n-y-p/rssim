@@ -9,11 +9,6 @@ class AppController(Controller):
         self.game = None
         self.settings = None
 
-    def on_update_model(self):
-        self.model.on_update()
-        self.game.on_update_model()
-        self.settings.on_update_model()
-
     def on_update_view(self):
         self.view.on_update()
         self.game.on_update_view()

@@ -9,6 +9,14 @@ def _model_is_active(fn):
     return _handle_if_model_is_activated
 
 
+def _game_is_not_paused(fn):
+    def _update_if_game_is_not_paused(*args, **kwargs):
+        if not args[0].game_paused:
+            fn(*args, **kwargs)
+
+    return _update_if_game_is_not_paused
+
+
 class GameModel(Model):
     def __init__(self, user_db_connection, user_db_cursor, config_db_cursor):
         super().__init__(user_db_connection, user_db_cursor, config_db_cursor)
@@ -32,6 +40,7 @@ class GameModel(Model):
         self.view.on_resume_game()
 
     @_model_is_active
+    @_game_is_not_paused
     def on_update(self):
         self.game_time += 1
         if self.game_time % 240 == 0:

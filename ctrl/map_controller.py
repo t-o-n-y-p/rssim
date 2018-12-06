@@ -5,9 +5,6 @@ class MapController(Controller):
     def __init__(self, game_controller):
         super().__init__(parent_controller=game_controller)
 
-    def on_update_model(self):
-        self.model.on_update()
-
     def on_update_view(self):
         self.view.on_update()
 

@@ -7,9 +7,6 @@ class SettingsController(Controller):
         self.navigated_from_main_menu = False
         self.navigated_from_game = False
 
-    def on_update_model(self):
-        self.model.on_update()
-
     def on_update_view(self):
         self.view.on_update()
 

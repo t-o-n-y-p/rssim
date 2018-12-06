@@ -22,9 +22,6 @@ class Model:
         self.user_db_cursor = user_db_cursor
         self.config_db_cursor = config_db_cursor
 
-    def on_update(self):
-        pass
-
     @_model_is_not_active
     def on_activate(self):
         pass

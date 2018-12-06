@@ -6,10 +6,6 @@ class GameController(Controller):
         super().__init__(parent_controller=app)
         self.map = None
 
-    def on_update_model(self):
-        self.model.on_update()
-        self.map.on_update_model()
-
     def on_update_view(self):
         self.view.on_update()
         self.map.on_update_view()

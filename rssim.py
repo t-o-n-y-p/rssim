@@ -102,7 +102,7 @@ class RSSim:
     def run(self):
         while True:
             self.surface.dispatch_events()
-            self.app.on_update_model()
+            self.game.model.on_update()
             self.app.on_update_view()
             self.surface.dispatch_event('on_draw')
             self.surface.flip()
