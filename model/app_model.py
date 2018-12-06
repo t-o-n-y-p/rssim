@@ -61,6 +61,8 @@ class AppModel(Model):
         self.view.on_change_screen_resolution(self.screen_resolution, fullscreen=fullscreen_mode)
 
     def save_state(self):
+        self.user_db_cursor.execute('UPDATE graphics_config SET app_width = ?, app_height = ?',
+                                    self.windowed_resolution)
         if self.fullscreen_mode:
             self.user_db_cursor.execute('UPDATE graphics_config SET fullscreen = 1')
         else:

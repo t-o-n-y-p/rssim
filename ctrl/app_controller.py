@@ -30,6 +30,7 @@ class AppController(Controller):
         self.model.on_deactivate()
         self.view.on_deactivate()
         self.game.on_deactivate()
+        self.settings.on_deactivate()
 
     def on_fullscreen_mode_turned_on(self):
         self.on_change_screen_resolution(self.model.fullscreen_resolution, fullscreen_mode=False)

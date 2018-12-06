@@ -59,8 +59,10 @@ class MapView(View):
         super().__init__(surface, batch, groups)
         self.main_map = load('img/map/4/full_map.png')
         self.main_map_sprite = None
-        self.default_base_offset = (-3440, -1440)
+        self.screen_resolution = (1280, 720)
         self.base_offset = (-3440, -1440)
+        self.base_offset_lower_left_limit = (0, 0)
+        self.base_offset_upper_right_limit = (-6880, -2880)
         self.zoom_factor = 1.0
         self.zoom_out_activated = False
         self.zoom_in_button = ZoomInButton(surface=self.surface, batch=self.batch, groups=self.groups,
@@ -112,30 +114,35 @@ class MapView(View):
 
     def on_change_base_offset(self, new_base_offset):
         self.base_offset = new_base_offset
+        self.check_base_offset_limits()
         if self.is_activated:
-            self.main_map_sprite.position = new_base_offset
-
-    def on_change_default_base_offset(self, new_default_base_offset):
-        self.default_base_offset = new_default_base_offset
+            self.main_map_sprite.position = self.base_offset
 
     def on_unlock_track(self, track_number):
         self.main_map = load(f'img/map/{track_number}/full_map.png')
         if self.is_activated:
             self.main_map_sprite.image = self.main_map
 
-    def on_zoom_in(self):
-        self.zoom_factor = 1.0
-        self.zoom_out_activated = False
+    def on_change_zoom_factor(self, zoom_factor, zoom_out_activated):
+        self.zoom_factor = zoom_factor
+        self.zoom_out_activated = zoom_out_activated
         if self.is_activated:
-            self.main_map_sprite.scale = 1.0
+            self.main_map_sprite.scale = zoom_factor
 
-    def on_zoom_out(self):
-        self.zoom_factor = 0.5
-        self.zoom_out_activated = True
-        if self.is_activated:
-            self.main_map_sprite.scale = 0.5
+        if zoom_out_activated:
+            self.base_offset_upper_right_limit = (self.screen_resolution[0] - 4080, self.screen_resolution[1] - 1800)
+            self.on_change_base_offset((self.base_offset[0] // 2 + self.screen_resolution[0] // 4,
+                                        self.base_offset[1] // 2 + self.screen_resolution[1] // 4))
+        else:
+            self.base_offset_upper_right_limit = (self.screen_resolution[0] - 8160, self.screen_resolution[1] - 3600)
+            self.on_change_base_offset((self.base_offset[0] * 2 - self.screen_resolution[0] // 2,
+                                        self.base_offset[1] * 2 - self.screen_resolution[1] // 2))
 
     def on_change_screen_resolution(self, screen_resolution):
+        self.base_offset_upper_right_limit = (screen_resolution[0] - 8160, screen_resolution[1] - 3600)
+        self.on_change_base_offset((self.base_offset[0] + (screen_resolution[0] - self.screen_resolution[0]) // 2,
+                                    self.base_offset[1] + (screen_resolution[1] - self.screen_resolution[1]) // 2))
+        self.screen_resolution = screen_resolution
         for b in self.buttons:
             b.on_position_changed((0, screen_resolution[1] - b.y_margin))
 
@@ -152,3 +159,16 @@ class MapView(View):
     @_left_button
     def handle_mouse_release(self, x, y, button, modifiers):
         self.map_move_mode = False
+
+    def check_base_offset_limits(self):
+        if self.base_offset[0] > self.base_offset_lower_left_limit[0]:
+            self.base_offset = (self.base_offset_lower_left_limit[0], self.base_offset[1])
+
+        if self.base_offset[0] < self.base_offset_upper_right_limit[0]:
+            self.base_offset = (self.base_offset_upper_right_limit[0], self.base_offset[1])
+
+        if self.base_offset[1] > self.base_offset_lower_left_limit[1]:
+            self.base_offset = (self.base_offset[0], self.base_offset_lower_left_limit[1])
+
+        if self.base_offset[1] < self.base_offset_upper_right_limit[1]:
+            self.base_offset = (self.base_offset[0], self.base_offset_upper_right_limit[1])

@@ -22,16 +22,16 @@ class MapController(Controller):
         self.view.on_deactivate()
 
     def on_change_screen_resolution(self, screen_resolution):
-        self.model.on_change_screen_resolution(screen_resolution)
+        self.view.on_change_screen_resolution(screen_resolution)
 
     def on_change_base_offset(self, new_base_offset):
-        self.model.on_change_base_offset(new_base_offset)
+        self.view.on_change_base_offset(new_base_offset)
 
     def on_pause_game(self):
-        pass
+        self.model.on_pause_game()
 
     def on_resume_game(self):
-        pass
+        self.model.on_resume_game()
 
     def on_unlock_track(self, track_number):
         self.model.on_unlock_track(track_number)
@@ -43,7 +43,7 @@ class MapController(Controller):
         self.view.on_deactivate()
 
     def on_zoom_in(self):
-        self.model.on_zoom_in()
+        self.view.on_change_zoom_factor(1.0, zoom_out_activated=False)
 
     def on_zoom_out(self):
-        self.model.on_zoom_out()
+        self.view.on_change_zoom_factor(0.5, zoom_out_activated=True)

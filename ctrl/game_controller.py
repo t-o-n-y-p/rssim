@@ -27,7 +27,7 @@ class GameController(Controller):
         self.map.on_deactivate()
 
     def on_change_screen_resolution(self, screen_resolution):
-        self.model.on_change_screen_resolution(screen_resolution)
+        self.view.on_change_screen_resolution(screen_resolution)
         self.map.on_change_screen_resolution(screen_resolution)
 
     def on_pause_game(self):
