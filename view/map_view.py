@@ -22,7 +22,7 @@ def _map_move_mode_enabled(fn):
     return _turn_on_move_mode_if_map_move_mode_enabled
 
 
-def _left_button(fn):
+def _left_mouse_button(fn):
     def _handle_mouse_if_left_button_was_clicked(*args, **kwargs):
         if args[3] == mouse.LEFT:
             fn(*args, **kwargs)
@@ -155,9 +155,9 @@ class MapView(View):
         for b in self.buttons:
             b.on_position_changed((0, screen_resolution[1] - b.y_margin))
 
-    @_left_button
     @_view_is_active
     @_cursor_is_on_the_map
+    @_left_mouse_button
     @_map_move_mode_available
     def handle_mouse_press(self, x, y, button, modifiers):
         self.map_move_mode = True
@@ -166,7 +166,7 @@ class MapView(View):
     def handle_mouse_drag(self, x, y, dx, dy, buttons, modifiers):
         self.controller.on_change_base_offset((self.base_offset[0] + dx, self.base_offset[1] + dy))
 
-    @_left_button
+    @_left_mouse_button
     def handle_mouse_release(self, x, y, button, modifiers):
         self.map_move_mode = False
 

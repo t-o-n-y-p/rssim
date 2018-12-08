@@ -34,7 +34,7 @@ def _app_window_move_mode_enabled(fn):
     return _handle_if_app_window_move_mode_enabled
 
 
-def _left_button(fn):
+def _left_mouse_button(fn):
     def _handle_mouse_if_left_button_was_clicked(*args, **kwargs):
         if args[3] == mouse.LEFT:
             fn(*args, **kwargs)
@@ -157,7 +157,7 @@ class AppView(View):
 
     @_game_window_is_active
     @_game_is_not_fullscreen
-    @_left_button
+    @_left_mouse_button
     @_view_is_active
     def handle_mouse_press(self, x, y, button, modifiers):
         y = self.surface.height - y
@@ -166,7 +166,7 @@ class AppView(View):
             self.app_window_move_offset = (x, y)
 
     @_game_window_is_active
-    @_left_button
+    @_left_mouse_button
     def handle_mouse_release(self, x, y, button, modifiers):
         self.app_window_move_mode = False
 
