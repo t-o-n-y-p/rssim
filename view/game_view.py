@@ -203,9 +203,12 @@ class GameView(View):
 
     @_view_is_active
     def on_update_exp(self, exp, player_progress):
-        exp_percent = int(exp / player_progress * 100)
-        if exp_percent > 100:
-            exp_percent = 100
+        if player_progress < 1:
+            exp_percent = 0
+        else:
+            exp_percent = int(exp / player_progress * 100)
+            if exp_percent > 100:
+                exp_percent = 100
 
         if exp_percent == 0:
             image_region = self.progress_bar_exp_active_image.get_region(0, 0, 1, 10)
