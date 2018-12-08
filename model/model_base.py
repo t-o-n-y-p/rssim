@@ -17,6 +17,7 @@ def _model_is_not_active(fn):
 class Model:
     def __init__(self, user_db_connection, user_db_cursor, config_db_cursor):
         self.view = None
+        self.controller = None
         self.is_activated = False
         self.user_db_connection = user_db_connection
         self.user_db_cursor = user_db_cursor

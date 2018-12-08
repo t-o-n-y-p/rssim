@@ -108,7 +108,7 @@ class RSSim:
         while True:
             time_1 = perf_counter()
             self.surface.dispatch_events()
-            self.game.model.on_update()
+            self.game.model.on_update_time()
             self.app.on_update_view()
             self.surface.dispatch_event('on_draw')
             self.surface.flip()

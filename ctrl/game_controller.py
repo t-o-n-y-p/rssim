@@ -14,6 +14,9 @@ class GameController(Controller):
         self.is_activated = True
         self.model.on_activate()
         self.view.on_activate()
+        self.view.on_update_game_time(self.model.game_time)
+        self.view.on_update_level(self.model.level)
+        self.view.on_update_exp(self.model.exp, self.model.player_progress)
         self.map.on_activate()
 
     def on_deactivate(self):
@@ -39,8 +42,27 @@ class GameController(Controller):
 
     def on_activate_view(self):
         self.view.on_activate()
+        self.view.on_update_game_time(self.model.game_time)
+        self.view.on_update_level(self.model.level)
+        self.view.on_update_exp(self.model.exp, self.model.player_progress)
         self.map.on_activate_view()
 
     def on_deactivate_view(self):
         self.view.on_deactivate()
         self.map.on_deactivate_view()
+
+    def on_update_time(self):
+        self.map.on_update_time(self.model.game_time)
+        self.model.on_update_time()
+        if self.model.game_time % 28800 == 0:
+            self.on_save_and_commit_game_state()
+
+    def on_save_and_commit_game_state(self):
+        self.model.on_save_game_state()
+        self.map.on_save_game_state()
+
+        self.model.user_db_connection.commit()
+
+    def on_level_up(self):
+        self.model.on_level_up()
+        self.map.on_level_up()

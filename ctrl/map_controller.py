@@ -44,3 +44,6 @@ class MapController(Controller):
 
     def on_zoom_out(self):
         self.view.on_change_zoom_factor(0.5, zoom_out_activated=True)
+
+    def on_save_game_state(self):
+        pass
