@@ -1,6 +1,14 @@
 from .controller_base import Controller
 
 
+def _game_is_not_paused(fn):
+    def _update_if_game_is_not_paused(*args, **kwargs):
+        if not args[0].model.game_paused:
+            fn(*args, **kwargs)
+
+    return _update_if_game_is_not_paused
+
+
 class GameController(Controller):
     def __init__(self, app):
         super().__init__(parent_controller=app)
@@ -27,11 +35,9 @@ class GameController(Controller):
 
     def on_pause_game(self):
         self.model.on_pause_game()
-        self.map.on_pause_game()
 
     def on_resume_game(self):
         self.model.on_resume_game()
-        self.map.on_resume_game()
 
     def on_unlock_track(self, track_number):
         self.map.on_unlock_track(track_number)
@@ -47,6 +53,7 @@ class GameController(Controller):
         self.view.on_deactivate()
         self.map.on_deactivate_view()
 
+    @_game_is_not_paused
     def on_update_time(self):
         self.map.on_update_time(self.model.game_time)
         self.model.on_update_time()

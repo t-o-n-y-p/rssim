@@ -38,6 +38,15 @@ def _view_is_active(fn):
     return _handle_if_view_is_activated
 
 
+def _cursor_is_on_the_map(fn):
+    def _enable_map_move_mode_if_cursor_is_on_the_map(*args, **kwargs):
+        if args[1] in range(0, args[0].screen_resolution[0]) \
+                and args[2] in range(80, args[0].screen_resolution[1] - 35):
+            fn(*args, **kwargs)
+
+    return _enable_map_move_mode_if_cursor_is_on_the_map
+
+
 class MapView(View):
     def __init__(self, surface, batch, groups):
         def on_zoom_in_button(button):
@@ -148,6 +157,7 @@ class MapView(View):
 
     @_left_button
     @_view_is_active
+    @_cursor_is_on_the_map
     @_map_move_mode_available
     def handle_mouse_press(self, x, y, button, modifiers):
         self.map_move_mode = True

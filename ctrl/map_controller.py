@@ -23,12 +23,6 @@ class MapController(Controller):
     def on_change_base_offset(self, new_base_offset):
         self.view.on_change_base_offset(new_base_offset)
 
-    def on_pause_game(self):
-        self.model.on_pause_game()
-
-    def on_resume_game(self):
-        self.model.on_resume_game()
-
     def on_unlock_track(self, track_number):
         self.model.on_unlock_track(track_number)
 
@@ -45,4 +39,7 @@ class MapController(Controller):
         self.view.on_change_zoom_factor(0.5, zoom_out_activated=True)
 
     def on_save_state(self):
+        pass
+
+    def on_update_time(self, game_time):
         pass

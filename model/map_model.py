@@ -19,9 +19,3 @@ class MapModel(Model):
     def on_unlock_track(self, track_number):
         self.unlocked_tracks = track_number
         self.view.on_unlock_track(track_number)
-
-    def on_pause_game(self):
-        self.game_paused = True
-
-    def on_resume_game(self):
-        self.game_paused = False
