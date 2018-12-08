@@ -36,6 +36,9 @@ class AppModel(Model):
         self.is_activated = True
         self.on_activate_view()
 
+    def on_deactivate(self):
+        self.is_activated = False
+
     def on_activate_view(self):
         self.view.on_activate()
         if self.fullscreen_mode:

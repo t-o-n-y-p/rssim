@@ -1,6 +1,6 @@
 from ctypes import c_long, windll
 from sys import exit
-import sqlite3
+from sqlite3 import connect
 from time import perf_counter
 
 from pyglet import gl
@@ -23,9 +23,9 @@ class RSSim:
         if windll.user32.GetSystemMetrics(0) < 1280 or windll.user32.GetSystemMetrics(1) < 720:
             raise MonitorNotSupportedException
 
-        self.user_db_connection = sqlite3.connect('db/user.db')
+        self.user_db_connection = connect('db/user.db')
         self.user_db_cursor = self.user_db_connection.cursor()
-        self.config_db_connection = sqlite3.connect('db/config.db')
+        self.config_db_connection = connect('db/config.db')
         self.config_db_cursor = self.config_db_connection.cursor()
         gl.glEnable(gl.GL_BLEND)
         gl.glBlendFunc(gl.GL_SRC_ALPHA, gl.GL_ONE_MINUS_SRC_ALPHA)

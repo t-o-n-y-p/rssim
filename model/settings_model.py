@@ -10,6 +10,9 @@ class SettingsModel(Model):
         self.is_activated = True
         self.view.on_activate()
 
+    def on_deactivate(self):
+        self.is_activated = False
+
     def on_change_screen_resolution(self, screen_resolution):
         self.screen_resolution = screen_resolution
         self.view.on_change_screen_resolution(self.screen_resolution)

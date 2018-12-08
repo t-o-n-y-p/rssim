@@ -60,6 +60,9 @@ class GameModel(Model):
         self.is_activated = True
         self.on_activate_view()
 
+    def on_deactivate(self):
+        self.is_activated = False
+
     def on_activate_view(self):
         self.view.on_activate()
         self.view.on_update_game_time(self.game_time)
