@@ -43,10 +43,7 @@ class GameController(Controller):
         self.map.on_unlock_track(track_number)
 
     def on_activate_view(self):
-        self.view.on_activate()
-        self.view.on_update_game_time(self.model.game_time)
-        self.view.on_update_level(self.model.level)
-        self.view.on_update_exp(self.model.exp, self.model.player_progress)
+        self.model.on_activate_view()
         self.map.on_activate_view()
 
     def on_deactivate_view(self):

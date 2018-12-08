@@ -58,11 +58,18 @@ class GameModel(Model):
 
     def on_activate(self):
         self.is_activated = True
+        self.on_activate_view()
+
+    def on_activate_view(self):
         self.view.on_activate()
         self.view.on_update_game_time(self.game_time)
         self.view.on_update_level(self.level)
         self.view.on_update_exp(self.exp, self.player_progress)
         self.view.on_update_money(self.money, self.money_target)
+        if self.game_paused:
+            self.view.resume_game_button.on_activate()
+        else:
+            self.view.pause_game_button.on_activate()
 
     def on_pause_game(self):
         self.game_paused = True
