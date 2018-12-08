@@ -11,6 +11,9 @@ class MapModel(Model):
     def on_activate(self):
         self.is_activated = True
 
+    def on_deactivate(self):
+        self.is_activated = False
+
     def on_assign_view(self, view):
         self.view = view
         self.view.on_unlock_track(self.unlocked_tracks)

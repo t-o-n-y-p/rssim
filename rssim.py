@@ -1,6 +1,7 @@
 from ctypes import c_long, windll
 from sys import exit
 import sqlite3
+from time import perf_counter
 
 from pyglet import gl
 from pyglet.window import Window
@@ -9,7 +10,7 @@ from win32api import MessageBoxEx
 import win32con
 
 from exceptions import VideoAdapterNotSupportedException, MonitorNotSupportedException
-from game_objects import create_app, create_game, create_map, create_settings
+from game_objects import create_app, create_game, create_map, create_settings, create_fps
 
 
 class RSSim:
@@ -64,6 +65,9 @@ class RSSim:
         self.settings = create_settings(user_db_connection=self.user_db_connection, user_db_cursor=self.user_db_cursor,
                                         config_db_cursor=self.config_db_cursor,
                                         surface=self.surface, batch=self.batch, groups=self.groups, app=self.app)
+        self.fps = create_fps(user_db_connection=self.user_db_connection, user_db_cursor=self.user_db_cursor,
+                              config_db_cursor=self.config_db_cursor,
+                              surface=self.surface, batch=self.batch, groups=self.groups, app=self.app)
         self.app.on_activate()
         self.app.on_change_screen_resolution(self.app.model.screen_resolution, self.app.model.fullscreen_mode)
         if self.app.model.fullscreen_mode:
@@ -100,12 +104,18 @@ class RSSim:
                 h(x, y)
 
     def run(self):
+        fps_timer = 0.0
         while True:
+            time_1 = perf_counter()
             self.surface.dispatch_events()
             self.game.model.on_update()
             self.app.on_update_view()
             self.surface.dispatch_event('on_draw')
             self.surface.flip()
+            time_4 = perf_counter()
+            if perf_counter() - fps_timer > 0.2:
+                self.app.on_update_fps(round(float(1/(time_4 - time_1))))
+                fps_timer = perf_counter()
 
 
 def main():

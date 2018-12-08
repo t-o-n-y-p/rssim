@@ -8,6 +8,7 @@ class AppController(Controller):
         super().__init__()
         self.game = None
         self.settings = None
+        self.fps = None
 
     def on_update_view(self):
         self.view.on_update()
@@ -19,6 +20,7 @@ class AppController(Controller):
         self.model.on_activate()
         self.view.on_activate()
         self.game.on_activate()
+        self.fps.on_activate()
 
     def on_deactivate(self):
         self.is_activated = False
@@ -26,6 +28,7 @@ class AppController(Controller):
         self.view.on_deactivate()
         self.game.on_deactivate()
         self.settings.on_deactivate()
+        self.fps.on_deactivate()
 
     def on_fullscreen_mode_turned_on(self):
         self.on_change_screen_resolution(self.model.fullscreen_resolution, fullscreen_mode=False)
@@ -35,6 +38,7 @@ class AppController(Controller):
         self.model.on_change_screen_resolution(screen_resolution, fullscreen_mode)
         self.game.on_change_screen_resolution(screen_resolution)
         self.settings.on_change_screen_resolution(screen_resolution)
+        self.fps.on_change_screen_resolution(screen_resolution)
 
     def on_fullscreen_mode_turned_off(self):
         self.model.on_fullscreen_mode_turned_off()
@@ -57,3 +61,12 @@ class AppController(Controller):
 
     def on_activate_open_settings_button(self):
         self.view.open_settings_button.on_activate()
+
+    def on_update_fps(self, fps):
+        self.fps.on_update_fps(fps)
+
+    def on_display_fps(self):
+        self.fps.on_activate()
+
+    def on_hide_fps(self):
+        self.fps.on_deactivate()
