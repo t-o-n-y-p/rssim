@@ -66,9 +66,10 @@ class GameModel(Model):
 
     def on_activate(self):
         self.is_activated = True
-
-    def on_assign_view(self, view):
-        self.view = view
+        self.view.on_activate()
+        self.view.on_update_game_time(self.game_time)
+        self.view.on_update_level(self.level)
+        self.view.on_update_exp(self.exp, self.player_progress)
 
     def on_pause_game(self):
         self.game_paused = True
@@ -86,7 +87,7 @@ class GameModel(Model):
 
         self.game_time += 1
 
-    def on_save_game_state(self):
+    def on_save_state(self):
         self.user_db_cursor.execute('UPDATE epoch_timestamp SET game_time = ?', (self.game_time, ))
         self.user_db_cursor.execute('''UPDATE game_progress SET level = ?, exp = ?, accumulated_exp = ?, money = ?, 
                                     money_target = ?''', (self.level, self.exp, self.accumulated_exp, self.money,

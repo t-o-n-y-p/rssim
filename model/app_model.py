@@ -34,9 +34,7 @@ class AppModel(Model):
 
     def on_activate(self):
         self.is_activated = True
-
-    def on_assign_view(self, view):
-        self.view = view
+        self.view.on_activate()
         if self.fullscreen_mode:
             self.view.restore_button.on_activate()
         else:

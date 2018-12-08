@@ -8,9 +8,7 @@ class FPSModel(Model):
 
     def on_activate(self):
         self.is_activated = True
-
-    def on_assign_view(self, view):
-        self.view = view
+        self.view.on_activate()
 
     def on_update_fps(self, fps):
         self.fps = fps

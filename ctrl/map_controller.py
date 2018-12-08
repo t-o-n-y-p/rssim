@@ -11,7 +11,6 @@ class MapController(Controller):
     def on_activate(self):
         self.is_activated = True
         self.model.on_activate()
-        self.view.on_activate()
 
     def on_deactivate(self):
         self.is_activated = False
@@ -45,5 +44,5 @@ class MapController(Controller):
     def on_zoom_out(self):
         self.view.on_change_zoom_factor(0.5, zoom_out_activated=True)
 
-    def on_save_game_state(self):
+    def on_save_state(self):
         pass

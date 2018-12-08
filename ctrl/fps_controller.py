@@ -19,7 +19,6 @@ class FPSController(Controller):
     def on_activate(self):
         self.is_activated = True
         self.model.on_activate()
-        self.view.on_activate()
 
     def on_deactivate(self):
         self.is_activated = False

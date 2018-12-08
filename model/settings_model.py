@@ -8,9 +8,7 @@ class SettingsModel(Model):
 
     def on_activate(self):
         self.is_activated = True
-
-    def on_assign_view(self, view):
-        self.view = view
+        self.view.on_activate()
 
     def on_change_screen_resolution(self, screen_resolution):
         self.screen_resolution = screen_resolution

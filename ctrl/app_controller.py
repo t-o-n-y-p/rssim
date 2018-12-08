@@ -18,7 +18,6 @@ class AppController(Controller):
     def on_activate(self):
         self.is_activated = True
         self.model.on_activate()
-        self.view.on_activate()
         self.game.on_activate()
         self.fps.on_activate()
 

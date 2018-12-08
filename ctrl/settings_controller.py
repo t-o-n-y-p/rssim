@@ -13,7 +13,6 @@ class SettingsController(Controller):
     def on_activate(self):
         self.is_activated = True
         self.model.on_activate()
-        self.view.on_activate()
         self.parent_controller.on_deactivate_current_view()
 
     def on_deactivate(self):

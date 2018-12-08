@@ -11,7 +11,7 @@ def create_app(user_db_connection, user_db_cursor, config_db_cursor, surface, ba
     model.controller = controller
     controller.view = view
     view.on_assign_controller(controller)
-    model.on_assign_view(view)
+    model.view = view
     return controller
 
 
@@ -24,7 +24,7 @@ def create_game(user_db_connection, user_db_cursor, config_db_cursor, surface, b
     model.controller = controller
     controller.view = view
     view.on_assign_controller(controller)
-    model.on_assign_view(view)
+    model.view = view
     return controller
 
 
@@ -37,7 +37,7 @@ def create_map(user_db_connection, user_db_cursor, config_db_cursor, surface, ba
     model.controller = controller
     controller.view = view
     view.on_assign_controller(controller)
-    model.on_assign_view(view)
+    model.view = view
     return controller
 
 
@@ -50,7 +50,7 @@ def create_settings(user_db_connection, user_db_cursor, config_db_cursor, surfac
     model.controller = controller
     controller.view = view
     view.on_assign_controller(controller)
-    model.on_assign_view(view)
+    model.view = view
     return controller
 
 
@@ -63,5 +63,5 @@ def create_fps(user_db_connection, user_db_cursor, config_db_cursor, surface, ba
     model.controller = controller
     controller.view = view
     view.on_assign_controller(controller)
-    model.on_assign_view(view)
+    model.view = view
     return controller
