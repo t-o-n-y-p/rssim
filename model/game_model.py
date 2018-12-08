@@ -123,3 +123,7 @@ class GameModel(Model):
     def on_pay_money(self, money):
         self.money -= money
         self.view.on_update_money(self.money, self.money_target)
+
+    def on_update_money_target(self, money_target):
+        self.money_target = money_target
+        self.view.on_update_money(self.money, self.money_target)
