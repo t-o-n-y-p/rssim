@@ -54,6 +54,7 @@ class Button:
         self.surface = surface
         self.batch = batch
         self.groups = groups
+        self.transparent = True
         self.paired_button = None
         self.border_sprite_image = None
         self.border_sprite = None
@@ -75,6 +76,8 @@ class Button:
     @_button_is_not_activated
     def on_activate(self):
         self.is_activated = True
+        gl.glEnable(gl.GL_BLEND)
+        gl.glBlendFunc(gl.GL_SRC_ALPHA, gl.GL_ONE_MINUS_SRC_ALPHA)
         self.vertex_list = self.batch.add(4, gl.GL_QUADS, self.groups['button_background'],
                                           ('v2i', (self.position[0], self.position[1],
                                                    self.position[0] + self.button_size[0] - 1, self.position[1],
@@ -84,6 +87,9 @@ class Button:
                                            ),
                                           ('c4B', (0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0))
                                           )
+        if not self.transparent:
+            self.vertex_list.colors = (0, 0, 0, 248, 0, 0, 0, 248, 0, 0, 0, 248, 0, 0, 0, 248)
+
         self.border_sprite = Sprite(self.border_sprite_image, x=self.position[0], y=self.position[1], batch=self.batch,
                                     group=self.groups['button_border'])
         if self.text not in (None, ''):
@@ -135,7 +141,11 @@ class Button:
         else:
             if self.state != 'normal':
                 self.state = 'normal'
-                self.vertex_list.colors = (0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0)
+                if not self.transparent:
+                    self.vertex_list.colors = (0, 0, 0, 248, 0, 0, 0, 248, 0, 0, 0, 248, 0, 0, 0, 248)
+                else:
+                    self.vertex_list.colors = (0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0)
+
                 self.surface.set_mouse_cursor(self.default_cursor)
                 if self.on_leave_action is not None:
                     self.on_leave_action()
@@ -159,5 +169,9 @@ class Button:
     @_button_is_activated
     def handle_mouse_leave(self, x, y):
         self.state = 'normal'
-        self.vertex_list.colors = (0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0)
+        if not self.transparent:
+            self.vertex_list.colors = (0, 0, 0, 248, 0, 0, 0, 248, 0, 0, 0, 248, 0, 0, 0, 248)
+        else:
+            self.vertex_list.colors = (0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0)
+
         self.surface.set_mouse_cursor(self.default_cursor)
