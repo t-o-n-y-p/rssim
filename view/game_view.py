@@ -227,3 +227,27 @@ class GameView(View):
     @_view_is_active
     def on_update_level(self, level):
         self.level_text.text = f'LEVEL {level}'
+
+    @_view_is_active
+    def on_update_money(self, money, money_target):
+        if money_target < 1:
+            money_percent = 0
+        else:
+            money_percent = int(money / money_target * 100)
+            if money_percent > 100:
+                money_percent = 100
+
+        if money_percent == 0:
+            image_region = self.progress_bar_money_active_image.get_region(0, 0, 1, 10)
+        else:
+            image_region = self.progress_bar_money_active_image.get_region(0, 0, money_percent * 2, 60)
+
+        self.progress_bar_money_active.image = image_region
+        if money_percent < 100:
+            image_region = self.progress_bar_inactive_image.get_region(money_percent * 2, 0,
+                                                                       200 - money_percent * 2, 60)
+        else:
+            image_region = self.progress_bar_inactive_image.get_region(199, 0, 1, 10)
+
+        self.progress_bar_money_inactive.image = image_region
+        self.progress_bar_money_inactive.position = (self.money_offset + money_percent * 2, 10)

@@ -62,6 +62,7 @@ class GameModel(Model):
         self.view.on_update_game_time(self.game_time)
         self.view.on_update_level(self.level)
         self.view.on_update_exp(self.exp, self.player_progress)
+        self.view.on_update_money(self.money, self.money_target)
 
     def on_pause_game(self):
         self.game_paused = True
@@ -104,3 +105,14 @@ class GameModel(Model):
                                       WHERE level = ?''', (self.level, ))
         self.accumulated_player_progress, self.player_progress = self.config_db_cursor.fetchone()
         self.view.on_update_level(self.level)
+
+    @_maximum_money_not_reached
+    def on_add_money(self, money):
+        self.money += money
+        if self.money > 99999999.01:
+            self.money = 99999999.01
+        self.view.on_update_money(self.money, self.money_target)
+
+    def on_pay_money(self, money):
+        self.money -= money
+        self.view.on_update_money(self.money, self.money_target)
