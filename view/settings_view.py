@@ -5,7 +5,7 @@ from .button import AcceptSettingsButton
 class SettingsView(View):
     def __init__(self, surface, batch, groups):
         def on_accept_settings(button):
-            self.controller.on_accept_settings()
+            self.controller.on_save_and_commit_state()
             self.controller.on_deactivate()
 
         super().__init__(surface, batch, groups)

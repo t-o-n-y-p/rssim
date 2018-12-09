@@ -30,8 +30,10 @@ class AppController(Controller):
         self.fps.on_deactivate()
 
     def on_fullscreen_mode_turned_on(self):
-        self.on_change_screen_resolution(self.model.fullscreen_resolution, fullscreen_mode=False)
+        self.on_change_screen_resolution(self.settings.model.fullscreen_resolution, fullscreen_mode=False)
         self.model.on_fullscreen_mode_turned_on()
+        if self.model.fullscreen_mode_available:
+            self.settings.on_fullscreen_mode_turned_on()
 
     def on_change_screen_resolution(self, screen_resolution, fullscreen_mode):
         self.model.on_change_screen_resolution(screen_resolution, fullscreen_mode)
@@ -41,7 +43,8 @@ class AppController(Controller):
 
     def on_fullscreen_mode_turned_off(self):
         self.model.on_fullscreen_mode_turned_off()
-        self.on_change_screen_resolution(self.model.windowed_resolution, fullscreen_mode=False)
+        self.on_change_screen_resolution(self.settings.model.windowed_resolution, fullscreen_mode=False)
+        self.settings.on_fullscreen_mode_turned_off()
 
     def on_close_game(self):
         self.on_deactivate()

@@ -69,8 +69,8 @@ class RSSim:
                               config_db_cursor=self.config_db_cursor,
                               surface=self.surface, batch=self.batch, groups=self.groups, app=self.app)
         self.app.on_activate()
-        self.app.on_change_screen_resolution(self.app.model.screen_resolution, self.app.model.fullscreen_mode)
-        if self.app.model.fullscreen_mode:
+        self.app.on_change_screen_resolution(self.settings.model.screen_resolution, self.settings.model.fullscreen_mode)
+        if self.settings.model.fullscreen_mode:
             self.app.on_fullscreen_mode_turned_on()
 
         @surface.event

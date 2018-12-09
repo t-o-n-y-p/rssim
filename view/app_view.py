@@ -59,13 +59,9 @@ class AppView(View):
             self.surface.minimize()
 
         def on_app_window_fullscreen(button):
-            button.on_deactivate()
-            button.paired_button.on_activate()
             self.controller.on_fullscreen_mode_turned_on()
 
         def on_app_window_restore(button):
-            button.on_deactivate()
-            button.paired_button.on_activate()
             self.controller.on_fullscreen_mode_turned_off()
 
         def on_open_settings(button):
@@ -151,9 +147,13 @@ class AppView(View):
 
     def on_fullscreen_mode_turned_on(self):
         self.surface.set_fullscreen(fullscreen=True)
+        self.restore_button.on_activate()
+        self.fullscreen_button.on_deactivate()
 
     def on_fullscreen_mode_turned_off(self):
         self.surface.set_fullscreen(fullscreen=False)
+        self.restore_button.on_deactivate()
+        self.fullscreen_button.on_activate()
 
     @_game_window_is_active
     @_game_is_not_fullscreen

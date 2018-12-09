@@ -1,10 +1,28 @@
+from ctypes import windll
+
 from .model_base import Model
 
 
 class SettingsModel(Model):
     def __init__(self, user_db_connection, user_db_cursor, config_db_cursor):
         super().__init__(user_db_connection, user_db_cursor, config_db_cursor)
-        self.screen_resolution = (1280, 720)
+        self.user_db_cursor.execute('SELECT app_width, app_height FROM graphics_config')
+        self.windowed_resolution = self.user_db_cursor.fetchone()
+        self.user_db_cursor.execute('SELECT fullscreen FROM graphics_config')
+        self.fullscreen_mode = bool(self.user_db_cursor.fetchone()[0])
+        self.config_db_cursor.execute('SELECT app_width, app_height FROM screen_resolution_config')
+        self.screen_resolution_config = self.config_db_cursor.fetchall()
+        self.fullscreen_mode_available = False
+        self.fullscreen_resolution = (0, 0)
+        self.screen_resolution = (0, 0)
+        if (windll.user32.GetSystemMetrics(0), windll.user32.GetSystemMetrics(1)) in self.screen_resolution_config:
+            self.fullscreen_mode_available = True
+            self.fullscreen_resolution = (windll.user32.GetSystemMetrics(0), windll.user32.GetSystemMetrics(1))
+
+        if self.fullscreen_mode and self.fullscreen_mode_available:
+            self.screen_resolution = self.fullscreen_resolution
+        else:
+            self.screen_resolution = self.windowed_resolution
 
     def on_activate(self):
         self.is_activated = True
@@ -16,3 +34,21 @@ class SettingsModel(Model):
     def on_change_screen_resolution(self, screen_resolution):
         self.screen_resolution = screen_resolution
         self.view.on_change_screen_resolution(self.screen_resolution)
+
+    def on_fullscreen_mode_turned_on(self):
+        self.fullscreen_mode = True
+        self.on_save_and_commit_state()
+
+    def on_fullscreen_mode_turned_off(self):
+        self.fullscreen_mode = False
+        self.on_save_and_commit_state()
+
+    def on_save_and_commit_state(self):
+        self.user_db_cursor.execute('UPDATE graphics_config SET app_width = ?, app_height = ?',
+                                    self.windowed_resolution)
+        if self.fullscreen_mode:
+            self.user_db_cursor.execute('UPDATE graphics_config SET fullscreen = 1')
+        else:
+            self.user_db_cursor.execute('UPDATE graphics_config SET fullscreen = 0')
+
+        self.user_db_connection.commit()
