@@ -181,19 +181,19 @@ class GameView(View):
         if self.is_activated:
             self.game_frame_sprite.image = self.game_frame
 
-        self.day_sprite.delete()
-        self.day_sprite = None
-        self.day_sprite = Label(f'DAY  {1 + self.game_time // 345600}', font_name='Perfo', bold=True, font_size=22,
-                                color=(255, 255, 255, 255), x=self.screen_resolution[0] - 181, y=57,
-                                anchor_x='center', anchor_y='center', batch=self.batch,
-                                group=self.groups['button_text'])
-        self.time_sprite.delete()
-        self.time_sprite = None
-        self.time_sprite = Label('{0:0>2} : {1:0>2}'.format((self.game_time // 14400 + 12) % 24,
-                                                            (self.game_time // 240) % 60),
-                                 font_name='Perfo', bold=True, font_size=22, color=(255, 255, 255, 255),
-                                 x=self.screen_resolution[0] - 181, y=26, anchor_x='center', anchor_y='center',
-                                 batch=self.batch, group=self.groups['button_text'])
+            self.day_sprite.delete()
+            self.day_sprite = None
+            self.day_sprite = Label(f'DAY  {1 + self.game_time // 345600}', font_name='Perfo', bold=True, font_size=22,
+                                    color=(255, 255, 255, 255), x=self.screen_resolution[0] - 181, y=57,
+                                    anchor_x='center', anchor_y='center', batch=self.batch,
+                                    group=self.groups['button_text'])
+            self.time_sprite.delete()
+            self.time_sprite = None
+            self.time_sprite = Label('{0:0>2} : {1:0>2}'.format((self.game_time // 14400 + 12) % 24,
+                                                                (self.game_time // 240) % 60),
+                                     font_name='Perfo', bold=True, font_size=22, color=(255, 255, 255, 255),
+                                     x=self.screen_resolution[0] - 181, y=26, anchor_x='center', anchor_y='center',
+                                     batch=self.batch, group=self.groups['button_text'])
 
         for b in self.buttons:
             b.on_position_changed((self.screen_resolution[0] - b.x_margin, 0))

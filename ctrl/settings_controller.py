@@ -52,9 +52,3 @@ class SettingsController(Controller):
 
     def on_save_and_commit_state(self):
         self.model.on_save_and_commit_state()
-
-    def on_fullscreen_mode_turned_on(self):
-        self.model.on_fullscreen_mode_turned_on()
-
-    def on_fullscreen_mode_turned_off(self):
-        self.model.on_fullscreen_mode_turned_off()

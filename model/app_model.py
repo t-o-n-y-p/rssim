@@ -52,12 +52,18 @@ class AppModel(Model):
     @_fullscreen_mode_available
     def on_fullscreen_mode_turned_on(self):
         self.view.on_fullscreen_mode_turned_on()
+        self.on_save_and_commit_state(1)
 
     def on_fullscreen_mode_turned_off(self):
         self.view.on_fullscreen_mode_turned_off()
+        self.on_save_and_commit_state(0)
 
     def on_change_screen_resolution(self, screen_resolution, fullscreen_mode):
         if fullscreen_mode and not self.fullscreen_mode_available:
             self.on_fullscreen_mode_turned_off()
 
         self.view.on_change_screen_resolution(screen_resolution, fullscreen=fullscreen_mode)
+
+    def on_save_and_commit_state(self, fullscreen_mode):
+        self.user_db_cursor.execute('UPDATE graphics_config SET fullscreen = ?', (fullscreen_mode, ))
+        self.user_db_connection.commit()

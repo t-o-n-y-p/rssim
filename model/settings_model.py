@@ -59,22 +59,8 @@ class SettingsModel(Model):
         self.screen_resolution = screen_resolution
         self.view.on_change_screen_resolution(self.screen_resolution)
 
-    def on_fullscreen_mode_turned_on(self):
-        self.fullscreen_mode = True
-        self.on_save_and_commit_state()
-
-    def on_fullscreen_mode_turned_off(self):
-        self.fullscreen_mode = False
-        self.on_save_and_commit_state()
-
     def on_save_and_commit_state(self):
         self.windowed_resolution = self.view.temp_windowed_resolution
         self.user_db_cursor.execute('UPDATE graphics_config SET app_width = ?, app_height = ?',
                                     self.windowed_resolution)
-        self.fullscreen_mode = self.view.temp_fullscreen_mode
-        if self.fullscreen_mode:
-            self.user_db_cursor.execute('UPDATE graphics_config SET fullscreen = 1')
-        else:
-            self.user_db_cursor.execute('UPDATE graphics_config SET fullscreen = 0')
-
         self.user_db_connection.commit()
