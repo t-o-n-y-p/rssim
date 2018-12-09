@@ -15,6 +15,14 @@ def _view_is_active(fn):
     return _handle_if_view_is_activated
 
 
+def _view_is_not_active(fn):
+    def _handle_if_view_is_not_activated(*args, **kwargs):
+        if not args[0].is_activated:
+            fn(*args, **kwargs)
+
+    return _handle_if_view_is_not_activated
+
+
 class GameView(View):
     def __init__(self, surface, batch, groups):
         def on_pause_game(button):
@@ -108,6 +116,7 @@ class GameView(View):
                         self.progress_bar_money_active.delete()
                         self.progress_bar_money_active = None
 
+    @_view_is_not_active
     def on_activate(self):
         self.is_activated = True
         if self.game_frame_sprite is None:
@@ -152,6 +161,7 @@ class GameView(View):
             if b.to_activate_on_controller_init:
                 b.on_activate()
 
+    @_view_is_active
     def on_deactivate(self):
         self.is_activated = False
         self.level_text.delete()

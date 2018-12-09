@@ -1,19 +1,3 @@
-def _controller_is_active(fn):
-    def _handle_if_controller_is_activated(*args, **kwargs):
-        if args[0].is_activated:
-            fn(*args, **kwargs)
-
-    return _handle_if_controller_is_activated
-
-
-def _controller_is_not_active(fn):
-    def _handle_if_controller_is_not_activated(*args, **kwargs):
-        if not args[0].is_activated:
-            fn(*args, **kwargs)
-
-    return _handle_if_controller_is_not_activated
-
-
 class Controller:
     def __init__(self, parent_controller=None):
         self.model = None
@@ -29,11 +13,9 @@ class Controller:
     def on_update_view(self):
         pass
 
-    @_controller_is_not_active
     def on_activate(self):
         pass
 
-    @_controller_is_active
     def on_deactivate(self):
         pass
 

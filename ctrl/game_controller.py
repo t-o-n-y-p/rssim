@@ -9,6 +9,22 @@ def _game_is_not_paused(fn):
     return _update_if_game_is_not_paused
 
 
+def _controller_is_active(fn):
+    def _handle_if_controller_is_activated(*args, **kwargs):
+        if args[0].is_activated:
+            fn(*args, **kwargs)
+
+    return _handle_if_controller_is_activated
+
+
+def _controller_is_not_active(fn):
+    def _handle_if_controller_is_not_activated(*args, **kwargs):
+        if not args[0].is_activated:
+            fn(*args, **kwargs)
+
+    return _handle_if_controller_is_not_activated
+
+
 class GameController(Controller):
     def __init__(self, app):
         super().__init__(parent_controller=app)
@@ -18,11 +34,13 @@ class GameController(Controller):
         self.view.on_update()
         self.map.on_update_view()
 
+    @_controller_is_not_active
     def on_activate(self):
         self.is_activated = True
         self.model.on_activate()
         self.map.on_activate()
 
+    @_controller_is_active
     def on_deactivate(self):
         self.is_activated = False
         self.model.on_deactivate()

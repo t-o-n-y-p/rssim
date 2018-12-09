@@ -1,6 +1,22 @@
 from .controller_base import Controller
 
 
+def _controller_is_active(fn):
+    def _handle_if_controller_is_activated(*args, **kwargs):
+        if args[0].is_activated:
+            fn(*args, **kwargs)
+
+    return _handle_if_controller_is_activated
+
+
+def _controller_is_not_active(fn):
+    def _handle_if_controller_is_not_activated(*args, **kwargs):
+        if not args[0].is_activated:
+            fn(*args, **kwargs)
+
+    return _handle_if_controller_is_not_activated
+
+
 class MapController(Controller):
     def __init__(self, game_controller):
         super().__init__(parent_controller=game_controller)
@@ -8,10 +24,12 @@ class MapController(Controller):
     def on_update_view(self):
         self.view.on_update()
 
+    @_controller_is_not_active
     def on_activate(self):
         self.is_activated = True
         self.model.on_activate()
 
+    @_controller_is_active
     def on_deactivate(self):
         self.is_activated = False
         self.model.on_deactivate()

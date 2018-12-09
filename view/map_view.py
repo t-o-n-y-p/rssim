@@ -38,6 +38,14 @@ def _view_is_active(fn):
     return _handle_if_view_is_activated
 
 
+def _view_is_not_active(fn):
+    def _handle_if_view_is_not_activated(*args, **kwargs):
+        if not args[0].is_activated:
+            fn(*args, **kwargs)
+
+    return _handle_if_view_is_not_activated
+
+
 def _cursor_is_on_the_map(fn):
     def _enable_map_move_mode_if_cursor_is_on_the_map(*args, **kwargs):
         if args[1] in range(0, args[0].screen_resolution[0]) \
@@ -101,6 +109,7 @@ class MapView(View):
                     self.main_map_sprite.delete()
                     self.main_map_sprite = None
 
+    @_view_is_not_active
     def on_activate(self):
         self.is_activated = True
         if self.main_map_sprite is None:
@@ -114,6 +123,7 @@ class MapView(View):
         else:
             self.zoom_out_button.on_activate()
 
+    @_view_is_active
     def on_deactivate(self):
         self.is_activated = False
         self.main_map_sprite.delete()

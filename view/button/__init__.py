@@ -6,5 +6,6 @@ from .pause_game_button import PauseGameButton
 from .resume_game_button import ResumeGameButton
 from .open_settings_button import OpenSettingsButton
 from .accept_settings_button import AcceptSettingsButton
+from .reject_settings_button import RejectSettingsButton
 from .zoom_in_button import ZoomInButton
 from .zoom_out_button import ZoomOutButton
