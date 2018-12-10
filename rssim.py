@@ -10,7 +10,7 @@ from win32api import MessageBoxEx
 import win32con
 
 from exceptions import VideoAdapterNotSupportedException, MonitorNotSupportedException
-from game_objects import create_app, create_game, create_map, create_settings, create_fps
+from game_objects import create_app
 
 
 class RSSim:
@@ -56,21 +56,10 @@ class RSSim:
         self.app = create_app(user_db_connection=self.user_db_connection, user_db_cursor=self.user_db_cursor,
                               config_db_cursor=self.config_db_cursor,
                               surface=self.surface, batch=self.batch, groups=self.groups)
-        self.game = create_game(user_db_connection=self.user_db_connection, user_db_cursor=self.user_db_cursor,
-                                config_db_cursor=self.config_db_cursor,
-                                surface=self.surface, batch=self.batch, groups=self.groups, app=self.app)
-        self.map = create_map(user_db_connection=self.user_db_connection, user_db_cursor=self.user_db_cursor,
-                              config_db_cursor=self.config_db_cursor,
-                              surface=self.surface, batch=self.batch, groups=self.groups, game=self.game)
-        self.settings = create_settings(user_db_connection=self.user_db_connection, user_db_cursor=self.user_db_cursor,
-                                        config_db_cursor=self.config_db_cursor,
-                                        surface=self.surface, batch=self.batch, groups=self.groups, app=self.app)
-        self.fps = create_fps(user_db_connection=self.user_db_connection, user_db_cursor=self.user_db_cursor,
-                              config_db_cursor=self.config_db_cursor,
-                              surface=self.surface, batch=self.batch, groups=self.groups, app=self.app)
         self.app.on_activate()
-        self.app.on_change_screen_resolution(self.settings.model.screen_resolution, self.settings.model.fullscreen_mode)
-        if self.settings.model.fullscreen_mode:
+        self.app.on_change_screen_resolution(self.app.settings.model.screen_resolution,
+                                             self.app.settings.model.fullscreen_mode)
+        if self.app.settings.model.fullscreen_mode:
             self.app.on_fullscreen_mode_turned_on()
 
         @surface.event
@@ -108,7 +97,7 @@ class RSSim:
         while True:
             time_1 = perf_counter()
             self.surface.dispatch_events()
-            self.game.on_update_time()
+            self.app.game.on_update_time()
             self.app.on_update_view()
             self.surface.dispatch_event('on_draw')
             self.surface.flip()

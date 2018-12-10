@@ -40,3 +40,6 @@ class MapModel(Model):
     def on_unlock_track(self, track_number):
         self.unlocked_tracks = track_number
         self.view.on_unlock_track(track_number)
+
+    def on_save_state(self):
+        self.user_db_cursor.execute('UPDATE game_progress SET unlocked_tracks = ?', (self.unlocked_tracks, ))
