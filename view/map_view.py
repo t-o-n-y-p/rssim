@@ -158,7 +158,11 @@ class MapView(View):
                                         self.base_offset[1] * 2 - self.screen_resolution[1] // 2))
 
     def on_change_screen_resolution(self, screen_resolution):
-        self.base_offset_upper_right_limit = (screen_resolution[0] - 8160, screen_resolution[1] - 3600)
+        if self.zoom_out_activated:
+            self.base_offset_upper_right_limit = (screen_resolution[0] - 4080, screen_resolution[1] - 1800)
+        else:
+            self.base_offset_upper_right_limit = (screen_resolution[0] - 8160, screen_resolution[1] - 3600)
+
         self.on_change_base_offset((self.base_offset[0] + (screen_resolution[0] - self.screen_resolution[0]) // 2,
                                     self.base_offset[1] + (screen_resolution[1] - self.screen_resolution[1]) // 2))
         self.screen_resolution = screen_resolution
