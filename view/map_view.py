@@ -187,6 +187,12 @@ class MapView(View):
         self.zoom_in_button.on_deactivate()
         self.zoom_out_button.on_deactivate()
 
+    def on_activate_zoom_buttons(self):
+        if self.zoom_out_activated:
+            self.zoom_in_button.on_activate()
+        else:
+            self.zoom_out_button.on_activate()
+
     @_view_is_active
     @_cursor_is_on_the_map
     @_left_mouse_button

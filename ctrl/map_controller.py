@@ -36,9 +36,11 @@ class MapController(Controller):
         self.is_activated = False
         self.model.on_deactivate()
         self.view.on_deactivate()
+        self.scheduler.on_deactivate()
 
     def on_change_screen_resolution(self, screen_resolution):
         self.view.on_change_screen_resolution(screen_resolution)
+        self.scheduler.on_change_screen_resolution(screen_resolution)
 
     def on_change_base_offset(self, new_base_offset):
         self.view.on_change_base_offset(new_base_offset)
@@ -72,3 +74,7 @@ class MapController(Controller):
     def on_open_schedule(self):
         self.scheduler.on_activate()
         self.view.on_deactivate_zoom_buttons()
+
+    def on_close_schedule(self):
+        self.view.on_activate_zoom_buttons()
+        self.view.open_schedule_button.on_activate()

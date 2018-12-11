@@ -12,3 +12,4 @@ from .zoom_out_button import ZoomOutButton
 from .increment_windowed_resolution_button import IncrementWindowedResolutionButton
 from .decrement_windowed_resolution_button import DecrementWindowedResolutionButton
 from .open_schedule_button import OpenScheduleButton
+from .close_schedule_button import CloseScheduleButton

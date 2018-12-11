@@ -3,6 +3,7 @@ from pyglet.image import load
 from pyglet.sprite import Sprite
 
 from .view_base import View
+from .button import CloseScheduleButton
 
 
 def _view_is_active(fn):
@@ -23,12 +24,18 @@ def _view_is_not_active(fn):
 
 class SchedulerView(View):
     def __init__(self, surface, batch, groups):
+        def on_close_schedule(button):
+            self.controller.on_deactivate()
+
         super().__init__(surface, batch, groups)
         self.departure_text = ['West City', 'East City', 'North-West City', 'South-East City']
         self.screen_resolution = (1280, 720)
         self.background_image = load('img/main_frame/schedule_1280_720.png')
         self.background_sprite = None
         self.train_labels = []
+        self.close_schedule_button = CloseScheduleButton(surface=self.surface, batch=self.batch, groups=self.groups,
+                                                         on_click_action=on_close_schedule)
+        self.buttons.append(self.close_schedule_button)
 
     @_view_is_not_active
     def on_activate(self):
@@ -73,6 +80,10 @@ class SchedulerView(View):
                 self.train_labels[i * 2].y = (self.screen_resolution[1] - 165) - (i % 16) * 27
                 self.train_labels[i * 2 + 1].x = (self.screen_resolution[0] // 2 - 287) + 640 * (i // 16)
                 self.train_labels[i * 2 + 1].y = (self.screen_resolution[1] - 165) - (i % 16) * 27
+
+        self.close_schedule_button.y_margin = self.screen_resolution[1]
+        for b in self.buttons:
+            b.on_position_changed((screen_resolution[0] - b.x_margin, screen_resolution[1] - b.y_margin))
 
     @_view_is_active
     def on_update_train_labels(self, base_schedule, game_time):
