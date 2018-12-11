@@ -30,8 +30,8 @@ class SchedulerModel(Model):
         self.direction_from_right_to_left_side = 3
         self.user_db_cursor.execute('SELECT level, unlocked_tracks FROM game_progress')
         self.level, self.unlocked_tracks = self.user_db_cursor.fetchone()
-        self.config_db_cursor.execute('''SELECT * FROM (SELECT schedule_options_table_name FROM player_progress_config 
-                                      WHERE level = ?)''', (self.level, ))
+        self.config_db_cursor.execute('''SELECT arrival_time_min, arrival_time_max, direction, new_direction, 
+                                      cars_min, cars_max FROM schedule_options WHERE level = ?''', (self.level, ))
         self.schedule_options = self.config_db_cursor.fetchall()
         self.user_db_cursor.execute('SELECT * FROM base_schedule')
         self.base_schedule = self.user_db_cursor.fetchall()
@@ -72,6 +72,8 @@ class SchedulerModel(Model):
             self.next_cycle_start_time += self.schedule_cycle_length
             self.base_schedule = sorted(self.base_schedule, key=itemgetter(1))
 
+        self.view.on_update_train_labels(self.base_schedule, game_time)
+
     def on_save_state(self):
         self.user_db_cursor.execute('UPDATE scheduler SET train_counter = ?, next_cycle_start_time = ?',
                                     (self.train_counter, self.next_cycle_start_time))
@@ -80,8 +82,8 @@ class SchedulerModel(Model):
 
     def on_level_up(self):
         self.level += 1
-        self.config_db_cursor.execute('''SELECT * FROM (SELECT schedule_options_table_name FROM player_progress_config 
-                                      WHERE level = ?)''', (self.level, ))
+        self.config_db_cursor.execute('''SELECT arrival_time_min, arrival_time_max, direction, new_direction, 
+                                      cars_min, cars_max FROM schedule_options WHERE level = ?''', (self.level, ))
         self.schedule_options = self.config_db_cursor.fetchall()
         self.config_db_cursor.execute('''SELECT schedule_cycle_length, frame_per_car, exp_per_car, money_per_car 
                                       FROM player_progress_config WHERE level = ?''',
