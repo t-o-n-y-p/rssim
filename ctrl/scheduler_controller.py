@@ -34,8 +34,7 @@ class SchedulerController(Controller):
         self.is_activated = False
         self.model.on_deactivate()
         self.view.on_deactivate()
-        if self.parent_controller.is_activated:
-            self.parent_controller.on_close_schedule()
+        self.parent_controller.on_close_schedule()
 
     def on_change_screen_resolution(self, screen_resolution):
         self.view.on_change_screen_resolution(screen_resolution)

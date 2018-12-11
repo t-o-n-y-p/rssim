@@ -17,6 +17,14 @@ def _controller_is_not_active(fn):
     return _handle_if_controller_is_not_activated
 
 
+def _map_view_is_active(fn):
+    def _handle_if_map_view_is_activated(*args, **kwargs):
+        if args[0].view.is_activated:
+            fn(*args, **kwargs)
+
+    return _handle_if_map_view_is_activated
+
+
 class MapController(Controller):
     def __init__(self, game_controller):
         super().__init__(parent_controller=game_controller)
@@ -54,6 +62,7 @@ class MapController(Controller):
 
     def on_deactivate_view(self):
         self.view.on_deactivate()
+        self.scheduler.on_deactivate()
 
     def on_zoom_in(self):
         self.view.on_change_zoom_factor(1.0, zoom_out_activated=False)
@@ -75,6 +84,7 @@ class MapController(Controller):
         self.scheduler.on_activate()
         self.view.on_deactivate_zoom_buttons()
 
+    @_map_view_is_active
     def on_close_schedule(self):
         self.view.on_activate_zoom_buttons()
         self.view.open_schedule_button.on_activate()
