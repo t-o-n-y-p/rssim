@@ -15,7 +15,7 @@ class ZoomInButton(Button):
         self.text = '< >'
         self.font_name = 'Perfo'
         self.is_bold = True
-        self.font_size = 32
+        self.font_size = 30
         self.x_margin = 1280
         self.y_margin = 112
         self.button_size = (80, 80)

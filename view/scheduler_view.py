@@ -41,7 +41,7 @@ class SchedulerView(View):
     def on_activate(self):
         self.is_activated = True
         if self.background_sprite is None:
-            self.background_sprite = Sprite(self.background_image, x=0, y=0, batch=self.batch,
+            self.background_sprite = Sprite(self.background_image, x=0, y=78, batch=self.batch,
                                             group=self.groups['main_frame'])
             self.background_sprite.opacity = 0
 
@@ -52,8 +52,6 @@ class SchedulerView(View):
     @_view_is_active
     def on_deactivate(self):
         self.is_activated = False
-        self.background_sprite.delete()
-        self.background_sprite = None
         for label in self.train_labels:
             label.delete()
 
