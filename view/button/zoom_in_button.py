@@ -16,6 +16,7 @@ class ZoomInButton(Button):
         self.font_name = 'Perfo'
         self.is_bold = True
         self.font_size = 32
+        self.x_margin = 1280
         self.y_margin = 112
         self.button_size = (80, 80)
         self.on_click_action = on_click_action

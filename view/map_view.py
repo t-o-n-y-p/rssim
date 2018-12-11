@@ -3,7 +3,7 @@ from pyglet.sprite import Sprite
 from pyglet.window import mouse
 
 from .view_base import View
-from .button import ZoomInButton, ZoomOutButton
+from .button import ZoomInButton, ZoomOutButton, OpenScheduleButton
 
 
 def _map_move_mode_available(fn):
@@ -73,6 +73,10 @@ class MapView(View):
         def on_hover_action():
             self.map_move_mode_available = False
 
+        def on_open_schedule(button):
+            button.on_deactivate()
+            self.controller.on_open_schedule()
+
         super().__init__(surface, batch, groups)
         self.main_map = load('img/map/4/full_map.png')
         self.main_map_sprite = None
@@ -88,10 +92,13 @@ class MapView(View):
         self.zoom_out_button = ZoomOutButton(surface=self.surface, batch=self.batch, groups=self.groups,
                                              on_click_action=on_zoom_out_button, on_hover_action=on_hover_action,
                                              on_leave_action=on_leave_action)
+        self.open_schedule_button = OpenScheduleButton(surface=self.surface, batch=self.batch, groups=self.groups,
+                                                       on_click_action=on_open_schedule)
         self.zoom_in_button.paired_button = self.zoom_out_button
         self.zoom_out_button.paired_button = self.zoom_in_button
         self.buttons.append(self.zoom_in_button)
         self.buttons.append(self.zoom_out_button)
+        self.buttons.append(self.open_schedule_button)
         self.map_move_mode_available = True
         self.map_move_mode = False
         self.on_mouse_press_handlers.append(self.handle_mouse_press)
@@ -117,6 +124,10 @@ class MapView(View):
                                           batch=self.batch, group=self.groups['main_map'])
             self.main_map_sprite.opacity = 0
             self.main_map_sprite.scale = self.zoom_factor
+
+        for b in self.buttons:
+            if b.to_activate_on_controller_init:
+                b.on_activate()
 
         if self.zoom_out_activated:
             self.zoom_in_button.on_activate()
@@ -166,8 +177,11 @@ class MapView(View):
         self.on_change_base_offset((self.base_offset[0] + (screen_resolution[0] - self.screen_resolution[0]) // 2,
                                     self.base_offset[1] + (screen_resolution[1] - self.screen_resolution[1]) // 2))
         self.screen_resolution = screen_resolution
+        self.zoom_in_button.x_margin = self.screen_resolution[0]
+        self.zoom_out_button.x_margin = self.screen_resolution[0]
+        self.open_schedule_button.y_margin = self.screen_resolution[1]
         for b in self.buttons:
-            b.on_position_changed((0, screen_resolution[1] - b.y_margin))
+            b.on_position_changed((screen_resolution[0] - b.x_margin, screen_resolution[1] - b.y_margin))
 
     @_view_is_active
     @_cursor_is_on_the_map

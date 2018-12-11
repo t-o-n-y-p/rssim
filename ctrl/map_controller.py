@@ -67,3 +67,6 @@ class MapController(Controller):
 
     def on_level_up(self):
         self.scheduler.on_level_up()
+
+    def on_open_schedule(self):
+        self.scheduler.on_activate()

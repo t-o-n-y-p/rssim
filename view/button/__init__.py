@@ -9,5 +9,6 @@ from .accept_settings_button import AcceptSettingsButton
 from .reject_settings_button import RejectSettingsButton
 from .zoom_in_button import ZoomInButton
 from .zoom_out_button import ZoomOutButton
-from.increment_windowed_resolution_button import IncrementWindowedResolutionButton
+from .increment_windowed_resolution_button import IncrementWindowedResolutionButton
 from .decrement_windowed_resolution_button import DecrementWindowedResolutionButton
+from .open_schedule_button import OpenScheduleButton
