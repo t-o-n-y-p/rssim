@@ -24,6 +24,7 @@ class MapController(Controller):
 
     def on_update_view(self):
         self.view.on_update()
+        self.scheduler.on_update_view()
 
     @_controller_is_not_active
     def on_activate(self):
@@ -70,3 +71,4 @@ class MapController(Controller):
 
     def on_open_schedule(self):
         self.scheduler.on_activate()
+        self.view.on_deactivate_zoom_buttons()

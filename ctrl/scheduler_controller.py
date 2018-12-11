@@ -21,6 +21,9 @@ class SchedulerController(Controller):
     def __init__(self, map_controller):
         super().__init__(parent_controller=map_controller)
 
+    def on_update_view(self):
+        self.view.on_update()
+
     @_controller_is_not_active
     def on_activate(self):
         self.is_activated = True

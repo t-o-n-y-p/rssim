@@ -8,7 +8,7 @@ from .button import ZoomInButton, ZoomOutButton, OpenScheduleButton
 
 def _map_move_mode_available(fn):
     def _turn_on_move_mode_if_map_move_mode_available(*args, **kwargs):
-        if args[0].map_move_mode_available:
+        if args[0].map_move_mode_available and not args[0].controller.scheduler.is_activated:
             fn(*args, **kwargs)
 
     return _turn_on_move_mode_if_map_move_mode_available
@@ -182,6 +182,10 @@ class MapView(View):
         self.open_schedule_button.y_margin = self.screen_resolution[1]
         for b in self.buttons:
             b.on_position_changed((screen_resolution[0] - b.x_margin, screen_resolution[1] - b.y_margin))
+
+    def on_deactivate_zoom_buttons(self):
+        self.zoom_in_button.on_deactivate()
+        self.zoom_out_button.on_deactivate()
 
     @_view_is_active
     @_cursor_is_on_the_map

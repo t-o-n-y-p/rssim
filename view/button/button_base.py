@@ -164,6 +164,7 @@ class Button:
     def handle_mouse_release(self, x, y, button, modifiers):
         self.state = 'hover'
         self.vertex_list.colors = (127, 0, 0, 191, 127, 0, 0, 191, 127, 0, 0, 191, 127, 0, 0, 191)
+        self.surface.set_mouse_cursor(self.default_cursor)
         self.on_click_action(self)
 
     @_button_is_activated
