@@ -28,8 +28,8 @@ class SchedulerModel(Model):
         self.direction_from_right_to_left = 1
         self.direction_from_left_to_right_side = 2
         self.direction_from_right_to_left_side = 3
-        self.user_db_cursor.execute('SELECT level FROM game_progress')
-        self.level = self.user_db_cursor.fetchone()[0]
+        self.user_db_cursor.execute('SELECT level, unlocked_tracks FROM game_progress')
+        self.level, self.unlocked_tracks = self.user_db_cursor.fetchone()
         self.config_db_cursor.execute('''SELECT * FROM (SELECT schedule_options_table_name FROM player_progress_config 
                                       WHERE level = ?)''', (self.level, ))
         self.schedule_options = self.config_db_cursor.fetchall()
@@ -59,8 +59,8 @@ class SchedulerModel(Model):
         if game_time + self.schedule_cycle_length >= self.next_cycle_start_time:
             for i in self.schedule_options:
                 if i[2] in (self.direction_from_left_to_right, self.direction_from_right_to_left) \
-                        or (i[2] == self.direction_from_left_to_right_side and not self.tracks[21].locked)\
-                        or (i[2] == self.direction_from_right_to_left_side and not self.tracks[22].locked):
+                        or (i[2] == self.direction_from_left_to_right_side and self.unlocked_tracks >= 21)\
+                        or (i[2] == self.direction_from_right_to_left_side and self.unlocked_tracks >= 22):
                     cars = choice([i[4], i[5]])
                     self.base_schedule.append(
                         (self.train_counter, self.next_cycle_start_time + choice(list(range(i[0], i[1]))),
@@ -88,3 +88,6 @@ class SchedulerModel(Model):
                                       (self.level, ))
         self.schedule_cycle_length, self.frame_per_car, self.exp_per_car, self.money_per_car \
             = self.config_db_cursor.fetchone()
+
+    def on_unlock_track(self, track_number):
+        self.unlocked_tracks = track_number

@@ -44,6 +44,7 @@ class MapController(Controller):
 
     def on_unlock_track(self, track_number):
         self.model.on_unlock_track(track_number)
+        self.scheduler.on_unlock_track(track_number)
 
     def on_activate_view(self):
         self.view.on_activate()

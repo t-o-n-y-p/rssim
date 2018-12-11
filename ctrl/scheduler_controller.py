@@ -43,3 +43,6 @@ class SchedulerController(Controller):
 
     def on_level_up(self):
         self.model.on_level_up()
+
+    def on_unlock_track(self, track_number):
+        self.model.on_unlock_track(track_number)
