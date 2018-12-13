@@ -72,12 +72,15 @@ class SchedulerView(View):
 
     def on_change_screen_resolution(self, screen_resolution):
         self.screen_resolution = screen_resolution
+        self.background_image = load('img/main_frame/schedule_{}_{}.png'
+                                     .format(self.screen_resolution[0], self.screen_resolution[1]))
         if self.is_activated:
+            self.background_sprite.image = self.background_image
             for i in range(len(self.train_labels) // 2):
                 self.train_labels[i * 2].x = (self.screen_resolution[0] // 2 - 320) + 640 * (i // 16)
-                self.train_labels[i * 2].y = (self.screen_resolution[1] - 165) - (i % 16) * 27
+                self.train_labels[i * 2].y = (self.screen_resolution[1] // 2 + 195) - (i % 16) * 27
                 self.train_labels[i * 2 + 1].x = (self.screen_resolution[0] // 2 - 287) + 640 * (i // 16)
-                self.train_labels[i * 2 + 1].y = (self.screen_resolution[1] - 165) - (i % 16) * 27
+                self.train_labels[i * 2 + 1].y = (self.screen_resolution[1] // 2 + 195) - (i % 16) * 27
 
         self.close_schedule_button.y_margin = self.screen_resolution[1]
         for b in self.buttons:
@@ -94,12 +97,12 @@ class SchedulerView(View):
                                   (base_schedule[i][5] // 4) % 60),
                           font_name='Perfo', bold=True, font_size=18,
                           x=(self.screen_resolution[0] // 2 - 320) + 640 * (i // 16),
-                          y=(self.screen_resolution[1] - 165) - (i % 16) * 27, anchor_x='center', anchor_y='center',
-                          batch=self.batch, group=self.groups['button_text']))
+                          y=(self.screen_resolution[1] // 2 + 195) - (i % 16) * 27,
+                          anchor_x='center', anchor_y='center', batch=self.batch, group=self.groups['button_text']))
                 self.train_labels.append(
                     Label(self.departure_text[base_schedule[i][2]], font_name='Perfo', bold=True, font_size=18,
                           x=(self.screen_resolution[0] // 2 - 287) + 640 * (i // 16),
-                          y=(self.screen_resolution[1] - 165) - (i % 16) * 27, anchor_x='center', anchor_y='center',
-                          batch=self.batch, group=self.groups['button_text']))
+                          y=(self.screen_resolution[1] // 2 + 195) - (i % 16) * 27,
+                          anchor_x='center', anchor_y='center', batch=self.batch, group=self.groups['button_text']))
                 break
 
