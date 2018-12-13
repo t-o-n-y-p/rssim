@@ -68,6 +68,7 @@ class GameController(Controller):
         self.view.on_deactivate()
         self.map.on_deactivate_view()
 
+    @_controller_is_active
     @_game_is_not_paused
     def on_update_time(self):
         self.map.on_update_time(self.model.game_time)
