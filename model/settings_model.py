@@ -46,6 +46,9 @@ class SettingsModel(Model):
     @_model_is_not_active
     def on_activate(self):
         self.is_activated = True
+        self.on_activate_view()
+
+    def on_activate_view(self):
         self.view.on_activate()
         self.view.on_change_temp_windowed_resolution(self.windowed_resolution)
         self.view.on_change_available_windowed_resolutions(self.available_windowed_resolutions)

@@ -4,3 +4,4 @@ from .map_controller import MapController
 from .settings_controller import SettingsController
 from .fps_controller import FPSController
 from .scheduler_controller import SchedulerController
+from .signal_controller import SignalController
