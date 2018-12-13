@@ -38,6 +38,7 @@ class MapController(Controller):
     def on_activate(self):
         self.is_activated = True
         self.model.on_activate()
+        self.scheduler.on_activate()
 
     @_controller_is_active
     def on_deactivate(self):
@@ -62,7 +63,7 @@ class MapController(Controller):
 
     def on_deactivate_view(self):
         self.view.on_deactivate()
-        self.scheduler.on_deactivate()
+        self.scheduler.on_deactivate_view()
 
     def on_zoom_in(self):
         self.view.on_change_zoom_factor(1.0, zoom_out_activated=False)
@@ -81,7 +82,7 @@ class MapController(Controller):
         self.scheduler.on_level_up()
 
     def on_open_schedule(self):
-        self.scheduler.on_activate()
+        self.scheduler.on_activate_view()
         self.view.on_deactivate_zoom_buttons()
 
     @_map_view_is_active

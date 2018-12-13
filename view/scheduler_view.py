@@ -25,7 +25,7 @@ def _view_is_not_active(fn):
 class SchedulerView(View):
     def __init__(self, surface, batch, groups):
         def on_close_schedule(button):
-            self.controller.on_deactivate()
+            self.controller.on_deactivate_view()
 
         super().__init__(surface, batch, groups)
         self.departure_text = ['West City', 'East City', 'North-West City', 'South-East City']

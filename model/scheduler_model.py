@@ -46,7 +46,6 @@ class SchedulerModel(Model):
     @_model_is_not_active
     def on_activate(self):
         self.is_activated = True
-        self.on_activate_view()
 
     @_model_is_active
     def on_deactivate(self):
