@@ -63,6 +63,7 @@ class SignalController(Controller):
 
     def on_activate_view(self):
         self.view.on_activate()
+        self.view.on_change_state(self.model.state, self.model.locked)
 
     def on_deactivate_view(self):
         self.view.on_deactivate()

@@ -56,7 +56,7 @@ class SignalView(View):
                     self.signal_sprite.delete()
                     self.signal_sprite = None
 
-    @_view_is_active
+    @_signal_is_displayed_on_map
     def on_change_state(self, state, locked):
         if state == 'red_signal':
             self.signal_sprite.image = self.red_signal_image
