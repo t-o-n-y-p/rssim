@@ -20,16 +20,18 @@ def _model_is_not_active(fn):
 class SignalModel(Model):
     def __init__(self, user_db_connection, user_db_cursor, config_db_cursor):
         super().__init__(user_db_connection, user_db_cursor, config_db_cursor)
-        self.state = ''
-        self.locked = 0
+        self.state = None
+        self.locked = None
 
     @_model_is_not_active
     def on_activate(self):
         self.is_activated = True
-        self.user_db_cursor.execute('SELECT state, locked FROM signals WHERE track = ? AND base_route = ?',
-                                    (self.controller.track, self.controller.base_route))
-        self.state, self.locked = self.user_db_cursor.fetchone()
-        self.locked = bool(self.locked)
+        if self.state is None and self.locked is None:
+            self.user_db_cursor.execute('SELECT state, locked FROM signals WHERE track = ? AND base_route = ?',
+                                        (self.controller.track, self.controller.base_route))
+            self.state, self.locked = self.user_db_cursor.fetchone()
+            self.locked = bool(self.locked)
+
         self.config_db_cursor.execute('SELECT x, y, flip_needed FROM signal_config WHERE track = ? AND base_route = ?',
                                       (self.controller.track, self.controller.base_route))
         x, y, self.view.flip_needed = self.config_db_cursor.fetchone()
@@ -37,8 +39,9 @@ class SignalModel(Model):
         self.on_activate_view()
 
     def on_activate_view(self):
+        self.view.state = self.state
+        self.view.locked = self.locked
         self.view.on_activate()
-        self.view.on_change_state(self.state, self.locked)
 
     @_model_is_active
     def on_deactivate(self):
@@ -54,8 +57,8 @@ class SignalModel(Model):
 
     def on_switch_to_green(self, train_route):
         self.state = 'green_state'
-        self.view.on_change_state('green_state', self.locked)
+        self.view.on_change_state('green_state')
 
     def on_switch_to_red(self, train_route):
         self.state = 'green_state'
-        self.view.on_change_state('red_state', self.locked)
+        self.view.on_change_state('red_state')

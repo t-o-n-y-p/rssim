@@ -57,6 +57,8 @@ class MapController(Controller):
     def on_change_screen_resolution(self, screen_resolution):
         self.view.on_change_screen_resolution(screen_resolution)
         self.scheduler.on_change_screen_resolution(screen_resolution)
+        for s in self.signals:
+            s.on_change_screen_resolution(screen_resolution)
 
     def on_change_base_offset(self, new_base_offset):
         self.view.on_change_base_offset(new_base_offset)
