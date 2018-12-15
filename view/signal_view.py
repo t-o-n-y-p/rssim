@@ -43,6 +43,7 @@ class SignalView(View):
         self.flip_needed = 0
         self.zoom_out_activated = False
         self.zoom_factor = 1.0
+        self.state = None
 
     @_signal_is_displayed_on_map
     def on_update(self):
@@ -58,6 +59,7 @@ class SignalView(View):
 
     @_signal_is_displayed_on_map
     def on_change_state(self, state, locked):
+        self.state = state
         if state == 'red_signal':
             self.signal_sprite.image = self.red_signal_image
         else:
