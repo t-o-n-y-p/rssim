@@ -60,6 +60,8 @@ class MapController(Controller):
         for s in self.signals:
             s.on_change_screen_resolution(screen_resolution)
 
+        self.on_change_base_offset(self.view.base_offset)
+
     def on_change_base_offset(self, new_base_offset):
         self.view.on_change_base_offset(new_base_offset)
         for s in self.signals:
@@ -87,10 +89,14 @@ class MapController(Controller):
         for s in self.signals:
             s.on_zoom_in()
 
+        self.on_change_base_offset(self.view.base_offset)
+
     def on_zoom_out(self):
         self.view.on_change_zoom_factor(0.5, zoom_out_activated=True)
         for s in self.signals:
             s.on_zoom_out()
+
+        self.on_change_base_offset(self.view.base_offset)
 
     def on_save_state(self):
         self.model.on_save_state()
