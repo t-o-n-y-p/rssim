@@ -42,7 +42,6 @@ def create_map(user_db_connection, user_db_cursor, config_db_cursor, surface, ba
     game.map = controller
     controller.scheduler = create_scheduler(user_db_connection, user_db_cursor, config_db_cursor, surface,
                                             batch, groups, controller)
-    '''
     controller.signals \
         = (create_signal(user_db_connection, user_db_cursor, config_db_cursor, surface, batch, groups, controller),
            create_signal(user_db_connection, user_db_cursor, config_db_cursor, surface, batch, groups, controller),
@@ -126,7 +125,6 @@ def create_map(user_db_connection, user_db_cursor, config_db_cursor, surface, ba
     controller.signals[66].base_route = 'left_side_entry_base_route'
     controller.signals[67].track = 100
     controller.signals[67].base_route = 'right_side_entry_base_route'
-    '''
     model = MapModel(user_db_connection, user_db_cursor, config_db_cursor)
     view = MapView(surface, batch, groups)
     controller.model = model

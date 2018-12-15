@@ -34,6 +34,10 @@ class SignalView(View):
         self.base_offset = (-3440, -1440)
         self.red_signal_image = load('img/signals/signal_red.png')
         self.green_signal_image = load('img/signals/signal_green.png')
+        self.red_signal_image.anchor_x = 5
+        self.red_signal_image.anchor_y = 5
+        self.green_signal_image.anchor_x = 5
+        self.green_signal_image.anchor_y = 5
         self.signal_sprite = None
         self.position = (0, 0)
         self.flip_needed = 0
