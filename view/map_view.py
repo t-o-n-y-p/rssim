@@ -8,7 +8,7 @@ from .button import ZoomInButton, ZoomOutButton, OpenScheduleButton
 
 def _map_move_mode_available(fn):
     def _turn_on_move_mode_if_map_move_mode_available(*args, **kwargs):
-        if args[0].map_move_mode_available and not args[0].controller.scheduler.is_activated:
+        if args[0].map_move_mode_available and not args[0].controller.scheduler.view.is_activated:
             fn(*args, **kwargs)
 
     return _turn_on_move_mode_if_map_move_mode_available
@@ -144,7 +144,6 @@ class MapView(View):
 
     def on_change_base_offset(self, new_base_offset):
         self.base_offset = new_base_offset
-        self.check_base_offset_limits()
         if self.is_activated:
             self.main_map_sprite.position = self.base_offset
 
@@ -174,8 +173,10 @@ class MapView(View):
         else:
             self.base_offset_upper_right_limit = (screen_resolution[0] - 8160, screen_resolution[1] - 3600)
 
-        self.on_change_base_offset((self.base_offset[0] + (screen_resolution[0] - self.screen_resolution[0]) // 2,
-                                    self.base_offset[1] + (screen_resolution[1] - self.screen_resolution[1]) // 2))
+        self.base_offset = (self.base_offset[0] + (screen_resolution[0] - self.screen_resolution[0]) // 2,
+                            self.base_offset[1] + (screen_resolution[1] - self.screen_resolution[1]) // 2)
+        self.check_base_offset_limits()
+        self.controller.on_change_base_offset(self.base_offset)
         self.screen_resolution = screen_resolution
         self.zoom_in_button.x_margin = self.screen_resolution[0]
         self.zoom_out_button.x_margin = self.screen_resolution[0]
@@ -202,7 +203,9 @@ class MapView(View):
 
     @_map_move_mode_enabled
     def handle_mouse_drag(self, x, y, dx, dy, buttons, modifiers):
-        self.controller.on_change_base_offset((self.base_offset[0] + dx, self.base_offset[1] + dy))
+        self.base_offset = (self.base_offset[0] + dx, self.base_offset[1] + dy)
+        self.check_base_offset_limits()
+        self.controller.on_change_base_offset(self.base_offset)
 
     @_left_mouse_button
     def handle_mouse_release(self, x, y, button, modifiers):

@@ -17,9 +17,19 @@ def _controller_is_not_active(fn):
     return _handle_if_controller_is_not_activated
 
 
+def _signal_belongs_to_track(fn):
+    def _unlock_signal_if_belongs_to_track(*args, **kwargs):
+        if args[1] == args[0].track:
+            fn(*args, **kwargs)
+
+    return _unlock_signal_if_belongs_to_track
+
+
 class SignalController(Controller):
     def __init__(self, map_controller):
         super().__init__(parent_controller=map_controller)
+        self.track = None
+        self.base_route = None
 
     def on_update_view(self):
         self.view.on_update()
@@ -35,11 +45,24 @@ class SignalController(Controller):
         self.model.on_deactivate()
         self.view.on_deactivate()
 
-    def on_change_screen_resolution(self, screen_resolution):
-        self.view.on_change_screen_resolution(screen_resolution)
+    def on_change_base_offset(self, new_base_offset):
+        self.view.on_change_base_offset(new_base_offset)
 
-    def on_unlock(self):
+    @_signal_belongs_to_track
+    def on_unlock(self, track_number):
         self.model.on_unlock()
 
     def on_save_state(self):
         self.model.on_save_state()
+
+    def on_zoom_in(self):
+        self.view.on_change_zoom_factor(1.0, zoom_out_activated=False)
+
+    def on_zoom_out(self):
+        self.view.on_change_zoom_factor(0.5, zoom_out_activated=True)
+
+    def on_activate_view(self):
+        self.view.on_activate()
+
+    def on_deactivate_view(self):
+        self.view.on_deactivate()

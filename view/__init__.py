@@ -4,3 +4,4 @@ from .map_view import MapView
 from .settings_view import SettingsView
 from .fps_view import FPSView
 from .scheduler_view import SchedulerView
+from .signal_view import SignalView
