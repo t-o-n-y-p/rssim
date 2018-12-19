@@ -42,89 +42,29 @@ def create_map(user_db_connection, user_db_cursor, config_db_cursor, surface, ba
     game.map = controller
     controller.scheduler = create_scheduler(user_db_connection, user_db_cursor, config_db_cursor, surface,
                                             batch, groups, controller)
-    controller.signals \
-        = (create_signal(user_db_connection, user_db_cursor, config_db_cursor, surface, batch, groups, controller),
-           create_signal(user_db_connection, user_db_cursor, config_db_cursor, surface, batch, groups, controller),
-           create_signal(user_db_connection, user_db_cursor, config_db_cursor, surface, batch, groups, controller),
-           create_signal(user_db_connection, user_db_cursor, config_db_cursor, surface, batch, groups, controller),
-           create_signal(user_db_connection, user_db_cursor, config_db_cursor, surface, batch, groups, controller),
-           create_signal(user_db_connection, user_db_cursor, config_db_cursor, surface, batch, groups, controller),
-           create_signal(user_db_connection, user_db_cursor, config_db_cursor, surface, batch, groups, controller),
-           create_signal(user_db_connection, user_db_cursor, config_db_cursor, surface, batch, groups, controller),
-           create_signal(user_db_connection, user_db_cursor, config_db_cursor, surface, batch, groups, controller),
-           create_signal(user_db_connection, user_db_cursor, config_db_cursor, surface, batch, groups, controller),
-           create_signal(user_db_connection, user_db_cursor, config_db_cursor, surface, batch, groups, controller),
-           create_signal(user_db_connection, user_db_cursor, config_db_cursor, surface, batch, groups, controller),
-           create_signal(user_db_connection, user_db_cursor, config_db_cursor, surface, batch, groups, controller),
-           create_signal(user_db_connection, user_db_cursor, config_db_cursor, surface, batch, groups, controller),
-           create_signal(user_db_connection, user_db_cursor, config_db_cursor, surface, batch, groups, controller),
-           create_signal(user_db_connection, user_db_cursor, config_db_cursor, surface, batch, groups, controller),
-           create_signal(user_db_connection, user_db_cursor, config_db_cursor, surface, batch, groups, controller),
-           create_signal(user_db_connection, user_db_cursor, config_db_cursor, surface, batch, groups, controller),
-           create_signal(user_db_connection, user_db_cursor, config_db_cursor, surface, batch, groups, controller),
-           create_signal(user_db_connection, user_db_cursor, config_db_cursor, surface, batch, groups, controller),
-           create_signal(user_db_connection, user_db_cursor, config_db_cursor, surface, batch, groups, controller),
-           create_signal(user_db_connection, user_db_cursor, config_db_cursor, surface, batch, groups, controller),
-           create_signal(user_db_connection, user_db_cursor, config_db_cursor, surface, batch, groups, controller),
-           create_signal(user_db_connection, user_db_cursor, config_db_cursor, surface, batch, groups, controller),
-           create_signal(user_db_connection, user_db_cursor, config_db_cursor, surface, batch, groups, controller),
-           create_signal(user_db_connection, user_db_cursor, config_db_cursor, surface, batch, groups, controller),
-           create_signal(user_db_connection, user_db_cursor, config_db_cursor, surface, batch, groups, controller),
-           create_signal(user_db_connection, user_db_cursor, config_db_cursor, surface, batch, groups, controller),
-           create_signal(user_db_connection, user_db_cursor, config_db_cursor, surface, batch, groups, controller),
-           create_signal(user_db_connection, user_db_cursor, config_db_cursor, surface, batch, groups, controller),
-           create_signal(user_db_connection, user_db_cursor, config_db_cursor, surface, batch, groups, controller),
-           create_signal(user_db_connection, user_db_cursor, config_db_cursor, surface, batch, groups, controller),
-           create_signal(user_db_connection, user_db_cursor, config_db_cursor, surface, batch, groups, controller),
-           create_signal(user_db_connection, user_db_cursor, config_db_cursor, surface, batch, groups, controller),
-           create_signal(user_db_connection, user_db_cursor, config_db_cursor, surface, batch, groups, controller),
-           create_signal(user_db_connection, user_db_cursor, config_db_cursor, surface, batch, groups, controller),
-           create_signal(user_db_connection, user_db_cursor, config_db_cursor, surface, batch, groups, controller),
-           create_signal(user_db_connection, user_db_cursor, config_db_cursor, surface, batch, groups, controller),
-           create_signal(user_db_connection, user_db_cursor, config_db_cursor, surface, batch, groups, controller),
-           create_signal(user_db_connection, user_db_cursor, config_db_cursor, surface, batch, groups, controller),
-           create_signal(user_db_connection, user_db_cursor, config_db_cursor, surface, batch, groups, controller),
-           create_signal(user_db_connection, user_db_cursor, config_db_cursor, surface, batch, groups, controller),
-           create_signal(user_db_connection, user_db_cursor, config_db_cursor, surface, batch, groups, controller),
-           create_signal(user_db_connection, user_db_cursor, config_db_cursor, surface, batch, groups, controller),
-           create_signal(user_db_connection, user_db_cursor, config_db_cursor, surface, batch, groups, controller),
-           create_signal(user_db_connection, user_db_cursor, config_db_cursor, surface, batch, groups, controller),
-           create_signal(user_db_connection, user_db_cursor, config_db_cursor, surface, batch, groups, controller),
-           create_signal(user_db_connection, user_db_cursor, config_db_cursor, surface, batch, groups, controller),
-           create_signal(user_db_connection, user_db_cursor, config_db_cursor, surface, batch, groups, controller),
-           create_signal(user_db_connection, user_db_cursor, config_db_cursor, surface, batch, groups, controller),
-           create_signal(user_db_connection, user_db_cursor, config_db_cursor, surface, batch, groups, controller),
-           create_signal(user_db_connection, user_db_cursor, config_db_cursor, surface, batch, groups, controller),
-           create_signal(user_db_connection, user_db_cursor, config_db_cursor, surface, batch, groups, controller),
-           create_signal(user_db_connection, user_db_cursor, config_db_cursor, surface, batch, groups, controller),
-           create_signal(user_db_connection, user_db_cursor, config_db_cursor, surface, batch, groups, controller),
-           create_signal(user_db_connection, user_db_cursor, config_db_cursor, surface, batch, groups, controller),
-           create_signal(user_db_connection, user_db_cursor, config_db_cursor, surface, batch, groups, controller),
-           create_signal(user_db_connection, user_db_cursor, config_db_cursor, surface, batch, groups, controller),
-           create_signal(user_db_connection, user_db_cursor, config_db_cursor, surface, batch, groups, controller),
-           create_signal(user_db_connection, user_db_cursor, config_db_cursor, surface, batch, groups, controller),
-           create_signal(user_db_connection, user_db_cursor, config_db_cursor, surface, batch, groups, controller),
-           create_signal(user_db_connection, user_db_cursor, config_db_cursor, surface, batch, groups, controller),
-           create_signal(user_db_connection, user_db_cursor, config_db_cursor, surface, batch, groups, controller),
-           create_signal(user_db_connection, user_db_cursor, config_db_cursor, surface, batch, groups, controller),
-           create_signal(user_db_connection, user_db_cursor, config_db_cursor, surface, batch, groups, controller),
-           create_signal(user_db_connection, user_db_cursor, config_db_cursor, surface, batch, groups, controller),
-           create_signal(user_db_connection, user_db_cursor, config_db_cursor, surface, batch, groups, controller),
-           create_signal(user_db_connection, user_db_cursor, config_db_cursor, surface, batch, groups, controller))
-    controller.signals[0].track = 0
-    controller.signals[0].base_route = 'left_entry_base_route'
-    controller.signals[1].track = 0
-    controller.signals[1].base_route = 'right_entry_base_route'
-    for i in range(2, 65, 2):
-        controller.signals[i].track = i // 2
-        controller.signals[i].base_route = 'left_exit_platform_base_route'
-        controller.signals[i + 1].track = i // 2
-        controller.signals[i + 1].base_route = 'right_exit_platform_base_route'
+    controller.signals[0] = {}
+    controller.signals[0]['left_entry_base_route'] \
+        = create_signal(user_db_connection, user_db_cursor, config_db_cursor, surface, batch, groups, controller,
+                        0, 'left_entry_base_route')
+    controller.signals[0]['right_entry_base_route'] \
+        = create_signal(user_db_connection, user_db_cursor, config_db_cursor, surface, batch, groups, controller,
+                        0, 'right_entry_base_route')
+    for i in range(1, 33):
+        controller.signals[i] = {}
+        controller.signals[i]['left_exit_platform_base_route'] \
+            = create_signal(user_db_connection, user_db_cursor, config_db_cursor, surface, batch, groups, controller,
+                            i, 'left_exit_platform_base_route')
+        controller.signals[i]['right_exit_platform_base_route'] \
+            = create_signal(user_db_connection, user_db_cursor, config_db_cursor, surface, batch, groups, controller,
+                            i, 'right_exit_platform_base_route')
 
-    controller.signals[66].track = 100
-    controller.signals[66].base_route = 'left_side_entry_base_route'
-    controller.signals[67].track = 100
-    controller.signals[67].base_route = 'right_side_entry_base_route'
+    controller.signals[100] = {}
+    controller.signals[100]['left_side_entry_base_route'] \
+        = create_signal(user_db_connection, user_db_cursor, config_db_cursor, surface, batch, groups, controller,
+                        100, 'left_side_entry_base_route')
+    controller.signals[100]['right_side_entry_base_route'] \
+        = create_signal(user_db_connection, user_db_cursor, config_db_cursor, surface, batch, groups, controller,
+                        100, 'right_side_entry_base_route')
     model = MapModel(user_db_connection, user_db_cursor, config_db_cursor)
     view = MapView(surface, batch, groups)
     controller.model = model
@@ -174,7 +114,8 @@ def create_scheduler(user_db_connection, user_db_cursor, config_db_cursor, surfa
     return controller
 
 
-def create_signal(user_db_connection, user_db_cursor, config_db_cursor, surface, batch, groups, map_controller):
+def create_signal(user_db_connection, user_db_cursor, config_db_cursor, surface, batch, groups, map_controller,
+                  track, base_route):
     controller = SignalController(map_controller)
     model = SignalModel(user_db_connection, user_db_cursor, config_db_cursor)
     view = SignalView(surface, batch, groups)
@@ -183,4 +124,6 @@ def create_signal(user_db_connection, user_db_cursor, config_db_cursor, surface,
     controller.view = view
     view.on_assign_controller(controller)
     model.view = view
+    controller.track = track
+    controller.base_route = base_route
     return controller

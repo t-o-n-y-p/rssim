@@ -17,14 +17,6 @@ def _controller_is_not_active(fn):
     return _handle_if_controller_is_not_activated
 
 
-def _signal_belongs_to_track(fn):
-    def _unlock_signal_if_belongs_to_track(*args, **kwargs):
-        if args[1] == args[0].track:
-            fn(*args, **kwargs)
-
-    return _unlock_signal_if_belongs_to_track
-
-
 class SignalController(Controller):
     def __init__(self, map_controller):
         super().__init__(parent_controller=map_controller)
@@ -51,8 +43,7 @@ class SignalController(Controller):
     def on_change_screen_resolution(self, screen_resolution):
         self.view.on_change_screen_resolution(screen_resolution)
 
-    @_signal_belongs_to_track
-    def on_unlock(self, track_number):
+    def on_unlock(self):
         self.model.on_unlock()
 
     def on_save_state(self):
@@ -65,8 +56,7 @@ class SignalController(Controller):
         self.view.on_change_zoom_factor(0.5, zoom_out_activated=True)
 
     def on_activate_view(self):
-        self.view.on_activate()
-        self.view.on_change_state(self.model.state, self.model.locked)
+        self.model.on_activate_view()
 
     def on_deactivate_view(self):
         self.view.on_deactivate()

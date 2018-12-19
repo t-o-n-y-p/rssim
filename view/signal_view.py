@@ -62,8 +62,8 @@ class SignalView(View):
     @_view_is_not_active
     def on_activate(self):
         self.is_activated = True
-        if self.signal_sprite is None:
-            if self.state == 'red_state':
+        if self.signal_sprite is None and not self.locked:
+            if self.state == 'red_signal':
                 self.signal_sprite = Sprite(self.red_signal_image, x=self.base_offset[0] + self.position[0],
                                             y=self.base_offset[1] + self.position[1], batch=self.batch,
                                             group=self.groups['signal'])
