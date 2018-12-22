@@ -55,10 +55,10 @@ class SignalModel(Model):
         self.locked = False
         self.view.on_unlock()
 
-    def on_switch_to_green(self, train_route):
+    def on_switch_to_green(self):
         self.state = 'green_state'
         self.view.on_change_state('green_state')
 
-    def on_switch_to_red(self, train_route):
+    def on_switch_to_red(self):
         self.state = 'green_state'
         self.view.on_change_state('red_state')
