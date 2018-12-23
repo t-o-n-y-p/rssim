@@ -48,3 +48,9 @@ class TrainRouteController(Controller):
 
     def on_update_train_route_sections(self, last_car_position):
         self.model.on_update_train_route_sections(last_car_position)
+
+    def on_update_time(self, game_time):
+        self.model.on_update_time(game_time)
+
+    def on_update_priority(self, priority):
+        self.model.on_update_priority(priority)

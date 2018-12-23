@@ -117,13 +117,14 @@ def create_scheduler(user_db_connection, user_db_cursor, config_db_cursor, surfa
 def create_signal(user_db_connection, user_db_cursor, config_db_cursor, surface, batch, groups, map_controller,
                   track, base_route):
     controller = SignalController(map_controller)
+    controller.track = track
+    controller.base_route = base_route
     model = SignalModel(user_db_connection, user_db_cursor, config_db_cursor)
+    model.on_signal_setup(track, base_route)
     view = SignalView(surface, batch, groups)
     controller.model = model
     model.controller = controller
     controller.view = view
     view.on_assign_controller(controller)
     model.view = view
-    controller.track = track
-    controller.base_route = base_route
     return controller

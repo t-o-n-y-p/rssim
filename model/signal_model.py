@@ -22,25 +22,29 @@ class SignalModel(Model):
         super().__init__(user_db_connection, user_db_cursor, config_db_cursor)
         self.state = None
         self.locked = None
+        self.flip_needed = None
+        self.position = None
+
+    def on_signal_setup(self, track, base_route):
+        self.user_db_cursor.execute('SELECT state, locked FROM signals WHERE track = ? AND base_route = ?',
+                                    (track, base_route))
+        self.state, self.locked = self.user_db_cursor.fetchone()
+        self.locked = bool(self.locked)
+        self.config_db_cursor.execute('SELECT x, y, flip_needed FROM signal_config WHERE track = ? AND base_route = ?',
+                                      (track, base_route))
+        x, y, self.flip_needed = self.config_db_cursor.fetchone()
+        self.position = (x, y)
 
     @_model_is_not_active
     def on_activate(self):
         self.is_activated = True
-        if self.state is None and self.locked is None:
-            self.user_db_cursor.execute('SELECT state, locked FROM signals WHERE track = ? AND base_route = ?',
-                                        (self.controller.track, self.controller.base_route))
-            self.state, self.locked = self.user_db_cursor.fetchone()
-            self.locked = bool(self.locked)
-
-        self.config_db_cursor.execute('SELECT x, y, flip_needed FROM signal_config WHERE track = ? AND base_route = ?',
-                                      (self.controller.track, self.controller.base_route))
-        x, y, self.view.flip_needed = self.config_db_cursor.fetchone()
-        self.view.position = (x, y)
         self.on_activate_view()
 
     def on_activate_view(self):
         self.view.state = self.state
         self.view.locked = self.locked
+        self.view.flip_needed = self.flip_needed
+        self.view.position = self.position
         self.view.on_activate()
 
     @_model_is_active
