@@ -32,15 +32,15 @@ class MapController(Controller):
         super().__init__(parent_controller=game_controller)
         self.scheduler = None
         self.signals = {}
+        self.signals_list = []
         self.train_routes = {}
         self.train_routes_sorted_list = []
 
     def on_update_view(self):
         self.view.on_update()
         self.scheduler.on_update_view()
-        for i in self.signals:
-            for j in self.signals[i]:
-                self.signals[i][j].on_update_view()
+        for signal in self.signals_list:
+            signal.on_update_view()
 
         for route in self.train_routes_sorted_list:
             route.on_update_view()
@@ -50,9 +50,8 @@ class MapController(Controller):
         self.is_activated = True
         self.model.on_activate()
         self.scheduler.on_activate()
-        for i in self.signals:
-            for j in self.signals[i]:
-                self.signals[i][j].on_activate()
+        for signal in self.signals_list:
+            signal.on_activate()
 
         for route in self.train_routes_sorted_list:
             route.on_activate()
@@ -63,9 +62,8 @@ class MapController(Controller):
         self.model.on_deactivate()
         self.view.on_deactivate()
         self.scheduler.on_deactivate()
-        for i in self.signals:
-            for j in self.signals[i]:
-                self.signals[i][j].on_deactivate()
+        for signal in self.signals_list:
+            signal.on_deactivate()
 
         for route in self.train_routes_sorted_list:
             route.on_deactivate()
@@ -73,9 +71,8 @@ class MapController(Controller):
     def on_change_screen_resolution(self, screen_resolution):
         self.view.on_change_screen_resolution(screen_resolution)
         self.scheduler.on_change_screen_resolution(screen_resolution)
-        for i in self.signals:
-            for j in self.signals[i]:
-                self.signals[i][j].on_change_screen_resolution(screen_resolution)
+        for signal in self.signals_list:
+            signal.on_change_screen_resolution(screen_resolution)
 
         for route in self.train_routes_sorted_list:
             route.on_change_screen_resolution(screen_resolution)
@@ -84,9 +81,8 @@ class MapController(Controller):
 
     def on_change_base_offset(self, new_base_offset):
         self.view.on_change_base_offset(new_base_offset)
-        for i in self.signals:
-            for j in self.signals[i]:
-                self.signals[i][j].on_change_base_offset(new_base_offset)
+        for signal in self.signals_list:
+            signal.on_change_base_offset(new_base_offset)
 
         for route in self.train_routes_sorted_list:
             route.on_change_base_offset(new_base_offset)
@@ -99,9 +95,8 @@ class MapController(Controller):
 
     def on_activate_view(self):
         self.view.on_activate()
-        for i in self.signals:
-            for j in self.signals[i]:
-                self.signals[i][j].on_activate_view()
+        for signal in self.signals_list:
+            signal.on_activate_view()
 
         for route in self.train_routes_sorted_list:
             route.on_activate_view()
@@ -109,18 +104,16 @@ class MapController(Controller):
     def on_deactivate_view(self):
         self.view.on_deactivate()
         self.scheduler.on_deactivate_view()
-        for i in self.signals:
-            for j in self.signals[i]:
-                self.signals[i][j].on_deactivate_view()
+        for signal in self.signals_list:
+            signal.on_deactivate_view()
 
         for route in self.train_routes_sorted_list:
             route.on_deactivate_view()
 
     def on_zoom_in(self):
         self.view.on_change_zoom_factor(1.0, zoom_out_activated=False)
-        for i in self.signals:
-            for j in self.signals[i]:
-                self.signals[i][j].on_zoom_in()
+        for signal in self.signals_list:
+            signal.on_zoom_in()
 
         for route in self.train_routes_sorted_list:
             route.on_zoom_in()
@@ -129,9 +122,8 @@ class MapController(Controller):
 
     def on_zoom_out(self):
         self.view.on_change_zoom_factor(0.5, zoom_out_activated=True)
-        for i in self.signals:
-            for j in self.signals[i]:
-                self.signals[i][j].on_zoom_out()
+        for signal in self.signals_list:
+            signal.on_zoom_out()
 
         for route in self.train_routes_sorted_list:
             route.on_zoom_out()
@@ -141,9 +133,8 @@ class MapController(Controller):
     def on_save_state(self):
         self.model.on_save_state()
         self.scheduler.on_save_state()
-        for i in self.signals:
-            for j in self.signals[i]:
-                self.signals[i][j].on_save_state()
+        for signal in self.signals_list:
+            signal.on_save_state()
 
         for route in self.train_routes_sorted_list:
             route.on_save_state()

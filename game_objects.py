@@ -46,26 +46,32 @@ def create_map(user_db_connection, user_db_cursor, config_db_cursor, surface, ba
     controller.signals[0]['left_entry_base_route'] \
         = create_signal(user_db_connection, user_db_cursor, config_db_cursor, surface, batch, groups, controller,
                         0, 'left_entry_base_route')
+    controller.signals_list.append(controller.signals[0]['left_entry_base_route'])
     controller.signals[0]['right_entry_base_route'] \
         = create_signal(user_db_connection, user_db_cursor, config_db_cursor, surface, batch, groups, controller,
                         0, 'right_entry_base_route')
+    controller.signals_list.append(controller.signals[0]['right_entry_base_route'])
     for i in range(1, 33):
         controller.signals[i] = {}
         controller.train_routes[i] = {}
         controller.signals[i]['left_exit_platform_base_route'] \
             = create_signal(user_db_connection, user_db_cursor, config_db_cursor, surface, batch, groups, controller,
                             i, 'left_exit_platform_base_route')
+        controller.signals_list.append(controller.signals[i]['left_exit_platform_base_route'])
         controller.signals[i]['right_exit_platform_base_route'] \
             = create_signal(user_db_connection, user_db_cursor, config_db_cursor, surface, batch, groups, controller,
                             i, 'right_exit_platform_base_route')
+        controller.signals_list.append(controller.signals[i]['right_exit_platform_base_route'])
 
     controller.signals[100] = {}
     controller.signals[100]['left_side_entry_base_route'] \
         = create_signal(user_db_connection, user_db_cursor, config_db_cursor, surface, batch, groups, controller,
                         100, 'left_side_entry_base_route')
+    controller.signals_list.append(controller.signals[100]['left_side_entry_base_route'])
     controller.signals[100]['right_side_entry_base_route'] \
         = create_signal(user_db_connection, user_db_cursor, config_db_cursor, surface, batch, groups, controller,
                         100, 'right_side_entry_base_route')
+    controller.signals_list.append(controller.signals[100]['right_side_entry_base_route'])
     controller.train_routes[0] = {}
     controller.train_routes[0]['left_approaching'] \
         = create_train_route(user_db_connection, user_db_cursor, config_db_cursor, surface, batch, groups, controller,
