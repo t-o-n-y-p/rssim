@@ -1,3 +1,5 @@
+from operator import attrgetter
+
 from .controller_base import Controller
 
 
@@ -30,6 +32,8 @@ class MapController(Controller):
         super().__init__(parent_controller=game_controller)
         self.scheduler = None
         self.signals = {}
+        self.train_routes = {}
+        self.train_routes_sorted_list = []
 
     def on_update_view(self):
         self.view.on_update()
@@ -37,6 +41,9 @@ class MapController(Controller):
         for i in self.signals:
             for j in self.signals[i]:
                 self.signals[i][j].on_update_view()
+
+        for route in self.train_routes_sorted_list:
+            route.on_update_view()
 
     @_controller_is_not_active
     def on_activate(self):
@@ -46,6 +53,9 @@ class MapController(Controller):
         for i in self.signals:
             for j in self.signals[i]:
                 self.signals[i][j].on_activate()
+
+        for route in self.train_routes_sorted_list:
+            route.on_activate()
 
     @_controller_is_active
     def on_deactivate(self):
@@ -57,12 +67,18 @@ class MapController(Controller):
             for j in self.signals[i]:
                 self.signals[i][j].on_deactivate()
 
+        for route in self.train_routes_sorted_list:
+            route.on_deactivate()
+
     def on_change_screen_resolution(self, screen_resolution):
         self.view.on_change_screen_resolution(screen_resolution)
         self.scheduler.on_change_screen_resolution(screen_resolution)
         for i in self.signals:
             for j in self.signals[i]:
                 self.signals[i][j].on_change_screen_resolution(screen_resolution)
+
+        for route in self.train_routes_sorted_list:
+            route.on_change_screen_resolution(screen_resolution)
 
         self.on_change_base_offset(self.view.base_offset)
 
@@ -71,6 +87,9 @@ class MapController(Controller):
         for i in self.signals:
             for j in self.signals[i]:
                 self.signals[i][j].on_change_base_offset(new_base_offset)
+
+        for route in self.train_routes_sorted_list:
+            route.on_change_base_offset(new_base_offset)
 
     def on_unlock_track(self, track_number):
         self.model.on_unlock_track(track_number)
@@ -84,6 +103,9 @@ class MapController(Controller):
             for j in self.signals[i]:
                 self.signals[i][j].on_activate_view()
 
+        for route in self.train_routes_sorted_list:
+            route.on_activate_view()
+
     def on_deactivate_view(self):
         self.view.on_deactivate()
         self.scheduler.on_deactivate_view()
@@ -91,11 +113,17 @@ class MapController(Controller):
             for j in self.signals[i]:
                 self.signals[i][j].on_deactivate_view()
 
+        for route in self.train_routes_sorted_list:
+            route.on_deactivate_view()
+
     def on_zoom_in(self):
         self.view.on_change_zoom_factor(1.0, zoom_out_activated=False)
         for i in self.signals:
             for j in self.signals[i]:
                 self.signals[i][j].on_zoom_in()
+
+        for route in self.train_routes_sorted_list:
+            route.on_zoom_in()
 
         self.on_change_base_offset(self.view.base_offset)
 
@@ -104,6 +132,9 @@ class MapController(Controller):
         for i in self.signals:
             for j in self.signals[i]:
                 self.signals[i][j].on_zoom_out()
+
+        for route in self.train_routes_sorted_list:
+            route.on_zoom_out()
 
         self.on_change_base_offset(self.view.base_offset)
 
@@ -114,7 +145,15 @@ class MapController(Controller):
             for j in self.signals[i]:
                 self.signals[i][j].on_save_state()
 
+        for route in self.train_routes_sorted_list:
+            route.on_save_state()
+
     def on_update_time(self, game_time):
+        self.train_routes_sorted_list = sorted(self.train_routes_sorted_list,
+                                               key=attrgetter('model.priority'), reverse=True)
+        for route in self.train_routes_sorted_list:
+            route.on_update_time(game_time)
+
         self.scheduler.on_update_time(game_time)
 
     def on_level_up(self):

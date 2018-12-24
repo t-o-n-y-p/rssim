@@ -54,3 +54,24 @@ class TrainRouteController(Controller):
 
     def on_update_priority(self, priority):
         self.model.on_update_priority(priority)
+
+    def on_update_section_status(self, section, status):
+        self.model.on_update_section_status(section, status)
+
+    def on_change_base_offset(self, new_base_offset):
+        self.view.on_change_base_offset(new_base_offset)
+
+    def on_change_screen_resolution(self, screen_resolution):
+        self.view.on_change_screen_resolution(screen_resolution)
+
+    def on_zoom_in(self):
+        self.view.on_change_zoom_factor(1.0, zoom_out_activated=False)
+
+    def on_zoom_out(self):
+        self.view.on_change_zoom_factor(0.5, zoom_out_activated=True)
+
+    def on_activate_view(self):
+        self.model.on_activate_view()
+
+    def on_deactivate_view(self):
+        self.view.on_deactivate()

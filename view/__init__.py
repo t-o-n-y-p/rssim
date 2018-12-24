@@ -5,3 +5,4 @@ from .settings_view import SettingsView
 from .fps_view import FPSView
 from .scheduler_view import SchedulerView
 from .signal_view import SignalView
+from .train_route_view import TrainRouteView

@@ -53,6 +53,7 @@ class RSSim:
         surface = Window(width=1280, height=720, caption='Railway Station Simulator', style='borderless',
                          fullscreen=False, vsync=False)
         self.surface = surface
+        self.surface.flip()
         self.app = create_app(user_db_connection=self.user_db_connection, user_db_cursor=self.user_db_cursor,
                               config_db_cursor=self.config_db_cursor,
                               surface=self.surface, batch=self.batch, groups=self.groups)

@@ -45,17 +45,25 @@ class TrainRouteModel(Model):
         self.priority = None
 
     def on_train_route_setup(self, track, train_route):
-        self.user_db_cursor.execute('''SELECT opened, last_opened_by, current_checkpoint FROM train_routes
+        self.user_db_cursor.execute('''SELECT opened, last_opened_by, current_checkpoint, priority FROM train_routes
                                        WHERE track = ? and train_route = ?''', (track, train_route))
-        self.opened, self.last_opened_by, self.current_checkpoint = self.user_db_cursor.fetchone()
+        self.opened, self.last_opened_by, self.current_checkpoint, self.priority = self.user_db_cursor.fetchone()
         self.opened = bool(self.opened)
+        self.user_db_cursor.execute('''SELECT train_route_section_busy_state FROM train_routes
+                                       WHERE track = ? and train_route = ?''', (track, train_route))
+        busy_state_parsed = self.user_db_cursor.fetchone()[0].split(',')
+        for i in range(len(busy_state_parsed)):
+            busy_state_parsed[i] = bool(int(busy_state_parsed[i]))
+
+        self.train_route_section_busy_state = busy_state_parsed
+
         self.config_db_cursor.execute('''SELECT signal_track, signal_base_route FROM train_route_config
                                          WHERE track = ? and train_route = ?''', (track, train_route))
         self.signal_track, self.signal_base_route = self.config_db_cursor.fetchone()
         self.config_db_cursor.execute('''SELECT start_point_v2, stop_point_v2, destination_point_v2, checkpoints_v2 
                                          FROM train_route_config WHERE track = ? and train_route = ?''',
                                       (track, train_route))
-        fetched_data = self.config_db_cursor.fetchone()
+        fetched_data = list(self.config_db_cursor.fetchone())
         for i in range(len(fetched_data)):
             if fetched_data[i] is not None:
                 fetched_data[i] = fetched_data[i].split(',')
@@ -75,11 +83,11 @@ class TrainRouteModel(Model):
             trail_points_v2_parsed[i][2] = float(trail_points_v2_parsed[i][2])
 
         self.config_db_cursor.execute('''SELECT section_type, track_param_1, track_param_2 
-                                         FROM train_route_sections WHERE WHERE track = ? and train_route = ?''',
+                                         FROM train_route_sections WHERE track = ? and train_route = ?''',
                                       (track, train_route))
         self.train_route_sections = self.config_db_cursor.fetchall()
         self.config_db_cursor.execute('''SELECT position_1, position_2 
-                                         FROM train_route_sections WHERE WHERE track = ? and train_route = ?''',
+                                         FROM train_route_sections WHERE track = ? and train_route = ?''',
                                       (track, train_route))
         self.train_route_section_positions = self.config_db_cursor.fetchall()
 
@@ -96,10 +104,18 @@ class TrainRouteModel(Model):
         self.is_activated = False
 
     def on_save_state(self):
-        self.user_db_cursor.execute('''UPDATE train_routes SET opened = ?, last_opened_by = ?, current_checkpoint = ?
-                                       WHERE track = ? and train_route = ?''',
-                                    (int(self.opened), self.last_opened_by, self.current_checkpoint,
+        self.user_db_cursor.execute('''UPDATE train_routes SET opened = ?, last_opened_by = ?, current_checkpoint = ?,
+                                       priority = ? WHERE track = ? and train_route = ?''',
+                                    (int(self.opened), self.last_opened_by, self.current_checkpoint, self.priority,
                                      self.controller.track, self.controller.train_route))
+        busy_state_string = ''
+        for i in self.train_route_section_busy_state:
+            busy_state_string += f'{int(i)},'
+
+        busy_state_string = busy_state_string[0:len(busy_state_string) - 1]
+        self.user_db_cursor.execute('''UPDATE train_routes SET train_route_section_busy_state = ? 
+                                       WHERE track = ? and train_route = ?''',
+                                    (busy_state_string, self.controller.track, self.controller.train_route))
 
     def on_open_train_route(self, train_id):
         self.opened = True
@@ -140,3 +156,6 @@ class TrainRouteModel(Model):
 
     def on_update_priority(self, priority):
         self.priority = priority
+
+    def on_update_section_status(self, section, status):
+        self.train_route_section_busy_state[section] = status

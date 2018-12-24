@@ -1,7 +1,7 @@
 from ctrl import AppController, GameController, MapController, SettingsController, FPSController, SchedulerController, \
-    SignalController
-from model import AppModel, GameModel, MapModel, SettingsModel, FPSModel, SchedulerModel, SignalModel
-from view import AppView, GameView, MapView, SettingsView, FPSView, SchedulerView, SignalView
+    SignalController, TrainRouteController
+from model import AppModel, GameModel, MapModel, SettingsModel, FPSModel, SchedulerModel, SignalModel, TrainRouteModel
+from view import AppView, GameView, MapView, SettingsView, FPSView, SchedulerView, SignalView, TrainRouteView
 
 
 def create_app(user_db_connection, user_db_cursor, config_db_cursor, surface, batch, groups):
@@ -51,6 +51,7 @@ def create_map(user_db_connection, user_db_cursor, config_db_cursor, surface, ba
                         0, 'right_entry_base_route')
     for i in range(1, 33):
         controller.signals[i] = {}
+        controller.train_routes[i] = {}
         controller.signals[i]['left_exit_platform_base_route'] \
             = create_signal(user_db_connection, user_db_cursor, config_db_cursor, surface, batch, groups, controller,
                             i, 'left_exit_platform_base_route')
@@ -65,6 +66,82 @@ def create_map(user_db_connection, user_db_cursor, config_db_cursor, surface, ba
     controller.signals[100]['right_side_entry_base_route'] \
         = create_signal(user_db_connection, user_db_cursor, config_db_cursor, surface, batch, groups, controller,
                         100, 'right_side_entry_base_route')
+    controller.train_routes[0] = {}
+    controller.train_routes[0]['left_approaching'] \
+        = create_train_route(user_db_connection, user_db_cursor, config_db_cursor, surface, batch, groups, controller,
+                             0, 'left_approaching')
+    controller.train_routes_sorted_list.append(controller.train_routes[0]['left_approaching'])
+    controller.train_routes[0]['right_approaching'] \
+        = create_train_route(user_db_connection, user_db_cursor, config_db_cursor, surface, batch, groups, controller,
+                             0, 'right_approaching')
+    controller.train_routes_sorted_list.append(controller.train_routes[0]['right_approaching'])
+    for i in range(1, 25):
+        controller.train_routes[i]['left_entry'] \
+            = create_train_route(user_db_connection, user_db_cursor, config_db_cursor, surface, batch, groups,
+                                 controller, i, 'left_entry')
+        controller.train_routes_sorted_list.append(controller.train_routes[i]['left_entry'])
+        controller.train_routes[i]['right_entry'] \
+            = create_train_route(user_db_connection, user_db_cursor, config_db_cursor, surface, batch, groups,
+                                 controller, i, 'right_entry')
+        controller.train_routes_sorted_list.append(controller.train_routes[i]['right_entry'])
+        controller.train_routes[i]['left_exit'] \
+            = create_train_route(user_db_connection, user_db_cursor, config_db_cursor, surface, batch, groups,
+                                 controller, i, 'left_exit')
+        controller.train_routes_sorted_list.append(controller.train_routes[i]['left_exit'])
+        controller.train_routes[i]['right_exit'] \
+            = create_train_route(user_db_connection, user_db_cursor, config_db_cursor, surface, batch, groups,
+                                 controller, i, 'right_exit')
+        controller.train_routes_sorted_list.append(controller.train_routes[i]['right_exit'])
+
+    for i in range(21, 32, 2):
+        controller.train_routes[i]['left_side_entry'] \
+            = create_train_route(user_db_connection, user_db_cursor, config_db_cursor, surface, batch, groups,
+                                 controller, i, 'left_side_entry')
+        controller.train_routes_sorted_list.append(controller.train_routes[i]['left_side_entry'])
+        controller.train_routes[i]['left_side_exit'] \
+            = create_train_route(user_db_connection, user_db_cursor, config_db_cursor, surface, batch, groups,
+                                 controller, i, 'left_side_exit')
+        controller.train_routes_sorted_list.append(controller.train_routes[i]['left_side_exit'])
+
+    for i in range(22, 33, 2):
+        controller.train_routes[i]['right_side_entry'] \
+            = create_train_route(user_db_connection, user_db_cursor, config_db_cursor, surface, batch, groups,
+                                 controller, i, 'right_side_entry')
+        controller.train_routes_sorted_list.append(controller.train_routes[i]['right_side_entry'])
+        controller.train_routes[i]['right_side_exit'] \
+            = create_train_route(user_db_connection, user_db_cursor, config_db_cursor, surface, batch, groups,
+                                 controller, i, 'right_side_exit')
+        controller.train_routes_sorted_list.append(controller.train_routes[i]['right_side_exit'])
+
+    for i in range(25, 32, 2):
+        controller.train_routes[i]['right_entry'] \
+            = create_train_route(user_db_connection, user_db_cursor, config_db_cursor, surface, batch, groups,
+                                 controller, i, 'right_entry')
+        controller.train_routes_sorted_list.append(controller.train_routes[i]['right_entry'])
+        controller.train_routes[i]['right_exit'] \
+            = create_train_route(user_db_connection, user_db_cursor, config_db_cursor, surface, batch, groups,
+                                 controller, i, 'right_exit')
+        controller.train_routes_sorted_list.append(controller.train_routes[i]['right_exit'])
+
+    for i in range(26, 33, 2):
+        controller.train_routes[i]['left_entry'] \
+            = create_train_route(user_db_connection, user_db_cursor, config_db_cursor, surface, batch, groups,
+                                 controller, i, 'left_entry')
+        controller.train_routes_sorted_list.append(controller.train_routes[i]['left_entry'])
+        controller.train_routes[i]['left_exit'] \
+            = create_train_route(user_db_connection, user_db_cursor, config_db_cursor, surface, batch, groups,
+                                 controller, i, 'left_exit')
+        controller.train_routes_sorted_list.append(controller.train_routes[i]['left_exit'])
+
+    controller.train_routes[100] = {}
+    controller.train_routes[100]['left_side_approaching'] \
+        = create_train_route(user_db_connection, user_db_cursor, config_db_cursor, surface, batch, groups, controller,
+                             100, 'left_side_approaching')
+    controller.train_routes_sorted_list.append(controller.train_routes[100]['left_side_approaching'])
+    controller.train_routes[100]['right_side_approaching'] \
+        = create_train_route(user_db_connection, user_db_cursor, config_db_cursor, surface, batch, groups, controller,
+                             100, 'right_side_approaching')
+    controller.train_routes_sorted_list.append(controller.train_routes[100]['right_side_approaching'])
     model = MapModel(user_db_connection, user_db_cursor, config_db_cursor)
     view = MapView(surface, batch, groups)
     controller.model = model
@@ -122,6 +199,22 @@ def create_signal(user_db_connection, user_db_cursor, config_db_cursor, surface,
     model = SignalModel(user_db_connection, user_db_cursor, config_db_cursor)
     model.on_signal_setup(track, base_route)
     view = SignalView(surface, batch, groups)
+    controller.model = model
+    model.controller = controller
+    controller.view = view
+    view.on_assign_controller(controller)
+    model.view = view
+    return controller
+
+
+def create_train_route(user_db_connection, user_db_cursor, config_db_cursor, surface, batch, groups, map_controller,
+                       track, train_route):
+    controller = TrainRouteController(map_controller)
+    controller.track = track
+    controller.train_route = train_route
+    model = TrainRouteModel(user_db_connection, user_db_cursor, config_db_cursor)
+    model.on_train_route_setup(track, train_route)
+    view = TrainRouteView(surface, batch, groups)
     controller.model = model
     model.controller = controller
     controller.view = view
