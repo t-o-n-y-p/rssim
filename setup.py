@@ -11,6 +11,9 @@ executables = [Executable('rssim.py',
 
 include_files = ['db', 'img', 'icon.ico', 'perfo-bold.ttf']
 
+excludes = ['PIL', 'test', 'distutils', 'email', 'html', 'http', 'unittest', 'urllib', 'dbm', 'pydoc_data',
+            'xml', 'xmlrpc']
+
 includes = ['pyglet',
             'pyglet.app',
             'pyglet.canvas',
@@ -35,6 +38,7 @@ options = {
     'build_exe': {
         'include_msvcr': True,
         'includes': includes,
+        'excludes': excludes,
         'include_files': include_files
     }
 }

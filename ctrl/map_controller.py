@@ -42,8 +42,8 @@ class MapController(Controller):
         for signal in self.signals_list:
             signal.on_update_view()
 
-        for route in self.train_routes_sorted_list:
-            route.on_update_view()
+        # for route in self.train_routes_sorted_list:
+        #     route.on_update_view()
 
     @_controller_is_not_active
     def on_activate(self):
@@ -74,8 +74,8 @@ class MapController(Controller):
         for signal in self.signals_list:
             signal.on_change_screen_resolution(screen_resolution)
 
-        for route in self.train_routes_sorted_list:
-            route.on_change_screen_resolution(screen_resolution)
+        # for route in self.train_routes_sorted_list:
+        #     route.on_change_screen_resolution(screen_resolution)
 
         self.on_change_base_offset(self.view.base_offset)
 
@@ -84,8 +84,8 @@ class MapController(Controller):
         for signal in self.signals_list:
             signal.on_change_base_offset(new_base_offset)
 
-        for route in self.train_routes_sorted_list:
-            route.on_change_base_offset(new_base_offset)
+        # for route in self.train_routes_sorted_list:
+        #     route.on_change_base_offset(new_base_offset)
 
     def on_unlock_track(self, track_number):
         self.model.on_unlock_track(track_number)
@@ -98,8 +98,8 @@ class MapController(Controller):
         for signal in self.signals_list:
             signal.on_activate_view()
 
-        for route in self.train_routes_sorted_list:
-            route.on_activate_view()
+        # for route in self.train_routes_sorted_list:
+        #     route.on_activate_view()
 
     def on_deactivate_view(self):
         self.view.on_deactivate()
@@ -107,16 +107,16 @@ class MapController(Controller):
         for signal in self.signals_list:
             signal.on_deactivate_view()
 
-        for route in self.train_routes_sorted_list:
-            route.on_deactivate_view()
+        # for route in self.train_routes_sorted_list:
+        #     route.on_deactivate_view()
 
     def on_zoom_in(self):
         self.view.on_change_zoom_factor(1.0, zoom_out_activated=False)
         for signal in self.signals_list:
             signal.on_zoom_in()
 
-        for route in self.train_routes_sorted_list:
-            route.on_zoom_in()
+        # for route in self.train_routes_sorted_list:
+        #     route.on_zoom_in()
 
         self.on_change_base_offset(self.view.base_offset)
 
@@ -125,8 +125,8 @@ class MapController(Controller):
         for signal in self.signals_list:
             signal.on_zoom_out()
 
-        for route in self.train_routes_sorted_list:
-            route.on_zoom_out()
+        # for route in self.train_routes_sorted_list:
+        #     route.on_zoom_out()
 
         self.on_change_base_offset(self.view.base_offset)
 
