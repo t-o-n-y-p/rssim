@@ -25,6 +25,14 @@ def _train_has_passed_train_route_section(fn):
     return _allow_other_trains_to_pass_if_train_has_passed_train_route_section
 
 
+def _train_route_is_opened(fn):
+    def _handle_if_train_route_is_opened(*args, **kwargs):
+        if args[0].opened:
+            fn(*args, **kwargs)
+
+    return _handle_if_train_route_is_opened
+
+
 class TrainRouteModel(Model):
     def __init__(self, user_db_connection, user_db_cursor, config_db_cursor):
         super().__init__(user_db_connection, user_db_cursor, config_db_cursor)
@@ -141,6 +149,7 @@ class TrainRouteModel(Model):
         self.train_route_section_busy_state[self.current_checkpoint] = False
         self.current_checkpoint += 1
 
+    @_train_route_is_opened
     def on_update_time(self, game_time):
         train_route_busy = False
         for i in range(1, len(self.train_route_sections)):
