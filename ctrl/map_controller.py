@@ -158,3 +158,9 @@ class MapController(Controller):
     def on_close_schedule(self):
         self.view.on_activate_zoom_buttons()
         self.view.open_schedule_button.on_activate()
+
+    def on_switch_signal_to_green(self, signal_track, signal_base_route):
+        self.signals[signal_track][signal_base_route].on_switch_to_green()
+
+    def on_switch_signal_to_red(self, signal_track, signal_base_route):
+        self.signals[signal_track][signal_base_route].on_switch_to_red()

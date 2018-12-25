@@ -49,13 +49,14 @@ class TrainRouteModel(Model):
         self.train_route_sections = None
         self.train_route_section_positions = None
         self.train_route_section_busy_state = None
-        self.train_id = None
         self.priority = None
+        self.cars = None
 
     def on_train_route_setup(self, track, train_route):
-        self.user_db_cursor.execute('''SELECT opened, last_opened_by, current_checkpoint, priority FROM train_routes
-                                       WHERE track = ? and train_route = ?''', (track, train_route))
-        self.opened, self.last_opened_by, self.current_checkpoint, self.priority = self.user_db_cursor.fetchone()
+        self.user_db_cursor.execute('''SELECT opened, last_opened_by, current_checkpoint, priority, cars 
+                                       FROM train_routes WHERE track = ? and train_route = ?''', (track, train_route))
+        self.opened, self.last_opened_by, self.current_checkpoint, self.priority, self.cars \
+            = self.user_db_cursor.fetchone()
         self.opened = bool(self.opened)
         self.user_db_cursor.execute('''SELECT train_route_section_busy_state FROM train_routes
                                        WHERE track = ? and train_route = ?''', (track, train_route))
@@ -113,9 +114,9 @@ class TrainRouteModel(Model):
 
     def on_save_state(self):
         self.user_db_cursor.execute('''UPDATE train_routes SET opened = ?, last_opened_by = ?, current_checkpoint = ?,
-                                       priority = ? WHERE track = ? and train_route = ?''',
+                                       priority = ?, cars = ? WHERE track = ? and train_route = ?''',
                                     (int(self.opened), self.last_opened_by, self.current_checkpoint, self.priority,
-                                     self.controller.track, self.controller.train_route))
+                                     self.cars, self.controller.track, self.controller.train_route))
         busy_state_string = ''
         for i in self.train_route_section_busy_state:
             busy_state_string += f'{int(i)},'
@@ -125,13 +126,15 @@ class TrainRouteModel(Model):
                                        WHERE track = ? and train_route = ?''',
                                     (busy_state_string, self.controller.track, self.controller.train_route))
 
-    def on_open_train_route(self, train_id):
+    def on_open_train_route(self, train_id, cars):
         self.opened = True
-        self.train_id = train_id
         self.last_opened_by = train_id
+        self.cars = cars
         self.current_checkpoint = 0
-        self.controller.on_train_route_section_force_busy_on(self.train_route_sections[0],
-                                                             self.train_route_section_positions[0], train_id)
+        self.controller.parent_controller.on_train_route_section_force_busy_on(self.train_route_sections[0],
+                                                                               self.train_route_section_positions[0],
+                                                                               self.last_opened_by)
+        self.controller.parent_controller.on_set_train_stop_point(train_id, self.stop_point_v2[cars])
         self.train_route_section_busy_state[0] = True
 
     def on_close_train_route(self):
@@ -140,6 +143,7 @@ class TrainRouteModel(Model):
         self.controller.on_train_route_section_force_busy_off(self.train_route_sections[-1],
                                                               self.train_route_section_positions[-1])
         self.train_route_section_busy_state[-1] = False
+        self.cars = 0
 
     @_train_has_passed_train_route_section
     def on_update_train_route_sections(self, last_car_position):
@@ -147,6 +151,9 @@ class TrainRouteModel(Model):
             self.train_route_sections[self.current_checkpoint],
             self.train_route_section_positions[self.current_checkpoint])
         self.train_route_section_busy_state[self.current_checkpoint] = False
+        if self.current_checkpoint == 0:
+            self.controller.parent_controller.on_switch_signal_to_red(self.signal_track, self.signal_base_route)
+
         self.current_checkpoint += 1
 
     @_train_route_is_opened
@@ -156,11 +163,14 @@ class TrainRouteModel(Model):
             train_route_busy = train_route_busy or self.train_route_section_busy_state[i]
 
         if self.train_route_section_busy_state[0] and not train_route_busy:
+            self.controller.parent_controller.on_switch_signal_to_green(self.signal_track, self.signal_base_route)
+            self.controller.parent_controller.on_set_train_stop_point(self.last_opened_by,
+                                                                      self.destination_point_v2[self.cars])
             for i in range(1, len(self.train_route_sections)):
                 self.controller.on_train_route_section_force_busy_on(
                     self.train_route_sections[i],
                     self.train_route_section_positions[i],
-                    self.train_id)
+                    self.last_opened_by)
                 self.train_route_section_busy_state[i] = True
 
     def on_update_priority(self, priority):

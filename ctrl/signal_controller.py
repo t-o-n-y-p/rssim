@@ -61,8 +61,8 @@ class SignalController(Controller):
     def on_deactivate_view(self):
         self.view.on_deactivate()
 
-    def on_switch_to_green(self, train_route):
-        self.model.on_switch_to_green(train_route)
+    def on_switch_to_green(self):
+        self.model.on_switch_to_green()
 
-    def on_switch_to_red(self, train_route):
-        self.model.on_switch_to_red(train_route)
+    def on_switch_to_red(self):
+        self.model.on_switch_to_red()

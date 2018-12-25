@@ -40,8 +40,8 @@ class TrainRouteController(Controller):
     def on_save_state(self):
         self.model.on_save_state()
 
-    def on_open_train_route(self):
-        self.model.on_open_train_route()
+    def on_open_train_route(self, train_id, cars):
+        self.model.on_open_train_route(train_id, cars)
 
     def on_close_train_route(self):
         self.model.on_open_train_route()
