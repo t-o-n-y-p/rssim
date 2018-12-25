@@ -134,6 +134,9 @@ class TrainRouteModel(Model):
         self.controller.parent_controller.on_train_route_section_force_busy_on(self.train_route_sections[0],
                                                                                self.train_route_section_positions[0],
                                                                                self.last_opened_by)
+        if self.start_point_v2 is not None:
+            self.controller.parent_controller.on_set_train_start_point(train_id, self.start_point_v2[cars])
+
         self.controller.parent_controller.on_set_train_stop_point(train_id, self.stop_point_v2[cars])
         self.train_route_section_busy_state[0] = True
 
@@ -147,7 +150,7 @@ class TrainRouteModel(Model):
 
     @_train_has_passed_train_route_section
     def on_update_train_route_sections(self, last_car_position):
-        self.controller.on_train_route_section_force_busy_off(
+        self.controller.parent_controller.on_train_route_section_force_busy_off(
             self.train_route_sections[self.current_checkpoint],
             self.train_route_section_positions[self.current_checkpoint])
         self.train_route_section_busy_state[self.current_checkpoint] = False
@@ -167,7 +170,7 @@ class TrainRouteModel(Model):
             self.controller.parent_controller.on_set_train_stop_point(self.last_opened_by,
                                                                       self.destination_point_v2[self.cars])
             for i in range(1, len(self.train_route_sections)):
-                self.controller.on_train_route_section_force_busy_on(
+                self.controller.parent_controller.on_train_route_section_force_busy_on(
                     self.train_route_sections[i],
                     self.train_route_section_positions[i],
                     self.last_opened_by)

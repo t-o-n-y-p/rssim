@@ -164,3 +164,7 @@ class MapController(Controller):
 
     def on_switch_signal_to_red(self, signal_track, signal_base_route):
         self.signals[signal_track][signal_base_route].on_switch_to_red()
+
+    def on_update_train_route_section_status(self, train_route_data, status):
+        self.train_routes[train_route_data[0]][train_route_data[1]].on_update_section_status(train_route_data[2],
+                                                                                             status)

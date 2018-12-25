@@ -6,3 +6,4 @@ from .fps_model import FPSModel
 from .scheduler_model import SchedulerModel
 from .signal_model import SignalModel
 from .train_route_model import TrainRouteModel
+from .railroad_switch_model import RailroadSwitchModel
