@@ -35,6 +35,8 @@ class MapController(Controller):
         self.signals_list = []
         self.train_routes = {}
         self.train_routes_sorted_list = []
+        self.switches = {}
+        self.switches_list = []
 
     def on_update_view(self):
         self.view.on_update()
@@ -44,6 +46,9 @@ class MapController(Controller):
 
         # for route in self.train_routes_sorted_list:
         #     route.on_update_view()
+
+        # for switch in self.switches_list:
+        #     switch.on_update_view()
 
     @_controller_is_not_active
     def on_activate(self):
@@ -55,6 +60,9 @@ class MapController(Controller):
 
         for route in self.train_routes_sorted_list:
             route.on_activate()
+
+        for switch in self.switches_list:
+            switch.on_activate()
 
     @_controller_is_active
     def on_deactivate(self):
@@ -68,6 +76,9 @@ class MapController(Controller):
         for route in self.train_routes_sorted_list:
             route.on_deactivate()
 
+        for switch in self.switches_list:
+            switch.on_deactivate()
+
     def on_change_screen_resolution(self, screen_resolution):
         self.view.on_change_screen_resolution(screen_resolution)
         self.scheduler.on_change_screen_resolution(screen_resolution)
@@ -76,6 +87,9 @@ class MapController(Controller):
 
         # for route in self.train_routes_sorted_list:
         #     route.on_change_screen_resolution(screen_resolution)
+
+        # for switch in self.switches_list:
+        #     switch.on_change_screen_resolution(screen_resolution)
 
         self.on_change_base_offset(self.view.base_offset)
 
@@ -86,6 +100,9 @@ class MapController(Controller):
 
         # for route in self.train_routes_sorted_list:
         #     route.on_change_base_offset(new_base_offset)
+
+        # for switch in self.switches_list:
+        #     switch.on_change_base_offset(new_base_offset)
 
     def on_unlock_track(self, track_number):
         self.model.on_unlock_track(track_number)
@@ -98,8 +115,11 @@ class MapController(Controller):
         for signal in self.signals_list:
             signal.on_activate_view()
 
-        # for route in self.train_routes_sorted_list:
-        #     route.on_activate_view()
+        for route in self.train_routes_sorted_list:
+            route.on_activate_view()
+
+        for switch in self.switches_list:
+            switch.on_activate_view()
 
     def on_deactivate_view(self):
         self.view.on_deactivate()
@@ -107,8 +127,11 @@ class MapController(Controller):
         for signal in self.signals_list:
             signal.on_deactivate_view()
 
-        # for route in self.train_routes_sorted_list:
-        #     route.on_deactivate_view()
+        for route in self.train_routes_sorted_list:
+            route.on_deactivate_view()
+
+        for switch in self.switches_list:
+            switch.on_deactivate_view()
 
     def on_zoom_in(self):
         self.view.on_change_zoom_factor(1.0, zoom_out_activated=False)
@@ -117,6 +140,9 @@ class MapController(Controller):
 
         # for route in self.train_routes_sorted_list:
         #     route.on_zoom_in()
+
+        # for switch in self.switches_list:
+        #     switch.on_zoom_in()
 
         self.on_change_base_offset(self.view.base_offset)
 
@@ -128,6 +154,9 @@ class MapController(Controller):
         # for route in self.train_routes_sorted_list:
         #     route.on_zoom_out()
 
+        # for switch in self.switches_list:
+        #     switch.on_zoom_out()
+
         self.on_change_base_offset(self.view.base_offset)
 
     def on_save_state(self):
@@ -138,6 +167,9 @@ class MapController(Controller):
 
         for route in self.train_routes_sorted_list:
             route.on_save_state()
+
+        for switch in self.switches_list:
+            switch.on_save_state()
 
     def on_update_time(self, game_time):
         self.train_routes_sorted_list = sorted(self.train_routes_sorted_list,
@@ -168,3 +200,7 @@ class MapController(Controller):
     def on_update_train_route_section_status(self, train_route_data, status):
         self.train_routes[train_route_data[0]][train_route_data[1]].on_update_section_status(train_route_data[2],
                                                                                              status)
+
+    def on_train_route_section_force_busy_on(self, section, positions, train_id):
+        if section[0] in ('left_railroad_switch', 'right_railroad_switch'):
+            self.switches[section[1]][section[2]][section[0]].on_force_busy_on(positions, train_id)

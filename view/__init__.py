@@ -6,3 +6,4 @@ from .fps_view import FPSView
 from .scheduler_view import SchedulerView
 from .signal_view import SignalView
 from .train_route_view import TrainRouteView
+from .railroad_switch_view import RailroadSwitchView

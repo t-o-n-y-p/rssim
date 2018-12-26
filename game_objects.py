@@ -1,7 +1,9 @@
 from ctrl import AppController, GameController, MapController, SettingsController, FPSController, SchedulerController, \
-    SignalController, TrainRouteController
-from model import AppModel, GameModel, MapModel, SettingsModel, FPSModel, SchedulerModel, SignalModel, TrainRouteModel
-from view import AppView, GameView, MapView, SettingsView, FPSView, SchedulerView, SignalView, TrainRouteView
+                 SignalController, TrainRouteController, RailroadSwitchController
+from model import AppModel, GameModel, MapModel, SettingsModel, FPSModel, SchedulerModel, SignalModel, TrainRouteModel,\
+                  RailroadSwitchModel
+from view import AppView, GameView, MapView, SettingsView, FPSView, SchedulerView, SignalView, TrainRouteView, \
+                 RailroadSwitchView
 
 
 def create_app(user_db_connection, user_db_cursor, config_db_cursor, surface, batch, groups):
@@ -221,6 +223,23 @@ def create_train_route(user_db_connection, user_db_cursor, config_db_cursor, sur
     model = TrainRouteModel(user_db_connection, user_db_cursor, config_db_cursor)
     model.on_train_route_setup(track, train_route)
     view = TrainRouteView(surface, batch, groups)
+    controller.model = model
+    model.controller = controller
+    controller.view = view
+    view.on_assign_controller(controller)
+    model.view = view
+    return controller
+
+
+def create_railroad_switch(user_db_connection, user_db_cursor, config_db_cursor, surface, batch, groups, map_controller,
+                           track_param_1, track_param_2, switch_type):
+    controller = RailroadSwitchController(map_controller)
+    controller.track_param_1 = track_param_1
+    controller.track_param_2 = track_param_2
+    controller.switch_type = switch_type
+    model = RailroadSwitchModel(user_db_connection, user_db_cursor, config_db_cursor)
+    model.on_railroad_switch_setup(track_param_1, track_param_2, switch_type)
+    view = RailroadSwitchView(surface, batch, groups)
     controller.model = model
     model.controller = controller
     controller.view = view
