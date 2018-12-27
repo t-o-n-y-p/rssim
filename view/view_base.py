@@ -1,5 +1,7 @@
 class View:
-    def __init__(self, surface, batch, groups):
+    def __init__(self, user_db_cursor, config_db_cursor, surface, batch, groups):
+        self.user_db_cursor = user_db_cursor
+        self.config_db_cursor = config_db_cursor
         self.controller = None
         self.surface = surface
         self.batch = batch

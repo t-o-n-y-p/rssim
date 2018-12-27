@@ -29,8 +29,8 @@ def _signal_is_displayed_on_map(fn):
 
 
 class SignalView(View):
-    def __init__(self, surface, batch, groups):
-        super().__init__(surface, batch, groups)
+    def __init__(self, user_db_cursor, config_db_cursor, surface, batch, groups):
+        super().__init__(user_db_cursor, config_db_cursor, surface, batch, groups)
         self.base_offset = (-3440, -1440)
         self.screen_resolution = (1280, 720)
         self.red_signal_image = load('img/signals/signal_red.png')

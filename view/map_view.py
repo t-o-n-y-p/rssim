@@ -56,7 +56,7 @@ def _cursor_is_on_the_map(fn):
 
 
 class MapView(View):
-    def __init__(self, surface, batch, groups):
+    def __init__(self, user_db_cursor, config_db_cursor, surface, batch, groups):
         def on_zoom_in_button(button):
             button.on_deactivate()
             button.paired_button.on_activate()
@@ -77,7 +77,7 @@ class MapView(View):
             button.on_deactivate()
             self.controller.on_open_schedule()
 
-        super().__init__(surface, batch, groups)
+        super().__init__(user_db_cursor, config_db_cursor, surface, batch, groups)
         self.main_map = load('img/map/4/full_map.png')
         self.main_map_sprite = None
         self.screen_resolution = (1280, 720)

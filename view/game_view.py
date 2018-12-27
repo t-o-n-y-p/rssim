@@ -24,7 +24,7 @@ def _view_is_not_active(fn):
 
 
 class GameView(View):
-    def __init__(self, surface, batch, groups):
+    def __init__(self, user_db_cursor, config_db_cursor, surface, batch, groups):
         def on_pause_game(button):
             button.on_deactivate()
             button.paired_button.on_activate()
@@ -35,7 +35,7 @@ class GameView(View):
             button.paired_button.on_activate()
             self.controller.on_resume_game()
 
-        super().__init__(surface, batch, groups)
+        super().__init__(user_db_cursor, config_db_cursor, surface, batch, groups)
         self.screen_resolution = (1280, 720)
         self.game_frame = load('img/main_frame/game_frame_1280_720.png')
         self.game_frame_sprite = None

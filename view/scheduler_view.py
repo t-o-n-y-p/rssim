@@ -23,11 +23,11 @@ def _view_is_not_active(fn):
 
 
 class SchedulerView(View):
-    def __init__(self, surface, batch, groups):
+    def __init__(self, user_db_cursor, config_db_cursor, surface, batch, groups):
         def on_close_schedule(button):
             self.controller.on_deactivate_view()
 
-        super().__init__(surface, batch, groups)
+        super().__init__(user_db_cursor, config_db_cursor, surface, batch, groups)
         self.departure_text = ['West City', 'East City', 'North-West City', 'South-East City']
         self.screen_resolution = (1280, 720)
         self.background_image = load('img/main_frame/schedule_1280_720.png')

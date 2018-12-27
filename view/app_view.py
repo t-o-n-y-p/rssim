@@ -59,7 +59,7 @@ def _view_is_not_active(fn):
 
 
 class AppView(View):
-    def __init__(self, surface, batch, groups):
+    def __init__(self, user_db_cursor, config_db_cursor, surface, batch, groups):
         def on_close_game(button):
             self.controller.on_close_game()
 
@@ -76,7 +76,7 @@ class AppView(View):
             button.on_deactivate()
             self.controller.settings.on_activate()
 
-        super().__init__(surface, batch, groups)
+        super().__init__(user_db_cursor, config_db_cursor, surface, batch, groups)
         self.main_frame = load('img/main_frame/main_frame_1280_720.png')
         self.title_label = None
         self.main_frame_sprite = None

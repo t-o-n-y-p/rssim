@@ -22,7 +22,7 @@ def _view_is_not_active(fn):
 
 
 class SettingsView(View):
-    def __init__(self, surface, batch, groups):
+    def __init__(self, user_db_cursor, config_db_cursor, surface, batch, groups):
         def on_accept_settings(button):
             self.controller.on_save_and_commit_state()
             self.controller.on_deactivate()
@@ -50,7 +50,7 @@ class SettingsView(View):
 
             self.increment_windowed_resolution_button.on_activate()
 
-        super().__init__(surface, batch, groups)
+        super().__init__(user_db_cursor, config_db_cursor, surface, batch, groups)
         self.temp_windowed_resolution = (0, 0)
         self.screen_resolution = (1280, 720)
         self.temp_fullscreen_mode = False
