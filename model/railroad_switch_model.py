@@ -54,7 +54,8 @@ class RailroadSwitchModel(Model):
         self.user_db_cursor.execute('''UPDATE switches SET busy = ?, force_busy = ?, 
                                        last_entered_by = ?, current_position = ? 
                                        WHERE track_param_1 = ? AND track_param_2 = ? AND switch_type = ?''',
-                                    (self.controller.track_param_1, self.controller.track_param_2,
+                                    (int(self.busy), int(self.force_busy), self.last_entered_by, self.current_position,
+                                     self.controller.track_param_1, self.controller.track_param_2,
                                      self.controller.switch_type))
 
     def on_force_busy_on(self, positions, train_id):

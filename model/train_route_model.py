@@ -143,8 +143,8 @@ class TrainRouteModel(Model):
     def on_close_train_route(self):
         self.opened = False
         self.current_checkpoint = 0
-        self.controller.on_train_route_section_force_busy_off(self.train_route_sections[-1],
-                                                              self.train_route_section_positions[-1])
+        self.controller.parent_controller.on_train_route_section_force_busy_off(self.train_route_sections[-1],
+                                                                                self.train_route_section_positions[-1])
         self.train_route_section_busy_state[-1] = False
         self.cars = 0
 

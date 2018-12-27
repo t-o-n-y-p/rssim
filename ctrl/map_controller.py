@@ -37,6 +37,8 @@ class MapController(Controller):
         self.train_routes_sorted_list = []
         self.switches = {}
         self.switches_list = []
+        self.crossovers = {}
+        self.crossovers_list = []
 
     def on_update_view(self):
         self.view.on_update()
@@ -204,3 +206,13 @@ class MapController(Controller):
     def on_train_route_section_force_busy_on(self, section, positions, train_id):
         if section[0] in ('left_railroad_switch', 'right_railroad_switch'):
             self.switches[section[1]][section[2]][section[0]].on_force_busy_on(positions, train_id)
+
+        if section[0] in ('left_crossover', 'right_crossover'):
+            self.crossovers[section[1]][section[2]][section[0]].on_force_busy_on(positions, train_id)
+
+    def on_train_route_section_force_busy_off(self, section, positions):
+        if section[0] in ('left_railroad_switch', 'right_railroad_switch'):
+            self.switches[section[1]][section[2]][section[0]].on_force_busy_off()
+
+        if section[0] in ('left_crossover', 'right_crossover'):
+            self.switches[section[1]][section[2]][section[0]].on_force_busy_off(positions)
