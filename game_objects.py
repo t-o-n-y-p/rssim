@@ -1,9 +1,9 @@
 from ctrl import AppController, GameController, MapController, SettingsController, FPSController, SchedulerController, \
-                 SignalController, TrainRouteController, RailroadSwitchController
+                 SignalController, TrainRouteController, RailroadSwitchController, CrossoverController
 from model import AppModel, GameModel, MapModel, SettingsModel, FPSModel, SchedulerModel, SignalModel, TrainRouteModel,\
-                  RailroadSwitchModel
+                  RailroadSwitchModel, CrossoverModel
 from view import AppView, GameView, MapView, SettingsView, FPSView, SchedulerView, SignalView, TrainRouteView, \
-                 RailroadSwitchView
+                 RailroadSwitchView, CrossoverView
 
 
 def create_app(user_db_connection, user_db_cursor, config_db_cursor, surface, batch, groups):
@@ -69,6 +69,42 @@ def create_map(user_db_connection, user_db_cursor, config_db_cursor, surface, ba
             = create_train_route(user_db_connection, user_db_cursor, config_db_cursor, surface, batch, groups,
                                  controller, i[0], i[1])
         controller.train_routes_sorted_list.append(controller.train_routes[i[0]][i[1]])
+
+    user_db_cursor.execute('''SELECT DISTINCT track_param_1 FROM switches''')
+    switch_track_param_1 = user_db_cursor.fetchall()
+    for i in switch_track_param_1:
+        controller.switches[i[0]] = {}
+
+    user_db_cursor.execute('''SELECT DISTINCT track_param_1, track_param_2 FROM switches''')
+    switch_track_param_2 = user_db_cursor.fetchall()
+    for i in switch_track_param_2:
+        controller.switches[i[0]][i[1]] = {}
+
+    user_db_cursor.execute('''SELECT track_param_1, track_param_2, switch_type FROM switches''')
+    switch_types = user_db_cursor.fetchall()
+    for i in switch_types:
+        controller.switches[i[0]][i[1]][i[2]] \
+            = create_railroad_switch(user_db_connection, user_db_cursor, config_db_cursor, surface, batch, groups,
+                                     controller, i[0], i[1], i[2])
+        controller.switches_list.append(controller.switches[i[0]][i[1]][i[2]])
+
+    user_db_cursor.execute('''SELECT DISTINCT track_param_1 FROM crossovers''')
+    crossovers_track_param_1 = user_db_cursor.fetchall()
+    for i in crossovers_track_param_1:
+        controller.crossovers[i[0]] = {}
+
+    user_db_cursor.execute('''SELECT DISTINCT track_param_1, track_param_2 FROM crossovers''')
+    crossovers_track_param_2 = user_db_cursor.fetchall()
+    for i in crossovers_track_param_2:
+        controller.crossovers[i[0]][i[1]] = {}
+
+    user_db_cursor.execute('''SELECT track_param_1, track_param_2, crossover_type FROM crossovers''')
+    crossovers_types = user_db_cursor.fetchall()
+    for i in crossovers_types:
+        controller.crossovers[i[0]][i[1]][i[2]] \
+            = create_crossover(user_db_connection, user_db_cursor, config_db_cursor, surface, batch, groups,
+                               controller, i[0], i[1], i[2])
+        controller.crossovers_list.append(controller.crossovers[i[0]][i[1]][i[2]])
 
     model = MapModel(user_db_connection, user_db_cursor, config_db_cursor)
     view = MapView(user_db_cursor, config_db_cursor, surface, batch, groups)
@@ -160,6 +196,23 @@ def create_railroad_switch(user_db_connection, user_db_cursor, config_db_cursor,
     model = RailroadSwitchModel(user_db_connection, user_db_cursor, config_db_cursor)
     model.on_railroad_switch_setup(track_param_1, track_param_2, switch_type)
     view = RailroadSwitchView(user_db_cursor, config_db_cursor, surface, batch, groups)
+    controller.model = model
+    model.controller = controller
+    controller.view = view
+    view.on_assign_controller(controller)
+    model.view = view
+    return controller
+
+
+def create_crossover(user_db_connection, user_db_cursor, config_db_cursor, surface, batch, groups, map_controller,
+                     track_param_1, track_param_2, crossover_type):
+    controller = CrossoverController(map_controller)
+    controller.track_param_1 = track_param_1
+    controller.track_param_2 = track_param_2
+    controller.crossover_type = crossover_type
+    model = CrossoverModel(user_db_connection, user_db_cursor, config_db_cursor)
+    model.on_crossover_setup(track_param_1, track_param_2, crossover_type)
+    view = CrossoverView(user_db_cursor, config_db_cursor, surface, batch, groups)
     controller.model = model
     model.controller = controller
     controller.view = view
