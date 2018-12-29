@@ -135,20 +135,16 @@ class TrainRouteModel(Model):
         self.last_opened_by = train_id
         self.cars = cars
         self.current_checkpoint = 0
-        self.controller.parent_controller.on_train_route_section_force_busy_on(self.train_route_sections[0],
-                                                                               self.train_route_section_positions[0],
-                                                                               self.last_opened_by)
         if self.start_point_v2 is not None:
             self.controller.parent_controller.on_set_train_start_point(train_id, self.start_point_v2[cars])
 
         self.controller.parent_controller.on_set_train_stop_point(train_id, self.stop_point_v2[cars])
+        self.controller.parent_controller.on_set_train_destination_point(train_id, self.destination_point_v2[cars])
         self.train_route_section_busy_state[0] = True
 
     def on_close_train_route(self):
         self.opened = False
         self.current_checkpoint = 0
-        self.controller.parent_controller.on_train_route_section_force_busy_off(self.train_route_sections[-1],
-                                                                                self.train_route_section_positions[-1])
         self.train_route_section_busy_state[-1] = False
         self.cars = 0
 
@@ -183,12 +179,14 @@ class TrainRouteModel(Model):
             self.controller.parent_controller.on_switch_signal_to_green(self.signal_track, self.signal_base_route)
             self.controller.parent_controller.on_set_train_stop_point(self.last_opened_by,
                                                                       self.destination_point_v2[self.cars])
-            for i in range(1, len(self.train_route_sections)):
+            for i in range(1, len(self.train_route_sections) - 1):
                 self.controller.parent_controller.on_train_route_section_force_busy_on(
                     self.train_route_sections[i],
                     self.train_route_section_positions[i],
                     self.last_opened_by)
                 self.train_route_section_busy_state[i] = True
+
+            self.train_route_section_busy_state[-1] = True
 
     def on_update_priority(self, priority):
         self.priority = priority

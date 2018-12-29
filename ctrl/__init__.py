@@ -8,3 +8,4 @@ from .signal_controller import SignalController
 from .train_route_controller import TrainRouteController
 from .railroad_switch_controller import RailroadSwitchController
 from .crossover_controller import CrossoverController
+from .train_controller import TrainController

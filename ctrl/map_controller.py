@@ -219,3 +219,6 @@ class MapController(Controller):
 
     def on_leave_entry(self, entry_id):
         self.scheduler.on_leave_entry(entry_id)
+
+    def on_update_train_route_priority(self, track, train_route, priority):
+        self.train_routes[track][train_route].on_update_priority(priority)
