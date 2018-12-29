@@ -36,6 +36,10 @@ def _train_route_is_opened(fn):
 class TrainRouteModel(Model):
     def __init__(self, user_db_connection, user_db_cursor, config_db_cursor):
         super().__init__(user_db_connection, user_db_cursor, config_db_cursor)
+        self.direction_from_left_to_right = 0
+        self.direction_from_right_to_left = 1
+        self.direction_from_left_to_right_side = 2
+        self.direction_from_right_to_left_side = 3
         self.opened = None
         self.last_opened_by = None
         self.current_checkpoint = None
@@ -156,6 +160,16 @@ class TrainRouteModel(Model):
         self.train_route_section_busy_state[self.current_checkpoint] = False
         if self.current_checkpoint == 0:
             self.controller.parent_controller.on_switch_signal_to_red(self.signal_track, self.signal_base_route)
+            if self.train_route_sections[0][0] == 'left_entry_base_route':
+                self.controller.parent_controller.on_leave_entry(self.direction_from_left_to_right)
+            elif self.train_route_sections[0][0] == 'right_entry_base_route':
+                self.controller.parent_controller.on_leave_entry(self.direction_from_right_to_left)
+            elif self.train_route_sections[0][0] == 'left_side_entry_base_route':
+                self.controller.parent_controller.on_leave_entry(self.direction_from_left_to_right_side)
+            elif self.train_route_sections[0][0] == 'right_side_entry_base_route':
+                self.controller.parent_controller.on_leave_entry(self.direction_from_right_to_left_side)
+            elif self.train_route_sections[0][0] in ('left_exit_platform_base_route', 'right_exit_platform_base_route'):
+                self.controller.parent_controller.on_leave_track(self.controller.track)
 
         self.current_checkpoint += 1
 

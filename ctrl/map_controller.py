@@ -216,3 +216,6 @@ class MapController(Controller):
 
         if section[0] in ('left_crossover', 'right_crossover'):
             self.switches[section[1]][section[2]][section[0]].on_force_busy_off(positions)
+
+    def on_leave_entry(self, entry_id):
+        self.scheduler.on_leave_entry(entry_id)

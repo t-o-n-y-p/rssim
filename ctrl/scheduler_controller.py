@@ -57,3 +57,6 @@ class SchedulerController(Controller):
     def on_deactivate_view(self):
         self.view.on_deactivate()
         self.parent_controller.on_close_schedule()
+
+    def on_leave_entry(self, entry_id):
+        self.model.on_leave_entry(entry_id)

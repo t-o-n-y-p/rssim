@@ -35,8 +35,14 @@ class SchedulerModel(Model):
         self.schedule_options = self.config_db_cursor.fetchall()
         self.user_db_cursor.execute('SELECT * FROM base_schedule')
         self.base_schedule = self.user_db_cursor.fetchall()
-        self.user_db_cursor.execute('SELECT * FROM scheduler')
+        self.user_db_cursor.execute('SELECT train_counter, next_cycle_start_time FROM scheduler')
         self.train_counter, self.next_cycle_start_time = self.user_db_cursor.fetchone()
+        self.user_db_cursor.execute('SELECT entry_busy_state FROM scheduler')
+        entry_busy_state_parsed = self.user_db_cursor.fetchone()[0].split(',')
+        for i in range(len(entry_busy_state_parsed)):
+            entry_busy_state_parsed[i] = bool(int(entry_busy_state_parsed[i]))
+
+        self.entry_busy_state = entry_busy_state_parsed
         self.config_db_cursor.execute('''SELECT schedule_cycle_length, frame_per_car, exp_per_car, money_per_car 
                                       FROM player_progress_config WHERE level = ?''',
                                       (self.level, ))
@@ -74,8 +80,11 @@ class SchedulerModel(Model):
         self.view.on_update_train_labels(self.base_schedule, game_time)
 
     def on_save_state(self):
-        self.user_db_cursor.execute('UPDATE scheduler SET train_counter = ?, next_cycle_start_time = ?',
-                                    (self.train_counter, self.next_cycle_start_time))
+        entry_busy_state_string = int(self.entry_busy_state[0]) + ',' + int(self.entry_busy_state[1]) + ',' \
+                                  + int(self.entry_busy_state[2]) + ',' + int(self.entry_busy_state[3])
+        self.user_db_cursor.execute('''UPDATE scheduler SET train_counter = ?, next_cycle_start_time = ?, 
+                                       entry_busy_state = ?''',
+                                    (self.train_counter, self.next_cycle_start_time, entry_busy_state_string))
         self.user_db_cursor.execute('DELETE FROM base_schedule')
         self.user_db_cursor.executemany('INSERT INTO base_schedule VALUES (?, ?, ?, ?, ?, ?, ?, ?)', self.base_schedule)
 
@@ -92,3 +101,6 @@ class SchedulerModel(Model):
 
     def on_unlock_track(self, track_number):
         self.unlocked_tracks = track_number
+
+    def on_leave_entry(self, entry_id):
+        self.entry_busy_state[entry_id] = False
