@@ -103,6 +103,8 @@ class TrainRouteModel(Model):
                                          FROM train_route_sections WHERE track = ? and train_route = ?''',
                                       (track, train_route))
         self.train_route_section_positions = self.config_db_cursor.fetchall()
+        if self.opened:
+            self.controller.parent_controller.on_set_trail_points(self.last_opened_by, self.trail_points_v2)
 
     @_model_is_not_active
     def on_activate(self):

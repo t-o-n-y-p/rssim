@@ -14,7 +14,7 @@ class AcceptSettingsButton(Button):
         self.text = ''
         self.font_name = 'Webdings'
         self.is_bold = False
-        self.font_size = 40
+        self.font_size = 48
         self.x_margin = 80
         self.y_margin = 720
         self.button_size = (80, 80)

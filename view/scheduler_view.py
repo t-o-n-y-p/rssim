@@ -30,7 +30,7 @@ class SchedulerView(View):
         super().__init__(user_db_cursor, config_db_cursor, surface, batch, groups)
         self.departure_text = ['West City', 'East City', 'North-West City', 'South-East City']
         self.screen_resolution = (1280, 720)
-        self.background_image = load('img/main_frame/schedule_1280_720.png')
+        self.background_image = load('img/schedule/schedule_1280_720.png')
         self.background_sprite = None
         self.train_labels = []
         self.close_schedule_button = CloseScheduleButton(surface=self.surface, batch=self.batch, groups=self.groups,
@@ -72,7 +72,7 @@ class SchedulerView(View):
 
     def on_change_screen_resolution(self, screen_resolution):
         self.screen_resolution = screen_resolution
-        self.background_image = load('img/main_frame/schedule_{}_{}.png'
+        self.background_image = load('img/schedule/schedule_{}_{}.png'
                                      .format(self.screen_resolution[0], self.screen_resolution[1]))
         if self.is_activated:
             self.background_sprite.image = self.background_image

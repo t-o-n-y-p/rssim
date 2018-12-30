@@ -37,7 +37,7 @@ class GameView(View):
 
         super().__init__(user_db_cursor, config_db_cursor, surface, batch, groups)
         self.screen_resolution = (1280, 720)
-        self.game_frame = load('img/main_frame/game_frame_1280_720.png')
+        self.game_frame = load('img/game_frame/game_frame_1280_720.png')
         self.game_frame_sprite = None
         self.progress_bar_inactive_image = load('img/game_progress_bars/progress_bar_inactive.png')
         self.progress_bar_exp_inactive = None
@@ -177,7 +177,7 @@ class GameView(View):
 
     def on_change_screen_resolution(self, screen_resolution):
         self.screen_resolution = screen_resolution
-        self.game_frame = load('img/main_frame/game_frame_{}_{}.png'.format(screen_resolution[0], screen_resolution[1]))
+        self.game_frame = load('img/game_frame/game_frame_{}_{}.png'.format(screen_resolution[0], screen_resolution[1]))
         if self.is_activated:
             self.game_frame_sprite.image = self.game_frame
 
