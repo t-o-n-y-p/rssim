@@ -23,7 +23,6 @@ def _model_is_not_active(fn):
 class SchedulerModel(Model):
     def __init__(self, user_db_connection, user_db_cursor, config_db_cursor):
         super().__init__(user_db_connection, user_db_cursor, config_db_cursor)
-        self.tracks = ()
         self.direction_from_left_to_right = 0
         self.direction_from_right_to_left = 1
         self.direction_from_left_to_right_side = 2

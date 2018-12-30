@@ -31,6 +31,7 @@ class MapController(Controller):
     def __init__(self, game_controller):
         super().__init__(parent_controller=game_controller)
         self.scheduler = None
+        self.dispatcher = None
         self.signals = {}
         self.signals_list = []
         self.train_routes = {}
@@ -125,6 +126,7 @@ class MapController(Controller):
     def on_unlock_track(self, track_number):
         self.model.on_unlock_track(track_number)
         self.scheduler.on_unlock_track(track_number)
+        self.dispatcher.on_unlock_track(track_number)
         for i in self.signals[track_number]:
             self.signals[track_number][i].on_unlock()
 
