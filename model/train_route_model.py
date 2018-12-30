@@ -137,12 +137,12 @@ class TrainRouteModel(Model):
         self.last_opened_by = train_id
         self.cars = cars
         self.current_checkpoint = 0
+        self.controller.parent_controller.on_set_trail_points(train_id, self.trail_points_v2)
         if self.start_point_v2 is not None:
             self.controller.parent_controller.on_set_train_start_point(train_id, self.start_point_v2[cars])
 
         self.controller.parent_controller.on_set_train_stop_point(train_id, self.stop_point_v2[cars])
         self.controller.parent_controller.on_set_train_destination_point(train_id, self.destination_point_v2[cars])
-        self.controller.parent_controller.on_set_trail_points(train_id, self.trail_points_v2)
         self.train_route_section_busy_state[0] = True
 
     def on_close_train_route(self):

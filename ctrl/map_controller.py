@@ -53,6 +53,9 @@ class MapController(Controller):
         # for switch in self.switches_list:
         #     switch.on_update_view()
 
+        for train in self.trains:
+            train.on_update_view()
+
     @_controller_is_not_active
     def on_activate(self):
         self.is_activated = True
@@ -66,6 +69,9 @@ class MapController(Controller):
 
         for switch in self.switches_list:
             switch.on_activate()
+
+        for train in self.trains:
+            train.on_activate()
 
     @_controller_is_active
     def on_deactivate(self):
@@ -82,6 +88,9 @@ class MapController(Controller):
         for switch in self.switches_list:
             switch.on_deactivate()
 
+        for train in self.trains:
+            train.on_deactivate()
+
     def on_change_screen_resolution(self, screen_resolution):
         self.view.on_change_screen_resolution(screen_resolution)
         self.scheduler.on_change_screen_resolution(screen_resolution)
@@ -93,6 +102,9 @@ class MapController(Controller):
 
         # for switch in self.switches_list:
         #     switch.on_change_screen_resolution(screen_resolution)
+
+        for train in self.trains:
+            train.on_change_screen_resolution(screen_resolution)
 
         self.on_change_base_offset(self.view.base_offset)
 
@@ -106,6 +118,9 @@ class MapController(Controller):
 
         # for switch in self.switches_list:
         #     switch.on_change_base_offset(new_base_offset)
+
+        for train in self.trains:
+            train.on_change_base_offset(new_base_offset)
 
     def on_unlock_track(self, track_number):
         self.model.on_unlock_track(track_number)
@@ -124,6 +139,9 @@ class MapController(Controller):
         for switch in self.switches_list:
             switch.on_activate_view()
 
+        for train in self.trains:
+            train.on_activate_view()
+
     def on_deactivate_view(self):
         self.view.on_deactivate()
         self.scheduler.on_deactivate_view()
@@ -136,6 +154,9 @@ class MapController(Controller):
         for switch in self.switches_list:
             switch.on_deactivate_view()
 
+        for train in self.trains:
+            train.on_deactivate_view()
+
     def on_zoom_in(self):
         self.view.on_change_zoom_factor(1.0, zoom_out_activated=False)
         for signal in self.signals_list:
@@ -146,6 +167,9 @@ class MapController(Controller):
 
         # for switch in self.switches_list:
         #     switch.on_zoom_in()
+
+        for train in self.trains:
+            train.on_zoom_in()
 
         self.on_change_base_offset(self.view.base_offset)
 
@@ -159,6 +183,9 @@ class MapController(Controller):
 
         # for switch in self.switches_list:
         #     switch.on_zoom_out()
+
+        for train in self.trains:
+            train.on_zoom_out()
 
         self.on_change_base_offset(self.view.base_offset)
 
@@ -174,6 +201,9 @@ class MapController(Controller):
         for switch in self.switches_list:
             switch.on_save_state()
 
+        for train in self.trains:
+            train.on_save_state()
+
         self.model.on_clear_trains_info()
 
     def on_update_time(self, game_time):
@@ -181,6 +211,9 @@ class MapController(Controller):
                                                key=attrgetter('model.priority'), reverse=True)
         for route in self.train_routes_sorted_list:
             route.on_update_time(game_time)
+
+        for train in self.trains:
+            train.on_update_time(game_time)
 
         self.scheduler.on_update_time(game_time)
 

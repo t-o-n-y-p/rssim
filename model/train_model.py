@@ -68,13 +68,14 @@ class TrainModel(Model):
         self.stop_point = None
         self.destination_point = None
         self.trail_points_v2 = None
+        self.car_image_collection = None
 
     def on_train_setup(self, train_id):
         self.user_db_cursor.execute('''SELECT * FROM trains WHERE train_id = ?''', (train_id, ))
         train_id, self.cars, self.track, self.train_route, self.state, self.direction, self.new_direction, \
             self.current_direction, self.speed, self.speed_state, self.speed_factor_position, self.priority, \
             self.boarding_time, self.exp, self.money, cars_position_parsed, cars_position_abs_parsed, \
-            self.stop_point, self.destination_point \
+            self.stop_point, self.destination_point, self.car_image_collection \
             = self.user_db_cursor.fetchone()
         if cars_position_parsed is not None:
             cars_position_parsed = cars_position_parsed.split(',')
@@ -92,18 +93,24 @@ class TrainModel(Model):
         self.cars_position_abs = cars_position_abs_parsed
 
     def on_train_init(self, cars, track, train_route, status, direction, new_direction, current_direction, speed,
-                      speed_state, priority, boarding_time, exp, money):
+                      speed_state, priority, boarding_time, exp, money, car_image_collection):
         self.cars, self.track, self.train_route, self.state, self.direction, self.new_direction, \
             self.current_direction, self.speed, self.speed_state, self.priority, self.boarding_time, \
-            self.exp, self.money \
+            self.exp, self.money, self.car_image_collection \
             = cars, track, train_route, status, direction, new_direction, current_direction, speed, speed_state, \
-            priority, boarding_time, exp, money
+            priority, boarding_time, exp, money, car_image_collection
         self.speed_factor_position = self.speed_factor_position_limit
+        self.controller.parent_controller.on_open_train_route(self.track, self.train_route,
+                                                              self.controller.train_id, self.cars)
 
     def on_set_train_start_point(self, first_car_start_point):
         self.cars_position = None
+        car_position_view = []
         for i in range(self.cars):
             self.cars_position.append(first_car_start_point - i * 251)
+            car_position_view.append(self.trail_points_v2[first_car_start_point - i * 251])
+
+        self.view.on_update_car_position(car_position_view)
 
     def on_set_train_stop_point(self, first_car_stop_point):
         self.stop_point = first_car_stop_point
@@ -120,6 +127,18 @@ class TrainModel(Model):
         self.on_activate_view()
 
     def on_activate_view(self):
+        car_position_view = []
+        if self.cars_position is not None:
+            for i in self.cars_position:
+                car_position_view.append(self.trail_points_v2[i])
+        else:
+            for i in self.cars_position_abs:
+                car_position_view.append((i[0], i[1], 0.0))
+
+        self.view.on_update_car_position(car_position_view)
+        self.view.on_update_direction(self.current_direction)
+        self.view.on_update_car_image_collection(self.car_image_collection)
+        self.view.on_update_state(self.state)
         self.view.on_activate()
 
     @_model_is_active
@@ -182,6 +201,7 @@ class TrainModel(Model):
                 self.controller.parent_controller.on_close_train_route(self.track, self.train_route)
                 if self.state == 'pending_boarding':
                     self.state = 'boarding_in_progress'
+                    self.view.on_update_state(self.state)
                     self.on_convert_trail_points()
                     self.trail_points_v2 = None
                 elif self.state == 'boarding_complete':
@@ -202,8 +222,12 @@ class TrainModel(Model):
                              - self.train_acceleration_factor[self.speed_factor_position]
 
             if self.speed_state != 'stop':
+                car_position_view = []
                 for i in range(len(self.cars_position)):
                     self.cars_position[i] += self.speed
+                    car_position_view.append(self.trail_points_v2[self.cars_position[i]])
+
+                self.view.on_update_car_position(car_position_view)
 
         else:
             self.boarding_time -= 1
@@ -219,6 +243,7 @@ class TrainModel(Model):
 
             if self.boarding_time == 0:
                 self.state = 'boarding_complete'
+                self.view.on_update_state(self.state)
                 self.controller.parent_controller.on_add_exp(self.exp)
                 self.controller.parent_controller.on_add_money(self.money)
 

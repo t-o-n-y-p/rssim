@@ -1,9 +1,33 @@
+from pyglet.image import load
+from random import choice
+
 from ctrl import AppController, GameController, MapController, SettingsController, FPSController, SchedulerController, \
-                 SignalController, TrainRouteController, RailroadSwitchController, CrossoverController
+                 SignalController, TrainRouteController, RailroadSwitchController, CrossoverController, TrainController
 from model import AppModel, GameModel, MapModel, SettingsModel, FPSModel, SchedulerModel, SignalModel, TrainRouteModel,\
-                  RailroadSwitchModel, CrossoverModel
+                  RailroadSwitchModel, CrossoverModel, TrainModel
 from view import AppView, GameView, MapView, SettingsView, FPSView, SchedulerView, SignalView, TrainRouteView, \
-                 RailroadSwitchView, CrossoverView
+                 RailroadSwitchView, CrossoverView, TrainView
+
+
+car_head_image = [
+    # collection 0
+    [load('img/cars/0/car_head_0.png'), load('img/cars/0/car_head_1.png'),
+     load('img/cars/0/car_head_2.png'), load('img/cars/0/car_head_3.png')],
+]
+car_mid_image = [
+    # collection 0
+    [load('img/cars/0/car_mid_0.png'), load('img/cars/0/car_mid_1.png'),
+     load('img/cars/0/car_mid_2.png'), load('img/cars/0/car_mid_3.png')],
+]
+car_tail_image = [
+    # collection 0
+    [load('img/cars/0/car_tail_0.png'), load('img/cars/0/car_tail_1.png'),
+     load('img/cars/0/car_tail_2.png'), load('img/cars/0/car_tail_3.png')],
+]
+boarding_light_image = [
+    # collection 0
+    load('img/cars/0/boarding_lights.png'),
+]
 
 
 def create_app(user_db_connection, user_db_cursor, config_db_cursor, surface, batch, groups):
@@ -105,6 +129,13 @@ def create_map(user_db_connection, user_db_cursor, config_db_cursor, surface, ba
             = create_crossover(user_db_connection, user_db_cursor, config_db_cursor, surface, batch, groups,
                                controller, i[0], i[1], i[2])
         controller.crossovers_list.append(controller.crossovers[i[0]][i[1]][i[2]])
+
+    user_db_cursor.execute('SELECT train_id FROM trains')
+    train_ids = user_db_cursor.fetchone()
+    if train_ids is not None:
+        for i in train_ids:
+            controller.trains[i] = create_train(user_db_connection, user_db_cursor, config_db_cursor, surface,
+                                                batch, groups, controller, i)
 
     model = MapModel(user_db_connection, user_db_cursor, config_db_cursor)
     view = MapView(user_db_cursor, config_db_cursor, surface, batch, groups)
@@ -213,6 +244,32 @@ def create_crossover(user_db_connection, user_db_cursor, config_db_cursor, surfa
     model = CrossoverModel(user_db_connection, user_db_cursor, config_db_cursor)
     model.on_crossover_setup(track_param_1, track_param_2, crossover_type)
     view = CrossoverView(user_db_cursor, config_db_cursor, surface, batch, groups)
+    controller.model = model
+    model.controller = controller
+    controller.view = view
+    view.on_assign_controller(controller)
+    model.view = view
+    return controller
+
+
+def create_train(user_db_connection, user_db_cursor, config_db_cursor, surface, batch, groups, map_controller,
+                 train_id, cars=None, track=None, train_route=None, status=None, direction=None, new_direction=None,
+                 current_direction=None, speed=None, speed_state=None, priority=None, boarding_time=None, exp=None,
+                 money=None, created_by='database'):
+    controller = TrainController(map_controller)
+    controller.train_id = train_id
+    model = TrainModel(user_db_connection, user_db_cursor, config_db_cursor)
+    if created_by == 'dispatcher':
+        model.on_train_init(cars, track, train_route, status, direction, new_direction, current_direction, speed,
+                            speed_state, priority, boarding_time, exp, money, choice([0, 0]))
+    else:
+        model.on_train_setup(train_id)
+
+    view = TrainView(user_db_cursor, config_db_cursor, surface, batch, groups)
+    view.car_head_image = car_head_image
+    view.car_mid_image = car_mid_image
+    view.car_tail_image = car_tail_image
+    view.boarding_light_image = boarding_light_image
     controller.model = model
     model.controller = controller
     controller.view = view
