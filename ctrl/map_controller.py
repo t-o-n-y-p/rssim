@@ -39,6 +39,7 @@ class MapController(Controller):
         self.switches_list = []
         self.crossovers = {}
         self.crossovers_list = []
+        self.trains = {}
 
     def on_update_view(self):
         self.view.on_update()
@@ -173,6 +174,8 @@ class MapController(Controller):
         for switch in self.switches_list:
             switch.on_save_state()
 
+        self.model.on_clear_trains_info()
+
     def on_update_time(self, game_time):
         self.train_routes_sorted_list = sorted(self.train_routes_sorted_list,
                                                key=attrgetter('model.priority'), reverse=True)
@@ -222,3 +225,15 @@ class MapController(Controller):
 
     def on_update_train_route_priority(self, track, train_route, priority):
         self.train_routes[track][train_route].on_update_priority(priority)
+
+    def on_set_trail_points(self, train_id, trail_points_v2):
+        self.trains[train_id].on_set_trail_points(trail_points_v2)
+
+    def on_open_train_route(self, track, train_route, train_id, cars):
+        self.train_routes[track][train_route].on_open_train_route(train_id, cars)
+
+    def on_close_train_route(self, track, train_route):
+        self.train_routes[track][train_route].on_close_train_route()
+
+    def on_delete_train(self, train_id):
+        self.trains[train_id].delete()

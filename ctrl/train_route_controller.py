@@ -44,7 +44,7 @@ class TrainRouteController(Controller):
         self.model.on_open_train_route(train_id, cars)
 
     def on_close_train_route(self):
-        self.model.on_open_train_route()
+        self.model.on_close_train_route()
 
     def on_update_train_route_sections(self, last_car_position):
         self.model.on_update_train_route_sections(last_car_position)

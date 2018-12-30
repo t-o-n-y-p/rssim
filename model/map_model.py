@@ -43,3 +43,7 @@ class MapModel(Model):
 
     def on_save_state(self):
         self.user_db_cursor.execute('UPDATE game_progress SET unlocked_tracks = ?', (self.unlocked_tracks, ))
+
+    def on_clear_trains_info(self):
+        self.user_db_cursor.execute('DELETE FROM trains')
+

@@ -88,3 +88,9 @@ class GameController(Controller):
 
     def on_update_money_target(self, money_target):
         self.model.on_update_money_target(money_target)
+
+    def on_add_exp(self, exp):
+        self.model.on_add_exp(exp)
+
+    def on_add_money(self, money):
+        self.model.on_add_money(money)
