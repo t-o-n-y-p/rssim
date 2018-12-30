@@ -36,6 +36,14 @@ class SchedulerView(View):
         self.close_schedule_button = CloseScheduleButton(surface=self.surface, batch=self.batch, groups=self.groups,
                                                          on_click_action=on_close_schedule)
         self.buttons.append(self.close_schedule_button)
+        self.base_train_id = 0
+        self.base_arrival_time = 1
+        self.base_direction = 2
+        self.base_new_direction = 3
+        self.base_cars = 4
+        self.base_stop_time = 5
+        self.base_exp = 6
+        self.base_money = 7
 
     @_view_is_not_active
     def on_activate(self):
@@ -92,17 +100,18 @@ class SchedulerView(View):
             if base_schedule[i][1] < game_time + 14400 and len(self.train_labels) < (i + 1) * 2:
                 self.train_labels.append(
                     Label('{0:0>6}   {1:0>2} : {2:0>2}                           {3:0>2}   {4:0>2} : {5:0>2}'
-                          .format(base_schedule[i][0], (base_schedule[i][1] // 14400 + 12) % 24,
-                                  (base_schedule[i][1] // 240) % 60, base_schedule[i][4], base_schedule[i][5] // 240,
-                                  (base_schedule[i][5] // 4) % 60),
+                          .format(base_schedule[i][self.base_train_id],
+                                  (base_schedule[i][self.base_arrival_time] // 14400 + 12) % 24,
+                                  (base_schedule[i][self.base_arrival_time] // 240) % 60,
+                                  base_schedule[i][self.base_cars], base_schedule[i][self.base_stop_time] // 240,
+                                  (base_schedule[i][self.base_stop_time] // 4) % 60),
                           font_name='Perfo', bold=True, font_size=18,
                           x=(self.screen_resolution[0] // 2 - 320) + 640 * (i // 16),
                           y=(self.screen_resolution[1] // 2 + 195) - (i % 16) * 27,
                           anchor_x='center', anchor_y='center', batch=self.batch, group=self.groups['button_text']))
                 self.train_labels.append(
-                    Label(self.departure_text[base_schedule[i][2]], font_name='Perfo', bold=True, font_size=18,
-                          x=(self.screen_resolution[0] // 2 - 287) + 640 * (i // 16),
+                    Label(self.departure_text[base_schedule[i][self.base_direction]], font_name='Perfo', bold=True,
+                          font_size=18, x=(self.screen_resolution[0] // 2 - 287) + 640 * (i // 16),
                           y=(self.screen_resolution[1] // 2 + 195) - (i % 16) * 27,
                           anchor_x='center', anchor_y='center', batch=self.batch, group=self.groups['button_text']))
                 break
-

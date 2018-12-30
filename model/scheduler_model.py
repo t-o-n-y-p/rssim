@@ -28,6 +28,20 @@ class SchedulerModel(Model):
         self.direction_from_right_to_left = 1
         self.direction_from_left_to_right_side = 2
         self.direction_from_right_to_left_side = 3
+        self.options_arrival_time_min = 0
+        self.options_arrival_time_max = 1
+        self.options_direction = 2
+        self.options_new_direction = 3
+        self.options_cars_min = 4
+        self.options_cars_max = 5
+        self.base_train_id = 0
+        self.base_arrival_time = 1
+        self.base_direction = 2
+        self.base_new_direction = 3
+        self.base_cars = 4
+        self.base_stop_time = 5
+        self.base_exp = 6
+        self.base_money = 7
         self.user_db_cursor.execute('SELECT level, unlocked_tracks FROM game_progress')
         self.level, self.unlocked_tracks = self.user_db_cursor.fetchone()
         self.config_db_cursor.execute('''SELECT arrival_time_min, arrival_time_max, direction, new_direction, 
@@ -63,19 +77,22 @@ class SchedulerModel(Model):
     def on_update_time(self, game_time):
         if game_time + self.schedule_cycle_length >= self.next_cycle_start_time:
             for i in self.schedule_options:
-                if i[2] in (self.direction_from_left_to_right, self.direction_from_right_to_left) \
-                        or (i[2] == self.direction_from_left_to_right_side and self.unlocked_tracks >= 21)\
-                        or (i[2] == self.direction_from_right_to_left_side and self.unlocked_tracks >= 22):
-                    cars = choice([i[4], i[5]])
+                if i[self.options_direction] in (self.direction_from_left_to_right, self.direction_from_right_to_left) \
+                        or (i[self.options_direction] == self.direction_from_left_to_right_side
+                            and self.unlocked_tracks >= 21)\
+                        or (i[self.options_direction] == self.direction_from_right_to_left_side
+                            and self.unlocked_tracks >= 22):
+                    cars = choice([i[self.options_cars_min], i[self.options_cars_max]])
                     self.base_schedule.append(
-                        (self.train_counter, self.next_cycle_start_time + choice(list(range(i[0], i[1]))),
-                         i[2], i[3], cars, self.frame_per_car * cars, self.exp_per_car * cars,
-                         self.money_per_car * cars)
+                        (self.train_counter, self.next_cycle_start_time
+                         + choice(list(range(i[self.options_arrival_time_min], i[self.options_arrival_time_max]))),
+                         i[self.options_direction], i[self.options_new_direction], cars, self.frame_per_car * cars,
+                         self.exp_per_car * cars, self.money_per_car * cars)
                     )
                     self.train_counter = (self.train_counter + 1) % 1000000
 
             self.next_cycle_start_time += self.schedule_cycle_length
-            self.base_schedule = sorted(self.base_schedule, key=itemgetter(1))
+            self.base_schedule = sorted(self.base_schedule, key=itemgetter(self.base_arrival_time))
 
         self.view.on_update_train_labels(self.base_schedule, game_time)
 

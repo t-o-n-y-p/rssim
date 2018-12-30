@@ -9,3 +9,4 @@ from .train_route_view import TrainRouteView
 from .railroad_switch_view import RailroadSwitchView
 from .crossover_view import CrossoverView
 from .train_view import TrainView
+from .dispatcher_view import DispatcherView
