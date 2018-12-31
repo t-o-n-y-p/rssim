@@ -2,6 +2,8 @@ from ctypes import c_long, windll
 from sys import exit
 from sqlite3 import connect
 from time import perf_counter
+from os import path
+from shutil import copyfile
 
 from pyglet import gl
 from pyglet.window import Window
@@ -22,6 +24,9 @@ class RSSim:
 
         if windll.user32.GetSystemMetrics(0) < 1280 or windll.user32.GetSystemMetrics(1) < 720:
             raise MonitorNotSupportedException
+
+        if not path.exists('db/user.db'):
+            copyfile('db/default.db', 'db/user.db')
 
         self.user_db_connection = connect('db/user.db')
         self.user_db_cursor = self.user_db_connection.cursor()

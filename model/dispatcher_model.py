@@ -49,10 +49,11 @@ class DispatcherModel(Model):
         self.user_db_cursor.execute('''SELECT unlocked_tracks, supported_cars_min, supported_cars_max 
                                        FROM game_progress''')
         self.unlocked_tracks, self.supported_cars[0], self.supported_cars[1] = self.user_db_cursor.fetchone()
-        self.user_db_cursor.execute('SELECT track_busy_status FROM dispatcher')
-        self.track_busy_status = self.user_db_cursor.fetchone()[0].split(',')
-        for i in range(len(self.track_busy_status)):
-            self.track_busy_status[i] = bool(int(self.track_busy_status[i]))
+        self.user_db_cursor.execute('SELECT busy FROM tracks')
+        self.track_busy_status = [None, ]
+        busy_status_parsed = self.user_db_cursor.fetchall()
+        for i in busy_status_parsed:
+            self.track_busy_status.append(bool(i[0]))
 
     @_model_is_not_active
     def on_activate(self):
@@ -69,12 +70,9 @@ class DispatcherModel(Model):
         pass
 
     def on_save_state(self):
-        track_busy_status_string = ''
-        for i in self.track_busy_status:
-            track_busy_status_string += f'{i},'
-
-        track_busy_status_string = track_busy_status_string[0:len(track_busy_status_string) - 1]
-        self.user_db_cursor.execute('UPDATE dispatcher SET track_busy_status = ?', (track_busy_status_string, ))
+        for i in range(1, len(self.track_busy_status)):
+            self.user_db_cursor.execute('''UPDATE tracks SET busy = ? WHERE track_number = ?''',
+                                        (int(self.track_busy_status[i]), i))
 
     def on_unlock_track(self, track_number):
         self.unlocked_tracks = track_number

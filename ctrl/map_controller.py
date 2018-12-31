@@ -45,6 +45,7 @@ class MapController(Controller):
     def on_update_view(self):
         self.view.on_update()
         self.scheduler.on_update_view()
+        # self.dispatcher.on_update_view()
         for signal in self.signals_list:
             signal.on_update_view()
 
@@ -62,6 +63,7 @@ class MapController(Controller):
         self.is_activated = True
         self.model.on_activate()
         self.scheduler.on_activate()
+        self.dispatcher.on_activate()
         for signal in self.signals_list:
             signal.on_activate()
 
@@ -80,6 +82,7 @@ class MapController(Controller):
         self.model.on_deactivate()
         self.view.on_deactivate()
         self.scheduler.on_deactivate()
+        self.dispatcher.on_deactivate()
         for signal in self.signals_list:
             signal.on_deactivate()
 
@@ -95,6 +98,7 @@ class MapController(Controller):
     def on_change_screen_resolution(self, screen_resolution):
         self.view.on_change_screen_resolution(screen_resolution)
         self.scheduler.on_change_screen_resolution(screen_resolution)
+        self.dispatcher.on_change_screen_resolution(screen_resolution)
         for signal in self.signals_list:
             signal.on_change_screen_resolution(screen_resolution)
 
@@ -194,6 +198,7 @@ class MapController(Controller):
     def on_save_state(self):
         self.model.on_save_state()
         self.scheduler.on_save_state()
+        self.dispatcher.on_save_state()
         for signal in self.signals_list:
             signal.on_save_state()
 
@@ -218,6 +223,7 @@ class MapController(Controller):
             self.trains[train_id].on_update_time(game_time)
 
         self.scheduler.on_update_time(game_time)
+        self.dispatcher.on_update_time(game_time)
 
     def on_level_up(self):
         self.scheduler.on_level_up()
