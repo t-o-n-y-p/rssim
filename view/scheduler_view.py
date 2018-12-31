@@ -115,3 +115,14 @@ class SchedulerView(View):
                           y=(self.screen_resolution[1] // 2 + 195) - (i % 16) * 27,
                           anchor_x='center', anchor_y='center', batch=self.batch, group=self.groups['button_text']))
                 break
+
+    @_view_is_active
+    def on_release_train(self, index):
+        for i in range(index * 2, len(self.train_labels) // 2 - 1):
+            self.train_labels[i * 2].text = self.train_labels[(i + 1) * 2].text
+            self.train_labels[i * 2 + 1].text = self.train_labels[(i + 1) * 2 + 1].text
+
+        self.train_labels[-2].delete()
+        self.train_labels[-1].delete()
+        self.train_labels.pop(-2)
+        self.train_labels.pop(-1)
