@@ -55,11 +55,9 @@ class TrainView(View):
                 if i == 0:
                     sprite = Sprite(self.car_head_image[self.car_image_collection][self.direction], x=x, y=y,
                                     batch=self.batch, group=self.groups['train'])
-                    self.boarding_light_sprites.append(None)
                 elif i == len(self.car_position) - 1:
                     sprite = Sprite(self.car_tail_image[self.car_image_collection][self.direction], x=x, y=y,
                                     batch=self.batch, group=self.groups['train'])
-                    self.boarding_light_sprites.append(None)
                 else:
                     sprite = Sprite(self.car_mid_image[self.car_image_collection][self.direction], x=x, y=y,
                                     batch=self.batch, group=self.groups['train'])
@@ -72,6 +70,19 @@ class TrainView(View):
                 self.car_sprites.append(sprite)
             else:
                 self.car_sprites.append(None)
+
+            if self.state == 'boarding_in_progress':
+                if i == 0:
+                    self.boarding_light_sprites.append(None)
+                elif i == len(self.car_position) - 1:
+                    self.boarding_light_sprites.append(None)
+                else:
+                    if x in range(-150, self.screen_resolution[0] + 150) \
+                            and y in range(-100, self.screen_resolution[1] + 100):
+                        self.boarding_light_sprites.append(Sprite(self.boarding_light_image[self.car_image_collection],
+                                                                  x=x, y=y, batch=self.batch,
+                                                                  group=self.groups['boarding_light']))
+            else:
                 self.boarding_light_sprites.append(None)
 
     @_view_is_active
@@ -85,6 +96,9 @@ class TrainView(View):
             if self.boarding_light_sprites[i] is not None:
                 self.boarding_light_sprites[i].delete()
                 self.boarding_light_sprites[i] = None
+
+        self.car_sprites.clear()
+        self.boarding_light_sprites.clear()
 
     def on_change_base_offset(self, new_base_offset):
         self.base_offset = new_base_offset

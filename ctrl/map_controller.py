@@ -289,6 +289,8 @@ class MapController(Controller):
                         current_direction, priority, boarding_time, exp, money):
         train = self.model.on_create_train(train_id, cars, track, train_route, state, direction, new_direction,
                                            current_direction, priority, boarding_time, exp, money)
+        train.view.on_change_base_offset(self.view.base_offset)
+        train.view.on_change_screen_resolution(self.view.screen_resolution)
         train.view.on_change_zoom_factor(self.view.zoom_factor, zoom_out_activated=self.view.zoom_out_activated)
         self.trains[train.train_id] = train
         self.dispatcher.on_add_train(train)
