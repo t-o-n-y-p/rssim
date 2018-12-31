@@ -63,8 +63,8 @@ class TrainModel(Model):
         self.boarding_time = None
         self.exp = None
         self.money = None
-        self.cars_position = None
-        self.cars_position_abs = None
+        self.cars_position = []
+        self.cars_position_abs = []
         self.stop_point = None
         self.destination_point = None
         self.trail_points_v2 = None
@@ -205,7 +205,7 @@ class TrainModel(Model):
                     self.on_convert_trail_points()
                     self.trail_points_v2 = None
                 elif self.state == 'boarding_complete':
-                    self.controller.parent_controller.on_delete_train(self.controller.train_id)
+                    self.state = 'successful_departure'
 
             if self.speed_state == 'accelerate':
                 if self.speed_factor_position == self.speed_factor_position_limit:
@@ -246,8 +246,8 @@ class TrainModel(Model):
             if self.boarding_time == 0:
                 self.state = 'boarding_complete'
                 self.view.on_update_state(self.state)
-                self.controller.parent_controller.on_add_exp(self.exp)
-                self.controller.parent_controller.on_add_money(self.money)
+                self.controller.parent_controller.parent_controller.on_add_exp(self.exp)
+                self.controller.parent_controller.parent_controller.on_add_money(self.money)
 
     def on_convert_trail_points(self):
         self.cars_position_abs.clear()

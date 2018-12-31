@@ -61,3 +61,6 @@ class DispatcherController(Controller):
 
     def on_add_train(self, train_controller):
         self.model.on_add_train(train_controller)
+
+    def on_leave_track(self, track):
+        self.model.on_leave_track(track)

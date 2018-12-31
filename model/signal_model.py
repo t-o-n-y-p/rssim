@@ -60,9 +60,9 @@ class SignalModel(Model):
         self.view.on_unlock()
 
     def on_switch_to_green(self):
-        self.state = 'green_state'
-        self.view.on_change_state('green_state')
+        self.state = 'green_signal'
+        self.view.on_change_state('green_signal')
 
     def on_switch_to_red(self):
-        self.state = 'green_state'
-        self.view.on_change_state('red_state')
+        self.state = 'red_signal'
+        self.view.on_change_state('red_signal')

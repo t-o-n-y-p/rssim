@@ -45,6 +45,10 @@ class DispatcherModel(Model):
         self.base_stop_time = 5
         self.base_exp = 6
         self.base_money = 7
+        self.entry_train_route = ('left_entry', 'right_entry', 'left_side_entry', 'right_side_entry')
+        self.exit_train_route = ('right_exit', 'left_exit', 'right_side_exit', 'left_side_exit')
+        self.approaching_train_route = ('left_approaching', 'right_approaching',
+                                        'left_side_approaching', 'right_side_approaching')
         self.supported_cars = [0, 0]
         self.user_db_cursor.execute('''SELECT unlocked_tracks, supported_cars_min, supported_cars_max 
                                        FROM game_progress''')
@@ -54,6 +58,10 @@ class DispatcherModel(Model):
         busy_status_parsed = self.user_db_cursor.fetchall()
         for i in busy_status_parsed:
             self.track_busy_status.append(bool(i[0]))
+
+        self.supported_cars_by_track = [None, ]
+        self.config_db_cursor.execute('SELECT supported_cars_min, supported_cars_max FROM track_config')
+        self.supported_cars_by_track.extend(self.config_db_cursor.fetchall())
 
     @_model_is_not_active
     def on_activate(self):
@@ -67,7 +75,26 @@ class DispatcherModel(Model):
         self.view.on_activate()
 
     def on_update_time(self, game_time):
-        pass
+        for i in self.trains:
+            track_priority_list = None
+            if i.model.state == 'approaching':
+                track_priority_list = self.main_priority_tracks[i.model.direction][i.model.new_direction]
+            elif i.model.state == 'approaching_pass_through':
+                track_priority_list = self.pass_through_priority_tracks[i.model.direction]
+
+            for track in track_priority_list:
+                if track <= self.unlocked_tracks and not self.track_busy_status[track] \
+                        and i.model.cars in range(self.supported_cars_by_track[track][0],
+                                                  self.supported_cars_by_track[track][1] + 1):
+                    self.track_busy_status[track] = True
+                    i.model.state = 'pending_boarding'
+                    self.controller.parent_controller.on_close_train_route(i.model.track, i.model.train_route)
+                    i.model.track = track
+                    i.model.train_route = self.entry_train_route[i.model.direction]
+                    self.controller.parent_controller.on_open_train_route(track,
+                                                                          self.entry_train_route[i.model.direction],
+                                                                          i.train_id, i.model.cars)
+                    self.trains.remove(i)
 
     def on_save_state(self):
         for i in range(1, len(self.track_busy_status)):
@@ -79,3 +106,6 @@ class DispatcherModel(Model):
 
     def on_add_train(self, train_controller):
         self.trains.append(train_controller)
+
+    def on_leave_track(self, track):
+        self.track_busy_status[track] = False

@@ -219,8 +219,14 @@ class MapController(Controller):
         for route in self.train_routes_sorted_list:
             route.on_update_time(game_time)
 
+        successful_departure_state = []
         for train_id in self.trains:
             self.trains[train_id].on_update_time(game_time)
+            if self.trains[train_id].model.state == 'successful_departure':
+                successful_departure_state.append(train_id)
+
+        for train_id in successful_departure_state:
+            self.trains.pop(train_id)
 
         self.scheduler.on_update_time(game_time)
         self.dispatcher.on_update_time(game_time)
@@ -262,10 +268,13 @@ class MapController(Controller):
             self.switches[section[1]][section[2]][section[0]].on_force_busy_off()
 
         if section[0] in ('left_crossover', 'right_crossover'):
-            self.switches[section[1]][section[2]][section[0]].on_force_busy_off(positions)
+            self.crossovers[section[1]][section[2]][section[0]].on_force_busy_off(positions)
 
     def on_leave_entry(self, entry_id):
         self.scheduler.on_leave_entry(entry_id)
+
+    def on_leave_track(self, track):
+        self.dispatcher.on_leave_track(track)
 
     def on_update_train_route_priority(self, track, train_route, priority):
         self.train_routes[track][train_route].on_update_priority(priority)
@@ -287,9 +296,6 @@ class MapController(Controller):
 
     def on_close_train_route(self, track, train_route):
         self.train_routes[track][train_route].on_close_train_route()
-
-    def on_delete_train(self, train_id):
-        self.trains[train_id].delete()
 
     def on_create_train(self, train_id, cars, track, train_route, state, direction, new_direction,
                         current_direction, priority, boarding_time, exp, money):

@@ -122,7 +122,7 @@ class CrossoverModel(Model):
             self.on_busy_notify(positions[1], positions[0], train_id)
             self.on_busy_notify(positions[1], positions[1], train_id)
         else:
-            k = self.busy[positions[0]].keys()
+            k = list(self.busy[positions[0]].keys())
             if positions[0] == k[0]:
                 self.on_busy_notify(k[0], k[0], train_id)
                 self.on_busy_notify(k[0], k[1], train_id)
@@ -142,7 +142,7 @@ class CrossoverModel(Model):
             self.on_leave_notify(positions[1], positions[0])
             self.on_leave_notify(positions[1], positions[1])
         else:
-            k = self.busy[positions[0]].keys()
+            k = list(self.busy[positions[0]].keys())
             if positions[0] == k[0]:
                 self.on_leave_notify(k[0], k[0])
                 if not self.force_busy[k[1]][k[1]]:
