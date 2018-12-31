@@ -41,6 +41,8 @@ class SchedulerModel(Model):
         self.base_stop_time = 5
         self.base_exp = 6
         self.base_money = 7
+        self.entry_track = [0, 0, 100, 100]
+        self.entry_route = ['left_approaching', 'right_approaching', 'left_side_approaching', 'right_side_approaching']
         self.user_db_cursor.execute('SELECT level, unlocked_tracks FROM game_progress')
         self.level, self.unlocked_tracks = self.user_db_cursor.fetchone()
         self.config_db_cursor.execute('''SELECT arrival_time_min, arrival_time_max, direction, new_direction, 
@@ -94,6 +96,22 @@ class SchedulerModel(Model):
             self.base_schedule = sorted(self.base_schedule, key=itemgetter(self.base_arrival_time))
 
         self.view.on_update_train_labels(self.base_schedule, game_time)
+        for i in self.base_schedule:
+            if game_time >= i[self.base_arrival_time]:
+                if not self.entry_busy_state[i[self.base_direction]]:
+                    self.entry_busy_state[i[self.base_direction]] = True
+                    self.controller.parent_controller.on_create_train(i[self.base_train_id], i[self.base_cars],
+                                                                      self.entry_track[i[self.base_direction]],
+                                                                      self.entry_route[i[self.base_direction]],
+                                                                      'approaching', i[self.base_direction],
+                                                                      i[self.base_new_direction],
+                                                                      i[self.base_direction],
+                                                                      0, i[self.base_stop_time], i[self.base_exp],
+                                                                      i[self.base_money])
+                else:
+                    break
+            else:
+                break
 
     def on_save_state(self):
         entry_busy_state_string = int(self.entry_busy_state[0]) + ',' + int(self.entry_busy_state[1]) + ',' \

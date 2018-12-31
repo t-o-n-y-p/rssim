@@ -59,5 +59,5 @@ class DispatcherController(Controller):
     def on_deactivate_view(self):
         self.view.on_deactivate()
 
-    def on_create_train(self, base_schedule_line):
-        self.model.on_create_train(base_schedule_line)
+    def on_add_train(self, train_controller):
+        self.model.on_add_train(train_controller)

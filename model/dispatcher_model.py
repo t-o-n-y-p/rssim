@@ -23,6 +23,7 @@ def _model_is_not_active(fn):
 class DispatcherModel(Model):
     def __init__(self, user_db_connection, user_db_cursor, config_db_cursor):
         super().__init__(user_db_connection, user_db_cursor, config_db_cursor)
+        self.trains = []
         self.direction_from_left_to_right = 0
         self.direction_from_right_to_left = 1
         self.direction_from_left_to_right_side = 2
@@ -45,7 +46,7 @@ class DispatcherModel(Model):
         self.base_exp = 6
         self.base_money = 7
         self.supported_cars = [0, 0]
-        self.user_db_cursor.execute('''SELECT unlocked_tracks, supported_carts_min, supported_carts_max 
+        self.user_db_cursor.execute('''SELECT unlocked_tracks, supported_cars_min, supported_cars_max 
                                        FROM game_progress''')
         self.unlocked_tracks, self.supported_cars[0], self.supported_cars[1] = self.user_db_cursor.fetchone()
         self.user_db_cursor.execute('SELECT track_busy_status FROM dispatcher')
@@ -77,3 +78,6 @@ class DispatcherModel(Model):
 
     def on_unlock_track(self, track_number):
         self.unlocked_tracks = track_number
+
+    def on_add_train(self, train_controller):
+        self.trains.append(train_controller)

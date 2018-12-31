@@ -2,11 +2,12 @@ from pyglet.image import load
 from random import choice
 
 from ctrl import AppController, GameController, MapController, SettingsController, FPSController, SchedulerController, \
-                 SignalController, TrainRouteController, RailroadSwitchController, CrossoverController, TrainController
+                 SignalController, TrainRouteController, RailroadSwitchController, CrossoverController, \
+                 TrainController, DispatcherController
 from model import AppModel, GameModel, MapModel, SettingsModel, FPSModel, SchedulerModel, SignalModel, TrainRouteModel,\
-                  RailroadSwitchModel, CrossoverModel, TrainModel
+                  RailroadSwitchModel, CrossoverModel, TrainModel, DispatcherModel
 from view import AppView, GameView, MapView, SettingsView, FPSView, SchedulerView, SignalView, TrainRouteView, \
-                 RailroadSwitchView, CrossoverView, TrainView
+                 RailroadSwitchView, CrossoverView, TrainView, DispatcherView
 
 
 car_head_image = [
@@ -68,6 +69,8 @@ def create_map(user_db_connection, user_db_cursor, config_db_cursor, surface, ba
     game.map = controller
     controller.scheduler = create_scheduler(user_db_connection, user_db_cursor, config_db_cursor, surface,
                                             batch, groups, controller)
+    controller.dispatcher = create_dispatcher(user_db_connection, user_db_cursor, config_db_cursor, surface,
+                                              batch, groups, controller)
     config_db_cursor.execute('''SELECT DISTINCT track FROM signal_config''')
     signal_index = config_db_cursor.fetchall()
     for i in signal_index:
@@ -175,7 +178,6 @@ def create_fps(user_db_connection, user_db_cursor, config_db_cursor, surface, ba
 
 def create_scheduler(user_db_connection, user_db_cursor, config_db_cursor, surface, batch, groups, map_controller):
     controller = SchedulerController(map_controller)
-    map_controller.scheduler = controller
     model = SchedulerModel(user_db_connection, user_db_cursor, config_db_cursor)
     view = SchedulerView(user_db_cursor, config_db_cursor, surface, batch, groups)
     controller.model = model
@@ -253,15 +255,15 @@ def create_crossover(user_db_connection, user_db_cursor, config_db_cursor, surfa
 
 
 def create_train(user_db_connection, user_db_cursor, config_db_cursor, surface, batch, groups, map_controller,
-                 train_id, cars=None, track=None, train_route=None, status=None, direction=None, new_direction=None,
-                 current_direction=None, speed=None, speed_state=None, priority=None, boarding_time=None, exp=None,
-                 money=None, created_by='database'):
+                 train_id, cars=None, track=None, train_route=None, state=None, direction=None, new_direction=None,
+                 current_direction=None, priority=None, boarding_time=None, exp=None, money=None,
+                 created_by='database'):
     controller = TrainController(map_controller)
     controller.train_id = train_id
     model = TrainModel(user_db_connection, user_db_cursor, config_db_cursor)
     if created_by == 'dispatcher':
-        model.on_train_init(cars, track, train_route, status, direction, new_direction, current_direction, speed,
-                            speed_state, priority, boarding_time, exp, money, choice([0, 0]))
+        model.on_train_init(cars, track, train_route, state, direction, new_direction, current_direction,
+                            priority, boarding_time, exp, money, choice([0, 0]))
     else:
         model.on_train_setup(train_id)
 
@@ -270,6 +272,18 @@ def create_train(user_db_connection, user_db_cursor, config_db_cursor, surface, 
     view.car_mid_image = car_mid_image
     view.car_tail_image = car_tail_image
     view.boarding_light_image = boarding_light_image
+    controller.model = model
+    model.controller = controller
+    controller.view = view
+    view.on_assign_controller(controller)
+    model.view = view
+    return controller
+
+
+def create_dispatcher(user_db_connection, user_db_cursor, config_db_cursor, surface, batch, groups, map_controller):
+    controller = DispatcherController(map_controller)
+    model = DispatcherModel(user_db_connection, user_db_cursor, config_db_cursor)
+    view = DispatcherView(user_db_cursor, config_db_cursor, surface, batch, groups)
     controller.model = model
     model.controller = controller
     controller.view = view

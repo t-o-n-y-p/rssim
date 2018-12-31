@@ -92,25 +92,25 @@ class TrainModel(Model):
 
         self.cars_position_abs = cars_position_abs_parsed
 
-    def on_train_init(self, cars, track, train_route, status, direction, new_direction, current_direction, speed,
-                      speed_state, priority, boarding_time, exp, money, car_image_collection):
+    def on_train_init(self, cars, track, train_route, state, direction, new_direction, current_direction,
+                      priority, boarding_time, exp, money, car_image_collection):
         self.cars, self.track, self.train_route, self.state, self.direction, self.new_direction, \
-            self.current_direction, self.speed, self.speed_state, self.priority, self.boarding_time, \
+            self.current_direction, self.priority, self.boarding_time, \
             self.exp, self.money, self.car_image_collection \
-            = cars, track, train_route, status, direction, new_direction, current_direction, speed, speed_state, \
+            = cars, track, train_route, state, direction, new_direction, current_direction, \
             priority, boarding_time, exp, money, car_image_collection
+        self.speed = self.train_maximum_speed
+        self.speed_state = 'move'
         self.speed_factor_position = self.speed_factor_position_limit
-        self.controller.parent_controller.on_open_train_route(self.track, self.train_route,
-                                                              self.controller.train_id, self.cars)
 
     def on_set_train_start_point(self, first_car_start_point):
-        self.cars_position = None
-        car_position_view = []
+        self.cars_position = []
+        # car_position_view = []
         for i in range(self.cars):
             self.cars_position.append(first_car_start_point - i * 251)
-            car_position_view.append(self.trail_points_v2[first_car_start_point - i * 251])
-
-        self.view.on_update_car_position(car_position_view)
+        #     car_position_view.append(self.trail_points_v2[first_car_start_point - i * 251])
+        #
+        # self.view.on_update_car_position(car_position_view)
 
     def on_set_train_stop_point(self, first_car_stop_point):
         self.stop_point = first_car_stop_point
@@ -228,6 +228,8 @@ class TrainModel(Model):
                     car_position_view.append(self.trail_points_v2[self.cars_position[i]])
 
                 self.view.on_update_car_position(car_position_view)
+                self.controller.parent_controller.on_update_train_route_sections(self.track, self.train_route,
+                                                                                 self.cars_position[-1])
 
         else:
             self.boarding_time -= 1

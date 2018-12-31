@@ -33,6 +33,14 @@ def _train_route_is_opened(fn):
     return _handle_if_train_route_is_opened
 
 
+def _not_approaching_route(fn):
+    def _handle_if_train_route_is_not_approaching_route(*args, **kwargs):
+        if len(args[0].train_route_sections) > 1:
+            fn(*args, **kwargs)
+
+    return _handle_if_train_route_is_not_approaching_route
+
+
 class TrainRouteModel(Model):
     def __init__(self, user_db_connection, user_db_cursor, config_db_cursor):
         super().__init__(user_db_connection, user_db_cursor, config_db_cursor)
@@ -95,6 +103,7 @@ class TrainRouteModel(Model):
             trail_points_v2_parsed[i][1] = int(trail_points_v2_parsed[i][1])
             trail_points_v2_parsed[i][2] = float(trail_points_v2_parsed[i][2])
 
+        self.trail_points_v2 = trail_points_v2_parsed
         self.config_db_cursor.execute('''SELECT section_type, track_param_1, track_param_2 
                                          FROM train_route_sections WHERE track = ? and train_route = ?''',
                                       (track, train_route))
@@ -173,6 +182,7 @@ class TrainRouteModel(Model):
         self.current_checkpoint += 1
 
     @_train_route_is_opened
+    @_not_approaching_route
     def on_update_time(self, game_time):
         train_route_busy = False
         for i in range(1, len(self.train_route_sections)):
