@@ -43,8 +43,8 @@ class SchedulerModel(Model):
         self.base_money = 7
         self.entry_track = [0, 0, 100, 100]
         self.entry_route = ['left_approaching', 'right_approaching', 'left_side_approaching', 'right_side_approaching']
-        self.user_db_cursor.execute('SELECT level, unlocked_tracks FROM game_progress')
-        self.level, self.unlocked_tracks = self.user_db_cursor.fetchone()
+        self.user_db_cursor.execute('SELECT level, unlocked_tracks, supported_cars_min FROM game_progress')
+        self.level, self.unlocked_tracks, self.supported_cars_min = self.user_db_cursor.fetchone()
         self.config_db_cursor.execute('''SELECT arrival_time_min, arrival_time_max, direction, new_direction, 
                                       cars_min, cars_max FROM schedule_options WHERE level = ?''', (self.level, ))
         self.schedule_options = self.config_db_cursor.fetchall()
@@ -100,10 +100,15 @@ class SchedulerModel(Model):
             if game_time >= i[self.base_arrival_time]:
                 if not self.entry_busy_state[i[self.base_direction]]:
                     self.entry_busy_state[i[self.base_direction]] = True
+                    if i[self.base_cars] < self.supported_cars_min:
+                        state = 'approaching_pass_through'
+                    else:
+                        state = 'approaching'
+
                     self.controller.parent_controller.on_create_train(i[self.base_train_id], i[self.base_cars],
                                                                       self.entry_track[i[self.base_direction]],
                                                                       self.entry_route[i[self.base_direction]],
-                                                                      'approaching', i[self.base_direction],
+                                                                      state, i[self.base_direction],
                                                                       i[self.base_new_direction],
                                                                       i[self.base_direction],
                                                                       0, i[self.base_stop_time], i[self.base_exp],
@@ -124,6 +129,7 @@ class SchedulerModel(Model):
                                     (self.train_counter, self.next_cycle_start_time, entry_busy_state_string))
         self.user_db_cursor.execute('DELETE FROM base_schedule')
         self.user_db_cursor.executemany('INSERT INTO base_schedule VALUES (?, ?, ?, ?, ?, ?, ?, ?)', self.base_schedule)
+        self.user_db_cursor.execute('UPDATE game_progress SET supported_cars_min = ?', (self.supported_cars_min, ))
 
     def on_level_up(self):
         self.level += 1
@@ -138,6 +144,9 @@ class SchedulerModel(Model):
 
     def on_unlock_track(self, track_number):
         self.unlocked_tracks = track_number
+        self.config_db_cursor.execute('SELECT supported_cars_min FROM track_config WHERE track_number = ?',
+                                      (track_number, ))
+        self.supported_cars_min = self.config_db_cursor.fetchone()[0]
 
     def on_leave_entry(self, entry_id):
         self.entry_busy_state[entry_id] = False
