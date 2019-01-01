@@ -2,7 +2,7 @@ from pyglet.text import Label
 
 from .view_base import View
 from .button import AcceptSettingsButton, RejectSettingsButton, IncrementWindowedResolutionButton, \
-    DecrementWindowedResolutionButton
+                    DecrementWindowedResolutionButton
 
 
 def _view_is_active(fn):

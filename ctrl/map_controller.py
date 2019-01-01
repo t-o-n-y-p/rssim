@@ -45,18 +45,18 @@ class MapController(Controller):
     def on_update_view(self):
         self.view.on_update()
         self.scheduler.on_update_view()
-        # self.dispatcher.on_update_view()
+        self.dispatcher.on_update_view()
         for signal in self.signals_list:
             signal.on_update_view()
 
-        # for route in self.train_routes_sorted_list:
-        #     route.on_update_view()
+        for route in self.train_routes_sorted_list:
+            route.on_update_view()
 
-        # for switch in self.switches_list:
-        #     switch.on_update_view()
+        for switch in self.switches_list:
+            switch.on_update_view()
 
-        # for crossover in self.crossovers_list:
-        #     crossover.on_update_view()
+        for crossover in self.crossovers_list:
+            crossover.on_update_view()
 
         for train_id in self.trains:
             self.trains[train_id].on_update_view()
@@ -111,14 +111,14 @@ class MapController(Controller):
         for signal in self.signals_list:
             signal.on_change_screen_resolution(screen_resolution)
 
-        # for route in self.train_routes_sorted_list:
-        #     route.on_change_screen_resolution(screen_resolution)
+        for route in self.train_routes_sorted_list:
+            route.on_change_screen_resolution(screen_resolution)
 
-        # for switch in self.switches_list:
-        #     switch.on_change_screen_resolution(screen_resolution)
+        for switch in self.switches_list:
+            switch.on_change_screen_resolution(screen_resolution)
 
-        # for crossover in self.crossovers_list:
-        #     crossover.on_change_screen_resolution(screen_resolution)
+        for crossover in self.crossovers_list:
+            crossover.on_change_screen_resolution(screen_resolution)
 
         for train_id in self.trains:
             self.trains[train_id].on_change_screen_resolution(screen_resolution)
@@ -130,14 +130,14 @@ class MapController(Controller):
         for signal in self.signals_list:
             signal.on_change_base_offset(new_base_offset)
 
-        # for route in self.train_routes_sorted_list:
-        #     route.on_change_base_offset(new_base_offset)
+        for route in self.train_routes_sorted_list:
+            route.on_change_base_offset(new_base_offset)
 
-        # for switch in self.switches_list:
-        #     switch.on_change_base_offset(new_base_offset)
+        for switch in self.switches_list:
+            switch.on_change_base_offset(new_base_offset)
 
-        # for crossover in self.crossovers_list:
-        #     crossover.on_change_base_offset(new_base_offset)
+        for crossover in self.crossovers_list:
+            crossover.on_change_base_offset(new_base_offset)
 
         for train_id in self.trains:
             self.trains[train_id].on_change_base_offset(new_base_offset)
@@ -189,14 +189,14 @@ class MapController(Controller):
         for signal in self.signals_list:
             signal.on_zoom_in()
 
-        # for route in self.train_routes_sorted_list:
-        #     route.on_zoom_in()
+        for route in self.train_routes_sorted_list:
+            route.on_zoom_in()
 
-        # for switch in self.switches_list:
-        #     switch.on_zoom_in()
+        for switch in self.switches_list:
+            switch.on_zoom_in()
 
-        # for crossover in self.crossovers_list:
-        #     crossover.on_zoom_in()
+        for crossover in self.crossovers_list:
+            crossover.on_zoom_in()
 
         for train_id in self.trains:
             self.trains[train_id].on_zoom_in()
@@ -208,14 +208,14 @@ class MapController(Controller):
         for signal in self.signals_list:
             signal.on_zoom_out()
 
-        # for route in self.train_routes_sorted_list:
-        #     route.on_zoom_out()
+        for route in self.train_routes_sorted_list:
+            route.on_zoom_out()
 
-        # for switch in self.switches_list:
-        #     switch.on_zoom_out()
+        for switch in self.switches_list:
+            switch.on_zoom_out()
 
-        # for crossover in self.crossovers_list:
-        #     crossover.on_zoom_out()
+        for crossover in self.crossovers_list:
+            crossover.on_zoom_out()
 
         for train_id in self.trains:
             self.trains[train_id].on_zoom_out()

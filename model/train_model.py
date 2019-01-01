@@ -105,12 +105,8 @@ class TrainModel(Model):
 
     def on_set_train_start_point(self, first_car_start_point):
         self.cars_position = []
-        # car_position_view = []
         for i in range(self.cars):
             self.cars_position.append(first_car_start_point - i * 251)
-        #     car_position_view.append(self.trail_points_v2[first_car_start_point - i * 251])
-        #
-        # self.view.on_update_car_position(car_position_view)
 
     def on_set_train_stop_point(self, first_car_stop_point):
         self.stop_point = first_car_stop_point
