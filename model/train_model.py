@@ -250,7 +250,7 @@ class TrainModel(Model):
                 self.controller.parent_controller.parent_controller.on_add_money(self.money)
 
     def on_convert_trail_points(self):
-        self.cars_position_abs.clear()
+        self.cars_position_abs = []
         for i in self.cars_position:
             dot = self.trail_points_v2[i]
             self.cars_position_abs.append([dot[0], dot[1]])
@@ -258,7 +258,7 @@ class TrainModel(Model):
         self.cars_position.clear()
 
     def on_reconvert_trail_points(self):
-        self.cars_position.clear()
+        self.cars_position = []
         for i in self.cars_position_abs:
             self.cars_position.append(abs(i[0] - self.trail_points_v2[0][0]))
 

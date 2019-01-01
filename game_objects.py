@@ -15,20 +15,38 @@ car_head_image = [
     [load('img/cars/0/car_head_0.png'), load('img/cars/0/car_head_1.png'),
      load('img/cars/0/car_head_2.png'), load('img/cars/0/car_head_3.png')],
 ]
+for i in range(len(car_head_image)):
+    for j in range(4):
+        car_head_image[i][j].anchor_x = car_head_image[i][j].width // 2
+        car_head_image[i][j].anchor_y = car_head_image[i][j].height // 2
+
 car_mid_image = [
     # collection 0
     [load('img/cars/0/car_mid_0.png'), load('img/cars/0/car_mid_1.png'),
      load('img/cars/0/car_mid_2.png'), load('img/cars/0/car_mid_3.png')],
 ]
+for i in range(len(car_mid_image)):
+    for j in range(4):
+        car_mid_image[i][j].anchor_x = car_mid_image[i][j].width // 2
+        car_mid_image[i][j].anchor_y = car_mid_image[i][j].height // 2
+
 car_tail_image = [
     # collection 0
     [load('img/cars/0/car_tail_0.png'), load('img/cars/0/car_tail_1.png'),
      load('img/cars/0/car_tail_2.png'), load('img/cars/0/car_tail_3.png')],
 ]
+for i in range(len(car_tail_image)):
+    for j in range(4):
+        car_tail_image[i][j].anchor_x = car_tail_image[i][j].width // 2
+        car_tail_image[i][j].anchor_y = car_tail_image[i][j].height // 2
+
 boarding_light_image = [
     # collection 0
     load('img/cars/0/boarding_lights.png'),
 ]
+for i in range(len(boarding_light_image)):
+    boarding_light_image[i].anchor_x = boarding_light_image[i].width // 2
+    boarding_light_image[i].anchor_y = boarding_light_image[i].height // 2
 
 
 def create_app(user_db_connection, user_db_cursor, config_db_cursor, surface, batch, groups):
@@ -71,6 +89,13 @@ def create_map(user_db_connection, user_db_cursor, config_db_cursor, surface, ba
                                             batch, groups, controller)
     controller.dispatcher = create_dispatcher(user_db_connection, user_db_cursor, config_db_cursor, surface,
                                               batch, groups, controller)
+    user_db_cursor.execute('SELECT train_id FROM trains')
+    train_ids = user_db_cursor.fetchall()
+    if train_ids is not None:
+        for i in train_ids:
+            controller.trains[i[0]] = create_train(user_db_connection, user_db_cursor, config_db_cursor, surface,
+                                                   batch, groups, controller, i[0])
+
     config_db_cursor.execute('''SELECT DISTINCT track FROM signal_config''')
     signal_index = config_db_cursor.fetchall()
     for i in signal_index:
@@ -132,13 +157,6 @@ def create_map(user_db_connection, user_db_cursor, config_db_cursor, surface, ba
             = create_crossover(user_db_connection, user_db_cursor, config_db_cursor, surface, batch, groups,
                                controller, i[0], i[1], i[2])
         controller.crossovers_list.append(controller.crossovers[i[0]][i[1]][i[2]])
-
-    user_db_cursor.execute('SELECT train_id FROM trains')
-    train_ids = user_db_cursor.fetchone()
-    if train_ids is not None:
-        for i in train_ids:
-            controller.trains[i] = create_train(user_db_connection, user_db_cursor, config_db_cursor, surface,
-                                                batch, groups, controller, i)
 
     model = MapModel(user_db_connection, user_db_cursor, config_db_cursor)
     view = MapView(user_db_cursor, config_db_cursor, surface, batch, groups)
@@ -211,6 +229,9 @@ def create_train_route(user_db_connection, user_db_cursor, config_db_cursor, sur
     controller.train_route = train_route
     model = TrainRouteModel(user_db_connection, user_db_cursor, config_db_cursor)
     model.on_train_route_setup(track, train_route)
+    if model.opened:
+        controller.parent_controller.on_set_trail_points(model.last_opened_by, model.trail_points_v2)
+
     view = TrainRouteView(user_db_cursor, config_db_cursor, surface, batch, groups)
     controller.model = model
     model.controller = controller
