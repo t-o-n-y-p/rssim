@@ -84,7 +84,7 @@ class GameController(Controller):
 
     def on_level_up(self):
         self.model.on_level_up()
-        self.map.on_level_up()
+        self.map.on_level_up(self.model.level)
 
     def on_update_money_target(self, money_target):
         self.model.on_update_money_target(money_target)

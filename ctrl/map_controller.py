@@ -31,6 +31,7 @@ class MapController(Controller):
     def __init__(self, game_controller):
         super().__init__(parent_controller=game_controller)
         self.scheduler = None
+        self.constructor = None
         self.dispatcher = None
         self.signals = {}
         self.signals_list = []
@@ -255,13 +256,14 @@ class MapController(Controller):
                 successful_departure_state.append(train_id)
 
         for train_id in successful_departure_state:
+            self.trains[train_id].on_deactivate()
             self.trains.pop(train_id)
 
         self.scheduler.on_update_time(game_time)
         self.dispatcher.on_update_time(game_time)
 
-    def on_level_up(self):
-        self.scheduler.on_level_up()
+    def on_level_up(self, level):
+        self.scheduler.on_level_up(level)
 
     def on_open_schedule(self):
         self.scheduler.on_activate_view()

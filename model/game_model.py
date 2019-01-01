@@ -48,16 +48,6 @@ class GameModel(Model):
         self.user_db_cursor.execute('SELECT game_time FROM epoch_timestamp')
         self.game_time = self.user_db_cursor.fetchone()[0]
         self.maximum_level = 100
-        self.unlock_tracks_matrix = ([], [], [], [], [], [], [], [], [], [5, 6],
-                                     [], [], [], [], [], [], [], [], [], [7, 8],
-                                     [], [], [], [], [], [], [], [], [], [9, 10],
-                                     [], [], [], [], [], [], [], [], [], [11, 12],
-                                     [], [], [], [], [], [], [], [], [], [13, 14],
-                                     [], [], [], [], [15, 16], [], [], [], [], [17, 18],
-                                     [], [], [], [], [19, 20], [], [], [], [], [21, ],
-                                     [], [], [], [], [22, ], [], [], [], [], [23, 24],
-                                     [], [], [], [], [25, 26], [], [], [], [], [27, 28],
-                                     [], [], [], [], [29, 30], [], [], [], [], [31, 32])
         self.user_db_cursor.execute('SELECT level, exp, accumulated_exp, money, money_target FROM game_progress')
         self.level, self.exp, self.accumulated_exp, self.money, self.money_target = self.user_db_cursor.fetchone()
         self.config_db_cursor.execute('''SELECT accumulated_player_progress, player_progress FROM player_progress_config 
@@ -109,12 +99,11 @@ class GameModel(Model):
     def on_add_exp(self, exp):
         self.exp += exp
         self.accumulated_exp += exp
-        if self.accumulated_exp >= self.accumulated_player_progress:
+        if self.accumulated_exp >= self.accumulated_player_progress and self.level < self.maximum_level:
             self.controller.on_level_up()
 
         self.view.on_update_exp(self.exp, self.player_progress)
 
-    @_maximum_level_not_reached
     def on_level_up(self):
         self.exp = self.accumulated_exp - self.accumulated_player_progress
         self.level += 1

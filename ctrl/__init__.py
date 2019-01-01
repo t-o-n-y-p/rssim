@@ -10,3 +10,4 @@ from .railroad_switch_controller import RailroadSwitchController
 from .crossover_controller import CrossoverController
 from .train_controller import TrainController
 from .dispatcher_controller import DispatcherController
+from .constructor_controller import ConstructorController

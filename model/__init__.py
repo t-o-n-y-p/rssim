@@ -10,3 +10,4 @@ from .railroad_switch_model import RailroadSwitchModel
 from .crossover_model import CrossoverModel
 from .train_model import TrainModel
 from .dispatcher_model import DispatcherModel
+from .constructor_model import ConstructorModel

@@ -131,8 +131,8 @@ class SchedulerModel(Model):
         self.user_db_cursor.executemany('INSERT INTO base_schedule VALUES (?, ?, ?, ?, ?, ?, ?, ?)', self.base_schedule)
         self.user_db_cursor.execute('UPDATE game_progress SET supported_cars_min = ?', (self.supported_cars_min, ))
 
-    def on_level_up(self):
-        self.level += 1
+    def on_level_up(self, level):
+        self.level = level
         self.config_db_cursor.execute('''SELECT arrival_time_min, arrival_time_max, direction, new_direction, 
                                       cars_min, cars_max FROM schedule_options WHERE level = ?''', (self.level, ))
         self.schedule_options = self.config_db_cursor.fetchall()
