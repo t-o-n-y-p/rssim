@@ -79,9 +79,11 @@ class TrainView(View):
                 else:
                     if x in range(-150, self.screen_resolution[0] + 150) \
                             and y in range(-100, self.screen_resolution[1] + 100):
-                        self.boarding_light_sprites.append(Sprite(self.boarding_light_image[self.car_image_collection],
-                                                                  x=x, y=y, batch=self.batch,
-                                                                  group=self.groups['boarding_light']))
+                        boarding_light_sprite = Sprite(self.boarding_light_image[self.car_image_collection],
+                                                       x=x, y=y, batch=self.batch, group=self.groups['boarding_light'])
+                        boarding_light_sprite.scale = self.zoom_factor
+                        self.boarding_light_sprites.append(boarding_light_sprite)
+
             else:
                 self.boarding_light_sprites.append(None)
 
@@ -155,6 +157,7 @@ class TrainView(View):
                         self.boarding_light_sprites[i] = Sprite(self.boarding_light_image[self.car_image_collection],
                                                                 x=x, y=y, batch=self.batch,
                                                                 group=self.groups['boarding_light'])
+                        self.boarding_light_sprites[i].scale = self.zoom_factor
 
             else:
                 for i in range(1, len(self.car_sprites) - 1):
@@ -189,6 +192,7 @@ class TrainView(View):
                                 self.boarding_light_sprites[i] \
                                     = Sprite(self.boarding_light_image[self.car_image_collection], x=x, y=y,
                                              batch=self.batch, group=self.groups['boarding_light'])
+                                self.boarding_light_sprites[i].scale = self.zoom_factor
 
                         self.car_sprites[i].update(scale=self.zoom_factor, rotation=self.car_position[i][2])
                     else:
