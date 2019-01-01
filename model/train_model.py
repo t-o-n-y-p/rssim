@@ -170,7 +170,7 @@ class TrainModel(Model):
                                      self.direction, self.new_direction, self.current_direction, self.speed,
                                      self.speed_state, self.speed_factor_position, self.priority, self.boarding_time,
                                      self.exp, self.money, cars_position_string, cars_position_abs_string,
-                                     self.stop_point, self.destination_point))
+                                     self.stop_point, self.destination_point, self.car_image_collection))
 
     def on_update_time(self, game_time):
         if self.cars < 9:

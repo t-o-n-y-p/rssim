@@ -122,8 +122,8 @@ class SchedulerModel(Model):
                 break
 
     def on_save_state(self):
-        entry_busy_state_string = int(self.entry_busy_state[0]) + ',' + int(self.entry_busy_state[1]) + ',' \
-                                  + int(self.entry_busy_state[2]) + ',' + int(self.entry_busy_state[3])
+        entry_busy_state_string = '{},{},{},{}'.format(int(self.entry_busy_state[0]), int(self.entry_busy_state[1]),
+                                                       int(self.entry_busy_state[2]), int(self.entry_busy_state[3]))
         self.user_db_cursor.execute('''UPDATE scheduler SET train_counter = ?, next_cycle_start_time = ?, 
                                        entry_busy_state = ?''',
                                     (self.train_counter, self.next_cycle_start_time, entry_busy_state_string))

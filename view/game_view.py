@@ -240,6 +240,7 @@ class GameView(View):
 
     @_view_is_active
     def on_update_money(self, money, money_target):
+        self.money_text.text = '{0:0>8} ¤'.format(int(money))
         if money_target < 1:
             money_percent = 0
         else:
