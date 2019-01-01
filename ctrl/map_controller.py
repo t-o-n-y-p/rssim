@@ -337,3 +337,6 @@ class MapController(Controller):
         self.dispatcher.on_add_train(train)
         train.parent_controller.on_open_train_route(track, train_route, train_id, cars)
         train.on_activate()
+        if not self.view.is_activated:
+            train.on_deactivate_view()
+
