@@ -78,7 +78,9 @@ class MapView(View):
             self.controller.on_open_schedule()
 
         super().__init__(user_db_cursor, config_db_cursor, surface, batch, groups)
-        self.main_map = load('img/map/4/full_map.png')
+        self.user_db_cursor.execute('SELECT unlocked_tracks FROM game_progress')
+        unlocked_tracks = self.user_db_cursor.fetchone()[0]
+        self.main_map = load(f'img/map/{unlocked_tracks}/full_map.png')
         self.main_map_sprite = None
         self.screen_resolution = (1280, 720)
         self.base_offset = (-3440, -1440)
