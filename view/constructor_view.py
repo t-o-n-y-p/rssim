@@ -175,9 +175,24 @@ class ConstructorView(View):
                             group=self.groups['button_text'])
 
                 if track_state_matrix[dictionary_keys[i]][self.track_state_unlock_available]:
-                    n = 1
+                    self.description_tracks_labels[dictionary_keys[i]] \
+                        = Label('Available for {} ¤'
+                                .format(track_state_matrix[dictionary_keys[i]][self.track_state_price]),
+                                font_name='Arial', font_size=16, color=(0, 192, 0, 255),
+                                x=self.screen_resolution[0] // 2 - 11 - 576 + 90,
+                                y=self.screen_resolution[1] // 2 + 135 + 21 - i * 101,
+                                anchor_x='left', anchor_y='center', batch=self.batch,
+                                group=self.groups['button_text'])
                 elif track_state_matrix[dictionary_keys[i]][self.track_state_under_construction]:
-                    n = 1
+                    construction_time = track_state_matrix[dictionary_keys[i]][self.track_state_construction_time]
+                    self.description_tracks_labels[dictionary_keys[i]] \
+                        = Label('Under construction. {}h {}min left'
+                                .format(construction_time // 14400, (construction_time // 240) % 60),
+                                font_name='Arial', font_size=16, color=(255, 127, 0, 255),
+                                x=self.screen_resolution[0] // 2 - 11 - 576 + 90,
+                                y=self.screen_resolution[1] // 2 + 135 + 21 - i * 101,
+                                anchor_x='left', anchor_y='center', batch=self.batch,
+                                group=self.groups['button_text'])
                 else:
                     if not track_state_matrix[dictionary_keys[i]][self.track_state_unlock_condition_from_level]:
                         self.description_tracks_labels[dictionary_keys[i]] \
@@ -206,3 +221,5 @@ class ConstructorView(View):
                                     y=self.screen_resolution[1] // 2 + 135 + 21 - i * 101,
                                     anchor_x='left', anchor_y='center', batch=self.batch,
                                     group=self.groups['button_text'])
+
+                break
