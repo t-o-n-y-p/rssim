@@ -11,10 +11,10 @@ class OpenConstructorButton(Button):
         self.border_sprite = None
         self.vertex_list = None
         self.text_object = None
-        self.text = ''
+        self.text = ''
         self.font_name = 'Webdings'
         self.is_bold = False
-        self.font_size = 32
+        self.font_size = 34
         self.x_margin = 1280
         self.y_margin = 720
         self.button_size = (80, 80)

@@ -11,7 +11,7 @@ class CloseConstructorButton(Button):
         self.border_sprite = None
         self.vertex_list = None
         self.text_object = None
-        self.text = ''
+        self.text = ''
         self.font_name = 'Webdings'
         self.is_bold = False
         self.font_size = 24
