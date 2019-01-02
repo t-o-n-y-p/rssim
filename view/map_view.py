@@ -3,12 +3,13 @@ from pyglet.sprite import Sprite
 from pyglet.window import mouse
 
 from .view_base import View
-from .button import ZoomInButton, ZoomOutButton, OpenScheduleButton
+from .button import ZoomInButton, ZoomOutButton, OpenScheduleButton, OpenConstructorButton
 
 
 def _map_move_mode_available(fn):
     def _turn_on_move_mode_if_map_move_mode_available(*args, **kwargs):
-        if args[0].map_move_mode_available and not args[0].controller.scheduler.view.is_activated:
+        if args[0].map_move_mode_available and not args[0].controller.scheduler.view.is_activated \
+                and not args[0].controller.constructor.view.is_activated:
             fn(*args, **kwargs)
 
     return _turn_on_move_mode_if_map_move_mode_available
@@ -77,6 +78,10 @@ class MapView(View):
             button.on_deactivate()
             self.controller.on_open_schedule()
 
+        def on_open_constructor(button):
+            button.on_deactivate()
+            self.controller.on_open_constructor()
+
         super().__init__(user_db_cursor, config_db_cursor, surface, batch, groups)
         self.user_db_cursor.execute('SELECT unlocked_tracks FROM game_progress')
         unlocked_tracks = self.user_db_cursor.fetchone()[0]
@@ -96,11 +101,14 @@ class MapView(View):
                                              on_leave_action=on_leave_action)
         self.open_schedule_button = OpenScheduleButton(surface=self.surface, batch=self.batch, groups=self.groups,
                                                        on_click_action=on_open_schedule)
+        self.open_constructor_button = OpenConstructorButton(surface=self.surface, batch=self.batch, groups=self.groups,
+                                                             on_click_action=on_open_constructor)
         self.zoom_in_button.paired_button = self.zoom_out_button
         self.zoom_out_button.paired_button = self.zoom_in_button
         self.buttons.append(self.zoom_in_button)
         self.buttons.append(self.zoom_out_button)
         self.buttons.append(self.open_schedule_button)
+        self.buttons.append(self.open_constructor_button)
         self.map_move_mode_available = True
         self.map_move_mode = False
         self.on_mouse_press_handlers.append(self.handle_mouse_press)
@@ -184,6 +192,8 @@ class MapView(View):
         self.zoom_in_button.x_margin = self.screen_resolution[0]
         self.zoom_out_button.x_margin = self.screen_resolution[0]
         self.open_schedule_button.y_margin = self.screen_resolution[1]
+        self.open_constructor_button.x_margin = self.screen_resolution[0]
+        self.open_constructor_button.y_margin = self.screen_resolution[1]
         for b in self.buttons:
             b.on_position_changed((screen_resolution[0] - b.x_margin, screen_resolution[1] - b.y_margin))
 

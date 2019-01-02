@@ -3,11 +3,11 @@ from random import choice
 
 from ctrl import AppController, GameController, MapController, SettingsController, FPSController, SchedulerController, \
                  SignalController, TrainRouteController, RailroadSwitchController, CrossoverController, \
-                 TrainController, DispatcherController
+                 TrainController, DispatcherController, ConstructorController
 from model import AppModel, GameModel, MapModel, SettingsModel, FPSModel, SchedulerModel, SignalModel, TrainRouteModel,\
-                  RailroadSwitchModel, CrossoverModel, TrainModel, DispatcherModel
+                  RailroadSwitchModel, CrossoverModel, TrainModel, DispatcherModel, ConstructorModel
 from view import AppView, GameView, MapView, SettingsView, FPSView, SchedulerView, SignalView, TrainRouteView, \
-                 RailroadSwitchView, CrossoverView, TrainView, DispatcherView
+                 RailroadSwitchView, CrossoverView, TrainView, DispatcherView, ConstructorView
 
 
 car_head_image = [
@@ -89,6 +89,8 @@ def create_map(user_db_connection, user_db_cursor, config_db_cursor, surface, ba
                                             batch, groups, controller)
     controller.dispatcher = create_dispatcher(user_db_connection, user_db_cursor, config_db_cursor, surface,
                                               batch, groups, controller)
+    controller.constructor = create_constructor(user_db_connection, user_db_cursor, config_db_cursor, surface,
+                                                batch, groups, controller)
     user_db_cursor.execute('SELECT train_id FROM trains')
     train_ids = user_db_cursor.fetchall()
     if train_ids is not None:
@@ -305,6 +307,18 @@ def create_dispatcher(user_db_connection, user_db_cursor, config_db_cursor, surf
     controller = DispatcherController(map_controller)
     model = DispatcherModel(user_db_connection, user_db_cursor, config_db_cursor)
     view = DispatcherView(user_db_cursor, config_db_cursor, surface, batch, groups)
+    controller.model = model
+    model.controller = controller
+    controller.view = view
+    view.on_assign_controller(controller)
+    model.view = view
+    return controller
+
+
+def create_constructor(user_db_connection, user_db_cursor, config_db_cursor, surface, batch, groups, map_controller):
+    controller = ConstructorController(map_controller)
+    model = ConstructorModel(user_db_connection, user_db_cursor, config_db_cursor)
+    view = ConstructorView(user_db_cursor, config_db_cursor, surface, batch, groups)
     controller.model = model
     model.controller = controller
     controller.view = view

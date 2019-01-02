@@ -39,7 +39,7 @@ class ConstructorModel(Model):
         for info in track_info_fetched:
             self.track_state_matrix[info[0]] = [bool(info[1]), bool(info[2]), info[3], bool(info[4]), bool(info[5]),
                                                 bool(info[6]), bool(info[7])]
-            self.config_db_cursor.execute('SELECT price FROM track_config WHERE track = ?', (info[0], ))
+            self.config_db_cursor.execute('SELECT price FROM track_config WHERE track_number = ?', (info[0], ))
             self.track_state_matrix[info[0]].append(self.config_db_cursor.fetchone()[0])
 
         self.track_state_locked = 0

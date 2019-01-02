@@ -47,6 +47,7 @@ class MapController(Controller):
         self.view.on_update()
         self.scheduler.on_update_view()
         self.dispatcher.on_update_view()
+        self.constructor.on_update_view()
         for signal in self.signals_list:
             signal.on_update_view()
 
@@ -68,6 +69,7 @@ class MapController(Controller):
         self.model.on_activate()
         self.scheduler.on_activate()
         self.dispatcher.on_activate()
+        self.constructor.on_activate()
         for signal in self.signals_list:
             signal.on_activate()
 
@@ -90,6 +92,7 @@ class MapController(Controller):
         self.view.on_deactivate()
         self.scheduler.on_deactivate()
         self.dispatcher.on_deactivate()
+        self.constructor.on_deactivate()
         for signal in self.signals_list:
             signal.on_deactivate()
 
@@ -109,6 +112,7 @@ class MapController(Controller):
         self.view.on_change_screen_resolution(screen_resolution)
         self.scheduler.on_change_screen_resolution(screen_resolution)
         self.dispatcher.on_change_screen_resolution(screen_resolution)
+        self.constructor.on_change_screen_resolution(screen_resolution)
         for signal in self.signals_list:
             signal.on_change_screen_resolution(screen_resolution)
 
@@ -170,6 +174,7 @@ class MapController(Controller):
     def on_deactivate_view(self):
         self.view.on_deactivate()
         self.scheduler.on_deactivate_view()
+        self.constructor.on_deactivate_view()
         for signal in self.signals_list:
             signal.on_deactivate_view()
 
@@ -227,6 +232,7 @@ class MapController(Controller):
         self.model.on_save_state()
         self.scheduler.on_save_state()
         self.dispatcher.on_save_state()
+        self.constructor.on_save_state()
         for signal in self.signals_list:
             signal.on_save_state()
 
@@ -261,18 +267,33 @@ class MapController(Controller):
 
         self.scheduler.on_update_time(game_time)
         self.dispatcher.on_update_time(game_time)
+        self.constructor.on_update_time(game_time)
 
     def on_level_up(self, level):
         self.scheduler.on_level_up(level)
+        self.constructor.on_level_up(level)
 
     def on_open_schedule(self):
+        self.constructor.on_deactivate_view()
+        self.on_close_constructor()
         self.scheduler.on_activate_view()
+        self.view.on_deactivate_zoom_buttons()
+
+    def on_open_constructor(self):
+        self.scheduler.on_deactivate_view()
+        self.on_close_schedule()
+        self.constructor.on_activate_view()
         self.view.on_deactivate_zoom_buttons()
 
     @_map_view_is_active
     def on_close_schedule(self):
         self.view.on_activate_zoom_buttons()
         self.view.open_schedule_button.on_activate()
+
+    @_map_view_is_active
+    def on_close_constructor(self):
+        self.view.on_activate_zoom_buttons()
+        self.view.open_constructor_button.on_activate()
 
     def on_switch_signal_to_green(self, signal_track, signal_base_route):
         self.signals[signal_track][signal_base_route].on_switch_to_green()

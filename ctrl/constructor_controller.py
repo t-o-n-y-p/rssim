@@ -34,6 +34,7 @@ class ConstructorController(Controller):
         self.is_activated = False
         self.model.on_deactivate()
         self.view.on_deactivate()
+        self.parent_controller.on_close_constructor()
 
     def on_save_state(self):
         self.model.on_save_state()
@@ -49,6 +50,7 @@ class ConstructorController(Controller):
 
     def on_deactivate_view(self):
         self.view.on_deactivate()
+        self.parent_controller.on_close_constructor()
 
     def on_level_up(self, level):
         self.model.on_level_up(level)

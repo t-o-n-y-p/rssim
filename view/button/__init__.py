@@ -13,3 +13,5 @@ from .increment_windowed_resolution_button import IncrementWindowedResolutionBut
 from .decrement_windowed_resolution_button import DecrementWindowedResolutionButton
 from .open_schedule_button import OpenScheduleButton
 from .close_schedule_button import CloseScheduleButton
+from .open_constructor_button import OpenConstructorButton
+from .close_constructor_button import CloseConstructorButton

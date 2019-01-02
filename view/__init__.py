@@ -10,3 +10,4 @@ from .railroad_switch_view import RailroadSwitchView
 from .crossover_view import CrossoverView
 from .train_view import TrainView
 from .dispatcher_view import DispatcherView
+from .constructor_view import ConstructorView
