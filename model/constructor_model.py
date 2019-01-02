@@ -20,16 +20,6 @@ def _model_is_not_active(fn):
 class ConstructorModel(Model):
     def __init__(self, user_db_connection, user_db_cursor, config_db_cursor):
         super().__init__(user_db_connection, user_db_cursor, config_db_cursor)
-        self.unlock_tracks_matrix = ([], [], [], [], [], [], [], [], [], [5, 6],
-                                     [], [], [], [], [], [], [], [], [], [7, 8],
-                                     [], [], [], [], [], [], [], [], [], [9, 10],
-                                     [], [], [], [], [], [], [], [], [], [11, 12],
-                                     [], [], [], [], [], [], [], [], [], [13, 14],
-                                     [], [], [], [], [15, 16], [], [], [], [], [17, 18],
-                                     [], [], [], [], [19, 20], [], [], [], [], [21, ],
-                                     [], [], [], [], [22, ], [], [], [], [], [23, 24],
-                                     [], [], [], [], [25, 26], [], [], [], [], [27, 28],
-                                     [], [], [], [], [29, 30], [], [], [], [], [31, 32], [])
         self.user_db_cursor.execute('''SELECT track_number, locked, under_construction, construction_time, 
                                        unlock_condition_from_level, unlock_condition_from_previous_track, 
                                        unlock_condition_from_environment, unlock_available FROM tracks 
@@ -39,8 +29,8 @@ class ConstructorModel(Model):
         for info in track_info_fetched:
             self.track_state_matrix[info[0]] = [bool(info[1]), bool(info[2]), info[3], bool(info[4]), bool(info[5]),
                                                 bool(info[6]), bool(info[7])]
-            self.config_db_cursor.execute('SELECT price FROM track_config WHERE track_number = ?', (info[0], ))
-            self.track_state_matrix[info[0]].append(self.config_db_cursor.fetchone()[0])
+            self.config_db_cursor.execute('SELECT price, level FROM track_config WHERE track_number = ?', (info[0], ))
+            self.track_state_matrix[info[0]].extend(self.config_db_cursor.fetchone())
 
         self.track_state_locked = 0
         self.track_state_under_construction = 1
@@ -50,6 +40,7 @@ class ConstructorModel(Model):
         self.track_state_unlock_condition_from_environment = 5
         self.track_state_unlock_available = 6
         self.track_state_price = 7
+        self.track_state_level = 8
 
     @_model_is_not_active
     def on_activate(self):
@@ -79,6 +70,8 @@ class ConstructorModel(Model):
                         self.track_state_matrix[track + 1][self.track_state_unlock_condition_from_environment] = False
                         self.track_state_matrix[track + 1][self.track_state_unlock_available] = True
 
+        self.view.on_update_track_state(self.track_state_matrix, game_time)
+
     def on_save_state(self):
         unlocked_tracks = []
         for track in self.track_state_matrix:
@@ -103,7 +96,13 @@ class ConstructorModel(Model):
             self.track_state_matrix.pop(track)
 
     def on_level_up(self, level):
-        for track in self.unlock_tracks_matrix[level]:
+        self.config_db_cursor.execute('SELECT track_number FROM track_config WHERE level = ?', (level, ))
+        raw_tracks = self.config_db_cursor.fetchall()
+        tracks_parsed = []
+        for i in raw_tracks:
+            tracks_parsed.append(i[0])
+
+        for track in tracks_parsed:
             self.track_state_matrix[track][self.track_state_unlock_condition_from_level] = True
             if self.track_state_matrix[track][self.track_state_unlock_condition_from_previous_track] \
                     and self.track_state_matrix[track][self.track_state_unlock_condition_from_environment]:
