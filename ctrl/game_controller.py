@@ -94,3 +94,8 @@ class GameController(Controller):
 
     def on_add_money(self, money):
         self.model.on_add_money(money)
+        self.map.on_add_money(money)
+
+    def on_pay_money(self, money):
+        self.model.on_pay_money(money)
+        self.map.on_pay_money(money)

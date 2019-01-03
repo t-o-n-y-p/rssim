@@ -17,6 +17,14 @@ def _model_is_not_active(fn):
     return _handle_if_model_is_not_activated
 
 
+def _maximum_money_not_reached(fn):
+    def _add_money_if_maximum_money_is_not_reached(*args, **kwargs):
+        if args[0].money < 99999999.0:
+            fn(*args, **kwargs)
+
+    return _add_money_if_maximum_money_is_not_reached
+
+
 class ConstructorModel(Model):
     def __init__(self, user_db_connection, user_db_cursor, config_db_cursor):
         super().__init__(user_db_connection, user_db_cursor, config_db_cursor)
@@ -32,6 +40,8 @@ class ConstructorModel(Model):
             self.config_db_cursor.execute('SELECT price, level FROM track_config WHERE track_number = ?', (info[0], ))
             self.track_state_matrix[info[0]].extend(self.config_db_cursor.fetchone())
 
+        self.user_db_cursor.execute('SELECT money FROM game_progress')
+        self.money = self.user_db_cursor.fetchone()[0]
         self.track_state_locked = 0
         self.track_state_under_construction = 1
         self.track_state_construction_time = 2
@@ -51,6 +61,7 @@ class ConstructorModel(Model):
         self.is_activated = False
 
     def on_activate_view(self):
+        self.view.on_update_money(self.money)
         self.view.on_activate()
 
     def on_update_time(self, game_time):
@@ -69,6 +80,8 @@ class ConstructorModel(Model):
                         self.track_state_matrix[track + 1][self.track_state_unlock_condition_from_level] = False
                         self.track_state_matrix[track + 1][self.track_state_unlock_condition_from_environment] = False
                         self.track_state_matrix[track + 1][self.track_state_unlock_available] = True
+
+                self.view.on_update_live_track_state(self.track_state_matrix, track)
 
         self.view.on_update_track_state(self.track_state_matrix, game_time)
 
@@ -111,6 +124,19 @@ class ConstructorModel(Model):
                 self.track_state_matrix[track][self.track_state_unlock_condition_from_environment] = False
                 self.track_state_matrix[track][self.track_state_unlock_available] = True
 
+            self.view.on_update_live_track_state(self.track_state_matrix, track)
+
     def on_put_track_under_construction(self, track):
         self.track_state_matrix[track][self.track_state_unlock_available] = False
         self.track_state_matrix[track][self.track_state_under_construction] = True
+
+    @_maximum_money_not_reached
+    def on_add_money(self, money):
+        self.money += money
+        if self.money > 99999999.01:
+            self.money = 99999999.01
+        self.view.on_update_money(self.money)
+
+    def on_pay_money(self, money):
+        self.money -= money
+        self.view.on_update_money(self.money)

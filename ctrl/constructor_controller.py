@@ -57,3 +57,9 @@ class ConstructorController(Controller):
 
     def on_put_track_under_construction(self, track):
         self.model.on_put_track_under_construction(track)
+
+    def on_add_money(self, money):
+        self.model.on_add_money(money)
+
+    def on_pay_money(self, money):
+        self.model.on_pay_money(money)

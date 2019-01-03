@@ -22,6 +22,15 @@ def _view_is_not_active(fn):
     return _handle_if_view_is_not_activated
 
 
+def _track_is_in_top4(fn):
+    def _handle_if_track_is_in_top4(*args, **kwargs):
+        if args[2] in args[0].locked_tracks_labels:
+            fn(*args, **kwargs)
+
+    return _handle_if_track_is_in_top4
+
+
+
 class ConstructorView(View):
     def __init__(self, user_db_cursor, config_db_cursor, surface, batch, groups):
         def on_close_constructor(button):
@@ -40,6 +49,7 @@ class ConstructorView(View):
         self.close_constructor_button = CloseConstructorButton(surface=self.surface, batch=self.batch,
                                                                groups=self.groups, on_click_action=on_close_constructor)
         self.buttons.append(self.close_constructor_button)
+        self.money = 0.0
         self.track_state_locked = 0
         self.track_state_under_construction = 1
         self.track_state_construction_time = 2
@@ -59,16 +69,16 @@ class ConstructorView(View):
             self.background_sprite.opacity = 0
 
         self.coming_soon_environment_labels \
-            = [Label('Coming soon', font_name='Arial', font_size=22, color=(96, 96, 96, 255),
+            = [Label('Coming soon', font_name='Arial', font_size=22, color=(112, 112, 112, 255),
                      x=self.screen_resolution[0] // 2 + 11 + 288, y=self.screen_resolution[1] // 2 - 168 + 40,
                      anchor_x='center', anchor_y='center', batch=self.batch, group=self.groups['button_text']),
-               Label('Coming soon', font_name='Arial', font_size=22, color=(96, 96, 96, 255),
+               Label('Coming soon', font_name='Arial', font_size=22, color=(112, 112, 112, 255),
                      x=self.screen_resolution[0] // 2 + 11 + 288, y=self.screen_resolution[1] // 2 - 67 + 40,
                      anchor_x='center', anchor_y='center', batch=self.batch, group=self.groups['button_text']),
-               Label('Coming soon', font_name='Arial', font_size=22, color=(96, 96, 96, 255),
+               Label('Coming soon', font_name='Arial', font_size=22, color=(112, 112, 112, 255),
                      x=self.screen_resolution[0] // 2 + 11 + 288, y=self.screen_resolution[1] // 2 + 34 + 40,
                      anchor_x='center', anchor_y='center', batch=self.batch, group=self.groups['button_text']),
-               Label('Coming soon', font_name='Arial', font_size=22, color=(96, 96, 96, 255),
+               Label('Coming soon', font_name='Arial', font_size=22, color=(112, 112, 112, 255),
                      x=self.screen_resolution[0] // 2 + 11 + 288, y=self.screen_resolution[1] // 2 + 135 + 40,
                      anchor_x='center', anchor_y='center', batch=self.batch, group=self.groups['button_text'])
                ]
@@ -132,6 +142,42 @@ class ConstructorView(View):
         for b in self.buttons:
             b.on_position_changed((screen_resolution[0] - b.x_margin, screen_resolution[1] - b.y_margin))
 
+    def on_update_money(self, money):
+        self.money = money
+
+    @_view_is_active
+    @_track_is_in_top4
+    def on_update_live_track_state(self, track_state_matrix, track):
+        if track_state_matrix[track][self.track_state_unlock_available]:
+            if self.money < track_state_matrix[track][self.track_state_price]:
+                self.locked_tracks_labels[track].text = ''
+            else:
+                self.locked_tracks_labels[track].text = ' '
+        else:
+            self.locked_tracks_labels[track].text = ''
+
+        if track_state_matrix[track][self.track_state_unlock_available]:
+            self.description_tracks_labels[track].text = 'Available for {} ¤'\
+                                                         .format(track_state_matrix[track][self.track_state_price])
+            self.description_tracks_labels[track].color = (0, 192, 0, 255)
+        elif track_state_matrix[track][self.track_state_under_construction]:
+            construction_time = track_state_matrix[track][self.track_state_construction_time]
+            self.description_tracks_labels[track].text = 'Under construction. {}h {}min left'\
+                                                         .format(construction_time // 14400,
+                                                                 (construction_time // 240) % 60)
+            self.description_tracks_labels[track].color = (255, 127, 0, 255)
+        else:
+            if not track_state_matrix[track][self.track_state_unlock_condition_from_level]:
+                self.description_tracks_labels[track].text = 'Requires level {}'\
+                                                             .format(track_state_matrix[track][self.track_state_level])
+                self.description_tracks_labels[track].color = (112, 112, 112, 255)
+            elif not track_state_matrix[track][self.track_state_unlock_condition_from_environment]:
+                self.description_tracks_labels[track].text = 'Requires environment Tier X'
+                self.description_tracks_labels[track].color = (112, 112, 112, 255)
+            elif not track_state_matrix[track][self.track_state_unlock_condition_from_previous_track]:
+                self.description_tracks_labels[track].text = 'Build track {} to unlock'.format(track - 1)
+                self.description_tracks_labels[track].color = (112, 112, 112, 255)
+
     @_view_is_active
     def on_update_track_state(self, track_state_matrix, game_time):
         dictionary_keys = list(track_state_matrix.keys())
@@ -143,7 +189,7 @@ class ConstructorView(View):
 
             if len(self.no_more_tracks_available_labels) < 4 - available_options:
                 self.no_more_tracks_available_labels.append(
-                    Label('No more track available', font_name='Arial', font_size=22, color=(96, 96, 96, 255),
+                    Label('No more track available', font_name='Arial', font_size=22, color=(112, 112, 112, 255),
                           x=self.screen_resolution[0] // 2 - 11 - 288,
                           y=self.screen_resolution[1] // 2 - 168 + 40 + len(self.no_more_tracks_available_labels) * 101,
                           anchor_x='center', anchor_y='center', batch=self.batch, group=self.groups['button_text'])
@@ -151,25 +197,32 @@ class ConstructorView(View):
 
         for i in range(available_options):
             if dictionary_keys[i] not in self.locked_tracks_labels:
-                if track_state_matrix[dictionary_keys[i]][self.track_state_unlock_available] \
-                        or track_state_matrix[dictionary_keys[i]][self.track_state_under_construction]:
-                    self.locked_tracks_labels[dictionary_keys[i]] \
-                        = Label('', font_name='Webdings', font_size=40, color=(255, 255, 255, 255),
-                                x=self.screen_resolution[0] // 2 - 11 - 576 + 40,
-                                y=self.screen_resolution[1] // 2 - 168 + 40 + i * 101,
-                                anchor_x='center', anchor_y='center', batch=self.batch,
-                                group=self.groups['button_text'])
+                if track_state_matrix[dictionary_keys[i]][self.track_state_unlock_available]:
+                    if self.money < track_state_matrix[dictionary_keys[i]][self.track_state_price]:
+                        self.locked_tracks_labels[dictionary_keys[i]] \
+                            = Label('', font_name='Webdings', font_size=40, color=(112, 112, 112, 255),
+                                    x=self.screen_resolution[0] // 2 - 11 - 40,
+                                    y=self.screen_resolution[1] // 2 + 135 + 40 - i * 101,
+                                    anchor_x='center', anchor_y='center', batch=self.batch,
+                                    group=self.groups['button_text'])
+                    else:
+                        self.locked_tracks_labels[dictionary_keys[i]] \
+                            = Label(' ', font_name='Webdings', font_size=40, color=(112, 112, 112, 255),
+                                    x=self.screen_resolution[0] // 2 - 11 - 40,
+                                    y=self.screen_resolution[1] // 2 + 135 + 40 - i * 101,
+                                    anchor_x='center', anchor_y='center', batch=self.batch,
+                                    group=self.groups['button_text'])
                 else:
                     self.locked_tracks_labels[dictionary_keys[i]] \
-                        = Label('', font_name='Webdings', font_size=40, color=(96, 96, 96, 255),
-                                x=self.screen_resolution[0] // 2 - 11 - 576 + 40,
-                                y=self.screen_resolution[1] // 2 - 168 + 40 + i * 101,
+                        = Label('', font_name='Webdings', font_size=40, color=(112, 112, 112, 255),
+                                x=self.screen_resolution[0] // 2 - 11 - 40,
+                                y=self.screen_resolution[1] // 2 + 135 + 40 - i * 101,
                                 anchor_x='center', anchor_y='center', batch=self.batch,
                                 group=self.groups['button_text'])
 
                 self.title_tracks_labels[dictionary_keys[i]] \
                     = Label(f'Track {dictionary_keys[i]}', font_name='Arial', font_size=24, color=(255, 255, 255, 255),
-                            x=self.screen_resolution[0] // 2 - 11 - 576 + 90,
+                            x=self.screen_resolution[0] // 2 - 11 - 576 + 10,
                             y=self.screen_resolution[1] // 2 + 135 + 56 - i * 101,
                             anchor_x='left', anchor_y='center', batch=self.batch,
                             group=self.groups['button_text'])
@@ -179,7 +232,7 @@ class ConstructorView(View):
                         = Label('Available for {} ¤'
                                 .format(track_state_matrix[dictionary_keys[i]][self.track_state_price]),
                                 font_name='Arial', font_size=16, color=(0, 192, 0, 255),
-                                x=self.screen_resolution[0] // 2 - 11 - 576 + 90,
+                                x=self.screen_resolution[0] // 2 - 11 - 576 + 10,
                                 y=self.screen_resolution[1] // 2 + 135 + 21 - i * 101,
                                 anchor_x='left', anchor_y='center', batch=self.batch,
                                 group=self.groups['button_text'])
@@ -189,7 +242,7 @@ class ConstructorView(View):
                         = Label('Under construction. {}h {}min left'
                                 .format(construction_time // 14400, (construction_time // 240) % 60),
                                 font_name='Arial', font_size=16, color=(255, 127, 0, 255),
-                                x=self.screen_resolution[0] // 2 - 11 - 576 + 90,
+                                x=self.screen_resolution[0] // 2 - 11 - 576 + 10,
                                 y=self.screen_resolution[1] // 2 + 135 + 21 - i * 101,
                                 anchor_x='left', anchor_y='center', batch=self.batch,
                                 group=self.groups['button_text'])
@@ -198,16 +251,16 @@ class ConstructorView(View):
                         self.description_tracks_labels[dictionary_keys[i]] \
                             = Label('Requires level {}'
                                     .format(track_state_matrix[dictionary_keys[i]][self.track_state_level]),
-                                    font_name='Arial', font_size=16, color=(96, 96, 96, 255),
-                                    x=self.screen_resolution[0] // 2 - 11 - 576 + 90,
+                                    font_name='Arial', font_size=16, color=(112, 112, 112, 255),
+                                    x=self.screen_resolution[0] // 2 - 11 - 576 + 10,
                                     y=self.screen_resolution[1] // 2 + 135 + 21 - i * 101,
                                     anchor_x='left', anchor_y='center', batch=self.batch,
                                     group=self.groups['button_text'])
                     elif not track_state_matrix[dictionary_keys[i]][self.track_state_unlock_condition_from_environment]:
                         self.description_tracks_labels[dictionary_keys[i]] \
                             = Label('Requires environment Tier X',
-                                    font_name='Arial', font_size=16, color=(96, 96, 96, 255),
-                                    x=self.screen_resolution[0] // 2 - 11 - 576 + 90,
+                                    font_name='Arial', font_size=16, color=(112, 112, 112, 255),
+                                    x=self.screen_resolution[0] // 2 - 11 - 576 + 10,
                                     y=self.screen_resolution[1] // 2 + 135 + 21 - i * 101,
                                     anchor_x='left', anchor_y='center', batch=self.batch,
                                     group=self.groups['button_text'])
@@ -216,8 +269,8 @@ class ConstructorView(View):
                     ]:
                         self.description_tracks_labels[dictionary_keys[i]] \
                             = Label('Build track {} to unlock'.format(dictionary_keys[i] - 1),
-                                    font_name='Arial', font_size=16, color=(96, 96, 96, 255),
-                                    x=self.screen_resolution[0] // 2 - 11 - 576 + 90,
+                                    font_name='Arial', font_size=16, color=(112, 112, 112, 255),
+                                    x=self.screen_resolution[0] // 2 - 11 - 576 + 10,
                                     y=self.screen_resolution[1] // 2 + 135 + 21 - i * 101,
                                     anchor_x='left', anchor_y='center', batch=self.batch,
                                     group=self.groups['button_text'])

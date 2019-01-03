@@ -363,3 +363,8 @@ class MapController(Controller):
         if not self.view.is_activated:
             train.on_deactivate_view()
 
+    def on_add_money(self, money):
+        self.constructor.on_add_money(money)
+
+    def on_pay_money(self, money):
+        self.constructor.on_pay_money(money)
