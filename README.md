@@ -15,3 +15,4 @@ Known issues:
 - empty screen is displayed when user opens constructor or schedule screen and game is paused
 - side entry signals are not displayed on map
 - app consumes about 500 MB of RAM
+- typo on schedule screen: "carts" instead of "cars"
