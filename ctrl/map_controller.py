@@ -154,6 +154,12 @@ class MapController(Controller):
         for i in self.signals[track_number]:
             self.signals[track_number][i].on_unlock()
 
+        if track_number == 21:
+            self.signals[100]['left_side_entry_base_route'].on_unlock()
+
+        if track_number == 22:
+            self.signals[100]['right_side_entry_base_route'].on_unlock()
+
     def on_activate_view(self):
         self.view.on_activate()
         for signal in self.signals_list:
