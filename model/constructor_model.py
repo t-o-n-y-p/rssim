@@ -61,7 +61,7 @@ class ConstructorModel(Model):
         self.is_activated = False
 
     def on_activate_view(self):
-        self.view.on_update_money(self.money)
+        self.view.on_update_money(self.money, self.track_state_matrix)
         self.view.on_activate()
 
     def on_update_time(self, game_time):
@@ -75,17 +75,21 @@ class ConstructorModel(Model):
                     self.track_state_matrix[track][self.track_state_under_construction] = False
                     self.track_state_matrix[track][self.track_state_locked] = False
                     self.controller.parent_controller.on_unlock_track(track)
-                    self.track_state_matrix[track + 1][self.track_state_unlock_condition_from_previous_track] = True
-                    if self.track_state_matrix[track + 1][self.track_state_unlock_condition_from_level] \
-                            and self.track_state_matrix[track + 1][self.track_state_unlock_condition_from_environment]:
-                        self.track_state_matrix[track + 1][self.track_state_unlock_condition_from_previous_track] \
-                            = False
-                        self.track_state_matrix[track + 1][self.track_state_unlock_condition_from_level] = False
-                        self.track_state_matrix[track + 1][self.track_state_unlock_condition_from_environment] = False
-                        self.track_state_matrix[track + 1][self.track_state_unlock_available] = True
+                    if track < 32:
+                        self.track_state_matrix[track + 1][self.track_state_unlock_condition_from_previous_track] = True
+                        if self.track_state_matrix[track + 1][self.track_state_unlock_condition_from_level] \
+                                and self.track_state_matrix[track + 1][
+                                                                    self.track_state_unlock_condition_from_environment]:
+                            self.track_state_matrix[track + 1][self.track_state_unlock_condition_from_previous_track] \
+                                = False
+                            self.track_state_matrix[track + 1][self.track_state_unlock_condition_from_level] = False
+                            self.track_state_matrix[track + 1][self.track_state_unlock_condition_from_environment] \
+                                = False
+                            self.track_state_matrix[track + 1][self.track_state_unlock_available] = True
+
+                        self.view.on_update_live_track_state(self.track_state_matrix, track + 1)
 
                     self.view.on_unlock_track_live(track)
-                    self.view.on_update_live_track_state(self.track_state_matrix, track + 1)
 
         if unlocked_track > 0:
             self.track_state_matrix.pop(unlocked_track)
@@ -145,8 +149,8 @@ class ConstructorModel(Model):
         self.money += money
         if self.money > 99999999.01:
             self.money = 99999999.01
-        self.view.on_update_money(self.money)
+        self.view.on_update_money(self.money, self.track_state_matrix)
 
     def on_pay_money(self, money):
         self.money -= money
-        self.view.on_update_money(self.money)
+        self.view.on_update_money(self.money, self.track_state_matrix)

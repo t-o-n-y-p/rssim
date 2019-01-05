@@ -174,8 +174,11 @@ class ConstructorView(View):
         for b in self.buttons:
             b.on_position_changed((screen_resolution[0] - b.x_margin, screen_resolution[1] - b.y_margin))
 
-    def on_update_money(self, money):
+    def on_update_money(self, money, track_state_matrix):
         self.money = money
+        if track_state_matrix:
+            track = list(track_state_matrix.keys())[0]
+            self.on_update_live_track_state(track_state_matrix, track)
 
     @_view_is_active
     @_track_is_in_top4
@@ -243,7 +246,7 @@ class ConstructorView(View):
 
             if len(self.no_more_tracks_available_labels) < 4 - available_options:
                 self.no_more_tracks_available_labels.append(
-                    Label('No more track available', font_name='Arial', font_size=22, color=(112, 112, 112, 255),
+                    Label('No more tracks available', font_name='Arial', font_size=22, color=(112, 112, 112, 255),
                           x=self.screen_resolution[0] // 2 - 11 - 288,
                           y=self.screen_resolution[1] // 2 - 168 + 40 + len(self.no_more_tracks_available_labels) * 101,
                           anchor_x='center', anchor_y='center', batch=self.batch, group=self.groups['button_text'])
@@ -374,3 +377,10 @@ class ConstructorView(View):
         self.description_tracks_labels.pop(track)
         for t in self.description_tracks_labels:
             self.description_tracks_labels[t].y += 101
+
+        for b in self.buy_buttons:
+            self.buy_buttons[b].y_margin -= 101
+            self.buy_buttons[b].on_position_changed(
+                (self.screen_resolution[0] - self.buy_buttons[b].x_margin,
+                 self.screen_resolution[1] - self.buy_buttons[b].y_margin)
+            )
