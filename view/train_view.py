@@ -37,12 +37,8 @@ class TrainView(View):
         self.car_image_collection = None
         self.state = None
 
+    @_view_is_active
     def on_update(self):
-        pass
-
-    @_view_is_not_active
-    def on_activate(self):
-        self.is_activated = True
         for i in range(len(self.car_position)):
             if self.zoom_out_activated:
                 x = self.base_offset[0] + self.car_position[i][0] // 2
@@ -51,35 +47,52 @@ class TrainView(View):
                 x = self.base_offset[0] + self.car_position[i][0]
                 y = self.base_offset[1] + self.car_position[i][1]
 
-            if x in range(-150, self.screen_resolution[0] + 150) and y in range(-100, self.screen_resolution[1] + 100):
-                if i == 0:
-                    sprite = Sprite(self.car_head_image[self.car_image_collection][self.direction], x=x, y=y,
-                                    batch=self.batch, group=self.groups['train'])
-                elif i == len(self.car_position) - 1:
-                    sprite = Sprite(self.car_tail_image[self.car_image_collection][self.direction], x=x, y=y,
-                                    batch=self.batch, group=self.groups['train'])
-                else:
-                    sprite = Sprite(self.car_mid_image[self.car_image_collection][self.direction], x=x, y=y,
-                                    batch=self.batch, group=self.groups['train'])
-
-                sprite.update(scale=self.zoom_factor, rotation=self.car_position[i][2])
-                self.car_sprites.append(sprite)
-                if self.state == 'boarding_in_progress':
+            if x in range(-150, self.screen_resolution[0] + 150) \
+                    and y in range(-100, self.screen_resolution[1] + 100):
+                if self.car_sprites[i] is None:
                     if i == 0:
-                        self.boarding_light_sprites.append(None)
+                        self.car_sprites[i] = Sprite(self.car_head_image[self.car_image_collection][self.direction],
+                                                     x=x, y=y, batch=self.batch, group=self.groups['train'])
                     elif i == len(self.car_position) - 1:
-                        self.boarding_light_sprites.append(None)
+                        self.car_sprites[i] = Sprite(self.car_tail_image[self.car_image_collection][self.direction],
+                                                     x=x, y=y, batch=self.batch, group=self.groups['train'])
                     else:
-                        boarding_light_sprite = Sprite(self.boarding_light_image[self.car_image_collection],
-                                                       x=x, y=y, batch=self.batch,
-                                                       group=self.groups['boarding_light'])
-                        boarding_light_sprite.scale = self.zoom_factor
-                        self.boarding_light_sprites.append(boarding_light_sprite)
+                        self.car_sprites[i] = Sprite(self.car_mid_image[self.car_image_collection][self.direction],
+                                                     x=x, y=y, batch=self.batch, group=self.groups['train'])
+
+                    self.car_sprites[i].update(scale=self.zoom_factor, rotation=self.car_position[i][2])
                 else:
-                    self.boarding_light_sprites.append(None)
+                    self.car_sprites[i].update(x=x, y=y, rotation=self.car_position[i][2], scale=self.zoom_factor)
+
+                if self.state == 'boarding_in_progress' and i in range(1, len(self.car_position) - 1):
+                    if self.boarding_light_sprites[i] is None:
+                        self.boarding_light_sprites[i] \
+                            = Sprite(self.boarding_light_image[self.car_image_collection], x=x, y=y,
+                                     batch=self.batch, group=self.groups['boarding_light'])
+                        self.boarding_light_sprites[i].scale = self.zoom_factor
+                    else:
+                        self.boarding_light_sprites[i].update(x=x, y=y, scale=self.zoom_factor)
+
+                else:
+                    if self.boarding_light_sprites[i] is not None:
+                        self.boarding_light_sprites[i].delete()
+                        self.boarding_light_sprites[i] = None
+
             else:
-                self.car_sprites.append(None)
-                self.boarding_light_sprites.append(None)
+                if self.car_sprites[i] is not None:
+                    self.car_sprites[i].delete()
+                    self.car_sprites[i] = None
+
+                if self.boarding_light_sprites[i] is not None:
+                    self.boarding_light_sprites[i].delete()
+                    self.boarding_light_sprites[i] = None
+
+    @_view_is_not_active
+    def on_activate(self):
+        self.is_activated = True
+        for i in range(len(self.car_position)):
+            self.car_sprites.append(None)
+            self.boarding_light_sprites.append(None)
 
     @_view_is_active
     def on_deactivate(self):
@@ -98,24 +111,14 @@ class TrainView(View):
 
     def on_change_base_offset(self, new_base_offset):
         self.base_offset = new_base_offset
-        self.on_update_car_position(self.car_position)
+        # self.on_update_car_position(self.car_position)
 
     def on_change_screen_resolution(self, screen_resolution):
         self.screen_resolution = screen_resolution
-        self.on_update_car_position(self.car_position)
 
     def on_change_zoom_factor(self, zoom_factor, zoom_out_activated):
         self.zoom_factor = zoom_factor
         self.zoom_out_activated = zoom_out_activated
-        for i in self.car_sprites:
-            if i is not None:
-                i.scale = self.zoom_factor
-
-        for i in self.boarding_light_sprites:
-            if i is not None:
-                i.scale = self.zoom_factor
-
-        self.on_update_car_position(self.car_position)
 
     def on_update_direction(self, new_direction):
         self.direction = new_direction
@@ -135,70 +138,6 @@ class TrainView(View):
 
     def on_update_state(self, state):
         self.state = state
-        if self.is_activated:
-            if self.state == 'boarding_in_progress':
-                for i in range(1, len(self.car_sprites) - 1):
-                    if self.zoom_out_activated:
-                        x = self.base_offset[0] + self.car_position[i][0] // 2
-                        y = self.base_offset[1] + self.car_position[i][1] // 2
-                    else:
-                        x = self.base_offset[0] + self.car_position[i][0]
-                        y = self.base_offset[1] + self.car_position[i][1]
-
-                    if x in range(-150, self.screen_resolution[0] + 150) \
-                            and y in range(-100, self.screen_resolution[1] + 100) \
-                            and self.boarding_light_sprites[i] is None:
-                        self.boarding_light_sprites[i] = Sprite(self.boarding_light_image[self.car_image_collection],
-                                                                x=x, y=y, batch=self.batch,
-                                                                group=self.groups['boarding_light'])
-                        self.boarding_light_sprites[i].scale = self.zoom_factor
-
-            else:
-                for i in range(1, len(self.car_sprites) - 1):
-                    if self.boarding_light_sprites[i] is not None:
-                        self.boarding_light_sprites[i].delete()
-                        self.boarding_light_sprites[i] = None
 
     def on_update_car_position(self, car_positions):
         self.car_position = car_positions
-        if self.is_activated:
-            for i in range(len(self.car_sprites)):
-                if self.zoom_out_activated:
-                    x = self.base_offset[0] + self.car_position[i][0] // 2
-                    y = self.base_offset[1] + self.car_position[i][1] // 2
-                else:
-                    x = self.base_offset[0] + self.car_position[i][0]
-                    y = self.base_offset[1] + self.car_position[i][1]
-
-                if x in range(-150, self.screen_resolution[0] + 150) \
-                        and y in range(-100, self.screen_resolution[1] + 100):
-                    if self.car_sprites[i] is None:
-                        if i == 0:
-                            self.car_sprites[i] = Sprite(self.car_head_image[self.car_image_collection][self.direction],
-                                                         x=x, y=y, batch=self.batch, group=self.groups['train'])
-                        elif i == len(self.car_position) - 1:
-                            self.car_sprites[i] = Sprite(self.car_tail_image[self.car_image_collection][self.direction],
-                                                         x=x, y=y, batch=self.batch, group=self.groups['train'])
-                        else:
-                            self.car_sprites[i] = Sprite(self.car_mid_image[self.car_image_collection][self.direction],
-                                                         x=x, y=y, batch=self.batch, group=self.groups['train'])
-                            if self.state == 'boarding_in_progress':
-                                self.boarding_light_sprites[i] \
-                                    = Sprite(self.boarding_light_image[self.car_image_collection], x=x, y=y,
-                                             batch=self.batch, group=self.groups['boarding_light'])
-                                self.boarding_light_sprites[i].scale = self.zoom_factor
-
-                        self.car_sprites[i].update(scale=self.zoom_factor, rotation=self.car_position[i][2])
-                    else:
-                        self.car_sprites[i].update(x=x, y=y, rotation=self.car_position[i][2])
-                        if self.state == 'boarding_in_progress' and i in range(1, len(self.car_sprites) - 1):
-                            self.boarding_light_sprites[i].position = (x, y)
-
-                else:
-                    if self.car_sprites[i] is not None:
-                        self.car_sprites[i].delete()
-                        self.car_sprites[i] = None
-
-                    if self.boarding_light_sprites[i] is not None:
-                        self.boarding_light_sprites[i].delete()
-                        self.boarding_light_sprites[i] = None
