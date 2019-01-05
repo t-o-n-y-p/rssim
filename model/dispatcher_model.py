@@ -95,6 +95,7 @@ class DispatcherModel(Model):
                                                                           self.entry_train_route[i.model.direction],
                                                                           i.train_id, i.model.cars)
                     self.trains.remove(i)
+                    break
 
     def on_save_state(self):
         for i in range(1, len(self.track_busy_status)):

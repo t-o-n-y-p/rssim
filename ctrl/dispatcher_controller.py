@@ -64,3 +64,6 @@ class DispatcherController(Controller):
 
     def on_leave_track(self, track):
         self.model.on_leave_track(track)
+
+    def on_unlock_track(self, track):
+        self.model.on_unlock_track(track)

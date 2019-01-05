@@ -85,16 +85,8 @@ class SignalView(View):
         self.is_activated = False
 
     def on_unlock(self):
-        self.signal_sprite = Sprite(self.red_signal_image, x=self.base_offset[0] + self.position[0],
-                                    y=self.base_offset[1] + self.position[1], batch=self.batch,
-                                    group=self.groups['signal'])
-        if self.zoom_out_activated:
-            self.signal_sprite.x = self.base_offset[0] + self.position[0] // 2
-            self.signal_sprite.y = self.base_offset[1] + self.position[1] // 2
-
-        self.signal_sprite.scale = self.zoom_factor
-        if self.flip_needed == 1:
-            self.signal_sprite.rotation = 180.0
+        self.locked = False
+        self.on_change_base_offset(self.base_offset)
 
     def on_change_base_offset(self, new_base_offset):
         self.base_offset = new_base_offset

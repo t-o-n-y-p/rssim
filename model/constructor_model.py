@@ -65,10 +65,13 @@ class ConstructorModel(Model):
         self.view.on_activate()
 
     def on_update_time(self, game_time):
+        unlocked_track = 0
         for track in self.track_state_matrix:
             if self.track_state_matrix[track][self.track_state_under_construction]:
                 self.track_state_matrix[track][self.track_state_construction_time] -= 1
+                self.view.on_update_live_track_state(self.track_state_matrix, track)
                 if self.track_state_matrix[track][self.track_state_construction_time] == 0:
+                    unlocked_track = track
                     self.track_state_matrix[track][self.track_state_under_construction] = False
                     self.track_state_matrix[track][self.track_state_locked] = False
                     self.controller.parent_controller.on_unlock_track(track)
@@ -81,7 +84,11 @@ class ConstructorModel(Model):
                         self.track_state_matrix[track + 1][self.track_state_unlock_condition_from_environment] = False
                         self.track_state_matrix[track + 1][self.track_state_unlock_available] = True
 
-                self.view.on_update_live_track_state(self.track_state_matrix, track)
+                    self.view.on_unlock_track_live(track)
+                    self.view.on_update_live_track_state(self.track_state_matrix, track + 1)
+
+        if unlocked_track > 0:
+            self.track_state_matrix.pop(unlocked_track)
 
         self.view.on_update_track_state(self.track_state_matrix, game_time)
 
@@ -127,8 +134,11 @@ class ConstructorModel(Model):
             self.view.on_update_live_track_state(self.track_state_matrix, track)
 
     def on_put_track_under_construction(self, track):
+        self.controller.parent_controller.parent_controller\
+            .on_pay_money(self.track_state_matrix[track][self.track_state_price])
         self.track_state_matrix[track][self.track_state_unlock_available] = False
         self.track_state_matrix[track][self.track_state_under_construction] = True
+        self.view.on_update_live_track_state(self.track_state_matrix, track)
 
     @_maximum_money_not_reached
     def on_add_money(self, money):

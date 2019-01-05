@@ -42,3 +42,32 @@ class Controller:
                                                       on_mouse_release_handlers=on_mouse_release_handlers,
                                                       on_mouse_drag_handlers=on_mouse_drag_handlers,
                                                       on_mouse_leave_handlers=on_mouse_leave_handlers)
+
+    def on_detach_handlers(self, on_mouse_motion_handlers=None, on_mouse_press_handlers=None,
+                           on_mouse_release_handlers=None, on_mouse_drag_handlers=None, on_mouse_leave_handlers=None):
+        if on_mouse_motion_handlers is not None:
+            for handler in on_mouse_motion_handlers:
+                self.on_mouse_motion_handlers.remove(handler)
+
+        if on_mouse_press_handlers is not None:
+            for handler in on_mouse_press_handlers:
+                self.on_mouse_press_handlers.remove(handler)
+
+        if on_mouse_release_handlers is not None:
+            for handler in on_mouse_release_handlers:
+                self.on_mouse_release_handlers.remove(handler)
+
+        if on_mouse_drag_handlers is not None:
+            for handler in on_mouse_drag_handlers:
+                self.on_mouse_drag_handlers.remove(handler)
+
+        if on_mouse_leave_handlers is not None:
+            for handler in on_mouse_leave_handlers:
+                self.on_mouse_leave_handlers.remove(handler)
+
+        if self.parent_controller is not None:
+            self.parent_controller.on_detach_handlers(on_mouse_motion_handlers=on_mouse_motion_handlers,
+                                                      on_mouse_press_handlers=on_mouse_press_handlers,
+                                                      on_mouse_release_handlers=on_mouse_release_handlers,
+                                                      on_mouse_drag_handlers=on_mouse_drag_handlers,
+                                                      on_mouse_leave_handlers=on_mouse_leave_handlers)

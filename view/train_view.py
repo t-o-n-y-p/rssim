@@ -61,30 +61,24 @@ class TrainView(View):
                 else:
                     sprite = Sprite(self.car_mid_image[self.car_image_collection][self.direction], x=x, y=y,
                                     batch=self.batch, group=self.groups['train'])
-                    if self.state == 'boarding_in_progress':
-                        self.boarding_light_sprites.append(Sprite(self.boarding_light_image[self.car_image_collection],
-                                                                  x=x, y=y, batch=self.batch,
-                                                                  group=self.groups['boarding_light']))
 
                 sprite.update(scale=self.zoom_factor, rotation=self.car_position[i][2])
                 self.car_sprites.append(sprite)
-            else:
-                self.car_sprites.append(None)
-
-            if self.state == 'boarding_in_progress':
-                if i == 0:
-                    self.boarding_light_sprites.append(None)
-                elif i == len(self.car_position) - 1:
-                    self.boarding_light_sprites.append(None)
-                else:
-                    if x in range(-150, self.screen_resolution[0] + 150) \
-                            and y in range(-100, self.screen_resolution[1] + 100):
+                if self.state == 'boarding_in_progress':
+                    if i == 0:
+                        self.boarding_light_sprites.append(None)
+                    elif i == len(self.car_position) - 1:
+                        self.boarding_light_sprites.append(None)
+                    else:
                         boarding_light_sprite = Sprite(self.boarding_light_image[self.car_image_collection],
-                                                       x=x, y=y, batch=self.batch, group=self.groups['boarding_light'])
+                                                       x=x, y=y, batch=self.batch,
+                                                       group=self.groups['boarding_light'])
                         boarding_light_sprite.scale = self.zoom_factor
                         self.boarding_light_sprites.append(boarding_light_sprite)
-
+                else:
+                    self.boarding_light_sprites.append(None)
             else:
+                self.car_sprites.append(None)
                 self.boarding_light_sprites.append(None)
 
     @_view_is_active
