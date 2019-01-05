@@ -78,10 +78,15 @@ class SchedulerModel(Model):
     def on_update_time(self, game_time):
         if game_time + self.schedule_cycle_length >= self.next_cycle_start_time:
             for i in self.schedule_options:
-                if i[self.options_direction] in (self.direction_from_left_to_right, self.direction_from_right_to_left) \
-                        or (i[self.options_direction] == self.direction_from_left_to_right_side
+                if (i[self.options_direction] in (self.direction_from_left_to_right,
+                                                  self.direction_from_right_to_left)
+                        and i[self.options_new_direction] in (self.direction_from_left_to_right,
+                                                              self.direction_from_right_to_left)) \
+                        or ((i[self.options_direction] == self.direction_from_left_to_right_side
+                             or i[self.options_new_direction] == self.direction_from_right_to_left_side)
                             and self.unlocked_tracks >= 21)\
-                        or (i[self.options_direction] == self.direction_from_right_to_left_side
+                        or ((i[self.options_direction] == self.direction_from_right_to_left_side
+                             or i[self.options_new_direction] == self.direction_from_left_to_right_side)
                             and self.unlocked_tracks >= 22):
                     cars = choice([i[self.options_cars_min], i[self.options_cars_max]])
                     self.base_schedule.append(
@@ -102,17 +107,24 @@ class SchedulerModel(Model):
                     self.entry_busy_state[i[self.base_direction]] = True
                     if i[self.base_cars] < self.supported_cars_min:
                         state = 'approaching_pass_through'
+                        self.controller.parent_controller.on_create_train(i[self.base_train_id], i[self.base_cars],
+                                                                          self.entry_track[i[self.base_direction]],
+                                                                          self.entry_route[i[self.base_direction]],
+                                                                          state, i[self.base_direction],
+                                                                          i[self.base_new_direction],
+                                                                          i[self.base_direction],
+                                                                          0, 480, 0.0,
+                                                                          0.0)
                     else:
                         state = 'approaching'
-
-                    self.controller.parent_controller.on_create_train(i[self.base_train_id], i[self.base_cars],
-                                                                      self.entry_track[i[self.base_direction]],
-                                                                      self.entry_route[i[self.base_direction]],
-                                                                      state, i[self.base_direction],
-                                                                      i[self.base_new_direction],
-                                                                      i[self.base_direction],
-                                                                      0, i[self.base_stop_time], i[self.base_exp],
-                                                                      i[self.base_money])
+                        self.controller.parent_controller.on_create_train(i[self.base_train_id], i[self.base_cars],
+                                                                          self.entry_track[i[self.base_direction]],
+                                                                          self.entry_route[i[self.base_direction]],
+                                                                          state, i[self.base_direction],
+                                                                          i[self.base_direction],
+                                                                          i[self.base_direction],
+                                                                          0, i[self.base_stop_time], i[self.base_exp],
+                                                                          i[self.base_money])
                     index = self.base_schedule.index(i)
                     self.base_schedule.remove(i)
                     self.view.on_release_train(index)
