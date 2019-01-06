@@ -75,6 +75,11 @@ class ConstructorModel(Model):
                     self.track_state_matrix[track][self.track_state_under_construction] = False
                     self.track_state_matrix[track][self.track_state_locked] = False
                     self.controller.parent_controller.on_unlock_track(track)
+                    self.user_db_cursor.execute('''UPDATE tracks SET locked = 0, under_construction = 0, 
+                                                   construction_time = 0, unlock_condition_from_level = 0, 
+                                                   unlock_condition_from_previous_track = 0, 
+                                                   unlock_condition_from_environment = 0, unlock_available = 0 
+                                                   WHERE track_number = ?''', (track, ))
                     if track < 32:
                         self.track_state_matrix[track + 1][self.track_state_unlock_condition_from_previous_track] = True
                         if self.track_state_matrix[track + 1][self.track_state_unlock_condition_from_level] \
@@ -97,7 +102,6 @@ class ConstructorModel(Model):
         self.view.on_update_track_state(self.track_state_matrix, game_time)
 
     def on_save_state(self):
-        unlocked_tracks = []
         for track in self.track_state_matrix:
             self.user_db_cursor.execute('''UPDATE tracks SET locked = ?, under_construction = ?, construction_time = ?, 
                                            unlock_condition_from_level = ?, unlock_condition_from_previous_track = ?, 
@@ -113,11 +117,6 @@ class ConstructorModel(Model):
                                              self.track_state_unlock_condition_from_environment],
                                          self.track_state_matrix[track][self.track_state_unlock_available], track)
                                         )
-            if not self.track_state_matrix[track][self.track_state_locked]:
-                unlocked_tracks.append(track)
-
-        for track in unlocked_tracks:
-            self.track_state_matrix.pop(track)
 
     def on_level_up(self, level):
         self.config_db_cursor.execute('SELECT track_number FROM track_config WHERE level = ?', (level, ))
