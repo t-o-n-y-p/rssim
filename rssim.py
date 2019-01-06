@@ -6,6 +6,7 @@ from os import path
 from shutil import copyfile
 
 from pyglet import gl
+from pyglet import resource
 from pyglet.window import Window
 from pyglet.graphics import Batch, OrderedGroup
 from win32api import MessageBoxEx
@@ -28,6 +29,8 @@ class RSSim:
         if not path.exists('db/user.db'):
             copyfile('db/default.db', 'db/user.db')
 
+        resource.path = ['font', 'img', 'img/main_map.zip']
+        resource.reindex()
         self.user_db_connection = connect('db/user.db')
         self.user_db_cursor = self.user_db_connection.cursor()
         self.config_db_connection = connect('db/config.db')
@@ -37,24 +40,25 @@ class RSSim:
         self.batch = Batch()
         self.groups = {}
         numbered_groups = []
-        for i in range(9):
+        for i in range(10):
             numbered_groups.append(OrderedGroup(i))
 
-        self.groups['main_map'] = numbered_groups[0]
-        self.groups['signal'] = numbered_groups[1]
-        self.groups['train'] = numbered_groups[1]
-        self.groups['boarding_light'] = numbered_groups[2]
-        self.groups['twilight'] = numbered_groups[3]
-        self.groups['twilight_artifacts'] = numbered_groups[4]
-        self.groups['main_frame'] = numbered_groups[5]
-        self.groups['tip'] = numbered_groups[6]
-        self.groups['mini_map'] = numbered_groups[6]
-        self.groups['game_progress_background'] = numbered_groups[6]
-        self.groups['button_background'] = numbered_groups[7]
-        self.groups['viewport_border'] = numbered_groups[7]
-        self.groups['exp_money_time'] = numbered_groups[7]
-        self.groups['button_text'] = numbered_groups[8]
-        self.groups['button_border'] = numbered_groups[8]
+        self.groups['environment'] = numbered_groups[0]
+        self.groups['main_map'] = numbered_groups[1]
+        self.groups['signal'] = numbered_groups[2]
+        self.groups['train'] = numbered_groups[2]
+        self.groups['boarding_light'] = numbered_groups[3]
+        self.groups['twilight'] = numbered_groups[4]
+        self.groups['twilight_artifacts'] = numbered_groups[5]
+        self.groups['main_frame'] = numbered_groups[6]
+        self.groups['tip'] = numbered_groups[7]
+        self.groups['mini_map'] = numbered_groups[7]
+        self.groups['game_progress_background'] = numbered_groups[7]
+        self.groups['button_background'] = numbered_groups[8]
+        self.groups['viewport_border'] = numbered_groups[8]
+        self.groups['exp_money_time'] = numbered_groups[8]
+        self.groups['button_text'] = numbered_groups[9]
+        self.groups['button_border'] = numbered_groups[9]
         surface = Window(width=1280, height=720, caption='Railway Station Simulator', style='borderless',
                          fullscreen=False, vsync=False)
         self.surface = surface

@@ -9,8 +9,7 @@ executables = [Executable('rssim.py',
                           base='Win32GUI',
                           icon='icon.ico')]
 
-include_files = [('db/config.db', 'db/config.db'), ('db/default.db', 'db/default.db'), 'img', 'icon.ico',
-                 'perfo-bold.ttf']
+include_files = [('db/config.db', 'db/config.db'), ('db/default.db', 'db/default.db'), 'img', 'icon.ico', 'font']
 
 excludes = ['PIL', 'test', 'distutils', 'email', 'html', 'http', 'unittest', 'urllib', 'dbm', 'pydoc_data',
             'xml', 'xmlrpc']
