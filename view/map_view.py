@@ -139,13 +139,7 @@ class MapView(View):
     @_view_is_not_active
     def on_activate(self):
         self.is_activated = True
-        if self.zoom_out_activated:
-            if self.unlocked_tracks < 5:
-                self.map_offset = (0, 896)
-        else:
-            if self.unlocked_tracks < 5:
-                self.map_offset = (0, 1792)
-
+        self.on_change_map_offset()
         if self.main_map_sprite is None:
             self.main_map_sprite = Sprite(self.main_map, x=self.base_offset[0] + self.map_offset[0],
                                           y=self.base_offset[1] + self.map_offset[1],
@@ -185,9 +179,9 @@ class MapView(View):
             self.environment_sprite.position = self.base_offset
 
     def on_unlock_track(self, track_number):
+        self.unlocked_tracks = track_number
         self.main_map = resource.image(f'full_map_{track_number}.dds')
-        if track_number < 5:
-            self.map_offset = (0, 1792)
+        self.on_change_map_offset()
 
         if self.is_activated:
             self.main_map_sprite.image = self.main_map
@@ -197,12 +191,7 @@ class MapView(View):
     def on_change_zoom_factor(self, zoom_factor, zoom_out_activated):
         self.zoom_factor = zoom_factor
         self.zoom_out_activated = zoom_out_activated
-        if self.zoom_out_activated:
-            if self.unlocked_tracks < 5:
-                self.map_offset = (0, 896)
-        else:
-            if self.unlocked_tracks < 5:
-                self.map_offset = (0, 1792)
+        self.on_change_map_offset()
 
         if self.is_activated:
             self.main_map_sprite.scale = zoom_factor
@@ -276,3 +265,23 @@ class MapView(View):
 
         if self.base_offset[1] < self.base_offset_upper_right_limit[1]:
             self.base_offset = (self.base_offset[0], self.base_offset_upper_right_limit[1])
+
+    def on_change_map_offset(self):
+        if self.zoom_out_activated:
+            if self.unlocked_tracks < 5:
+                self.map_offset = (0, 896)
+            elif self.unlocked_tracks < 9:
+                self.map_offset = (0, 768)
+            elif self.unlocked_tracks < 21:
+                self.map_offset = (0, 512)
+            else:
+                self.map_offset = (0, 0)
+        else:
+            if self.unlocked_tracks < 5:
+                self.map_offset = (0, 1792)
+            elif self.unlocked_tracks < 9:
+                self.map_offset = (0, 1536)
+            elif self.unlocked_tracks < 21:
+                self.map_offset = (0, 1024)
+            else:
+                self.map_offset = (0, 0)
