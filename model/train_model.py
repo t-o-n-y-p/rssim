@@ -194,7 +194,9 @@ class TrainModel(Model):
                     self.speed_state = 'accelerate'
 
             if self.cars_position[0] == self.destination_point:
-                self.controller.parent_controller.on_close_train_route(self.track, self.train_route)
+                if self.state not in ('approaching', 'approaching_pass_through'):
+                    self.controller.parent_controller.on_close_train_route(self.track, self.train_route)
+
                 if self.state == 'pending_boarding':
                     self.state = 'boarding_in_progress'
                     self.view.on_update_state(self.state)
