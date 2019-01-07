@@ -1,5 +1,5 @@
 from pyglet.image import load
-from random import choice
+from random import choice, seed
 
 from ctrl import AppController, GameController, MapController, SettingsController, FPSController, SchedulerController, \
                  SignalController, TrainRouteController, RailroadSwitchController, CrossoverController, \
@@ -9,41 +9,45 @@ from model import AppModel, GameModel, MapModel, SettingsModel, FPSModel, Schedu
 from view import AppView, GameView, MapView, SettingsView, FPSView, SchedulerView, SignalView, TrainRouteView, \
                  RailroadSwitchView, CrossoverView, TrainView, DispatcherView, ConstructorView
 
+car_collections = 2
 
-car_head_image = [
-    # collection 0
-    [load('img/cars/0/car_head_0.png'), load('img/cars/0/car_head_1.png'),
-     load('img/cars/0/car_head_2.png'), load('img/cars/0/car_head_3.png')],
-]
+car_head_image = []
+for i in range(car_collections):
+    car_head_image.append([])
+    for j in range(4):
+        car_head_image[i].append(load(f'img/cars/{i}/car_head_{j}.png'))
+
 for i in range(len(car_head_image)):
     for j in range(4):
         car_head_image[i][j].anchor_x = car_head_image[i][j].width // 2
         car_head_image[i][j].anchor_y = car_head_image[i][j].height // 2
 
-car_mid_image = [
-    # collection 0
-    [load('img/cars/0/car_mid_0.png'), load('img/cars/0/car_mid_1.png'),
-     load('img/cars/0/car_mid_2.png'), load('img/cars/0/car_mid_3.png')],
-]
+car_mid_image = []
+for i in range(car_collections):
+    car_mid_image.append([])
+    for j in range(4):
+        car_mid_image[i].append(load(f'img/cars/{i}/car_mid_{j}.png'))
+
 for i in range(len(car_mid_image)):
     for j in range(4):
         car_mid_image[i][j].anchor_x = car_mid_image[i][j].width // 2
         car_mid_image[i][j].anchor_y = car_mid_image[i][j].height // 2
 
-car_tail_image = [
-    # collection 0
-    [load('img/cars/0/car_tail_0.png'), load('img/cars/0/car_tail_1.png'),
-     load('img/cars/0/car_tail_2.png'), load('img/cars/0/car_tail_3.png')],
-]
+car_tail_image = []
+for i in range(car_collections):
+    car_tail_image.append([])
+    for j in range(4):
+        car_tail_image[i].append(load(f'img/cars/{i}/car_tail_{j}.png'))
+
 for i in range(len(car_tail_image)):
     for j in range(4):
         car_tail_image[i][j].anchor_x = car_tail_image[i][j].width // 2
         car_tail_image[i][j].anchor_y = car_tail_image[i][j].height // 2
 
-boarding_light_image = [
-    # collection 0
-    load('img/cars/0/boarding_lights.png'),
-]
+boarding_light_image = []
+for i in range(car_collections):
+    boarding_light_image.append(load(f'img/cars/{i}/boarding_lights.png'))
+
 for i in range(len(boarding_light_image)):
     boarding_light_image[i].anchor_x = boarding_light_image[i].width // 2
     boarding_light_image[i].anchor_y = boarding_light_image[i].height // 2
@@ -285,8 +289,9 @@ def create_train(user_db_connection, user_db_cursor, config_db_cursor, surface, 
     controller.train_id = train_id
     model = TrainModel(user_db_connection, user_db_cursor, config_db_cursor)
     if created_by == 'dispatcher':
+        seed()
         model.on_train_init(cars, track, train_route, state, direction, new_direction, current_direction,
-                            priority, boarding_time, exp, money, choice([0, 0]))
+                            priority, boarding_time, exp, money, choice([0, 1]))
     else:
         model.on_train_setup(train_id)
 
