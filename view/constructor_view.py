@@ -65,7 +65,8 @@ class ConstructorView(View):
         self.constructor_title_text_font_size = 0
         self.constructor_description_text_font_size = 0
         self.constructor_placeholder_font_size = 0
-        self.cells_y_interval = 0
+        self.constructor_cell_height = 0
+        self.constructor_interval_between_cells = 0
         self.on_read_ui_info()
         self.background_sprite = None
         self.locked_tracks_labels = {}
@@ -192,6 +193,7 @@ class ConstructorView(View):
                     = self.environment_cell_positions[i][0] + self.constructor_placeholder_offset[0]
                 self.coming_soon_environment_labels[i].y \
                     = self.environment_cell_positions[i][1] + self.constructor_placeholder_offset[1]
+                self.coming_soon_environment_labels[i].font_size = self.constructor_placeholder_font_size
 
             dictionary_keys = list(self.locked_tracks_labels.keys())
             for i in range(len(dictionary_keys)):
@@ -199,14 +201,18 @@ class ConstructorView(View):
                     = self.track_cells_positions[i][0] + self.constructor_locked_label_offset[0]
                 self.locked_tracks_labels[dictionary_keys[i]].y \
                     = self.track_cells_positions[i][1] + self.constructor_locked_label_offset[1]
+                self.locked_tracks_labels[dictionary_keys[i]].font_size = self.constructor_locked_label_font_size
                 self.title_tracks_labels[dictionary_keys[i]].x \
                     = self.track_cells_positions[i][0] + self.constructor_title_text_offset[0]
                 self.title_tracks_labels[dictionary_keys[i]].y \
                     = self.track_cells_positions[i][1] + self.constructor_title_text_offset[1]
+                self.title_tracks_labels[dictionary_keys[i]].font_size = self.constructor_title_text_font_size
                 self.description_tracks_labels[dictionary_keys[i]].x \
                     = self.track_cells_positions[i][0] + self.constructor_description_text_offset[0]
                 self.description_tracks_labels[dictionary_keys[i]].y \
                     = self.track_cells_positions[i][1] + self.constructor_description_text_offset[1]
+                self.description_tracks_labels[dictionary_keys[i]].font_size \
+                    = self.constructor_description_text_font_size
 
             dictionary_keys = list(self.buy_buttons.keys())
             for i in range(len(dictionary_keys)):
@@ -428,52 +434,54 @@ class ConstructorView(View):
 
     @_view_is_active
     def on_unlock_track_live(self, track):
+        cell_step = self.constructor_cell_height + self.constructor_interval_between_cells
         self.locked_tracks_labels[track].delete()
         self.locked_tracks_labels.pop(track)
         for t in self.locked_tracks_labels:
-            self.locked_tracks_labels[t].y += self.cells_y_interval
+            self.locked_tracks_labels[t].y += cell_step
 
         self.title_tracks_labels[track].delete()
         self.title_tracks_labels.pop(track)
         for t in self.title_tracks_labels:
-            self.title_tracks_labels[t].y += self.cells_y_interval
+            self.title_tracks_labels[t].y += cell_step
 
         self.description_tracks_labels[track].delete()
         self.description_tracks_labels.pop(track)
         for t in self.description_tracks_labels:
-            self.description_tracks_labels[t].y += self.cells_y_interval
+            self.description_tracks_labels[t].y += cell_step
 
         for b in self.buy_buttons:
-            self.buy_buttons[b].y_margin -= self.cells_y_interval
+            self.buy_buttons[b].y_margin -= cell_step
             self.buy_buttons[b].on_position_changed(
                 (self.screen_resolution[0] - self.buy_buttons[b].x_margin,
                  self.screen_resolution[1] - self.buy_buttons[b].y_margin)
             )
 
         for p in range(len(self.no_more_tracks_available_labels)):
-            self.no_more_tracks_available_labels[p].y += self.cells_y_interval
+            self.no_more_tracks_available_labels[p].y += cell_step
 
     def on_read_ui_info(self):
-        self.config_db_cursor.execute('''SELECT constructor_cell_0_left_x, constructor_cell_0_left_y,
-                                         constructor_cell_1_left_x, constructor_cell_1_left_y,
-                                         constructor_cell_2_left_x, constructor_cell_2_left_y,
-                                         constructor_cell_3_left_x, constructor_cell_3_left_y 
+        self.config_db_cursor.execute('''SELECT constructor_cell_height, constructor_interval_between_cells
+                                         FROM screen_resolution_config WHERE app_width = ? AND app_height = ?''',
+                                      (self.screen_resolution[0], self.screen_resolution[1]))
+        self.constructor_cell_height, self.constructor_interval_between_cells = self.config_db_cursor.fetchone()
+        cell_step = self.constructor_cell_height + self.constructor_interval_between_cells
+        self.config_db_cursor.execute('''SELECT constructor_cell_top_left_x, constructor_cell_top_left_y
                                          FROM screen_resolution_config WHERE app_width = ? AND app_height = ?''',
                                       (self.screen_resolution[0], self.screen_resolution[1]))
         fetched_coords = self.config_db_cursor.fetchone()
-        self.track_cells_positions = ((fetched_coords[0], fetched_coords[1]), (fetched_coords[2], fetched_coords[3]),
-                                      (fetched_coords[4], fetched_coords[5]), (fetched_coords[6], fetched_coords[7]))
-        self.config_db_cursor.execute('''SELECT constructor_cell_0_right_x, constructor_cell_0_right_y,
-                                         constructor_cell_1_right_x, constructor_cell_1_right_y,
-                                         constructor_cell_2_right_x, constructor_cell_2_right_y,
-                                         constructor_cell_3_right_x, constructor_cell_3_right_y 
+        self.track_cells_positions = ((fetched_coords[0], fetched_coords[1]),
+                                      (fetched_coords[0], fetched_coords[1] - cell_step),
+                                      (fetched_coords[0], fetched_coords[1] - cell_step * 2),
+                                      (fetched_coords[0], fetched_coords[1] - cell_step * 3))
+        self.config_db_cursor.execute('''SELECT constructor_cell_top_right_x, constructor_cell_top_right_y
                                          FROM screen_resolution_config WHERE app_width = ? AND app_height = ?''',
                                       (self.screen_resolution[0], self.screen_resolution[1]))
         fetched_coords = self.config_db_cursor.fetchone()
         self.environment_cell_positions = ((fetched_coords[0], fetched_coords[1]),
-                                           (fetched_coords[2], fetched_coords[3]),
-                                           (fetched_coords[4], fetched_coords[5]),
-                                           (fetched_coords[6], fetched_coords[7]))
+                                           (fetched_coords[0], fetched_coords[1] - cell_step),
+                                           (fetched_coords[0], fetched_coords[1] - cell_step * 2),
+                                           (fetched_coords[0], fetched_coords[1] - cell_step * 3))
         self.constructor_locked_label_offset = [0, 0]
         self.constructor_build_button_offset = [0, 0]
         self.constructor_title_text_offset = [0, 0]
@@ -500,4 +508,3 @@ class ConstructorView(View):
             self.constructor_locked_label_font_size, self.constructor_title_text_font_size, \
             self.constructor_description_text_font_size, self.constructor_placeholder_font_size \
             = self.config_db_cursor.fetchone()
-        self.cells_y_interval = self.track_cells_positions[0][1] - self.track_cells_positions[1][1]
