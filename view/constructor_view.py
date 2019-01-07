@@ -65,6 +65,7 @@ class ConstructorView(View):
         self.constructor_title_text_font_size = 0
         self.constructor_description_text_font_size = 0
         self.constructor_placeholder_font_size = 0
+        self.cells_y_interval = 0
         self.on_read_ui_info()
         self.background_sprite = None
         self.locked_tracks_labels = {}
@@ -213,7 +214,7 @@ class ConstructorView(View):
                     = self.screen_resolution[0] \
                       - (self.track_cells_positions[i][0] + self.constructor_build_button_offset[0])
                 self.buy_buttons[dictionary_keys[i]].y_margin \
-                    = self.screen_resolution[0] \
+                    = self.screen_resolution[1] \
                       - (self.track_cells_positions[i][1] + self.constructor_build_button_offset[1])
                 self.buy_buttons[dictionary_keys[i]].on_position_changed(
                     (self.screen_resolution[0] - self.buy_buttons[dictionary_keys[i]].x_margin,
@@ -247,7 +248,7 @@ class ConstructorView(View):
                           - (self.track_cells_positions[list(track_state_matrix.keys()).index(track)][0]
                              + self.constructor_build_button_offset[0])
                     self.buy_buttons[track].y_margin \
-                        = self.screen_resolution[0] \
+                        = self.screen_resolution[1] \
                           - (self.track_cells_positions[list(track_state_matrix.keys()).index(track)][1]
                              + self.constructor_build_button_offset[1])
                     self.buy_buttons[track].on_position_changed(
@@ -331,7 +332,7 @@ class ConstructorView(View):
                             = self.screen_resolution[0] - (self.track_cells_positions[i][0]
                                                            + self.constructor_build_button_offset[0])
                         self.buy_buttons[dictionary_keys[i]].y_margin \
-                            = self.screen_resolution[0] - (self.track_cells_positions[i][1]
+                            = self.screen_resolution[1] - (self.track_cells_positions[i][1]
                                                            + self.constructor_build_button_offset[1])
                         self.buy_buttons[dictionary_keys[i]].on_position_changed(
                             (self.screen_resolution[0] - self.buy_buttons[dictionary_keys[i]].x_margin,
@@ -499,4 +500,4 @@ class ConstructorView(View):
             self.constructor_locked_label_font_size, self.constructor_title_text_font_size, \
             self.constructor_description_text_font_size, self.constructor_placeholder_font_size \
             = self.config_db_cursor.fetchone()
-        self.cells_y_interval = self.track_cells_positions[1][1] - self.track_cells_positions[0][1]
+        self.cells_y_interval = self.track_cells_positions[0][1] - self.track_cells_positions[1][1]

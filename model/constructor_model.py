@@ -51,6 +51,7 @@ class ConstructorModel(Model):
         self.track_state_unlock_available = 6
         self.track_state_price = 7
         self.track_state_level = 8
+        self.cached_unlocked_tracks = []
 
     @_model_is_not_active
     def on_activate(self):
@@ -75,11 +76,7 @@ class ConstructorModel(Model):
                     self.track_state_matrix[track][self.track_state_under_construction] = False
                     self.track_state_matrix[track][self.track_state_locked] = False
                     self.controller.parent_controller.on_unlock_track(track)
-                    self.user_db_cursor.execute('''UPDATE tracks SET locked = 0, under_construction = 0, 
-                                                   construction_time = 0, unlock_condition_from_level = 0, 
-                                                   unlock_condition_from_previous_track = 0, 
-                                                   unlock_condition_from_environment = 0, unlock_available = 0 
-                                                   WHERE track_number = ?''', (track, ))
+                    self.cached_unlocked_tracks.append(track)
                     if track < 32:
                         self.track_state_matrix[track + 1][self.track_state_unlock_condition_from_previous_track] = True
                         if self.track_state_matrix[track + 1][self.track_state_unlock_condition_from_level] \
@@ -102,6 +99,14 @@ class ConstructorModel(Model):
         self.view.on_update_track_state(self.track_state_matrix, game_time)
 
     def on_save_state(self):
+        for track in self.cached_unlocked_tracks:
+            self.user_db_cursor.execute('''UPDATE tracks SET locked = 0, under_construction = 0, 
+                                           construction_time = 0, unlock_condition_from_level = 0, 
+                                           unlock_condition_from_previous_track = 0, 
+                                           unlock_condition_from_environment = 0, unlock_available = 0 
+                                           WHERE track_number = ?''', (track, ))
+
+        self.cached_unlocked_tracks = []
         for track in self.track_state_matrix:
             self.user_db_cursor.execute('''UPDATE tracks SET locked = ?, under_construction = ?, construction_time = ?, 
                                            unlock_condition_from_level = ?, unlock_condition_from_previous_track = ?, 
