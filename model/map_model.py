@@ -6,7 +6,7 @@ from ctrl import TrainController
 from .train_model import TrainModel
 from view import TrainView
 
-car_collections = 2
+car_collections = 3
 
 car_head_image = []
 for i in range(car_collections):
@@ -60,7 +60,7 @@ def create_train(user_db_connection, user_db_cursor, config_db_cursor, surface, 
     if created_by == 'dispatcher':
         seed()
         model.on_train_init(cars, track, train_route, state, direction, new_direction, current_direction,
-                            priority, boarding_time, exp, money, choice([0, 1]))
+                            priority, boarding_time, exp, money, choice(list(range(car_collections))))
     else:
         model.on_train_setup(train_id)
 
