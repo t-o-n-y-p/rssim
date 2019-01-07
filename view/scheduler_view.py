@@ -39,6 +39,8 @@ class SchedulerView(View):
         self.schedule_font_size = 0
         self.on_read_ui_info()
         self.train_labels = []
+        self.base_schedule = None
+        self.game_time = None
         self.close_schedule_button = CloseScheduleButton(surface=self.surface, batch=self.batch, groups=self.groups,
                                                          on_click_action=on_close_schedule)
         self.buttons.append(self.close_schedule_button)
@@ -74,8 +76,31 @@ class SchedulerView(View):
             b.on_deactivate()
 
     def on_update(self):
-        if self.is_activated and self.background_sprite.opacity < 255:
-            self.background_sprite.opacity += 15
+        if self.is_activated:
+            if self.background_sprite.opacity < 255:
+                self.background_sprite.opacity += 15
+
+            for i in range(min(len(self.base_schedule), 32)):
+                if self.base_schedule[i][1] < self.game_time + 14400 and len(self.train_labels) < (i + 1) * 2:
+                    self.train_labels.append(
+                        Label('{0:0>6}    {1:0>2} : {2:0>2}                             {3:0>2}   {4:0>2} : {5:0>2}'
+                              .format(self.base_schedule[i][self.base_train_id],
+                                      (self.base_schedule[i][self.base_arrival_time] // 14400 + 12) % 24,
+                                      (self.base_schedule[i][self.base_arrival_time] // 240) % 60,
+                                      self.base_schedule[i][self.base_cars],
+                                      self.base_schedule[i][self.base_stop_time] // 240,
+                                      (self.base_schedule[i][self.base_stop_time] // 4) % 60),
+                              font_name='Perfo', bold=True, font_size=self.schedule_font_size,
+                              x=self.schedule_top_left_line[0] + self.schedule_line_step_x * (i // 16),
+                              y=self.schedule_top_left_line[1] - (i % 16) * self.schedule_line_step_y,
+                              anchor_x='center', anchor_y='center', batch=self.batch, group=self.groups['button_text']))
+                    self.train_labels.append(
+                        Label(self.departure_text[self.base_schedule[i][self.base_direction]],
+                              font_name='Perfo', bold=True, font_size=self.schedule_font_size,
+                              x=self.schedule_departure_top_left_line[0] + self.schedule_line_step_x * (i // 16),
+                              y=self.schedule_departure_top_left_line[1] - (i % 16) * self.schedule_line_step_y,
+                              anchor_x='center', anchor_y='center', batch=self.batch, group=self.groups['button_text']))
+                    break
 
         if not self.is_activated and self.background_sprite is not None:
             if self.background_sprite.opacity > 0:
@@ -107,26 +132,8 @@ class SchedulerView(View):
 
     @_view_is_active
     def on_update_train_labels(self, base_schedule, game_time):
-        for i in range(min(len(base_schedule), 32)):
-            if base_schedule[i][1] < game_time + 14400 and len(self.train_labels) < (i + 1) * 2:
-                self.train_labels.append(
-                    Label('{0:0>6}    {1:0>2} : {2:0>2}                             {3:0>2}   {4:0>2} : {5:0>2}'
-                          .format(base_schedule[i][self.base_train_id],
-                                  (base_schedule[i][self.base_arrival_time] // 14400 + 12) % 24,
-                                  (base_schedule[i][self.base_arrival_time] // 240) % 60,
-                                  base_schedule[i][self.base_cars], base_schedule[i][self.base_stop_time] // 240,
-                                  (base_schedule[i][self.base_stop_time] // 4) % 60),
-                          font_name='Perfo', bold=True, font_size=self.schedule_font_size,
-                          x=self.schedule_top_left_line[0] + self.schedule_line_step_x * (i // 16),
-                          y=self.schedule_top_left_line[1] - (i % 16) * self.schedule_line_step_y,
-                          anchor_x='center', anchor_y='center', batch=self.batch, group=self.groups['button_text']))
-                self.train_labels.append(
-                    Label(self.departure_text[base_schedule[i][self.base_direction]],
-                          font_name='Perfo', bold=True, font_size=self.schedule_font_size,
-                          x=self.schedule_departure_top_left_line[0] + self.schedule_line_step_x * (i // 16),
-                          y=self.schedule_departure_top_left_line[1] - (i % 16) * self.schedule_line_step_y,
-                          anchor_x='center', anchor_y='center', batch=self.batch, group=self.groups['button_text']))
-                break
+        self.base_schedule = base_schedule
+        self.game_time = game_time
 
     @_view_is_active
     def on_release_train(self, index):
