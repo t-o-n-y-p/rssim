@@ -226,6 +226,9 @@ class ConstructorView(View):
                     (self.screen_resolution[0] - self.buy_buttons[dictionary_keys[i]].x_margin,
                      self.screen_resolution[1] - self.buy_buttons[dictionary_keys[i]].y_margin)
                 )
+                self.buy_buttons[dictionary_keys[i]] \
+                    .on_size_changed((self.constructor_cell_height, self.constructor_cell_height),
+                                     self.constructor_locked_label_font_size)
 
         self.close_constructor_button.x_margin = self.screen_resolution[0]
         self.close_constructor_button.y_margin = self.screen_resolution[1]
@@ -261,6 +264,9 @@ class ConstructorView(View):
                         (self.screen_resolution[0] - self.buy_buttons[track].x_margin,
                          self.screen_resolution[1] - self.buy_buttons[track].y_margin)
                     )
+                    self.buy_buttons[track] \
+                        .on_size_changed((self.constructor_cell_height, self.constructor_cell_height),
+                                         self.constructor_locked_label_font_size)
                     self.buttons.append(self.buy_buttons[track])
                     self.buy_buttons[track].on_activate()
                     self.controller.on_append_handlers(
@@ -344,6 +350,9 @@ class ConstructorView(View):
                             (self.screen_resolution[0] - self.buy_buttons[dictionary_keys[i]].x_margin,
                              self.screen_resolution[1] - self.buy_buttons[dictionary_keys[i]].y_margin)
                         )
+                        self.buy_buttons[dictionary_keys[i]]\
+                            .on_size_changed((self.constructor_cell_height, self.constructor_cell_height),
+                                             self.constructor_locked_label_font_size)
                         self.buttons.append(self.buy_buttons[dictionary_keys[i]])
                         self.buy_buttons[dictionary_keys[i]].on_activate()
                         self.controller.on_append_handlers(

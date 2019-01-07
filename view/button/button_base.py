@@ -1,4 +1,5 @@
 from pyglet import gl
+from pyglet.image import load
 from pyglet.sprite import Sprite
 from pyglet.text import Label
 from pyglet.window import mouse
@@ -127,6 +128,15 @@ class Button:
                                          y=self.position[1] + self.button_size[1] // 2,
                                          anchor_x='center', anchor_y='center', batch=self.batch,
                                          group=self.groups['button_text'])
+
+    def on_size_changed(self, new_button_size, new_font_size):
+        self.button_size = new_button_size
+        self.font_size = new_font_size
+        self.border_sprite_image = load('img/button_borders/button_border_{}_{}.png'
+                                        .format(self.button_size[0], self.button_size[1]))
+        if self.is_activated:
+            self.border_sprite.image = self.border_sprite_image
+            self.text_object.font_size = self.font_size
 
     @_button_is_activated
     def handle_mouse_motion(self, x, y, dx, dy):
