@@ -69,6 +69,7 @@ class ConstructorView(View):
         self.constructor_interval_between_cells = 0
         self.on_read_ui_info()
         self.background_sprite = None
+        self.track_state_matrix = None
         self.locked_tracks_labels = {}
         self.title_tracks_labels = {}
         self.description_tracks_labels = {}
@@ -171,8 +172,156 @@ class ConstructorView(View):
         self.coming_soon_environment_labels = []
 
     def on_update(self):
-        if self.is_activated and self.background_sprite.opacity < 255:
-            self.background_sprite.opacity += 15
+        if self.is_activated:
+            if self.background_sprite.opacity < 255:
+                self.background_sprite.opacity += 15
+
+            dictionary_keys = list(self.track_state_matrix.keys())
+            available_options = min(len(dictionary_keys), 4)
+            if available_options < 4 and len(self.no_more_tracks_available_labels) < 4 - available_options:
+                position_index = available_options + len(self.no_more_tracks_available_labels)
+                self.no_more_tracks_available_labels.append(
+                    Label('No more tracks available', font_name='Arial',
+                          font_size=self.constructor_placeholder_font_size,
+                          color=(112, 112, 112, 255),
+                          x=self.track_cells_positions[position_index][0] + self.constructor_placeholder_offset[0],
+                          y=self.track_cells_positions[position_index][1] + self.constructor_placeholder_offset[1],
+                          anchor_x='center', anchor_y='center', batch=self.batch, group=self.groups['button_text'])
+                )
+
+            for i in range(available_options):
+                if dictionary_keys[i] not in self.locked_tracks_labels:
+                    if self.track_state_matrix[dictionary_keys[i]][self.track_state_unlock_available]:
+                        if self.money < self.track_state_matrix[dictionary_keys[i]][self.track_state_price]:
+                            self.locked_tracks_labels[dictionary_keys[i]] \
+                                = Label('', font_name='Webdings', font_size=self.constructor_locked_label_font_size,
+                                        color=(112, 112, 112, 255),
+                                        x=self.track_cells_positions[i][0] + self.constructor_locked_label_offset[0],
+                                        y=self.track_cells_positions[i][1] + self.constructor_locked_label_offset[1],
+                                        anchor_x='center', anchor_y='center', batch=self.batch,
+                                        group=self.groups['button_text'])
+                        else:
+                            self.locked_tracks_labels[dictionary_keys[i]] \
+                                = Label(' ', font_name='Webdings', font_size=self.constructor_locked_label_font_size,
+                                        color=(112, 112, 112, 255),
+                                        x=self.track_cells_positions[i][0] + self.constructor_locked_label_offset[0],
+                                        y=self.track_cells_positions[i][1] + self.constructor_locked_label_offset[1],
+                                        anchor_x='center', anchor_y='center', batch=self.batch,
+                                        group=self.groups['button_text'])
+                            self.buy_buttons[dictionary_keys[i]] = BuyTrackButton(surface=self.surface,
+                                                                                  batch=self.batch,
+                                                                                  groups=self.groups,
+                                                                                  on_click_action=self.on_buy_track)
+                            self.buy_buttons[dictionary_keys[i]].x_margin \
+                                = self.screen_resolution[0] - (self.track_cells_positions[i][0]
+                                                               + self.constructor_build_button_offset[0])
+                            self.buy_buttons[dictionary_keys[i]].y_margin \
+                                = self.screen_resolution[1] - (self.track_cells_positions[i][1]
+                                                               + self.constructor_build_button_offset[1])
+                            self.buy_buttons[dictionary_keys[i]].on_position_changed(
+                                (self.screen_resolution[0] - self.buy_buttons[dictionary_keys[i]].x_margin,
+                                 self.screen_resolution[1] - self.buy_buttons[dictionary_keys[i]].y_margin)
+                            )
+                            self.buy_buttons[dictionary_keys[i]] \
+                                .on_size_changed((self.constructor_cell_height, self.constructor_cell_height),
+                                                 self.constructor_locked_label_font_size)
+                            self.buttons.append(self.buy_buttons[dictionary_keys[i]])
+                            self.buy_buttons[dictionary_keys[i]].on_activate()
+                            self.controller.on_append_handlers(
+                                on_mouse_motion_handlers=[self.buy_buttons[dictionary_keys[i]].handle_mouse_motion, ],
+                                on_mouse_press_handlers=[self.buy_buttons[dictionary_keys[i]].handle_mouse_press, ],
+                                on_mouse_release_handlers=[self.buy_buttons[dictionary_keys[i]].handle_mouse_release, ],
+                                on_mouse_leave_handlers=[self.buy_buttons[dictionary_keys[i]].handle_mouse_leave, ]
+                            )
+
+                    else:
+                        if not self.track_state_matrix[dictionary_keys[i]][self.track_state_under_construction]:
+                            self.locked_tracks_labels[dictionary_keys[i]] \
+                                = Label('', font_name='Webdings', font_size=self.constructor_locked_label_font_size,
+                                        color=(112, 112, 112, 255),
+                                        x=self.track_cells_positions[i][0] + self.constructor_locked_label_offset[0],
+                                        y=self.track_cells_positions[i][1] + self.constructor_locked_label_offset[1],
+                                        anchor_x='center', anchor_y='center', batch=self.batch,
+                                        group=self.groups['button_text'])
+                        else:
+                            self.locked_tracks_labels[dictionary_keys[i]] \
+                                = Label(' ', font_name='Webdings', font_size=self.constructor_locked_label_font_size,
+                                        color=(112, 112, 112, 255),
+                                        x=self.track_cells_positions[i][0] + self.constructor_locked_label_offset[0],
+                                        y=self.track_cells_positions[i][1] + self.constructor_locked_label_offset[1],
+                                        anchor_x='center', anchor_y='center', batch=self.batch,
+                                        group=self.groups['button_text'])
+
+                    self.title_tracks_labels[dictionary_keys[i]] \
+                        = Label(f'Track {dictionary_keys[i]}', font_name='Arial',
+                                font_size=self.constructor_title_text_font_size, color=(255, 255, 255, 255),
+                                x=self.track_cells_positions[i][0] + self.constructor_title_text_offset[0],
+                                y=self.track_cells_positions[i][1] + self.constructor_title_text_offset[1],
+                                anchor_x='left', anchor_y='center', batch=self.batch, group=self.groups['button_text'])
+
+                    if self.track_state_matrix[dictionary_keys[i]][self.track_state_unlock_available]:
+                        self.description_tracks_labels[dictionary_keys[i]] \
+                            = Label('Available for {} ¤'
+                                    .format(self.track_state_matrix[dictionary_keys[i]][self.track_state_price]),
+                                    font_name='Arial', font_size=self.constructor_description_text_font_size,
+                                    color=(0, 192, 0, 255),
+                                    x=self.track_cells_positions[i][0] + self.constructor_description_text_offset[0],
+                                    y=self.track_cells_positions[i][1] + self.constructor_description_text_offset[1],
+                                    anchor_x='left', anchor_y='center', batch=self.batch,
+                                    group=self.groups['button_text'])
+                    elif self.track_state_matrix[dictionary_keys[i]][self.track_state_under_construction]:
+                        construction_time \
+                            = self.track_state_matrix[dictionary_keys[i]][self.track_state_construction_time]
+                        self.description_tracks_labels[dictionary_keys[i]] \
+                            = Label('Under construction. {}h {}min left'
+                                    .format(construction_time // 14400, (construction_time // 240) % 60),
+                                    font_name='Arial', font_size=self.constructor_description_text_font_size,
+                                    color=(255, 127, 0, 255),
+                                    x=self.track_cells_positions[i][0] + self.constructor_description_text_offset[0],
+                                    y=self.track_cells_positions[i][1] + self.constructor_description_text_offset[1],
+                                    anchor_x='left', anchor_y='center', batch=self.batch,
+                                    group=self.groups['button_text'])
+                    else:
+                        if not self.track_state_matrix[dictionary_keys[i]][
+                                                                        self.track_state_unlock_condition_from_level]:
+                            self.description_tracks_labels[dictionary_keys[i]] \
+                                = Label('Requires level {}'
+                                        .format(self.track_state_matrix[dictionary_keys[i]][self.track_state_level]),
+                                        font_name='Arial', font_size=self.constructor_description_text_font_size,
+                                        color=(112, 112, 112, 255),
+                                        x=self.track_cells_positions[i][0]
+                                          + self.constructor_description_text_offset[0],
+                                        y=self.track_cells_positions[i][1]
+                                          + self.constructor_description_text_offset[1],
+                                        anchor_x='left', anchor_y='center', batch=self.batch,
+                                        group=self.groups['button_text'])
+                        elif not self.track_state_matrix[dictionary_keys[i]][
+                                                                    self.track_state_unlock_condition_from_environment]:
+                            self.description_tracks_labels[dictionary_keys[i]] \
+                                = Label('Requires environment Tier X',
+                                        font_name='Arial', font_size=self.constructor_description_text_font_size,
+                                        color=(112, 112, 112, 255),
+                                        x=self.track_cells_positions[i][0]
+                                          + self.constructor_description_text_offset[0],
+                                        y=self.track_cells_positions[i][1]
+                                          + self.constructor_description_text_offset[1],
+                                        anchor_x='left', anchor_y='center', batch=self.batch,
+                                        group=self.groups['button_text'])
+                        elif not self.track_state_matrix[dictionary_keys[i]][
+                            self.track_state_unlock_condition_from_previous_track
+                        ]:
+                            self.description_tracks_labels[dictionary_keys[i]] \
+                                = Label('Build track {} to unlock'.format(dictionary_keys[i] - 1),
+                                        font_name='Arial', font_size=self.constructor_description_text_font_size,
+                                        color=(112, 112, 112, 255),
+                                        x=self.track_cells_positions[i][0]
+                                          + self.constructor_description_text_offset[0],
+                                        y=self.track_cells_positions[i][1]
+                                          + self.constructor_description_text_offset[1],
+                                        anchor_x='left', anchor_y='center', batch=self.batch,
+                                        group=self.groups['button_text'])
+
+                    break
 
         if not self.is_activated and self.background_sprite is not None:
             if self.background_sprite.opacity > 0:
@@ -237,13 +386,13 @@ class ConstructorView(View):
 
     def on_update_money(self, money, track_state_matrix):
         self.money = money
-        if track_state_matrix:
-            track = list(track_state_matrix.keys())[0]
-            self.on_update_live_track_state(track_state_matrix, track)
+        self.track_state_matrix = track_state_matrix
+        self.on_update_live_track_state(track_state_matrix, list(track_state_matrix.keys())[0])
 
     @_view_is_active
     @_track_is_in_top4
     def on_update_live_track_state(self, track_state_matrix, track):
+        self.track_state_matrix = track_state_matrix
         if track_state_matrix[track][self.track_state_unlock_available]:
             if self.money < track_state_matrix[track][self.track_state_price]:
                 self.locked_tracks_labels[track].text = ''
@@ -304,142 +453,8 @@ class ConstructorView(View):
                 self.description_tracks_labels[track].text = 'Build track {} to unlock'.format(track - 1)
                 self.description_tracks_labels[track].color = (112, 112, 112, 255)
 
-    @_view_is_active
     def on_update_track_state(self, track_state_matrix, game_time):
-        dictionary_keys = list(track_state_matrix.keys())
-        available_options = min(len(dictionary_keys), 4)
-        if available_options < 4 and len(self.no_more_tracks_available_labels) < 4 - available_options:
-            position_index = available_options + len(self.no_more_tracks_available_labels)
-            self.no_more_tracks_available_labels.append(
-                Label('No more tracks available', font_name='Arial', font_size=self.constructor_placeholder_font_size,
-                      color=(112, 112, 112, 255),
-                      x=self.track_cells_positions[position_index][0] + self.constructor_placeholder_offset[0],
-                      y=self.track_cells_positions[position_index][1] + self.constructor_placeholder_offset[1],
-                      anchor_x='center', anchor_y='center', batch=self.batch, group=self.groups['button_text'])
-            )
-
-        for i in range(available_options):
-            if dictionary_keys[i] not in self.locked_tracks_labels:
-                if track_state_matrix[dictionary_keys[i]][self.track_state_unlock_available]:
-                    if self.money < track_state_matrix[dictionary_keys[i]][self.track_state_price]:
-                        self.locked_tracks_labels[dictionary_keys[i]] \
-                            = Label('', font_name='Webdings', font_size=self.constructor_locked_label_font_size,
-                                    color=(112, 112, 112, 255),
-                                    x=self.track_cells_positions[i][0] + self.constructor_locked_label_offset[0],
-                                    y=self.track_cells_positions[i][1] + self.constructor_locked_label_offset[1],
-                                    anchor_x='center', anchor_y='center', batch=self.batch,
-                                    group=self.groups['button_text'])
-                    else:
-                        self.locked_tracks_labels[dictionary_keys[i]] \
-                            = Label(' ', font_name='Webdings', font_size=self.constructor_locked_label_font_size,
-                                    color=(112, 112, 112, 255),
-                                    x=self.track_cells_positions[i][0] + self.constructor_locked_label_offset[0],
-                                    y=self.track_cells_positions[i][1] + self.constructor_locked_label_offset[1],
-                                    anchor_x='center', anchor_y='center', batch=self.batch,
-                                    group=self.groups['button_text'])
-                        self.buy_buttons[dictionary_keys[i]] = BuyTrackButton(surface=self.surface, batch=self.batch,
-                                                                              groups=self.groups,
-                                                                              on_click_action=self.on_buy_track)
-                        self.buy_buttons[dictionary_keys[i]].x_margin \
-                            = self.screen_resolution[0] - (self.track_cells_positions[i][0]
-                                                           + self.constructor_build_button_offset[0])
-                        self.buy_buttons[dictionary_keys[i]].y_margin \
-                            = self.screen_resolution[1] - (self.track_cells_positions[i][1]
-                                                           + self.constructor_build_button_offset[1])
-                        self.buy_buttons[dictionary_keys[i]].on_position_changed(
-                            (self.screen_resolution[0] - self.buy_buttons[dictionary_keys[i]].x_margin,
-                             self.screen_resolution[1] - self.buy_buttons[dictionary_keys[i]].y_margin)
-                        )
-                        self.buy_buttons[dictionary_keys[i]]\
-                            .on_size_changed((self.constructor_cell_height, self.constructor_cell_height),
-                                             self.constructor_locked_label_font_size)
-                        self.buttons.append(self.buy_buttons[dictionary_keys[i]])
-                        self.buy_buttons[dictionary_keys[i]].on_activate()
-                        self.controller.on_append_handlers(
-                            on_mouse_motion_handlers=[self.buy_buttons[dictionary_keys[i]].handle_mouse_motion, ],
-                            on_mouse_press_handlers=[self.buy_buttons[dictionary_keys[i]].handle_mouse_press, ],
-                            on_mouse_release_handlers=[self.buy_buttons[dictionary_keys[i]].handle_mouse_release, ],
-                            on_mouse_leave_handlers=[self.buy_buttons[dictionary_keys[i]].handle_mouse_leave, ]
-                        )
-
-                else:
-                    if not track_state_matrix[dictionary_keys[i]][self.track_state_under_construction]:
-                        self.locked_tracks_labels[dictionary_keys[i]] \
-                            = Label('', font_name='Webdings', font_size=self.constructor_locked_label_font_size,
-                                    color=(112, 112, 112, 255),
-                                    x=self.track_cells_positions[i][0] + self.constructor_locked_label_offset[0],
-                                    y=self.track_cells_positions[i][1] + self.constructor_locked_label_offset[1],
-                                    anchor_x='center', anchor_y='center', batch=self.batch,
-                                    group=self.groups['button_text'])
-                    else:
-                        self.locked_tracks_labels[dictionary_keys[i]] \
-                            = Label(' ', font_name='Webdings', font_size=self.constructor_locked_label_font_size,
-                                    color=(112, 112, 112, 255),
-                                    x=self.track_cells_positions[i][0] + self.constructor_locked_label_offset[0],
-                                    y=self.track_cells_positions[i][1] + self.constructor_locked_label_offset[1],
-                                    anchor_x='center', anchor_y='center', batch=self.batch,
-                                    group=self.groups['button_text'])
-
-                self.title_tracks_labels[dictionary_keys[i]] \
-                    = Label(f'Track {dictionary_keys[i]}', font_name='Arial',
-                            font_size=self.constructor_title_text_font_size, color=(255, 255, 255, 255),
-                            x=self.track_cells_positions[i][0] + self.constructor_title_text_offset[0],
-                            y=self.track_cells_positions[i][1] + self.constructor_title_text_offset[1],
-                            anchor_x='left', anchor_y='center', batch=self.batch, group=self.groups['button_text'])
-
-                if track_state_matrix[dictionary_keys[i]][self.track_state_unlock_available]:
-                    self.description_tracks_labels[dictionary_keys[i]] \
-                        = Label('Available for {} ¤'
-                                .format(track_state_matrix[dictionary_keys[i]][self.track_state_price]),
-                                font_name='Arial', font_size=self.constructor_description_text_font_size,
-                                color=(0, 192, 0, 255),
-                                x=self.track_cells_positions[i][0] + self.constructor_description_text_offset[0],
-                                y=self.track_cells_positions[i][1] + self.constructor_description_text_offset[1],
-                                anchor_x='left', anchor_y='center', batch=self.batch, group=self.groups['button_text'])
-                elif track_state_matrix[dictionary_keys[i]][self.track_state_under_construction]:
-                    construction_time = track_state_matrix[dictionary_keys[i]][self.track_state_construction_time]
-                    self.description_tracks_labels[dictionary_keys[i]] \
-                        = Label('Under construction. {}h {}min left'
-                                .format(construction_time // 14400, (construction_time // 240) % 60),
-                                font_name='Arial', font_size=self.constructor_description_text_font_size,
-                                color=(255, 127, 0, 255),
-                                x=self.track_cells_positions[i][0] + self.constructor_description_text_offset[0],
-                                y=self.track_cells_positions[i][1] + self.constructor_description_text_offset[1],
-                                anchor_x='left', anchor_y='center', batch=self.batch,
-                                group=self.groups['button_text'])
-                else:
-                    if not track_state_matrix[dictionary_keys[i]][self.track_state_unlock_condition_from_level]:
-                        self.description_tracks_labels[dictionary_keys[i]] \
-                            = Label('Requires level {}'
-                                    .format(track_state_matrix[dictionary_keys[i]][self.track_state_level]),
-                                    font_name='Arial', font_size=self.constructor_description_text_font_size,
-                                    color=(112, 112, 112, 255),
-                                    x=self.track_cells_positions[i][0] + self.constructor_description_text_offset[0],
-                                    y=self.track_cells_positions[i][1] + self.constructor_description_text_offset[1],
-                                    anchor_x='left', anchor_y='center', batch=self.batch,
-                                    group=self.groups['button_text'])
-                    elif not track_state_matrix[dictionary_keys[i]][self.track_state_unlock_condition_from_environment]:
-                        self.description_tracks_labels[dictionary_keys[i]] \
-                            = Label('Requires environment Tier X',
-                                    font_name='Arial', font_size=self.constructor_description_text_font_size,
-                                    color=(112, 112, 112, 255),
-                                    x=self.track_cells_positions[i][0] + self.constructor_description_text_offset[0],
-                                    y=self.track_cells_positions[i][1] + self.constructor_description_text_offset[1],
-                                    anchor_x='left', anchor_y='center', batch=self.batch,
-                                    group=self.groups['button_text'])
-                    elif not track_state_matrix[dictionary_keys[i]][
-                        self.track_state_unlock_condition_from_previous_track
-                    ]:
-                        self.description_tracks_labels[dictionary_keys[i]] \
-                            = Label('Build track {} to unlock'.format(dictionary_keys[i] - 1),
-                                    font_name='Arial', font_size=self.constructor_description_text_font_size,
-                                    color=(112, 112, 112, 255),
-                                    x=self.track_cells_positions[i][0] + self.constructor_description_text_offset[0],
-                                    y=self.track_cells_positions[i][1] + self.constructor_description_text_offset[1],
-                                    anchor_x='left', anchor_y='center', batch=self.batch,
-                                    group=self.groups['button_text'])
-
-                break
+        self.track_state_matrix = track_state_matrix
 
     @_view_is_active
     def on_unlock_track_live(self, track):

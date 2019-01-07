@@ -130,7 +130,6 @@ class SchedulerView(View):
         for b in self.buttons:
             b.on_position_changed((screen_resolution[0] - b.x_margin, screen_resolution[1] - b.y_margin))
 
-    @_view_is_active
     def on_update_train_labels(self, base_schedule, game_time):
         self.base_schedule = base_schedule
         self.game_time = game_time
