@@ -187,7 +187,7 @@ class AppView(View):
 
     def on_draw_main_frame(self):
         self.shader.use()
+        self.shader.uniforms.is_game_activated = int(self.controller.game.view.is_activated)
         self.shader.uniforms.screen_resolution = self.screen_resolution
-        self.shader.uniforms.is_game_activated = self.controller.game.is_activated
         self.main_frame_sprite.draw(GL_QUADS)
         self.shader.clear()
