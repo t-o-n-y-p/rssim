@@ -387,7 +387,8 @@ class ConstructorView(View):
     def on_update_money(self, money, track_state_matrix):
         self.money = money
         self.track_state_matrix = track_state_matrix
-        self.on_update_live_track_state(track_state_matrix, list(track_state_matrix.keys())[0])
+        if len(self.track_state_matrix) > 0:
+            self.on_update_live_track_state(track_state_matrix, list(track_state_matrix.keys())[0])
 
     @_view_is_active
     @_track_is_in_top4
