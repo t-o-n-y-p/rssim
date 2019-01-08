@@ -1,6 +1,4 @@
 from pyglet.text import Label
-from pyglet.image import load
-from pyglet.sprite import Sprite
 
 from .view_base import View
 from .button import CloseScheduleButton
@@ -30,17 +28,20 @@ class SchedulerView(View):
         super().__init__(user_db_cursor, config_db_cursor, surface, batch, main_frame_batch, ui_batch, groups)
         self.departure_text = ['West City', 'East City', 'North-West City', 'South-East City']
         self.screen_resolution = (1280, 720)
-        self.background_image = load('img/schedule/schedule_1280_720.png')
-        self.background_sprite = None
+        self.schedule_opacity = 0
         self.schedule_top_left_line = [0, 0]
         self.schedule_departure_top_left_line = [0, 0]
         self.schedule_line_step_x = 0
         self.schedule_line_step_y = 0
         self.schedule_font_size = 0
+        self.schedule_left_caption = [0, 0]
+        self.schedule_caption_font_size = 0
         self.on_read_ui_info()
         self.train_labels = []
         self.base_schedule = None
         self.game_time = None
+        self.left_schedule_caption_sprite = None
+        self.right_schedule_caption_sprite = None
         self.close_schedule_button = CloseScheduleButton(surface=self.surface, batch=self.ui_batch, groups=self.groups,
                                                          on_click_action=on_close_schedule)
         self.buttons.append(self.close_schedule_button)
@@ -56,10 +57,18 @@ class SchedulerView(View):
     @_view_is_not_active
     def on_activate(self):
         self.is_activated = True
-        if self.background_sprite is None:
-            self.background_sprite = Sprite(self.background_image, x=0, y=78, batch=self.ui_batch,
-                                            group=self.groups['main_frame'])
-            self.background_sprite.opacity = 0
+        self.left_schedule_caption_sprite \
+            = Label('Train #          Arrival            Departed from         Cars   Stop, m:s',
+                    font_name='Arial', font_size=self.schedule_caption_font_size,
+                    x=self.schedule_left_caption[0], y=self.schedule_left_caption[1],
+                    anchor_x='center', anchor_y='center', batch=self.ui_batch,
+                    group=self.groups['button_text'])
+        self.right_schedule_caption_sprite \
+            = Label('Train #          Arrival            Departed from         Cars   Stop, m:s',
+                    font_name='Arial', font_size=self.schedule_caption_font_size,
+                    x=self.schedule_left_caption[0] + self.schedule_line_step_x, y=self.schedule_left_caption[1],
+                    anchor_x='center', anchor_y='center', batch=self.ui_batch,
+                    group=self.groups['button_text'])
 
         for b in self.buttons:
             if b.to_activate_on_controller_init:
@@ -68,6 +77,10 @@ class SchedulerView(View):
     @_view_is_active
     def on_deactivate(self):
         self.is_activated = False
+        self.left_schedule_caption_sprite.delete()
+        self.left_schedule_caption_sprite = None
+        self.right_schedule_caption_sprite.delete()
+        self.right_schedule_caption_sprite = None
         for label in self.train_labels:
             label.delete()
 
@@ -77,8 +90,8 @@ class SchedulerView(View):
 
     def on_update(self):
         if self.is_activated:
-            if self.background_sprite.opacity < 255:
-                self.background_sprite.opacity += 15
+            if self.schedule_opacity < 255:
+                self.schedule_opacity += 15
 
             for i in range(min(len(self.base_schedule), 32)):
                 if self.base_schedule[i][1] < self.game_time + 14400 and len(self.train_labels) < (i + 1) * 2:
@@ -104,20 +117,20 @@ class SchedulerView(View):
                               group=self.groups['button_text']))
                     break
 
-        if not self.is_activated and self.background_sprite is not None:
-            if self.background_sprite.opacity > 0:
-                self.background_sprite.opacity -= 15
-                if self.background_sprite.opacity <= 0:
-                    self.background_sprite.delete()
-                    self.background_sprite = None
+        if not self.is_activated:
+            if self.schedule_opacity > 0:
+                self.schedule_opacity -= 15
 
     def on_change_screen_resolution(self, screen_resolution):
         self.screen_resolution = screen_resolution
-        self.background_image = load('img/schedule/schedule_{}_{}.png'
-                                     .format(self.screen_resolution[0], self.screen_resolution[1]))
         self.on_read_ui_info()
         if self.is_activated:
-            self.background_sprite.image = self.background_image
+            self.left_schedule_caption_sprite.x = self.schedule_left_caption[0]
+            self.left_schedule_caption_sprite.y = self.schedule_left_caption[1]
+            self.left_schedule_caption_sprite.font_size = self.schedule_caption_font_size
+            self.right_schedule_caption_sprite.x = self.schedule_left_caption[0] + self.schedule_line_step_x
+            self.right_schedule_caption_sprite.y = self.schedule_left_caption[1]
+            self.right_schedule_caption_sprite.font_size = self.schedule_caption_font_size
             for i in range(len(self.train_labels) // 2):
                 self.train_labels[i * 2].x = self.schedule_top_left_line[0] + self.schedule_line_step_x * (i // 16)
                 self.train_labels[i * 2].y = self.schedule_top_left_line[1] - (i % 16) * self.schedule_line_step_y
@@ -150,10 +163,13 @@ class SchedulerView(View):
     def on_read_ui_info(self):
         self.config_db_cursor.execute('''SELECT schedule_top_left_line_x, schedule_top_left_line_y,
                                          schedule_departure_top_left_line_x, schedule_departure_top_left_line_y,
-                                         schedule_line_step_x, schedule_line_step_y, schedule_font_size
+                                         schedule_line_step_x, schedule_line_step_y, schedule_font_size,
+                                         schedule_left_caption_x, schedule_left_caption_y, 
+                                         schedule_caption_font_size
                                          FROM screen_resolution_config WHERE app_width = ? AND app_height = ?''',
                                       (self.screen_resolution[0], self.screen_resolution[1]))
         self.schedule_top_left_line[0], self.schedule_top_left_line[1], \
             self.schedule_departure_top_left_line[0], self.schedule_departure_top_left_line[1], \
-            self.schedule_line_step_x, self.schedule_line_step_y, self.schedule_font_size \
+            self.schedule_line_step_x, self.schedule_line_step_y, self.schedule_font_size, \
+            self.schedule_left_caption[0], self.schedule_left_caption[1], self.schedule_caption_font_size \
             = self.config_db_cursor.fetchone()
