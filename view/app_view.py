@@ -1,3 +1,5 @@
+import time
+
 from pyglet.image import load
 from pyglet.sprite import Sprite
 from pyglet.window import mouse
@@ -189,5 +191,6 @@ class AppView(View):
         self.shader.use()
         self.shader.uniforms.is_game_activated = int(self.controller.game.view.is_activated)
         self.shader.uniforms.screen_resolution = self.screen_resolution
+        self.shader.uniforms.game_frame_opacity = self.controller.game.view.game_frame_opacity
         self.main_frame_sprite.draw(GL_QUADS)
         self.shader.clear()

@@ -37,6 +37,7 @@ class GameView(View):
 
         super().__init__(user_db_cursor, config_db_cursor, surface, batch, main_frame_batch, ui_batch, groups)
         self.screen_resolution = (1280, 720)
+        self.game_frame_opacity = 0
         self.progress_bar_inactive_image = load('img/game_progress_bars/progress_bar_inactive.png')
         self.progress_bar_exp_inactive = None
         self.progress_bar_money_inactive = None
@@ -63,6 +64,9 @@ class GameView(View):
 
     def on_update(self):
         if self.is_activated:
+            if self.game_frame_opacity < 255:
+                self.game_frame_opacity += 15
+
             if self.progress_bar_exp_inactive.opacity < 255:
                 self.progress_bar_exp_inactive.opacity += 15
 
@@ -76,6 +80,9 @@ class GameView(View):
                 self.progress_bar_money_active.opacity += 15
 
         if not self.is_activated:
+            if self.game_frame_opacity > 0:
+                self.game_frame_opacity -= 15
+
             if self.progress_bar_exp_inactive is not None:
                 if self.progress_bar_exp_inactive.opacity > 0:
                     self.progress_bar_exp_inactive.opacity -= 15
