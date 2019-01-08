@@ -9,7 +9,7 @@ from model import AppModel, GameModel, MapModel, SettingsModel, FPSModel, Schedu
 from view import AppView, GameView, MapView, SettingsView, FPSView, SchedulerView, SignalView, TrainRouteView, \
                  RailroadSwitchView, CrossoverView, TrainView, DispatcherView, ConstructorView
 
-car_collections = 3
+car_collections = 4
 
 car_head_image = []
 for i in range(car_collections):

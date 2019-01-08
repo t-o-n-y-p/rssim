@@ -6,7 +6,7 @@ from ctrl import TrainController
 from .train_model import TrainModel
 from view import TrainView
 
-car_collections = 3
+car_collections = 4
 
 car_head_image = []
 for i in range(car_collections):
