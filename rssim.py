@@ -33,6 +33,7 @@ class RSSim:
         resource.reindex()
         self.user_db_connection = connect('db/user.db')
         self.user_db_cursor = self.user_db_connection.cursor()
+        self.check_for_updates()
         self.config_db_connection = connect('db/config.db')
         self.config_db_cursor = self.config_db_connection.cursor()
         gl.glEnable(gl.GL_BLEND)
@@ -115,6 +116,13 @@ class RSSim:
             if perf_counter() - fps_timer > 0.2:
                 self.app.on_update_fps(round(float(1/(time_4 - time_1))))
                 fps_timer = perf_counter()
+
+    def check_for_updates(self):
+        self.user_db_cursor.execute('SELECT * FROM sqlite_master WHERE type = "table" AND tbl_name = "version"')
+        if len(self.user_db_cursor.fetchall()) == 0:
+            self.user_db_cursor.execute('CREATE TABLE version (major integer, minor integer, patch integer)')
+            self.user_db_cursor.execute('INSERT INTO version VALUES (0, 9, 1)')
+            self.user_db_connection.commit()
 
 
 def main():
