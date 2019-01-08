@@ -1,7 +1,3 @@
-import time
-
-from pyglet.image import load
-from pyglet.sprite import Sprite
 from pyglet.window import mouse
 from pyglet.text import Label
 from pyglet.gl import GL_QUADS
