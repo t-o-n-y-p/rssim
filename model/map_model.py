@@ -50,7 +50,8 @@ for i in range(len(boarding_light_image)):
     boarding_light_image[i].anchor_y = boarding_light_image[i].height // 2
 
 
-def create_train(user_db_connection, user_db_cursor, config_db_cursor, surface, batch, groups, map_controller,
+def create_train(user_db_connection, user_db_cursor, config_db_cursor, surface,
+                 batch, main_frame_batch, ui_batch, groups, map_controller,
                  train_id, cars=None, track=None, train_route=None, state=None, direction=None, new_direction=None,
                  current_direction=None, priority=None, boarding_time=None, exp=None, money=None,
                  created_by='database'):
@@ -64,7 +65,7 @@ def create_train(user_db_connection, user_db_cursor, config_db_cursor, surface, 
     else:
         model.on_train_setup(train_id)
 
-    view = TrainView(user_db_cursor, config_db_cursor, surface, batch, groups)
+    view = TrainView(user_db_cursor, config_db_cursor, surface, batch, main_frame_batch, ui_batch, groups)
     view.car_head_image = car_head_image
     view.car_mid_image = car_mid_image
     view.car_tail_image = car_tail_image
@@ -126,6 +127,7 @@ class MapModel(Model):
     def on_create_train(self, train_id, cars, track, train_route, status, direction, new_direction,
                         current_direction, priority, boarding_time, exp, money):
         return create_train(self.user_db_connection, self.user_db_cursor, self.config_db_cursor, self.view.surface,
-                            self.view.batch, self.view.groups, self.controller, train_id, cars, track, train_route,
+                            self.view.batch, self.view.main_frame_batch, self.view.ui_batch, self.view.groups,
+                            self.controller, train_id, cars, track, train_route,
                             status, direction, new_direction, current_direction, priority, boarding_time, exp, money,
                             created_by='dispatcher')

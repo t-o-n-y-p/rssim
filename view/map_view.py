@@ -57,7 +57,7 @@ def _cursor_is_on_the_map(fn):
 
 
 class MapView(View):
-    def __init__(self, user_db_cursor, config_db_cursor, surface, batch, groups):
+    def __init__(self, user_db_cursor, config_db_cursor, surface, batch, main_frame_batch, ui_batch, groups):
         def on_zoom_in_button(button):
             button.on_deactivate()
             button.paired_button.on_activate()
@@ -82,7 +82,7 @@ class MapView(View):
             button.on_deactivate()
             self.controller.on_open_constructor()
 
-        super().__init__(user_db_cursor, config_db_cursor, surface, batch, groups)
+        super().__init__(user_db_cursor, config_db_cursor, surface, batch, main_frame_batch, ui_batch, groups)
         self.user_db_cursor.execute('SELECT unlocked_tracks FROM game_progress')
         self.unlocked_tracks = self.user_db_cursor.fetchone()[0]
         self.map_offset = ()
@@ -96,16 +96,16 @@ class MapView(View):
         self.base_offset_upper_right_limit = (-6912, -3376)
         self.zoom_factor = 1.0
         self.zoom_out_activated = False
-        self.zoom_in_button = ZoomInButton(surface=self.surface, batch=self.batch, groups=self.groups,
+        self.zoom_in_button = ZoomInButton(surface=self.surface, batch=self.ui_batch, groups=self.groups,
                                            on_click_action=on_zoom_in_button, on_hover_action=on_hover_action,
                                            on_leave_action=on_leave_action)
-        self.zoom_out_button = ZoomOutButton(surface=self.surface, batch=self.batch, groups=self.groups,
+        self.zoom_out_button = ZoomOutButton(surface=self.surface, batch=self.ui_batch, groups=self.groups,
                                              on_click_action=on_zoom_out_button, on_hover_action=on_hover_action,
                                              on_leave_action=on_leave_action)
-        self.open_schedule_button = OpenScheduleButton(surface=self.surface, batch=self.batch, groups=self.groups,
+        self.open_schedule_button = OpenScheduleButton(surface=self.surface, batch=self.ui_batch, groups=self.groups,
                                                        on_click_action=on_open_schedule)
-        self.open_constructor_button = OpenConstructorButton(surface=self.surface, batch=self.batch, groups=self.groups,
-                                                             on_click_action=on_open_constructor)
+        self.open_constructor_button = OpenConstructorButton(surface=self.surface, batch=self.ui_batch,
+                                                             groups=self.groups, on_click_action=on_open_constructor)
         self.zoom_in_button.paired_button = self.zoom_out_button
         self.zoom_out_button.paired_button = self.zoom_in_button
         self.buttons.append(self.zoom_in_button)

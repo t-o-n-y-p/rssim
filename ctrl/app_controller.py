@@ -87,3 +87,6 @@ class AppController(Controller):
 
     def on_hide_fps(self):
         self.fps.on_deactivate()
+
+    def on_draw_main_frame(self):
+        self.view.on_draw_main_frame()

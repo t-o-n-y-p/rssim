@@ -22,7 +22,7 @@ def _view_is_not_active(fn):
 
 
 class SettingsView(View):
-    def __init__(self, user_db_cursor, config_db_cursor, surface, batch, groups):
+    def __init__(self, user_db_cursor, config_db_cursor, surface, batch, main_frame_batch, ui_batch, groups):
         def on_accept_settings(button):
             self.controller.on_save_and_commit_state()
             self.controller.on_deactivate()
@@ -50,23 +50,23 @@ class SettingsView(View):
 
             self.increment_windowed_resolution_button.on_activate()
 
-        super().__init__(user_db_cursor, config_db_cursor, surface, batch, groups)
+        super().__init__(user_db_cursor, config_db_cursor, surface, batch, main_frame_batch, ui_batch, groups)
         self.temp_windowed_resolution = (0, 0)
         self.screen_resolution = (1280, 720)
         self.temp_fullscreen_mode = False
         self.available_windowed_resolutions = []
         self.available_windowed_resolutions_position = 0
-        self.accept_settings_button = AcceptSettingsButton(surface=self.surface, batch=self.batch, groups=self.groups,
-                                                           on_click_action=on_accept_settings)
+        self.accept_settings_button = AcceptSettingsButton(surface=self.surface, batch=self.ui_batch,
+                                                           groups=self.groups, on_click_action=on_accept_settings)
         self.buttons.append(self.accept_settings_button)
-        self.reject_settings_button = RejectSettingsButton(surface=self.surface, batch=self.batch, groups=self.groups,
-                                                           on_click_action=on_reject_settings)
+        self.reject_settings_button = RejectSettingsButton(surface=self.surface, batch=self.ui_batch,
+                                                           groups=self.groups, on_click_action=on_reject_settings)
         self.buttons.append(self.reject_settings_button)
         self.increment_windowed_resolution_button \
-            = IncrementWindowedResolutionButton(surface=self.surface, batch=self.batch, groups=self.groups,
+            = IncrementWindowedResolutionButton(surface=self.surface, batch=self.ui_batch, groups=self.groups,
                                                 on_click_action=on_increment_windowed_resolution)
         self.decrement_windowed_resolution_button \
-            = DecrementWindowedResolutionButton(surface=self.surface, batch=self.batch, groups=self.groups,
+            = DecrementWindowedResolutionButton(surface=self.surface, batch=self.ui_batch, groups=self.groups,
                                                 on_click_action=on_decrement_windowed_resolution)
         self.buttons.append(self.increment_windowed_resolution_button)
         self.buttons.append(self.decrement_windowed_resolution_button)
@@ -79,11 +79,11 @@ class SettingsView(View):
         self.temp_windowed_resolution_label \
             = Label('{}x{}'.format(self.temp_windowed_resolution[0], self.temp_windowed_resolution[1]),
                     font_name='Arial', bold=False, font_size=16, x=217, y=self.screen_resolution[1] - 183,
-                    anchor_x='center', anchor_y='center', batch=self.batch, group=self.groups['button_text'])
+                    anchor_x='center', anchor_y='center', batch=self.ui_batch, group=self.groups['button_text'])
         self.windowed_resolution_description_label \
             = Label('Game resolution in window mode (not fullscreen):',
                     font_name='Arial', bold=False, font_size=16, x=100, y=self.screen_resolution[1] - 133,
-                    anchor_x='left', anchor_y='center', batch=self.batch, group=self.groups['button_text'])
+                    anchor_x='left', anchor_y='center', batch=self.ui_batch, group=self.groups['button_text'])
         for b in self.buttons:
             if b.to_activate_on_controller_init:
                 b.on_activate()
@@ -115,11 +115,11 @@ class SettingsView(View):
             self.temp_windowed_resolution_label \
                 = Label('{}x{}'.format(self.temp_windowed_resolution[0], self.temp_windowed_resolution[1]),
                         font_name='Arial', bold=False, font_size=16, x=217, y=self.screen_resolution[1] - 183,
-                        anchor_x='center', anchor_y='center', batch=self.batch, group=self.groups['button_text'])
+                        anchor_x='center', anchor_y='center', batch=self.ui_batch, group=self.groups['button_text'])
             self.windowed_resolution_description_label \
                 = Label('Game resolution in window mode (not fullscreen):',
                         font_name='Arial', bold=False, font_size=16, x=100, y=self.screen_resolution[1] - 133,
-                        anchor_x='left', anchor_y='center', batch=self.batch, group=self.groups['button_text'])
+                        anchor_x='left', anchor_y='center', batch=self.ui_batch, group=self.groups['button_text'])
 
     def on_change_temp_windowed_resolution(self, windowed_resolution):
         self.temp_windowed_resolution = windowed_resolution

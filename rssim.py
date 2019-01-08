@@ -39,6 +39,8 @@ class RSSim:
         gl.glEnable(gl.GL_BLEND)
         gl.glBlendFunc(gl.GL_SRC_ALPHA, gl.GL_ONE_MINUS_SRC_ALPHA)
         self.batch = Batch()
+        self.main_frame_batch = Batch()
+        self.ui_batch = Batch()
         self.groups = {}
         numbered_groups = []
         for i in range(10):
@@ -66,7 +68,8 @@ class RSSim:
         self.surface.flip()
         self.app = create_app(user_db_connection=self.user_db_connection, user_db_cursor=self.user_db_cursor,
                               config_db_cursor=self.config_db_cursor,
-                              surface=self.surface, batch=self.batch, groups=self.groups)
+                              surface=self.surface, batch=self.batch, main_frame_batch=self.main_frame_batch,
+                              ui_batch=self.ui_batch, groups=self.groups)
         self.app.on_activate()
         self.app.on_change_screen_resolution(self.app.settings.model.screen_resolution,
                                              self.app.settings.model.fullscreen_mode)
@@ -77,6 +80,8 @@ class RSSim:
         def on_draw():
             self.surface.clear()
             self.batch.draw()
+            self.app.on_draw_main_frame()
+            self.ui_batch.draw()
 
         @surface.event
         def on_mouse_press(x, y, button, modifiers):

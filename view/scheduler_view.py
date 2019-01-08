@@ -23,11 +23,11 @@ def _view_is_not_active(fn):
 
 
 class SchedulerView(View):
-    def __init__(self, user_db_cursor, config_db_cursor, surface, batch, groups):
+    def __init__(self, user_db_cursor, config_db_cursor, surface, batch, main_frame_batch, ui_batch, groups):
         def on_close_schedule(button):
             self.controller.on_deactivate_view()
 
-        super().__init__(user_db_cursor, config_db_cursor, surface, batch, groups)
+        super().__init__(user_db_cursor, config_db_cursor, surface, batch, main_frame_batch, ui_batch, groups)
         self.departure_text = ['West City', 'East City', 'North-West City', 'South-East City']
         self.screen_resolution = (1280, 720)
         self.background_image = load('img/schedule/schedule_1280_720.png')
@@ -41,7 +41,7 @@ class SchedulerView(View):
         self.train_labels = []
         self.base_schedule = None
         self.game_time = None
-        self.close_schedule_button = CloseScheduleButton(surface=self.surface, batch=self.batch, groups=self.groups,
+        self.close_schedule_button = CloseScheduleButton(surface=self.surface, batch=self.ui_batch, groups=self.groups,
                                                          on_click_action=on_close_schedule)
         self.buttons.append(self.close_schedule_button)
         self.base_train_id = 0
@@ -57,7 +57,7 @@ class SchedulerView(View):
     def on_activate(self):
         self.is_activated = True
         if self.background_sprite is None:
-            self.background_sprite = Sprite(self.background_image, x=0, y=78, batch=self.batch,
+            self.background_sprite = Sprite(self.background_image, x=0, y=78, batch=self.ui_batch,
                                             group=self.groups['main_frame'])
             self.background_sprite.opacity = 0
 
@@ -93,13 +93,15 @@ class SchedulerView(View):
                               font_name='Perfo', bold=True, font_size=self.schedule_font_size,
                               x=self.schedule_top_left_line[0] + self.schedule_line_step_x * (i // 16),
                               y=self.schedule_top_left_line[1] - (i % 16) * self.schedule_line_step_y,
-                              anchor_x='center', anchor_y='center', batch=self.batch, group=self.groups['button_text']))
+                              anchor_x='center', anchor_y='center', batch=self.ui_batch,
+                              group=self.groups['button_text']))
                     self.train_labels.append(
                         Label(self.departure_text[self.base_schedule[i][self.base_direction]],
                               font_name='Perfo', bold=True, font_size=self.schedule_font_size,
                               x=self.schedule_departure_top_left_line[0] + self.schedule_line_step_x * (i // 16),
                               y=self.schedule_departure_top_left_line[1] - (i % 16) * self.schedule_line_step_y,
-                              anchor_x='center', anchor_y='center', batch=self.batch, group=self.groups['button_text']))
+                              anchor_x='center', anchor_y='center', batch=self.ui_batch,
+                              group=self.groups['button_text']))
                     break
 
         if not self.is_activated and self.background_sprite is not None:

@@ -1,10 +1,12 @@
 class View:
-    def __init__(self, user_db_cursor, config_db_cursor, surface, batch, groups):
+    def __init__(self, user_db_cursor, config_db_cursor, surface, batch, main_frame_batch, ui_batch, groups):
         self.user_db_cursor = user_db_cursor
         self.config_db_cursor = config_db_cursor
         self.controller = None
         self.surface = surface
         self.batch = batch
+        self.main_frame_batch = main_frame_batch
+        self.ui_batch = ui_batch
         self.groups = groups
         self.is_activated = False
         self.buttons = []

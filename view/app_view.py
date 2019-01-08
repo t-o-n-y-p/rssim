@@ -2,6 +2,8 @@ from pyglet.image import load
 from pyglet.sprite import Sprite
 from pyglet.window import mouse
 from pyglet.text import Label
+from pyglet.gl import GL_QUADS
+from pyshaders import from_files_names
 from win32api import GetCursorPos
 from win32gui import GetActiveWindow, GetWindowRect, SetWindowPos
 from win32con import HWND_TOP, SWP_NOREDRAW
@@ -59,7 +61,7 @@ def _view_is_not_active(fn):
 
 
 class AppView(View):
-    def __init__(self, user_db_cursor, config_db_cursor, surface, batch, groups):
+    def __init__(self, user_db_cursor, config_db_cursor, surface, batch, main_frame_batch, ui_batch, groups):
         def on_close_game(button):
             self.controller.on_close_game()
 
@@ -76,19 +78,20 @@ class AppView(View):
             button.on_deactivate()
             self.controller.settings.on_activate()
 
-        super().__init__(user_db_cursor, config_db_cursor, surface, batch, groups)
-        self.main_frame = load('img/main_frame/main_frame_1280_720.png')
+        super().__init__(user_db_cursor, config_db_cursor, surface, batch, main_frame_batch, ui_batch, groups)
+        self.screen_resolution = (1280, 720)
+        self.shader = from_files_names('shaders/main_frame/shader.vert', 'shaders/main_frame/shader.frag')
         self.title_label = None
         self.main_frame_sprite = None
-        self.buttons.append(CloseGameButton(surface=self.surface, batch=self.batch, groups=self.groups,
+        self.buttons.append(CloseGameButton(surface=self.surface, batch=self.ui_batch, groups=self.groups,
                                             on_click_action=on_close_game))
-        self.buttons.append(IconifyGameButton(surface=self.surface, batch=self.batch, groups=self.groups,
+        self.buttons.append(IconifyGameButton(surface=self.surface, batch=self.ui_batch, groups=self.groups,
                                               on_click_action=on_iconify_game))
-        self.fullscreen_button = FullscreenButton(surface=self.surface, batch=self.batch, groups=self.groups,
+        self.fullscreen_button = FullscreenButton(surface=self.surface, batch=self.ui_batch, groups=self.groups,
                                                   on_click_action=on_app_window_fullscreen)
-        self.restore_button = RestoreButton(surface=self.surface, batch=self.batch, groups=self.groups,
+        self.restore_button = RestoreButton(surface=self.surface, batch=self.ui_batch, groups=self.groups,
                                             on_click_action=on_app_window_restore)
-        self.open_settings_button = OpenSettingsButton(surface=self.surface, batch=self.batch, groups=self.groups,
+        self.open_settings_button = OpenSettingsButton(surface=self.surface, batch=self.ui_batch, groups=self.groups,
                                                        on_click_action=on_open_settings)
         self.fullscreen_button.paired_button = self.restore_button
         self.restore_button.paired_button = self.fullscreen_button
@@ -105,26 +108,18 @@ class AppView(View):
         self.on_mouse_drag_handlers.append(self.handle_mouse_drag)
 
     def on_update(self):
-        if self.is_activated and self.main_frame_sprite.opacity < 255:
-            self.main_frame_sprite.opacity += 15
-
-        if not self.is_activated and self.main_frame_sprite is not None:
-            if self.main_frame_sprite.opacity > 0:
-                self.main_frame_sprite.opacity -= 15
-                if self.main_frame_sprite.opacity <= 0:
-                    self.main_frame_sprite.delete()
-                    self.main_frame_sprite = None
+        pass
 
     @_view_is_not_active
     def on_activate(self):
         self.is_activated = True
         self.title_label = Label('Railway Station Simulator', font_name='Arial', font_size=13,
-                                 x=10, y=703, anchor_x='left', anchor_y='center', batch=self.batch,
+                                 x=10, y=703, anchor_x='left', anchor_y='center', batch=self.ui_batch,
                                  group=self.groups['button_text'])
         if self.main_frame_sprite is None:
-            self.main_frame_sprite = Sprite(self.main_frame, x=0, y=0, batch=self.batch,
-                                            group=self.groups['main_frame'])
-            self.main_frame_sprite.opacity = 0
+            self.main_frame_sprite\
+                = self.main_frame_batch.add(4, GL_QUADS, self.groups['main_frame'],
+                                            ('v2f/static', (-1.0, -1.0, -1.0, 1.0, 1.0, 1.0, 1.0, -1.0)))
 
         for b in self.buttons:
             if b.to_activate_on_controller_init:
@@ -133,24 +128,23 @@ class AppView(View):
     @_view_is_active
     def on_deactivate(self):
         self.is_activated = False
+        self.main_frame_sprite.delete()
+        self.main_frame_sprite = None
         self.title_label.delete()
         self.title_label = None
         for b in self.buttons:
             b.on_deactivate()
 
     def on_change_screen_resolution(self, screen_resolution, fullscreen):
+        self.screen_resolution = screen_resolution
         if not fullscreen:
             self.surface.set_size(screen_resolution[0], screen_resolution[1])
-
-        self.main_frame = load('img/main_frame/main_frame_{}_{}.png'.format(screen_resolution[0], screen_resolution[1]))
-        if self.is_activated:
-            self.main_frame_sprite.image = self.main_frame
 
         self.title_label.delete()
         self.title_label = None
         self.title_label = Label('Railway Station Simulator', font_name='Arial', font_size=13,
                                  x=10, y=screen_resolution[1] - 17, anchor_x='left', anchor_y='center',
-                                 batch=self.batch, group=self.groups['button_text'])
+                                 batch=self.ui_batch, group=self.groups['button_text'])
         self.open_settings_button.y_margin = screen_resolution[1]
         for b in self.buttons:
             b.on_position_changed((screen_resolution[0] - b.x_margin, screen_resolution[1] - b.y_margin))
@@ -190,3 +184,10 @@ class AppView(View):
                      self.absolute_mouse_pos[1] - self.app_window_move_offset[1],
                      self.game_window_position[2] - self.game_window_position[0],
                      self.game_window_position[3] - self.game_window_position[1], SWP_NOREDRAW)
+
+    def on_draw_main_frame(self):
+        self.shader.use()
+        self.shader.uniforms.screen_resolution = self.screen_resolution
+        self.shader.uniforms.is_game_activated = self.controller.game.is_activated
+        self.main_frame_sprite.draw(GL_QUADS)
+        self.shader.clear()

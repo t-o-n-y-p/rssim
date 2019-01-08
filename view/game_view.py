@@ -24,7 +24,7 @@ def _view_is_not_active(fn):
 
 
 class GameView(View):
-    def __init__(self, user_db_cursor, config_db_cursor, surface, batch, groups):
+    def __init__(self, user_db_cursor, config_db_cursor, surface, batch, main_frame_batch, ui_batch, groups):
         def on_pause_game(button):
             button.on_deactivate()
             button.paired_button.on_activate()
@@ -35,7 +35,7 @@ class GameView(View):
             button.paired_button.on_activate()
             self.controller.on_resume_game()
 
-        super().__init__(user_db_cursor, config_db_cursor, surface, batch, groups)
+        super().__init__(user_db_cursor, config_db_cursor, surface, batch, main_frame_batch, ui_batch, groups)
         self.screen_resolution = (1280, 720)
         self.game_frame = load('img/game_frame/game_frame_1280_720.png')
         self.game_frame_sprite = None
@@ -48,9 +48,9 @@ class GameView(View):
         self.progress_bar_money_active = None
         self.exp_offset = 90
         self.money_offset = 300
-        self.pause_game_button = PauseGameButton(surface=self.surface, batch=self.batch, groups=self.groups,
+        self.pause_game_button = PauseGameButton(surface=self.surface, batch=self.ui_batch, groups=self.groups,
                                                  on_click_action=on_pause_game)
-        self.resume_game_button = ResumeGameButton(surface=self.surface, batch=self.batch, groups=self.groups,
+        self.resume_game_button = ResumeGameButton(surface=self.surface, batch=self.ui_batch, groups=self.groups,
                                                    on_click_action=on_resume_game)
         self.pause_game_button.paired_button = self.resume_game_button
         self.resume_game_button.paired_button = self.pause_game_button
@@ -120,42 +120,42 @@ class GameView(View):
     def on_activate(self):
         self.is_activated = True
         if self.game_frame_sprite is None:
-            self.game_frame_sprite = Sprite(self.game_frame, x=0, y=0, batch=self.batch,
+            self.game_frame_sprite = Sprite(self.game_frame, x=0, y=0, batch=self.ui_batch,
                                             group=self.groups['main_frame'])
             self.game_frame_sprite.opacity = 0
 
         if self.progress_bar_exp_inactive is None:
             self.progress_bar_exp_inactive = Sprite(self.progress_bar_inactive_image, x=self.exp_offset, y=10,
-                                                    batch=self.batch, group=self.groups['button_background'])
+                                                    batch=self.ui_batch, group=self.groups['button_background'])
 
         if self.progress_bar_money_inactive is None:
             self.progress_bar_money_inactive = Sprite(self.progress_bar_inactive_image, x=self.money_offset, y=10,
-                                                      batch=self.batch, group=self.groups['button_background'])
+                                                      batch=self.ui_batch, group=self.groups['button_background'])
 
         if self.progress_bar_exp_active is None:
             self.progress_bar_exp_active = Sprite(self.progress_bar_exp_active_image, x=self.exp_offset, y=10,
-                                                  batch=self.batch, group=self.groups['button_text'])
+                                                  batch=self.ui_batch, group=self.groups['button_text'])
 
         if self.progress_bar_money_active is None:
             self.progress_bar_money_active = Sprite(self.progress_bar_money_active_image, x=self.money_offset, y=10,
-                                                    batch=self.batch, group=self.groups['button_text'])
+                                                    batch=self.ui_batch, group=self.groups['button_text'])
 
         self.level_text = Label('LEVEL 0', font_name='Perfo', bold=True, font_size=22, x=self.exp_offset + 100, y=40,
-                                anchor_x='center', anchor_y='center', batch=self.batch,
+                                anchor_x='center', anchor_y='center', batch=self.ui_batch,
                                 group=self.groups['button_text'])
         self.money_text = Label('{0:0>8} ¤'.format(0), font_name='Perfo', bold=True, color=(0, 192, 0, 255),
                                 font_size=22, x=self.money_offset + 100, y=40, anchor_x='center', anchor_y='center',
-                                batch=self.batch, group=self.groups['button_text'])
+                                batch=self.ui_batch, group=self.groups['button_text'])
 
         self.day_sprite = Label(f'DAY  {1 + self.game_time // 345600}', font_name='Perfo', bold=True, font_size=22,
                                 color=(255, 255, 255, 255), x=self.screen_resolution[0] - 181, y=57,
-                                anchor_x='center', anchor_y='center', batch=self.batch,
+                                anchor_x='center', anchor_y='center', batch=self.ui_batch,
                                 group=self.groups['button_text'])
         self.time_sprite = Label('{0:0>2} : {1:0>2}'.format((self.game_time // 14400 + 12) % 24,
                                                             (self.game_time // 240) % 60),
                                  font_name='Perfo', bold=True, font_size=22, color=(255, 255, 255, 255),
                                  x=self.screen_resolution[0] - 181, y=26, anchor_x='center', anchor_y='center',
-                                 batch=self.batch, group=self.groups['button_text'])
+                                 batch=self.ui_batch, group=self.groups['button_text'])
 
         for b in self.buttons:
             if b.to_activate_on_controller_init:
@@ -185,7 +185,7 @@ class GameView(View):
             self.day_sprite = None
             self.day_sprite = Label(f'DAY  {1 + self.game_time // 345600}', font_name='Perfo', bold=True, font_size=22,
                                     color=(255, 255, 255, 255), x=self.screen_resolution[0] - 181, y=57,
-                                    anchor_x='center', anchor_y='center', batch=self.batch,
+                                    anchor_x='center', anchor_y='center', batch=self.ui_batch,
                                     group=self.groups['button_text'])
             self.time_sprite.delete()
             self.time_sprite = None
@@ -193,7 +193,7 @@ class GameView(View):
                                                                 (self.game_time // 240) % 60),
                                      font_name='Perfo', bold=True, font_size=22, color=(255, 255, 255, 255),
                                      x=self.screen_resolution[0] - 181, y=26, anchor_x='center', anchor_y='center',
-                                     batch=self.batch, group=self.groups['button_text'])
+                                     batch=self.ui_batch, group=self.groups['button_text'])
 
         for b in self.buttons:
             b.on_position_changed((self.screen_resolution[0] - b.x_margin, 0))

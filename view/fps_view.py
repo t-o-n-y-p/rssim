@@ -20,8 +20,8 @@ def _view_is_not_active(fn):
 
 
 class FPSView(View):
-    def __init__(self, user_db_cursor, config_db_cursor, surface, batch, groups):
-        super().__init__(user_db_cursor, config_db_cursor, surface, batch, groups)
+    def __init__(self, user_db_cursor, config_db_cursor, surface, batch, main_frame_batch, ui_batch, groups):
+        super().__init__(user_db_cursor, config_db_cursor, surface, batch, main_frame_batch, ui_batch, groups)
         self.fps_label = None
         self.screen_resolution = (1280, 720)
 
@@ -33,7 +33,8 @@ class FPSView(View):
         self.is_activated = True
         self.fps_label = Label(text='0 FPS', font_name='Courier New', font_size=16,
                                x=self.screen_resolution[0] - 110, y=self.screen_resolution[1] - 17,
-                               anchor_x='right', anchor_y='center', batch=self.batch, group=self.groups['button_text'])
+                               anchor_x='right', anchor_y='center', batch=self.ui_batch,
+                               group=self.groups['button_text'])
 
     @_view_is_active
     def on_deactivate(self):
@@ -50,4 +51,5 @@ class FPSView(View):
         self.fps_label = None
         self.fps_label = Label(text='0 FPS', font_name='Courier New', font_size=16,
                                x=self.screen_resolution[0] - 110, y=self.screen_resolution[1] - 17,
-                               anchor_x='right', anchor_y='center', batch=self.batch, group=self.groups['button_text'])
+                               anchor_x='right', anchor_y='center', batch=self.ui_batch,
+                               group=self.groups['button_text'])

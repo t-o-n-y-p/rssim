@@ -31,7 +31,7 @@ def _track_is_in_top4(fn):
 
 
 class ConstructorView(View):
-    def __init__(self, user_db_cursor, config_db_cursor, surface, batch, groups):
+    def __init__(self, user_db_cursor, config_db_cursor, surface, batch, main_frame_batch, ui_batch, groups):
         def on_close_constructor(button):
             self.controller.on_deactivate_view()
 
@@ -51,7 +51,7 @@ class ConstructorView(View):
             )
             self.buttons.remove(self.buy_buttons.pop(key_for_remove))
 
-        super().__init__(user_db_cursor, config_db_cursor, surface, batch, groups)
+        super().__init__(user_db_cursor, config_db_cursor, surface, batch, main_frame_batch, ui_batch, groups)
         self.screen_resolution = (1280, 720)
         self.background_image = load('img/constructor/constructor_1280_720.png')
         self.track_cells_positions = ()
@@ -76,7 +76,7 @@ class ConstructorView(View):
         self.buy_buttons = {}
         self.no_more_tracks_available_labels = []
         self.coming_soon_environment_labels = []
-        self.close_constructor_button = CloseConstructorButton(surface=self.surface, batch=self.batch,
+        self.close_constructor_button = CloseConstructorButton(surface=self.surface, batch=self.ui_batch,
                                                                groups=self.groups, on_click_action=on_close_constructor)
         self.buttons.append(self.close_constructor_button)
         self.on_buy_track = on_buy_track
@@ -95,7 +95,7 @@ class ConstructorView(View):
     def on_activate(self):
         self.is_activated = True
         if self.background_sprite is None:
-            self.background_sprite = Sprite(self.background_image, x=0, y=78, batch=self.batch,
+            self.background_sprite = Sprite(self.background_image, x=0, y=78, batch=self.ui_batch,
                                             group=self.groups['main_frame'])
             self.background_sprite.opacity = 0
 
@@ -104,22 +104,22 @@ class ConstructorView(View):
                      color=(112, 112, 112, 255),
                      x=self.environment_cell_positions[0][0] + self.constructor_placeholder_offset[0],
                      y=self.environment_cell_positions[0][1] + self.constructor_placeholder_offset[1],
-                     anchor_x='center', anchor_y='center', batch=self.batch, group=self.groups['button_text']),
+                     anchor_x='center', anchor_y='center', batch=self.ui_batch, group=self.groups['button_text']),
                Label('Coming soon', font_name='Arial', font_size=self.constructor_placeholder_font_size,
                      color=(112, 112, 112, 255),
                      x=self.environment_cell_positions[1][0] + self.constructor_placeholder_offset[0],
                      y=self.environment_cell_positions[1][1] + self.constructor_placeholder_offset[1],
-                     anchor_x='center', anchor_y='center', batch=self.batch, group=self.groups['button_text']),
+                     anchor_x='center', anchor_y='center', batch=self.ui_batch, group=self.groups['button_text']),
                Label('Coming soon', font_name='Arial', font_size=self.constructor_placeholder_font_size,
                      color=(112, 112, 112, 255),
                      x=self.environment_cell_positions[2][0] + self.constructor_placeholder_offset[0],
                      y=self.environment_cell_positions[2][1] + self.constructor_placeholder_offset[1],
-                     anchor_x='center', anchor_y='center', batch=self.batch, group=self.groups['button_text']),
+                     anchor_x='center', anchor_y='center', batch=self.ui_batch, group=self.groups['button_text']),
                Label('Coming soon', font_name='Arial', font_size=self.constructor_placeholder_font_size,
                      color=(112, 112, 112, 255),
                      x=self.environment_cell_positions[3][0] + self.constructor_placeholder_offset[0],
                      y=self.environment_cell_positions[3][1] + self.constructor_placeholder_offset[1],
-                     anchor_x='center', anchor_y='center', batch=self.batch, group=self.groups['button_text'])
+                     anchor_x='center', anchor_y='center', batch=self.ui_batch, group=self.groups['button_text'])
                ]
 
         for b in self.buttons:
@@ -186,7 +186,7 @@ class ConstructorView(View):
                           color=(112, 112, 112, 255),
                           x=self.track_cells_positions[position_index][0] + self.constructor_placeholder_offset[0],
                           y=self.track_cells_positions[position_index][1] + self.constructor_placeholder_offset[1],
-                          anchor_x='center', anchor_y='center', batch=self.batch, group=self.groups['button_text'])
+                          anchor_x='center', anchor_y='center', batch=self.ui_batch, group=self.groups['button_text'])
                 )
 
             for i in range(available_options):
@@ -198,7 +198,7 @@ class ConstructorView(View):
                                         color=(112, 112, 112, 255),
                                         x=self.track_cells_positions[i][0] + self.constructor_locked_label_offset[0],
                                         y=self.track_cells_positions[i][1] + self.constructor_locked_label_offset[1],
-                                        anchor_x='center', anchor_y='center', batch=self.batch,
+                                        anchor_x='center', anchor_y='center', batch=self.ui_batch,
                                         group=self.groups['button_text'])
                         else:
                             self.locked_tracks_labels[dictionary_keys[i]] \
@@ -206,10 +206,10 @@ class ConstructorView(View):
                                         color=(112, 112, 112, 255),
                                         x=self.track_cells_positions[i][0] + self.constructor_locked_label_offset[0],
                                         y=self.track_cells_positions[i][1] + self.constructor_locked_label_offset[1],
-                                        anchor_x='center', anchor_y='center', batch=self.batch,
+                                        anchor_x='center', anchor_y='center', batch=self.ui_batch,
                                         group=self.groups['button_text'])
                             self.buy_buttons[dictionary_keys[i]] = BuyTrackButton(surface=self.surface,
-                                                                                  batch=self.batch,
+                                                                                  batch=self.ui_batch,
                                                                                   groups=self.groups,
                                                                                   on_click_action=self.on_buy_track)
                             self.buy_buttons[dictionary_keys[i]].x_margin \
@@ -241,7 +241,7 @@ class ConstructorView(View):
                                         color=(112, 112, 112, 255),
                                         x=self.track_cells_positions[i][0] + self.constructor_locked_label_offset[0],
                                         y=self.track_cells_positions[i][1] + self.constructor_locked_label_offset[1],
-                                        anchor_x='center', anchor_y='center', batch=self.batch,
+                                        anchor_x='center', anchor_y='center', batch=self.ui_batch,
                                         group=self.groups['button_text'])
                         else:
                             self.locked_tracks_labels[dictionary_keys[i]] \
@@ -249,7 +249,7 @@ class ConstructorView(View):
                                         color=(112, 112, 112, 255),
                                         x=self.track_cells_positions[i][0] + self.constructor_locked_label_offset[0],
                                         y=self.track_cells_positions[i][1] + self.constructor_locked_label_offset[1],
-                                        anchor_x='center', anchor_y='center', batch=self.batch,
+                                        anchor_x='center', anchor_y='center', batch=self.ui_batch,
                                         group=self.groups['button_text'])
 
                     self.title_tracks_labels[dictionary_keys[i]] \
@@ -257,7 +257,8 @@ class ConstructorView(View):
                                 font_size=self.constructor_title_text_font_size, color=(255, 255, 255, 255),
                                 x=self.track_cells_positions[i][0] + self.constructor_title_text_offset[0],
                                 y=self.track_cells_positions[i][1] + self.constructor_title_text_offset[1],
-                                anchor_x='left', anchor_y='center', batch=self.batch, group=self.groups['button_text'])
+                                anchor_x='left', anchor_y='center', batch=self.ui_batch,
+                                group=self.groups['button_text'])
 
                     if self.track_state_matrix[dictionary_keys[i]][self.track_state_unlock_available]:
                         self.description_tracks_labels[dictionary_keys[i]] \
@@ -267,7 +268,7 @@ class ConstructorView(View):
                                     color=(0, 192, 0, 255),
                                     x=self.track_cells_positions[i][0] + self.constructor_description_text_offset[0],
                                     y=self.track_cells_positions[i][1] + self.constructor_description_text_offset[1],
-                                    anchor_x='left', anchor_y='center', batch=self.batch,
+                                    anchor_x='left', anchor_y='center', batch=self.ui_batch,
                                     group=self.groups['button_text'])
                     elif self.track_state_matrix[dictionary_keys[i]][self.track_state_under_construction]:
                         construction_time \
@@ -279,7 +280,7 @@ class ConstructorView(View):
                                     color=(255, 127, 0, 255),
                                     x=self.track_cells_positions[i][0] + self.constructor_description_text_offset[0],
                                     y=self.track_cells_positions[i][1] + self.constructor_description_text_offset[1],
-                                    anchor_x='left', anchor_y='center', batch=self.batch,
+                                    anchor_x='left', anchor_y='center', batch=self.ui_batch,
                                     group=self.groups['button_text'])
                     else:
                         if not self.track_state_matrix[dictionary_keys[i]][
@@ -293,7 +294,7 @@ class ConstructorView(View):
                                           + self.constructor_description_text_offset[0],
                                         y=self.track_cells_positions[i][1]
                                           + self.constructor_description_text_offset[1],
-                                        anchor_x='left', anchor_y='center', batch=self.batch,
+                                        anchor_x='left', anchor_y='center', batch=self.ui_batch,
                                         group=self.groups['button_text'])
                         elif not self.track_state_matrix[dictionary_keys[i]][
                                                                     self.track_state_unlock_condition_from_environment]:
@@ -305,7 +306,7 @@ class ConstructorView(View):
                                           + self.constructor_description_text_offset[0],
                                         y=self.track_cells_positions[i][1]
                                           + self.constructor_description_text_offset[1],
-                                        anchor_x='left', anchor_y='center', batch=self.batch,
+                                        anchor_x='left', anchor_y='center', batch=self.ui_batch,
                                         group=self.groups['button_text'])
                         elif not self.track_state_matrix[dictionary_keys[i]][
                             self.track_state_unlock_condition_from_previous_track
@@ -318,7 +319,7 @@ class ConstructorView(View):
                                           + self.constructor_description_text_offset[0],
                                         y=self.track_cells_positions[i][1]
                                           + self.constructor_description_text_offset[1],
-                                        anchor_x='left', anchor_y='center', batch=self.batch,
+                                        anchor_x='left', anchor_y='center', batch=self.ui_batch,
                                         group=self.groups['button_text'])
 
                     break
@@ -400,7 +401,7 @@ class ConstructorView(View):
             else:
                 self.locked_tracks_labels[track].text = ' '
                 if track not in self.buy_buttons:
-                    self.buy_buttons[track] = BuyTrackButton(surface=self.surface, batch=self.batch,
+                    self.buy_buttons[track] = BuyTrackButton(surface=self.surface, batch=self.ui_batch,
                                                              groups=self.groups, on_click_action=self.on_buy_track)
                     self.buy_buttons[track].x_margin \
                         = self.screen_resolution[0] \
