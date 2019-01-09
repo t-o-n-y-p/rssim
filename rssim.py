@@ -129,6 +129,11 @@ class RSSim:
             self.user_db_cursor.execute('INSERT INTO version VALUES (0, 9, 1)')
             self.user_db_connection.commit()
 
+        self.user_db_cursor.execute('SELECT * FROM version')
+        if self.user_db_cursor.fetchone() < (0, 9, 2):
+            self.user_db_cursor.execute('UPDATE version SET major = 0, minor = 9, patch = 2')
+            self.user_db_connection.commit()
+
 
 def main():
     try:
