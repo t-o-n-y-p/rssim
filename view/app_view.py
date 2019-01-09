@@ -140,7 +140,7 @@ class AppView(View):
 
         self.title_label.delete()
         self.title_label = None
-        self.title_label = Label('Railway Station Simulator', font_name='Arial', font_size=13,
+        self.title_label = Label('Railway Station Simulator', font_name='Arial', bold=True, font_size=13,
                                  x=10, y=screen_resolution[1] - 17, anchor_x='left', anchor_y='center',
                                  batch=self.ui_batch, group=self.groups['button_text'])
         self.open_settings_button.y_margin = screen_resolution[1]

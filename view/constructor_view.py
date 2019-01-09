@@ -67,8 +67,13 @@ class ConstructorView(View):
         self.constructor_placeholder_font_size = 0
         self.constructor_cell_height = 0
         self.constructor_interval_between_cells = 0
+        self.constructor_railway_station_caption = [0, 0]
+        self.constructor_environment_caption = [0, 0]
+        self.constructor_caption_font_size = 0
         self.on_read_ui_info()
         self.background_sprite = None
+        self.constructor_railway_station_caption_sprite = None
+        self.constructor_environment_caption_sprite = None
         self.track_state_matrix = None
         self.locked_tracks_labels = {}
         self.title_tracks_labels = {}
@@ -94,6 +99,18 @@ class ConstructorView(View):
     @_view_is_not_active
     def on_activate(self):
         self.is_activated = True
+        self.constructor_railway_station_caption_sprite \
+            = Label('R a i l w a y   s t a t i o n', font_name='Arial', font_size=self.constructor_caption_font_size,
+                    color=(255, 255, 255, 255),
+                    x=self.constructor_railway_station_caption[0],
+                    y=self.constructor_railway_station_caption[1],
+                    anchor_x='center', anchor_y='center', batch=self.ui_batch, group=self.groups['button_text'])
+        self.constructor_environment_caption_sprite \
+            = Label('E n v i r o n m e n t', font_name='Arial', font_size=self.constructor_caption_font_size,
+                    color=(255, 255, 255, 255),
+                    x=self.constructor_environment_caption[0],
+                    y=self.constructor_environment_caption[1],
+                    anchor_x='center', anchor_y='center', batch=self.ui_batch, group=self.groups['button_text'])
         if self.background_sprite is None:
             self.background_sprite = Sprite(self.background_image, x=0, y=78, batch=self.ui_batch,
                                             group=self.groups['main_frame'])
@@ -129,6 +146,10 @@ class ConstructorView(View):
     @_view_is_active
     def on_deactivate(self):
         self.is_activated = False
+        self.constructor_railway_station_caption_sprite.delete()
+        self.constructor_railway_station_caption_sprite = None
+        self.constructor_environment_caption_sprite.delete()
+        self.constructor_environment_caption_sprite = None
         for l in self.coming_soon_environment_labels:
             l.delete()
             l = None
@@ -338,6 +359,12 @@ class ConstructorView(View):
         self.on_read_ui_info()
         if self.is_activated:
             self.background_sprite.image = self.background_image
+            self.constructor_railway_station_caption_sprite.x = self.constructor_railway_station_caption[0]
+            self.constructor_railway_station_caption_sprite.y = self.constructor_railway_station_caption[1]
+            self.constructor_railway_station_caption_sprite.font_size = self.constructor_caption_font_size
+            self.constructor_environment_caption_sprite.x = self.constructor_environment_caption[0]
+            self.constructor_environment_caption_sprite.y = self.constructor_environment_caption[1]
+            self.constructor_environment_caption_sprite.font_size = self.constructor_caption_font_size
             for i in range(4):
                 self.coming_soon_environment_labels[i].x \
                     = self.environment_cell_positions[i][0] + self.constructor_placeholder_offset[0]
@@ -487,6 +514,14 @@ class ConstructorView(View):
             self.no_more_tracks_available_labels[p].y += cell_step
 
     def on_read_ui_info(self):
+        self.config_db_cursor.execute('''SELECT constructor_railway_station_caption_x, constructor_caption_y
+                                         FROM screen_resolution_config WHERE app_width = ? AND app_height = ?''',
+                                      (self.screen_resolution[0], self.screen_resolution[1]))
+        self.constructor_railway_station_caption = self.config_db_cursor.fetchone()
+        self.config_db_cursor.execute('''SELECT constructor_environment_caption_x, constructor_caption_y
+                                         FROM screen_resolution_config WHERE app_width = ? AND app_height = ?''',
+                                      (self.screen_resolution[0], self.screen_resolution[1]))
+        self.constructor_environment_caption = self.config_db_cursor.fetchone()
         self.config_db_cursor.execute('''SELECT constructor_cell_height, constructor_interval_between_cells
                                          FROM screen_resolution_config WHERE app_width = ? AND app_height = ?''',
                                       (self.screen_resolution[0], self.screen_resolution[1]))
@@ -508,22 +543,14 @@ class ConstructorView(View):
                                            (fetched_coords[0], fetched_coords[1] - cell_step),
                                            (fetched_coords[0], fetched_coords[1] - cell_step * 2),
                                            (fetched_coords[0], fetched_coords[1] - cell_step * 3))
-        self.constructor_locked_label_offset = [0, 0]
-        self.constructor_build_button_offset = [0, 0]
-        self.constructor_title_text_offset = [0, 0]
-        self.constructor_description_text_offset = [0, 0]
-        self.constructor_placeholder_offset = [0, 0]
-        self.constructor_locked_label_font_size = 0
-        self.constructor_title_text_font_size = 0
-        self.constructor_description_text_font_size = 0
-        self.constructor_placeholder_font_size = 0
         self.config_db_cursor.execute('''SELECT constructor_locked_label_offset_x, constructor_locked_label_offset_y,
                                          constructor_build_button_offset_x, constructor_build_button_offset_y,
                                          constructor_title_text_offset_x, constructor_title_text_offset_y,
                                          constructor_description_text_offset_x, constructor_description_text_offset_y,
                                          constructor_placeholder_offset_x, constructor_placeholder_offset_y,
                                          constructor_locked_label_font_size, constructor_title_text_font_size,
-                                         constructor_description_text_font_size, constructor_placeholder_font_size 
+                                         constructor_description_text_font_size, constructor_placeholder_font_size,
+                                         constructor_caption_font_size 
                                          FROM screen_resolution_config WHERE app_width = ? AND app_height = ?''',
                                       (self.screen_resolution[0], self.screen_resolution[1]))
         self.constructor_locked_label_offset[0], self.constructor_locked_label_offset[1], \
@@ -532,5 +559,5 @@ class ConstructorView(View):
             self.constructor_description_text_offset[0], self.constructor_description_text_offset[1], \
             self.constructor_placeholder_offset[0], self.constructor_placeholder_offset[1], \
             self.constructor_locked_label_font_size, self.constructor_title_text_font_size, \
-            self.constructor_description_text_font_size, self.constructor_placeholder_font_size \
-            = self.config_db_cursor.fetchone()
+            self.constructor_description_text_font_size, self.constructor_placeholder_font_size, \
+            self.constructor_caption_font_size = self.config_db_cursor.fetchone()
