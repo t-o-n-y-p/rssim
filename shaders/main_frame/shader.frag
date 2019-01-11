@@ -40,7 +40,7 @@ void main()
             int cell_width = int(0.4296875 * float(screen_resolution[0]));
             int cell_height = int(0.0625 * float(screen_resolution[0]));
             int interval_between_cells_height = int(0.015625 * float(screen_resolution[0]));
-            ivec2 top_left_cell = ivec2(cell_height, screen_resolution[1] - (top_bar_height - 1) - int(float(screen_resolution[1] - (top_bar_height + bottom_bar_height - 4) - 4 * cell_height - 3 * interval_between_cells_height + int(0.025 * float(screen_resolution[0])) + int(0.01171875 * float(screen_resolution[0]))) / 2.0));
+            ivec2 top_left_cell = ivec2(cell_height, screen_resolution[1] - (top_bar_height - 1) - int(float(screen_resolution[1] - (top_bar_height + bottom_bar_height - 4) - 4 * cell_height - 3 * interval_between_cells_height + int(0.02265625 * float(screen_resolution[0])) + int(0.01171875 * float(screen_resolution[0]))) / 2.0));
             ivec2 top_right_cell = ivec2(int(0.0078125 * float(screen_resolution[0])) + int(float(screen_resolution[0]) / 2.0), top_left_cell[1]);
             if (gl_FragCoord[1] == top_left_cell[1] || gl_FragCoord[1] == top_left_cell[1] + 1)
             {
