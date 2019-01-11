@@ -186,7 +186,10 @@ class AppView(View):
     def on_draw_main_frame(self):
         self.shader.use()
         self.shader.uniforms.screen_resolution = self.screen_resolution
+        self.shader.uniforms.schedule_is_activated = int(self.controller.game.map.scheduler.view.is_activated)
+        self.shader.uniforms.constructor_is_activated = int(self.controller.game.map.constructor.view.is_activated)
         self.shader.uniforms.game_frame_opacity = self.controller.game.view.game_frame_opacity
         self.shader.uniforms.schedule_opacity = self.controller.game.map.scheduler.view.schedule_opacity
+        self.shader.uniforms.constructor_opacity = self.controller.game.map.constructor.view.constructor_opacity
         self.main_frame_sprite.draw(GL_QUADS)
         self.shader.clear()

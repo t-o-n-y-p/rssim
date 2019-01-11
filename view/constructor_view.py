@@ -1,6 +1,4 @@
 from pyglet.text import Label
-from pyglet.image import load
-from pyglet.sprite import Sprite
 
 from .view_base import View
 from .button import CloseConstructorButton, BuyTrackButton
@@ -53,7 +51,6 @@ class ConstructorView(View):
 
         super().__init__(user_db_cursor, config_db_cursor, surface, batch, main_frame_batch, ui_batch, groups)
         self.screen_resolution = (1280, 720)
-        self.background_image = load('img/constructor/constructor_1280_720.png')
         self.track_cells_positions = ()
         self.environment_cell_positions = ()
         self.constructor_locked_label_offset = [0, 0]
@@ -71,7 +68,7 @@ class ConstructorView(View):
         self.constructor_environment_caption = [0, 0]
         self.constructor_caption_font_size = 0
         self.on_read_ui_info()
-        self.background_sprite = None
+        self.constructor_opacity = 0
         self.constructor_railway_station_caption_sprite = None
         self.constructor_environment_caption_sprite = None
         self.track_state_matrix = None
@@ -111,11 +108,6 @@ class ConstructorView(View):
                     x=self.constructor_environment_caption[0],
                     y=self.constructor_environment_caption[1],
                     anchor_x='center', anchor_y='center', batch=self.ui_batch, group=self.groups['button_text'])
-        if self.background_sprite is None:
-            self.background_sprite = Sprite(self.background_image, x=0, y=78, batch=self.ui_batch,
-                                            group=self.groups['main_frame'])
-            self.background_sprite.opacity = 0
-
         self.coming_soon_environment_labels \
             = [Label('Coming soon', font_name='Arial', font_size=self.constructor_placeholder_font_size,
                      color=(112, 112, 112, 255),
@@ -152,7 +144,6 @@ class ConstructorView(View):
         self.constructor_environment_caption_sprite = None
         for l in self.coming_soon_environment_labels:
             l.delete()
-            l = None
 
         for d in self.locked_tracks_labels:
             self.locked_tracks_labels[d].delete()
@@ -171,7 +162,6 @@ class ConstructorView(View):
 
         for l in self.no_more_tracks_available_labels:
             l.delete()
-            l = None
 
         for b in self.buttons:
             b.on_deactivate()
@@ -194,8 +184,8 @@ class ConstructorView(View):
 
     def on_update(self):
         if self.is_activated:
-            if self.background_sprite.opacity < 255:
-                self.background_sprite.opacity += 15
+            if self.constructor_opacity < 255:
+                self.constructor_opacity += 15
 
             dictionary_keys = list(self.track_state_matrix.keys())
             available_options = min(len(dictionary_keys), 4)
@@ -345,20 +335,14 @@ class ConstructorView(View):
 
                     break
 
-        if not self.is_activated and self.background_sprite is not None:
-            if self.background_sprite.opacity > 0:
-                self.background_sprite.opacity -= 15
-                if self.background_sprite.opacity <= 0:
-                    self.background_sprite.delete()
-                    self.background_sprite = None
+        if not self.is_activated:
+            if self.constructor_opacity > 0:
+                self.constructor_opacity -= 15
 
     def on_change_screen_resolution(self, screen_resolution):
         self.screen_resolution = screen_resolution
-        self.background_image = load('img/constructor/constructor_{}_{}.png'
-                                     .format(self.screen_resolution[0], self.screen_resolution[1]))
         self.on_read_ui_info()
         if self.is_activated:
-            self.background_sprite.image = self.background_image
             self.constructor_railway_station_caption_sprite.x = self.constructor_railway_station_caption[0]
             self.constructor_railway_station_caption_sprite.y = self.constructor_railway_station_caption[1]
             self.constructor_railway_station_caption_sprite.font_size = self.constructor_caption_font_size
