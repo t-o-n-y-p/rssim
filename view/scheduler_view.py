@@ -58,13 +58,13 @@ class SchedulerView(View):
     def on_activate(self):
         self.is_activated = True
         self.left_schedule_caption_sprite \
-            = Label('Train #          Arrival           Departed from        Cars   Stop, m:s',
+            = Label('Train #          Arrival          Departed from       Cars   Stop, m:s',
                     font_name='Arial', bold=True, font_size=self.schedule_caption_font_size,
                     x=self.schedule_left_caption[0], y=self.schedule_left_caption[1],
                     anchor_x='center', anchor_y='center', batch=self.ui_batch,
                     group=self.groups['button_text'])
         self.right_schedule_caption_sprite \
-            = Label('Train #          Arrival           Departed from        Cars   Stop, m:s',
+            = Label('Train #          Arrival          Departed from       Cars   Stop, m:s',
                     font_name='Arial', bold=True, font_size=self.schedule_caption_font_size,
                     x=self.schedule_left_caption[0] + self.schedule_line_step_x, y=self.schedule_left_caption[1],
                     anchor_x='center', anchor_y='center', batch=self.ui_batch,
