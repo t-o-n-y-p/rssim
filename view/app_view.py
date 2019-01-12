@@ -193,5 +193,7 @@ class AppView(View):
         self.shader.uniforms.zoom_buttons_activated \
             = int(self.controller.game.map.view.zoom_in_button.is_activated
                   or self.controller.game.map.view.zoom_out_button.is_activated)
+        self.shader.uniforms.track_build_button_is_activated \
+            = int(len(self.controller.game.map.constructor.view.buy_buttons) > 0)
         self.main_frame_sprite.draw(GL_QUADS)
         self.shader.clear()

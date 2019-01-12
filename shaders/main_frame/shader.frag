@@ -7,6 +7,7 @@ uniform int schedule_opacity = 0;
 uniform int constructor_opacity = 0;
 uniform int settings_is_activated = 0;
 uniform int zoom_buttons_activated = 1;
+uniform int track_build_button_is_activated = 0;
 void main()
 {
     int bottom_bar_height = 80;
@@ -77,7 +78,7 @@ void main()
         if (schedule_opacity > 0)
         {
             float real_schedule_opacity = float(schedule_opacity) / 255.0 * 0.94;
-            if (gl_FragCoord[1] == top_left_cell[1] || gl_FragCoord[1] == top_left_cell[1] + 1)
+            if (gl_FragCoord[1] == top_left_cell[1] || gl_FragCoord[1] == top_left_cell[1] - 1)
             {
                 if (gl_FragCoord[0] >= top_left_cell[0] && gl_FragCoord[0] <= top_left_cell[0] + cell_width - 1)
                 {
@@ -111,7 +112,7 @@ void main()
                 if (((gl_FragCoord[0] >= top_left_cell[0] && gl_FragCoord[0] <= top_left_cell[0] + cell_width - 1) || (gl_FragCoord[0] >= top_right_cell[0] && gl_FragCoord[0] <= top_right_cell[0] + cell_width - 1)) && (y_offset == 0 || y_offset == 1 || y_offset == cell_height - 1 || y_offset == cell_height - 2))
                     ++is_on_cell_border;
 
-                if (gl_FragCoord[1] >= top_left_cell[1] - i * (cell_height + interval_between_cells_height) - (cell_height - 1) && gl_FragCoord[1] <= top_left_cell[1] - i * (cell_height + interval_between_cells_height) && (x_left_offset == 0 || x_left_offset == 1 || x_left_offset == cell_width - 1 || x_left_offset == cell_width - 2 || x_right_offset == 0 || x_right_offset == 1 || x_right_offset == cell_width - 1 || x_right_offset == cell_width - 2))
+                if (gl_FragCoord[1] >= top_left_cell[1] - i * (cell_height + interval_between_cells_height) - (cell_height - 1) && gl_FragCoord[1] <= top_left_cell[1] - i * (cell_height + interval_between_cells_height) && (x_left_offset == 0 || x_left_offset == 1 || x_left_offset == cell_width - 1 || x_left_offset == cell_width - 2 || (track_build_button_is_activated == 1 && i == 0 && (x_left_offset == cell_width - cell_height || x_left_offset == cell_width - cell_height + 1)) || x_right_offset == 0 || x_right_offset == 1 || x_right_offset == cell_width - 1 || x_right_offset == cell_width - 2))
                     ++is_on_cell_border;
             }
             if (is_on_cell_border > 0)

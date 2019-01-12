@@ -57,8 +57,6 @@ class Button:
         self.groups = groups
         self.transparent = True
         self.paired_button = None
-        self.border_sprite_image = None
-        self.border_sprite = None
         self.vertex_list = None
         self.text_object = None
         self.text = None
@@ -91,8 +89,6 @@ class Button:
         if not self.transparent:
             self.vertex_list.colors = (0, 0, 0, 248, 0, 0, 0, 248, 0, 0, 0, 248, 0, 0, 0, 248)
 
-        # self.border_sprite = Sprite(self.border_sprite_image, x=self.position[0], y=self.position[1],
-        #                             batch=self.batch, group=self.groups['button_border'])
         if self.text not in (None, ''):
             self.text_object = Label(self.text, font_name=self.font_name, bold=self.is_bold, font_size=self.font_size,
                                      x=self.position[0] + self.button_size[0] // 2,
@@ -119,7 +115,6 @@ class Button:
                                          self.position[0] + self.button_size[0] - 2,
                                          self.position[1] + self.button_size[1] - 2,
                                          self.position[0] + 2, self.position[1] + self.button_size[1] - 2)
-            # self.border_sprite.position = position
             if self.text_object is not None:
                 self.text_object.delete()
                 self.text_object = Label(self.text, font_name=self.font_name, bold=self.is_bold,
@@ -132,10 +127,7 @@ class Button:
     def on_size_changed(self, new_button_size, new_font_size):
         self.button_size = new_button_size
         self.font_size = new_font_size
-        self.border_sprite_image = load('img/button_borders/button_border_{}_{}.png'
-                                        .format(self.button_size[0], self.button_size[1]))
         if self.is_activated:
-            self.border_sprite.image = self.border_sprite_image
             self.text_object.font_size = self.font_size
 
     @_button_is_activated
