@@ -208,7 +208,7 @@ class GameView(View):
                 exp_percent = 100
 
         if exp_percent == 0:
-            image_region = self.progress_bar_exp_active_image.get_region(0, 0, 1, 10)
+            image_region = self.progress_bar_exp_active_image.get_region(30, 30, 1, 1)
         else:
             image_region = self.progress_bar_exp_active_image.get_region(0, 0, exp_percent * 2, 60)
 
@@ -216,7 +216,7 @@ class GameView(View):
         if exp_percent < 100:
             image_region = self.progress_bar_inactive_image.get_region(exp_percent * 2, 0, 200 - exp_percent * 2, 60)
         else:
-            image_region = self.progress_bar_inactive_image.get_region(199, 0, 1, 10)
+            image_region = self.progress_bar_inactive_image.get_region(30, 30, 1, 1)
 
         self.progress_bar_exp_inactive.image = image_region
         self.progress_bar_exp_inactive.position = (self.exp_offset + exp_percent * 2, 10)
@@ -236,7 +236,7 @@ class GameView(View):
                 money_percent = 100
 
         if money_percent == 0:
-            image_region = self.progress_bar_money_active_image.get_region(0, 0, 1, 10)
+            image_region = self.progress_bar_money_active_image.get_region(30, 30, 1, 1)
         else:
             image_region = self.progress_bar_money_active_image.get_region(0, 0, money_percent * 2, 60)
 
@@ -245,7 +245,7 @@ class GameView(View):
             image_region = self.progress_bar_inactive_image.get_region(money_percent * 2, 0,
                                                                        200 - money_percent * 2, 60)
         else:
-            image_region = self.progress_bar_inactive_image.get_region(199, 0, 1, 10)
+            image_region = self.progress_bar_inactive_image.get_region(30, 30, 1, 1)
 
         self.progress_bar_money_inactive.image = image_region
         self.progress_bar_money_inactive.position = (self.money_offset + money_percent * 2, 10)
