@@ -80,19 +80,19 @@ class Button:
         gl.glEnable(gl.GL_BLEND)
         gl.glBlendFunc(gl.GL_SRC_ALPHA, gl.GL_ONE_MINUS_SRC_ALPHA)
         self.vertex_list = self.batch.add(4, gl.GL_QUADS, self.groups['button_background'],
-                                          ('v2i', (self.position[0], self.position[1],
-                                                   self.position[0] + self.button_size[0] - 1, self.position[1],
-                                                   self.position[0] + self.button_size[0] - 1,
-                                                   self.position[1] + self.button_size[1] - 1,
-                                                   self.position[0], self.position[1] + self.button_size[1] - 1)
+                                          ('v2i', (self.position[0] + 2, self.position[1] + 2,
+                                                   self.position[0] + self.button_size[0] - 2, self.position[1] + 2,
+                                                   self.position[0] + self.button_size[0] - 2,
+                                                   self.position[1] + self.button_size[1] - 2,
+                                                   self.position[0] + 2, self.position[1] + self.button_size[1] - 2)
                                            ),
                                           ('c4B', (0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0))
                                           )
         if not self.transparent:
             self.vertex_list.colors = (0, 0, 0, 248, 0, 0, 0, 248, 0, 0, 0, 248, 0, 0, 0, 248)
 
-        self.border_sprite = Sprite(self.border_sprite_image, x=self.position[0], y=self.position[1], batch=self.batch,
-                                    group=self.groups['button_border'])
+        # self.border_sprite = Sprite(self.border_sprite_image, x=self.position[0], y=self.position[1],
+        #                             batch=self.batch, group=self.groups['button_border'])
         if self.text not in (None, ''):
             self.text_object = Label(self.text, font_name=self.font_name, bold=self.is_bold, font_size=self.font_size,
                                      x=self.position[0] + self.button_size[0] // 2,
@@ -105,8 +105,8 @@ class Button:
         self.is_activated = False
         self.vertex_list.delete()
         self.vertex_list = None
-        self.border_sprite.delete()
-        self.border_sprite = None
+        # self.border_sprite.delete()
+        # self.border_sprite = None
         if self.text_object is not None:
             self.text_object.delete()
             self.text_object = None
@@ -114,12 +114,12 @@ class Button:
     def on_position_changed(self, position):
         self.position = position
         if self.is_activated:
-            self.vertex_list.vertices = (self.position[0], self.position[1],
-                                         self.position[0] + self.button_size[0] - 1, self.position[1],
-                                         self.position[0] + self.button_size[0] - 1,
-                                         self.position[1] + self.button_size[1] - 1,
-                                         self.position[0], self.position[1] + self.button_size[1] - 1)
-            self.border_sprite.position = position
+            self.vertex_list.vertices = (self.position[0] + 2, self.position[1] + 2,
+                                         self.position[0] + self.button_size[0] - 2, self.position[1] + 2,
+                                         self.position[0] + self.button_size[0] - 2,
+                                         self.position[1] + self.button_size[1] - 2,
+                                         self.position[0] + 2, self.position[1] + self.button_size[1] - 2)
+            # self.border_sprite.position = position
             if self.text_object is not None:
                 self.text_object.delete()
                 self.text_object = Label(self.text, font_name=self.font_name, bold=self.is_bold,

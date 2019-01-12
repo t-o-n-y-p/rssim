@@ -50,6 +50,6 @@ class FPSView(View):
         self.fps_label.delete()
         self.fps_label = None
         self.fps_label = Label(text='0 FPS', font_name='Courier New', font_size=16,
-                               x=self.screen_resolution[0] - 110, y=self.screen_resolution[1] - 17,
+                               x=self.screen_resolution[0] - 150, y=self.screen_resolution[1] - 20,
                                anchor_x='right', anchor_y='center', batch=self.ui_batch,
                                group=self.groups['button_text'])

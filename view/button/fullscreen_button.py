@@ -14,8 +14,8 @@ class FullscreenButton(Button):
         self.text = ''
         self.font_name = 'Webdings'
         self.is_bold = False
-        self.font_size = 16
-        self.x_margin = 66
-        self.y_margin = 34
-        self.button_size = (34, 34)
+        self.font_size = 18
+        self.x_margin = 78
+        self.y_margin = 40
+        self.button_size = (40, 40)
         self.on_click_action = on_click_action
