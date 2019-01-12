@@ -14,7 +14,7 @@ class RestoreButton(Button):
         self.text = ''
         self.font_name = 'Webdings'
         self.is_bold = False
-        self.font_size = 18
+        self.font_size = 19
         self.x_margin = 78
         self.y_margin = 40
         self.button_size = (40, 40)

@@ -17,7 +17,7 @@ class ZoomInButton(Button):
         self.is_bold = True
         self.font_size = 30
         self.x_margin = 1280
-        self.y_margin = 112
+        self.y_margin = 118
         self.button_size = (80, 80)
         self.on_click_action = on_click_action
         self.on_hover_action = on_hover_action

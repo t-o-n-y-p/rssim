@@ -111,8 +111,8 @@ class AppView(View):
     @_view_is_not_active
     def on_activate(self):
         self.is_activated = True
-        self.title_label = Label('Railway Station Simulator', font_name='Arial', font_size=13,
-                                 x=10, y=703, anchor_x='left', anchor_y='center', batch=self.ui_batch,
+        self.title_label = Label('Railway Station Simulator', font_name='Arial', font_size=14,
+                                 x=10, y=700, anchor_x='left', anchor_y='center', batch=self.ui_batch,
                                  group=self.groups['button_text'])
         if self.main_frame_sprite is None:
             self.main_frame_sprite\
@@ -140,8 +140,8 @@ class AppView(View):
 
         self.title_label.delete()
         self.title_label = None
-        self.title_label = Label('Railway Station Simulator', font_name='Arial', bold=True, font_size=13,
-                                 x=10, y=screen_resolution[1] - 17, anchor_x='left', anchor_y='center',
+        self.title_label = Label('Railway Station Simulator', font_name='Arial', bold=True, font_size=14,
+                                 x=10, y=screen_resolution[1] - 20, anchor_x='left', anchor_y='center',
                                  batch=self.ui_batch, group=self.groups['button_text'])
         self.open_settings_button.y_margin = screen_resolution[1]
         for b in self.buttons:
@@ -189,5 +189,9 @@ class AppView(View):
         self.shader.uniforms.game_frame_opacity = self.controller.game.view.game_frame_opacity
         self.shader.uniforms.schedule_opacity = self.controller.game.map.scheduler.view.schedule_opacity
         self.shader.uniforms.constructor_opacity = self.controller.game.map.constructor.view.constructor_opacity
+        # self.shader.uniforms.settings_opacity = self.controller.settings.view.settings_opacity
+        self.shader.uniforms.zoom_buttons_activated \
+            = int(self.controller.game.map.view.zoom_in_button.is_activated
+                  or self.controller.game.map.view.zoom_out_button.is_activated)
         self.main_frame_sprite.draw(GL_QUADS)
         self.shader.clear()

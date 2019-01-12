@@ -53,6 +53,7 @@ class SettingsView(View):
         super().__init__(user_db_cursor, config_db_cursor, surface, batch, main_frame_batch, ui_batch, groups)
         self.temp_windowed_resolution = (0, 0)
         self.screen_resolution = (1280, 720)
+        self.settings_opacity = 0
         self.temp_fullscreen_mode = False
         self.available_windowed_resolutions = []
         self.available_windowed_resolutions_position = 0
@@ -72,6 +73,13 @@ class SettingsView(View):
         self.buttons.append(self.decrement_windowed_resolution_button)
         self.temp_windowed_resolution_label = None
         self.windowed_resolution_description_label = None
+
+    def on_update(self):
+        if self.is_activated and self.settings_opacity < 255:
+            self.settings_opacity += 15
+
+        if not self.is_activated and self.settings_opacity > 0:
+            self.settings_opacity -= 15
 
     @_view_is_not_active
     def on_activate(self):
