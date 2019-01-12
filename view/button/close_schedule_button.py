@@ -1,5 +1,3 @@
-from pyglet.image import load
-
 from .button_base import Button
 
 
@@ -13,7 +11,7 @@ class CloseScheduleButton(Button):
         self.font_name = 'Webdings'
         self.is_bold = False
         self.font_size = 24
-        self.x_margin = 438
-        self.y_margin = 720
+        self.x_margin = 842
+        self.y_margin = 0
         self.button_size = (80, 80)
         self.on_click_action = on_click_action

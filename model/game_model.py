@@ -61,6 +61,12 @@ class GameModel(Model):
 
     @_model_is_active
     def on_deactivate(self):
+        self.view.exp_percent = int(self.exp / self.player_progress)
+        if self.money_target > 0:
+            self.view.money_percent = int(self.money / self.money_target)
+        else:
+            self.view.money_percent = 0
+
         self.is_activated = False
 
     def on_activate_view(self):

@@ -1,5 +1,3 @@
-from pyglet.image import load
-
 from .button_base import Button
 
 
@@ -12,7 +10,7 @@ class BuyTrackButton(Button):
         self.text = ''
         self.font_name = 'Webdings'
         self.font_size = 40
-        self.x_margin = 691
-        self.y_margin = 535
+        self.x_margin = 0
+        self.y_margin = 0
         self.button_size = (80, 80)
         self.on_click_action = on_click_action

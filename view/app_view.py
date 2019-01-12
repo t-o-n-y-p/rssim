@@ -78,13 +78,15 @@ class AppView(View):
 
         super().__init__(user_db_cursor, config_db_cursor, surface, batch, main_frame_batch, ui_batch, groups)
         self.screen_resolution = (1280, 720)
+        self.bottom_bar_height = int(72 / 1280 * self.screen_resolution[0])
+        self.top_bar_height = int(72 / 1280 * self.screen_resolution[0]) // 2
         self.shader = from_files_names('shaders/main_frame/shader.vert', 'shaders/main_frame/shader.frag')
         self.title_label = None
         self.main_frame_sprite = None
-        self.buttons.append(CloseGameButton(surface=self.surface, batch=self.ui_batch, groups=self.groups,
-                                            on_click_action=on_close_game))
-        self.buttons.append(IconifyGameButton(surface=self.surface, batch=self.ui_batch, groups=self.groups,
-                                              on_click_action=on_iconify_game))
+        self.close_game_button = CloseGameButton(surface=self.surface, batch=self.ui_batch, groups=self.groups,
+                                                 on_click_action=on_close_game)
+        self.iconify_game_button = IconifyGameButton(surface=self.surface, batch=self.ui_batch, groups=self.groups,
+                                                     on_click_action=on_iconify_game)
         self.fullscreen_button = FullscreenButton(surface=self.surface, batch=self.ui_batch, groups=self.groups,
                                                   on_click_action=on_app_window_fullscreen)
         self.restore_button = RestoreButton(surface=self.surface, batch=self.ui_batch, groups=self.groups,
@@ -93,6 +95,8 @@ class AppView(View):
                                                        on_click_action=on_open_settings)
         self.fullscreen_button.paired_button = self.restore_button
         self.restore_button.paired_button = self.fullscreen_button
+        self.buttons.append(self.close_game_button)
+        self.buttons.append(self.iconify_game_button)
         self.buttons.append(self.fullscreen_button)
         self.buttons.append(self.restore_button)
         self.buttons.append(self.open_settings_button)
@@ -111,8 +115,10 @@ class AppView(View):
     @_view_is_not_active
     def on_activate(self):
         self.is_activated = True
-        self.title_label = Label('Railway Station Simulator', font_name='Arial', font_size=14,
-                                 x=10, y=700, anchor_x='left', anchor_y='center', batch=self.ui_batch,
+        self.title_label = Label('Railway Station Simulator', font_name='Arial',
+                                 font_size=int(16 / 40 * self.top_bar_height),
+                                 x=10, y=self.screen_resolution[1] - self.top_bar_height // 2,
+                                 anchor_x='left', anchor_y='center', batch=self.ui_batch,
                                  group=self.groups['button_text'])
         if self.main_frame_sprite is None:
             self.main_frame_sprite\
@@ -135,17 +141,35 @@ class AppView(View):
 
     def on_change_screen_resolution(self, screen_resolution, fullscreen):
         self.screen_resolution = screen_resolution
+        self.bottom_bar_height = int(72 / 1280 * self.screen_resolution[0])
+        self.top_bar_height = int(72 / 1280 * self.screen_resolution[0]) // 2
         if not fullscreen:
             self.surface.set_size(screen_resolution[0], screen_resolution[1])
 
-        self.title_label.delete()
-        self.title_label = None
-        self.title_label = Label('Railway Station Simulator', font_name='Arial', bold=True, font_size=14,
-                                 x=10, y=screen_resolution[1] - 20, anchor_x='left', anchor_y='center',
-                                 batch=self.ui_batch, group=self.groups['button_text'])
-        self.open_settings_button.y_margin = screen_resolution[1]
+        self.title_label.y = self.screen_resolution[1] - self.top_bar_height // 2
+        self.title_label.font_size = int(16 / 40 * self.top_bar_height)
+        self.close_game_button.x_margin = self.screen_resolution[0] - self.top_bar_height
+        self.close_game_button.y_margin = self.screen_resolution[1] - self.top_bar_height
+        self.close_game_button.on_size_changed((self.top_bar_height, self.top_bar_height),
+                                               int(19 / 40 * self.top_bar_height))
+        self.fullscreen_button.x_margin = self.screen_resolution[0] - self.top_bar_height * 2 + 2
+        self.fullscreen_button.y_margin = self.screen_resolution[1] - self.top_bar_height
+        self.fullscreen_button.on_size_changed((self.top_bar_height, self.top_bar_height),
+                                               int(19 / 40 * self.top_bar_height))
+        self.restore_button.x_margin = self.screen_resolution[0] - self.top_bar_height * 2 + 2
+        self.restore_button.y_margin = self.screen_resolution[1] - self.top_bar_height
+        self.restore_button.on_size_changed((self.top_bar_height, self.top_bar_height),
+                                            int(19 / 40 * self.top_bar_height))
+        self.iconify_game_button.x_margin = self.screen_resolution[0] - self.top_bar_height * 3 + 4
+        self.iconify_game_button.y_margin = self.screen_resolution[1] - self.top_bar_height
+        self.iconify_game_button.on_size_changed((self.top_bar_height, self.top_bar_height),
+                                                 int(19 / 40 * self.top_bar_height))
+        self.open_settings_button.x_margin = self.screen_resolution[0] - self.bottom_bar_height
+        self.open_settings_button.y_margin = 0
+        self.open_settings_button.on_size_changed((self.bottom_bar_height, self.bottom_bar_height),
+                                                  int(30 / 80 * self.bottom_bar_height))
         for b in self.buttons:
-            b.on_position_changed((screen_resolution[0] - b.x_margin, screen_resolution[1] - b.y_margin))
+            b.on_position_changed((b.x_margin, b.y_margin))
 
     def on_fullscreen_mode_turned_on(self):
         self.surface.set_fullscreen(fullscreen=True)
