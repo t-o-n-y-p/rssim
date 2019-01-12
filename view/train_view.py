@@ -111,7 +111,6 @@ class TrainView(View):
 
     def on_change_base_offset(self, new_base_offset):
         self.base_offset = new_base_offset
-        # self.on_update_car_position(self.car_position)
 
     def on_change_screen_resolution(self, screen_resolution):
         self.screen_resolution = screen_resolution
