@@ -51,6 +51,7 @@ class ConstructorView(View):
 
         super().__init__(user_db_cursor, config_db_cursor, surface, batch, main_frame_batch, ui_batch, groups)
         self.screen_resolution = (1280, 720)
+        self.bottom_bar_height = int(72 / 1280 * self.screen_resolution[0])
         self.track_cells_positions = ()
         self.environment_cell_positions = ()
         self.constructor_locked_label_offset = [0, 0]
@@ -338,6 +339,7 @@ class ConstructorView(View):
 
     def on_change_screen_resolution(self, screen_resolution):
         self.screen_resolution = screen_resolution
+        self.bottom_bar_height = int(72 / 1280 * self.screen_resolution[0])
         self.on_read_ui_info()
         if self.is_activated:
             self.constructor_railway_station_caption_sprite.x = self.constructor_railway_station_caption[0]
@@ -385,6 +387,8 @@ class ConstructorView(View):
                     .on_size_changed((self.constructor_cell_height, self.constructor_cell_height),
                                      self.constructor_locked_label_font_size)
 
+        self.close_constructor_button.on_size_changed((self.bottom_bar_height, self.bottom_bar_height),
+                                                      int(24 / 80 * self.bottom_bar_height))
         for b in self.buttons:
             b.on_position_changed((b.x_margin, b.y_margin))
 

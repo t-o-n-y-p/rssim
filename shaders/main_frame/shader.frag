@@ -82,13 +82,13 @@ void main()
             {
                 if (gl_FragCoord[0] >= top_left_cell[0] && gl_FragCoord[0] <= top_left_cell[0] + cell_width - 1)
                 {
-                    gradient_coeff = (float(top_left_cell[0]) + 0.21484375 * float(screen_resolution[0]) - float(gl_FragCoord[0])) / (0.21484375 * float(screen_resolution[0]));
+                    gradient_coeff = (float(top_left_cell[0]) + float(cell_width) / 2.0 - float(gl_FragCoord[0])) / (float(cell_width) / 2.0);
                     schedule_coeff = (255.0 - abs(int(gradient_coeff * gradient_coeff * gradient_coeff * 255.0))) / 255.0;
                     schedule_result = vec4(vec3(schedule_coeff), real_schedule_opacity);
                 }
                 else if (gl_FragCoord[0] >= top_right_cell[0] && gl_FragCoord[0] <= top_right_cell[0] + cell_width - 1)
                 {
-                    gradient_coeff = (float(top_right_cell[0]) + 0.21484375 * float(screen_resolution[0]) - float(gl_FragCoord[0])) / (0.21484375 * float(screen_resolution[0]));
+                    gradient_coeff = (float(top_right_cell[0]) + float(cell_width) / 2.0 - float(gl_FragCoord[0])) / (float(cell_width) / 2.0);
                     schedule_coeff = (255.0 - abs(int(gradient_coeff * gradient_coeff * gradient_coeff * 255.0))) / 255.0;
                     schedule_result = vec4(vec3(schedule_coeff), real_schedule_opacity);
                 }

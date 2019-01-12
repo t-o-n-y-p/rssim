@@ -91,6 +91,8 @@ class MapView(View):
         self.main_map_sprite = None
         self.environment_sprite = None
         self.screen_resolution = (1280, 720)
+        self.bottom_bar_height = int(72 / 1280 * self.screen_resolution[0])
+        self.top_bar_height = int(72 / 1280 * self.screen_resolution[0]) // 2
         self.base_offset = (-3456, -1688)
         self.base_offset_lower_left_limit = (0, 0)
         self.base_offset_upper_right_limit = (-6912, -3376)
@@ -218,13 +220,24 @@ class MapView(View):
                             self.base_offset[1] + (screen_resolution[1] - self.screen_resolution[1]) // 2)
         self.check_base_offset_limits()
         self.screen_resolution = screen_resolution
-        self.zoom_in_button.x_margin = self.screen_resolution[0]
-        self.zoom_out_button.x_margin = self.screen_resolution[0]
-        self.open_schedule_button.y_margin = self.screen_resolution[1]
-        self.open_constructor_button.x_margin = self.screen_resolution[0]
-        self.open_constructor_button.y_margin = self.screen_resolution[1]
+        self.bottom_bar_height = int(72 / 1280 * self.screen_resolution[0])
+        self.top_bar_height = int(72 / 1280 * self.screen_resolution[0]) // 2
+        self.zoom_in_button.x_margin = 0
+        self.zoom_in_button.y_margin = self.screen_resolution[1] - self.top_bar_height - self.bottom_bar_height + 2
+        self.zoom_in_button.on_size_changed((self.bottom_bar_height, self.bottom_bar_height),
+                                            int(30 / 80 * self.bottom_bar_height))
+        self.zoom_out_button.x_margin = 0
+        self.zoom_out_button.y_margin = self.screen_resolution[1] - self.top_bar_height - self.bottom_bar_height + 2
+        self.zoom_out_button.on_size_changed((self.bottom_bar_height, self.bottom_bar_height),
+                                             int(30 / 80 * self.bottom_bar_height))
+        self.open_schedule_button.x_margin = self.screen_resolution[0] - 11 * self.bottom_bar_height // 2 + 2
+        self.open_schedule_button.y_margin = 0
+        self.open_schedule_button.on_size_changed((self.bottom_bar_height, self.bottom_bar_height),
+                                                  int(32 / 80 * self.bottom_bar_height))
+        self.open_constructor_button.on_size_changed((self.bottom_bar_height, self.bottom_bar_height),
+                                                     int(34 / 80 * self.bottom_bar_height))
         for b in self.buttons:
-            b.on_position_changed((screen_resolution[0] - b.x_margin, screen_resolution[1] - b.y_margin))
+            b.on_position_changed((b.x_margin, b.y_margin))
 
     def on_deactivate_zoom_buttons(self):
         self.zoom_in_button.on_deactivate()

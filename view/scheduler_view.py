@@ -28,6 +28,7 @@ class SchedulerView(View):
         super().__init__(user_db_cursor, config_db_cursor, surface, batch, main_frame_batch, ui_batch, groups)
         self.departure_text = ['West City', 'East City', 'North-West City', 'South-East City']
         self.screen_resolution = (1280, 720)
+        self.bottom_bar_height = int(72 / 1280 * self.screen_resolution[0])
         self.schedule_opacity = 0
         self.schedule_top_left_line = [0, 0]
         self.schedule_departure_top_left_line = [0, 0]
@@ -123,6 +124,7 @@ class SchedulerView(View):
 
     def on_change_screen_resolution(self, screen_resolution):
         self.screen_resolution = screen_resolution
+        self.bottom_bar_height = int(72 / 1280 * self.screen_resolution[0])
         self.on_read_ui_info()
         if self.is_activated:
             self.left_schedule_caption_sprite.x = self.schedule_left_caption[0]
@@ -141,9 +143,12 @@ class SchedulerView(View):
                     = self.schedule_departure_top_left_line[1] - (i % 16) * self.schedule_line_step_y
                 self.train_labels[i * 2 + 1].font_size = self.schedule_font_size
 
-        self.close_schedule_button.y_margin = self.screen_resolution[1]
+        self.close_schedule_button.x_margin = self.screen_resolution[0] - 11 * self.bottom_bar_height // 2 + 2
+        self.close_schedule_button.y_margin = 0
+        self.close_schedule_button.on_size_changed((self.bottom_bar_height, self.bottom_bar_height),
+                                                   int(24 / 80 * self.bottom_bar_height))
         for b in self.buttons:
-            b.on_position_changed((screen_resolution[0] - b.x_margin, screen_resolution[1] - b.y_margin))
+            b.on_position_changed((b.x_margin,  b.y_margin))
 
     def on_update_train_labels(self, base_schedule, game_time):
         self.base_schedule = base_schedule

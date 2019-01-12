@@ -269,7 +269,7 @@ class GameView(View):
 
         self.progress_bar_exp_inactive.image = image_region
         self.progress_bar_exp_inactive.position \
-            = (self.exp_offset + round(self.exp_percent * 2 * self.bottom_bar_height / 80), self.bottom_bar_height // 8)
+            = (self.exp_offset + self.progress_bar_exp_active.width, self.bottom_bar_height // 8)
 
     @_view_is_active
     def on_update_level(self, level):
@@ -299,5 +299,5 @@ class GameView(View):
 
         self.progress_bar_money_inactive.image = image_region
         self.progress_bar_money_inactive.position \
-            = (self.money_offset + round(self.money_percent * 2 * self.bottom_bar_height / 80),
+            = (self.money_offset + self.progress_bar_money_active.width,
                self.bottom_bar_height // 8)
