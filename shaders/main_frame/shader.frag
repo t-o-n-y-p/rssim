@@ -5,7 +5,7 @@ uniform ivec2 screen_resolution = ivec2(1280, 720);
 uniform int game_frame_opacity = 0;
 uniform int schedule_opacity = 0;
 uniform int constructor_opacity = 0;
-//uniform int settings_opacity = 0;
+uniform int settings_is_activated = 0;
 uniform int zoom_buttons_activated = 1;
 void main()
 {
@@ -25,22 +25,38 @@ void main()
 
     if (gl_FragCoord[0] >= 2 && gl_FragCoord[0] <= screen_resolution[0] - 3 && gl_FragCoord[1] >= 2 && gl_FragCoord[1] <= bottom_bar_height - 1)
     {
+        vec4 game_frame_result, settings_result;
         if (game_frame_opacity > 0)
         {
             float real_game_frame_border_opacity = float(game_frame_opacity) / 255.0;
             float real_game_frame_opacity = float(game_frame_opacity) / 255.0 * 0.94;
             if (gl_FragCoord[1] == bottom_bar_height - 2 || gl_FragCoord[1] == bottom_bar_height - 1)
-                color_frag = vec4(1.0, 0.0, 0.0, real_game_frame_border_opacity);
+                game_frame_result = vec4(1.0, 0.0, 0.0, real_game_frame_border_opacity);
             else if (gl_FragCoord[1] >= 2 && gl_FragCoord[1] <= bottom_bar_height - 3)
             {
                 int margin = screen_resolution[0] - int(gl_FragCoord[0]);
                 int game_time_margin = int(3.5 * float(bottom_bar_height));
                 if (gl_FragCoord[0] == bottom_bar_height - 1 || gl_FragCoord[0] == bottom_bar_height - 2 || margin == bottom_bar_height || margin == bottom_bar_height - 1 || margin == game_time_margin + 1 || margin == game_time_margin + 2 || margin == game_time_margin + bottom_bar_height || margin == game_time_margin + bottom_bar_height - 1 || margin == game_time_margin + 2 * bottom_bar_height - 2 || margin == game_time_margin + 2 * bottom_bar_height - 3)
-                    color_frag = vec4(1.0, 0.0, 0.0, real_game_frame_border_opacity);
+                    game_frame_result = vec4(1.0, 0.0, 0.0, real_game_frame_border_opacity);
                 else
-                    color_frag = vec4(vec3(0.0), real_game_frame_opacity);
+                    game_frame_result = vec4(vec3(0.0), real_game_frame_opacity);
             }
         }
+        else
+            game_frame_result = vec4(0.0);
+
+        if (settings_is_activated == 1)
+        {
+            int margin = screen_resolution[0] - int(gl_FragCoord[0]);
+            if (margin == bottom_bar_height || margin == bottom_bar_height - 1 || margin == 2 * bottom_bar_height - 2 || margin == 2 * bottom_bar_height - 3 || ((gl_FragCoord[1] == bottom_bar_height - 1 || gl_FragCoord[1] == bottom_bar_height - 2) && margin > 2 && margin < 2 * bottom_bar_height - 2))
+                settings_result = vec4(1.0, 0.0, 0.0, 1.0);
+            else
+                settings_result = vec4(0.0);
+        }
+        else
+            settings_result = vec4(0.0);
+
+        color_frag = game_frame_result * float(game_frame_opacity) / 255.0 + settings_result;
     }
 
     if (gl_FragCoord[0] >= 2 && gl_FragCoord[0] <= screen_resolution[0] - 3 && gl_FragCoord[1] >= bottom_bar_height && gl_FragCoord[1] <= screen_resolution[1] - top_bar_height - 1)

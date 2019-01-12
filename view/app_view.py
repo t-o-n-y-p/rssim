@@ -189,7 +189,7 @@ class AppView(View):
         self.shader.uniforms.game_frame_opacity = self.controller.game.view.game_frame_opacity
         self.shader.uniforms.schedule_opacity = self.controller.game.map.scheduler.view.schedule_opacity
         self.shader.uniforms.constructor_opacity = self.controller.game.map.constructor.view.constructor_opacity
-        # self.shader.uniforms.settings_opacity = self.controller.settings.view.settings_opacity
+        self.shader.uniforms.settings_is_activated = int(self.controller.settings.view.is_activated)
         self.shader.uniforms.zoom_buttons_activated \
             = int(self.controller.game.map.view.zoom_in_button.is_activated
                   or self.controller.game.map.view.zoom_out_button.is_activated)
