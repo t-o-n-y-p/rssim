@@ -209,14 +209,14 @@ class GameView(View):
             self.time_sprite.x = self.screen_resolution[0] - int(181 / 80 * self.bottom_bar_height)
             self.time_sprite.y = int(26 / 80 * self.bottom_bar_height)
             self.time_sprite.font_size = int(22 / 80 * self.bottom_bar_height)
-            self.progress_bar_exp_inactive.x = self.exp_offset + round(self.exp_percent * 2
-                                                                       * self.bottom_bar_height / 80)
-            self.progress_bar_exp_inactive.y = self.bottom_bar_height // 8
             self.progress_bar_exp_inactive.scale = self.bottom_bar_height / 80
-            self.progress_bar_money_inactive.x = self.money_offset + round(self.money_percent * 2
-                                                                           * self.bottom_bar_height / 80)
-            self.progress_bar_money_inactive.y = self.bottom_bar_height // 8
+            self.progress_bar_exp_inactive.x = self.exp_offset + round(200 / 80 * self.bottom_bar_height) \
+                                             - self.progress_bar_exp_inactive.width
+            self.progress_bar_exp_inactive.y = self.bottom_bar_height // 8
             self.progress_bar_money_inactive.scale = self.bottom_bar_height / 80
+            self.progress_bar_money_inactive.x = self.money_offset + round(200 / 80 * self.bottom_bar_height) \
+                                               - self.progress_bar_money_inactive.width
+            self.progress_bar_money_inactive.y = self.bottom_bar_height // 8
             self.progress_bar_exp_active.x = self.exp_offset
             self.progress_bar_exp_active.y = self.bottom_bar_height // 8
             self.progress_bar_exp_active.scale = self.bottom_bar_height / 80

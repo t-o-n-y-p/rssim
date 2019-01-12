@@ -53,6 +53,8 @@ class SettingsView(View):
         super().__init__(user_db_cursor, config_db_cursor, surface, batch, main_frame_batch, ui_batch, groups)
         self.temp_windowed_resolution = (0, 0)
         self.screen_resolution = (1280, 720)
+        self.bottom_bar_height = int(72 / 1280 * self.screen_resolution[0])
+        self.top_bar_height = int(72 / 1280 * self.screen_resolution[0]) // 2
         self.settings_opacity = 0
         self.temp_fullscreen_mode = False
         self.available_windowed_resolutions = []
@@ -108,12 +110,20 @@ class SettingsView(View):
 
     def on_change_screen_resolution(self, screen_resolution):
         self.screen_resolution = screen_resolution
-        self.accept_settings_button.y_margin = self.screen_resolution[1]
-        self.reject_settings_button.y_margin = self.screen_resolution[1]
-        self.increment_windowed_resolution_button.x_margin = self.screen_resolution[0] - 300
-        self.decrement_windowed_resolution_button.x_margin = self.screen_resolution[0] - 100
+        self.bottom_bar_height = int(72 / 1280 * self.screen_resolution[0])
+        self.top_bar_height = int(72 / 1280 * self.screen_resolution[0]) // 2
+        self.accept_settings_button.x_margin = self.screen_resolution[0] - self.bottom_bar_height * 2 + 2
+        self.accept_settings_button.y_margin = 0
+        self.accept_settings_button.on_size_changed((self.bottom_bar_height, self.bottom_bar_height),
+                                                    int(48 / 80 * self.bottom_bar_height))
+        self.reject_settings_button.x_margin = self.screen_resolution[0] - self.bottom_bar_height
+        self.reject_settings_button.y_margin = 0
+        self.reject_settings_button.on_size_changed((self.bottom_bar_height, self.bottom_bar_height),
+                                                    self.bottom_bar_height // 2)
+        self.increment_windowed_resolution_button.x_margin = 300
+        self.decrement_windowed_resolution_button.x_margin = 100
         for b in self.buttons:
-            b.on_position_changed((self.screen_resolution[0] - b.x_margin, self.screen_resolution[1] - b.y_margin))
+            b.on_position_changed((b.x_margin, b.y_margin))
 
         if self.is_activated:
             self.temp_windowed_resolution_label.delete()
