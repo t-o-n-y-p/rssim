@@ -219,19 +219,16 @@ class ConstructorView(View):
                                         y=self.track_cells_positions[i][1] + self.constructor_locked_label_offset[1],
                                         anchor_x='center', anchor_y='center', batch=self.ui_batch,
                                         group=self.groups['button_text'])
-                            self.buy_buttons[dictionary_keys[i]] = BuyTrackButton(surface=self.surface,
-                                                                                  batch=self.ui_batch,
-                                                                                  groups=self.groups,
-                                                                                  on_click_action=self.on_buy_track)
+                            self.buy_buttons[dictionary_keys[i]] \
+                                = BuyTrackButton(surface=self.surface, batch=self.ui_batch,
+                                                 groups=self.groups, on_click_action=self.on_buy_track)
                             self.buy_buttons[dictionary_keys[i]].x_margin \
-                                = self.screen_resolution[0] - (self.track_cells_positions[i][0]
-                                                               + self.constructor_build_button_offset[0])
+                                = self.track_cells_positions[i][0] + self.constructor_build_button_offset[0]
                             self.buy_buttons[dictionary_keys[i]].y_margin \
-                                = self.screen_resolution[1] - (self.track_cells_positions[i][1]
-                                                               + self.constructor_build_button_offset[1])
+                                = self.track_cells_positions[i][1] + self.constructor_build_button_offset[1]
                             self.buy_buttons[dictionary_keys[i]].on_position_changed(
-                                (self.screen_resolution[0] - self.buy_buttons[dictionary_keys[i]].x_margin,
-                                 self.screen_resolution[1] - self.buy_buttons[dictionary_keys[i]].y_margin)
+                                (self.buy_buttons[dictionary_keys[i]].x_margin,
+                                 self.buy_buttons[dictionary_keys[i]].y_margin)
                             )
                             self.buy_buttons[dictionary_keys[i]] \
                                 .on_size_changed((self.constructor_cell_height, self.constructor_cell_height),
@@ -378,23 +375,18 @@ class ConstructorView(View):
             dictionary_keys = list(self.buy_buttons.keys())
             for i in range(len(dictionary_keys)):
                 self.buy_buttons[dictionary_keys[i]].x_margin \
-                    = self.screen_resolution[0] \
-                      - (self.track_cells_positions[i][0] + self.constructor_build_button_offset[0])
+                    = self.track_cells_positions[i][0] + self.constructor_build_button_offset[0]
                 self.buy_buttons[dictionary_keys[i]].y_margin \
-                    = self.screen_resolution[1] \
-                      - (self.track_cells_positions[i][1] + self.constructor_build_button_offset[1])
+                    = self.track_cells_positions[i][1] + self.constructor_build_button_offset[1]
                 self.buy_buttons[dictionary_keys[i]].on_position_changed(
-                    (self.screen_resolution[0] - self.buy_buttons[dictionary_keys[i]].x_margin,
-                     self.screen_resolution[1] - self.buy_buttons[dictionary_keys[i]].y_margin)
+                    (self.buy_buttons[dictionary_keys[i]].x_margin, self.buy_buttons[dictionary_keys[i]].y_margin)
                 )
                 self.buy_buttons[dictionary_keys[i]] \
                     .on_size_changed((self.constructor_cell_height, self.constructor_cell_height),
                                      self.constructor_locked_label_font_size)
 
-        self.close_constructor_button.x_margin = self.screen_resolution[0]
-        self.close_constructor_button.y_margin = self.screen_resolution[1]
         for b in self.buttons:
-            b.on_position_changed((screen_resolution[0] - b.x_margin, screen_resolution[1] - b.y_margin))
+            b.on_position_changed((b.x_margin, b.y_margin))
 
     def on_update_money(self, money, track_state_matrix):
         self.money = money
@@ -415,16 +407,13 @@ class ConstructorView(View):
                     self.buy_buttons[track] = BuyTrackButton(surface=self.surface, batch=self.ui_batch,
                                                              groups=self.groups, on_click_action=self.on_buy_track)
                     self.buy_buttons[track].x_margin \
-                        = self.screen_resolution[0] \
-                          - (self.track_cells_positions[list(track_state_matrix.keys()).index(track)][0]
-                             + self.constructor_build_button_offset[0])
+                        = self.track_cells_positions[list(track_state_matrix.keys()).index(track)][0] \
+                        + self.constructor_build_button_offset[0]
                     self.buy_buttons[track].y_margin \
-                        = self.screen_resolution[1] \
-                          - (self.track_cells_positions[list(track_state_matrix.keys()).index(track)][1]
-                             + self.constructor_build_button_offset[1])
+                        = self.track_cells_positions[list(track_state_matrix.keys()).index(track)][1] \
+                        + self.constructor_build_button_offset[1]
                     self.buy_buttons[track].on_position_changed(
-                        (self.screen_resolution[0] - self.buy_buttons[track].x_margin,
-                         self.screen_resolution[1] - self.buy_buttons[track].y_margin)
+                        (self.buy_buttons[track].x_margin, self.buy_buttons[track].y_margin)
                     )
                     self.buy_buttons[track] \
                         .on_size_changed((self.constructor_cell_height, self.constructor_cell_height),
@@ -488,10 +477,9 @@ class ConstructorView(View):
             self.description_tracks_labels[t].y += cell_step
 
         for b in self.buy_buttons:
-            self.buy_buttons[b].y_margin -= cell_step
+            self.buy_buttons[b].y_margin += cell_step
             self.buy_buttons[b].on_position_changed(
-                (self.screen_resolution[0] - self.buy_buttons[b].x_margin,
-                 self.screen_resolution[1] - self.buy_buttons[b].y_margin)
+                (self.buy_buttons[b].x_margin, self.buy_buttons[b].y_margin)
             )
 
         for p in range(len(self.no_more_tracks_available_labels)):
