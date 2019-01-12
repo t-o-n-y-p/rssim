@@ -65,10 +65,10 @@ void main()
         vec4 schedule_result, constructor_result, zoom_buttons_result;
         float real_constructor_opacity = float(constructor_opacity) / 255.0 * 0.94;
         float gradient_coeff, schedule_coeff;
-        int cell_width = int(0.4296875 * float(screen_resolution[0]));
-        int cell_height = int(0.0625 * float(screen_resolution[0]));
-        int interval_between_cells_height = int(0.015625 * float(screen_resolution[0]));
-        ivec2 top_left_cell = ivec2(cell_height, screen_resolution[1] - (top_bar_height - 1) - int(float(screen_resolution[1] - (top_bar_height + bottom_bar_height - 4) - 4 * cell_height - 3 * interval_between_cells_height + int(0.02265625 * float(screen_resolution[0])) + int(0.01171875 * float(screen_resolution[0]))) / 2.0));
+        int cell_height = int(0.05625 * float(screen_resolution[0]));
+        int cell_width = int(6.875 * float(cell_height));
+        int interval_between_cells_height = int(0.25 * float(cell_height));
+        ivec2 top_left_cell = ivec2(int(float(screen_resolution[0]) / 2.0) - cell_width - int(float(interval_between_cells_height) / 2.0), screen_resolution[1] - (top_bar_height - 1) - int(float(screen_resolution[1] - (top_bar_height + bottom_bar_height - 4) - 4 * cell_height - 3 * interval_between_cells_height + int(0.02265625 * float(screen_resolution[0])) + int(0.01171875 * float(screen_resolution[0]))) / 2.0));
         ivec2 top_right_cell = ivec2(int(0.0078125 * float(screen_resolution[0])) + int(float(screen_resolution[0]) / 2.0), top_left_cell[1]);
         if (zoom_buttons_activated == 1 && ((gl_FragCoord[1] >= screen_resolution[1] - (top_bar_height - 1 + cell_height - 1) && gl_FragCoord[1] <= screen_resolution[1] - (top_bar_height - 1) && (gl_FragCoord[0] == cell_height - 1 || gl_FragCoord[0] == cell_height - 2)) || (gl_FragCoord[0] >= 2 && gl_FragCoord[0] <= cell_height - 3 && (gl_FragCoord[1] == screen_resolution[1] - (top_bar_height - 1 + cell_height - 1) || gl_FragCoord[1] == screen_resolution[1] - (top_bar_height - 1 + cell_height - 2)))))
             zoom_buttons_result = vec4(1.0, 0.0, 0.0, 1.0);
