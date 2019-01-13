@@ -2,8 +2,10 @@ from ctypes import c_long, windll
 from sys import exit
 from sqlite3 import connect
 from time import perf_counter
-from os import path
+from os import path, mkdir
 from shutil import copyfile
+from logging import FileHandler, Formatter, getLogger
+import datetime
 
 from pyglet import gl
 from pyglet import resource
@@ -29,6 +31,18 @@ class RSSim:
         if not path.exists('db/user.db'):
             copyfile('db/default.db', 'db/user.db')
 
+        if not path.exists('logs'):
+            mkdir('logs')
+
+        self.logger = getLogger('game')
+        current_datetime = datetime.datetime.now()
+        logs_handler = FileHandler('logs/logs_{0}_{1:0>2}-{2:0>2}-{3:0>2}-{4:0>6}.log'
+                                   .format(str(current_datetime.date()), current_datetime.time().hour,
+                                           current_datetime.time().minute, current_datetime.time().second,
+                                           current_datetime.time().microsecond))
+        logs_handler.setFormatter(Formatter('%(asctime)s - %(name)s - %(levelname)s - %(message)s'))
+        self.logger.addHandler(logs_handler)
+
         resource.path = ['font', 'img', 'img/main_map.zip']
         resource.reindex()
         self.user_db_connection = connect('db/user.db')
@@ -36,6 +50,9 @@ class RSSim:
         self.check_for_updates()
         self.config_db_connection = connect('db/config.db')
         self.config_db_cursor = self.config_db_connection.cursor()
+        self.user_db_cursor.execute('SELECT log_level FROM log_options')
+        self.logger.setLevel(self.user_db_cursor.fetchone()[0])
+        self.logger.critical('DB connection set up successfully')
         gl.glEnable(gl.GL_BLEND)
         gl.glBlendFunc(gl.GL_SRC_ALPHA, gl.GL_ONE_MINUS_SRC_ALPHA)
         self.batch = Batch()
@@ -128,6 +145,8 @@ class RSSim:
 
         self.user_db_cursor.execute('SELECT * FROM version')
         if self.user_db_cursor.fetchone() < (0, 9, 2):
+            self.user_db_cursor.execute('CREATE TABLE log_options (log_level integer)')
+            self.user_db_cursor.execute('INSERT INTO log_options VALUES (50)')
             self.user_db_cursor.execute('UPDATE version SET major = 0, minor = 9, patch = 2')
             self.user_db_connection.commit()
 
