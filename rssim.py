@@ -53,14 +53,12 @@ class RSSim:
         self.groups['boarding_light'] = numbered_groups[3]
         self.groups['car_skins'] = numbered_groups[3]
         self.groups['twilight'] = numbered_groups[4]
-        self.groups['mini_map'] = numbered_groups[5]
-        self.groups['main_frame'] = numbered_groups[6]
-        self.groups['tip'] = numbered_groups[7]
-        self.groups['game_progress_background'] = numbered_groups[7]
+        self.groups['mini_environment'] = numbered_groups[5]
+        self.groups['mini_map'] = numbered_groups[6]
+        self.groups['main_frame'] = numbered_groups[7]
         self.groups['button_background'] = numbered_groups[8]
         self.groups['exp_money_time'] = numbered_groups[8]
         self.groups['button_text'] = numbered_groups[9]
-        self.groups['button_border'] = numbered_groups[9]
         surface = Window(width=1280, height=720, caption='Railway Station Simulator', style='borderless',
                          fullscreen=False, vsync=False)
         self.surface = surface

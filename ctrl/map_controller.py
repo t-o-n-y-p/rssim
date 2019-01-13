@@ -284,12 +284,14 @@ class MapController(Controller):
         self.on_close_constructor()
         self.scheduler.on_activate_view()
         self.view.on_deactivate_zoom_buttons()
+        self.view.is_mini_map_activated = False
 
     def on_open_constructor(self):
         self.scheduler.on_deactivate_view()
         self.on_close_schedule()
         self.constructor.on_activate_view()
         self.view.on_deactivate_zoom_buttons()
+        self.view.is_mini_map_activated = False
 
     @_map_view_is_active
     def on_close_schedule(self):

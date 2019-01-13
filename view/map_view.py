@@ -1,3 +1,5 @@
+from time import perf_counter
+
 from pyglet.sprite import Sprite
 from pyglet.window import mouse
 from pyglet import resource
@@ -56,6 +58,14 @@ def _cursor_is_on_the_map(fn):
     return _enable_map_move_mode_if_cursor_is_on_the_map
 
 
+def _mini_map_is_not_active(fn):
+    def _handle_if_mini_map_is_not_activated(*args, **kwargs):
+        if not args[0].is_mini_map_activated:
+            fn(*args, **kwargs)
+
+    return _handle_if_mini_map_is_not_activated
+
+
 class MapView(View):
     def __init__(self, user_db_cursor, config_db_cursor, surface, batch, main_frame_batch, ui_batch, groups):
         def on_zoom_in_button(button):
@@ -86,16 +96,27 @@ class MapView(View):
         self.user_db_cursor.execute('SELECT unlocked_tracks FROM game_progress')
         self.unlocked_tracks = self.user_db_cursor.fetchone()[0]
         self.map_offset = ()
+        self.mini_map_offset = ()
         self.main_map = resource.image(f'full_map_{self.unlocked_tracks}.dds')
         self.environment = resource.image(f'full_map_e_0.dds')
         self.main_map_sprite = None
         self.environment_sprite = None
+        self.mini_map_sprite = None
+        self.mini_environment_sprite = None
+        self.is_mini_map_activated = False
+        self.mini_map_timer = 0.0
+        self.mini_map_opacity = 0
         self.screen_resolution = (1280, 720)
         self.bottom_bar_height = int(72 / 1280 * self.screen_resolution[0])
         self.top_bar_height = int(72 / 1280 * self.screen_resolution[0]) // 2
         self.base_offset = (-3456, -1688)
         self.base_offset_lower_left_limit = (0, 0)
         self.base_offset_upper_right_limit = (-6912, -3376)
+        self.mini_map_position = (2 * self.screen_resolution[0] // 3,
+                                  self.screen_resolution[1] - self.top_bar_height - 6
+                                  - (self.screen_resolution[0] // 3 - 6) // 2)
+        self.mini_map_width = self.screen_resolution[0] // 3 - 6
+        self.mini_map_height = (self.screen_resolution[0] // 3 - 6) // 2
         self.zoom_factor = 1.0
         self.zoom_out_activated = False
         self.zoom_in_button = ZoomInButton(surface=self.surface, batch=self.ui_batch, groups=self.groups,
@@ -138,6 +159,43 @@ class MapView(View):
                     self.environment_sprite.delete()
                     self.environment_sprite = None
 
+        if self.is_mini_map_activated and self.mini_map_sprite.opacity < 255:
+            self.mini_map_sprite.opacity += 15
+            self.mini_environment_sprite.opacity += 15
+            self.mini_map_opacity += 15
+
+        if not self.is_mini_map_activated and self.mini_map_sprite is not None:
+            if self.mini_map_sprite.opacity > 0:
+                self.mini_map_opacity -= 15
+                self.mini_map_sprite.opacity -= 15
+                if self.mini_map_sprite.opacity <= 0:
+                    self.mini_map_sprite.delete()
+                    self.mini_map_sprite = None
+
+            if self.mini_environment_sprite.opacity > 0:
+                self.mini_environment_sprite.opacity -= 15
+                if self.mini_environment_sprite.opacity <= 0:
+                    self.mini_environment_sprite.delete()
+                    self.mini_environment_sprite = None
+
+        if self.is_mini_map_activated and not self.map_move_mode and perf_counter() - self.mini_map_timer > 1:
+            self.is_mini_map_activated = False
+
+    @_mini_map_is_not_active
+    def on_activate_mini_map(self):
+        self.is_mini_map_activated = True
+        self.mini_environment_sprite = Sprite(self.environment, x=self.mini_map_position[0],
+                                              y=self.mini_map_position[1],
+                                              batch=self.batch, group=self.groups['mini_environment'])
+        self.mini_environment_sprite.opacity = 0
+        self.mini_environment_sprite.scale = self.mini_map_width / 8192
+        self.mini_map_sprite = Sprite(self.main_map, x=self.mini_map_position[0],
+                                      y=self.mini_map_position[1]
+                                      + int(self.mini_map_offset[1] * (self.screen_resolution[0] // 3 - 6) / 8192),
+                                      batch=self.batch, group=self.groups['mini_map'])
+        self.mini_map_sprite.opacity = 0
+        self.mini_map_sprite.scale = self.mini_map_width / 8192
+
     @_view_is_not_active
     def on_activate(self):
         self.is_activated = True
@@ -166,6 +224,7 @@ class MapView(View):
     @_view_is_active
     def on_deactivate(self):
         self.is_activated = False
+        self.is_mini_map_activated = False
         self.main_map_sprite.delete()
         self.main_map_sprite = None
         self.environment_sprite.delete()
@@ -189,6 +248,12 @@ class MapView(View):
             self.main_map_sprite.image = self.main_map
             self.main_map_sprite.position = (self.base_offset[0] + self.map_offset[0],
                                              self.base_offset[1] + self.map_offset[1])
+
+        if self.is_mini_map_activated:
+            self.mini_map_sprite.image = self.main_map
+            self.mini_map_sprite.update(y=self.mini_map_position[1]
+                                        + int(self.mini_map_offset[1] * (self.screen_resolution[0] // 3 - 6) / 8192),
+                                        scale=self.mini_map_width / 8192)
 
     def on_change_zoom_factor(self, zoom_factor, zoom_out_activated):
         self.zoom_factor = zoom_factor
@@ -222,6 +287,19 @@ class MapView(View):
         self.screen_resolution = screen_resolution
         self.bottom_bar_height = int(72 / 1280 * self.screen_resolution[0])
         self.top_bar_height = int(72 / 1280 * self.screen_resolution[0]) // 2
+        self.mini_map_position = (2 * self.screen_resolution[0] // 3,
+                                  self.screen_resolution[1] - self.top_bar_height - 6
+                                  - (self.screen_resolution[0] // 3 - 6) // 2)
+        self.mini_map_width = self.screen_resolution[0] // 3 - 6
+        self.mini_map_height = (self.screen_resolution[0] // 3 - 6) // 2
+        if self.is_mini_map_activated:
+            self.mini_environment_sprite.update(x=self.mini_map_position[0], y=self.mini_map_position[1],
+                                                scale=self.mini_map_width / 8192)
+            self.mini_map_sprite.update(x=self.mini_map_position[0],
+                                        y=self.mini_map_position[1]
+                                        + int(self.mini_map_offset[1] * (self.screen_resolution[0] // 3 - 6) / 8192),
+                                        scale=self.mini_map_width / 8192)
+
         self.zoom_in_button.x_margin = 0
         self.zoom_in_button.y_margin = self.screen_resolution[1] - self.top_bar_height - self.bottom_bar_height + 2
         self.zoom_in_button.on_size_changed((self.bottom_bar_height, self.bottom_bar_height),
@@ -255,6 +333,7 @@ class MapView(View):
     @_map_move_mode_available
     def handle_mouse_press(self, x, y, button, modifiers):
         self.map_move_mode = True
+        self.on_activate_mini_map()
 
     @_map_move_mode_enabled
     def handle_mouse_drag(self, x, y, dx, dy, buttons, modifiers):
@@ -265,6 +344,7 @@ class MapView(View):
     @_left_mouse_button
     def handle_mouse_release(self, x, y, button, modifiers):
         self.map_move_mode = False
+        self.mini_map_timer = perf_counter()
 
     def check_base_offset_limits(self):
         if self.base_offset[0] > self.base_offset_lower_left_limit[0]:
@@ -283,18 +363,26 @@ class MapView(View):
         if self.zoom_out_activated:
             if self.unlocked_tracks < 5:
                 self.map_offset = (0, 896)
+                self.mini_map_offset = (0, 1792)
             elif self.unlocked_tracks < 9:
                 self.map_offset = (0, 768)
+                self.mini_map_offset = (0, 1536)
             elif self.unlocked_tracks < 21:
                 self.map_offset = (0, 512)
+                self.mini_map_offset = (0, 1024)
             else:
                 self.map_offset = (0, 0)
+                self.mini_map_offset = (0, 0)
         else:
             if self.unlocked_tracks < 5:
                 self.map_offset = (0, 1792)
+                self.mini_map_offset = (0, 1792)
             elif self.unlocked_tracks < 9:
                 self.map_offset = (0, 1536)
+                self.mini_map_offset = (0, 1536)
             elif self.unlocked_tracks < 21:
                 self.map_offset = (0, 1024)
+                self.mini_map_offset = (0, 1024)
             else:
                 self.map_offset = (0, 0)
+                self.mini_map_offset = (0, 0)
