@@ -13,7 +13,7 @@ from win32api import MessageBoxEx
 import win32con
 
 from exceptions import VideoAdapterNotSupportedException, MonitorNotSupportedException
-from game_objects import create_app
+from rssimcore import create_app
 
 
 class RSSim:

@@ -1,6 +1,3 @@
-from pyglet.image import load
-from random import choice, seed
-
 from ctrl import AppController, GameController, MapController, SettingsController, FPSController, SchedulerController, \
                  SignalController, TrainRouteController, RailroadSwitchController, CrossoverController, \
                  TrainController, DispatcherController, ConstructorController
@@ -8,49 +5,7 @@ from model import AppModel, GameModel, MapModel, SettingsModel, FPSModel, Schedu
                   RailroadSwitchModel, CrossoverModel, TrainModel, DispatcherModel, ConstructorModel
 from view import AppView, GameView, MapView, SettingsView, FPSView, SchedulerView, SignalView, TrainRouteView, \
                  RailroadSwitchView, CrossoverView, TrainView, DispatcherView, ConstructorView
-
-car_collections = 4
-
-car_head_image = []
-for i in range(car_collections):
-    car_head_image.append([])
-    for j in range(4):
-        car_head_image[i].append(load(f'img/cars/{i}/car_head_{j}.png'))
-
-for i in range(len(car_head_image)):
-    for j in range(4):
-        car_head_image[i][j].anchor_x = car_head_image[i][j].width // 2
-        car_head_image[i][j].anchor_y = car_head_image[i][j].height // 2
-
-car_mid_image = []
-for i in range(car_collections):
-    car_mid_image.append([])
-    for j in range(4):
-        car_mid_image[i].append(load(f'img/cars/{i}/car_mid_{j}.png'))
-
-for i in range(len(car_mid_image)):
-    for j in range(4):
-        car_mid_image[i][j].anchor_x = car_mid_image[i][j].width // 2
-        car_mid_image[i][j].anchor_y = car_mid_image[i][j].height // 2
-
-car_tail_image = []
-for i in range(car_collections):
-    car_tail_image.append([])
-    for j in range(4):
-        car_tail_image[i].append(load(f'img/cars/{i}/car_tail_{j}.png'))
-
-for i in range(len(car_tail_image)):
-    for j in range(4):
-        car_tail_image[i][j].anchor_x = car_tail_image[i][j].width // 2
-        car_tail_image[i][j].anchor_y = car_tail_image[i][j].height // 2
-
-boarding_light_image = []
-for i in range(car_collections):
-    boarding_light_image.append(load(f'img/cars/{i}/boarding_lights.png'))
-
-for i in range(len(boarding_light_image)):
-    boarding_light_image[i].anchor_x = boarding_light_image[i].width // 2
-    boarding_light_image[i].anchor_y = boarding_light_image[i].height // 2
+from car_skins_collection import car_head_image, car_mid_image, car_tail_image, boarding_light_image
 
 
 def create_app(user_db_connection, user_db_cursor, config_db_cursor, surface,
@@ -290,20 +245,11 @@ def create_crossover(user_db_connection, user_db_cursor, config_db_cursor, surfa
 
 
 def create_train(user_db_connection, user_db_cursor, config_db_cursor, surface,
-                 batch, main_frame_batch, ui_batch, groups, map_controller,
-                 train_id, cars=None, track=None, train_route=None, state=None, direction=None, new_direction=None,
-                 current_direction=None, priority=None, boarding_time=None, exp=None, money=None,
-                 created_by='database'):
+                 batch, main_frame_batch, ui_batch, groups, map_controller, train_id):
     controller = TrainController(map_controller)
     controller.train_id = train_id
     model = TrainModel(user_db_connection, user_db_cursor, config_db_cursor)
-    if created_by == 'dispatcher':
-        seed()
-        model.on_train_init(cars, track, train_route, state, direction, new_direction, current_direction,
-                            priority, boarding_time, exp, money, choice(list(range(car_collections))))
-    else:
-        model.on_train_setup(train_id)
-
+    model.on_train_setup(train_id)
     view = TrainView(user_db_cursor, config_db_cursor, surface, batch, main_frame_batch, ui_batch, groups)
     view.car_head_image = car_head_image
     view.car_mid_image = car_mid_image
