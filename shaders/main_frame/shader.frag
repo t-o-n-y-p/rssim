@@ -62,7 +62,7 @@ void main()
 
     if (gl_FragCoord[0] >= 2 && gl_FragCoord[0] <= screen_resolution[0] - 3 && gl_FragCoord[1] >= bottom_bar_height && gl_FragCoord[1] <= screen_resolution[1] - top_bar_height - 1)
     {
-        vec4 schedule_result, constructor_result, zoom_buttons_result;
+        vec4 schedule_result, constructor_result, zoom_buttons_result, settings_result;
         float real_constructor_opacity = float(constructor_opacity) / 255.0 * 0.94;
         float gradient_coeff, schedule_coeff;
         int cell_height = int(0.05625 * float(screen_resolution[0]));
@@ -74,6 +74,22 @@ void main()
             zoom_buttons_result = vec4(1.0, 0.0, 0.0, 1.0);
         else
             zoom_buttons_result = vec4(0.0);
+
+        if (settings_is_activated == 1)
+        {
+            int medium_line = screen_resolution[1] / 2 + top_bar_height / 2;
+            ivec2 decrement_resolution_button_position = ivec2(5 * screen_resolution[0] / 32 - top_bar_height / 2, medium_line + top_bar_height / 2);
+            ivec2 increment_resolution_button_position = ivec2(11 * screen_resolution[0] / 32 - top_bar_height / 2, medium_line + top_bar_height / 2);
+            int settings_decrement_x_margin = int(gl_FragCoord[0]) - decrement_resolution_button_position[0];
+            int settings_resolution_y_margin = int(gl_FragCoord[1]) - decrement_resolution_button_position[1];
+            int settings_increment_x_margin = int(gl_FragCoord[0]) - increment_resolution_button_position[0];
+            if (((settings_decrement_x_margin == 0 || settings_decrement_x_margin == 1 || settings_decrement_x_margin == top_bar_height - 2 || settings_decrement_x_margin == top_bar_height - 1 || settings_increment_x_margin == 0 || settings_increment_x_margin == 1 || settings_increment_x_margin == top_bar_height - 2 || settings_increment_x_margin == top_bar_height - 1) && settings_resolution_y_margin >= 0 && settings_resolution_y_margin <= top_bar_height - 1) || ((settings_resolution_y_margin == 0 || settings_resolution_y_margin == 1 || settings_resolution_y_margin == top_bar_height - 2 || settings_resolution_y_margin == top_bar_height - 1) && ((settings_decrement_x_margin >= 0 && settings_decrement_x_margin <= top_bar_height - 1) || (settings_increment_x_margin >= 0 && settings_increment_x_margin <= top_bar_height - 1))))
+                settings_result = vec4(1.0, 0.0, 0.0, 1.0);
+            else
+                settings_result = vec4(0.0);
+        }
+        else
+            settings_result = vec4(0.0);
 
         if (schedule_opacity > 0)
         {
@@ -123,6 +139,6 @@ void main()
         else
             constructor_result = vec4(0.0);
 
-        color_frag = schedule_result * float(schedule_opacity) / 255.0 + constructor_result * float(constructor_opacity) / 255.0 + zoom_buttons_result;
+        color_frag = schedule_result * float(schedule_opacity) / 255.0 + constructor_result * float(constructor_opacity) / 255.0 + zoom_buttons_result + settings_result;
     }
 }

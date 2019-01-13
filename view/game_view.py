@@ -210,19 +210,18 @@ class GameView(View):
             self.time_sprite.y = int(26 / 80 * self.bottom_bar_height)
             self.time_sprite.font_size = int(22 / 80 * self.bottom_bar_height)
             self.progress_bar_exp_inactive.scale = self.bottom_bar_height / 80
-            self.progress_bar_exp_inactive.x = self.exp_offset + round(200 / 80 * self.bottom_bar_height) \
-                                             - self.progress_bar_exp_inactive.width
-            self.progress_bar_exp_inactive.y = self.bottom_bar_height // 8
+            self.progress_bar_exp_inactive.position \
+                = (self.exp_offset + round(200 / 80 * self.bottom_bar_height) - self.progress_bar_exp_inactive.width,
+                   self.bottom_bar_height // 8)
             self.progress_bar_money_inactive.scale = self.bottom_bar_height / 80
-            self.progress_bar_money_inactive.x = self.money_offset + round(200 / 80 * self.bottom_bar_height) \
-                                               - self.progress_bar_money_inactive.width
-            self.progress_bar_money_inactive.y = self.bottom_bar_height // 8
-            self.progress_bar_exp_active.x = self.exp_offset
-            self.progress_bar_exp_active.y = self.bottom_bar_height // 8
-            self.progress_bar_exp_active.scale = self.bottom_bar_height / 80
-            self.progress_bar_money_active.x = self.money_offset
-            self.progress_bar_money_active.y = self.bottom_bar_height // 8
-            self.progress_bar_money_active.scale = self.bottom_bar_height / 80
+            self.progress_bar_money_inactive.position \
+                = (self.money_offset + round(200 / 80 * self.bottom_bar_height)
+                   - self.progress_bar_money_inactive.width,
+                   self.bottom_bar_height // 8)
+            self.progress_bar_exp_active.update(x=self.exp_offset, y=self.bottom_bar_height // 8,
+                                                scale=self.bottom_bar_height / 80)
+            self.progress_bar_money_active.update(x=self.money_offset, y=self.bottom_bar_height // 8,
+                                                  scale=self.bottom_bar_height / 80)
 
         self.pause_game_button.x_margin = self.screen_resolution[0] - 9 * self.bottom_bar_height // 2
         self.resume_game_button.x_margin = self.screen_resolution[0] - 9 * self.bottom_bar_height // 2

@@ -73,8 +73,8 @@ class SignalView(View):
                                             group=self.groups['signal'])
 
             if self.zoom_out_activated:
-                self.signal_sprite.x = self.base_offset[0] + self.position[0] // 2
-                self.signal_sprite.y = self.base_offset[1] + self.position[1] // 2
+                self.signal_sprite.position = (self.base_offset[0] + self.position[0] // 2,
+                                               self.base_offset[1] + self.position[1] // 2)
 
             self.signal_sprite.scale = self.zoom_factor
             if self.flip_needed == 1:
