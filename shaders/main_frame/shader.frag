@@ -2,6 +2,10 @@
 out vec4 color_frag;
 layout(pixel_center_integer) in vec4 gl_FragCoord;
 uniform ivec2 screen_resolution = ivec2(1280, 720);
+uniform int bottom_bar_height = 72;
+uniform int top_bar_height = 36;
+uniform ivec2 top_left_cell = ivec2(0, 0);
+uniform ivec2 top_right_cell = ivec2(0, 0);
 uniform int game_frame_opacity = 0;
 uniform int schedule_opacity = 0;
 uniform int constructor_opacity = 0;
@@ -10,8 +14,6 @@ uniform int zoom_buttons_activated = 1;
 uniform int track_build_button_is_activated = 0;
 void main()
 {
-    int bottom_bar_height = int(0.05625 * float(screen_resolution[0]));
-    int top_bar_height = bottom_bar_height / 2;
     if (gl_FragCoord[0] < 2 || gl_FragCoord[0] > screen_resolution[0] - 3 || gl_FragCoord[1] < 2 || gl_FragCoord[1] > screen_resolution[1] - 3 || gl_FragCoord[1] == screen_resolution[1] - top_bar_height + 1 || gl_FragCoord[1] == screen_resolution[1] - top_bar_height)
         color_frag = vec4(1.0, 0.0, 0.0, 1.0);
   
@@ -68,8 +70,6 @@ void main()
         int cell_height = int(0.05625 * float(screen_resolution[0]));
         int cell_width = int(6.875 * float(cell_height));
         int interval_between_cells_height = int(0.25 * float(cell_height));
-        ivec2 top_left_cell = ivec2(int(float(screen_resolution[0]) / 2.0) - cell_width - int(float(interval_between_cells_height) / 2.0), screen_resolution[1] - (top_bar_height - 1) - int(float(screen_resolution[1] - (top_bar_height + bottom_bar_height - 4) - 4 * cell_height - 3 * interval_between_cells_height + int(0.02265625 * float(screen_resolution[0])) + int(0.01171875 * float(screen_resolution[0]))) / 2.0));
-        ivec2 top_right_cell = ivec2(int(0.0078125 * float(screen_resolution[0])) + int(float(screen_resolution[0]) / 2.0), top_left_cell[1]);
         if (zoom_buttons_activated == 1 && ((gl_FragCoord[1] >= screen_resolution[1] - (top_bar_height - 1 + bottom_bar_height - 1) && gl_FragCoord[1] <= screen_resolution[1] - (top_bar_height - 1) && (gl_FragCoord[0] == bottom_bar_height - 1 || gl_FragCoord[0] == bottom_bar_height - 2)) || (gl_FragCoord[0] >= 2 && gl_FragCoord[0] <= bottom_bar_height - 3 && (gl_FragCoord[1] == screen_resolution[1] - (top_bar_height - 1 + bottom_bar_height - 1) || gl_FragCoord[1] == screen_resolution[1] - (top_bar_height - 1 + bottom_bar_height - 2)))))
             zoom_buttons_result = vec4(1.0, 0.0, 0.0, 1.0);
         else

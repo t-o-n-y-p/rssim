@@ -209,6 +209,15 @@ class AppView(View):
 
     def on_draw_main_frame(self):
         self.shader.use()
+        self.shader.uniforms.bottom_bar_height = self.bottom_bar_height
+        self.shader.uniforms.top_bar_height = self.top_bar_height
+        self.shader.uniforms.top_left_cell \
+            = (self.controller.game.map.constructor.view.track_cells_positions[0][0],
+               self.controller.game.map.constructor.view.track_cells_positions[0][1] + self.bottom_bar_height - 1)
+        self.shader.uniforms.top_right_cell \
+            = (self.controller.game.map.constructor.view.environment_cell_positions[0][0],
+               self.controller.game.map.constructor.view.environment_cell_positions[0][1] + self.bottom_bar_height - 1)
+        self.shader.uniforms.top_bar_height = self.top_bar_height
         self.shader.uniforms.screen_resolution = self.screen_resolution
         self.shader.uniforms.game_frame_opacity = self.controller.game.view.game_frame_opacity
         self.shader.uniforms.schedule_opacity = self.controller.game.map.scheduler.view.schedule_opacity
