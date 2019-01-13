@@ -209,6 +209,9 @@ class AppView(View):
 
     def on_draw_main_frame(self):
         self.shader.use()
+        self.shader.uniforms.screen_resolution = self.screen_resolution
+        self.shader.uniforms.base_offset = ((-1) * self.controller.game.map.view.base_offset[0],
+                                            (-1) * self.controller.game.map.view.base_offset[1])
         self.shader.uniforms.bottom_bar_height = self.bottom_bar_height
         self.shader.uniforms.top_bar_height = self.top_bar_height
         self.shader.uniforms.top_left_cell \
@@ -217,8 +220,6 @@ class AppView(View):
         self.shader.uniforms.top_right_cell \
             = (self.controller.game.map.constructor.view.environment_cell_positions[0][0],
                self.controller.game.map.constructor.view.environment_cell_positions[0][1] + self.bottom_bar_height - 1)
-        self.shader.uniforms.top_bar_height = self.top_bar_height
-        self.shader.uniforms.screen_resolution = self.screen_resolution
         self.shader.uniforms.game_frame_opacity = self.controller.game.view.game_frame_opacity
         self.shader.uniforms.schedule_opacity = self.controller.game.map.scheduler.view.schedule_opacity
         self.shader.uniforms.constructor_opacity = self.controller.game.map.constructor.view.constructor_opacity
@@ -228,5 +229,10 @@ class AppView(View):
                   or self.controller.game.map.view.zoom_out_button.is_activated)
         self.shader.uniforms.track_build_button_is_activated \
             = int(len(self.controller.game.map.constructor.view.buy_buttons) > 0)
+        self.shader.uniforms.mini_map_opacity = self.controller.game.map.view.mini_map_opacity
+        self.shader.uniforms.zoom_out_activated = int(self.controller.game.map.view.zoom_out_activated)
+        self.shader.uniforms.mini_map_position = self.controller.game.map.view.mini_map_position
+        self.shader.uniforms.mini_map_width = self.controller.game.map.view.mini_map_width
+        self.shader.uniforms.mini_map_height = self.controller.game.map.view.mini_map_height
         self.main_frame_sprite.draw(GL_QUADS)
         self.shader.clear()
