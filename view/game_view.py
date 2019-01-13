@@ -119,16 +119,14 @@ class GameView(View):
         self.is_activated = True
         if self.progress_bar_exp_inactive is None:
             self.progress_bar_exp_inactive = Sprite(self.progress_bar_inactive_image,
-                                                    x=self.exp_offset + round(self.exp_percent * 2
-                                                                              * self.bottom_bar_height / 80),
+                                                    x=self.exp_offset,
                                                     y=self.bottom_bar_height // 8,
                                                     batch=self.ui_batch, group=self.groups['button_background'])
             self.progress_bar_exp_inactive.scale = self.bottom_bar_height / 80
 
         if self.progress_bar_money_inactive is None:
             self.progress_bar_money_inactive = Sprite(self.progress_bar_inactive_image,
-                                                      x=self.money_offset + round(self.money_percent * 2
-                                                                                  * self.bottom_bar_height / 80),
+                                                      x=self.money_offset,
                                                       y=self.bottom_bar_height // 8,
                                                       batch=self.ui_batch, group=self.groups['button_background'])
             self.progress_bar_money_inactive.scale = self.bottom_bar_height / 80
@@ -211,12 +209,11 @@ class GameView(View):
             self.time_sprite.font_size = int(22 / 80 * self.bottom_bar_height)
             self.progress_bar_exp_inactive.scale = self.bottom_bar_height / 80
             self.progress_bar_exp_inactive.position \
-                = (self.exp_offset + round(200 / 80 * self.bottom_bar_height) - self.progress_bar_exp_inactive.width,
+                = (self.exp_offset,
                    self.bottom_bar_height // 8)
             self.progress_bar_money_inactive.scale = self.bottom_bar_height / 80
             self.progress_bar_money_inactive.position \
-                = (self.money_offset + round(200 / 80 * self.bottom_bar_height)
-                   - self.progress_bar_money_inactive.width,
+                = (self.money_offset,
                    self.bottom_bar_height // 8)
             self.progress_bar_exp_active.update(x=self.exp_offset, y=self.bottom_bar_height // 8,
                                                 scale=self.bottom_bar_height / 80)
@@ -260,16 +257,6 @@ class GameView(View):
             image_region = self.progress_bar_exp_active_image.get_region(0, 0, self.exp_percent * 2, 60)
 
         self.progress_bar_exp_active.image = image_region
-        if self.exp_percent < 100:
-            image_region = self.progress_bar_inactive_image.get_region(self.exp_percent * 2, 0,
-                                                                       200 - self.exp_percent * 2, 60)
-        else:
-            image_region = self.progress_bar_inactive_image.get_region(30, 30, 1, 1)
-
-        self.progress_bar_exp_inactive.image = image_region
-        self.progress_bar_exp_inactive.position \
-            = (self.exp_offset + round(200 / 80 * self.bottom_bar_height) - self.progress_bar_exp_inactive.width,
-               self.bottom_bar_height // 8)
 
     @_view_is_active
     def on_update_level(self, level):
@@ -291,13 +278,3 @@ class GameView(View):
             image_region = self.progress_bar_money_active_image.get_region(0, 0, self.money_percent * 2, 60)
 
         self.progress_bar_money_active.image = image_region
-        if self.money_percent < 100:
-            image_region = self.progress_bar_inactive_image.get_region(self.money_percent * 2, 0,
-                                                                       200 - self.money_percent * 2, 60)
-        else:
-            image_region = self.progress_bar_inactive_image.get_region(30, 30, 1, 1)
-
-        self.progress_bar_money_inactive.image = image_region
-        self.progress_bar_money_inactive.position \
-            = (self.money_offset + round(200 / 80 * self.bottom_bar_height) - self.progress_bar_money_inactive.width,
-               self.bottom_bar_height // 8)
