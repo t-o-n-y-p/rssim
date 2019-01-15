@@ -20,8 +20,8 @@ def _view_is_not_active(fn):
 
 
 class FPSView(View):
-    def __init__(self, user_db_cursor, config_db_cursor, surface, batch, main_frame_batch, ui_batch, groups):
-        super().__init__(user_db_cursor, config_db_cursor, surface, batch, main_frame_batch, ui_batch, groups)
+    def __init__(self, user_db_cursor, config_db_cursor, surface, batches, groups):
+        super().__init__(user_db_cursor, config_db_cursor, surface, batches, groups)
         self.fps_label = None
         self.screen_resolution = (1280, 720)
         self.top_bar_height = int(72 / 1280 * self.screen_resolution[0]) // 2
@@ -35,7 +35,7 @@ class FPSView(View):
         self.fps_label = Label(text='0 FPS', font_name='Courier New', font_size=int(16 / 40 * self.top_bar_height),
                                x=self.screen_resolution[0] - self.top_bar_height * 3 - 10,
                                y=self.screen_resolution[1] - self.top_bar_height // 2,
-                               anchor_x='right', anchor_y='center', batch=self.ui_batch,
+                               anchor_x='right', anchor_y='center', batch=self.batches['ui_batch'],
                                group=self.groups['button_text'])
 
     @_view_is_active
@@ -44,6 +44,7 @@ class FPSView(View):
         self.fps_label.delete()
         self.fps_label = None
 
+    @_view_is_active
     def on_update_fps(self, fps):
         self.fps_label.text = f'{fps} FPS'
 

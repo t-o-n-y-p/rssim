@@ -22,7 +22,7 @@ def _view_is_not_active(fn):
 
 
 class SettingsView(View):
-    def __init__(self, user_db_cursor, config_db_cursor, surface, batch, main_frame_batch, ui_batch, groups):
+    def __init__(self, user_db_cursor, config_db_cursor, surface, batches, groups):
         def on_accept_settings(button):
             self.controller.on_save_and_commit_state()
             self.controller.on_deactivate()
@@ -50,7 +50,7 @@ class SettingsView(View):
 
             self.increment_windowed_resolution_button.on_activate()
 
-        super().__init__(user_db_cursor, config_db_cursor, surface, batch, main_frame_batch, ui_batch, groups)
+        super().__init__(user_db_cursor, config_db_cursor, surface, batches, groups)
         self.temp_windowed_resolution = (0, 0)
         self.temp_log_level = 0
         self.screen_resolution = (1280, 720)
@@ -61,18 +61,18 @@ class SettingsView(View):
         self.temp_fullscreen_mode = False
         self.available_windowed_resolutions = []
         self.available_windowed_resolutions_position = 0
-        self.accept_settings_button = AcceptSettingsButton(surface=self.surface, batch=self.ui_batch,
+        self.accept_settings_button = AcceptSettingsButton(surface=self.surface, batch=self.batches['ui_batch'],
                                                            groups=self.groups, on_click_action=on_accept_settings)
         self.buttons.append(self.accept_settings_button)
-        self.reject_settings_button = RejectSettingsButton(surface=self.surface, batch=self.ui_batch,
+        self.reject_settings_button = RejectSettingsButton(surface=self.surface, batch=self.batches['ui_batch'],
                                                            groups=self.groups, on_click_action=on_reject_settings)
         self.buttons.append(self.reject_settings_button)
         self.increment_windowed_resolution_button \
-            = IncrementWindowedResolutionButton(surface=self.surface, batch=self.ui_batch, groups=self.groups,
-                                                on_click_action=on_increment_windowed_resolution)
+            = IncrementWindowedResolutionButton(surface=self.surface, batch=self.batches['ui_batch'],
+                                                groups=self.groups, on_click_action=on_increment_windowed_resolution)
         self.decrement_windowed_resolution_button \
-            = DecrementWindowedResolutionButton(surface=self.surface, batch=self.ui_batch, groups=self.groups,
-                                                on_click_action=on_decrement_windowed_resolution)
+            = DecrementWindowedResolutionButton(surface=self.surface, batch=self.batches['ui_batch'],
+                                                groups=self.groups, on_click_action=on_decrement_windowed_resolution)
         self.buttons.append(self.increment_windowed_resolution_button)
         self.buttons.append(self.decrement_windowed_resolution_button)
         self.temp_windowed_resolution_label = None
@@ -92,12 +92,14 @@ class SettingsView(View):
             = Label('{}x{}'.format(self.temp_windowed_resolution[0], self.temp_windowed_resolution[1]),
                     font_name='Arial', font_size=int(16 / 80 * self.bottom_bar_height),
                     x=self.screen_resolution[0] // 4, y=self.medium_line + self.top_bar_height,
-                    anchor_x='center', anchor_y='center', batch=self.ui_batch, group=self.groups['button_text'])
+                    anchor_x='center', anchor_y='center', batch=self.batches['ui_batch'],
+                    group=self.groups['button_text'])
         self.windowed_resolution_description_label \
             = Label('Game resolution in window mode (not fullscreen):',
                     font_name='Arial', font_size=int(16 / 80 * self.bottom_bar_height),
                     x=self.screen_resolution[0] // 4, y=self.medium_line + self.top_bar_height * 2,
-                    anchor_x='center', anchor_y='center', batch=self.ui_batch, group=self.groups['button_text'])
+                    anchor_x='center', anchor_y='center', batch=self.batches['ui_batch'],
+                    group=self.groups['button_text'])
         for b in self.buttons:
             if b.to_activate_on_controller_init:
                 b.on_activate()

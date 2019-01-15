@@ -21,11 +21,11 @@ def _view_is_not_active(fn):
 
 
 class SchedulerView(View):
-    def __init__(self, user_db_cursor, config_db_cursor, surface, batch, main_frame_batch, ui_batch, groups):
+    def __init__(self, user_db_cursor, config_db_cursor, surface, batches, groups):
         def on_close_schedule(button):
             self.controller.on_deactivate_view()
 
-        super().__init__(user_db_cursor, config_db_cursor, surface, batch, main_frame_batch, ui_batch, groups)
+        super().__init__(user_db_cursor, config_db_cursor, surface, batches, groups)
         self.departure_text = ['West City', 'East City', 'North-West City', 'South-East City']
         self.screen_resolution = (1280, 720)
         self.bottom_bar_height = int(72 / 1280 * self.screen_resolution[0])
@@ -43,8 +43,8 @@ class SchedulerView(View):
         self.game_time = None
         self.left_schedule_caption_sprite = None
         self.right_schedule_caption_sprite = None
-        self.close_schedule_button = CloseScheduleButton(surface=self.surface, batch=self.ui_batch, groups=self.groups,
-                                                         on_click_action=on_close_schedule)
+        self.close_schedule_button = CloseScheduleButton(surface=self.surface, batch=self.batches['ui_batch'],
+                                                         groups=self.groups, on_click_action=on_close_schedule)
         self.buttons.append(self.close_schedule_button)
         self.base_train_id = 0
         self.base_arrival_time = 1
@@ -62,13 +62,13 @@ class SchedulerView(View):
             = Label('Train #          Arrival          Departed from       Cars   Stop, m:s',
                     font_name='Arial', bold=True, font_size=self.schedule_caption_font_size,
                     x=self.schedule_left_caption[0], y=self.schedule_left_caption[1],
-                    anchor_x='center', anchor_y='center', batch=self.ui_batch,
+                    anchor_x='center', anchor_y='center', batch=self.batches['ui_batch'],
                     group=self.groups['button_text'])
         self.right_schedule_caption_sprite \
             = Label('Train #          Arrival          Departed from       Cars   Stop, m:s',
                     font_name='Arial', bold=True, font_size=self.schedule_caption_font_size,
                     x=self.schedule_left_caption[0] + self.schedule_line_step_x, y=self.schedule_left_caption[1],
-                    anchor_x='center', anchor_y='center', batch=self.ui_batch,
+                    anchor_x='center', anchor_y='center', batch=self.batches['ui_batch'],
                     group=self.groups['button_text'])
 
         for b in self.buttons:
@@ -107,14 +107,14 @@ class SchedulerView(View):
                               font_name='Perfo', bold=True, font_size=self.schedule_font_size,
                               x=self.schedule_top_left_line[0] + self.schedule_line_step_x * (i // 16),
                               y=self.schedule_top_left_line[1] - (i % 16) * self.schedule_line_step_y,
-                              anchor_x='center', anchor_y='center', batch=self.ui_batch,
+                              anchor_x='center', anchor_y='center', batch=self.batches['ui_batch'],
                               group=self.groups['button_text']))
                     self.train_labels.append(
                         Label(self.departure_text[self.base_schedule[i][self.base_direction]],
                               font_name='Perfo', bold=True, font_size=self.schedule_font_size,
                               x=self.schedule_departure_top_left_line[0] + self.schedule_line_step_x * (i // 16),
                               y=self.schedule_departure_top_left_line[1] - (i % 16) * self.schedule_line_step_y,
-                              anchor_x='center', anchor_y='center', batch=self.ui_batch,
+                              anchor_x='center', anchor_y='center', batch=self.batches['ui_batch'],
                               group=self.groups['button_text']))
                     break
 

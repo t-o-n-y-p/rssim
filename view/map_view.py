@@ -67,7 +67,7 @@ def _mini_map_is_not_active(fn):
 
 
 class MapView(View):
-    def __init__(self, user_db_cursor, config_db_cursor, surface, batch, main_frame_batch, ui_batch, groups):
+    def __init__(self, user_db_cursor, config_db_cursor, surface, batches, groups):
         def on_zoom_in_button(button):
             button.on_deactivate()
             button.paired_button.on_activate()
@@ -92,7 +92,7 @@ class MapView(View):
             button.on_deactivate()
             self.controller.on_open_constructor()
 
-        super().__init__(user_db_cursor, config_db_cursor, surface, batch, main_frame_batch, ui_batch, groups)
+        super().__init__(user_db_cursor, config_db_cursor, surface, batches, groups)
         self.user_db_cursor.execute('SELECT unlocked_tracks FROM game_progress')
         self.unlocked_tracks = self.user_db_cursor.fetchone()[0]
         self.map_offset = ()
@@ -119,15 +119,15 @@ class MapView(View):
         self.mini_map_height = (self.screen_resolution[0] // 3 - 6) // 2
         self.zoom_factor = 1.0
         self.zoom_out_activated = False
-        self.zoom_in_button = ZoomInButton(surface=self.surface, batch=self.ui_batch, groups=self.groups,
+        self.zoom_in_button = ZoomInButton(surface=self.surface, batch=self.batches['ui_batch'], groups=self.groups,
                                            on_click_action=on_zoom_in_button, on_hover_action=on_hover_action,
                                            on_leave_action=on_leave_action)
-        self.zoom_out_button = ZoomOutButton(surface=self.surface, batch=self.ui_batch, groups=self.groups,
+        self.zoom_out_button = ZoomOutButton(surface=self.surface, batch=self.batches['ui_batch'], groups=self.groups,
                                              on_click_action=on_zoom_out_button, on_hover_action=on_hover_action,
                                              on_leave_action=on_leave_action)
-        self.open_schedule_button = OpenScheduleButton(surface=self.surface, batch=self.ui_batch, groups=self.groups,
-                                                       on_click_action=on_open_schedule)
-        self.open_constructor_button = OpenConstructorButton(surface=self.surface, batch=self.ui_batch,
+        self.open_schedule_button = OpenScheduleButton(surface=self.surface, batch=self.batches['ui_batch'],
+                                                       groups=self.groups, on_click_action=on_open_schedule)
+        self.open_constructor_button = OpenConstructorButton(surface=self.surface, batch=self.batches['ui_batch'],
                                                              groups=self.groups, on_click_action=on_open_constructor)
         self.zoom_in_button.paired_button = self.zoom_out_button
         self.zoom_out_button.paired_button = self.zoom_in_button
@@ -186,13 +186,13 @@ class MapView(View):
         self.is_mini_map_activated = True
         self.mini_environment_sprite = Sprite(self.environment, x=self.mini_map_position[0],
                                               y=self.mini_map_position[1],
-                                              batch=self.batch, group=self.groups['mini_environment'])
+                                              batch=self.batches['main_batch'], group=self.groups['mini_environment'])
         self.mini_environment_sprite.opacity = 0
         self.mini_environment_sprite.scale = self.mini_map_width / 8192
         self.mini_map_sprite = Sprite(self.main_map, x=self.mini_map_position[0],
                                       y=self.mini_map_position[1]
                                       + int(self.mini_map_offset[1] * (self.screen_resolution[0] // 3 - 6) / 8192),
-                                      batch=self.batch, group=self.groups['mini_map'])
+                                      batch=self.batches['main_batch'], group=self.groups['mini_map'])
         self.mini_map_sprite.opacity = 0
         self.mini_map_sprite.scale = self.mini_map_width / 8192
 
@@ -203,12 +203,12 @@ class MapView(View):
         if self.main_map_sprite is None:
             self.main_map_sprite = Sprite(self.main_map, x=self.base_offset[0] + self.map_offset[0],
                                           y=self.base_offset[1] + self.map_offset[1],
-                                          batch=self.batch, group=self.groups['main_map'])
+                                          batch=self.batches['main_batch'], group=self.groups['main_map'])
             self.main_map_sprite.opacity = 0
             self.main_map_sprite.scale = self.zoom_factor
 
             self.environment_sprite = Sprite(self.environment, x=self.base_offset[0], y=self.base_offset[1],
-                                             batch=self.batch, group=self.groups['environment'])
+                                             batch=self.batches['main_batch'], group=self.groups['environment'])
             self.environment_sprite.opacity = 0
             self.environment_sprite.scale = self.zoom_factor
 

@@ -59,7 +59,7 @@ def _view_is_not_active(fn):
 
 
 class AppView(View):
-    def __init__(self, user_db_cursor, config_db_cursor, surface, batch, main_frame_batch, ui_batch, groups):
+    def __init__(self, user_db_cursor, config_db_cursor, surface, batches, groups):
         def on_close_game(button):
             self.controller.on_close_game()
 
@@ -76,23 +76,23 @@ class AppView(View):
             button.on_deactivate()
             self.controller.settings.on_activate()
 
-        super().__init__(user_db_cursor, config_db_cursor, surface, batch, main_frame_batch, ui_batch, groups)
+        super().__init__(user_db_cursor, config_db_cursor, surface, batches, groups)
         self.screen_resolution = (1280, 720)
         self.bottom_bar_height = int(72 / 1280 * self.screen_resolution[0])
         self.top_bar_height = int(72 / 1280 * self.screen_resolution[0]) // 2
         self.shader = from_files_names('shaders/main_frame/shader.vert', 'shaders/main_frame/shader.frag')
         self.title_label = None
         self.main_frame_sprite = None
-        self.close_game_button = CloseGameButton(surface=self.surface, batch=self.ui_batch, groups=self.groups,
-                                                 on_click_action=on_close_game)
-        self.iconify_game_button = IconifyGameButton(surface=self.surface, batch=self.ui_batch, groups=self.groups,
-                                                     on_click_action=on_iconify_game)
-        self.fullscreen_button = FullscreenButton(surface=self.surface, batch=self.ui_batch, groups=self.groups,
-                                                  on_click_action=on_app_window_fullscreen)
-        self.restore_button = RestoreButton(surface=self.surface, batch=self.ui_batch, groups=self.groups,
-                                            on_click_action=on_app_window_restore)
-        self.open_settings_button = OpenSettingsButton(surface=self.surface, batch=self.ui_batch, groups=self.groups,
-                                                       on_click_action=on_open_settings)
+        self.close_game_button = CloseGameButton(surface=self.surface, batch=self.batches['ui_batch'],
+                                                 groups=self.groups, on_click_action=on_close_game)
+        self.iconify_game_button = IconifyGameButton(surface=self.surface, batch=self.batches['ui_batch'],
+                                                     groups=self.groups, on_click_action=on_iconify_game)
+        self.fullscreen_button = FullscreenButton(surface=self.surface, batch=self.batches['ui_batch'],
+                                                  groups=self.groups, on_click_action=on_app_window_fullscreen)
+        self.restore_button = RestoreButton(surface=self.surface, batch=self.batches['ui_batch'],
+                                            groups=self.groups, on_click_action=on_app_window_restore)
+        self.open_settings_button = OpenSettingsButton(surface=self.surface, batch=self.batches['ui_batch'],
+                                                       groups=self.groups, on_click_action=on_open_settings)
         self.fullscreen_button.paired_button = self.restore_button
         self.restore_button.paired_button = self.fullscreen_button
         self.buttons.append(self.close_game_button)
@@ -118,12 +118,12 @@ class AppView(View):
         self.title_label = Label('Railway Station Simulator', font_name='Arial',
                                  font_size=int(16 / 40 * self.top_bar_height),
                                  x=10, y=self.screen_resolution[1] - self.top_bar_height // 2,
-                                 anchor_x='left', anchor_y='center', batch=self.ui_batch,
+                                 anchor_x='left', anchor_y='center', batch=self.batches['ui_batch'],
                                  group=self.groups['button_text'])
         if self.main_frame_sprite is None:
             self.main_frame_sprite\
-                = self.main_frame_batch.add(4, GL_QUADS, self.groups['main_frame'],
-                                            ('v2f/static', (-1.0, -1.0, -1.0, 1.0, 1.0, 1.0, 1.0, -1.0)))
+                = self.batches['main_frame'].add(4, GL_QUADS, self.groups['main_frame'],
+                                                 ('v2f/static', (-1.0, -1.0, -1.0, 1.0, 1.0, 1.0, 1.0, -1.0)))
 
         for b in self.buttons:
             if b.to_activate_on_controller_init:

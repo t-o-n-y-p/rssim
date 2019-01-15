@@ -29,7 +29,8 @@ class SettingsModel(Model):
         self.config_db_cursor.execute('SELECT app_width, app_height FROM screen_resolution_config')
         self.screen_resolution_config = self.config_db_cursor.fetchall()
         self.config_db_cursor.execute('''SELECT app_width, app_height FROM screen_resolution_config 
-                                      WHERE manual_setup = 1 AND app_width <= ?''', (windll.user32.GetSystemMetrics(0),))
+                                         WHERE manual_setup = 1 AND app_width <= ?''',
+                                      (windll.user32.GetSystemMetrics(0),))
         self.available_windowed_resolutions = self.config_db_cursor.fetchall()
         self.user_db_cursor.execute('SELECT log_level FROM log_options')
         self.log_level = self.user_db_cursor.fetchone()[0]

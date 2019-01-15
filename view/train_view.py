@@ -20,8 +20,8 @@ def _view_is_not_active(fn):
 
 
 class TrainView(View):
-    def __init__(self, user_db_cursor, config_db_cursor, surface, batch, main_frame_batch, ui_batch, groups):
-        super().__init__(user_db_cursor, config_db_cursor, surface, batch, main_frame_batch, ui_batch, groups)
+    def __init__(self, user_db_cursor, config_db_cursor, surface, batches, groups):
+        super().__init__(user_db_cursor, config_db_cursor, surface, batches, groups)
         self.base_offset = (-3456, -1688)
         self.screen_resolution = (1280, 720)
         self.zoom_out_activated = False
@@ -52,13 +52,16 @@ class TrainView(View):
                 if self.car_sprites[i] is None:
                     if i == 0:
                         self.car_sprites[i] = Sprite(self.car_head_image[self.car_image_collection][self.direction],
-                                                     x=x, y=y, batch=self.batch, group=self.groups['train'])
+                                                     x=x, y=y, batch=self.batches['main_batch'],
+                                                     group=self.groups['train'])
                     elif i == len(self.car_position) - 1:
                         self.car_sprites[i] = Sprite(self.car_tail_image[self.car_image_collection][self.direction],
-                                                     x=x, y=y, batch=self.batch, group=self.groups['train'])
+                                                     x=x, y=y, batch=self.batches['main_batch'],
+                                                     group=self.groups['train'])
                     else:
                         self.car_sprites[i] = Sprite(self.car_mid_image[self.car_image_collection][self.direction],
-                                                     x=x, y=y, batch=self.batch, group=self.groups['train'])
+                                                     x=x, y=y, batch=self.batches['main_batch'],
+                                                     group=self.groups['train'])
 
                     self.car_sprites[i].update(scale=self.zoom_factor, rotation=self.car_position[i][2])
                 else:
@@ -68,7 +71,7 @@ class TrainView(View):
                     if self.boarding_light_sprites[i] is None:
                         self.boarding_light_sprites[i] \
                             = Sprite(self.boarding_light_image[self.car_image_collection], x=x, y=y,
-                                     batch=self.batch, group=self.groups['boarding_light'])
+                                     batch=self.batches['main_batch'], group=self.groups['boarding_light'])
                         self.boarding_light_sprites[i].scale = self.zoom_factor
                     else:
                         self.boarding_light_sprites[i].update(x=x, y=y, scale=self.zoom_factor)

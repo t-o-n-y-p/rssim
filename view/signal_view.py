@@ -29,8 +29,8 @@ def _signal_is_displayed_on_map(fn):
 
 
 class SignalView(View):
-    def __init__(self, user_db_cursor, config_db_cursor, surface, batch, main_frame_batch, ui_batch, groups):
-        super().__init__(user_db_cursor, config_db_cursor, surface, batch, main_frame_batch, ui_batch, groups)
+    def __init__(self, user_db_cursor, config_db_cursor, surface, batches, groups):
+        super().__init__(user_db_cursor, config_db_cursor, surface, batches, groups)
         self.base_offset = (-3456, -1688)
         self.screen_resolution = (1280, 720)
         self.red_signal_image = load('img/signals/signal_red.png')
@@ -65,11 +65,11 @@ class SignalView(View):
         if self.signal_sprite is None and not self.locked:
             if self.state == 'red_signal':
                 self.signal_sprite = Sprite(self.red_signal_image, x=self.base_offset[0] + self.position[0],
-                                            y=self.base_offset[1] + self.position[1], batch=self.batch,
+                                            y=self.base_offset[1] + self.position[1], batch=self.batches['main_batch'],
                                             group=self.groups['signal'])
             else:
                 self.signal_sprite = Sprite(self.green_signal_image, x=self.base_offset[0] + self.position[0],
-                                            y=self.base_offset[1] + self.position[1], batch=self.batch,
+                                            y=self.base_offset[1] + self.position[1], batch=self.batches['main_batch'],
                                             group=self.groups['signal'])
 
             if self.zoom_out_activated:
@@ -105,10 +105,10 @@ class SignalView(View):
             if self.signal_sprite is None:
                 if not self.locked:
                     if self.state == 'red_signal':
-                        self.signal_sprite = Sprite(self.red_signal_image, x=x, y=y, batch=self.batch,
+                        self.signal_sprite = Sprite(self.red_signal_image, x=x, y=y, batch=self.batches['main_batch'],
                                                     group=self.groups['signal'])
                     else:
-                        self.signal_sprite = Sprite(self.green_signal_image, x=x, y=y, batch=self.batch,
+                        self.signal_sprite = Sprite(self.green_signal_image, x=x, y=y, batch=self.batches['main_batch'],
                                                     group=self.groups['signal'])
 
                     self.signal_sprite.scale = self.zoom_factor

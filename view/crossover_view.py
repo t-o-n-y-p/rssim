@@ -18,8 +18,8 @@ def _view_is_not_active(fn):
 
 
 class CrossoverView(View):
-    def __init__(self, user_db_cursor, config_db_cursor, surface, batch, main_frame_batch, ui_batch, groups):
-        super().__init__(user_db_cursor, config_db_cursor, surface, batch, main_frame_batch, ui_batch, groups)
+    def __init__(self, user_db_cursor, config_db_cursor, surface, batches, groups):
+        super().__init__(user_db_cursor, config_db_cursor, surface, batches, groups)
         self.base_offset = (-3456, -1688)
         self.screen_resolution = (1280, 720)
         self.zoom_out_activated = False

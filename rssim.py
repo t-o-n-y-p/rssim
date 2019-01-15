@@ -55,9 +55,16 @@ class RSSim:
         self.logger.critical('DB connection set up successfully')
         gl.glEnable(gl.GL_BLEND)
         gl.glBlendFunc(gl.GL_SRC_ALPHA, gl.GL_ONE_MINUS_SRC_ALPHA)
-        self.batch = Batch()
-        self.main_frame_batch = Batch()
-        self.ui_batch = Batch()
+        self.logger.debug('blending set successfully')
+        self.batches = {}
+        numbered_batches = []
+        for i in range(4):
+            numbered_batches.append(Batch())
+
+        self.batches['main_batch'] = numbered_batches[0]
+        self.batches['main_frame'] = numbered_batches[2]
+        self.batches['ui_batch'] = numbered_batches[3]
+        self.logger.debug('batches created successfully')
         self.groups = {}
         numbered_groups = []
         for i in range(10):
@@ -82,8 +89,7 @@ class RSSim:
         self.surface.flip()
         self.app = create_app(user_db_connection=self.user_db_connection, user_db_cursor=self.user_db_cursor,
                               config_db_cursor=self.config_db_cursor,
-                              surface=self.surface, batch=self.batch, main_frame_batch=self.main_frame_batch,
-                              ui_batch=self.ui_batch, groups=self.groups, loader=self)
+                              surface=self.surface, batches=self.batches, groups=self.groups, loader=self)
         self.app.on_activate()
         self.app.on_change_screen_resolution(self.app.settings.model.screen_resolution,
                                              self.app.settings.model.fullscreen_mode)
@@ -93,9 +99,9 @@ class RSSim:
         @surface.event
         def on_draw():
             self.surface.clear()
-            self.batch.draw()
+            self.batches['main_batch'].draw()
             self.app.on_draw_main_frame()
-            self.ui_batch.draw()
+            self.batches['ui_batch'].draw()
 
         @surface.event
         def on_mouse_press(x, y, button, modifiers):

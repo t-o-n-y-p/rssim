@@ -7,8 +7,7 @@ from view import TrainView
 from car_skins_collection import car_head_image, car_mid_image, car_tail_image, boarding_light_image, car_collections
 
 
-def create_train(user_db_connection, user_db_cursor, config_db_cursor, surface,
-                 batch, main_frame_batch, ui_batch, groups, map_controller,
+def create_train(user_db_connection, user_db_cursor, config_db_cursor, surface, batches, groups, map_controller,
                  train_id, cars, track, train_route, state, direction, new_direction,
                  current_direction, priority, boarding_time, exp, money):
     controller = TrainController(map_controller)
@@ -17,7 +16,7 @@ def create_train(user_db_connection, user_db_cursor, config_db_cursor, surface,
     seed()
     model.on_train_init(cars, track, train_route, state, direction, new_direction, current_direction,
                         priority, boarding_time, exp, money, choice(list(range(car_collections))))
-    view = TrainView(user_db_cursor, config_db_cursor, surface, batch, main_frame_batch, ui_batch, groups)
+    view = TrainView(user_db_cursor, config_db_cursor, surface, batches, groups)
     view.car_head_image = car_head_image
     view.car_mid_image = car_mid_image
     view.car_tail_image = car_tail_image
@@ -79,6 +78,5 @@ class MapModel(Model):
     def on_create_train(self, train_id, cars, track, train_route, status, direction, new_direction,
                         current_direction, priority, boarding_time, exp, money):
         return create_train(self.user_db_connection, self.user_db_cursor, self.config_db_cursor, self.view.surface,
-                            self.view.batch, self.view.main_frame_batch, self.view.ui_batch, self.view.groups,
-                            self.controller, train_id, cars, track, train_route,
+                            self.view.batches, self.view.groups, self.controller, train_id, cars, track, train_route,
                             status, direction, new_direction, current_direction, priority, boarding_time, exp, money)
