@@ -83,7 +83,7 @@ class RSSim:
         self.app = create_app(user_db_connection=self.user_db_connection, user_db_cursor=self.user_db_cursor,
                               config_db_cursor=self.config_db_cursor,
                               surface=self.surface, batch=self.batch, main_frame_batch=self.main_frame_batch,
-                              ui_batch=self.ui_batch, groups=self.groups)
+                              ui_batch=self.ui_batch, groups=self.groups, loader=self)
         self.app.on_activate()
         self.app.on_change_screen_resolution(self.app.settings.model.screen_resolution,
                                              self.app.settings.model.fullscreen_mode)
@@ -149,6 +149,10 @@ class RSSim:
             self.user_db_cursor.execute('INSERT INTO log_options VALUES (50)')
             self.user_db_cursor.execute('UPDATE version SET major = 0, minor = 9, patch = 2')
             self.user_db_connection.commit()
+
+    def on_save_and_commit_log_level(self, log_level):
+        self.logger.setLevel(log_level)
+        self.user_db_cursor.execute('UPDATE log_options SET log_level = ?', (log_level, ))
 
 
 def main():

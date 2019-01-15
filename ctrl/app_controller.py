@@ -20,11 +20,12 @@ def _controller_is_not_active(fn):
 
 
 class AppController(Controller):
-    def __init__(self):
+    def __init__(self, loader):
         super().__init__()
         self.game = None
         self.settings = None
         self.fps = None
+        self.loader = loader
 
     def on_update_view(self):
         self.view.on_update()
@@ -90,3 +91,6 @@ class AppController(Controller):
 
     def on_draw_main_frame(self):
         self.view.on_draw_main_frame()
+
+    def on_save_and_commit_log_level(self, log_level):
+        self.loader.on_save_and_commit_log_level(log_level)

@@ -9,8 +9,8 @@ from car_skins_collection import car_head_image, car_mid_image, car_tail_image, 
 
 
 def create_app(user_db_connection, user_db_cursor, config_db_cursor, surface,
-               batch, main_frame_batch, ui_batch, groups):
-    controller = AppController()
+               batch, main_frame_batch, ui_batch, groups, loader):
+    controller = AppController(loader)
     model = AppModel(user_db_connection, user_db_cursor, config_db_cursor)
     view = AppView(user_db_cursor, config_db_cursor, surface, batch, main_frame_batch, ui_batch, groups)
     controller.model = model

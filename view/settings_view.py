@@ -52,6 +52,7 @@ class SettingsView(View):
 
         super().__init__(user_db_cursor, config_db_cursor, surface, batch, main_frame_batch, ui_batch, groups)
         self.temp_windowed_resolution = (0, 0)
+        self.temp_log_level = 0
         self.screen_resolution = (1280, 720)
         self.bottom_bar_height = int(72 / 1280 * self.screen_resolution[0])
         self.top_bar_height = int(72 / 1280 * self.screen_resolution[0]) // 2
@@ -159,3 +160,6 @@ class SettingsView(View):
 
         if self.available_windowed_resolutions_position < len(self.available_windowed_resolutions) - 1:
             self.increment_windowed_resolution_button.on_activate()
+
+    def on_change_temp_log_level(self, log_level):
+        self.temp_log_level = log_level

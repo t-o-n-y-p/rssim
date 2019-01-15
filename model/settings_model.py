@@ -31,6 +31,8 @@ class SettingsModel(Model):
         self.config_db_cursor.execute('''SELECT app_width, app_height FROM screen_resolution_config 
                                       WHERE manual_setup = 1 AND app_width <= ?''', (windll.user32.GetSystemMetrics(0),))
         self.available_windowed_resolutions = self.config_db_cursor.fetchall()
+        self.user_db_cursor.execute('SELECT log_level FROM log_options')
+        self.log_level = self.user_db_cursor.fetchone()[0]
         self.fullscreen_mode_available = False
         self.fullscreen_resolution = (0, 0)
         self.screen_resolution = (0, 0)
@@ -50,6 +52,7 @@ class SettingsModel(Model):
 
     def on_activate_view(self):
         self.view.on_activate()
+        self.view.on_change_temp_log_level(self.log_level)
         self.view.on_change_temp_windowed_resolution(self.windowed_resolution)
         self.view.on_change_available_windowed_resolutions(self.available_windowed_resolutions)
 
@@ -62,6 +65,8 @@ class SettingsModel(Model):
         self.view.on_change_screen_resolution(self.screen_resolution)
 
     def on_save_and_commit_state(self):
+        self.log_level = self.view.on_change_temp_log_level
+        self.controller.parent_controller.on_save_and_commit_log_level(self.log_level)
         self.windowed_resolution = self.view.temp_windowed_resolution
         if not self.view.surface.fullscreen:
             self.controller.parent_controller.on_change_screen_resolution(self.windowed_resolution, False)
