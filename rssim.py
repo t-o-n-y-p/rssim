@@ -81,25 +81,40 @@ class RSSim:
         self.groups['environment'] = numbered_groups[0]
         self.logger.debug('environment group created successfully')
         self.groups['main_map'] = numbered_groups[1]
+        self.logger.debug('main_map group created successfully')
         self.groups['signal'] = numbered_groups[2]
+        self.logger.debug('signal group created successfully')
         self.groups['train'] = numbered_groups[2]
+        self.logger.debug('train group created successfully')
         self.groups['boarding_light'] = numbered_groups[3]
+        self.logger.debug('boarding_light group created successfully')
         self.groups['car_skins'] = numbered_groups[3]
+        self.logger.debug('car_skins group created successfully')
         self.groups['twilight'] = numbered_groups[4]
+        self.logger.debug('twilight group created successfully')
         self.groups['mini_environment'] = numbered_groups[5]
+        self.logger.debug('mini_environment group created successfully')
         self.groups['mini_map'] = numbered_groups[6]
+        self.logger.debug('mini_map group created successfully')
         self.groups['main_frame'] = numbered_groups[7]
+        self.logger.debug('main_frame group created successfully')
         self.groups['button_background'] = numbered_groups[8]
+        self.logger.debug('button_background group created successfully')
         self.groups['exp_money_time'] = numbered_groups[8]
+        self.logger.debug('exp_money_time group created successfully')
         self.groups['button_text'] = numbered_groups[9]
+        self.logger.debug('button_text group created successfully')
         surface = Window(width=1280, height=720, caption='Railway Station Simulator', style='borderless',
                          fullscreen=False, vsync=False)
+        self.logger.debug(f'surface {surface.width}x{surface.height} created successfully')
         self.surface = surface
         self.surface.flip()
         self.app = create_app(user_db_connection=self.user_db_connection, user_db_cursor=self.user_db_cursor,
                               config_db_cursor=self.config_db_cursor,
                               surface=self.surface, batches=self.batches, groups=self.groups, loader=self)
+        self.logger.debug('app created successfully')
         self.app.on_activate()
+        self.logger.debug('app activated successfully')
         self.app.on_change_screen_resolution(self.app.settings.model.screen_resolution,
                                              self.app.settings.model.fullscreen_mode)
         if self.app.settings.model.fullscreen_mode:
