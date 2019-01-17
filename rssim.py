@@ -1,11 +1,12 @@
 from ctypes import c_long, windll
-from sys import exit
+from sys import exit, exc_info
 from sqlite3 import connect
 from time import perf_counter
 from os import path, mkdir
 from shutil import copyfile
 from logging import FileHandler, Formatter, getLogger
 import datetime
+from traceback import print_tb
 
 from pyglet import gl
 from pyglet import resource
@@ -16,6 +17,15 @@ import win32con
 
 from exceptions import VideoAdapterNotSupportedException, MonitorNotSupportedException
 from rssimcore import create_app
+
+logger = getLogger('game')
+current_datetime = datetime.datetime.now()
+logs_handler = FileHandler('logs/logs_{0}_{1:0>2}-{2:0>2}-{3:0>2}-{4:0>6}.log'
+                           .format(str(current_datetime.date()), current_datetime.time().hour,
+                                   current_datetime.time().minute, current_datetime.time().second,
+                                   current_datetime.time().microsecond))
+logs_handler.setFormatter(Formatter('%(asctime)s - %(name)s - %(levelname)s - %(message)s'))
+logger.addHandler(logs_handler)
 
 
 class RSSim:
@@ -34,15 +44,6 @@ class RSSim:
         if not path.exists('logs'):
             mkdir('logs')
 
-        self.logger = getLogger('game')
-        current_datetime = datetime.datetime.now()
-        logs_handler = FileHandler('logs/logs_{0}_{1:0>2}-{2:0>2}-{3:0>2}-{4:0>6}.log'
-                                   .format(str(current_datetime.date()), current_datetime.time().hour,
-                                           current_datetime.time().minute, current_datetime.time().second,
-                                           current_datetime.time().microsecond))
-        logs_handler.setFormatter(Formatter('%(asctime)s - %(name)s - %(levelname)s - %(message)s'))
-        self.logger.addHandler(logs_handler)
-
         resource.path = ['font', 'img', 'img/main_map.zip']
         resource.reindex()
         self.user_db_connection = connect('db/user.db')
@@ -51,20 +52,20 @@ class RSSim:
         self.config_db_connection = connect('db/config.db')
         self.config_db_cursor = self.config_db_connection.cursor()
         self.user_db_cursor.execute('SELECT log_level FROM log_options')
-        self.logger.setLevel(self.user_db_cursor.fetchone()[0])
-        self.logger.critical('DB connection set up successfully')
+        logger.setLevel(self.user_db_cursor.fetchone()[0])
+        logger.debug('DB connection set up successfully')
         gl.glEnable(gl.GL_BLEND)
         gl.glBlendFunc(gl.GL_SRC_ALPHA, gl.GL_ONE_MINUS_SRC_ALPHA)
-        self.logger.debug('blending set successfully')
+        logger.debug('blending set successfully')
         self.batches = {}
         numbered_batches = []
-        for i in range(4):
+        for i in range(5):
             numbered_batches.append(Batch())
 
         self.batches['main_batch'] = numbered_batches[0]
-        self.batches['main_frame'] = numbered_batches[2]
-        self.batches['ui_batch'] = numbered_batches[3]
-        self.logger.debug('batches created successfully')
+        self.batches['main_frame'] = numbered_batches[3]
+        self.batches['ui_batch'] = numbered_batches[4]
+        logger.debug('batches created successfully')
         self.groups = {}
         numbered_groups = []
         for i in range(10):
@@ -157,7 +158,7 @@ class RSSim:
             self.user_db_connection.commit()
 
     def on_save_and_commit_log_level(self, log_level):
-        self.logger.setLevel(log_level)
+        logger.setLevel(log_level)
         self.user_db_cursor.execute('UPDATE log_options SET log_level = ?', (log_level, ))
 
 
@@ -168,6 +169,17 @@ def main():
         MessageBoxEx(win32con.NULL, e.text, e.caption,
                      win32con.MB_OK | win32con.MB_ICONERROR | win32con.MB_DEFBUTTON1
                      | win32con.MB_SYSTEMMODAL | win32con.MB_SETFOREGROUND, 0)
+    except Exception:
+        crash_datetime = datetime.datetime.now()
+        filename = 'logs/logs_{0}_{1:0>2}-{2:0>2}-{3:0>2}-{4:0>6}.crash'\
+            .format(str(crash_datetime.date()), crash_datetime.time().hour,
+                    crash_datetime.time().minute, crash_datetime.time().second,
+                    crash_datetime.time().microsecond)
+        with open(filename, 'w') as crash_dump:
+            crash_dump.write('Traceback (most recent call last):\n')
+            print_tb(exc_info()[2], file=crash_dump)
+            crash_dump.write('{}: {}\n'.format(exc_info()[0].__name__, exc_info()[1]))
+    finally:
         exit()
 
 
