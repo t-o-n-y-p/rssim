@@ -19,6 +19,9 @@ from exceptions import VideoAdapterNotSupportedException, MonitorNotSupportedExc
 from rssimcore import create_app
 
 
+current_version = (0, 9, 2)
+
+
 class RSSim:
     def __init__(self, logger):
         self.logger = logger
@@ -143,11 +146,13 @@ class RSSim:
             self.user_db_connection.commit()
 
         self.user_db_cursor.execute('SELECT * FROM version')
-        if self.user_db_cursor.fetchone() < (0, 9, 2):
-            self.user_db_cursor.execute('CREATE TABLE log_options (log_level integer)')
-            self.user_db_cursor.execute('INSERT INTO log_options VALUES (50)')
-            self.user_db_cursor.execute('UPDATE version SET major = 0, minor = 9, patch = 2')
-            self.user_db_connection.commit()
+        if self.user_db_cursor.fetchone() < current_version:
+            for patch in range(2, current_version[2] + 1):
+                with open(f'db/patch/09{patch}.sql', 'r') as migration:
+                    for line in migration.readlines():
+                        self.user_db_cursor.execute(line)
+
+                self.user_db_connection.commit()
 
     def on_save_and_commit_log_level(self, log_level):
         self.logger.setLevel(log_level)
