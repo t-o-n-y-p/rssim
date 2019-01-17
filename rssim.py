@@ -18,18 +18,10 @@ import win32con
 from exceptions import VideoAdapterNotSupportedException, MonitorNotSupportedException
 from rssimcore import create_app
 
-logger = getLogger('game')
-current_datetime = datetime.datetime.now()
-logs_handler = FileHandler('logs/logs_{0}_{1:0>2}-{2:0>2}-{3:0>2}-{4:0>6}.log'
-                           .format(str(current_datetime.date()), current_datetime.time().hour,
-                                   current_datetime.time().minute, current_datetime.time().second,
-                                   current_datetime.time().microsecond))
-logs_handler.setFormatter(Formatter('%(asctime)s - %(name)s - %(levelname)s - %(message)s'))
-logger.addHandler(logs_handler)
-
 
 class RSSim:
-    def __init__(self):
+    def __init__(self, logger):
+        self.logger = logger
         max_texture_size = c_long(0)
         gl.glGetIntegerv(gl.GL_MAX_TEXTURE_SIZE, max_texture_size)
         if max_texture_size.value < 8192:
@@ -52,11 +44,11 @@ class RSSim:
         self.config_db_connection = connect('db/config.db')
         self.config_db_cursor = self.config_db_connection.cursor()
         self.user_db_cursor.execute('SELECT log_level FROM log_options')
-        logger.setLevel(self.user_db_cursor.fetchone()[0])
-        logger.debug('DB connection set up successfully')
+        self.logger.setLevel(self.user_db_cursor.fetchone()[0])
+        self.logger.debug('DB connection set up successfully')
         gl.glEnable(gl.GL_BLEND)
         gl.glBlendFunc(gl.GL_SRC_ALPHA, gl.GL_ONE_MINUS_SRC_ALPHA)
-        logger.debug('blending set successfully')
+        self.logger.debug('blending set successfully')
         self.batches = {}
         numbered_batches = []
         for i in range(5):
@@ -65,7 +57,7 @@ class RSSim:
         self.batches['main_batch'] = numbered_batches[0]
         self.batches['main_frame'] = numbered_batches[3]
         self.batches['ui_batch'] = numbered_batches[4]
-        logger.debug('batches created successfully')
+        self.logger.debug('batches created successfully')
         self.groups = {}
         numbered_groups = []
         for i in range(10):
@@ -158,13 +150,22 @@ class RSSim:
             self.user_db_connection.commit()
 
     def on_save_and_commit_log_level(self, log_level):
-        logger.setLevel(log_level)
+        self.logger.setLevel(log_level)
         self.user_db_cursor.execute('UPDATE log_options SET log_level = ?', (log_level, ))
 
 
 def main():
+    logger = getLogger('root')
+    current_datetime = datetime.datetime.now()
+    logs_handler = FileHandler('logs/logs_{0}_{1:0>2}-{2:0>2}-{3:0>2}-{4:0>6}.log'
+                               .format(str(current_datetime.date()), current_datetime.time().hour,
+                                       current_datetime.time().minute, current_datetime.time().second,
+                                       current_datetime.time().microsecond))
+    logs_handler.setFormatter(Formatter('%(asctime)s - %(name)s - %(levelname)s - %(message)s'))
+    logger.addHandler(logs_handler)
+
     try:
-        RSSim().run()
+        RSSim(logger).run()
     except (VideoAdapterNotSupportedException, MonitorNotSupportedException) as e:
         MessageBoxEx(win32con.NULL, e.text, e.caption,
                      win32con.MB_OK | win32con.MB_ICONERROR | win32con.MB_DEFBUTTON1
