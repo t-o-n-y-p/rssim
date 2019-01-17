@@ -43,10 +43,10 @@ class RSSim:
         self.config_db_connection = connect('db/config.db')
         self.config_db_cursor = self.config_db_connection.cursor()
         self.user_db_cursor.execute('SELECT log_level FROM log_options')
-        log_level = self.user_db_cursor.fetchone()[0]
+        self.log_level = self.user_db_cursor.fetchone()[0]
         self.logger = getLogger('root')
         current_datetime = datetime.datetime.now()
-        if log_level < 30:
+        if self.log_level < 30:
             if not path.exists('logs'):
                 mkdir('logs')
 
@@ -57,7 +57,7 @@ class RSSim:
             logs_handler.setFormatter(Formatter('%(asctime)s - %(name)s - %(levelname)s - %(message)s'))
             self.logger.addHandler(logs_handler)
 
-        self.logger.setLevel(log_level)
+        self.logger.setLevel(self.log_level)
         self.logger.debug('DB connection set up successfully')
         gl.glEnable(gl.GL_BLEND)
         gl.glBlendFunc(gl.GL_SRC_ALPHA, gl.GL_ONE_MINUS_SRC_ALPHA)
@@ -183,7 +183,20 @@ class RSSim:
                 self.user_db_connection.commit()
 
     def on_save_and_commit_log_level(self, log_level):
+        if self.log_level >= 30 > log_level:
+            if not path.exists('logs'):
+                mkdir('logs')
+
+            current_datetime = datetime.datetime.now()
+            logs_handler = FileHandler('logs/logs_{0}_{1:0>2}-{2:0>2}-{3:0>2}-{4:0>6}.log'
+                                       .format(str(current_datetime.date()), current_datetime.time().hour,
+                                               current_datetime.time().minute, current_datetime.time().second,
+                                               current_datetime.time().microsecond))
+            logs_handler.setFormatter(Formatter('%(asctime)s - %(name)s - %(levelname)s - %(message)s'))
+            self.logger.addHandler(logs_handler)
+
         self.logger.setLevel(log_level)
+        self.log_level = log_level
         self.user_db_cursor.execute('UPDATE log_options SET log_level = ?', (log_level, ))
 
 
