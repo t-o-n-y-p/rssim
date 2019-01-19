@@ -215,10 +215,10 @@ bool is_mini_map_viewport_border()
                 );
 }
 /*
-    is_setings_view_button_border() function
+    is_settings_view_button_border() function
     Returns "true" if pixel belongs to settings view buttons borders and "false" if it does not.
 */
-bool is_setings_view_button_border()
+bool is_settings_view_button_border()
 {
     // medium_line - Y position of settings screen center
     int medium_line = screen_resolution[1] / 2 + top_bar_height / 2;
@@ -277,7 +277,7 @@ bool is_schedule_right_line(int line_width)
     Returns "true" if pixel belongs to any cell border on constructor screen and "false" if it does not.
     Input values:
         int cell_width - width of a cell
-        int cell_width - height of a cell
+        int cell_height - height of a cell
         int interval_between_cells_height - vertical interval between cells
 */
 bool is_constructor_cell_border(int cell_width, int cell_height, int interval_between_cells_height)
@@ -312,7 +312,7 @@ bool is_constructor_cell_border(int cell_width, int cell_height, int interval_be
     Returns "true" if pixel belongs to track build button border on constructor screen and "false" if it does not.
     Input values:
         int cell_width - width of a cell
-        int cell_width - height of a cell
+        int cell_height - height of a cell
 */
 bool is_build_track_button_border_activated(int cell_width, int cell_height)
 {
@@ -384,6 +384,7 @@ void main()
         int cell_height = int(0.05625 * float(screen_resolution[0]));
         int cell_width = int(6.875 * float(cell_height));
         int interval_between_cells_height = int(0.25 * float(cell_height));
+        // draw zoom button borders
         if (is_zoom_button_border_activated())
             zoom_buttons_result = vec4(1.0, 0.0, 0.0, 1.0);
         else
@@ -392,55 +393,72 @@ void main()
         if (mini_map_opacity > 0)
         {
             float real_mini_map_opacity = float(mini_map_opacity) / 255.0;
+            // draw black mini-map border
             if (is_mini_map_border())
                 mini_map_result = vec4(vec3(0.0), real_mini_map_opacity);
             else
                 mini_map_result = vec4(0.0);
 
+            // draw mini-map viewport border
             if (is_mini_map_viewport_border())
                 mini_map_result = vec4(1.0, 0.5, 0.0, real_mini_map_opacity);
         }
+        // just transparent if there is no mini-map on the screen
         else
             mini_map_result = vec4(0.0);
 
-        if (settings_is_activated == 1 && is_setings_view_button_border())
+        // draw all buttons on settings screen
+        if (settings_is_activated == 1 && is_settings_view_button_border())
             settings_result = vec4(1.0, 0.0, 0.0, 1.0);
+        // just transparent if settings screen is not activated
         else
             settings_result = vec4(0.0);
 
         if (schedule_opacity > 0)
         {
             float real_schedule_opacity = float(schedule_opacity) / 255.0 * 0.94;
+            // draw left gradient line
             if (is_schedule_left_line(cell_width))
             {
+                // distance from the line center
                 gradient_coeff = (float(top_left_cell[0]) + float(cell_width) / 2.0 - float(gl_FragCoord[0]))
                 / (float(cell_width) / 2.0);
+                // gradient color
                 schedule_coeff = (255.0 - abs(int(gradient_coeff * gradient_coeff * gradient_coeff * 255.0))) / 255.0;
                 schedule_result = vec4(vec3(schedule_coeff), real_schedule_opacity);
             }
+            // draw right gradient line
             else if (is_schedule_right_line(cell_width))
             {
+                // distance from the line center
                 gradient_coeff = (float(top_right_cell[0]) + float(cell_width) / 2.0 - float(gl_FragCoord[0]))
                 / (float(cell_width) / 2.0);
+                // gradient color
                 schedule_coeff = (255.0 - abs(int(gradient_coeff * gradient_coeff * gradient_coeff * 255.0))) / 255.0;
                 schedule_result = vec4(vec3(schedule_coeff), real_schedule_opacity);
             }
+            // background color for other pixels
             else
                 schedule_result = vec4(vec3(0.0), real_schedule_opacity);
         }
+        // just transparent if schedule screen is not activated
         else
             schedule_result = vec4(0.0);
 
         if (constructor_opacity > 0)
+            // draw cells and button borders on constructor screen
             if (is_constructor_cell_border(cell_width, cell_height, interval_between_cells_height)
                 || is_build_track_button_border_activated(cell_width, cell_height)
                )
                 constructor_result = vec4(1.0, 0.0, 0.0, real_constructor_opacity);
+            // background color for other pixels
             else
                 constructor_result = vec4(vec3(0.0), real_constructor_opacity);
+        // just transparent if constructor screen is not activated
         else
             constructor_result = vec4(0.0);
 
+        // mix all results proportionally
         color_frag = schedule_result * float(schedule_opacity) / 255.0
         + constructor_result * float(constructor_opacity) / 255.0
         + zoom_buttons_result + settings_result + mini_map_result * float(mini_map_opacity) / 255.0;
