@@ -17,16 +17,16 @@ def create_app(user_db_connection, user_db_cursor, config_db_cursor, surface, ba
     controller.view = view
     view.on_assign_controller(controller)
     model.view = view
-    controller.game = create_game(user_db_connection, user_db_cursor, config_db_cursor, surface,
-                                  batches, groups, controller)
-    controller.settings = create_settings(user_db_connection, user_db_cursor, config_db_cursor, surface,
-                                          batches, groups, controller)
-    controller.fps = create_fps(user_db_connection, user_db_cursor, config_db_cursor, surface,
-                                batches, groups, controller)
+    controller.game = _create_game(user_db_connection, user_db_cursor, config_db_cursor, surface,
+                                   batches, groups, controller)
+    controller.settings = _create_settings(user_db_connection, user_db_cursor, config_db_cursor, surface,
+                                           batches, groups, controller)
+    controller.fps = _create_fps(user_db_connection, user_db_cursor, config_db_cursor, surface,
+                                 batches, groups, controller)
     return controller
 
 
-def create_game(user_db_connection, user_db_cursor, config_db_cursor, surface, batches, groups, app):
+def _create_game(user_db_connection, user_db_cursor, config_db_cursor, surface, batches, groups, app):
     controller = GameController(app)
     app.game = controller
     model = GameModel(user_db_connection, user_db_cursor, config_db_cursor)
@@ -36,26 +36,26 @@ def create_game(user_db_connection, user_db_cursor, config_db_cursor, surface, b
     controller.view = view
     view.on_assign_controller(controller)
     model.view = view
-    controller.map = create_map(user_db_connection, user_db_cursor, config_db_cursor, surface,
-                                batches, groups, controller)
+    controller.map = _create_map(user_db_connection, user_db_cursor, config_db_cursor, surface,
+                                 batches, groups, controller)
     return controller
 
 
-def create_map(user_db_connection, user_db_cursor, config_db_cursor, surface, batches, groups, game):
+def _create_map(user_db_connection, user_db_cursor, config_db_cursor, surface, batches, groups, game):
     controller = MapController(game)
     game.map = controller
-    controller.scheduler = create_scheduler(user_db_connection, user_db_cursor, config_db_cursor, surface,
-                                            batches, groups, controller)
-    controller.dispatcher = create_dispatcher(user_db_connection, user_db_cursor, config_db_cursor, surface,
-                                              batches, groups, controller)
-    controller.constructor = create_constructor(user_db_connection, user_db_cursor, config_db_cursor, surface,
-                                                batches, groups, controller)
+    controller.scheduler = _create_scheduler(user_db_connection, user_db_cursor, config_db_cursor, surface,
+                                             batches, groups, controller)
+    controller.dispatcher = _create_dispatcher(user_db_connection, user_db_cursor, config_db_cursor, surface,
+                                               batches, groups, controller)
+    controller.constructor = _create_constructor(user_db_connection, user_db_cursor, config_db_cursor, surface,
+                                                 batches, groups, controller)
     user_db_cursor.execute('SELECT train_id FROM trains')
     train_ids = user_db_cursor.fetchall()
     if train_ids is not None:
         for i in train_ids:
-            controller.trains[i[0]] = create_train(user_db_connection, user_db_cursor, config_db_cursor, surface,
-                                                   batches, groups, controller, i[0])
+            controller.trains[i[0]] = _create_train(user_db_connection, user_db_cursor, config_db_cursor, surface,
+                                                    batches, groups, controller, i[0])
 
     config_db_cursor.execute('''SELECT DISTINCT track FROM signal_config''')
     signal_index = config_db_cursor.fetchall()
@@ -66,8 +66,8 @@ def create_map(user_db_connection, user_db_cursor, config_db_cursor, surface, ba
     signal_ids = config_db_cursor.fetchall()
     for i in signal_ids:
         controller.signals[i[0]][i[1]] \
-            = create_signal(user_db_connection, user_db_cursor, config_db_cursor, surface,
-                            batches, groups, controller, i[0], i[1])
+            = _create_signal(user_db_connection, user_db_cursor, config_db_cursor, surface,
+                             batches, groups, controller, i[0], i[1])
         controller.signals_list.append(controller.signals[i[0]][i[1]])
 
     config_db_cursor.execute('''SELECT DISTINCT track FROM train_route_config''')
@@ -79,8 +79,8 @@ def create_map(user_db_connection, user_db_cursor, config_db_cursor, surface, ba
     train_route_ids = config_db_cursor.fetchall()
     for i in train_route_ids:
         controller.train_routes[i[0]][i[1]] \
-            = create_train_route(user_db_connection, user_db_cursor, config_db_cursor, surface,
-                                 batches, groups, controller, i[0], i[1])
+            = _create_train_route(user_db_connection, user_db_cursor, config_db_cursor, surface,
+                                  batches, groups, controller, i[0], i[1])
         controller.train_routes_sorted_list.append(controller.train_routes[i[0]][i[1]])
 
     user_db_cursor.execute('''SELECT DISTINCT track_param_1 FROM switches''')
@@ -97,8 +97,8 @@ def create_map(user_db_connection, user_db_cursor, config_db_cursor, surface, ba
     switch_types = user_db_cursor.fetchall()
     for i in switch_types:
         controller.switches[i[0]][i[1]][i[2]] \
-            = create_railroad_switch(user_db_connection, user_db_cursor, config_db_cursor, surface,
-                                     batches, groups, controller, i[0], i[1], i[2])
+            = _create_railroad_switch(user_db_connection, user_db_cursor, config_db_cursor, surface,
+                                      batches, groups, controller, i[0], i[1], i[2])
         controller.switches_list.append(controller.switches[i[0]][i[1]][i[2]])
 
     user_db_cursor.execute('''SELECT DISTINCT track_param_1 FROM crossovers''')
@@ -115,8 +115,8 @@ def create_map(user_db_connection, user_db_cursor, config_db_cursor, surface, ba
     crossovers_types = user_db_cursor.fetchall()
     for i in crossovers_types:
         controller.crossovers[i[0]][i[1]][i[2]] \
-            = create_crossover(user_db_connection, user_db_cursor, config_db_cursor, surface,
-                               batches, groups, controller, i[0], i[1], i[2])
+            = _create_crossover(user_db_connection, user_db_cursor, config_db_cursor, surface,
+                                batches, groups, controller, i[0], i[1], i[2])
         controller.crossovers_list.append(controller.crossovers[i[0]][i[1]][i[2]])
 
     model = MapModel(user_db_connection, user_db_cursor, config_db_cursor)
@@ -129,7 +129,7 @@ def create_map(user_db_connection, user_db_cursor, config_db_cursor, surface, ba
     return controller
 
 
-def create_settings(user_db_connection, user_db_cursor, config_db_cursor, surface, batches, groups, app):
+def _create_settings(user_db_connection, user_db_cursor, config_db_cursor, surface, batches, groups, app):
     controller = SettingsController(app)
     app.settings = controller
     model = SettingsModel(user_db_connection, user_db_cursor, config_db_cursor)
@@ -142,7 +142,7 @@ def create_settings(user_db_connection, user_db_cursor, config_db_cursor, surfac
     return controller
 
 
-def create_fps(user_db_connection, user_db_cursor, config_db_cursor, surface, batches, groups, app):
+def _create_fps(user_db_connection, user_db_cursor, config_db_cursor, surface, batches, groups, app):
     controller = FPSController(app)
     app.fps = controller
     model = FPSModel(user_db_connection, user_db_cursor, config_db_cursor)
@@ -155,7 +155,7 @@ def create_fps(user_db_connection, user_db_cursor, config_db_cursor, surface, ba
     return controller
 
 
-def create_scheduler(user_db_connection, user_db_cursor, config_db_cursor, surface, batches, groups, map_controller):
+def _create_scheduler(user_db_connection, user_db_cursor, config_db_cursor, surface, batches, groups, map_controller):
     controller = SchedulerController(map_controller)
     model = SchedulerModel(user_db_connection, user_db_cursor, config_db_cursor)
     view = SchedulerView(user_db_cursor, config_db_cursor, surface, batches, groups)
@@ -167,8 +167,8 @@ def create_scheduler(user_db_connection, user_db_cursor, config_db_cursor, surfa
     return controller
 
 
-def create_signal(user_db_connection, user_db_cursor, config_db_cursor, surface,
-                  batches, groups, map_controller, track, base_route):
+def _create_signal(user_db_connection, user_db_cursor, config_db_cursor, surface,
+                   batches, groups, map_controller, track, base_route):
     controller = SignalController(map_controller)
     controller.track = track
     controller.base_route = base_route
@@ -183,8 +183,8 @@ def create_signal(user_db_connection, user_db_cursor, config_db_cursor, surface,
     return controller
 
 
-def create_train_route(user_db_connection, user_db_cursor, config_db_cursor, surface,
-                       batches, groups, map_controller, track, train_route):
+def _create_train_route(user_db_connection, user_db_cursor, config_db_cursor, surface,
+                        batches, groups, map_controller, track, train_route):
     controller = TrainRouteController(map_controller)
     controller.track = track
     controller.train_route = train_route
@@ -202,9 +202,9 @@ def create_train_route(user_db_connection, user_db_cursor, config_db_cursor, sur
     return controller
 
 
-def create_railroad_switch(user_db_connection, user_db_cursor, config_db_cursor, surface,
-                           batches, groups, map_controller,
-                           track_param_1, track_param_2, switch_type):
+def _create_railroad_switch(user_db_connection, user_db_cursor, config_db_cursor, surface,
+                            batches, groups, map_controller,
+                            track_param_1, track_param_2, switch_type):
     controller = RailroadSwitchController(map_controller)
     controller.track_param_1 = track_param_1
     controller.track_param_2 = track_param_2
@@ -220,9 +220,9 @@ def create_railroad_switch(user_db_connection, user_db_cursor, config_db_cursor,
     return controller
 
 
-def create_crossover(user_db_connection, user_db_cursor, config_db_cursor, surface,
-                     batches, groups, map_controller,
-                     track_param_1, track_param_2, crossover_type):
+def _create_crossover(user_db_connection, user_db_cursor, config_db_cursor, surface,
+                      batches, groups, map_controller,
+                      track_param_1, track_param_2, crossover_type):
     controller = CrossoverController(map_controller)
     controller.track_param_1 = track_param_1
     controller.track_param_2 = track_param_2
@@ -238,8 +238,8 @@ def create_crossover(user_db_connection, user_db_cursor, config_db_cursor, surfa
     return controller
 
 
-def create_train(user_db_connection, user_db_cursor, config_db_cursor, surface,
-                 batches, groups, map_controller, train_id):
+def _create_train(user_db_connection, user_db_cursor, config_db_cursor, surface,
+                  batches, groups, map_controller, train_id):
     controller = TrainController(map_controller)
     controller.train_id = train_id
     model = TrainModel(user_db_connection, user_db_cursor, config_db_cursor)
@@ -257,8 +257,8 @@ def create_train(user_db_connection, user_db_cursor, config_db_cursor, surface,
     return controller
 
 
-def create_dispatcher(user_db_connection, user_db_cursor, config_db_cursor, surface,
-                      batches, groups, map_controller):
+def _create_dispatcher(user_db_connection, user_db_cursor, config_db_cursor, surface,
+                       batches, groups, map_controller):
     controller = DispatcherController(map_controller)
     model = DispatcherModel(user_db_connection, user_db_cursor, config_db_cursor)
     view = DispatcherView(user_db_cursor, config_db_cursor, surface, batches, groups)
@@ -270,8 +270,8 @@ def create_dispatcher(user_db_connection, user_db_cursor, config_db_cursor, surf
     return controller
 
 
-def create_constructor(user_db_connection, user_db_cursor, config_db_cursor, surface,
-                       batches, groups, map_controller):
+def _create_constructor(user_db_connection, user_db_cursor, config_db_cursor, surface,
+                        batches, groups, map_controller):
     controller = ConstructorController(map_controller)
     model = ConstructorModel(user_db_connection, user_db_cursor, config_db_cursor)
     view = ConstructorView(user_db_cursor, config_db_cursor, surface, batches, groups)
