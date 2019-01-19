@@ -331,15 +331,18 @@ bool is_build_track_button_border_activated(int cell_width, int cell_height)
 */
 void main()
 {
+    // draw app window border and top bar border
     if (is_general_border())
         color_frag = vec4(1.0, 0.0, 0.0, 1.0);
-  
+
+    // fill top bar with color and draw top bar buttons borders
     if (is_inside_top_bar())
         if (is_top_bar_button_border())
             color_frag = vec4(1.0, 0.0, 0.0, 1.0);
         else
             color_frag = vec4(vec3(0.0), 0.94);
 
+    // calculate bottom bar color using game frame opacity and settings state
     if (is_inside_bottom_bar_or_bar_border())
     {
         vec4 game_frame_result, settings_result;
@@ -347,28 +350,32 @@ void main()
         {
             float real_game_frame_border_opacity = float(game_frame_opacity) / 255.0;
             float real_game_frame_opacity = float(game_frame_opacity) / 255.0 * 0.94;
+            // draw bottom bar border
             if (is_bottom_bar_border())
                 game_frame_result = vec4(1.0, 0.0, 0.0, real_game_frame_border_opacity);
             else
+                // draw bottom bar buttons borders
                 if (is_bottom_bar_button_border())
                     game_frame_result = vec4(1.0, 0.0, 0.0, real_game_frame_border_opacity);
+                // fill bottom bar with color
                 else
                     game_frame_result = vec4(vec3(0.0), real_game_frame_opacity);
         }
+        // just transparent if there is not bottom bar on the screen
         else
             game_frame_result = vec4(0.0);
 
-        if (settings_is_activated == 1)
-            if (is_accept_reject_settings_button_border())
-                settings_result = vec4(1.0, 0.0, 0.0, 1.0);
-            else
-                settings_result = vec4(0.0);
+        // draw accert/reject settings buttons borders if settings screen is activated
+        if (settings_is_activated == 1 && is_accept_reject_settings_button_border())
+            settings_result = vec4(1.0, 0.0, 0.0, 1.0);
         else
             settings_result = vec4(0.0);
 
+        // mix game frame and settings results proportionally
         color_frag = game_frame_result * float(game_frame_opacity) / 255.0 + settings_result;
     }
 
+    // calculate main part of the window using results for every possible screen
     if (is_inside_main_part_of_the_window())
     {
         vec4 schedule_result, constructor_result, zoom_buttons_result, settings_result, mini_map_result;
