@@ -12,20 +12,18 @@ from pyglet.window import Window
 from pyglet.graphics import Batch, OrderedGroup
 
 from exceptions import VideoAdapterNotSupportedException, MonitorNotSupportedException
-from rssim_core import create_app
-
-
-current_version = (0, 9, 2)
+from rssim_core import *
 
 
 class RSSim:
     def __init__(self):
         max_texture_size = c_long(0)
         gl.glGetIntegerv(gl.GL_MAX_TEXTURE_SIZE, max_texture_size)
-        if max_texture_size.value < 8192:
+        if max_texture_size.value < REQUIRED_TEXTURE_SIZE:
             raise VideoAdapterNotSupportedException
 
-        if windll.user32.GetSystemMetrics(0) < 1280 or windll.user32.GetSystemMetrics(1) < 720:
+        if windll.user32.GetSystemMetrics(0) < MIN_RESOLUTION_WIDTH \
+                or windll.user32.GetSystemMetrics(1) < MIN_RESOLUTION_HEIGHT:
             raise MonitorNotSupportedException
 
         if not path.exists('db/user.db'):
@@ -42,7 +40,7 @@ class RSSim:
         self.log_level = self.user_db_cursor.fetchone()[0]
         self.logger = getLogger('root')
         current_datetime = datetime.now()
-        if self.log_level < 30:
+        if self.log_level < LOG_LEVEL_OFF:
             if not path.exists('logs'):
                 mkdir('logs')
 
@@ -101,8 +99,8 @@ class RSSim:
         self.logger.debug('exp_money_time group created successfully')
         self.groups['button_text'] = numbered_groups[9]
         self.logger.debug('button_text group created successfully')
-        surface = Window(width=1280, height=720, caption='Railway Station Simulator', style='borderless',
-                         fullscreen=False, vsync=False)
+        surface = Window(width=MIN_RESOLUTION_WIDTH, height=MIN_RESOLUTION_HEIGHT,
+                         caption='Railway Station Simulator', style='borderless', fullscreen=False, vsync=False)
         self.logger.debug(f'surface {surface.width}x{surface.height} created successfully')
         self.surface = surface
         self.surface.flip()
@@ -200,7 +198,7 @@ class RSSim:
             self.logger.debug('all stuff is drawn')
             self.logger.debug('END FRAME')
             time_4 = perf_counter()
-            if perf_counter() - fps_timer > 0.2:
+            if perf_counter() - fps_timer > FPS_INTERVAL:
                 self.app.on_update_fps(round(float(1/(time_4 - time_1))))
                 self.logger.debug(f'FPS: {self.app.fps.model.fps}')
                 fps_timer = perf_counter()
@@ -213,12 +211,12 @@ class RSSim:
         logger = getLogger('update_log')
         current_datetime = datetime.now()
         logs_handler = FileHandler('logs/logs_{0}_{1:0>2}-{2:0>2}-{3:0>2}-{4:0>6}.update_log'
-                                    .format(str(current_datetime.date()), current_datetime.time().hour,
-                                            current_datetime.time().minute, current_datetime.time().second,
-                                            current_datetime.time().microsecond))
+                                   .format(str(current_datetime.date()), current_datetime.time().hour,
+                                           current_datetime.time().minute, current_datetime.time().second,
+                                           current_datetime.time().microsecond))
         logs_handler.setFormatter(Formatter('%(asctime)s - %(name)s - %(levelname)s - %(message)s'))
         logger.addHandler(logs_handler)
-        logger.setLevel(10)
+        logger.setLevel(LOG_LEVEL_DEBUG)
         logger.info('START RSSIM.CHECK_FOR_UPDATES')
         self.user_db_cursor.execute('SELECT * FROM sqlite_master WHERE type = "table" AND tbl_name = "version"')
         if len(self.user_db_cursor.fetchall()) == 0:
@@ -232,10 +230,10 @@ class RSSim:
         self.user_db_cursor.execute('SELECT * FROM version')
         user_db_version = self.user_db_cursor.fetchone()
         logger.debug(f'user DB version: {user_db_version}')
-        logger.debug(f'current game version: {current_version}')
-        if user_db_version < current_version:
+        logger.debug(f'current game version: {CURRENT_VERSION}')
+        if user_db_version < CURRENT_VERSION:
             logger.debug('upgrading database...')
-            for patch in range(2, current_version[2] + 1):
+            for patch in range(2, CURRENT_VERSION[2] + 1):
                 logger.debug(f'start 0.9.{patch} migration')
                 with open(f'db/patch/09{patch}.sql', 'r') as migration:
                     for line in migration.readlines():
@@ -251,7 +249,7 @@ class RSSim:
 
     def on_save_and_commit_log_level(self, log_level):
         self.logger.info('START RSSIM.ON_SAVE_AND_COMMIT_LOG_LEVEL')
-        if self.log_level >= 30 > log_level and not self.logger.hasHandlers():
+        if self.log_level >= LOG_LEVEL_OFF > log_level and not self.logger.hasHandlers():
             if not path.exists('logs'):
                 mkdir('logs')
 

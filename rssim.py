@@ -1,6 +1,6 @@
 from sys import exit, exc_info
 from os import path, mkdir
-import datetime
+from datetime import datetime
 from traceback import print_tb
 
 from win32api import MessageBoxEx
@@ -21,7 +21,7 @@ def main():
         if not path.exists('logs'):
             mkdir('logs')
 
-        crash_datetime = datetime.datetime.now()
+        crash_datetime = datetime.now()
         filename = 'logs/logs_{0}_{1:0>2}-{2:0>2}-{3:0>2}-{4:0>6}.crash'\
             .format(str(crash_datetime.date()), crash_datetime.time().hour,
                     crash_datetime.time().minute, crash_datetime.time().second,

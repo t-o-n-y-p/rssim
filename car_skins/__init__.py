@@ -1,45 +1,45 @@
 from pyglet.image import load
 
 
-car_collections = 4
+CAR_COLLECTIONS = 4
 
-car_head_image = []
-for i in range(car_collections):
-    car_head_image.append([])
+CAR_HEAD_IMAGE = []
+for i in range(CAR_COLLECTIONS):
+    CAR_HEAD_IMAGE.append([])
     for j in range(4):
-        car_head_image[i].append(load(f'img/cars/{i}/car_head_{j}.png'))
+        CAR_HEAD_IMAGE[i].append(load(f'img/cars/{i}/car_head_{j}.png'))
 
-for i in range(len(car_head_image)):
+for i in range(len(CAR_HEAD_IMAGE)):
     for j in range(4):
-        car_head_image[i][j].anchor_x = car_head_image[i][j].width // 2
-        car_head_image[i][j].anchor_y = car_head_image[i][j].height // 2
+        CAR_HEAD_IMAGE[i][j].anchor_x = CAR_HEAD_IMAGE[i][j].width // 2
+        CAR_HEAD_IMAGE[i][j].anchor_y = CAR_HEAD_IMAGE[i][j].height // 2
 
-car_mid_image = []
-for i in range(car_collections):
-    car_mid_image.append([])
+CAR_MID_IMAGE = []
+for i in range(CAR_COLLECTIONS):
+    CAR_MID_IMAGE.append([])
     for j in range(4):
-        car_mid_image[i].append(load(f'img/cars/{i}/car_mid_{j}.png'))
+        CAR_MID_IMAGE[i].append(load(f'img/cars/{i}/car_mid_{j}.png'))
 
-for i in range(len(car_mid_image)):
+for i in range(len(CAR_MID_IMAGE)):
     for j in range(4):
-        car_mid_image[i][j].anchor_x = car_mid_image[i][j].width // 2
-        car_mid_image[i][j].anchor_y = car_mid_image[i][j].height // 2
+        CAR_MID_IMAGE[i][j].anchor_x = CAR_MID_IMAGE[i][j].width // 2
+        CAR_MID_IMAGE[i][j].anchor_y = CAR_MID_IMAGE[i][j].height // 2
 
-car_tail_image = []
-for i in range(car_collections):
-    car_tail_image.append([])
+CAR_TAIL_IMAGE = []
+for i in range(CAR_COLLECTIONS):
+    CAR_TAIL_IMAGE.append([])
     for j in range(4):
-        car_tail_image[i].append(load(f'img/cars/{i}/car_tail_{j}.png'))
+        CAR_TAIL_IMAGE[i].append(load(f'img/cars/{i}/car_tail_{j}.png'))
 
-for i in range(len(car_tail_image)):
+for i in range(len(CAR_TAIL_IMAGE)):
     for j in range(4):
-        car_tail_image[i][j].anchor_x = car_tail_image[i][j].width // 2
-        car_tail_image[i][j].anchor_y = car_tail_image[i][j].height // 2
+        CAR_TAIL_IMAGE[i][j].anchor_x = CAR_TAIL_IMAGE[i][j].width // 2
+        CAR_TAIL_IMAGE[i][j].anchor_y = CAR_TAIL_IMAGE[i][j].height // 2
 
-boarding_light_image = []
-for i in range(car_collections):
-    boarding_light_image.append(load(f'img/cars/{i}/boarding_lights.png'))
+BOARDING_LIGHT_IMAGE = []
+for i in range(CAR_COLLECTIONS):
+    BOARDING_LIGHT_IMAGE.append(load(f'img/cars/{i}/boarding_lights.png'))
 
-for i in range(len(boarding_light_image)):
-    boarding_light_image[i].anchor_x = boarding_light_image[i].width // 2
-    boarding_light_image[i].anchor_y = boarding_light_image[i].height // 2
+for i in range(len(BOARDING_LIGHT_IMAGE)):
+    BOARDING_LIGHT_IMAGE[i].anchor_x = BOARDING_LIGHT_IMAGE[i].width // 2
+    BOARDING_LIGHT_IMAGE[i].anchor_y = BOARDING_LIGHT_IMAGE[i].height // 2

@@ -5,7 +5,16 @@ from model import AppModel, GameModel, MapModel, SettingsModel, FPSModel, Schedu
                   RailroadSwitchModel, CrossoverModel, TrainModel, DispatcherModel, ConstructorModel
 from view import AppView, GameView, MapView, SettingsView, FPSView, SchedulerView, SignalView, TrainRouteView, \
                  RailroadSwitchView, CrossoverView, TrainView, DispatcherView, ConstructorView
-from car_skins import car_head_image, car_mid_image, car_tail_image, boarding_light_image
+from car_skins import *
+
+
+CURRENT_VERSION = (0, 9, 2)
+REQUIRED_TEXTURE_SIZE = 8192
+MIN_RESOLUTION_WIDTH = 1280
+MIN_RESOLUTION_HEIGHT = 720
+FPS_INTERVAL = 0.2
+LOG_LEVEL_OFF = 30
+LOG_LEVEL_DEBUG = 10
 
 
 def create_app(user_db_connection, user_db_cursor, config_db_cursor, surface, batches, groups, loader):
@@ -245,10 +254,10 @@ def _create_train(user_db_connection, user_db_cursor, config_db_cursor, surface,
     model = TrainModel(user_db_connection, user_db_cursor, config_db_cursor)
     model.on_train_setup(train_id)
     view = TrainView(user_db_cursor, config_db_cursor, surface, batches, groups)
-    view.car_head_image = car_head_image
-    view.car_mid_image = car_mid_image
-    view.car_tail_image = car_tail_image
-    view.boarding_light_image = boarding_light_image
+    view.car_head_image = CAR_HEAD_IMAGE
+    view.car_mid_image = CAR_MID_IMAGE
+    view.car_tail_image = CAR_TAIL_IMAGE
+    view.boarding_light_image = BOARDING_LIGHT_IMAGE
     controller.model = model
     model.controller = controller
     controller.view = view
