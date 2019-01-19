@@ -1,6 +1,34 @@
+/*
+    Fragment shader for "main frame" rectangle. "Main frame" is responsible for UI button borders, UI background,
+    and general app red border. It calculates normalized RGBA color for each pixel inside the game window.
+    Input value:
+        vec4 gl_FragCoord - pixel position in 3D homogeneous coordinates (from left bottom point)
+    Output value:
+        color_frag - calculated normalized RGBA color for the pixel
+    Uniforms (all positions are in 2D Cartesian coordinates from the left bottom point):
+        ivec2 screen_resolution - current resolution of the game window
+        ivec2 base_offset - sign-inverted game map offset; is used for viewport border on the mini-map
+        int bottom_bar_height - height of the bottom bar; is provided already calculated for performance reasons
+        int top_bar_height - height of the top bar; is provided already calculated for performance reasons
+        ivec2 top_left_cell - position of the top left corner for the top left cell on constructor screen;
+            schedule also uses it for gradient line
+        ivec2 top_right_cell - position of the top left corner for the top right cell on constructor screen;
+            schedule also uses it for gradient line
+        int game_frame_opacity - opacity of the bottom bar, its edges, and button edges
+        int schedule_opacity - opacity of the schedule screen
+        int constructor_opacity - opacity of the constructor screen
+        int settings_is_activated - flag to determine if we need to draw button borders for settings screen
+        int zoom_buttons_activated - flag to determine if we need to draw map zoom button borders
+        int track_build_button_is_activated - flag to determine if we need to draw track build button borders
+        int mini_map_opacity - opacity of the mini-map
+        int zoom_out_activated - flag to determine map scale; is used for viewport border on the mini-map
+        ivec2 mini_map_position - position of the bottom left corner for the mini-map
+        int mini_map_width - mini-map width; is provided already calculated for performance reasons
+        int mini_map_height - minipmap height; is provided already calculated for performance reasons
+*/
 #version 330 core
-out vec4 color_frag;
 layout(pixel_center_integer) in vec4 gl_FragCoord;
+out vec4 color_frag;
 uniform ivec2 screen_resolution = ivec2(1280, 720);
 uniform ivec2 base_offset = ivec2(0, 0);
 uniform int bottom_bar_height = 72;
@@ -18,89 +46,148 @@ uniform int zoom_out_activated = 0;
 uniform ivec2 mini_map_position = ivec2(0, 0);
 uniform int mini_map_width = 0;
 uniform int mini_map_height = 0;
+/*
+    is_general_border() function
+    Returns "true" if pixel belongs to red app window border and "false" if it does not.
+*/
 bool is_general_border()
 {
-    return gl_FragCoord[0] < 2 || gl_FragCoord[0] > screen_resolution[0] - 3
-           || gl_FragCoord[1] < 2 || gl_FragCoord[1] > screen_resolution[1] - 3
-           || gl_FragCoord[1] == screen_resolution[1] - top_bar_height + 1
+    return gl_FragCoord[0] < 2 || gl_FragCoord[0] > screen_resolution[0] - 3     // 2 pixels for left and right border
+           || gl_FragCoord[1] < 2 || gl_FragCoord[1] > screen_resolution[1] - 3  // 2 pixels for bottom and top border
+           || gl_FragCoord[1] == screen_resolution[1] - top_bar_height + 1       // 2 pixels for top bar border
            || gl_FragCoord[1] == screen_resolution[1] - top_bar_height;
 }
+/*
+    is_top_bar_button_border() function
+    Returns "true" if pixel belongs to any top bar button (close, iconify or fullscreen/restore) border
+    and "false" if it does not.
+*/
 bool is_top_bar_button_border()
 {
     int margin = screen_resolution[0] - int(gl_FragCoord[0]);
-    return gl_FragCoord[1] >= screen_resolution[1] - top_bar_height + 2 && gl_FragCoord[1] <= screen_resolution[1] - 3
-           && (margin == top_bar_height || margin == top_bar_height - 1
-               || margin == top_bar_height * 2 - 2 || margin == top_bar_height * 2 - 3
-               || margin == top_bar_height * 3 - 4 || margin == top_bar_height * 3 - 5
+    return gl_FragCoord[1] >= screen_resolution[1] - top_bar_height + 2                // pixel Y is inside the top bar
+           && gl_FragCoord[1] <= screen_resolution[1] - 3
+           && (margin == top_bar_height || margin == top_bar_height - 1                // 2 pixels for close button
+               || margin == top_bar_height * 2 - 2 || margin == top_bar_height * 2 - 3 // fullscreen/restore button
+               || margin == top_bar_height * 3 - 4 || margin == top_bar_height * 3 - 5 // iconify button
               );
 }
+/*
+    is_inside_top_bar() function
+    Returns "true" if pixel belongs to the top bar excluding borders and "false" if it does not.
+*/
 bool is_inside_top_bar()
 {
-    return gl_FragCoord[0] >= 2 && gl_FragCoord[0] <= screen_resolution[0] - 3
-           && gl_FragCoord[1] >= screen_resolution[1] - top_bar_height + 2
+    return gl_FragCoord[0] >= 2 && gl_FragCoord[0] <= screen_resolution[0] - 3  // between app window side borders
+           && gl_FragCoord[1] >= screen_resolution[1] - top_bar_height + 2      // between bottom and top borders
            && gl_FragCoord[1] <= screen_resolution[1] - 3;
 }
+/*
+    is_inside_bottom_bar_or_bar_border() function
+    Returns "true" if pixel belongs to the bottom bar or its top border and "false" if it does not.
+*/
 bool is_inside_bottom_bar_or_bar_border()
 {
-    return gl_FragCoord[0] >= 2 && gl_FragCoord[0] <= screen_resolution[0] - 3
-           && gl_FragCoord[1] >= 2 && gl_FragCoord[1] <= bottom_bar_height - 1;
+    return gl_FragCoord[0] >= 2 && gl_FragCoord[0] <= screen_resolution[0] - 3  // between app window side borders
+           && gl_FragCoord[1] >= 2                                              // between bottom
+           && gl_FragCoord[1] <= bottom_bar_height - 1;                         // and (including) top borders
 }
+/*
+    is_bottom_bar_border() function
+    Returns "true" if pixel belongs to the bottom bar top border and "false" if it does not.
+*/
 bool is_bottom_bar_border()
 {
     return gl_FragCoord[1] == bottom_bar_height - 2 || gl_FragCoord[1] == bottom_bar_height - 1;
 }
+/*
+    is_bottom_bar_button_border() function
+    Returns "true" if pixel belongs to the bottom bar button borders and "false" if it does not.
+*/
 bool is_bottom_bar_button_border()
 {
     int margin = screen_resolution[0] - int(gl_FragCoord[0]);
     int game_time_margin = int(3.5 * float(bottom_bar_height));
-    return gl_FragCoord[0] == bottom_bar_height - 1 || gl_FragCoord[0] == bottom_bar_height - 2
-           || margin == bottom_bar_height || margin == bottom_bar_height - 1
-           || margin == game_time_margin + 1 || margin == game_time_margin + 2
-           || margin == game_time_margin + bottom_bar_height || margin == game_time_margin + bottom_bar_height - 1
-           || margin == game_time_margin + 2 * bottom_bar_height - 2
+    return gl_FragCoord[0] == bottom_bar_height - 1                               // constructor button border
+           || gl_FragCoord[0] == bottom_bar_height - 2
+           || margin == bottom_bar_height || margin == bottom_bar_height - 1      // settings button border
+           || margin == game_time_margin + 1 || margin == game_time_margin + 2    // pause/resume button right border
+           || margin == game_time_margin + bottom_bar_height                      // pause/resume button left border
+           || margin == game_time_margin + bottom_bar_height - 1
+           || margin == game_time_margin + 2 * bottom_bar_height - 2              // schedule button border
            || margin == game_time_margin + 2 * bottom_bar_height - 3;
 }
+/*
+    is_accept_reject_settings_button_border() function
+    Returns "true" if pixel belongs to the accept/reject buttons borders and "false" if it does not.
+*/
 bool is_accept_reject_settings_button_border()
 {
     int margin = screen_resolution[0] - int(gl_FragCoord[0]);
-    return margin == bottom_bar_height || margin == bottom_bar_height - 1
-           || margin == 2 * bottom_bar_height - 2 || margin == 2 * bottom_bar_height - 3
-           || ((gl_FragCoord[1] == bottom_bar_height - 1 || gl_FragCoord[1] == bottom_bar_height - 2)
-               && margin > 2 && margin < 2 * bottom_bar_height - 2
+    return margin == bottom_bar_height || margin == bottom_bar_height - 1            // reject button side border
+           || margin == 2 * bottom_bar_height - 2                                    // accept button side border
+           || margin == 2 * bottom_bar_height - 3
+           || ((gl_FragCoord[1] == bottom_bar_height - 1                             // top border for both buttons
+                || gl_FragCoord[1] == bottom_bar_height - 2
+               ) && margin > 2 && margin < 2 * bottom_bar_height - 2
               );
 }
+/*
+    is_inside_main_part_of_the_window() function
+    Returns "true" if pixel belongs to the large space between top and bottom bars and "false" if it does not.
+*/
 bool is_inside_main_part_of_the_window()
 {
-    return gl_FragCoord[0] >= 2 && gl_FragCoord[0] <= screen_resolution[0] - 3
-           && gl_FragCoord[1] >= bottom_bar_height && gl_FragCoord[1] <= screen_resolution[1] - top_bar_height - 1;
+    return gl_FragCoord[0] >= 2 && gl_FragCoord[0] <= screen_resolution[0] - 3   // between app window side borders
+           && gl_FragCoord[1] >= bottom_bar_height                               // between bottom and top bars
+           && gl_FragCoord[1] <= screen_resolution[1] - top_bar_height - 1;
 }
+/*
+    is_zoom_button_border_activated() function
+    Returns "true" if pixel belongs to the zoom button borders (and button is activated) and "false" if it does not.
+*/
 bool is_zoom_button_border_activated()
 {
-    return zoom_buttons_activated == 1
-           && ((gl_FragCoord[1] >= screen_resolution[1] - (top_bar_height - 1 + bottom_bar_height - 1)
+    return zoom_buttons_activated == 1                                                            // button activated
+           && ((gl_FragCoord[1] >= screen_resolution[1] - (top_bar_height - 1 + bottom_bar_height - 1) // right border
                 && gl_FragCoord[1] <= screen_resolution[1] - (top_bar_height - 1)
                 && (gl_FragCoord[0] == bottom_bar_height - 1 || gl_FragCoord[0] == bottom_bar_height - 2)
                )
-               || (gl_FragCoord[0] >= 2 && gl_FragCoord[0] <= bottom_bar_height - 3
+               || (gl_FragCoord[0] >= 2 && gl_FragCoord[0] <= bottom_bar_height - 3                    // bottom border
                    && (gl_FragCoord[1] == screen_resolution[1] - (top_bar_height - 1 + bottom_bar_height - 1)
                        || gl_FragCoord[1] == screen_resolution[1] - (top_bar_height - 1 + bottom_bar_height - 2)
                       )
                   )
               );
 }
+/*
+    is_mini_map_border() function
+    Returns "true" if pixel belongs to the mini-map borders and "false" if it does not.
+*/
 bool is_mini_map_border()
 {
-    return ((gl_FragCoord[0] == mini_map_position[0] || gl_FragCoord[0] == mini_map_position[0] + mini_map_width - 1)
-            && gl_FragCoord[1] >= mini_map_position[1]
-            && gl_FragCoord[1] <= mini_map_position[1] + mini_map_height - 1
-           ) || ((gl_FragCoord[1] == mini_map_position[1]
-                  || gl_FragCoord[1] == mini_map_position[1] + mini_map_height - 1
+    return ((gl_FragCoord[0] == mini_map_position[0]                                        // left border
+             || gl_FragCoord[0] == mini_map_position[0] + mini_map_width - 1                // right border
+            ) && gl_FragCoord[1] >= mini_map_position[1]
+              && gl_FragCoord[1] <= mini_map_position[1] + mini_map_height - 1
+           ) || ((gl_FragCoord[1] == mini_map_position[1]                                   // bottom border
+                  || gl_FragCoord[1] == mini_map_position[1] + mini_map_height - 1          // top border
                  ) && gl_FragCoord[0] >= mini_map_position[0]
                    && gl_FragCoord[0] <= mini_map_position[0] + mini_map_width - 1
                 );
 }
+/*
+    is_mini_map_border() function
+    Returns "true" if pixel belongs to the mini-map viewport borders and "false" if it does not.
+*/
 bool is_mini_map_viewport_border()
 {
+    /* calculate viewport border positions based on map scale and mini-map position and size
+        margin_left - left border X position
+        margin_right - right border X position
+        margin_down - bottom border Y position
+        margin_up - top border Y position
+    */
     int margin_left, margin_right, margin_down, margin_up;
     if (zoom_out_activated == 1)
     {
@@ -116,16 +203,20 @@ bool is_mini_map_viewport_border()
         margin_down = int(float(base_offset[1]) / 4096.0 * mini_map_height);
         margin_up = margin_down + int(float(screen_resolution[1] - 1) / 4096.0 * mini_map_height);
     }
-    return ((gl_FragCoord[0] - mini_map_position[0] == margin_left
-             || gl_FragCoord[0] - mini_map_position[0] == margin_right
-            ) && gl_FragCoord[1] - mini_map_position[1] >= margin_down
+    return ((gl_FragCoord[0] - mini_map_position[0] == margin_left                  // left border in place
+             || gl_FragCoord[0] - mini_map_position[0] == margin_right              // right border in place
+            ) && gl_FragCoord[1] - mini_map_position[1] >= margin_down              // between top and bottom borders
               && gl_FragCoord[1] - mini_map_position[1] <= margin_up
-           ) || ((gl_FragCoord[1] - mini_map_position[1] == margin_down
-                  || gl_FragCoord[1] - mini_map_position[1] == margin_up
-                 ) && gl_FragCoord[0] - mini_map_position[0] >= margin_left
+           ) || ((gl_FragCoord[1] - mini_map_position[1] == margin_down             // top border in place
+                  || gl_FragCoord[1] - mini_map_position[1] == margin_up            // bottom border in place
+                 ) && gl_FragCoord[0] - mini_map_position[0] >= margin_left         // between left and right borders
                    && gl_FragCoord[0] - mini_map_position[0] <= margin_right
                 );
 }
+/*
+    is_setings_view_button_border() function
+    Returns "true" if pixel belongs to settings view buttons borders and "false" if it does not.
+*/
 bool is_setings_view_button_border()
 {
     int medium_line = screen_resolution[1] / 2 + top_bar_height / 2;
