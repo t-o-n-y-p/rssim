@@ -4,7 +4,7 @@ from .model_base import Model
 from ctrl import TrainController
 from .train_model import TrainModel
 from view import TrainView
-from car_skins_collection import car_head_image, car_mid_image, car_tail_image, boarding_light_image, car_collections
+from car_skins import car_head_image, car_mid_image, car_tail_image, boarding_light_image, car_collections
 
 
 def create_train(user_db_connection, user_db_cursor, config_db_cursor, surface, batches, groups, map_controller,

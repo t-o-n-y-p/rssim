@@ -16,7 +16,7 @@ from win32api import MessageBoxEx
 import win32con
 
 from exceptions import VideoAdapterNotSupportedException, MonitorNotSupportedException
-from rssimcore import create_app
+from rssim_core import create_app
 
 
 current_version = (0, 9, 2)

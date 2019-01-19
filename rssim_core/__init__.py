@@ -5,7 +5,7 @@ from model import AppModel, GameModel, MapModel, SettingsModel, FPSModel, Schedu
                   RailroadSwitchModel, CrossoverModel, TrainModel, DispatcherModel, ConstructorModel
 from view import AppView, GameView, MapView, SettingsView, FPSView, SchedulerView, SignalView, TrainRouteView, \
                  RailroadSwitchView, CrossoverView, TrainView, DispatcherView, ConstructorView
-from car_skins_collection import car_head_image, car_mid_image, car_tail_image, boarding_light_image
+from car_skins import car_head_image, car_mid_image, car_tail_image, boarding_light_image
 
 
 def create_app(user_db_connection, user_db_cursor, config_db_cursor, surface, batches, groups, loader):
