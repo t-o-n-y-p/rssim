@@ -182,7 +182,8 @@ bool is_mini_map_border()
 */
 bool is_mini_map_viewport_border()
 {
-    /* calculate viewport border positions based on map scale and mini-map position and size
+    /*
+        calculate viewport border positions based on map scale and mini-map position and size
         margin_left - left border X position
         margin_right - right border X position
         margin_down - bottom border Y position
@@ -219,52 +220,81 @@ bool is_mini_map_viewport_border()
 */
 bool is_setings_view_button_border()
 {
+    // medium_line - Y position of settings screen center
     int medium_line = screen_resolution[1] / 2 + top_bar_height / 2;
+    // decrement_resolution_button_position - position of the bottom left corner for decrement resolution button
     ivec2 decrement_resolution_button_position = ivec2(5 * screen_resolution[0] / 32 - top_bar_height / 2,
                                                        medium_line + top_bar_height / 2);
+    // increment_resolution_button_position - position of the bottom left corner for increment resolution button
     ivec2 increment_resolution_button_position = ivec2(11 * screen_resolution[0] / 32 - top_bar_height / 2,
                                                        medium_line + top_bar_height / 2);
     int settings_decrement_x_margin = int(gl_FragCoord[0]) - decrement_resolution_button_position[0];
     int settings_resolution_y_margin = int(gl_FragCoord[1]) - decrement_resolution_button_position[1];
     int settings_increment_x_margin = int(gl_FragCoord[0]) - increment_resolution_button_position[0];
-    return ((settings_decrement_x_margin == 0 || settings_decrement_x_margin == 1
-             || settings_decrement_x_margin == top_bar_height - 2
+    return ((settings_decrement_x_margin == 0 || settings_decrement_x_margin == 1        // 2 pixels for left border
+             || settings_decrement_x_margin == top_bar_height - 2                        // 2 pixels for right border
              || settings_decrement_x_margin == top_bar_height - 1
-             || settings_increment_x_margin == 0 || settings_increment_x_margin == 1
-             || settings_increment_x_margin == top_bar_height - 2
+             || settings_increment_x_margin == 0 || settings_increment_x_margin == 1     // 2 pixels for left border
+             || settings_increment_x_margin == top_bar_height - 2                        // 2 pixels for right border
              || settings_increment_x_margin == top_bar_height - 1
-            ) && settings_resolution_y_margin >= 0 && settings_resolution_y_margin <= top_bar_height - 1
-           ) || ((settings_resolution_y_margin == 0 || settings_resolution_y_margin == 1
-                  || settings_resolution_y_margin == top_bar_height - 2
+            ) && settings_resolution_y_margin >= 0                                 // between top and bottom borders
+              && settings_resolution_y_margin <= top_bar_height - 1
+           ) || ((settings_resolution_y_margin == 0 || settings_resolution_y_margin == 1 // 2 pixels for bottom border
+                  || settings_resolution_y_margin == top_bar_height - 2                  // 2 pixels for top border
                   || settings_resolution_y_margin == top_bar_height - 1
-                 ) && ((settings_decrement_x_margin >= 0 && settings_decrement_x_margin <= top_bar_height - 1)
-                       || (settings_increment_x_margin >= 0 && settings_increment_x_margin <= top_bar_height - 1)
+                 ) && ((settings_decrement_x_margin >= 0       // between top and bottom borders for decrement button
+                        && settings_decrement_x_margin <= top_bar_height - 1
+                       ) || (settings_increment_x_margin >= 0  // between top and bottom borders for increment button
+                             && settings_increment_x_margin <= top_bar_height - 1
+                            )
                       )
                 );
 }
-bool is_schedule_left_line(int cell_width)
+/*
+    is_schedule_left_line(int line_width) function
+    Returns "true" if pixel belongs to the left gradient line on schedule screen and "false" if it does not.
+    Input value:
+        int line_width - width of the gradient line
+*/
+bool is_schedule_left_line(int line_width)
 {
-    return gl_FragCoord[0] >= top_left_cell[0] && gl_FragCoord[0] <= top_left_cell[0] + cell_width - 1
-           && (gl_FragCoord[1] == top_left_cell[1] || gl_FragCoord[1] == top_left_cell[1] - 1);
+    return gl_FragCoord[0] >= top_left_cell[0] && gl_FragCoord[0] <= top_left_cell[0] + line_width - 1
+           && (gl_FragCoord[1] == top_left_cell[1] || gl_FragCoord[1] == top_left_cell[1] - 1);  // 2-pixel thick line
 }
-bool is_schedule_right_line(int cell_width)
+/*
+    is_schedule_right_line(int line_width) function
+    Returns "true" if pixel belongs to the right gradient line on schedule screen and "false" if it does not.
+    Input value:
+        int line_width - width of the gradient line
+*/
+bool is_schedule_right_line(int line_width)
 {
-    return gl_FragCoord[0] >= top_right_cell[0] && gl_FragCoord[0] <= top_right_cell[0] + cell_width - 1
-           && (gl_FragCoord[1] == top_left_cell[1] || gl_FragCoord[1] == top_left_cell[1] - 1);
+    return gl_FragCoord[0] >= top_right_cell[0] && gl_FragCoord[0] <= top_right_cell[0] + line_width - 1
+           && (gl_FragCoord[1] == top_left_cell[1] || gl_FragCoord[1] == top_left_cell[1] - 1);  // 2-pixel thick line
 }
+/*
+    is_constructor_cell_border(int cell_width, int cell_height, int interval_between_cells_height) function
+    Returns "true" if pixel belongs to any cell border on constructor screen and "false" if it does not.
+    Input values:
+        int cell_width - width of a cell
+        int cell_width - height of a cell
+        int interval_between_cells_height - vertical interval between cells
+*/
 bool is_constructor_cell_border(int cell_width, int cell_height, int interval_between_cells_height)
 {
-    for (int i = 0; i < 4; ++i)
+    for (int i = 0; i < 4; ++i)  // we have 4 cells in each column; right after first match function returns "true"
     {
         int y_offset = top_left_cell[1] - i * (cell_height + interval_between_cells_height) - int(gl_FragCoord[1]);
         int x_left_offset = int(gl_FragCoord[0]) - top_left_cell[0];
         int x_right_offset = int(gl_FragCoord[0]) - top_right_cell[0];
+        // top and bottom borders for the current cell (left and right)
         if (((gl_FragCoord[0] >= top_left_cell[0] && gl_FragCoord[0] <= top_left_cell[0] + cell_width - 1)
              || (gl_FragCoord[0] >= top_right_cell[0] && gl_FragCoord[0] <= top_right_cell[0] + cell_width - 1)
             ) && (y_offset == 0 || y_offset == 1 || y_offset == cell_height - 1 || y_offset == cell_height - 2)
            )
             return true;
 
+        // left and right borders for the current cell (left and right)
         if (gl_FragCoord[1] >= top_left_cell[1] - i * (cell_height + interval_between_cells_height) - (cell_height - 1)
             && gl_FragCoord[1] <= top_left_cell[1] - i * (cell_height + interval_between_cells_height)
             && (x_left_offset == 0 || x_left_offset == 1
@@ -275,16 +305,30 @@ bool is_constructor_cell_border(int cell_width, int cell_height, int interval_be
            )
             return true;
     }
-    return false;
+    return false;    // if no matches were found
 }
-bool is_build_track_button_border_activated(int cell_width, int cell_height, int interval_between_cells_height)
+/*
+    is_build_track_button_border_activated(int cell_width, int cell_height) function
+    Returns "true" if pixel belongs to track build button border on constructor screen and "false" if it does not.
+    Input values:
+        int cell_width - width of a cell
+        int cell_width - height of a cell
+*/
+bool is_build_track_button_border_activated(int cell_width, int cell_height)
 {
     int x_left_offset = int(gl_FragCoord[0]) - top_left_cell[0];
-    return gl_FragCoord[1] >= top_left_cell[1] - (cell_height - 1) && gl_FragCoord[1] <= top_left_cell[1]
+    return gl_FragCoord[1] >= top_left_cell[1] - (cell_height - 1)       // inside the cell from bottom to top
+           && gl_FragCoord[1] <= top_left_cell[1]
            && (track_build_button_is_activated == 1
-               && (x_left_offset == cell_width - cell_height || x_left_offset == cell_width - cell_height + 1)
+               && (x_left_offset == cell_width - cell_height             // 2-pixel thick line
+                   || x_left_offset == cell_width - cell_height + 1
+                  )
               );
 }
+/*
+    MAIN SHADER FUNCTION
+    Calculates intermediate color for all possible cases and mixes it
+*/
 void main()
 {
     if (is_general_border())
@@ -382,7 +426,7 @@ void main()
 
         if (constructor_opacity > 0)
             if (is_constructor_cell_border(cell_width, cell_height, interval_between_cells_height)
-                || is_build_track_button_border_activated(cell_width, cell_height, interval_between_cells_height)
+                || is_build_track_button_border_activated(cell_width, cell_height)
                )
                 constructor_result = vec4(1.0, 0.0, 0.0, real_constructor_opacity);
             else
