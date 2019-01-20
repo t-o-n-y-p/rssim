@@ -1,3 +1,7 @@
+# ------------------- RSSIM_CORE MODULE -------------------
+# __init__.py       implements functions to create all objects in the app.
+# rssim_core.py     implements RSSim class - base class for game launch and main loop.
+# ------------------- IMPORTS -------------------
 from controller.app_controller import AppController
 from controller.game_controller import GameController
 from controller.map_controller import MapController
@@ -38,17 +42,37 @@ from view.train_view import TrainView
 from view.dispatcher_view import DispatcherView
 from view.constructor_view import ConstructorView
 from car_skins import *
+# ------------------- END IMPORTS -------------------
 
 
-CURRENT_VERSION = (0, 9, 2)
-REQUIRED_TEXTURE_SIZE = 8192
-MIN_RESOLUTION_WIDTH = 1280
-MIN_RESOLUTION_HEIGHT = 720
-FPS_INTERVAL = 0.2
-LOG_LEVEL_OFF = 30
-LOG_LEVEL_DEBUG = 10
+# ------------------- CONSTANTS -------------------
+CURRENT_VERSION = (0, 9, 2)         # current app version
+REQUIRED_TEXTURE_SIZE = 8192        # maximum texture resolution presented in the app
+MIN_RESOLUTION_WIDTH = 1280         # minimum screen resolution width supported by the app UI
+MIN_RESOLUTION_HEIGHT = 720         # minimum screen resolution height supported by the app UI
+FPS_INTERVAL = 0.2                  # interval between FPS update
+LOG_LEVEL_OFF = 30                  # integer log level high enough to cut off all logs
+LOG_LEVEL_DEBUG = 10                # integer log level which includes all possible logs
+# ------------------- END CONSTANTS -------------------
 
 
+# ------------------- FUNCTIONS -------------------
+# create_app function (public)
+# Creates controller, model and view for App object.
+# It is responsible for high-level properties, UI and events.
+# Child objects:
+#       game                    Game object
+#       settings                Settings object
+#       fps                     FPS object
+# Returns App object controller.
+# Input values:
+#       user_db_connection      connection to the user DB (stores game state and user-defined settings)
+#       user_db_cursor          user DB cursor (is used to execute user DB queries)
+#       config_db_cursor        configuration DB cursor (is used to execute configuration DB queries)
+#       surface                 surface to draw all UI objects on
+#       batches                 batches to group all labels and sprites
+#       groups                  defines drawing layers (some labels and sprites behind others)
+#       loader                  RSSim class pointer
 def create_app(user_db_connection, user_db_cursor, config_db_cursor, surface, batches, groups, loader):
     controller = AppController(loader)
     model = AppModel(user_db_connection, user_db_cursor, config_db_cursor)
@@ -67,6 +91,20 @@ def create_app(user_db_connection, user_db_cursor, config_db_cursor, surface, ba
     return controller
 
 
+# create_game function (private)
+# Creates controller, model and view for Game object.
+# It is responsible for properties, UI and events related to the game process.
+# Child objects:
+#       map                     Map object
+# Returns Game object controller.
+# Input values:
+#       user_db_connection      connection to the user DB (stores game state and user-defined settings)
+#       user_db_cursor          user DB cursor (is used to execute user DB queries)
+#       config_db_cursor        configuration DB cursor (is used to execute configuration DB queries)
+#       surface                 surface to draw all UI objects on
+#       batches                 batches to group all labels and sprites
+#       groups                  defines drawing layers (some labels and sprites behind others)
+#       app                     App controller pointer
 def _create_game(user_db_connection, user_db_cursor, config_db_cursor, surface, batches, groups, app):
     controller = GameController(app)
     app.game = controller
@@ -82,6 +120,27 @@ def _create_game(user_db_connection, user_db_cursor, config_db_cursor, surface, 
     return controller
 
 
+# create_map function (private)
+# Creates controller, model and view for Map object.
+# It is responsible for properties, UI and events related to the map.
+# Child objects:
+#       scheduler               Scheduler object
+#       dispatcher              Dispatcher object
+#       constructor             Constructor object
+#       trains{}                Train objects
+#       signals{}               Signal objects
+#       train_routes{}          TrainRoute objects
+#       switches{}              RailroadSwitch objects
+#       crossovers{}            Crossover objects
+# Returns Map object controller.
+# Input values:
+#       user_db_connection      connection to the user DB (stores game state and user-defined settings)
+#       user_db_cursor          user DB cursor (is used to execute user DB queries)
+#       config_db_cursor        configuration DB cursor (is used to execute configuration DB queries)
+#       surface                 surface to draw all UI objects on
+#       batches                 batches to group all labels and sprites
+#       groups                  defines drawing layers (some labels and sprites behind others)
+#       game                    Game controller pointer
 def _create_map(user_db_connection, user_db_cursor, config_db_cursor, surface, batches, groups, game):
     controller = MapController(game)
     game.map = controller
@@ -170,6 +229,18 @@ def _create_map(user_db_connection, user_db_cursor, config_db_cursor, surface, b
     return controller
 
 
+# create_settings function (private)
+# Creates controller, model and view for Settings object.
+# It is responsible for user-defined settings.
+# Returns Settings object controller.
+# Input values:
+#       user_db_connection      connection to the user DB (stores game state and user-defined settings)
+#       user_db_cursor          user DB cursor (is used to execute user DB queries)
+#       config_db_cursor        configuration DB cursor (is used to execute configuration DB queries)
+#       surface                 surface to draw all UI objects on
+#       batches                 batches to group all labels and sprites
+#       groups                  defines drawing layers (some labels and sprites behind others)
+#       app                     App controller pointer
 def _create_settings(user_db_connection, user_db_cursor, config_db_cursor, surface, batches, groups, app):
     controller = SettingsController(app)
     app.settings = controller
@@ -183,6 +254,18 @@ def _create_settings(user_db_connection, user_db_cursor, config_db_cursor, surfa
     return controller
 
 
+# create_fps function (private)
+# Creates controller, model and view for FPS object.
+# It is responsible for real-time FPS calculation.
+# Returns FPS object controller.
+# Input values:
+#       user_db_connection      connection to the user DB (stores game state and user-defined settings)
+#       user_db_cursor          user DB cursor (is used to execute user DB queries)
+#       config_db_cursor        configuration DB cursor (is used to execute configuration DB queries)
+#       surface                 surface to draw all UI objects on
+#       batches                 batches to group all labels and sprites
+#       groups                  defines drawing layers (some labels and sprites behind others)
+#       app                     App controller pointer
 def _create_fps(user_db_connection, user_db_cursor, config_db_cursor, surface, batches, groups, app):
     controller = FPSController(app)
     app.fps = controller
@@ -196,6 +279,18 @@ def _create_fps(user_db_connection, user_db_cursor, config_db_cursor, surface, b
     return controller
 
 
+# create_scheduler function (private)
+# Creates controller, model and view for Scheduler object.
+# It is responsible for properties, UI and events related to the train schedule.
+# Returns Scheduler object controller.
+# Input values:
+#       user_db_connection      connection to the user DB (stores game state and user-defined settings)
+#       user_db_cursor          user DB cursor (is used to execute user DB queries)
+#       config_db_cursor        configuration DB cursor (is used to execute configuration DB queries)
+#       surface                 surface to draw all UI objects on
+#       batches                 batches to group all labels and sprites
+#       groups                  defines drawing layers (some labels and sprites behind others)
+#       map_controller          Map controller pointer
 def _create_scheduler(user_db_connection, user_db_cursor, config_db_cursor, surface, batches, groups, map_controller):
     controller = SchedulerController(map_controller)
     model = SchedulerModel(user_db_connection, user_db_cursor, config_db_cursor)
@@ -208,6 +303,20 @@ def _create_scheduler(user_db_connection, user_db_cursor, config_db_cursor, surf
     return controller
 
 
+# create_signal function (private)
+# Creates controller, model and view for Signal object.
+# It is responsible for properties, UI and events related to the signal state.
+# Returns Signal object controller.
+# Input values:
+#       user_db_connection      connection to the user DB (stores game state and user-defined settings)
+#       user_db_cursor          user DB cursor (is used to execute user DB queries)
+#       config_db_cursor        configuration DB cursor (is used to execute configuration DB queries)
+#       surface                 surface to draw all UI objects on
+#       batches                 batches to group all labels and sprites
+#       groups                  defines drawing layers (some labels and sprites behind others)
+#       map_controller          Map controller pointer
+#       track                   signal track number
+#       base_route              train route part which signal belongs to
 def _create_signal(user_db_connection, user_db_cursor, config_db_cursor, surface,
                    batches, groups, map_controller, track, base_route):
     controller = SignalController(map_controller)
@@ -224,6 +333,20 @@ def _create_signal(user_db_connection, user_db_cursor, config_db_cursor, surface
     return controller
 
 
+# create_train_route function (private)
+# Creates controller, model and view for TrainRoute object.
+# It is responsible for properties, UI and events related to the train route.
+# Returns TrainRoute object controller.
+# Input values:
+#       user_db_connection      connection to the user DB (stores game state and user-defined settings)
+#       user_db_cursor          user DB cursor (is used to execute user DB queries)
+#       config_db_cursor        configuration DB cursor (is used to execute configuration DB queries)
+#       surface                 surface to draw all UI objects on
+#       batches                 batches to group all labels and sprites
+#       groups                  defines drawing layers (some labels and sprites behind others)
+#       map_controller          Map controller pointer
+#       track                   train route track number
+#       train_route             train route type
 def _create_train_route(user_db_connection, user_db_cursor, config_db_cursor, surface,
                         batches, groups, map_controller, track, train_route):
     controller = TrainRouteController(map_controller)
@@ -243,6 +366,21 @@ def _create_train_route(user_db_connection, user_db_cursor, config_db_cursor, su
     return controller
 
 
+# create_railroad_switch function (private)
+# Creates controller, model and view for RailroadSwitch object.
+# It is responsible for properties, UI and events related to the railroad switch.
+# Returns RailroadSwitch object controller.
+# Input values:
+#       user_db_connection      connection to the user DB (stores game state and user-defined settings)
+#       user_db_cursor          user DB cursor (is used to execute user DB queries)
+#       config_db_cursor        configuration DB cursor (is used to execute configuration DB queries)
+#       surface                 surface to draw all UI objects on
+#       batches                 batches to group all labels and sprites
+#       groups                  defines drawing layers (some labels and sprites behind others)
+#       map_controller          Map controller pointer
+#       track_param_1           straight track number
+#       track_param_2           diverging track number
+#       switch_type             switch location: left/right side of the map
 def _create_railroad_switch(user_db_connection, user_db_cursor, config_db_cursor, surface,
                             batches, groups, map_controller,
                             track_param_1, track_param_2, switch_type):
@@ -261,6 +399,21 @@ def _create_railroad_switch(user_db_connection, user_db_cursor, config_db_cursor
     return controller
 
 
+# create_crossover function (private)
+# Creates controller, model and view for Crossover object.
+# It is responsible for properties, UI and events related to the crossover.
+# Returns Crossover object controller.
+# Input values:
+#       user_db_connection      connection to the user DB (stores game state and user-defined settings)
+#       user_db_cursor          user DB cursor (is used to execute user DB queries)
+#       config_db_cursor        configuration DB cursor (is used to execute configuration DB queries)
+#       surface                 surface to draw all UI objects on
+#       batches                 batches to group all labels and sprites
+#       groups                  defines drawing layers (some labels and sprites behind others)
+#       map_controller          Map controller pointer
+#       track_param_1           first straight track number
+#       track_param_2           second straight track number
+#       crossover_type          crossover location: left/right side of the map
 def _create_crossover(user_db_connection, user_db_cursor, config_db_cursor, surface,
                       batches, groups, map_controller,
                       track_param_1, track_param_2, crossover_type):
@@ -279,6 +432,19 @@ def _create_crossover(user_db_connection, user_db_cursor, config_db_cursor, surf
     return controller
 
 
+# create_train function (private)
+# Creates controller, model and view for Train object.
+# It is responsible for properties, UI and events related to the train.
+# Returns Train object controller.
+# Input values:
+#       user_db_connection      connection to the user DB (stores game state and user-defined settings)
+#       user_db_cursor          user DB cursor (is used to execute user DB queries)
+#       config_db_cursor        configuration DB cursor (is used to execute configuration DB queries)
+#       surface                 surface to draw all UI objects on
+#       batches                 batches to group all labels and sprites
+#       groups                  defines drawing layers (some labels and sprites behind others)
+#       map_controller          Map controller pointer
+#       train_id                train identification number
 def _create_train(user_db_connection, user_db_cursor, config_db_cursor, surface,
                   batches, groups, map_controller, train_id):
     controller = TrainController(map_controller)
@@ -298,6 +464,18 @@ def _create_train(user_db_connection, user_db_cursor, config_db_cursor, surface,
     return controller
 
 
+# create_dispatcher function (private)
+# Creates controller, model and view for Dispatcher object.
+# It is responsible for creating trains from schedule and assigning routes to approaching trains.
+# Returns Dispatcher object controller.
+# Input values:
+#       user_db_connection      connection to the user DB (stores game state and user-defined settings)
+#       user_db_cursor          user DB cursor (is used to execute user DB queries)
+#       config_db_cursor        configuration DB cursor (is used to execute configuration DB queries)
+#       surface                 surface to draw all UI objects on
+#       batches                 batches to group all labels and sprites
+#       groups                  defines drawing layers (some labels and sprites behind others)
+#       map_controller          Map controller pointer
 def _create_dispatcher(user_db_connection, user_db_cursor, config_db_cursor, surface,
                        batches, groups, map_controller):
     controller = DispatcherController(map_controller)
@@ -311,6 +489,18 @@ def _create_dispatcher(user_db_connection, user_db_cursor, config_db_cursor, sur
     return controller
 
 
+# create_constructor function (private)
+# Creates controller, model and view for Constructor object.
+# It is responsible for building new tracks and station environment.
+# Returns Constructor object controller.
+# Input values:
+#       user_db_connection      connection to the user DB (stores game state and user-defined settings)
+#       user_db_cursor          user DB cursor (is used to execute user DB queries)
+#       config_db_cursor        configuration DB cursor (is used to execute configuration DB queries)
+#       surface                 surface to draw all UI objects on
+#       batches                 batches to group all labels and sprites
+#       groups                  defines drawing layers (some labels and sprites behind others)
+#       map_controller          Map controller pointer
 def _create_constructor(user_db_connection, user_db_cursor, config_db_cursor, surface,
                         batches, groups, map_controller):
     controller = ConstructorController(map_controller)
@@ -322,3 +512,6 @@ def _create_constructor(user_db_connection, user_db_cursor, config_db_cursor, su
     view.on_assign_controller(controller)
     model.view = view
     return controller
+
+
+# ------------------- END FUNCTIONS -------------------
