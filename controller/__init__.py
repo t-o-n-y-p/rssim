@@ -1,3 +1,35 @@
+def controller_is_active(fn):
+    def _handle_if_controller_is_activated(*args, **kwargs):
+        if args[0].is_activated:
+            fn(*args, **kwargs)
+
+    return _handle_if_controller_is_activated
+
+
+def controller_is_not_active(fn):
+    def _handle_if_controller_is_not_activated(*args, **kwargs):
+        if not args[0].is_activated:
+            fn(*args, **kwargs)
+
+    return _handle_if_controller_is_not_activated
+
+
+def game_is_not_paused(fn):
+    def _update_if_game_is_not_paused(*args, **kwargs):
+        if not args[0].model.game_paused:
+            fn(*args, **kwargs)
+
+    return _update_if_game_is_not_paused
+
+
+def map_view_is_active(fn):
+    def _handle_if_map_view_is_activated(*args, **kwargs):
+        if args[0].view.is_activated:
+            fn(*args, **kwargs)
+
+    return _handle_if_map_view_is_activated
+
+
 class Controller:
     def __init__(self, parent_controller=None):
         self.model = None

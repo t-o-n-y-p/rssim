@@ -1,44 +1,4 @@
-from model import Model
-
-
-def _model_is_active(fn):
-    def _handle_if_model_is_activated(*args, **kwargs):
-        if args[0].is_activated:
-            fn(*args, **kwargs)
-
-    return _handle_if_model_is_activated
-
-
-def _model_is_not_active(fn):
-    def _handle_if_model_is_not_activated(*args, **kwargs):
-        if not args[0].is_activated:
-            fn(*args, **kwargs)
-
-    return _handle_if_model_is_not_activated
-
-
-def _maximum_level_not_reached(fn):
-    def _add_exp_if_max_level_not_reached(*args, **kwargs):
-        if args[0].level < args[0].maximum_level:
-            fn(*args, **kwargs)
-
-    return _add_exp_if_max_level_not_reached
-
-
-def _money_target_exists(fn):
-    def _update_money_progress_if_money_target_exists(*args, **kwargs):
-        if args[0].money_target > 0:
-            fn(*args, **kwargs)
-
-    return _update_money_progress_if_money_target_exists
-
-
-def _maximum_money_not_reached(fn):
-    def _add_money_if_maximum_money_is_not_reached(*args, **kwargs):
-        if args[0].money < 99999999.0:
-            fn(*args, **kwargs)
-
-    return _add_money_if_maximum_money_is_not_reached
+from model import *
 
 
 class GameModel(Model):
@@ -54,12 +14,12 @@ class GameModel(Model):
                                       WHERE level = ?''', (self.level, ))
         self.accumulated_player_progress, self.player_progress = self.config_db_cursor.fetchone()
 
-    @_model_is_not_active
+    @model_is_not_active
     def on_activate(self):
         self.is_activated = True
         self.on_activate_view()
 
-    @_model_is_active
+    @model_is_active
     def on_deactivate(self):
         self.view.exp_percent = int(self.exp / self.player_progress)
         if self.money_target > 0:
@@ -88,7 +48,7 @@ class GameModel(Model):
         self.game_paused = False
         self.view.on_resume_game()
 
-    @_model_is_active
+    @model_is_active
     def on_update_time(self):
         if self.game_time % 240 == 0:
             self.view.on_update_game_time(self.game_time)
@@ -101,7 +61,7 @@ class GameModel(Model):
                                     money_target = ?''', (self.level, self.exp, self.accumulated_exp, self.money,
                                                           self.money_target))
 
-    @_maximum_level_not_reached
+    @maximum_level_not_reached
     def on_add_exp(self, exp):
         self.exp += exp
         self.accumulated_exp += exp
@@ -121,7 +81,7 @@ class GameModel(Model):
         self.accumulated_player_progress, self.player_progress = self.config_db_cursor.fetchone()
         self.view.on_update_level(self.level)
 
-    @_maximum_money_not_reached
+    @maximum_money_not_reached
     def on_add_money(self, money):
         self.money += money
         if self.money > 99999999.01:

@@ -1,28 +1,4 @@
-from controller import Controller
-
-
-def _game_is_not_paused(fn):
-    def _update_if_game_is_not_paused(*args, **kwargs):
-        if not args[0].model.game_paused:
-            fn(*args, **kwargs)
-
-    return _update_if_game_is_not_paused
-
-
-def _controller_is_active(fn):
-    def _handle_if_controller_is_activated(*args, **kwargs):
-        if args[0].is_activated:
-            fn(*args, **kwargs)
-
-    return _handle_if_controller_is_activated
-
-
-def _controller_is_not_active(fn):
-    def _handle_if_controller_is_not_activated(*args, **kwargs):
-        if not args[0].is_activated:
-            fn(*args, **kwargs)
-
-    return _handle_if_controller_is_not_activated
+from controller import *
 
 
 class GameController(Controller):
@@ -34,13 +10,13 @@ class GameController(Controller):
         self.view.on_update()
         self.map.on_update_view()
 
-    @_controller_is_not_active
+    @controller_is_not_active
     def on_activate(self):
         self.is_activated = True
         self.model.on_activate()
         self.map.on_activate()
 
-    @_controller_is_active
+    @controller_is_active
     def on_deactivate(self):
         self.is_activated = False
         self.model.on_deactivate()
@@ -68,8 +44,8 @@ class GameController(Controller):
         self.view.on_deactivate()
         self.map.on_deactivate_view()
 
-    @_controller_is_active
-    @_game_is_not_paused
+    @controller_is_active
+    @game_is_not_paused
     def on_update_time(self):
         self.map.on_update_time(self.model.game_time)
         self.model.on_update_time()

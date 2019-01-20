@@ -1,30 +1,6 @@
 from ctypes import windll
 
-from model import Model
-
-
-def _fullscreen_mode_available(fn):
-    def _turn_fullscren_mode_on_if_available(*args, **kwargs):
-        if args[0].fullscreen_mode_available:
-            fn(*args, **kwargs)
-
-    return _turn_fullscren_mode_on_if_available
-
-
-def _model_is_active(fn):
-    def _handle_if_model_is_activated(*args, **kwargs):
-        if args[0].is_activated:
-            fn(*args, **kwargs)
-
-    return _handle_if_model_is_activated
-
-
-def _model_is_not_active(fn):
-    def _handle_if_model_is_not_activated(*args, **kwargs):
-        if not args[0].is_activated:
-            fn(*args, **kwargs)
-
-    return _handle_if_model_is_not_activated
+from model import *
 
 
 class AppModel(Model):
@@ -36,12 +12,12 @@ class AppModel(Model):
         if (windll.user32.GetSystemMetrics(0), windll.user32.GetSystemMetrics(1)) in self.screen_resolution_config:
             self.fullscreen_mode_available = True
 
-    @_model_is_not_active
+    @model_is_not_active
     def on_activate(self):
         self.is_activated = True
         self.on_activate_view()
 
-    @_model_is_active
+    @model_is_active
     def on_deactivate(self):
         self.is_activated = False
 
@@ -49,7 +25,7 @@ class AppModel(Model):
         self.view.on_activate()
         self.view.fullscreen_button.on_activate()
 
-    @_fullscreen_mode_available
+    @fullscreen_mode_available
     def on_fullscreen_mode_turned_on(self):
         self.view.on_fullscreen_mode_turned_on()
         self.on_save_and_commit_state(1)

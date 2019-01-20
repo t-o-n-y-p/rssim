@@ -1,20 +1,4 @@
-from model import Model
-
-
-def _model_is_active(fn):
-    def _handle_if_model_is_activated(*args, **kwargs):
-        if args[0].is_activated:
-            fn(*args, **kwargs)
-
-    return _handle_if_model_is_activated
-
-
-def _model_is_not_active(fn):
-    def _handle_if_model_is_not_activated(*args, **kwargs):
-        if not args[0].is_activated:
-            fn(*args, **kwargs)
-
-    return _handle_if_model_is_not_activated
+from model import *
 
 
 class SignalModel(Model):
@@ -35,7 +19,7 @@ class SignalModel(Model):
         x, y, self.flip_needed = self.config_db_cursor.fetchone()
         self.position = (x, y)
 
-    @_model_is_not_active
+    @model_is_not_active
     def on_activate(self):
         self.is_activated = True
         self.on_activate_view()
@@ -47,7 +31,7 @@ class SignalModel(Model):
         self.view.position = self.position
         self.view.on_activate()
 
-    @_model_is_active
+    @model_is_active
     def on_deactivate(self):
         self.is_activated = False
 

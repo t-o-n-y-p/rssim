@@ -3,25 +3,9 @@ from pyglet.sprite import Sprite
 from pyglet.text import Label
 from pyglet.resource import add_font
 
-from view import View
+from view import *
 from button.pause_game_button import PauseGameButton
 from button.resume_game_button import ResumeGameButton
-
-
-def _view_is_active(fn):
-    def _handle_if_view_is_activated(*args, **kwargs):
-        if args[0].is_activated:
-            fn(*args, **kwargs)
-
-    return _handle_if_view_is_activated
-
-
-def _view_is_not_active(fn):
-    def _handle_if_view_is_not_activated(*args, **kwargs):
-        if not args[0].is_activated:
-            fn(*args, **kwargs)
-
-    return _handle_if_view_is_not_activated
 
 
 class GameView(View):
@@ -115,7 +99,7 @@ class GameView(View):
                         self.progress_bar_money_active.delete()
                         self.progress_bar_money_active = None
 
-    @_view_is_not_active
+    @view_is_not_active
     def on_activate(self):
         self.is_activated = True
         if self.progress_bar_exp_inactive is None:
@@ -180,7 +164,7 @@ class GameView(View):
             if b.to_activate_on_controller_init:
                 b.on_activate()
 
-    @_view_is_active
+    @view_is_active
     def on_deactivate(self):
         self.is_activated = False
         self.level_text.delete()
@@ -247,7 +231,7 @@ class GameView(View):
                                                                (self.game_time // 240) % 60)
             self.day_sprite.text = f'DAY  {1 + self.game_time // 345600}'
 
-    @_view_is_active
+    @view_is_active
     def on_update_exp(self, exp, player_progress):
         if player_progress < 1:
             self.exp_percent = 0
@@ -263,11 +247,11 @@ class GameView(View):
 
         self.progress_bar_exp_active.image = image_region
 
-    @_view_is_active
+    @view_is_active
     def on_update_level(self, level):
         self.level_text.text = f'LEVEL {level}'
 
-    @_view_is_active
+    @view_is_active
     def on_update_money(self, money, money_target):
         self.money_text.text = '{0:0>8} ¤'.format(int(money))
         if money_target < 1:

@@ -1,20 +1,4 @@
-from controller import Controller
-
-
-def _controller_is_active(fn):
-    def _handle_if_controller_is_activated(*args, **kwargs):
-        if args[0].is_activated:
-            fn(*args, **kwargs)
-
-    return _handle_if_controller_is_activated
-
-
-def _controller_is_not_active(fn):
-    def _handle_if_controller_is_not_activated(*args, **kwargs):
-        if not args[0].is_activated:
-            fn(*args, **kwargs)
-
-    return _handle_if_controller_is_not_activated
+from controller import *
 
 
 class FPSController(Controller):
@@ -24,18 +8,18 @@ class FPSController(Controller):
     def on_update_view(self):
         self.view.on_update()
 
-    @_controller_is_not_active
+    @controller_is_not_active
     def on_activate(self):
         self.is_activated = True
         self.model.on_activate()
 
-    @_controller_is_active
+    @controller_is_active
     def on_deactivate(self):
         self.is_activated = False
         self.model.on_deactivate()
         self.view.on_deactivate()
 
-    @_controller_is_active
+    @controller_is_active
     def on_update_fps(self, fps):
         self.model.on_update_fps(fps)
 

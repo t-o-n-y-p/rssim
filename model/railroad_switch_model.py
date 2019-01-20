@@ -1,20 +1,4 @@
-from model import Model
-
-
-def _model_is_active(fn):
-    def _handle_if_model_is_activated(*args, **kwargs):
-        if args[0].is_activated:
-            fn(*args, **kwargs)
-
-    return _handle_if_model_is_activated
-
-
-def _model_is_not_active(fn):
-    def _handle_if_model_is_not_activated(*args, **kwargs):
-        if not args[0].is_activated:
-            fn(*args, **kwargs)
-
-    return _handle_if_model_is_not_activated
+from model import *
 
 
 class RailroadSwitchModel(Model):
@@ -38,7 +22,7 @@ class RailroadSwitchModel(Model):
                                       (track_param_1, track_param_2, switch_type))
         self.state_change_listeners = self.config_db_cursor.fetchall()
 
-    @_model_is_not_active
+    @model_is_not_active
     def on_activate(self):
         self.is_activated = True
         self.on_activate_view()
@@ -46,7 +30,7 @@ class RailroadSwitchModel(Model):
     def on_activate_view(self):
         self.view.on_activate()
 
-    @_model_is_active
+    @model_is_active
     def on_deactivate(self):
         self.is_activated = False
 

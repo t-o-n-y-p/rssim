@@ -1,30 +1,6 @@
 from operator import attrgetter
 
-from controller import Controller
-
-
-def _controller_is_active(fn):
-    def _handle_if_controller_is_activated(*args, **kwargs):
-        if args[0].is_activated:
-            fn(*args, **kwargs)
-
-    return _handle_if_controller_is_activated
-
-
-def _controller_is_not_active(fn):
-    def _handle_if_controller_is_not_activated(*args, **kwargs):
-        if not args[0].is_activated:
-            fn(*args, **kwargs)
-
-    return _handle_if_controller_is_not_activated
-
-
-def _map_view_is_active(fn):
-    def _handle_if_map_view_is_activated(*args, **kwargs):
-        if args[0].view.is_activated:
-            fn(*args, **kwargs)
-
-    return _handle_if_map_view_is_activated
+from controller import *
 
 
 class MapController(Controller):
@@ -63,7 +39,7 @@ class MapController(Controller):
         for train_id in self.trains:
             self.trains[train_id].on_update_view()
 
-    @_controller_is_not_active
+    @controller_is_not_active
     def on_activate(self):
         self.is_activated = True
         self.model.on_activate()
@@ -85,7 +61,7 @@ class MapController(Controller):
         for train_id in self.trains:
             self.trains[train_id].on_activate()
 
-    @_controller_is_active
+    @controller_is_active
     def on_deactivate(self):
         self.is_activated = False
         self.model.on_deactivate()
@@ -293,12 +269,12 @@ class MapController(Controller):
         self.view.on_deactivate_zoom_buttons()
         self.view.is_mini_map_activated = False
 
-    @_map_view_is_active
+    @map_view_is_active
     def on_close_schedule(self):
         self.view.on_activate_zoom_buttons()
         self.view.open_schedule_button.on_activate()
 
-    @_map_view_is_active
+    @map_view_is_active
     def on_close_constructor(self):
         self.view.on_activate_zoom_buttons()
         self.view.open_constructor_button.on_activate()

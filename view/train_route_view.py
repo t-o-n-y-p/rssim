@@ -1,20 +1,4 @@
-from view import View
-
-
-def _view_is_active(fn):
-    def _handle_if_view_is_activated(*args, **kwargs):
-        if args[0].is_activated:
-            fn(*args, **kwargs)
-
-    return _handle_if_view_is_activated
-
-
-def _view_is_not_active(fn):
-    def _handle_if_view_is_not_activated(*args, **kwargs):
-        if not args[0].is_activated:
-            fn(*args, **kwargs)
-
-    return _handle_if_view_is_not_activated
+from view import *
 
 
 class TrainRouteView(View):
@@ -28,11 +12,11 @@ class TrainRouteView(View):
     def on_update(self):
         pass
 
-    @_view_is_not_active
+    @view_is_not_active
     def on_activate(self):
         self.is_activated = True
 
-    @_view_is_active
+    @view_is_active
     def on_deactivate(self):
         self.is_activated = False
 

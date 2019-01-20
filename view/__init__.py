@@ -1,3 +1,104 @@
+from pyglet.window import mouse
+
+
+def view_is_active(fn):
+    def _handle_if_view_is_activated(*args, **kwargs):
+        if args[0].is_activated:
+            fn(*args, **kwargs)
+
+    return _handle_if_view_is_activated
+
+
+def view_is_not_active(fn):
+    def _handle_if_view_is_not_activated(*args, **kwargs):
+        if not args[0].is_activated:
+            fn(*args, **kwargs)
+
+    return _handle_if_view_is_not_activated
+
+
+def game_window_is_active(fn):
+    def _handle_if_game_window_is_active(*args, **kwargs):
+        if args[0].surface.visible:
+            fn(*args, **kwargs)
+
+    return _handle_if_game_window_is_active
+
+
+def game_is_not_fullscreen(fn):
+    def _handle_if_game_window_is_not_fullscreen(*args, **kwargs):
+        if not args[0].surface.fullscreen:
+            fn(*args, **kwargs)
+
+    return _handle_if_game_window_is_not_fullscreen
+
+
+def app_window_move_mode_enabled(fn):
+    def _handle_if_app_window_move_mode_enabled(*args, **kwargs):
+        if args[0].app_window_move_mode:
+            fn(*args, **kwargs)
+
+    return _handle_if_app_window_move_mode_enabled
+
+
+def left_mouse_button(fn):
+    def _handle_mouse_if_left_button_was_clicked(*args, **kwargs):
+        if args[3] == mouse.LEFT:
+            fn(*args, **kwargs)
+
+    return _handle_mouse_if_left_button_was_clicked
+
+
+def track_is_in_top4(fn):
+    def _handle_if_track_is_in_top4(*args, **kwargs):
+        if args[2] in args[0].locked_tracks_labels:
+            fn(*args, **kwargs)
+
+    return _handle_if_track_is_in_top4
+
+
+def map_move_mode_available(fn):
+    def _turn_on_move_mode_if_map_move_mode_available(*args, **kwargs):
+        if args[0].map_move_mode_available and not args[0].controller.scheduler.view.is_activated \
+                and not args[0].controller.constructor.view.is_activated:
+            fn(*args, **kwargs)
+
+    return _turn_on_move_mode_if_map_move_mode_available
+
+
+def map_move_mode_enabled(fn):
+    def _turn_on_move_mode_if_map_move_mode_enabled(*args, **kwargs):
+        if args[0].map_move_mode:
+            fn(*args, **kwargs)
+
+    return _turn_on_move_mode_if_map_move_mode_enabled
+
+
+def cursor_is_on_the_map(fn):
+    def _enable_map_move_mode_if_cursor_is_on_the_map(*args, **kwargs):
+        if args[1] in range(0, args[0].screen_resolution[0]) \
+                and args[2] in range(80, args[0].screen_resolution[1] - 35):
+            fn(*args, **kwargs)
+
+    return _enable_map_move_mode_if_cursor_is_on_the_map
+
+
+def mini_map_is_not_active(fn):
+    def _handle_if_mini_map_is_not_activated(*args, **kwargs):
+        if not args[0].is_mini_map_activated:
+            fn(*args, **kwargs)
+
+    return _handle_if_mini_map_is_not_activated
+
+
+def signal_is_displayed_on_map(fn):
+    def _handle_if_signal_is_displayed_on_map(*args, **kwargs):
+        if args[0].signal_sprite is not None:
+            fn(*args, **kwargs)
+
+    return _handle_if_signal_is_displayed_on_map
+
+
 class View:
     def __init__(self, user_db_cursor, config_db_cursor, surface, batches, groups):
         self.user_db_cursor = user_db_cursor

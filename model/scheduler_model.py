@@ -1,23 +1,7 @@
 from random import choice
 from operator import itemgetter
 
-from model import Model
-
-
-def _model_is_active(fn):
-    def _handle_if_model_is_activated(*args, **kwargs):
-        if args[0].is_activated:
-            fn(*args, **kwargs)
-
-    return _handle_if_model_is_activated
-
-
-def _model_is_not_active(fn):
-    def _handle_if_model_is_not_activated(*args, **kwargs):
-        if not args[0].is_activated:
-            fn(*args, **kwargs)
-
-    return _handle_if_model_is_not_activated
+from model import *
 
 
 class SchedulerModel(Model):
@@ -64,11 +48,11 @@ class SchedulerModel(Model):
         self.schedule_cycle_length, self.frame_per_car, self.exp_per_car, self.money_per_car \
             = self.config_db_cursor.fetchone()
 
-    @_model_is_not_active
+    @model_is_not_active
     def on_activate(self):
         self.is_activated = True
 
-    @_model_is_active
+    @model_is_active
     def on_deactivate(self):
         self.is_activated = False
 

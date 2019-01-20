@@ -1,22 +1,6 @@
 from ctypes import windll
 
-from model import Model
-
-
-def _model_is_active(fn):
-    def _handle_if_model_is_activated(*args, **kwargs):
-        if args[0].is_activated:
-            fn(*args, **kwargs)
-
-    return _handle_if_model_is_activated
-
-
-def _model_is_not_active(fn):
-    def _handle_if_model_is_not_activated(*args, **kwargs):
-        if not args[0].is_activated:
-            fn(*args, **kwargs)
-
-    return _handle_if_model_is_not_activated
+from model import *
 
 
 class SettingsModel(Model):
@@ -46,7 +30,7 @@ class SettingsModel(Model):
         else:
             self.screen_resolution = self.windowed_resolution
 
-    @_model_is_not_active
+    @model_is_not_active
     def on_activate(self):
         self.is_activated = True
         self.on_activate_view()
@@ -57,7 +41,7 @@ class SettingsModel(Model):
         self.view.on_change_temp_windowed_resolution(self.windowed_resolution)
         self.view.on_change_available_windowed_resolutions(self.available_windowed_resolutions)
 
-    @_model_is_active
+    @model_is_active
     def on_deactivate(self):
         self.is_activated = False
 

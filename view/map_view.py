@@ -1,72 +1,13 @@
 from time import perf_counter
 
 from pyglet.sprite import Sprite
-from pyglet.window import mouse
 from pyglet import resource
 
-from view import View
+from view import *
 from button.zoom_in_button import ZoomInButton
 from button.zoom_out_button import ZoomOutButton
 from button.open_schedule_button import OpenScheduleButton
 from button.open_constructor_button import OpenConstructorButton
-
-
-def _map_move_mode_available(fn):
-    def _turn_on_move_mode_if_map_move_mode_available(*args, **kwargs):
-        if args[0].map_move_mode_available and not args[0].controller.scheduler.view.is_activated \
-                and not args[0].controller.constructor.view.is_activated:
-            fn(*args, **kwargs)
-
-    return _turn_on_move_mode_if_map_move_mode_available
-
-
-def _map_move_mode_enabled(fn):
-    def _turn_on_move_mode_if_map_move_mode_enabled(*args, **kwargs):
-        if args[0].map_move_mode:
-            fn(*args, **kwargs)
-
-    return _turn_on_move_mode_if_map_move_mode_enabled
-
-
-def _left_mouse_button(fn):
-    def _handle_mouse_if_left_button_was_clicked(*args, **kwargs):
-        if args[3] == mouse.LEFT:
-            fn(*args, **kwargs)
-
-    return _handle_mouse_if_left_button_was_clicked
-
-
-def _view_is_active(fn):
-    def _handle_if_view_is_activated(*args, **kwargs):
-        if args[0].is_activated:
-            fn(*args, **kwargs)
-
-    return _handle_if_view_is_activated
-
-
-def _view_is_not_active(fn):
-    def _handle_if_view_is_not_activated(*args, **kwargs):
-        if not args[0].is_activated:
-            fn(*args, **kwargs)
-
-    return _handle_if_view_is_not_activated
-
-
-def _cursor_is_on_the_map(fn):
-    def _enable_map_move_mode_if_cursor_is_on_the_map(*args, **kwargs):
-        if args[1] in range(0, args[0].screen_resolution[0]) \
-                and args[2] in range(80, args[0].screen_resolution[1] - 35):
-            fn(*args, **kwargs)
-
-    return _enable_map_move_mode_if_cursor_is_on_the_map
-
-
-def _mini_map_is_not_active(fn):
-    def _handle_if_mini_map_is_not_activated(*args, **kwargs):
-        if not args[0].is_mini_map_activated:
-            fn(*args, **kwargs)
-
-    return _handle_if_mini_map_is_not_activated
 
 
 class MapView(View):
@@ -184,7 +125,7 @@ class MapView(View):
         if self.is_mini_map_activated and not self.map_move_mode and perf_counter() - self.mini_map_timer > 1:
             self.is_mini_map_activated = False
 
-    @_mini_map_is_not_active
+    @mini_map_is_not_active
     def on_activate_mini_map(self):
         self.is_mini_map_activated = True
         self.mini_environment_sprite = Sprite(self.environment, x=self.mini_map_position[0],
@@ -199,7 +140,7 @@ class MapView(View):
         self.mini_map_sprite.opacity = 0
         self.mini_map_sprite.scale = self.mini_map_width / 8192
 
-    @_view_is_not_active
+    @view_is_not_active
     def on_activate(self):
         self.is_activated = True
         self.on_change_map_offset()
@@ -224,7 +165,7 @@ class MapView(View):
         else:
             self.zoom_out_button.on_activate()
 
-    @_view_is_active
+    @view_is_active
     def on_deactivate(self):
         self.is_activated = False
         self.is_mini_map_activated = False
@@ -330,21 +271,21 @@ class MapView(View):
         else:
             self.zoom_out_button.on_activate()
 
-    @_view_is_active
-    @_cursor_is_on_the_map
-    @_left_mouse_button
-    @_map_move_mode_available
+    @view_is_active
+    @cursor_is_on_the_map
+    @left_mouse_button
+    @map_move_mode_available
     def handle_mouse_press(self, x, y, button, modifiers):
         self.map_move_mode = True
         self.on_activate_mini_map()
 
-    @_map_move_mode_enabled
+    @map_move_mode_enabled
     def handle_mouse_drag(self, x, y, dx, dy, buttons, modifiers):
         self.base_offset = (self.base_offset[0] + dx, self.base_offset[1] + dy)
         self.check_base_offset_limits()
         self.controller.on_change_base_offset(self.base_offset)
 
-    @_left_mouse_button
+    @left_mouse_button
     def handle_mouse_release(self, x, y, button, modifiers):
         self.map_move_mode = False
         self.mini_map_timer = perf_counter()

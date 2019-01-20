@@ -4,7 +4,7 @@ from pyglet.window import mouse
 from pyglet.resource import add_font
 
 
-def _button_is_not_activated(fn):
+def button_is_not_activated(fn):
     def _handle_if_is_not_activated(*args, **kwargs):
         if not args[0].is_activated:
             fn(*args, **kwargs)
@@ -12,7 +12,7 @@ def _button_is_not_activated(fn):
     return _handle_if_is_not_activated
 
 
-def _button_is_activated(fn):
+def button_is_activated(fn):
     def _handle_if_is_activated(*args, **kwargs):
         if args[0].is_activated:
             fn(*args, **kwargs)
@@ -20,7 +20,7 @@ def _button_is_activated(fn):
     return _handle_if_is_activated
 
 
-def _left_mouse_button(fn):
+def left_mouse_button(fn):
     def _handle_mouse_if_left_button_was_clicked(*args, **kwargs):
         if args[3] == mouse.LEFT:
             fn(*args, **kwargs)
@@ -28,7 +28,7 @@ def _left_mouse_button(fn):
     return _handle_mouse_if_left_button_was_clicked
 
 
-def _cursor_is_over_the_button(fn):
+def cursor_is_over_the_button(fn):
     def _handle_if_cursor_is_over_the_button(*args, **kwargs):
         if args[1] in range(args[0].position[0] + 2, args[0].position[0] + args[0].button_size[0] - 2) \
                 and args[2] in range(args[0].position[1] + 2, args[0].position[1] + args[0].button_size[1] - 2):
@@ -37,7 +37,7 @@ def _cursor_is_over_the_button(fn):
     return _handle_if_cursor_is_over_the_button
 
 
-def _button_is_pressed(fn):
+def button_is_pressed(fn):
     def _handle_if_button_is_pressed(*args, **kwargs):
         if args[0].state == 'pressed':
             fn(*args, **kwargs)
@@ -70,7 +70,7 @@ class Button:
         self.hand_cursor = self.surface.get_system_mouse_cursor(surface.CURSOR_HAND)
         self.default_cursor = self.surface.get_system_mouse_cursor(surface.CURSOR_DEFAULT)
 
-    @_button_is_not_activated
+    @button_is_not_activated
     def on_activate(self):
         self.is_activated = True
         gl.glEnable(gl.GL_BLEND)
@@ -94,7 +94,7 @@ class Button:
                                      anchor_x='center', anchor_y='center', batch=self.batch,
                                      group=self.groups['button_text'])
 
-    @_button_is_activated
+    @button_is_activated
     def on_deactivate(self):
         self.is_activated = False
         self.vertex_list.delete()
@@ -126,7 +126,7 @@ class Button:
         if self.is_activated:
             self.text_object.font_size = self.font_size
 
-    @_button_is_activated
+    @button_is_activated
     def handle_mouse_motion(self, x, y, dx, dy):
         if x in range(self.position[0] + 2, self.position[0] + self.button_size[0] - 2) \
                 and y in range(self.position[1] + 2, self.position[1] + self.button_size[1] - 2):
@@ -148,24 +148,24 @@ class Button:
                 if self.on_leave_action is not None:
                     self.on_leave_action()
 
-    @_button_is_activated
-    @_cursor_is_over_the_button
-    @_left_mouse_button
+    @button_is_activated
+    @cursor_is_over_the_button
+    @left_mouse_button
     def handle_mouse_press(self, x, y, button, modifiers):
         self.state = 'pressed'
         self.vertex_list.colors = (191, 0, 0, 191, 191, 0, 0, 191, 191, 0, 0, 191, 191, 0, 0, 191)
 
-    @_button_is_activated
-    @_cursor_is_over_the_button
-    @_button_is_pressed
-    @_left_mouse_button
+    @button_is_activated
+    @cursor_is_over_the_button
+    @button_is_pressed
+    @left_mouse_button
     def handle_mouse_release(self, x, y, button, modifiers):
         self.state = 'hover'
         self.vertex_list.colors = (127, 0, 0, 191, 127, 0, 0, 191, 127, 0, 0, 191, 127, 0, 0, 191)
         self.surface.set_mouse_cursor(self.default_cursor)
         self.on_click_action(self)
 
-    @_button_is_activated
+    @button_is_activated
     def handle_mouse_leave(self, x, y):
         self.state = 'normal'
         if not self.transparent:

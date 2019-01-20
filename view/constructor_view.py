@@ -1,32 +1,8 @@
 from pyglet.text import Label
 
-from view import View
+from view import *
 from button.close_constructor_button import CloseConstructorButton
 from button.buy_track_button import BuyTrackButton
-
-
-def _view_is_active(fn):
-    def _handle_if_view_is_activated(*args, **kwargs):
-        if args[0].is_activated:
-            fn(*args, **kwargs)
-
-    return _handle_if_view_is_activated
-
-
-def _view_is_not_active(fn):
-    def _handle_if_view_is_not_activated(*args, **kwargs):
-        if not args[0].is_activated:
-            fn(*args, **kwargs)
-
-    return _handle_if_view_is_not_activated
-
-
-def _track_is_in_top4(fn):
-    def _handle_if_track_is_in_top4(*args, **kwargs):
-        if args[2] in args[0].locked_tracks_labels:
-            fn(*args, **kwargs)
-
-    return _handle_if_track_is_in_top4
 
 
 class ConstructorView(View):
@@ -95,7 +71,7 @@ class ConstructorView(View):
         self.track_state_price = 7
         self.track_state_level = 8
 
-    @_view_is_not_active
+    @view_is_not_active
     def on_activate(self):
         self.is_activated = True
         self.constructor_railway_station_caption_sprite \
@@ -143,7 +119,7 @@ class ConstructorView(View):
             if b.to_activate_on_controller_init:
                 b.on_activate()
 
-    @_view_is_active
+    @view_is_active
     def on_deactivate(self):
         self.is_activated = False
         self.constructor_railway_station_caption_sprite.delete()
@@ -168,8 +144,8 @@ class ConstructorView(View):
 
         self.description_tracks_labels.clear()
 
-        for l in self.no_more_tracks_available_labels:
-            l.delete()
+        for L in self.no_more_tracks_available_labels:
+            L.delete()
 
         for b in self.buttons:
             b.on_deactivate()
@@ -406,8 +382,8 @@ class ConstructorView(View):
         if len(self.track_state_matrix) > 0:
             self.on_update_live_track_state(track_state_matrix, list(track_state_matrix.keys())[0])
 
-    @_view_is_active
-    @_track_is_in_top4
+    @view_is_active
+    @track_is_in_top4
     def on_update_live_track_state(self, track_state_matrix, track):
         self.track_state_matrix = track_state_matrix
         if track_state_matrix[track][self.track_state_unlock_available]:
@@ -470,7 +446,7 @@ class ConstructorView(View):
     def on_update_track_state(self, track_state_matrix, game_time):
         self.track_state_matrix = track_state_matrix
 
-    @_view_is_active
+    @view_is_active
     def on_unlock_track_live(self, track):
         cell_step = self.constructor_cell_height + self.constructor_interval_between_cells
         self.locked_tracks_labels[track].delete()

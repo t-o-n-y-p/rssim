@@ -1,20 +1,4 @@
-from model import Model
-
-
-def _model_is_active(fn):
-    def _handle_if_model_is_activated(*args, **kwargs):
-        if args[0].is_activated:
-            fn(*args, **kwargs)
-
-    return _handle_if_model_is_activated
-
-
-def _model_is_not_active(fn):
-    def _handle_if_model_is_not_activated(*args, **kwargs):
-        if not args[0].is_activated:
-            fn(*args, **kwargs)
-
-    return _handle_if_model_is_not_activated
+from model import *
 
 
 class TrainModel(Model):
@@ -117,7 +101,7 @@ class TrainModel(Model):
     def on_set_trail_points(self, trail_points_v2):
         self.trail_points_v2 = trail_points_v2
 
-    @_model_is_not_active
+    @model_is_not_active
     def on_activate(self):
         self.is_activated = True
         self.on_activate_view()
@@ -137,7 +121,7 @@ class TrainModel(Model):
         self.view.on_update_state(self.state)
         self.view.on_activate()
 
-    @_model_is_active
+    @model_is_active
     def on_deactivate(self):
         self.is_activated = False
 

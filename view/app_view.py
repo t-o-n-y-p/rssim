@@ -1,4 +1,3 @@
-from pyglet.window import mouse
 from pyglet.text import Label
 from pyglet.gl import GL_QUADS
 from pyshaders import from_files_names
@@ -6,60 +5,12 @@ from win32api import GetCursorPos
 from win32gui import GetActiveWindow, GetWindowRect, SetWindowPos
 from win32con import HWND_TOP, SWP_NOREDRAW
 
-from view import View
+from view import *
 from button.close_game_button import CloseGameButton
 from button.iconify_game_button import IconifyGameButton
 from button.fullscreen_button import FullscreenButton
 from button.restore_button import RestoreButton
 from button.open_settings_button import OpenSettingsButton
-
-
-def _game_window_is_active(fn):
-    def _handle_if_game_window_is_active(*args, **kwargs):
-        if args[0].surface.visible:
-            fn(*args, **kwargs)
-
-    return _handle_if_game_window_is_active
-
-
-def _game_is_not_fullscreen(fn):
-    def _handle_if_game_window_is_not_fullscreen(*args, **kwargs):
-        if not args[0].surface.fullscreen:
-            fn(*args, **kwargs)
-
-    return _handle_if_game_window_is_not_fullscreen
-
-
-def _app_window_move_mode_enabled(fn):
-    def _handle_if_app_window_move_mode_enabled(*args, **kwargs):
-        if args[0].app_window_move_mode:
-            fn(*args, **kwargs)
-
-    return _handle_if_app_window_move_mode_enabled
-
-
-def _left_mouse_button(fn):
-    def _handle_mouse_if_left_button_was_clicked(*args, **kwargs):
-        if args[3] == mouse.LEFT:
-            fn(*args, **kwargs)
-
-    return _handle_mouse_if_left_button_was_clicked
-
-
-def _view_is_active(fn):
-    def _handle_if_view_is_activated(*args, **kwargs):
-        if args[0].is_activated:
-            fn(*args, **kwargs)
-
-    return _handle_if_view_is_activated
-
-
-def _view_is_not_active(fn):
-    def _handle_if_view_is_not_activated(*args, **kwargs):
-        if not args[0].is_activated:
-            fn(*args, **kwargs)
-
-    return _handle_if_view_is_not_activated
 
 
 class AppView(View):
@@ -116,7 +67,7 @@ class AppView(View):
     def on_update(self):
         pass
 
-    @_view_is_not_active
+    @view_is_not_active
     def on_activate(self):
         self.is_activated = True
         self.title_label = Label('Railway Station Simulator', font_name='Arial',
@@ -133,7 +84,7 @@ class AppView(View):
             if b.to_activate_on_controller_init:
                 b.on_activate()
 
-    @_view_is_active
+    @view_is_active
     def on_deactivate(self):
         self.is_activated = False
         self.main_frame_sprite.delete()
@@ -185,23 +136,23 @@ class AppView(View):
         self.restore_button.on_deactivate()
         self.fullscreen_button.on_activate()
 
-    @_game_window_is_active
-    @_game_is_not_fullscreen
-    @_left_mouse_button
-    @_view_is_active
+    @game_window_is_active
+    @game_is_not_fullscreen
+    @left_mouse_button
+    @view_is_active
     def handle_mouse_press(self, x, y, button, modifiers):
         y = self.surface.height - y
         if x in range(0, self.surface.width - 100) and y in range(0, 33):
             self.app_window_move_mode = True
             self.app_window_move_offset = (x, y)
 
-    @_game_window_is_active
-    @_left_mouse_button
+    @game_window_is_active
+    @left_mouse_button
     def handle_mouse_release(self, x, y, button, modifiers):
         self.app_window_move_mode = False
 
-    @_game_window_is_active
-    @_app_window_move_mode_enabled
+    @game_window_is_active
+    @app_window_move_mode_enabled
     def handle_mouse_drag(self, x, y, dx, dy, buttons, modifiers):
         self.absolute_mouse_pos = GetCursorPos()
         self.game_window_position = GetWindowRect(self.game_window_handler)

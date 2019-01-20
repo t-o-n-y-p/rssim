@@ -1,44 +1,4 @@
-from model import Model
-
-
-def _model_is_active(fn):
-    def _handle_if_model_is_activated(*args, **kwargs):
-        if args[0].is_activated:
-            fn(*args, **kwargs)
-
-    return _handle_if_model_is_activated
-
-
-def _model_is_not_active(fn):
-    def _handle_if_model_is_not_activated(*args, **kwargs):
-        if not args[0].is_activated:
-            fn(*args, **kwargs)
-
-    return _handle_if_model_is_not_activated
-
-
-def _train_has_passed_train_route_section(fn):
-    def _allow_other_trains_to_pass_if_train_has_passed_train_route_section(*args, **kwargs):
-        if args[1] >= args[0].checkpoints_v2[args[0].current_checkpoint]:
-            fn(*args, **kwargs)
-
-    return _allow_other_trains_to_pass_if_train_has_passed_train_route_section
-
-
-def _train_route_is_opened(fn):
-    def _handle_if_train_route_is_opened(*args, **kwargs):
-        if args[0].opened:
-            fn(*args, **kwargs)
-
-    return _handle_if_train_route_is_opened
-
-
-def _not_approaching_route(fn):
-    def _handle_if_train_route_is_not_approaching_route(*args, **kwargs):
-        if len(args[0].train_route_sections) > 1:
-            fn(*args, **kwargs)
-
-    return _handle_if_train_route_is_not_approaching_route
+from model import *
 
 
 class TrainRouteModel(Model):
@@ -113,7 +73,7 @@ class TrainRouteModel(Model):
                                       (track, train_route))
         self.train_route_section_positions = self.config_db_cursor.fetchall()
 
-    @_model_is_not_active
+    @model_is_not_active
     def on_activate(self):
         self.is_activated = True
         self.on_activate_view()
@@ -121,7 +81,7 @@ class TrainRouteModel(Model):
     def on_activate_view(self):
         self.view.on_activate()
 
-    @_model_is_active
+    @model_is_active
     def on_deactivate(self):
         self.is_activated = False
 
@@ -158,7 +118,7 @@ class TrainRouteModel(Model):
         self.train_route_section_busy_state[-1] = False
         self.cars = 0
 
-    @_train_has_passed_train_route_section
+    @train_has_passed_train_route_section
     def on_update_train_route_sections(self, last_car_position):
         self.controller.parent_controller.on_train_route_section_force_busy_off(
             self.train_route_sections[self.current_checkpoint],
@@ -179,8 +139,8 @@ class TrainRouteModel(Model):
 
         self.current_checkpoint += 1
 
-    @_train_route_is_opened
-    @_not_approaching_route
+    @train_route_is_opened
+    @not_approaching_route
     def on_update_time(self, game_time):
         train_route_busy = False
         for i in range(1, len(self.train_route_sections)):

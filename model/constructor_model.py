@@ -1,28 +1,4 @@
-from model import Model
-
-
-def _model_is_active(fn):
-    def _handle_if_model_is_activated(*args, **kwargs):
-        if args[0].is_activated:
-            fn(*args, **kwargs)
-
-    return _handle_if_model_is_activated
-
-
-def _model_is_not_active(fn):
-    def _handle_if_model_is_not_activated(*args, **kwargs):
-        if not args[0].is_activated:
-            fn(*args, **kwargs)
-
-    return _handle_if_model_is_not_activated
-
-
-def _maximum_money_not_reached(fn):
-    def _add_money_if_maximum_money_is_not_reached(*args, **kwargs):
-        if args[0].money < 99999999.0:
-            fn(*args, **kwargs)
-
-    return _add_money_if_maximum_money_is_not_reached
+from model import *
 
 
 class ConstructorModel(Model):
@@ -53,11 +29,11 @@ class ConstructorModel(Model):
         self.track_state_level = 8
         self.cached_unlocked_tracks = []
 
-    @_model_is_not_active
+    @model_is_not_active
     def on_activate(self):
         self.is_activated = True
 
-    @_model_is_active
+    @model_is_active
     def on_deactivate(self):
         self.is_activated = False
 
@@ -148,7 +124,7 @@ class ConstructorModel(Model):
         self.track_state_matrix[track][self.track_state_under_construction] = True
         self.view.on_update_live_track_state(self.track_state_matrix, track)
 
-    @_maximum_money_not_reached
+    @maximum_money_not_reached
     def on_add_money(self, money):
         self.money += money
         if self.money > 99999999.01:
