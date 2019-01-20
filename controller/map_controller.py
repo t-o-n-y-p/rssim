@@ -18,6 +18,7 @@ class MapController(Controller):
         self.crossovers = {}
         self.crossovers_list = []
         self.trains = {}
+        self.trains_list = []
 
     def on_update_view(self):
         self.view.on_update()
@@ -36,8 +37,8 @@ class MapController(Controller):
         for crossover in self.crossovers_list:
             crossover.on_update_view()
 
-        for train_id in self.trains:
-            self.trains[train_id].on_update_view()
+        for train in self.trains_list:
+            train.on_update_view()
 
     @controller_is_not_active
     def on_activate(self):
@@ -58,8 +59,8 @@ class MapController(Controller):
         for crossover in self.crossovers_list:
             crossover.on_activate()
 
-        for train_id in self.trains:
-            self.trains[train_id].on_activate()
+        for train in self.trains_list:
+            train.on_activate()
 
     @controller_is_active
     def on_deactivate(self):
@@ -81,8 +82,8 @@ class MapController(Controller):
         for crossover in self.crossovers_list:
             crossover.on_deactivate()
 
-        for train_id in self.trains:
-            self.trains[train_id].on_deactivate()
+        for train in self.trains_list:
+            train.on_deactivate()
 
     def on_change_screen_resolution(self, screen_resolution):
         self.view.on_change_screen_resolution(screen_resolution)
@@ -101,8 +102,8 @@ class MapController(Controller):
         for crossover in self.crossovers_list:
             crossover.on_change_screen_resolution(screen_resolution)
 
-        for train_id in self.trains:
-            self.trains[train_id].on_change_screen_resolution(screen_resolution)
+        for train in self.trains_list:
+            train.on_change_screen_resolution(screen_resolution)
 
         self.on_change_base_offset(self.view.base_offset)
 
@@ -120,8 +121,8 @@ class MapController(Controller):
         for crossover in self.crossovers_list:
             crossover.on_change_base_offset(new_base_offset)
 
-        for train_id in self.trains:
-            self.trains[train_id].on_change_base_offset(new_base_offset)
+        for train in self.trains_list:
+            train.on_change_base_offset(new_base_offset)
 
     def on_unlock_track(self, track_number):
         self.model.on_unlock_track(track_number)
@@ -150,8 +151,8 @@ class MapController(Controller):
         for crossover in self.crossovers_list:
             crossover.on_activate_view()
 
-        for train_id in self.trains:
-            self.trains[train_id].on_activate_view()
+        for train in self.trains_list:
+            train.on_activate_view()
 
     def on_deactivate_view(self):
         self.view.on_deactivate()
@@ -169,8 +170,8 @@ class MapController(Controller):
         for crossover in self.crossovers_list:
             crossover.on_deactivate_view()
 
-        for train_id in self.trains:
-            self.trains[train_id].on_deactivate_view()
+        for train in self.trains_list:
+            train.on_deactivate_view()
 
     def on_zoom_in(self):
         self.view.on_change_zoom_factor(1.0, zoom_out_activated=False)
@@ -186,8 +187,8 @@ class MapController(Controller):
         for crossover in self.crossovers_list:
             crossover.on_zoom_in()
 
-        for train_id in self.trains:
-            self.trains[train_id].on_zoom_in()
+        for train in self.trains_list:
+            train.on_zoom_in()
 
         self.on_change_base_offset(self.view.base_offset)
 
@@ -205,8 +206,8 @@ class MapController(Controller):
         for crossover in self.crossovers_list:
             crossover.on_zoom_out()
 
-        for train_id in self.trains:
-            self.trains[train_id].on_zoom_out()
+        for train in self.trains_list:
+            train.on_zoom_out()
 
         self.on_change_base_offset(self.view.base_offset)
 
@@ -228,8 +229,8 @@ class MapController(Controller):
             crossover.on_save_state()
 
         self.model.on_clear_trains_info()
-        for train_id in self.trains:
-            self.trains[train_id].on_save_state()
+        for train in self.trains_list:
+            train.on_save_state()
 
     def on_update_time(self, game_time):
         self.train_routes_sorted_list = sorted(self.train_routes_sorted_list,
@@ -238,12 +239,13 @@ class MapController(Controller):
             route.on_update_time(game_time)
 
         successful_departure_state = []
-        for train_id in self.trains:
-            self.trains[train_id].on_update_time(game_time)
-            if self.trains[train_id].model.state == 'successful_departure':
-                successful_departure_state.append(train_id)
+        for train in self.trains_list:
+            train.on_update_time(game_time)
+            if train.model.state == 'successful_departure':
+                successful_departure_state.append(train.train_id)
 
         for train_id in successful_departure_state:
+            self.trains_list.remove(self.trains[train_id])
             self.trains[train_id].on_deactivate()
             self.trains.pop(train_id)
 
@@ -341,6 +343,7 @@ class MapController(Controller):
         train.view.on_change_screen_resolution(self.view.screen_resolution)
         train.view.on_change_zoom_factor(self.view.zoom_factor, zoom_out_activated=self.view.zoom_out_activated)
         self.trains[train.train_id] = train
+        self.trains_list.append(train)
         self.dispatcher.on_add_train(train)
         train.parent_controller.on_open_train_route(track, train_route, train_id, cars)
         train.on_activate()

@@ -150,13 +150,15 @@ def _create_map(user_db_connection, user_db_cursor, config_db_cursor, surface, b
                                                batches, groups, controller)
     controller.constructor = _create_constructor(user_db_connection, user_db_cursor, config_db_cursor, surface,
                                                  batches, groups, controller)
+    # read train IDs from database, create trains and append them to both dictionary and list
     user_db_cursor.execute('SELECT train_id FROM trains')
     train_ids = user_db_cursor.fetchall()
     if train_ids is not None:
         for i in train_ids:
             controller.trains[i[0]] = _create_train(user_db_connection, user_db_cursor, config_db_cursor, surface,
                                                     batches, groups, controller, i[0])
-
+            controller.trains_list.append(controller.trains[i[0]])
+    # read signal tracks and base routes from database, create signals and append them to both dictionary and list
     config_db_cursor.execute('''SELECT DISTINCT track FROM signal_config''')
     signal_index = config_db_cursor.fetchall()
     for i in signal_index:
