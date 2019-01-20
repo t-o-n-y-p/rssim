@@ -129,14 +129,14 @@ class MapView(View):
     def on_activate_mini_map(self):
         self.is_mini_map_activated = True
         self.mini_environment_sprite = Sprite(self.environment, x=self.mini_map_position[0],
-                                              y=self.mini_map_position[1],
-                                              batch=self.batches['main_batch'], group=self.groups['mini_environment'])
+                                              y=self.mini_map_position[1], batch=self.batches['mini_map_batch'],
+                                              group=self.groups['mini_environment'])
         self.mini_environment_sprite.opacity = 0
         self.mini_environment_sprite.scale = self.mini_map_width / 8192
         self.mini_map_sprite = Sprite(self.main_map, x=self.mini_map_position[0],
                                       y=self.mini_map_position[1]
                                       + int(self.mini_map_offset[1] * (self.screen_resolution[0] // 3 - 6) / 8192),
-                                      batch=self.batches['main_batch'], group=self.groups['mini_map'])
+                                      batch=self.batches['mini_map_batch'], group=self.groups['mini_map'])
         self.mini_map_sprite.opacity = 0
         self.mini_map_sprite.scale = self.mini_map_width / 8192
 

@@ -1,6 +1,5 @@
 from pyglet.text import Label
 from pyglet.gl import GL_QUADS
-from pyshaders import from_files_names
 from win32api import GetCursorPos
 from win32gui import GetActiveWindow, GetWindowRect, SetWindowPos
 from win32con import HWND_TOP, SWP_NOREDRAW
@@ -35,7 +34,6 @@ class AppView(View):
         self.screen_resolution = (1280, 720)
         self.bottom_bar_height = int(72 / 1280 * self.screen_resolution[0])
         self.top_bar_height = int(72 / 1280 * self.screen_resolution[0]) // 2
-        self.shader = from_files_names('shaders/main_frame/shader.vert', 'shaders/main_frame/shader.frag')
         self.title_label = None
         self.main_frame_sprite = None
         self.close_game_button = CloseGameButton(surface=self.surface, batch=self.batches['ui_batch'],
@@ -162,32 +160,29 @@ class AppView(View):
                      self.game_window_position[2] - self.game_window_position[0],
                      self.game_window_position[3] - self.game_window_position[1], SWP_NOREDRAW)
 
-    def on_draw_main_frame(self):
-        self.shader.use()
-        self.shader.uniforms.screen_resolution = self.screen_resolution
-        self.shader.uniforms.base_offset = ((-1) * self.controller.game.map.view.base_offset[0],
-                                            (-1) * self.controller.game.map.view.base_offset[1])
-        self.shader.uniforms.bottom_bar_height = self.bottom_bar_height
-        self.shader.uniforms.top_bar_height = self.top_bar_height
-        self.shader.uniforms.top_left_cell \
+    def on_set_up_main_frame_shader_uniforms(self, shader):
+        shader.uniforms.screen_resolution = self.screen_resolution
+        shader.uniforms.base_offset = ((-1) * self.controller.game.map.view.base_offset[0],
+                                       (-1) * self.controller.game.map.view.base_offset[1])
+        shader.uniforms.bottom_bar_height = self.bottom_bar_height
+        shader.uniforms.top_bar_height = self.top_bar_height
+        shader.uniforms.top_left_cell \
             = (self.controller.game.map.constructor.view.track_cells_positions[0][0],
                self.controller.game.map.constructor.view.track_cells_positions[0][1] + self.bottom_bar_height - 1)
-        self.shader.uniforms.top_right_cell \
+        shader.uniforms.top_right_cell \
             = (self.controller.game.map.constructor.view.environment_cell_positions[0][0],
                self.controller.game.map.constructor.view.environment_cell_positions[0][1] + self.bottom_bar_height - 1)
-        self.shader.uniforms.game_frame_opacity = self.controller.game.view.game_frame_opacity
-        self.shader.uniforms.schedule_opacity = self.controller.game.map.scheduler.view.schedule_opacity
-        self.shader.uniforms.constructor_opacity = self.controller.game.map.constructor.view.constructor_opacity
-        self.shader.uniforms.settings_is_activated = int(self.controller.settings.view.is_activated)
-        self.shader.uniforms.zoom_buttons_activated \
+        shader.uniforms.game_frame_opacity = self.controller.game.view.game_frame_opacity
+        shader.uniforms.schedule_opacity = self.controller.game.map.scheduler.view.schedule_opacity
+        shader.uniforms.constructor_opacity = self.controller.game.map.constructor.view.constructor_opacity
+        shader.uniforms.settings_is_activated = int(self.controller.settings.view.is_activated)
+        shader.uniforms.zoom_buttons_activated \
             = int(self.controller.game.map.view.zoom_in_button.is_activated
                   or self.controller.game.map.view.zoom_out_button.is_activated)
-        self.shader.uniforms.track_build_button_is_activated \
+        shader.uniforms.track_build_button_is_activated \
             = int(len(self.controller.game.map.constructor.view.buy_buttons) > 0)
-        self.shader.uniforms.mini_map_opacity = self.controller.game.map.view.mini_map_opacity
-        self.shader.uniforms.zoom_out_activated = int(self.controller.game.map.view.zoom_out_activated)
-        self.shader.uniforms.mini_map_position = self.controller.game.map.view.mini_map_position
-        self.shader.uniforms.mini_map_width = self.controller.game.map.view.mini_map_width
-        self.shader.uniforms.mini_map_height = self.controller.game.map.view.mini_map_height
-        self.main_frame_sprite.draw(GL_QUADS)
-        self.shader.clear()
+        shader.uniforms.mini_map_opacity = self.controller.game.map.view.mini_map_opacity
+        shader.uniforms.zoom_out_activated = int(self.controller.game.map.view.zoom_out_activated)
+        shader.uniforms.mini_map_position = self.controller.game.map.view.mini_map_position
+        shader.uniforms.mini_map_width = self.controller.game.map.view.mini_map_width
+        shader.uniforms.mini_map_height = self.controller.game.map.view.mini_map_height

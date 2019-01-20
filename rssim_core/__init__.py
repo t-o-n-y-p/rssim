@@ -65,7 +65,7 @@ LOG_LEVEL_DEBUG = 10                # integer log level which includes all possi
 #       settings                Settings object
 #       fps                     FPS object
 # Returns App object controller.
-# Input values:
+# Input properties:
 #       user_db_connection      connection to the user DB (stores game state and user-defined settings)
 #       user_db_cursor          user DB cursor (is used to execute user DB queries)
 #       config_db_cursor        configuration DB cursor (is used to execute configuration DB queries)
@@ -97,7 +97,7 @@ def create_app(user_db_connection, user_db_cursor, config_db_cursor, surface, ba
 # Child objects:
 #       map                     Map object
 # Returns Game object controller.
-# Input values:
+# Input properties:
 #       user_db_connection      connection to the user DB (stores game state and user-defined settings)
 #       user_db_cursor          user DB cursor (is used to execute user DB queries)
 #       config_db_cursor        configuration DB cursor (is used to execute configuration DB queries)
@@ -133,7 +133,7 @@ def _create_game(user_db_connection, user_db_cursor, config_db_cursor, surface, 
 #       switches{}              RailroadSwitch objects
 #       crossovers{}            Crossover objects
 # Returns Map object controller.
-# Input values:
+# Input properties:
 #       user_db_connection      connection to the user DB (stores game state and user-defined settings)
 #       user_db_cursor          user DB cursor (is used to execute user DB queries)
 #       config_db_cursor        configuration DB cursor (is used to execute configuration DB queries)
@@ -171,7 +171,7 @@ def _create_map(user_db_connection, user_db_cursor, config_db_cursor, surface, b
             = _create_signal(user_db_connection, user_db_cursor, config_db_cursor, surface,
                              batches, groups, controller, i[0], i[1])
         controller.signals_list.append(controller.signals[i[0]][i[1]])
-
+    # read train route tracks and types from database, create train routes and append them to both dictionary and list
     config_db_cursor.execute('''SELECT DISTINCT track FROM train_route_config''')
     train_route_index = config_db_cursor.fetchall()
     for i in train_route_index:
@@ -184,7 +184,7 @@ def _create_map(user_db_connection, user_db_cursor, config_db_cursor, surface, b
             = _create_train_route(user_db_connection, user_db_cursor, config_db_cursor, surface,
                                   batches, groups, controller, i[0], i[1])
         controller.train_routes_sorted_list.append(controller.train_routes[i[0]][i[1]])
-
+    # read switches tracks from database, create switches and append them to both dictionary and list
     user_db_cursor.execute('''SELECT DISTINCT track_param_1 FROM switches''')
     switch_track_param_1 = user_db_cursor.fetchall()
     for i in switch_track_param_1:
@@ -202,7 +202,7 @@ def _create_map(user_db_connection, user_db_cursor, config_db_cursor, surface, b
             = _create_railroad_switch(user_db_connection, user_db_cursor, config_db_cursor, surface,
                                       batches, groups, controller, i[0], i[1], i[2])
         controller.switches_list.append(controller.switches[i[0]][i[1]][i[2]])
-
+    # read crossovers tracks from database, create crossovers and append them to both dictionary and list
     user_db_cursor.execute('''SELECT DISTINCT track_param_1 FROM crossovers''')
     crossovers_track_param_1 = user_db_cursor.fetchall()
     for i in crossovers_track_param_1:
@@ -235,7 +235,7 @@ def _create_map(user_db_connection, user_db_cursor, config_db_cursor, surface, b
 # Creates controller, model and view for Settings object.
 # It is responsible for user-defined settings.
 # Returns Settings object controller.
-# Input values:
+# Input properties:
 #       user_db_connection      connection to the user DB (stores game state and user-defined settings)
 #       user_db_cursor          user DB cursor (is used to execute user DB queries)
 #       config_db_cursor        configuration DB cursor (is used to execute configuration DB queries)
@@ -260,7 +260,7 @@ def _create_settings(user_db_connection, user_db_cursor, config_db_cursor, surfa
 # Creates controller, model and view for FPS object.
 # It is responsible for real-time FPS calculation.
 # Returns FPS object controller.
-# Input values:
+# Input properties:
 #       user_db_connection      connection to the user DB (stores game state and user-defined settings)
 #       user_db_cursor          user DB cursor (is used to execute user DB queries)
 #       config_db_cursor        configuration DB cursor (is used to execute configuration DB queries)
@@ -285,7 +285,7 @@ def _create_fps(user_db_connection, user_db_cursor, config_db_cursor, surface, b
 # Creates controller, model and view for Scheduler object.
 # It is responsible for properties, UI and events related to the train schedule.
 # Returns Scheduler object controller.
-# Input values:
+# Input properties:
 #       user_db_connection      connection to the user DB (stores game state and user-defined settings)
 #       user_db_cursor          user DB cursor (is used to execute user DB queries)
 #       config_db_cursor        configuration DB cursor (is used to execute configuration DB queries)
@@ -309,7 +309,7 @@ def _create_scheduler(user_db_connection, user_db_cursor, config_db_cursor, surf
 # Creates controller, model and view for Signal object.
 # It is responsible for properties, UI and events related to the signal state.
 # Returns Signal object controller.
-# Input values:
+# Input properties:
 #       user_db_connection      connection to the user DB (stores game state and user-defined settings)
 #       user_db_cursor          user DB cursor (is used to execute user DB queries)
 #       config_db_cursor        configuration DB cursor (is used to execute configuration DB queries)
@@ -339,7 +339,7 @@ def _create_signal(user_db_connection, user_db_cursor, config_db_cursor, surface
 # Creates controller, model and view for TrainRoute object.
 # It is responsible for properties, UI and events related to the train route.
 # Returns TrainRoute object controller.
-# Input values:
+# Input properties:
 #       user_db_connection      connection to the user DB (stores game state and user-defined settings)
 #       user_db_cursor          user DB cursor (is used to execute user DB queries)
 #       config_db_cursor        configuration DB cursor (is used to execute configuration DB queries)
@@ -372,7 +372,7 @@ def _create_train_route(user_db_connection, user_db_cursor, config_db_cursor, su
 # Creates controller, model and view for RailroadSwitch object.
 # It is responsible for properties, UI and events related to the railroad switch.
 # Returns RailroadSwitch object controller.
-# Input values:
+# Input properties:
 #       user_db_connection      connection to the user DB (stores game state and user-defined settings)
 #       user_db_cursor          user DB cursor (is used to execute user DB queries)
 #       config_db_cursor        configuration DB cursor (is used to execute configuration DB queries)
@@ -405,7 +405,7 @@ def _create_railroad_switch(user_db_connection, user_db_cursor, config_db_cursor
 # Creates controller, model and view for Crossover object.
 # It is responsible for properties, UI and events related to the crossover.
 # Returns Crossover object controller.
-# Input values:
+# Input properties:
 #       user_db_connection      connection to the user DB (stores game state and user-defined settings)
 #       user_db_cursor          user DB cursor (is used to execute user DB queries)
 #       config_db_cursor        configuration DB cursor (is used to execute configuration DB queries)
@@ -438,7 +438,7 @@ def _create_crossover(user_db_connection, user_db_cursor, config_db_cursor, surf
 # Creates controller, model and view for Train object.
 # It is responsible for properties, UI and events related to the train.
 # Returns Train object controller.
-# Input values:
+# Input properties:
 #       user_db_connection      connection to the user DB (stores game state and user-defined settings)
 #       user_db_cursor          user DB cursor (is used to execute user DB queries)
 #       config_db_cursor        configuration DB cursor (is used to execute configuration DB queries)
@@ -470,7 +470,7 @@ def _create_train(user_db_connection, user_db_cursor, config_db_cursor, surface,
 # Creates controller, model and view for Dispatcher object.
 # It is responsible for creating trains from schedule and assigning routes to approaching trains.
 # Returns Dispatcher object controller.
-# Input values:
+# Input properties:
 #       user_db_connection      connection to the user DB (stores game state and user-defined settings)
 #       user_db_cursor          user DB cursor (is used to execute user DB queries)
 #       config_db_cursor        configuration DB cursor (is used to execute configuration DB queries)
@@ -495,7 +495,7 @@ def _create_dispatcher(user_db_connection, user_db_cursor, config_db_cursor, sur
 # Creates controller, model and view for Constructor object.
 # It is responsible for building new tracks and station environment.
 # Returns Constructor object controller.
-# Input values:
+# Input properties:
 #       user_db_connection      connection to the user DB (stores game state and user-defined settings)
 #       user_db_cursor          user DB cursor (is used to execute user DB queries)
 #       config_db_cursor        configuration DB cursor (is used to execute configuration DB queries)

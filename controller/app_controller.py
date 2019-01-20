@@ -73,8 +73,8 @@ class AppController(Controller):
     def on_hide_fps(self):
         self.fps.on_deactivate()
 
-    def on_draw_main_frame(self):
-        self.view.on_draw_main_frame()
+    def on_set_up_main_frame_shader_uniforms(self, shader):
+        self.view.on_set_up_main_frame_shader_uniforms(shader)
 
     def on_save_log_level(self, log_level):
         self.loader.on_save_log_level(log_level)
