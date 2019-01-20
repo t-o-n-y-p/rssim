@@ -3,8 +3,9 @@ from pyglet.sprite import Sprite
 from pyglet.text import Label
 from pyglet.resource import add_font
 
-from .view_base import View
-from .button import PauseGameButton, ResumeGameButton
+from view import View
+from button.pause_game_button import PauseGameButton
+from button.resume_game_button import ResumeGameButton
 
 
 def _view_is_active(fn):

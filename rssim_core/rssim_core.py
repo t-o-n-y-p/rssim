@@ -33,7 +33,7 @@ class RSSim:
         resource.reindex()
         self.user_db_connection = connect('db/user.db')
         self.user_db_cursor = self.user_db_connection.cursor()
-        self.check_for_updates()
+        self.on_check_for_updates()
         self.config_db_connection = connect('db/config.db')
         self.config_db_cursor = self.config_db_connection.cursor()
         self.user_db_cursor.execute('SELECT log_level FROM log_options')
@@ -200,11 +200,11 @@ class RSSim:
             time_4 = perf_counter()
             if perf_counter() - fps_timer > FPS_INTERVAL:
                 self.app.on_update_fps(round(float(1/(time_4 - time_1))))
-                self.logger.debug(f'FPS: {self.app.fps.model.fps}')
+                self.logger.info(f'FPS: {self.app.fps.model.fps}')
                 fps_timer = perf_counter()
                 self.logger.debug(f'FPS timer: {fps_timer}')
 
-    def check_for_updates(self):
+    def on_check_for_updates(self):
         if not path.exists('logs'):
             mkdir('logs')
 
@@ -247,7 +247,7 @@ class RSSim:
 
         logger.info('END RSSIM.CHECK_FOR_UPDATES')
 
-    def on_save_and_commit_log_level(self, log_level):
+    def on_save_log_level(self, log_level):
         self.logger.info('START RSSIM.ON_SAVE_AND_COMMIT_LOG_LEVEL')
         if self.log_level >= LOG_LEVEL_OFF > log_level and not self.logger.hasHandlers():
             if not path.exists('logs'):
@@ -263,7 +263,8 @@ class RSSim:
             self.logger.debug('created log file')
 
         self.logger.setLevel(log_level)
-
+        self.logger.debug(f'log level set up to {log_level} (was {self.log_level})')
         self.log_level = log_level
         self.user_db_cursor.execute('UPDATE log_options SET log_level = ?', (log_level, ))
+        self.logger.debug(f'log level {self.log_level} saved')
         self.logger.info('END RSSIM.ON_SAVE_AND_COMMIT_LOG_LEVEL')

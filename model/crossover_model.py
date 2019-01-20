@@ -1,4 +1,4 @@
-from .model_base import Model
+from model import Model
 
 
 def _model_is_active(fn):

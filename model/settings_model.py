@@ -1,6 +1,6 @@
 from ctypes import windll
 
-from .model_base import Model
+from model import Model
 
 
 def _model_is_active(fn):
@@ -66,8 +66,8 @@ class SettingsModel(Model):
         self.view.on_change_screen_resolution(self.screen_resolution)
 
     def on_save_and_commit_state(self):
-        self.log_level = self.view.on_change_temp_log_level
-        self.controller.parent_controller.on_save_and_commit_log_level(self.log_level)
+        self.log_level = self.view.temp_log_level
+        self.controller.parent_controller.on_save_log_level(self.log_level)
         self.windowed_resolution = self.view.temp_windowed_resolution
         if not self.view.surface.fullscreen:
             self.controller.parent_controller.on_change_screen_resolution(self.windowed_resolution, False)

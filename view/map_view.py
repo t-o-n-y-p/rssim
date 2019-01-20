@@ -4,8 +4,11 @@ from pyglet.sprite import Sprite
 from pyglet.window import mouse
 from pyglet import resource
 
-from .view_base import View
-from .button import ZoomInButton, ZoomOutButton, OpenScheduleButton, OpenConstructorButton
+from view import View
+from button.zoom_in_button import ZoomInButton
+from button.zoom_out_button import ZoomOutButton
+from button.open_schedule_button import OpenScheduleButton
+from button.open_constructor_button import OpenConstructorButton
 
 
 def _map_move_mode_available(fn):

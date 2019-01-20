@@ -1,6 +1,6 @@
 from ctypes import windll
 
-from .model_base import Model
+from model import Model
 
 
 def _fullscreen_mode_available(fn):

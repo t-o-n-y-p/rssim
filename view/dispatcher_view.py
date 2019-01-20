@@ -1,4 +1,4 @@
-from .view_base import View
+from view import View
 
 
 def _view_is_active(fn):

@@ -1,8 +1,10 @@
 from pyglet.text import Label
 
-from .view_base import View
-from .button import AcceptSettingsButton, RejectSettingsButton, IncrementWindowedResolutionButton, \
-                    DecrementWindowedResolutionButton
+from view import View
+from button.accept_settings_button import AcceptSettingsButton
+from button.reject_settings_button import RejectSettingsButton
+from button.increment_windowed_resolution_button import IncrementWindowedResolutionButton
+from button.decrement_windowed_resolution_button import DecrementWindowedResolutionButton
 
 
 def _view_is_active(fn):

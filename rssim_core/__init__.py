@@ -1,10 +1,42 @@
-from ctrl import AppController, GameController, MapController, SettingsController, FPSController, SchedulerController, \
-                 SignalController, TrainRouteController, RailroadSwitchController, CrossoverController, \
-                 TrainController, DispatcherController, ConstructorController
-from model import AppModel, GameModel, MapModel, SettingsModel, FPSModel, SchedulerModel, SignalModel, TrainRouteModel,\
-                  RailroadSwitchModel, CrossoverModel, TrainModel, DispatcherModel, ConstructorModel
-from view import AppView, GameView, MapView, SettingsView, FPSView, SchedulerView, SignalView, TrainRouteView, \
-                 RailroadSwitchView, CrossoverView, TrainView, DispatcherView, ConstructorView
+from controller.app_controller import AppController
+from controller.game_controller import GameController
+from controller.map_controller import MapController
+from controller.settings_controller import SettingsController
+from controller.fps_controller import FPSController
+from controller.scheduler_controller import SchedulerController
+from controller.signal_controller import SignalController
+from controller.train_route_controller import TrainRouteController
+from controller.railroad_switch_controller import RailroadSwitchController
+from controller.crossover_controller import CrossoverController
+from controller.train_controller import TrainController
+from controller.dispatcher_controller import DispatcherController
+from controller.constructor_controller import ConstructorController
+from model.app_model import AppModel
+from model.game_model import GameModel
+from model.map_model import MapModel
+from model.settings_model import SettingsModel
+from model.fps_model import FPSModel
+from model.scheduler_model import SchedulerModel
+from model.signal_model import SignalModel
+from model.train_route_model import TrainRouteModel
+from model.railroad_switch_model import RailroadSwitchModel
+from model.crossover_model import CrossoverModel
+from model.train_model import TrainModel
+from model.dispatcher_model import DispatcherModel
+from model.constructor_model import ConstructorModel
+from view.app_view import AppView
+from view.game_view import GameView
+from view.map_view import MapView
+from view.settings_view import SettingsView
+from view.fps_view import FPSView
+from view.scheduler_view import SchedulerView
+from view.signal_view import SignalView
+from view.train_route_view import TrainRouteView
+from view.railroad_switch_view import RailroadSwitchView
+from view.crossover_view import CrossoverView
+from view.train_view import TrainView
+from view.dispatcher_view import DispatcherView
+from view.constructor_view import ConstructorView
 from car_skins import *
 
 

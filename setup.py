@@ -33,7 +33,7 @@ includes = ['pyglet',
             'pyglet.sprite',
             'pyglet.text', 'pyglet.text.formats',
             'pyglet.window', 'pyglet.window.carbon', 'pyglet.window.cocoa', 'pyglet.window.win32', 'pyglet.window.xlib',
-            'ctrl', 'model', 'view', 'car_skins', 'rssim_core', 'exceptions']
+            'controller', 'model', 'view', 'car_skins', 'rssim_core', 'exceptions', 'button']
 
 options = {
     'build_exe': {

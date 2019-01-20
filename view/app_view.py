@@ -6,8 +6,12 @@ from win32api import GetCursorPos
 from win32gui import GetActiveWindow, GetWindowRect, SetWindowPos
 from win32con import HWND_TOP, SWP_NOREDRAW
 
-from .view_base import View
-from .button import CloseGameButton, IconifyGameButton, FullscreenButton, RestoreButton, OpenSettingsButton
+from view import View
+from button.close_game_button import CloseGameButton
+from button.iconify_game_button import IconifyGameButton
+from button.fullscreen_button import FullscreenButton
+from button.restore_button import RestoreButton
+from button.open_settings_button import OpenSettingsButton
 
 
 def _game_window_is_active(fn):

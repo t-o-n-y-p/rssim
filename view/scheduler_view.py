@@ -1,7 +1,7 @@
 from pyglet.text import Label
 
-from .view_base import View
-from .button import CloseScheduleButton
+from view import View
+from button.close_schedule_button import CloseScheduleButton
 
 
 def _view_is_active(fn):

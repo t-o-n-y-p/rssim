@@ -1,7 +1,8 @@
 from pyglet.text import Label
 
-from .view_base import View
-from .button import CloseConstructorButton, BuyTrackButton
+from view import View
+from button.close_constructor_button import CloseConstructorButton
+from button.buy_track_button import BuyTrackButton
 
 
 def _view_is_active(fn):

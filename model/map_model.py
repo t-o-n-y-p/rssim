@@ -1,9 +1,9 @@
 from random import choice, seed
 
-from .model_base import Model
-from ctrl import TrainController
-from .train_model import TrainModel
-from view import TrainView
+from model import Model
+from controller.train_controller import TrainController
+from model.train_model import TrainModel
+from view.train_view import TrainView
 from car_skins import CAR_HEAD_IMAGE, CAR_MID_IMAGE, CAR_TAIL_IMAGE, BOARDING_LIGHT_IMAGE, CAR_COLLECTIONS
 
 
