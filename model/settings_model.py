@@ -6,9 +6,9 @@ from model import *
 class SettingsModel(Model):
     def __init__(self, user_db_connection, user_db_cursor, config_db_cursor):
         super().__init__(user_db_connection, user_db_cursor, config_db_cursor)
-        self.user_db_cursor.execute('SELECT app_width, app_height FROM graphics_config')
+        self.user_db_cursor.execute('SELECT app_width, app_height FROM graphics')
         self.windowed_resolution = self.user_db_cursor.fetchone()
-        self.user_db_cursor.execute('SELECT fullscreen FROM graphics_config')
+        self.user_db_cursor.execute('SELECT fullscreen FROM graphics')
         self.fullscreen_mode = bool(self.user_db_cursor.fetchone()[0])
         self.config_db_cursor.execute('SELECT app_width, app_height FROM screen_resolution_config')
         self.screen_resolution_config = self.config_db_cursor.fetchall()
