@@ -76,3 +76,6 @@ class MapModel(Model):
                             self.view.batches, self.view.groups, self.controller, train_id, cars, track, train_route,
                             status, direction, new_direction, current_direction, priority, boarding_time, exp, money,
                             self.unlocked_car_collections)
+
+    def on_add_car_collection(self, car_collection_id):
+        self.unlocked_car_collections.append(car_collection_id)

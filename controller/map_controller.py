@@ -355,3 +355,6 @@ class MapController(Controller):
 
     def on_pay_money(self, money):
         self.constructor.on_pay_money(money)
+
+    def on_add_car_collection(self, car_collection_id):
+        self.model.on_add_car_collection(car_collection_id)
