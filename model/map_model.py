@@ -4,7 +4,7 @@ from model import *
 from controller.train_controller import TrainController
 from model.train_model import TrainModel
 from view.train_view import TrainView
-from car_skins import CAR_HEAD_IMAGE, CAR_MID_IMAGE, CAR_TAIL_IMAGE, BOARDING_LIGHT_IMAGE
+from car_skins import *
 
 
 def create_train(user_db_connection, user_db_cursor, config_db_cursor, surface, batches, groups, map_controller,
@@ -59,7 +59,13 @@ class MapModel(Model):
         self.view.on_unlock_track(track_number)
 
     def on_save_state(self):
-        self.user_db_cursor.execute('UPDATE game_progress SET unlocked_tracks = ?', (self.unlocked_tracks, ))
+        car_collections_string = ''
+        for i in range(len(self.unlocked_car_collections)):
+            car_collections_string += '{},'.format(self.unlocked_car_collections[i])
+
+        car_collections_string = car_collections_string[0:len(car_collections_string) - 1]
+        self.user_db_cursor.execute('UPDATE game_progress SET unlocked_tracks = ?, unlocked_car_collections = ?',
+                                    (self.unlocked_tracks, car_collections_string))
 
     def on_clear_trains_info(self):
         self.user_db_cursor.execute('DELETE FROM trains')

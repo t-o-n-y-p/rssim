@@ -6,8 +6,6 @@ class ZoomOutButton(Button):
         super().__init__(surface, batch, groups)
         self.transparent = False
         self.to_activate_on_controller_init = False
-        self.vertex_list = None
-        self.text_object = None
         self.text = '> <'
         self.font_name = 'Perfo'
         self.is_bold = True
