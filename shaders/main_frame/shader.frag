@@ -25,6 +25,10 @@
         ivec2 mini_map_position - position of the bottom left corner for the mini-map
         int mini_map_width - mini-map width; is provided already calculated for performance reasons
         int mini_map_height - minipmap height; is provided already calculated for performance reasons
+        int is_decrement_resolution_button_activated - flag to determine if decrement resolution button
+            on settings screen is activated
+        int is_increment_resolution_button_activated - flag to determine if increment resolution button
+            on settings screen is activated
 */
 #version 330 core
 layout(pixel_center_integer) in vec4 gl_FragCoord;
@@ -46,6 +50,8 @@ uniform int zoom_out_activated = 0;
 uniform ivec2 mini_map_position = ivec2(0, 0);
 uniform int mini_map_width = 0;
 uniform int mini_map_height = 0;
+uniform int is_decrement_resolution_button_activated = 0;
+uniform int is_increment_resolution_button_activated = 0;
 /*
     is_general_border() function
     Returns "true" if pixel belongs to red app window border and "false" if it does not.
@@ -231,23 +237,34 @@ bool is_settings_view_button_border()
     int settings_decrement_x_margin = int(gl_FragCoord[0]) - decrement_resolution_button_position[0];
     int settings_resolution_y_margin = int(gl_FragCoord[1]) - decrement_resolution_button_position[1];
     int settings_increment_x_margin = int(gl_FragCoord[0]) - increment_resolution_button_position[0];
-    return ((settings_decrement_x_margin == 0 || settings_decrement_x_margin == 1        // 2 pixels for left border
-             || settings_decrement_x_margin == top_bar_height - 2                        // 2 pixels for right border
-             || settings_decrement_x_margin == top_bar_height - 1
-             || settings_increment_x_margin == 0 || settings_increment_x_margin == 1     // 2 pixels for left border
-             || settings_increment_x_margin == top_bar_height - 2                        // 2 pixels for right border
-             || settings_increment_x_margin == top_bar_height - 1
-            ) && settings_resolution_y_margin >= 0                                 // between top and bottom borders
-              && settings_resolution_y_margin <= top_bar_height - 1
-           ) || ((settings_resolution_y_margin == 0 || settings_resolution_y_margin == 1 // 2 pixels for bottom border
-                  || settings_resolution_y_margin == top_bar_height - 2                  // 2 pixels for top border
-                  || settings_resolution_y_margin == top_bar_height - 1
-                 ) && ((settings_decrement_x_margin >= 0       // between top and bottom borders for decrement button
-                        && settings_decrement_x_margin <= top_bar_height - 1
-                       ) || (settings_increment_x_margin >= 0  // between top and bottom borders for increment button
-                             && settings_increment_x_margin <= top_bar_height - 1
-                            )
-                      )
+    return ((((settings_decrement_x_margin == 0 || settings_decrement_x_margin == 1        // 2 pixels for left border
+               || settings_decrement_x_margin == top_bar_height - 2                        // 2 pixels for right border
+               || settings_decrement_x_margin == top_bar_height - 1
+              ) && settings_resolution_y_margin >= 0                                 // between top and bottom borders
+                && settings_resolution_y_margin <= top_bar_height - 1
+             ) || ((settings_resolution_y_margin == 0 || settings_resolution_y_margin == 1 // 2 pixels for bottom border
+                    || settings_resolution_y_margin == top_bar_height - 2                  // 2 pixels for top border
+                    || settings_resolution_y_margin == top_bar_height - 1
+                   ) && ((settings_decrement_x_margin >= 0       // between top and bottom borders for decrement button
+                          && settings_decrement_x_margin <= top_bar_height - 1
+                         )
+                        )
+                  )
+            ) && is_decrement_resolution_button_activated == 1
+           ) || ((((settings_increment_x_margin == 0 || settings_increment_x_margin == 1   // 2 pixels for left border
+                    || settings_increment_x_margin == top_bar_height - 2                   // 2 pixels for right border
+                    || settings_increment_x_margin == top_bar_height - 1
+                   ) && settings_resolution_y_margin >= 0                            // between top and bottom borders
+                     && settings_resolution_y_margin <= top_bar_height - 1
+                  ) || ((settings_resolution_y_margin == 0 || settings_resolution_y_margin == 1 // 2-pixel bottom border
+                         || settings_resolution_y_margin == top_bar_height - 2                  // 2-pixes top border
+                         || settings_resolution_y_margin == top_bar_height - 1
+                        ) && ((settings_increment_x_margin >= 0 // between top and bottom borders for increment button
+                               && settings_increment_x_margin <= top_bar_height - 1
+                              )
+                             )
+                       )
+                 ) && is_increment_resolution_button_activated == 1
                 );
 }
 /*

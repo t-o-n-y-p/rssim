@@ -186,3 +186,7 @@ class AppView(View):
         shader.uniforms.mini_map_position = self.controller.game.map.view.mini_map_position
         shader.uniforms.mini_map_width = self.controller.game.map.view.mini_map_width
         shader.uniforms.mini_map_height = self.controller.game.map.view.mini_map_height
+        shader.uniforms.is_decrement_resolution_button_activated \
+            = int(self.controller.settings.view.decrement_windowed_resolution_button.is_activated)
+        shader.uniforms.is_increment_resolution_button_activated \
+            = int(self.controller.settings.view.increment_windowed_resolution_button.is_activated)
