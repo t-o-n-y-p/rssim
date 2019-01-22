@@ -272,35 +272,50 @@ class RSSim:
 
             self.logger.info('END SURFACE.ON_MOUSE_LEAVE')
 
+    # run() function
+    # Implements main game loop.
     def run(self):
         self.logger.info('START GAME LOOP')
+        # fps_timer is used to determine if it's time to recalculate FPS
         fps_timer = 0.0
         self.logger.debug(f'FPS timer: {fps_timer}')
         while True:
             time_1 = perf_counter()
             self.logger.debug('START FRAME')
+            # dispatch_events() launches keyboard and mouse handlers implemented above
             self.surface.dispatch_events()
             self.logger.debug('all events dispatched')
+            # increment in-game time
             self.app.game.on_update_time()
             self.logger.debug('time updated')
+            # on_update_view() checks if all views content is up-to-date and opacity is correct
             self.app.on_update_view()
             self.logger.debug('all views updated')
+            # call on_draw() handler implemented above
             self.surface.dispatch_event('on_draw')
+            # flip the surface so user can see all the game content
             self.surface.flip()
             self.logger.debug('all stuff is drawn')
             self.logger.debug('END FRAME')
             time_4 = perf_counter()
+            # FPS is recalculated every FPS_INTERVAL seconds
             if perf_counter() - fps_timer > FPS_INTERVAL:
                 self.app.on_update_fps(round(float(1/(time_4 - time_1))))
                 self.logger.info(f'FPS: {self.app.fps.model.fps}')
                 fps_timer = perf_counter()
                 self.logger.debug(f'FPS timer: {fps_timer}')
 
+    # on_check_for_updates() function
+    # Checks user database version. If it is lower than current game version, it means user has just updated the app.
+    # All migration DB scripts need to be executed in chain, from earliest to latest, step by step.
+    # Results can be viewed in special ".update_log" file in logs directory.
     def on_check_for_updates(self):
+        # create logs directory if it does not exist
         if not path.exists('logs'):
             mkdir('logs')
 
         logger = getLogger('update_log')
+        # create .update_log file
         current_datetime = datetime.now()
         logs_handler = FileHandler('logs/logs_{0}_{1:0>2}-{2:0>2}-{3:0>2}-{4:0>6}.update_log'
                                    .format(str(current_datetime.date()), current_datetime.time().hour,
@@ -308,8 +323,11 @@ class RSSim:
                                            current_datetime.time().microsecond))
         logs_handler.setFormatter(Formatter('%(asctime)s - %(name)s - %(levelname)s - %(message)s'))
         logger.addHandler(logs_handler)
+        # for now log level is set to DEBUG, but can also be set to LOG_LEVEL_INFO
         logger.setLevel(LOG_LEVEL_DEBUG)
         logger.info('START RSSIM.CHECK_FOR_UPDATES')
+        # If version does not exist, DB version is 0.9.0.
+        # Just increment version here, no other DB changes.
         self.user_db_cursor.execute('SELECT * FROM sqlite_master WHERE type = "table" AND tbl_name = "version"')
         if len(self.user_db_cursor.fetchall()) == 0:
             logger.debug('version info not found')
@@ -319,6 +337,9 @@ class RSSim:
             logger.debug('version 0.9.1 set')
             self.user_db_connection.commit()
 
+        # If version exists, read it from user DB.
+        # If current game version is higher, use migration scripts one by one.
+        # Migration script file is named "<version>.sql"
         self.user_db_cursor.execute('SELECT * FROM version')
         user_db_version = self.user_db_cursor.fetchone()
         logger.debug(f'user DB version: {user_db_version}')
@@ -328,6 +349,7 @@ class RSSim:
             for patch in range(2, CURRENT_VERSION[2] + 1):
                 logger.debug(f'start 0.9.{patch} migration')
                 with open(f'db/patch/09{patch}.sql', 'r') as migration:
+                    # simply execute each line in the migration script
                     for line in migration.readlines():
                         self.user_db_cursor.execute(line)
                         logger.debug(f'executed request: {line}')
@@ -339,8 +361,13 @@ class RSSim:
 
         logger.info('END RSSIM.CHECK_FOR_UPDATES')
 
+    # on_save_log_level(log_level) function
+    # Log level was changed by user, so we need to apply it on the spot and save to the user database.
+    # Input properties:
+    #       log_level               new log level
     def on_save_log_level(self, log_level):
         self.logger.info('START RSSIM.ON_SAVE_AND_COMMIT_LOG_LEVEL')
+        # In case logs were just enabled by the user and log file does not exist, create the log file
         if self.log_level >= LOG_LEVEL_OFF > log_level and not self.logger.hasHandlers():
             if not path.exists('logs'):
                 mkdir('logs')
@@ -354,6 +381,7 @@ class RSSim:
             self.logger.addHandler(logs_handler)
             self.logger.debug('created log file')
 
+        # apply new log level to the main logger and save
         self.logger.setLevel(log_level)
         self.logger.debug(f'log level set up to {log_level} (was {self.log_level})')
         self.log_level = log_level

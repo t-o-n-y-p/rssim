@@ -52,6 +52,7 @@ MIN_RESOLUTION_WIDTH = 1280         # minimum screen resolution width supported 
 MIN_RESOLUTION_HEIGHT = 720         # minimum screen resolution height supported by the app UI
 FPS_INTERVAL = 0.2                  # interval between FPS update
 LOG_LEVEL_OFF = 30                  # integer log level high enough to cut off all logs
+LOG_LEVEL_INFO = 20                 # integer log level which includes basic logs
 LOG_LEVEL_DEBUG = 10                # integer log level which includes all possible logs
 # ------------------- END CONSTANTS -------------------
 
