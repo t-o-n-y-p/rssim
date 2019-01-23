@@ -33,26 +33,26 @@ class TrainModel(Model):
                                           644, 650, 657, 664, 671, 678, 685)
         self.train_maximum_speed = 7
         self.speed_factor_position_limit = len(self.train_acceleration_factor) - 1
-        self.cars = None
-        self.track = None
-        self.train_route = None
-        self.state = None
-        self.direction = None
-        self.new_direction = None
-        self.current_direction = None
-        self.speed = None
-        self.speed_state = None
-        self.speed_factor_position = None
-        self.priority = None
-        self.boarding_time = None
-        self.exp = None
-        self.money = None
+        self.cars = 0
+        self.track = 0
+        self.train_route = ''
+        self.state = ''
+        self.direction = 0
+        self.new_direction = 0
+        self.current_direction = 0
+        self.speed = 0
+        self.speed_state = ''
+        self.speed_factor_position = 0
+        self.priority = 0
+        self.boarding_time = 0
+        self.exp = 0.0
+        self.money = 0.0
         self.cars_position = []
         self.cars_position_abs = []
-        self.stop_point = None
-        self.destination_point = None
-        self.trail_points_v2 = None
-        self.car_image_collection = None
+        self.stop_point = 0
+        self.destination_point = 0
+        self.trail_points_v2 = []
+        self.car_image_collection = 0
 
     def on_train_setup(self, train_id):
         self.user_db_cursor.execute('''SELECT * FROM trains WHERE train_id = ?''', (train_id, ))

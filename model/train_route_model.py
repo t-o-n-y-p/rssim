@@ -8,21 +8,21 @@ class TrainRouteModel(Model):
         self.direction_from_right_to_left = 1
         self.direction_from_left_to_right_side = 2
         self.direction_from_right_to_left_side = 3
-        self.opened = None
-        self.last_opened_by = None
-        self.current_checkpoint = None
-        self.start_point_v2 = None
-        self.stop_point_v2 = None
-        self.destination_point_v2 = None
-        self.checkpoints_v2 = None
-        self.trail_points_v2 = None
-        self.signal_track = None
-        self.signal_base_route = None
-        self.train_route_sections = None
-        self.train_route_section_positions = None
-        self.train_route_section_busy_state = None
-        self.priority = None
-        self.cars = None
+        self.opened = False
+        self.last_opened_by = 0
+        self.current_checkpoint = 0
+        self.start_point_v2 = []
+        self.stop_point_v2 = []
+        self.destination_point_v2 = []
+        self.checkpoints_v2 = []
+        self.trail_points_v2 = []
+        self.signal_track = 0
+        self.signal_base_route = ''
+        self.train_route_sections = []
+        self.train_route_section_positions = []
+        self.train_route_section_busy_state = []
+        self.priority = 0
+        self.cars = 0
 
     def on_train_route_setup(self, track, train_route):
         self.user_db_cursor.execute('''SELECT opened, last_opened_by, current_checkpoint, priority, cars 
