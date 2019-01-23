@@ -166,7 +166,7 @@ class TrainModel(Model):
 
         self.controller.parent_controller.on_update_train_route_priority(self.track, self.train_route, self.priority)
 
-        if self.state != 'boarding_in_progress':
+        if self.state not in ('boarding_in_progress', 'boarding_in_progress_pass_through'):
             if self.cars_position[0] == self.stop_point:
                 self.speed_state = 'stop'
                 self.speed = 0
@@ -182,7 +182,11 @@ class TrainModel(Model):
                     self.controller.parent_controller.on_close_train_route(self.track, self.train_route)
 
                 if self.state == 'pending_boarding':
-                    self.state = 'boarding_in_progress'
+                    if self.track in (1, 2):
+                        self.state = 'boarding_in_progress_pass_through'
+                    else:
+                        self.state = 'boarding_in_progress'
+
                     self.view.on_update_state(self.state)
                     self.on_convert_trail_points()
                     self.trail_points_v2 = None
