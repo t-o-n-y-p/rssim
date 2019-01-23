@@ -127,7 +127,9 @@ class TrainModel(Model):
 
     def on_save_state(self):
         cars_position_string = ''
-        if len(self.cars_position) == 0:
+        if self.cars_position is None:
+            cars_position_string = None
+        elif len(self.cars_position) == 0:
             cars_position_string = None
         else:
             for i in self.cars_position:
@@ -136,7 +138,9 @@ class TrainModel(Model):
             cars_position_string = cars_position_string[0:len(cars_position_string) - 1]
 
         cars_position_abs_string = ''
-        if len(self.cars_position_abs) == 0:
+        if self.cars_position_abs is None:
+            cars_position_abs_string = None
+        elif len(self.cars_position_abs) == 0:
             cars_position_abs_string = None
         else:
             for i in self.cars_position_abs:

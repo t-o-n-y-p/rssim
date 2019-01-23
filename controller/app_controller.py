@@ -48,6 +48,7 @@ class AppController(Controller):
 
     def on_close_game(self):
         self.on_deactivate()
+        self.game.on_save_and_commit_state()
         exit()
 
     def on_activate_main_menu_view(self):
