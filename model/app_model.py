@@ -41,5 +41,5 @@ class AppModel(Model):
         self.view.on_change_screen_resolution(screen_resolution, fullscreen=fullscreen_mode)
 
     def on_save_and_commit_state(self, fullscreen_mode):
-        self.user_db_cursor.execute('UPDATE graphics_config SET fullscreen = ?', (fullscreen_mode, ))
+        self.user_db_cursor.execute('UPDATE graphics SET fullscreen = ?', (fullscreen_mode, ))
         self.user_db_connection.commit()

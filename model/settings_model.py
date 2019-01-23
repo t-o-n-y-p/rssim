@@ -56,6 +56,6 @@ class SettingsModel(Model):
         if not self.view.surface.fullscreen:
             self.controller.parent_controller.on_change_screen_resolution(self.windowed_resolution, False)
 
-        self.user_db_cursor.execute('UPDATE graphics_config SET app_width = ?, app_height = ?',
+        self.user_db_cursor.execute('UPDATE graphics SET app_width = ?, app_height = ?',
                                     self.windowed_resolution)
         self.user_db_connection.commit()
