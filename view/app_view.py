@@ -139,8 +139,8 @@ class AppView(View):
     @left_mouse_button
     @view_is_active
     def handle_mouse_press(self, x, y, button, modifiers):
-        y = self.surface.height - y
-        if x in range(0, self.surface.width - 100) and y in range(0, 33):
+        y = self.screen_resolution[1] - y
+        if x in range(self.screen_resolution[0] - self.top_bar_height * 3) and y in range(self.top_bar_height):
             self.app_window_move_mode = True
             self.app_window_move_offset = (x, y)
 

@@ -77,7 +77,7 @@ def map_move_mode_enabled(fn):
 def cursor_is_on_the_map(fn):
     def _enable_map_move_mode_if_cursor_is_on_the_map(*args, **kwargs):
         if args[1] in range(0, args[0].screen_resolution[0]) \
-                and args[2] in range(80, args[0].screen_resolution[1] - 35):
+                and args[2] in range(args[0].bottom_bar_height, args[0].screen_resolution[1] - args[0].top_bar_height):
             fn(*args, **kwargs)
 
     return _enable_map_move_mode_if_cursor_is_on_the_map
