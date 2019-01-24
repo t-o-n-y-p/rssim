@@ -66,7 +66,8 @@ class TrainModel(Model):
             for i in range(len(cars_position_parsed)):
                 cars_position_parsed[i] = int(cars_position_parsed[i])
 
-        self.cars_position = cars_position_parsed
+            self.cars_position = cars_position_parsed
+
         if cars_position_abs_parsed is not None:
             cars_position_abs_parsed = cars_position_abs_parsed.split('|')
             for i in range(len(cars_position_abs_parsed)):
@@ -74,7 +75,7 @@ class TrainModel(Model):
                 cars_position_abs_parsed[i][0] = int(cars_position_abs_parsed[i][0])
                 cars_position_abs_parsed[i][1] = int(cars_position_abs_parsed[i][1])
 
-        self.cars_position_abs = cars_position_abs_parsed
+            self.cars_position_abs = cars_position_abs_parsed
 
     def on_train_init(self, cars, track, train_route, state, direction, new_direction, current_direction,
                       priority, boarding_time, exp, money, car_image_collection):
@@ -108,7 +109,7 @@ class TrainModel(Model):
 
     def on_activate_view(self):
         car_position_view = []
-        if self.cars_position is not None:
+        if len(self.cars_position) > 0:
             for i in self.cars_position:
                 car_position_view.append(self.trail_points_v2[i])
         else:
@@ -127,9 +128,7 @@ class TrainModel(Model):
 
     def on_save_state(self):
         cars_position_string = ''
-        if self.cars_position is None:
-            cars_position_string = None
-        elif len(self.cars_position) == 0:
+        if len(self.cars_position) == 0:
             cars_position_string = None
         else:
             for i in self.cars_position:
@@ -138,9 +137,7 @@ class TrainModel(Model):
             cars_position_string = cars_position_string[0:len(cars_position_string) - 1]
 
         cars_position_abs_string = ''
-        if self.cars_position_abs is None:
-            cars_position_abs_string = None
-        elif len(self.cars_position_abs) == 0:
+        if len(self.cars_position_abs) == 0:
             cars_position_abs_string = None
         else:
             for i in self.cars_position_abs:
