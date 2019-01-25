@@ -103,24 +103,30 @@ class MapView(View):
                     self.environment_sprite.delete()
                     self.environment_sprite = None
 
-        if self.is_mini_map_activated and self.mini_map_sprite.opacity < 255:
-            self.mini_map_sprite.opacity += 15
-            self.mini_environment_sprite.opacity += 15
-            self.mini_map_opacity += 15
+        if self.is_mini_map_activated:
+            if self.mini_map_sprite.opacity < 255:
+                self.mini_map_sprite.opacity += 15
+                self.mini_environment_sprite.opacity += 15
 
-        if not self.is_mini_map_activated and self.mini_map_sprite is not None:
-            if self.mini_map_sprite.opacity > 0:
+            if self.mini_map_opacity < 255:
+                self.mini_map_opacity += 15
+
+        if not self.is_mini_map_activated:
+            if self.mini_map_opacity > 0:
                 self.mini_map_opacity -= 15
-                self.mini_map_sprite.opacity -= 15
-                if self.mini_map_sprite.opacity <= 0:
-                    self.mini_map_sprite.delete()
-                    self.mini_map_sprite = None
 
-            if self.mini_environment_sprite.opacity > 0:
-                self.mini_environment_sprite.opacity -= 15
-                if self.mini_environment_sprite.opacity <= 0:
-                    self.mini_environment_sprite.delete()
-                    self.mini_environment_sprite = None
+            if self.mini_map_sprite is not None:
+                if self.mini_map_sprite.opacity > 0:
+                    self.mini_map_sprite.opacity -= 15
+                    if self.mini_map_sprite.opacity <= 0:
+                        self.mini_map_sprite.delete()
+                        self.mini_map_sprite = None
+
+                if self.mini_environment_sprite.opacity > 0:
+                    self.mini_environment_sprite.opacity -= 15
+                    if self.mini_environment_sprite.opacity <= 0:
+                        self.mini_environment_sprite.delete()
+                        self.mini_environment_sprite = None
 
         if self.is_mini_map_activated and not self.map_move_mode and perf_counter() - self.mini_map_timer > 1:
             self.is_mini_map_activated = False
