@@ -3,11 +3,6 @@ if you use python 3.7+ like I do!
 
 -------------------------------------------
 
-Don't forget to patch cx_Freeze library 
-if you use python 3.7+ like I do!
-
--------------------------------------------
-
 New features:
 - all user interface is now adaptive to screen resolution
 - added mini-map: you can see where you are while dragging map
