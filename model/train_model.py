@@ -155,15 +155,15 @@ class TrainModel(Model):
 
     def on_update_time(self, game_time):
         if self.cars < 9:
-            self.priority += 1
+            self.priority += 5
         elif self.cars < 12:
-            self.priority += 2
+            self.priority += 4
         elif self.cars < 15:
             self.priority += 3
         elif self.cars < 18:
-            self.priority += 4
+            self.priority += 2
         elif self.cars < 21:
-            self.priority += 5
+            self.priority += 1
 
         self.controller.parent_controller.on_update_train_route_priority(self.track, self.train_route, self.priority)
 
