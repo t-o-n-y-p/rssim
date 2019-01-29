@@ -97,8 +97,7 @@ class SchedulerModel(Model):
                                                                           state, i[self.base_direction],
                                                                           i[self.base_new_direction],
                                                                           i[self.base_direction],
-                                                                          0, 480, 0.0,
-                                                                          0.0)
+                                                                          10000000, 480, 0.0, 0.0)
                     else:
                         state = 'approaching'
                         self.controller.parent_controller.on_create_train(i[self.base_train_id], i[self.base_cars],
@@ -107,8 +106,8 @@ class SchedulerModel(Model):
                                                                           state, i[self.base_direction],
                                                                           i[self.base_direction],
                                                                           i[self.base_direction],
-                                                                          0, i[self.base_stop_time], i[self.base_exp],
-                                                                          i[self.base_money])
+                                                                          10000000, i[self.base_stop_time],
+                                                                          i[self.base_exp], i[self.base_money])
                     index = self.base_schedule.index(i)
                     self.base_schedule.remove(i)
                     self.view.on_release_train(index)

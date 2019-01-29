@@ -183,6 +183,7 @@ class TrainModel(Model):
                     self.controller.parent_controller.on_close_train_route(self.track, self.train_route)
 
                 if self.state == 'pending_boarding':
+                    self.priority = 0
                     if self.track in (1, 2):
                         self.state = 'boarding_in_progress_pass_through'
                     else:
@@ -206,7 +207,7 @@ class TrainModel(Model):
             if self.speed_state == 'decelerate':
                 self.speed_factor_position -= 1
                 self.speed = self.train_acceleration_factor[self.speed_factor_position + 1] \
-                             - self.train_acceleration_factor[self.speed_factor_position]
+                           - self.train_acceleration_factor[self.speed_factor_position]
 
             if self.speed_state != 'stop':
                 car_position_view = []
