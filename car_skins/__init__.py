@@ -10,7 +10,7 @@ CAR_HEAD_IMAGE = []
 for i in range(_car_collections):
     CAR_HEAD_IMAGE.append([])
     for j in range(4):
-        CAR_HEAD_IMAGE[i].append(_cars_texture.get_region(i * 251, j * 41, 251, 41))
+        CAR_HEAD_IMAGE[i].append(_cars_texture.get_region(j * 251, i * 41, 251, 41))
 
 for i in range(len(CAR_HEAD_IMAGE)):
     for j in range(4):
@@ -21,7 +21,7 @@ CAR_MID_IMAGE = []
 for i in range(_car_collections):
     CAR_MID_IMAGE.append([])
     for j in range(4):
-        CAR_MID_IMAGE[i].append(_cars_texture.get_region(i * 251, (j + 4) * 41, 251, 41))
+        CAR_MID_IMAGE[i].append(_cars_texture.get_region((j + 4) * 251, i * 41, 251, 41))
 
 for i in range(len(CAR_MID_IMAGE)):
     for j in range(4):
@@ -32,7 +32,7 @@ CAR_TAIL_IMAGE = []
 for i in range(_car_collections):
     CAR_TAIL_IMAGE.append([])
     for j in range(4):
-        CAR_TAIL_IMAGE[i].append(_cars_texture.get_region(i * 251, (j + 8) * 41, 251, 41))
+        CAR_TAIL_IMAGE[i].append(_cars_texture.get_region((j + 8) * 251, i * 41, 251, 41))
 
 for i in range(len(CAR_TAIL_IMAGE)):
     for j in range(4):
@@ -41,7 +41,7 @@ for i in range(len(CAR_TAIL_IMAGE)):
 
 BOARDING_LIGHT_IMAGE = []
 for i in range(_car_collections):
-    BOARDING_LIGHT_IMAGE.append(_cars_texture.get_region(i * 251, 12 * 41, 251, 41))
+    BOARDING_LIGHT_IMAGE.append(_cars_texture.get_region(12 * 251, i * 41, 251, 41))
 
 for i in range(len(BOARDING_LIGHT_IMAGE)):
     BOARDING_LIGHT_IMAGE[i].anchor_x = BOARDING_LIGHT_IMAGE[i].width // 2
