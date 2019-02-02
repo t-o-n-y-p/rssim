@@ -13,7 +13,7 @@ include_files = [('db/patch', 'db/patch'), ('db/config.db', 'db/config.db'), ('d
                  'img', 'icon.ico', 'font', 'shaders']
 
 excludes = ['PIL', 'test', 'distutils', 'email', 'html', 'http', 'unittest', 'urllib', 'dbm', 'pydoc_data',
-            'xml', 'xmlrpc']
+            'xml', 'xmlrpc', 'jdcal', 'et-xmlfile', 'openpyxl']
 
 includes = ['pyglet',
             'pyglet.app',
@@ -48,7 +48,7 @@ os.environ['TCL_LIBRARY'] = r'{}\tcl\tcl8.6'.format(sys.exec_prefix)
 os.environ['TK_LIBRARY'] = r'{}\tcl\tk8.6'.format(sys.exec_prefix)
 
 setup(name='Railway Station Simulator',
-      version='0.9.2',
+      version='0.9.3',
       description='Railway Station Simulator',
       executables=executables,
       options=options)
