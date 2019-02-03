@@ -7,8 +7,6 @@ class FPSView(View):
     def __init__(self, user_db_cursor, config_db_cursor, surface, batches, groups):
         super().__init__(user_db_cursor, config_db_cursor, surface, batches, groups)
         self.fps_label = None
-        self.screen_resolution = (1280, 720)
-        self.top_bar_height = int(72 / 1280 * self.screen_resolution[0]) // 2
 
     def on_update(self):
         pass
@@ -33,8 +31,7 @@ class FPSView(View):
         self.fps_label.text = f'{fps} FPS'
 
     def on_change_screen_resolution(self, screen_resolution):
-        self.screen_resolution = screen_resolution
-        self.top_bar_height = int(72 / 1280 * self.screen_resolution[0]) // 2
+        self.on_recalculate_ui_properties(screen_resolution)
         self.fps_label.x = self.screen_resolution[0] - self.top_bar_height * 3 - 10
         self.fps_label.y = self.screen_resolution[1] - self.top_bar_height // 2
         self.fps_label.font_size = int(16 / 40 * self.top_bar_height)

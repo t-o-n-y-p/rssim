@@ -114,6 +114,12 @@ class View:
         self.on_mouse_motion_handlers = []
         self.on_mouse_drag_handlers = []
         self.on_mouse_leave_handlers = []
+        self.screen_resolution = (1280, 720)
+        self.bottom_bar_height = 72
+        self.top_bar_height = 36
+        self.base_offset = (-3456, -1688)
+        self.zoom_out_activated = False
+        self.zoom_factor = 1.0
 
     def on_update(self):
         pass
@@ -145,3 +151,8 @@ class View:
                                            on_mouse_press_handlers=on_mouse_press_handlers,
                                            on_mouse_release_handlers=on_mouse_release_handlers,
                                            on_mouse_leave_handlers=on_mouse_leave_handlers)
+
+    def on_recalculate_ui_properties(self, screen_resolution):
+        self.screen_resolution = screen_resolution
+        self.bottom_bar_height = int(72 / 1280 * self.screen_resolution[0])
+        self.top_bar_height = int(72 / 1280 * self.screen_resolution[0]) // 2

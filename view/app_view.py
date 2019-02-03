@@ -31,9 +31,6 @@ class AppView(View):
             self.controller.settings.on_activate()
 
         super().__init__(user_db_cursor, config_db_cursor, surface, batches, groups)
-        self.screen_resolution = (1280, 720)
-        self.bottom_bar_height = int(72 / 1280 * self.screen_resolution[0])
-        self.top_bar_height = int(72 / 1280 * self.screen_resolution[0]) // 2
         self.title_label = None
         self.main_frame_sprite = None
         self.close_game_button = CloseGameButton(surface=self.surface, batch=self.batches['ui_batch'],
@@ -93,9 +90,7 @@ class AppView(View):
             b.on_deactivate()
 
     def on_change_screen_resolution(self, screen_resolution, fullscreen):
-        self.screen_resolution = screen_resolution
-        self.bottom_bar_height = int(72 / 1280 * self.screen_resolution[0])
-        self.top_bar_height = int(72 / 1280 * self.screen_resolution[0]) // 2
+        self.on_recalculate_ui_properties(screen_resolution)
         if not fullscreen:
             self.surface.set_size(screen_resolution[0], screen_resolution[1])
 

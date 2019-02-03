@@ -11,8 +11,6 @@ class SchedulerView(View):
 
         super().__init__(user_db_cursor, config_db_cursor, surface, batches, groups)
         self.departure_text = ['West City', 'East City', 'North-West City', 'South-East City']
-        self.screen_resolution = (1280, 720)
-        self.bottom_bar_height = int(72 / 1280 * self.screen_resolution[0])
         self.schedule_opacity = 0
         self.schedule_top_left_line = [0, 0]
         self.schedule_departure_top_left_line = [0, 0]
@@ -107,8 +105,7 @@ class SchedulerView(View):
                 self.schedule_opacity -= 15
 
     def on_change_screen_resolution(self, screen_resolution):
-        self.screen_resolution = screen_resolution
-        self.bottom_bar_height = int(72 / 1280 * self.screen_resolution[0])
+        self.on_recalculate_ui_properties(screen_resolution)
         self.on_read_ui_info()
         if self.is_activated:
             self.left_schedule_caption_sprite.x = self.schedule_left_caption[0]

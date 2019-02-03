@@ -50,10 +50,6 @@ class MapView(View):
         self.is_mini_map_activated = False
         self.mini_map_timer = 0.0
         self.mini_map_opacity = 0
-        self.screen_resolution = (1280, 720)
-        self.bottom_bar_height = int(72 / 1280 * self.screen_resolution[0])
-        self.top_bar_height = int(72 / 1280 * self.screen_resolution[0]) // 2
-        self.base_offset = (-3456, -1688)
         self.base_offset_lower_left_limit = (0, 0)
         self.base_offset_upper_right_limit = (-6912, -3376)
         self.mini_map_position = (2 * self.screen_resolution[0] // 3,
@@ -61,8 +57,6 @@ class MapView(View):
                                   - (self.screen_resolution[0] // 3 - 6) // 2)
         self.mini_map_width = self.screen_resolution[0] // 3 - 6
         self.mini_map_height = (self.screen_resolution[0] // 3 - 6) // 2
-        self.zoom_factor = 1.0
-        self.zoom_out_activated = False
         self.zoom_in_button = ZoomInButton(surface=self.surface, batch=self.batches['ui_batch'], groups=self.groups,
                                            on_click_action=on_zoom_in_button, on_hover_action=on_hover_action,
                                            on_leave_action=on_leave_action)
@@ -234,9 +228,7 @@ class MapView(View):
         self.base_offset = (self.base_offset[0] + (screen_resolution[0] - self.screen_resolution[0]) // 2,
                             self.base_offset[1] + (screen_resolution[1] - self.screen_resolution[1]) // 2)
         self.check_base_offset_limits()
-        self.screen_resolution = screen_resolution
-        self.bottom_bar_height = int(72 / 1280 * self.screen_resolution[0])
-        self.top_bar_height = int(72 / 1280 * self.screen_resolution[0]) // 2
+        self.on_recalculate_ui_properties(screen_resolution)
         self.mini_map_position = (2 * self.screen_resolution[0] // 3,
                                   self.screen_resolution[1] - self.top_bar_height - 6
                                   - (self.screen_resolution[0] // 3 - 6) // 2)

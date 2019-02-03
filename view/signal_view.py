@@ -7,19 +7,15 @@ from view import *
 class SignalView(View):
     def __init__(self, user_db_cursor, config_db_cursor, surface, batches, groups):
         super().__init__(user_db_cursor, config_db_cursor, surface, batches, groups)
-        self.base_offset = (-3456, -1688)
-        self.screen_resolution = (1280, 720)
         self.red_signal_image = load('img/signals/signal_red.png')
         self.green_signal_image = load('img/signals/signal_green.png')
-        self.red_signal_image.anchor_x = 5
-        self.red_signal_image.anchor_y = 5
-        self.green_signal_image.anchor_x = 5
-        self.green_signal_image.anchor_y = 5
+        self.red_signal_image.anchor_x = 4
+        self.red_signal_image.anchor_y = 4
+        self.green_signal_image.anchor_x = 4
+        self.green_signal_image.anchor_y = 4
         self.signal_sprite = None
         self.position = (0, 0)
         self.flip_needed = 0
-        self.zoom_out_activated = False
-        self.zoom_factor = 1.0
         self.state = None
         self.locked = None
 
@@ -100,7 +96,7 @@ class SignalView(View):
             self.signal_sprite.scale = self.zoom_factor
 
     def on_change_screen_resolution(self, screen_resolution):
-        self.screen_resolution = screen_resolution
+        self.on_recalculate_ui_properties(screen_resolution)
 
     def on_change_state(self, state):
         self.state = state

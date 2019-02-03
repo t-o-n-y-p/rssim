@@ -27,8 +27,6 @@ class ConstructorView(View):
             self.buttons.remove(self.buy_buttons.pop(key_for_remove))
 
         super().__init__(user_db_cursor, config_db_cursor, surface, batches, groups)
-        self.screen_resolution = (1280, 720)
-        self.bottom_bar_height = int(72 / 1280 * self.screen_resolution[0])
         self.track_cells_positions = ()
         self.environment_cell_positions = ()
         self.constructor_locked_label_offset = [0, 0]
@@ -322,8 +320,7 @@ class ConstructorView(View):
                 self.constructor_opacity -= 15
 
     def on_change_screen_resolution(self, screen_resolution):
-        self.screen_resolution = screen_resolution
-        self.bottom_bar_height = int(72 / 1280 * self.screen_resolution[0])
+        self.on_recalculate_ui_properties(screen_resolution)
         self.on_read_ui_info()
         if self.is_activated:
             self.constructor_railway_station_caption_sprite.x = self.constructor_railway_station_caption[0]

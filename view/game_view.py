@@ -21,8 +21,6 @@ class GameView(View):
             self.controller.on_resume_game()
 
         super().__init__(user_db_cursor, config_db_cursor, surface, batches, groups)
-        self.screen_resolution = (1280, 720)
-        self.bottom_bar_height = int(72 / 1280 * self.screen_resolution[0])
         self.game_frame_opacity = 0
         self.progress_bar_inactive_image = load('img/game_progress_bars/progress_bar_inactive.png')
         self.progress_bar_exp_inactive = None
@@ -31,8 +29,8 @@ class GameView(View):
         self.progress_bar_money_active_image = load('img/game_progress_bars/progress_bar_money_active.png')
         self.progress_bar_exp_active = None
         self.progress_bar_money_active = None
-        self.exp_offset = self.bottom_bar_height + 10
-        self.money_offset = self.exp_offset + 10 + int(200 * self.bottom_bar_height / 80)
+        self.exp_offset = self.bottom_bar_height + self.bottom_bar_height // 8
+        self.money_offset = self.exp_offset + self.bottom_bar_height // 8 + int(200 * self.bottom_bar_height / 80)
         self.pause_game_button = PauseGameButton(surface=self.surface, batch=self.batches['ui_batch'],
                                                  groups=self.groups, on_click_action=on_pause_game)
         self.resume_game_button = ResumeGameButton(surface=self.surface, batch=self.batches['ui_batch'],
@@ -179,10 +177,9 @@ class GameView(View):
             b.on_deactivate()
 
     def on_change_screen_resolution(self, screen_resolution):
-        self.screen_resolution = screen_resolution
-        self.bottom_bar_height = int(72 / 1280 * self.screen_resolution[0])
-        self.exp_offset = self.bottom_bar_height + 10
-        self.money_offset = self.exp_offset + 10 + int(200 * self.bottom_bar_height / 80)
+        self.on_recalculate_ui_properties(screen_resolution)
+        self.exp_offset = self.bottom_bar_height + self.bottom_bar_height // 8
+        self.money_offset = self.exp_offset + self.bottom_bar_height // 8 + int(200 * self.bottom_bar_height / 80)
         if self.is_activated:
             self.level_text.x = self.exp_offset + int(100 / 80 * self.bottom_bar_height)
             self.level_text.y = self.bottom_bar_height // 2

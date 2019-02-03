@@ -39,9 +39,6 @@ class SettingsView(View):
         super().__init__(user_db_cursor, config_db_cursor, surface, batches, groups)
         self.temp_windowed_resolution = (0, 0)
         self.temp_log_level = 0
-        self.screen_resolution = (1280, 720)
-        self.bottom_bar_height = int(72 / 1280 * self.screen_resolution[0])
-        self.top_bar_height = int(72 / 1280 * self.screen_resolution[0]) // 2
         self.medium_line = self.screen_resolution[1] // 2 + self.top_bar_height // 2
         self.settings_opacity = 0
         self.temp_fullscreen_mode = False
@@ -101,9 +98,7 @@ class SettingsView(View):
             b.on_deactivate()
 
     def on_change_screen_resolution(self, screen_resolution):
-        self.screen_resolution = screen_resolution
-        self.bottom_bar_height = int(72 / 1280 * self.screen_resolution[0])
-        self.top_bar_height = int(72 / 1280 * self.screen_resolution[0]) // 2
+        self.on_recalculate_ui_properties(screen_resolution)
         self.medium_line = self.screen_resolution[1] // 2 + self.top_bar_height // 2
         if self.is_activated:
             self.temp_windowed_resolution_label.x = self.screen_resolution[0] // 4
