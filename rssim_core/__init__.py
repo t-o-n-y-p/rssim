@@ -129,11 +129,11 @@ def _create_map(user_db_connection, user_db_cursor, config_db_cursor, surface, b
         scheduler                   Scheduler object
         dispatcher                  Dispatcher object
         constructor                 Constructor object
-        trains{}                    Train objects
-        signals{}                   Signal objects
-        train_routes{}              TrainRoute objects
-        switches{}                  RailroadSwitch objects
-        crossovers{}                Crossover objects
+        trains                      Train objects
+        signals                     Signal objects
+        train_routes                TrainRoute objects
+        switches                    RailroadSwitch objects
+        crossovers                  Crossover objects
 
     :param user_db_connection:      connection to the user DB (stores game state and user-defined settings)
     :param user_db_cursor:          user DB cursor (is used to execute user DB queries)
