@@ -15,7 +15,7 @@ class AppController(Controller):
             fps                         FPS object controller
             loader                      RSSim class instance
 
-        :param loader:              RSSim class instance
+        :param loader:                  RSSim class instance
         """
         super().__init__()
         self.game = None
@@ -37,7 +37,8 @@ class AppController(Controller):
         Activates App object: controller and model. Model activates the view if necessary.
         When App object is activated, we also activate Game object
         (because game process is started right away) and FPS object (to display FPS counter).
-        TODO adjust this behavior when main menu will be implemented
+        TODO adjust this behavior when main menu will be implemented:
+            Game object will not be activated by default anymore, Main menu object will be activated instead
         """
         self.is_activated = True
         self.model.on_activate()
@@ -48,7 +49,6 @@ class AppController(Controller):
     def on_deactivate(self):
         """
         Deactivates App object: controller, view and model. Also deactivates all child objects.
-        TODO adjust this behavior when main menu will be implemented
         """
         self.is_activated = False
         self.model.on_deactivate()
@@ -57,57 +57,123 @@ class AppController(Controller):
         self.settings.on_deactivate()
         self.fps.on_deactivate()
 
-    def on_fullscreen_mode_turned_on(self):
-        self.model.on_fullscreen_mode_turned_on()
-
-    def on_change_screen_resolution(self, screen_resolution):
-        self.model.on_change_screen_resolution(screen_resolution)
-        self.game.on_change_screen_resolution(screen_resolution)
-        self.settings.on_change_screen_resolution(screen_resolution)
-        self.fps.on_change_screen_resolution(screen_resolution)
-
-    def on_fullscreen_mode_turned_off(self):
-        self.model.on_fullscreen_mode_turned_off()
-
-    def on_close_game(self):
-        self.on_deactivate()
-        self.game.on_save_and_commit_state()
-        exit()
-
-    def on_activate_main_menu_view(self):
-        pass
-
-    def on_activate_game_view(self):
-        self.game.on_activate_view()
-
-    def on_deactivate_current_view(self):
-        if self.game.view.is_activated:
-            self.game.on_deactivate_view()
-            self.settings.navigated_from_game = True
-
-    def on_activate_open_settings_button(self):
-        self.view.open_settings_button.on_activate()
-
-    def on_update_fps(self, fps):
-        self.fps.on_update_fps(fps)
-
-    def on_display_fps(self):
-        self.fps.on_activate()
-
-    def on_hide_fps(self):
-        self.fps.on_deactivate()
-
-    def on_set_up_main_frame_shader_uniforms(self, shader):
-        self.view.on_set_up_main_frame_shader_uniforms(shader)
-
-    def on_save_log_level(self, log_level):
-        self.loader.on_save_log_level(log_level)
-
     def on_fullscreen_button_click(self):
+        """
+        Handles Fullscreen button being clicked on.
+        We need to apply new screen resolution and switch app window mode to fullscreen
+        (if fullscreen mode is available for user display).
+        """
         self.on_change_screen_resolution(self.settings.model.fullscreen_resolution)
         if self.model.fullscreen_mode_available:
             self.on_fullscreen_mode_turned_on()
 
     def on_restore_button_click(self):
+        """
+        Handles Restore button being clicked on.
+        We need to apply new screen resolution and switch app window mode to windowed.
+        """
         self.on_fullscreen_mode_turned_off()
         self.on_change_screen_resolution(self.settings.model.windowed_resolution)
+
+    def on_fullscreen_mode_turned_on(self):
+        """
+        Makes the game fullscreen.
+        Note that adjusting screen resolution is made by on_change_screen_resolution handler,
+        this function only switches the app window mode.
+        """
+        self.model.on_fullscreen_mode_turned_on()
+
+    def on_fullscreen_mode_turned_off(self):
+        """
+        Makes the game windowed.
+        Note that adjusting screen resolution is made by on_change_screen_resolution handler,
+        this function only switches the app window mode.
+        """
+        self.model.on_fullscreen_mode_turned_off()
+
+    def on_change_screen_resolution(self, screen_resolution):
+        """
+        If app window resolution was somehow changed, this function handles it.
+        Handlers for all child objects are also called.
+
+        :param screen_resolution:       new screen resolution
+        """
+        self.model.on_change_screen_resolution(screen_resolution)
+        self.game.on_change_screen_resolution(screen_resolution)
+        self.settings.on_change_screen_resolution(screen_resolution)
+        self.fps.on_change_screen_resolution(screen_resolution)
+
+    def on_close_game(self):
+        """
+        Handles Close button being clicked on.
+        Here we deactivate the app, save game progress and close the app window.
+        """
+        self.on_deactivate()
+        self.game.on_save_and_commit_state()
+        exit()
+
+    def on_activate_main_menu_view(self):
+        """
+        Reserved for future use.
+        """
+        pass
+
+    def on_activate_game_view(self):
+        """
+        Activates the game screen in case the settings screen was opened from game screen
+        and then user closes settings screen.
+        """
+        self.game.on_activate_view()
+
+    def on_deactivate_current_view(self):
+        """
+        Determines where the user is located when Open settings button was clicked on:
+        either game screen or main menu screen (not implemented at the moment).
+        Corresponding flag is enabled for Settings object controller.
+        """
+        if self.game.view.is_activated:
+            self.game.on_deactivate_view()
+            self.settings.navigated_from_game = True
+
+    def on_activate_open_settings_button(self):
+        """
+        Activates Open settings button back when user closes settings screen.
+        """
+        self.view.open_settings_button.on_activate()
+
+    def on_update_fps(self, fps):
+        """
+        When FPS is recalculated by main game loop, on_update_fps event is dispatched
+        to display the updated FPS value.
+
+        :param fps:                     new FPS value
+        """
+        self.fps.on_update_fps(fps)
+
+    def on_display_fps(self):
+        """
+        Reserved for future use.
+        """
+        self.fps.on_activate()
+
+    def on_hide_fps(self):
+        """
+        Reserved for future use.
+        """
+        self.fps.on_deactivate()
+
+    def on_set_up_main_frame_shader_uniforms(self, shader):
+        """
+        Each time main frame shader is activated we need to set up values for all its uniforms.
+
+        :param shader:                  main frame shader
+        """
+        self.view.on_set_up_main_frame_shader_uniforms(shader)
+
+    def on_save_log_level(self, log_level):
+        """
+        Reserved for future use.
+
+        :param log_level:               new log level
+        """
+        self.loader.on_save_log_level(log_level)
