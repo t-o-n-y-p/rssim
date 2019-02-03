@@ -4,7 +4,19 @@ from controller import *
 
 
 class AppController(Controller):
+    """
+    Implements App object controller. It is responsible for high-level properties, UI and events.
+    """
     def __init__(self, loader):
+        """
+        Properties:
+            game                        Game object controller
+            settings                    Settings object controller
+            fps                         FPS object controller
+            loader                      RSSim class instance
+
+        :param loader:              RSSim class instance
+        """
         super().__init__()
         self.game = None
         self.settings = None
@@ -12,12 +24,21 @@ class AppController(Controller):
         self.loader = loader
 
     def on_update_view(self):
+        """
+        Updates fade-in/fade-out animations for App object view, Game object view and Settings object view.
+        """
         self.view.on_update()
         self.game.on_update_view()
         self.settings.on_update_view()
 
     @controller_is_not_active
     def on_activate(self):
+        """
+        Activates App object: controller and model. Model activates the view if necessary.
+        When App object is activated, we also activate Game object
+        (because game process is started right away) and FPS object (to display FPS counter).
+        TODO adjust this behavior when main menu will be implemented
+        """
         self.is_activated = True
         self.model.on_activate()
         self.game.on_activate()
@@ -25,6 +46,10 @@ class AppController(Controller):
 
     @controller_is_active
     def on_deactivate(self):
+        """
+        Deactivates App object: controller, view and model. Also deactivates all child objects.
+        TODO adjust this behavior when main menu will be implemented
+        """
         self.is_activated = False
         self.model.on_deactivate()
         self.view.on_deactivate()
