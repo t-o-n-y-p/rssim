@@ -1,7 +1,7 @@
-# ------------------- RSSIM_CORE MODULE -------------------
-# __init__.py       implements functions to create all objects in the app.
-# rssim_core.py     implements RSSim class - base class for game launch and main loop.
-# ------------------- IMPORTS -------------------
+"""
+__init__.py       implements functions to create all objects in the app.
+rssim_core.py     implements RSSim class - base class for game launch and main loop.
+"""
 from controller.app_controller import AppController
 from controller.game_controller import GameController
 from controller.map_controller import MapController
@@ -42,7 +42,6 @@ from view.train_view import TrainView
 from view.dispatcher_view import DispatcherView
 from view.constructor_view import ConstructorView
 from car_skins import *
-# ------------------- END IMPORTS -------------------
 
 
 # ------------------- CONSTANTS -------------------
@@ -57,7 +56,6 @@ LOG_LEVEL_DEBUG = 10                # integer log level which includes all possi
 # ------------------- END CONSTANTS -------------------
 
 
-# ------------------- FUNCTIONS -------------------
 def create_app(user_db_connection, user_db_cursor, config_db_cursor, surface, batches, groups, loader):
     """
     Creates controller, model and view for App object.
@@ -526,6 +524,3 @@ def _create_constructor(user_db_connection, user_db_cursor, config_db_cursor, su
     view.on_assign_controller(controller)
     model.view = view
     return controller
-
-
-# ------------------- END FUNCTIONS -------------------

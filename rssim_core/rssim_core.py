@@ -1,6 +1,6 @@
-# ------------------- RSSIM_CORE.PY -------------------
-# Implements RSSim class - base class for game launch and main loop.
-# ------------------- IMPORTS -------------------
+"""
+Implements RSSim class - base class for game launch and main loop.
+"""
 from ctypes import c_long, windll
 from sqlite3 import connect
 from time import perf_counter
@@ -10,34 +10,35 @@ from logging import FileHandler, Formatter, getLogger
 from datetime import datetime
 
 from pyglet import gl
-from pyglet import resource
 from pyglet.window import Window
 from pyglet.graphics import Batch, OrderedGroup
 from pyshaders import from_files_names
 
 from exceptions import VideoAdapterNotSupportedException, MonitorNotSupportedException
 from rssim_core import *
-# ------------------- END IMPORTS -------------------
 
 
-# ------------------- RSSIM CLASS -------------------
-# This class does all the work to make game ready to play.
-# Properties:
-#       user_db_connection      connection to the user DB (stores game state and user-defined settings)
-#       user_db_cursor          user DB cursor (is used to execute user DB queries)
-#       config_db_connection    connection to the config DB (stores all configuration
-#                               that is not designed to be managed by user)
-#       config_db_cursor        configuration DB cursor (is used to execute configuration DB queries)
-#       logger                  main game logger
-#       log_level               log level for base game logger
-#       surface                 surface to draw all UI objects on
-#       batches                 batches to group all labels and sprites
-#       groups                  defines drawing layers (some labels and sprites behind others)
-#       main_frame_shader       shader for main frame primitive (responsible for button borders,
-#                               UI screens background, main app border)
-#       app                     App object, is responsible for high-level properties, UI and events
 class RSSim:
+    """
+    Makes game ready to play: creates app instance, checks for updates and implements main game loop.
+    """
     def __init__(self):
+        """
+        Properties:
+              user_db_connection      connection to the user DB (stores game state and user-defined settings)
+              user_db_cursor          user DB cursor (is used to execute user DB queries)
+              config_db_connection    connection to the config DB (stores all configuration
+                                      that is not designed to be managed by user)
+              config_db_cursor        configuration DB cursor (is used to execute configuration DB queries)
+              logger                  main game logger
+              log_level               log level for base game logger
+              surface                 surface to draw all UI objects on
+              batches                 batches to group all labels and sprites
+              groups                  defines drawing layers (some labels and sprites behind others)
+              main_frame_shader       shader for main frame primitive (responsible for button borders,
+                                      UI screens background, main app border)
+              app                     App object, is responsible for high-level properties, UI and events
+        """
         # determine if video adapter supports all game textures, if not - raise specific exception
         max_texture_size = c_long(0)
         gl.glGetIntegerv(gl.GL_MAX_TEXTURE_SIZE, max_texture_size)
@@ -161,11 +162,12 @@ class RSSim:
 
         self.logger.info('END RSSIM.INIT')
 
-        # on_draw() function
-        # Implements on_draw event handler for surface. Handler is attached using @surface.event decoration.
-        # It clears surface and calls draw() function for all batches (inserts shaders if required)
         @surface.event
         def on_draw():
+            """
+            Implements on_draw event handler for surface. Handler is attached using @surface.event decoration.
+            It clears surface and calls draw() function for all batches (inserts shaders if required)
+            """
             self.logger.info('START SURFACE.ON_DRAW')
             # clear surface
             self.surface.clear()
@@ -187,16 +189,17 @@ class RSSim:
             self.logger.debug('ui batch is drawn now')
             self.logger.info('END SURFACE.ON_DRAW')
 
-        # on_mouse_press(x, y, button, modifiers) function
-        # Implements on_mouse_press event handler for surface. Handler is attached using @surface.event decoration.
-        # It simply triggers all existing on_mouse_press handlers (from buttons, map move, or app window move).
-        # Input properties:
-        #       x                       mouse cursor X position inside the app window
-        #       y                       mouse cursor X position inside the app window
-        #       button                  determines which mouse button was pressed
-        #       modifiers               determines if some modifier key is held down (at the moment we don't use it)
         @surface.event
         def on_mouse_press(x, y, button, modifiers):
+            """
+            Implements on_mouse_press event handler for surface. Handler is attached using @surface.event decoration.
+            It simply triggers all existing on_mouse_press handlers (from buttons, map move, or app window move).
+
+            :param x:               mouse cursor X position inside the app window
+            :param y:               mouse cursor Y position inside the app window
+            :param button:          determines which mouse button was pressed
+            :param modifiers:       determines if some modifier key is held down (at the moment we don't use it)
+            """
             self.logger.info('START SURFACE.ON_MOUSE_PRESS')
             for h in self.app.on_mouse_press_handlers:
                 self.logger.debug('moving to the next handler')
@@ -204,16 +207,17 @@ class RSSim:
 
             self.logger.info('END SURFACE.ON_MOUSE_PRESS')
 
-        # on_mouse_release(x, y, button, modifiers) function
-        # Implements on_mouse_release event handler for surface. Handler is attached using @surface.event decoration.
-        # It simply triggers all existing on_mouse_release handlers (from buttons, map move, or app window move).
-        # Input properties:
-        #       x                       mouse cursor X position inside the app window
-        #       y                       mouse cursor X position inside the app window
-        #       button                  determines which mouse button was released
-        #       modifiers               determines if some modifier key is held down (at the moment we don't use it)
         @surface.event
         def on_mouse_release(x, y, button, modifiers):
+            """
+            Implements on_mouse_release event handler for surface. Handler is attached using @surface.event decoration.
+            It simply triggers all existing on_mouse_release handlers (from buttons, map move, or app window move).
+
+            :param x:               mouse cursor X position inside the app window
+            :param y:               mouse cursor Y position inside the app window
+            :param button:          determines which mouse button was pressed
+            :param modifiers:       determines if some modifier key is held down (at the moment we don't use it)
+            """
             self.logger.info('START SURFACE.ON_MOUSE_RELEASE')
             for h in self.app.on_mouse_release_handlers:
                 self.logger.debug('moving to the next handler')
@@ -221,16 +225,17 @@ class RSSim:
 
             self.logger.info('END SURFACE.ON_MOUSE_RELEASE')
 
-        # on_mouse_motion(x, y, dx, dy) function
-        # Implements on_mouse_motion event handler for surface. Handler is attached using @surface.event decoration.
-        # It simply triggers all existing on_mouse_motion handlers (from buttons, map move, or app window move).
-        # Input properties:
-        #       x                       mouse cursor X position inside the app window
-        #       y                       mouse cursor X position inside the app window
-        #       dx                      relative X position from the previous mouse position
-        #       dy                      relative Y position from the previous mouse position
         @surface.event
         def on_mouse_motion(x, y, dx, dy):
+            """
+            Implements on_mouse_motion event handler for surface. Handler is attached using @surface.event decoration.
+            It simply triggers all existing on_mouse_motion handlers (from buttons, map move, or app window move).
+
+            :param x:               mouse cursor X position inside the app window
+            :param y:               mouse cursor Y position inside the app window
+            :param dx:              relative X position from the previous mouse position
+            :param dy:              relative Y position from the previous mouse position
+            """
             self.logger.info('START SURFACE.ON_MOUSE_MOTION')
             for h in self.app.on_mouse_motion_handlers:
                 self.logger.debug('moving to the next handler')
@@ -238,18 +243,19 @@ class RSSim:
 
             self.logger.info('END SURFACE.ON_MOUSE_MOTION')
 
-        # on_mouse_drag(x, y, dx, dy, button, modifiers) function
-        # Implements on_mouse_drag event handler for surface. Handler is attached using @surface.event decoration.
-        # It simply triggers all existing on_mouse_drag handlers (from map move or app window move).
-        # Input properties:
-        #       x                       mouse cursor X position inside the app window
-        #       y                       mouse cursor X position inside the app window
-        #       dx                      relative X position from the previous mouse position
-        #       dy                      relative Y position from the previous mouse position
-        #       button                  determines which mouse button is held down
-        #       modifiers               determines if some modifier key is held down (at the moment we don't use it)
         @surface.event
         def on_mouse_drag(x, y, dx, dy, button, modifiers):
+            """
+            Implements on_mouse_drag event handler for surface. Handler is attached using @surface.event decoration.
+            It simply triggers all existing on_mouse_drag handlers (from map move or app window move).
+
+            :param x:               mouse cursor X position inside the app window
+            :param y:               mouse cursor Y position inside the app window
+            :param dx:              relative X position from the previous mouse position
+            :param dy:              relative Y position from the previous mouse position
+            :param button:          determines which mouse button was pressed
+            :param modifiers:       determines if some modifier key is held down (at the moment we don't use it)
+            """
             self.logger.info('START SURFACE.ON_MOUSE_DRAG')
             for h in self.app.on_mouse_drag_handlers:
                 self.logger.debug('moving to the next handler')
@@ -257,14 +263,15 @@ class RSSim:
 
             self.logger.info('END SURFACE.ON_MOUSE_DRAG')
 
-        # on_mouse_leave(x, y) function
-        # Implements on_mouse_leave event handler for surface. Handler is attached using @surface.event decoration.
-        # It simply triggers all existing on_mouse_leave handlers (from buttons).
-        # Input properties:
-        #       x                       mouse cursor X position
-        #       y                       mouse cursor X position
         @surface.event
         def on_mouse_leave(x, y):
+            """
+            Implements on_mouse_leave event handler for surface. Handler is attached using @surface.event decoration.
+            It simply triggers all existing on_mouse_leave handlers (from buttons).
+
+            :param x:               mouse cursor X position
+            :param y:               mouse cursor Y position
+            """
             self.logger.info('START SURFACE.ON_MOUSE_LEAVE')
             for h in self.app.on_mouse_leave_handlers:
                 self.logger.debug('moving to the next handler')
@@ -272,9 +279,10 @@ class RSSim:
 
             self.logger.info('END SURFACE.ON_MOUSE_LEAVE')
 
-    # run() function
-    # Implements main game loop.
     def run(self):
+        """
+        Implements main game loop.
+        """
         self.logger.info('START GAME LOOP')
         # fps_timer is used to determine if it's time to recalculate FPS
         fps_timer = 0.0
@@ -305,11 +313,12 @@ class RSSim:
                 fps_timer = perf_counter()
                 self.logger.debug(f'FPS timer: {fps_timer}')
 
-    # on_check_for_updates() function
-    # Checks user database version. If it is lower than current game version, it means user has just updated the app.
-    # All migration DB scripts need to be executed in chain, from earliest to latest, step by step.
-    # Results can be viewed in special ".update_log" file in logs directory.
     def on_check_for_updates(self):
+        """
+        Checks user database version. If it is lower than current game version, it means user has just updated the app.
+        All migration DB scripts need to be executed in chain, from earliest to latest, step by step.
+        Results can be viewed in special ".update_log" file in logs directory.
+        """
         # create logs directory if it does not exist
         if not path.exists('logs'):
             mkdir('logs')
@@ -361,11 +370,12 @@ class RSSim:
 
         logger.info('END RSSIM.CHECK_FOR_UPDATES')
 
-    # on_save_log_level(log_level) function
-    # Log level was changed by user, so we need to apply it on the spot and save to the user database.
-    # Input properties:
-    #       log_level               new log level
     def on_save_log_level(self, log_level):
+        """
+        Log level was changed by user, so we need to apply it on the spot and save to the user database.
+
+        :param log_level:           new log level
+        """
         self.logger.info('START RSSIM.ON_SAVE_AND_COMMIT_LOG_LEVEL')
         # In case logs were just enabled by the user and log file does not exist, create the log file
         if self.log_level >= LOG_LEVEL_OFF > log_level and not self.logger.hasHandlers():
@@ -388,4 +398,3 @@ class RSSim:
         self.user_db_cursor.execute('UPDATE log_options SET log_level = ?', (log_level, ))
         self.logger.debug(f'log level {self.log_level} saved')
         self.logger.info('END RSSIM.ON_SAVE_AND_COMMIT_LOG_LEVEL')
-# ------------------- END RSSIM CLASS -------------------

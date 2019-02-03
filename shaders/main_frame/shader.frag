@@ -52,23 +52,23 @@ uniform int mini_map_width = 0;
 uniform int mini_map_height = 0;
 uniform int is_decrement_resolution_button_activated = 0;
 uniform int is_increment_resolution_button_activated = 0;
+
+bool is_general_border()
 /*
-    is_general_border() function
     Returns "true" if pixel belongs to red app window border and "false" if it does not.
 */
-bool is_general_border()
 {
     return gl_FragCoord[0] < 2 || gl_FragCoord[0] > screen_resolution[0] - 3     // 2 pixels for left and right border
            || gl_FragCoord[1] < 2 || gl_FragCoord[1] > screen_resolution[1] - 3  // 2 pixels for bottom and top border
            || gl_FragCoord[1] == screen_resolution[1] - top_bar_height + 1       // 2 pixels for top bar border
            || gl_FragCoord[1] == screen_resolution[1] - top_bar_height;
 }
+
+bool is_top_bar_button_border()
 /*
-    is_top_bar_button_border() function
     Returns "true" if pixel belongs to any top bar button (close, iconify or fullscreen/restore) border
     and "false" if it does not.
 */
-bool is_top_bar_button_border()
 {
     int margin = screen_resolution[0] - int(gl_FragCoord[0]);
     return gl_FragCoord[1] >= screen_resolution[1] - top_bar_height + 2                // pixel Y is inside the top bar
@@ -78,39 +78,39 @@ bool is_top_bar_button_border()
                || margin == top_bar_height * 3 - 4 || margin == top_bar_height * 3 - 5 // iconify button
               );
 }
+
+bool is_inside_top_bar()
 /*
-    is_inside_top_bar() function
     Returns "true" if pixel belongs to the top bar excluding borders and "false" if it does not.
 */
-bool is_inside_top_bar()
 {
     return gl_FragCoord[0] >= 2 && gl_FragCoord[0] <= screen_resolution[0] - 3  // between app window side borders
            && gl_FragCoord[1] >= screen_resolution[1] - top_bar_height + 2      // between bottom and top borders
            && gl_FragCoord[1] <= screen_resolution[1] - 3;
 }
+
+bool is_inside_bottom_bar_or_bar_border()
 /*
-    is_inside_bottom_bar_or_bar_border() function
     Returns "true" if pixel belongs to the bottom bar or its top border and "false" if it does not.
 */
-bool is_inside_bottom_bar_or_bar_border()
 {
     return gl_FragCoord[0] >= 2 && gl_FragCoord[0] <= screen_resolution[0] - 3  // between app window side borders
            && gl_FragCoord[1] >= 2                                              // between bottom
            && gl_FragCoord[1] <= bottom_bar_height - 1;                         // and (including) top borders
 }
+
+bool is_bottom_bar_border()
 /*
-    is_bottom_bar_border() function
     Returns "true" if pixel belongs to the bottom bar top border and "false" if it does not.
 */
-bool is_bottom_bar_border()
 {
     return gl_FragCoord[1] == bottom_bar_height - 2 || gl_FragCoord[1] == bottom_bar_height - 1;
 }
+
+bool is_bottom_bar_button_border()
 /*
-    is_bottom_bar_button_border() function
     Returns "true" if pixel belongs to the bottom bar button borders and "false" if it does not.
 */
-bool is_bottom_bar_button_border()
 {
     int margin = screen_resolution[0] - int(gl_FragCoord[0]);
     int game_time_margin = int(3.5 * float(bottom_bar_height));
@@ -123,11 +123,11 @@ bool is_bottom_bar_button_border()
            || margin == game_time_margin + 2 * bottom_bar_height - 2              // schedule button border
            || margin == game_time_margin + 2 * bottom_bar_height - 3;
 }
+
+bool is_accept_reject_settings_button_border()
 /*
-    is_accept_reject_settings_button_border() function
     Returns "true" if pixel belongs to the accept/reject buttons borders and "false" if it does not.
 */
-bool is_accept_reject_settings_button_border()
 {
     int margin = screen_resolution[0] - int(gl_FragCoord[0]);
     return margin == bottom_bar_height || margin == bottom_bar_height - 1            // reject button side border
@@ -138,21 +138,21 @@ bool is_accept_reject_settings_button_border()
                ) && margin > 2 && margin < 2 * bottom_bar_height - 2
               );
 }
+
+bool is_inside_main_part_of_the_window()
 /*
-    is_inside_main_part_of_the_window() function
     Returns "true" if pixel belongs to the large space between top and bottom bars and "false" if it does not.
 */
-bool is_inside_main_part_of_the_window()
 {
     return gl_FragCoord[0] >= 2 && gl_FragCoord[0] <= screen_resolution[0] - 3   // between app window side borders
            && gl_FragCoord[1] >= bottom_bar_height                               // between bottom and top bars
            && gl_FragCoord[1] <= screen_resolution[1] - top_bar_height - 1;
 }
+
+bool is_zoom_button_border_activated()
 /*
-    is_zoom_button_border_activated() function
     Returns "true" if pixel belongs to the zoom button borders (and button is activated) and "false" if it does not.
 */
-bool is_zoom_button_border_activated()
 {
     return zoom_buttons_activated == 1                                                            // button activated
            && ((gl_FragCoord[1] >= screen_resolution[1] - (top_bar_height - 1 + bottom_bar_height - 1) // right border
@@ -166,11 +166,11 @@ bool is_zoom_button_border_activated()
                   )
               );
 }
+
+bool is_mini_map_border()
 /*
-    is_mini_map_border() function
     Returns "true" if pixel belongs to the mini-map borders and "false" if it does not.
 */
-bool is_mini_map_border()
 {
     return ((gl_FragCoord[0] == mini_map_position[0]                                        // left border
              || gl_FragCoord[0] == mini_map_position[0] + mini_map_width - 1                // right border
@@ -182,11 +182,11 @@ bool is_mini_map_border()
                    && gl_FragCoord[0] <= mini_map_position[0] + mini_map_width - 1
                 );
 }
+
+bool is_mini_map_viewport_border()
 /*
-    is_mini_map_border() function
     Returns "true" if pixel belongs to the mini-map viewport borders and "false" if it does not.
 */
-bool is_mini_map_viewport_border()
 {
     /*
         calculate viewport border positions based on map scale and mini-map position and size
@@ -220,11 +220,11 @@ bool is_mini_map_viewport_border()
                    && gl_FragCoord[0] - mini_map_position[0] <= margin_right
                 );
 }
+
+bool is_settings_view_button_border()
 /*
-    is_settings_view_button_border() function
     Returns "true" if pixel belongs to settings view buttons borders and "false" if it does not.
 */
-bool is_settings_view_button_border()
 {
     // medium_line - Y position of settings screen center
     int medium_line = screen_resolution[1] / 2 + top_bar_height / 2;
@@ -267,37 +267,37 @@ bool is_settings_view_button_border()
                  ) && is_increment_resolution_button_activated == 1
                 );
 }
+
+bool is_schedule_left_line(int line_width)
 /*
-    is_schedule_left_line(int line_width) function
     Returns "true" if pixel belongs to the left gradient line on schedule screen and "false" if it does not.
     Input value:
         int line_width - width of the gradient line
 */
-bool is_schedule_left_line(int line_width)
 {
     return gl_FragCoord[0] >= top_left_cell[0] && gl_FragCoord[0] <= top_left_cell[0] + line_width - 1
            && (gl_FragCoord[1] == top_left_cell[1] || gl_FragCoord[1] == top_left_cell[1] - 1);  // 2-pixel thick line
 }
+
+bool is_schedule_right_line(int line_width)
 /*
-    is_schedule_right_line(int line_width) function
     Returns "true" if pixel belongs to the right gradient line on schedule screen and "false" if it does not.
     Input value:
         int line_width - width of the gradient line
 */
-bool is_schedule_right_line(int line_width)
 {
     return gl_FragCoord[0] >= top_right_cell[0] && gl_FragCoord[0] <= top_right_cell[0] + line_width - 1
            && (gl_FragCoord[1] == top_left_cell[1] || gl_FragCoord[1] == top_left_cell[1] - 1);  // 2-pixel thick line
 }
+
+bool is_constructor_cell_border(int cell_width, int cell_height, int interval_between_cells_height)
 /*
-    is_constructor_cell_border(int cell_width, int cell_height, int interval_between_cells_height) function
     Returns "true" if pixel belongs to any cell border on constructor screen and "false" if it does not.
     Input values:
         int cell_width - width of a cell
         int cell_height - height of a cell
         int interval_between_cells_height - vertical interval between cells
 */
-bool is_constructor_cell_border(int cell_width, int cell_height, int interval_between_cells_height)
 {
     for (int i = 0; i < 4; ++i)  // we have 4 cells in each column; right after first match function returns "true"
     {
@@ -324,14 +324,14 @@ bool is_constructor_cell_border(int cell_width, int cell_height, int interval_be
     }
     return false;    // if no matches were found
 }
+
+bool is_build_track_button_border_activated(int cell_width, int cell_height)
 /*
-    is_build_track_button_border_activated(int cell_width, int cell_height) function
     Returns "true" if pixel belongs to track build button border on constructor screen and "false" if it does not.
     Input values:
         int cell_width - width of a cell
         int cell_height - height of a cell
 */
-bool is_build_track_button_border_activated(int cell_width, int cell_height)
 {
     int x_left_offset = int(gl_FragCoord[0]) - top_left_cell[0];
     return gl_FragCoord[1] >= top_left_cell[1] - (cell_height - 1)       // inside the cell from bottom to top
@@ -342,11 +342,12 @@ bool is_build_track_button_border_activated(int cell_width, int cell_height)
                   )
               );
 }
+
+void main()
 /*
     MAIN SHADER FUNCTION
     Calculates intermediate color for all possible cases and mixes it
 */
-void main()
 {
     // draw app window border and top bar border
     if (is_general_border())
