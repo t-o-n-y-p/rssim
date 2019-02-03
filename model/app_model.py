@@ -23,7 +23,10 @@ class AppModel(Model):
 
     def on_activate_view(self):
         self.view.on_activate()
-        self.view.fullscreen_button.on_activate()
+        if self.controller.settings.model.fullscreen_mode:
+            self.view.restore_button.on_activate()
+        else:
+            self.view.fullscreen_button.on_activate()
 
     @fullscreen_mode_available
     def on_fullscreen_mode_turned_on(self):
@@ -34,11 +37,8 @@ class AppModel(Model):
         self.view.on_fullscreen_mode_turned_off()
         self.on_save_and_commit_state(0)
 
-    def on_change_screen_resolution(self, screen_resolution, fullscreen_mode):
-        if fullscreen_mode and not self.fullscreen_mode_available:
-            self.on_fullscreen_mode_turned_off()
-
-        self.view.on_change_screen_resolution(screen_resolution, fullscreen=fullscreen_mode)
+    def on_change_screen_resolution(self, screen_resolution):
+        self.view.on_change_screen_resolution(screen_resolution)
 
     def on_save_and_commit_state(self, fullscreen_mode):
         self.user_db_cursor.execute('UPDATE graphics SET fullscreen = ?', (fullscreen_mode, ))

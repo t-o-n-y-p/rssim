@@ -149,11 +149,10 @@ class RSSim:
         self.app.on_activate()
         self.logger.debug('app activated successfully')
         # initially app is created using default minimal screen resolution; now we change it to user resolution
-        self.app.on_change_screen_resolution(self.app.settings.model.screen_resolution,
-                                             self.app.settings.model.fullscreen_mode)
+        self.app.on_change_screen_resolution(self.app.settings.model.screen_resolution)
         self.logger.debug('screen resolution changed to {}'.format(self.app.settings.model.screen_resolution))
         # and same about fullscreen mode
-        if self.app.settings.model.fullscreen_mode:
+        if self.app.settings.model.fullscreen_mode and self.app.model.fullscreen_mode_available:
             self.logger.debug('fullscreen mode is turned on')
             self.app.on_fullscreen_mode_turned_on()
             self.logger.debug('fullscreen mode was set successfully')

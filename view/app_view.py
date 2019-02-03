@@ -21,10 +21,14 @@ class AppView(View):
             self.surface.minimize()
 
         def on_app_window_fullscreen(button):
-            self.controller.on_fullscreen_mode_turned_on()
+            button.on_deactivate()
+            button.paired_button.on_activate()
+            self.controller.on_fullscreen_button_click()
 
         def on_app_window_restore(button):
-            self.controller.on_fullscreen_mode_turned_off()
+            button.on_deactivate()
+            button.paired_button.on_activate()
+            self.controller.on_restore_button_click()
 
         def on_open_settings(button):
             button.on_deactivate()
@@ -89,10 +93,9 @@ class AppView(View):
         for b in self.buttons:
             b.on_deactivate()
 
-    def on_change_screen_resolution(self, screen_resolution, fullscreen):
+    def on_change_screen_resolution(self, screen_resolution):
         self.on_recalculate_ui_properties(screen_resolution)
-        if not fullscreen:
-            self.surface.set_size(screen_resolution[0], screen_resolution[1])
+        self.surface.set_size(screen_resolution[0], screen_resolution[1])
 
         self.title_label.y = self.screen_resolution[1] - self.top_bar_height // 2
         self.title_label.font_size = int(16 / 40 * self.top_bar_height)
@@ -121,13 +124,9 @@ class AppView(View):
 
     def on_fullscreen_mode_turned_on(self):
         self.surface.set_fullscreen(fullscreen=True)
-        self.restore_button.on_activate()
-        self.fullscreen_button.on_deactivate()
 
     def on_fullscreen_mode_turned_off(self):
         self.surface.set_fullscreen(fullscreen=False)
-        self.restore_button.on_deactivate()
-        self.fullscreen_button.on_activate()
 
     @game_window_is_active
     @game_is_not_fullscreen
