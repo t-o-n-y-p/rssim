@@ -112,7 +112,7 @@ class Controller:
 
     def on_update_view(self):
         """
-        Updates object view and child objects views.
+        Notifies object view and child objects views to update.
         Usually it is needed for fade-in/fade-out animations
         or for some views where all sprites are not created at once
         and remaining sprites are created frame by frame to avoid massive FPS drop.

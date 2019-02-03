@@ -5,7 +5,8 @@ from controller import *
 
 class AppController(Controller):
     """
-    Implements App object controller. It is responsible for high-level properties, UI and events.
+    Implements App controller.
+    App object is responsible for high-level properties, UI and events.
     """
     def __init__(self, loader):
         """
@@ -25,7 +26,7 @@ class AppController(Controller):
 
     def on_update_view(self):
         """
-        Updates fade-in/fade-out animations for App object view, Game object view and Settings object view.
+        Notifies the view, Game view and Settings view to update fade-in/fade-out animations.
         """
         self.view.on_update()
         self.game.on_update_view()
@@ -77,7 +78,7 @@ class AppController(Controller):
 
     def on_fullscreen_mode_turned_on(self):
         """
-        Makes the game fullscreen.
+        Notifies the model to make the game fullscreen.
         Note that adjusting screen resolution is made by on_change_screen_resolution handler,
         this function only switches the app window mode.
         """
@@ -85,7 +86,7 @@ class AppController(Controller):
 
     def on_fullscreen_mode_turned_off(self):
         """
-        Makes the game windowed.
+        Notifies the model to make the game windowed.
         Note that adjusting screen resolution is made by on_change_screen_resolution handler,
         this function only switches the app window mode.
         """
@@ -93,8 +94,7 @@ class AppController(Controller):
 
     def on_change_screen_resolution(self, screen_resolution):
         """
-        If app window resolution was somehow changed, this function handles it.
-        Handlers for all child objects are also called.
+        Notifies the model and all child controllers about screen resolution update.
 
         :param screen_resolution:       new screen resolution
         """
@@ -106,7 +106,7 @@ class AppController(Controller):
     def on_close_game(self):
         """
         Handles Close button being clicked on.
-        Here we deactivate the app, save game progress and close the app window.
+        Here we deactivate the app, notify game controller to save game progress and close the app window.
         """
         self.on_deactivate()
         self.game.on_save_and_commit_state()
@@ -120,8 +120,8 @@ class AppController(Controller):
 
     def on_activate_game_view(self):
         """
-        Activates the game screen in case the settings screen was opened from game screen
-        and then user closes settings screen.
+        Notifies Game controller to activate the game screen
+        in case the settings screen was opened from game screen and then user closes settings screen.
         """
         self.game.on_activate_view()
 
@@ -129,7 +129,7 @@ class AppController(Controller):
         """
         Determines where the user is located when Open settings button was clicked on:
         either game screen or main menu screen (not implemented at the moment).
-        Corresponding flag is enabled for Settings object controller.
+        Corresponding flag is enabled for Settings controller.
         """
         if self.game.view.is_activated:
             self.game.on_deactivate_view()
@@ -143,8 +143,7 @@ class AppController(Controller):
 
     def on_update_fps(self, fps):
         """
-        When FPS is recalculated by main game loop, on_update_fps event is dispatched
-        to display the updated FPS value.
+        Notifies FPS controller about FPS value update.
 
         :param fps:                     new FPS value
         """
