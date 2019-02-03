@@ -346,7 +346,7 @@ class RSSim:
         logger.debug(f'current game version: {CURRENT_VERSION}')
         if user_db_version < CURRENT_VERSION:
             logger.debug('upgrading database...')
-            for patch in range(2, CURRENT_VERSION[2] + 1):
+            for patch in range(user_db_version[2] + 1, CURRENT_VERSION[2] + 1):
                 logger.debug(f'start 0.9.{patch} migration')
                 with open(f'db/patch/09{patch}.sql', 'r') as migration:
                     # simply execute each line in the migration script
