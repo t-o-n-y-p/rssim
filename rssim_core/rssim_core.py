@@ -81,7 +81,7 @@ class RSSim:
             self.logger.addHandler(logs_handler)
 
         self.logger.setLevel(self.log_level)
-        self.logger.info('START RSSIM.INIT')
+        self.logger.info('START INIT')
         self.logger.debug('DB connection set up successfully')
         # set blending mode; this is required to correctly draw transparent textures
         gl.glEnable(gl.GL_BLEND)
@@ -159,7 +159,7 @@ class RSSim:
         else:
             self.logger.debug('fullscreen mode is turned off')
 
-        self.logger.info('END RSSIM.INIT')
+        self.logger.info('END INIT')
 
         @surface.event
         def on_draw():
@@ -167,7 +167,7 @@ class RSSim:
             Implements on_draw event handler for surface. Handler is attached using @surface.event decoration.
             It clears surface and calls draw() function for all batches (inserts shaders if required)
             """
-            self.logger.info('START SURFACE.ON_DRAW')
+            self.logger.info('START ON_DRAW')
             # clear surface
             self.surface.clear()
             self.logger.debug('surface cleared')
@@ -186,7 +186,7 @@ class RSSim:
             # draw ui batch: text labels, buttons
             self.batches['ui_batch'].draw()
             self.logger.debug('ui batch is drawn now')
-            self.logger.info('END SURFACE.ON_DRAW')
+            self.logger.info('END ON_DRAW')
 
         @surface.event
         def on_mouse_press(x, y, button, modifiers):
@@ -199,12 +199,12 @@ class RSSim:
             :param button:          determines which mouse button was pressed
             :param modifiers:       determines if some modifier key is held down (at the moment we don't use it)
             """
-            self.logger.info('START SURFACE.ON_MOUSE_PRESS')
+            self.logger.info('START ON_MOUSE_PRESS')
             for h in self.app.on_mouse_press_handlers:
                 self.logger.debug('moving to the next handler')
                 h(x, y, button, modifiers)
 
-            self.logger.info('END SURFACE.ON_MOUSE_PRESS')
+            self.logger.info('END ON_MOUSE_PRESS')
 
         @surface.event
         def on_mouse_release(x, y, button, modifiers):
@@ -217,7 +217,7 @@ class RSSim:
             :param button:          determines which mouse button was pressed
             :param modifiers:       determines if some modifier key is held down (at the moment we don't use it)
             """
-            self.logger.info('START SURFACE.ON_MOUSE_RELEASE')
+            self.logger.info('START ON_MOUSE_RELEASE')
             for h in self.app.on_mouse_release_handlers:
                 self.logger.debug('moving to the next handler')
                 h(x, y, button, modifiers)
@@ -240,7 +240,7 @@ class RSSim:
                 self.logger.debug('moving to the next handler')
                 h(x, y, dx, dy)
 
-            self.logger.info('END SURFACE.ON_MOUSE_MOTION')
+            self.logger.info('END ON_MOUSE_MOTION')
 
         @surface.event
         def on_mouse_drag(x, y, dx, dy, button, modifiers):
@@ -255,12 +255,12 @@ class RSSim:
             :param button:          determines which mouse button was pressed
             :param modifiers:       determines if some modifier key is held down (at the moment we don't use it)
             """
-            self.logger.info('START SURFACE.ON_MOUSE_DRAG')
+            self.logger.info('START ON_MOUSE_DRAG')
             for h in self.app.on_mouse_drag_handlers:
                 self.logger.debug('moving to the next handler')
                 h(x, y, dx, dy, button, modifiers)
 
-            self.logger.info('END SURFACE.ON_MOUSE_DRAG')
+            self.logger.info('END ON_MOUSE_DRAG')
 
         @surface.event
         def on_mouse_leave(x, y):
@@ -271,12 +271,12 @@ class RSSim:
             :param x:               mouse cursor X position
             :param y:               mouse cursor Y position
             """
-            self.logger.info('START SURFACE.ON_MOUSE_LEAVE')
+            self.logger.info('START ON_MOUSE_LEAVE')
             for h in self.app.on_mouse_leave_handlers:
                 self.logger.debug('moving to the next handler')
                 h(x, y)
 
-            self.logger.info('END SURFACE.ON_MOUSE_LEAVE')
+            self.logger.info('END ON_MOUSE_LEAVE')
 
     def run(self):
         """
@@ -333,7 +333,7 @@ class RSSim:
         logger.addHandler(logs_handler)
         # for now log level is set to DEBUG, but can also be set to LOG_LEVEL_INFO
         logger.setLevel(LOG_LEVEL_DEBUG)
-        logger.info('START RSSIM.CHECK_FOR_UPDATES')
+        logger.info('START CHECK_FOR_UPDATES')
         # If version does not exist, DB version is 0.9.0.
         # Just increment version here, no other DB changes.
         self.user_db_cursor.execute('SELECT * FROM sqlite_master WHERE type = "table" AND tbl_name = "version"')
@@ -367,7 +367,7 @@ class RSSim:
         else:
             logger.debug('user DB version is up to date')
 
-        logger.info('END RSSIM.CHECK_FOR_UPDATES')
+        logger.info('END CHECK_FOR_UPDATES')
 
     def on_save_log_level(self, log_level):
         """
@@ -375,7 +375,7 @@ class RSSim:
 
         :param log_level:           new log level
         """
-        self.logger.info('START RSSIM.ON_SAVE_AND_COMMIT_LOG_LEVEL')
+        self.logger.info('START ON_SAVE_AND_COMMIT_LOG_LEVEL')
         # In case logs were just enabled by the user and log file does not exist, create the log file
         if self.log_level >= LOG_LEVEL_OFF > log_level and not self.logger.hasHandlers():
             if not path.exists('logs'):
@@ -396,4 +396,4 @@ class RSSim:
         self.log_level = log_level
         self.user_db_cursor.execute('UPDATE log_options SET log_level = ?', (log_level, ))
         self.logger.debug(f'log level {self.log_level} saved')
-        self.logger.info('END RSSIM.ON_SAVE_AND_COMMIT_LOG_LEVEL')
+        self.logger.info('END ON_SAVE_AND_COMMIT_LOG_LEVEL')
