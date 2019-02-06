@@ -1,9 +1,12 @@
+from logging import getLogger
+
 from controller import *
 
 
 class SignalController(Controller):
     def __init__(self, map_controller):
-        super().__init__(parent_controller=map_controller)
+        super().__init__(parent_controller=map_controller,
+                         logger=getLogger('root.app.game.map.signal.controller'))
         self.track = None
         self.base_route = None
 

@@ -1,9 +1,11 @@
+from logging import getLogger
+
 from controller import *
 
 
 class SettingsController(Controller):
     def __init__(self, app):
-        super().__init__(parent_controller=app)
+        super().__init__(parent_controller=app, logger=getLogger('root.app.settings.controller'))
         self.navigated_from_main_menu = False
         self.navigated_from_game = False
 

@@ -1,9 +1,11 @@
+from logging import getLogger
+
 from controller import *
 
 
 class FPSController(Controller):
     def __init__(self, app_controller):
-        super().__init__(parent_controller=app_controller)
+        super().__init__(parent_controller=app_controller, logger=getLogger('root.app.fps.controller'))
 
     def on_update_view(self):
         self.view.on_update()

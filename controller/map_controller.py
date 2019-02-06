@@ -1,11 +1,12 @@
 from operator import attrgetter
+from logging import getLogger
 
 from controller import *
 
 
 class MapController(Controller):
     def __init__(self, game_controller):
-        super().__init__(parent_controller=game_controller)
+        super().__init__(parent_controller=game_controller, logger=getLogger('root.app.game.map.controller'))
         self.scheduler = None
         self.constructor = None
         self.dispatcher = None

@@ -1,9 +1,12 @@
+from logging import getLogger
+
 from controller import *
 
 
 class TrainController(Controller):
     def __init__(self, map_controller):
-        super().__init__(parent_controller=map_controller)
+        super().__init__(parent_controller=map_controller,
+                         logger=getLogger('root.app.game.map.train.controller'))
         self.train_id = None
 
     def on_update_view(self):

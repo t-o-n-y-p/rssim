@@ -1,9 +1,11 @@
+from logging import getLogger
+
 from controller import *
 
 
 class GameController(Controller):
     def __init__(self, app):
-        super().__init__(parent_controller=app)
+        super().__init__(parent_controller=app, logger=getLogger('root.app.game.controller'))
         self.map = None
 
     def on_update_view(self):
