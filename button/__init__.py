@@ -222,7 +222,7 @@ class Button:
         """
         Applies new position for the button when notified about it.
 
-        :param position:
+        :param position:                        new button position (including 2-pixel borders)
         """
         self.logger.info('START ON_POSITION_CHANGED')
         self.position = position
@@ -245,10 +245,23 @@ class Button:
         self.logger.info('END ON_POSITION_CHANGED')
 
     def on_size_changed(self, new_button_size, new_font_size):
+        """
+        Applies new size for the button when notified about it.
+
+        :param new_button_size:                 new width and height (including 2-pixel borders)
+        :param new_font_size:                   new text label font size
+        """
+        self.logger.info('START ON_SIZE_CHANGED')
         self.button_size = new_button_size
+        self.logger.debug(f'button size: {self.button_size}')
         self.font_size = new_font_size
+        self.logger.debug(f'font size: {self.font_size}')
+        self.logger.debug(f'is activated: {self.is_activated}')
         if self.is_activated:
             self.text_object.font_size = self.font_size
+            self.logger.debug('new font size applied successfully')
+
+        self.logger.info('END ON_SIZE_CHANGED')
 
     @button_is_activated
     def handle_mouse_motion(self, x, y, dx, dy):
