@@ -4,10 +4,10 @@ from controller import *
 
 
 class TrainController(Controller):
-    def __init__(self, map_controller):
+    def __init__(self, map_controller, train_id):
         super().__init__(parent_controller=map_controller,
-                         logger=getLogger('root.app.game.map.train.controller'))
-        self.train_id = None
+                         logger=getLogger(f'root.app.game.map.train.{train_id}.controller'))
+        self.train_id = train_id
 
     def on_update_view(self):
         self.view.on_update()

@@ -327,9 +327,7 @@ def _create_signal(user_db_connection, user_db_cursor, config_db_cursor, surface
     :param base_route:              train route part which signal belongs to
     :return:                        Signal object controller
     """
-    controller = SignalController(map_controller)
-    controller.track = track
-    controller.base_route = base_route
+    controller = SignalController(map_controller, track, base_route)
     model = SignalModel(user_db_connection, user_db_cursor, config_db_cursor)
     model.on_signal_setup(track, base_route)
     view = SignalView(user_db_cursor, config_db_cursor, surface, batches, groups)
@@ -358,9 +356,7 @@ def _create_train_route(user_db_connection, user_db_cursor, config_db_cursor, su
     :param train_route:             train route type
     :return:                        TrainRoute object controller
     """
-    controller = TrainRouteController(map_controller)
-    controller.track = track
-    controller.train_route = train_route
+    controller = TrainRouteController(map_controller, track, train_route)
     model = TrainRouteModel(user_db_connection, user_db_cursor, config_db_cursor)
     model.on_train_route_setup(track, train_route)
     if model.opened:
@@ -393,10 +389,7 @@ def _create_railroad_switch(user_db_connection, user_db_cursor, config_db_cursor
     :param switch_type:             switch location: left/right side of the map
     :return:                        RailroadSwitch object controller
     """
-    controller = RailroadSwitchController(map_controller)
-    controller.track_param_1 = track_param_1
-    controller.track_param_2 = track_param_2
-    controller.switch_type = switch_type
+    controller = RailroadSwitchController(map_controller, track_param_1, track_param_2, switch_type)
     model = RailroadSwitchModel(user_db_connection, user_db_cursor, config_db_cursor)
     model.on_railroad_switch_setup(track_param_1, track_param_2, switch_type)
     view = RailroadSwitchView(user_db_cursor, config_db_cursor, surface, batches, groups)
@@ -426,10 +419,7 @@ def _create_crossover(user_db_connection, user_db_cursor, config_db_cursor, surf
     :param crossover_type:          crossover location: left/right side of the map
     :return:                        Crossover object controller
     """
-    controller = CrossoverController(map_controller)
-    controller.track_param_1 = track_param_1
-    controller.track_param_2 = track_param_2
-    controller.crossover_type = crossover_type
+    controller = CrossoverController(map_controller, track_param_1, track_param_2, crossover_type)
     model = CrossoverModel(user_db_connection, user_db_cursor, config_db_cursor)
     model.on_crossover_setup(track_param_1, track_param_2, crossover_type)
     view = CrossoverView(user_db_cursor, config_db_cursor, surface, batches, groups)
@@ -457,8 +447,7 @@ def _create_train(user_db_connection, user_db_cursor, config_db_cursor, surface,
     :param train_id:                train identification number
     :return:                        Train object controller
     """
-    controller = TrainController(map_controller)
-    controller.train_id = train_id
+    controller = TrainController(map_controller, train_id)
     model = TrainModel(user_db_connection, user_db_cursor, config_db_cursor)
     model.on_train_setup(train_id)
     view = TrainView(user_db_cursor, config_db_cursor, surface, batches, groups)

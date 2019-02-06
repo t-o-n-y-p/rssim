@@ -4,12 +4,16 @@ from controller import *
 
 
 class RailroadSwitchController(Controller):
-    def __init__(self, map_controller):
-        super().__init__(parent_controller=map_controller,
-                         logger=getLogger('root.app.game.map.railroad_switch.controller'))
-        self.track_param_1 = None
-        self.track_param_2 = None
-        self.switch_type = None
+    def __init__(self, map_controller, track_param_1, track_param_2, switch_type):
+        super().__init__(
+            parent_controller=map_controller,
+            logger=getLogger(
+                f'root.app.game.map.railroad_switch.{track_param_1}.{track_param_2}.{switch_type}.controller'
+            )
+        )
+        self.track_param_1 = track_param_1
+        self.track_param_2 = track_param_2
+        self.switch_type = switch_type
 
     def on_update_view(self):
         self.view.on_update()

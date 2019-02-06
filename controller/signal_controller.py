@@ -4,11 +4,11 @@ from controller import *
 
 
 class SignalController(Controller):
-    def __init__(self, map_controller):
+    def __init__(self, map_controller, track, base_route):
         super().__init__(parent_controller=map_controller,
-                         logger=getLogger('root.app.game.map.signal.controller'))
-        self.track = None
-        self.base_route = None
+                         logger=getLogger(f'root.app.game.map.signal.{track}.{base_route}.controller'))
+        self.track = track
+        self.base_route = base_route
 
     def on_update_view(self):
         self.view.on_update()

@@ -10,8 +10,7 @@ from car_skins import *
 def create_train(user_db_connection, user_db_cursor, config_db_cursor, surface, batches, groups, map_controller,
                  train_id, cars, track, train_route, state, direction, new_direction,
                  current_direction, priority, boarding_time, exp, money, unlocked_car_collections):
-    controller = TrainController(map_controller)
-    controller.train_id = train_id
+    controller = TrainController(map_controller, train_id)
     model = TrainModel(user_db_connection, user_db_cursor, config_db_cursor)
     seed()
     model.on_train_init(cars, track, train_route, state, direction, new_direction, current_direction,

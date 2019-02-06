@@ -8,7 +8,7 @@ class CrossoverController(Controller):
     Implements Crossover controller.
     Crossover object is responsible for properties, UI and events related to the crossover.
     """
-    def __init__(self, map_controller):
+    def __init__(self, map_controller, track_param_1, track_param_2, crossover_type):
         """
         Properties:
             track_param_1               number of the first track of two being connected by the crossover
@@ -16,13 +16,21 @@ class CrossoverController(Controller):
             crossover_type              crossover location: left/right side of the map
 
         :param map_controller:          Map controller (parent controller)
+        :param track_param_1:           number of the first track of two being connected by the crossover
+        :param track_param_2:           number of the second track of two being connected by the crossover
+        :param crossover_type:          crossover location: left/right side of the map
         """
-        super().__init__(parent_controller=map_controller,
-                         logger=getLogger('root.app.game.map.crossover.controller'))
+        super().__init__(
+            parent_controller=map_controller,
+            logger=getLogger(
+                f'root.app.game.map.crossover.{track_param_1}.{track_param_2}.{crossover_type}.controller'
+            )
+        )
         self.logger.info('START INIT')
-        self.track_param_1 = None
-        self.track_param_2 = None
-        self.crossover_type = None
+        self.track_param_1 = track_param_1
+        self.track_param_2 = track_param_2
+        self.crossover_type = crossover_type
+        self.logger.debug(f'crossover params: {self.track_param_1} {self.track_param_2} {self.crossover_type}')
         self.logger.info('END INIT')
 
     def on_update_view(self):
