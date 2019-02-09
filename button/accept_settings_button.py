@@ -4,14 +4,29 @@ from button import Button
 
 
 class AcceptSettingsButton(Button):
+    """
+    Implements Accept button on settings screen.
+    For properties definition see base Button class.
+    """
     def __init__(self, surface, batch, groups, on_click_action):
         super().__init__(surface, batch, groups, logger=getLogger('root.button.accept_settings_button'))
+        self.logger.info('START INIT')
         self.to_activate_on_controller_init = True
+        self.logger.debug(f'to_activate_on_controller_init: {self.to_activate_on_controller_init}')
         self.text = ''
+        self.logger.debug(f'text: {self.text}')
         self.font_name = 'Webdings'
+        self.logger.debug(f'font_name: {self.font_name}')
         self.is_bold = False
+        self.logger.debug(f'is_bold: {self.is_bold}')
         self.font_size = 48
+        self.logger.debug(f'font_size: {self.font_size}')
         self.x_margin = 1122
+        self.logger.debug(f'x_margin: {self.x_margin}')
         self.y_margin = 0
+        self.logger.debug(f'y_margin: {self.y_margin}')
         self.button_size = (80, 80)
+        self.logger.debug(f'button_size: {self.button_size}')
         self.on_click_action = on_click_action
+        self.logger.debug('on_click_action set successfully')
+        self.logger.info('END INIT')

@@ -38,6 +38,7 @@ def button_is_not_activated(fn):
     """
     def _handle_if_is_not_activated(*args, **kwargs):
         if not args[0].is_activated:
+            args[0].logger.debug('button_is_not_activated decorator passed')
             fn(*args, **kwargs)
 
     return _handle_if_is_not_activated
@@ -52,6 +53,7 @@ def button_is_activated(fn):
     """
     def _handle_if_is_activated(*args, **kwargs):
         if args[0].is_activated:
+            args[0].logger.debug('button_is_activated decorator passed')
             fn(*args, **kwargs)
 
     return _handle_if_is_activated
@@ -66,6 +68,7 @@ def left_mouse_button(fn):
     """
     def _handle_mouse_if_left_button_was_clicked(*args, **kwargs):
         if args[3] == mouse.LEFT:
+            args[0].logger.debug('left_mouse_button decorator passed')
             fn(*args, **kwargs)
 
     return _handle_mouse_if_left_button_was_clicked
@@ -81,6 +84,7 @@ def cursor_is_over_the_button(fn):
     def _handle_if_cursor_is_over_the_button(*args, **kwargs):
         if args[1] in range(args[0].position[0] + 2, args[0].position[0] + args[0].button_size[0] - 2) \
                 and args[2] in range(args[0].position[1] + 2, args[0].position[1] + args[0].button_size[1] - 2):
+            args[0].logger.debug('cursor_is_over_the_button decorator passed')
             fn(*args, **kwargs)
 
     return _handle_if_cursor_is_over_the_button
@@ -95,6 +99,7 @@ def button_is_pressed(fn):
     """
     def _handle_if_button_is_pressed(*args, **kwargs):
         if args[0].state == 'pressed':
+            args[0].logger.debug('button_is_pressed decorator passed')
             fn(*args, **kwargs)
 
     return _handle_if_button_is_pressed
@@ -125,6 +130,8 @@ class Button:
             font_size                           button label font size
             position                            left bottom corner position (including 2-pixel border)
             button_size                         button width and height (including 2-pixel borders)
+            x_margin                            margin from left app window edge
+            y_margin                            margin from bottom app window edge
             on_click_action                     function to execute if user clicks on the button
             on_hover_action                     function to execute if user moves cursor over the button
             on_leave_action                     function to execute if user removes cursor from the button
@@ -153,6 +160,8 @@ class Button:
         self.font_size = None
         self.position = (0, 0)
         self.button_size = ()
+        self.x_margin = 0
+        self.y_margin = 0
         self.on_click_action = None
         self.on_hover_action = None
         self.on_leave_action = None
@@ -171,6 +180,8 @@ class Button:
         gl.glEnable(gl.GL_BLEND)
         gl.glBlendFunc(gl.GL_SRC_ALPHA, gl.GL_ONE_MINUS_SRC_ALPHA)
         self.logger.debug('blending set successfully')
+        # 2 pixels are left for red button border,
+        # that's why background position starts from (button_position + 2)
         self.vertex_list = self.batch.add(4, gl.GL_QUADS, self.groups['button_background'],
                                           ('v2i', (self.position[0] + 2, self.position[1] + 2,
                                                    self.position[0] + self.button_size[0] - 2, self.position[1] + 2,
