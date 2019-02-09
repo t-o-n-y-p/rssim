@@ -156,7 +156,7 @@ class Button:
         self.text = None
         add_font('perfo-bold.ttf')
         self.font_name = None
-        self.is_bold = None
+        self.is_bold = False
         self.font_size = None
         self.position = (0, 0)
         self.button_size = ()
@@ -398,4 +398,8 @@ class Button:
 
         self.surface.set_mouse_cursor(self.default_cursor)
         self.logger.debug('DEFAULT cursor set')
+        if self.on_leave_action is not None:
+            self.logger.debug('calling on_leave_action')
+            self.on_leave_action()
+
         self.logger.info('END HANDLE_MOUSE_LEAVE')

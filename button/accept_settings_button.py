@@ -17,8 +17,6 @@ class AcceptSettingsButton(Button):
         self.logger.debug(f'text: {self.text}')
         self.font_name = 'Webdings'
         self.logger.debug(f'font_name: {self.font_name}')
-        self.is_bold = False
-        self.logger.debug(f'is_bold: {self.is_bold}')
         self.font_size = 48
         self.logger.debug(f'font_size: {self.font_size}')
         self.x_margin = 1122

@@ -2,13 +2,13 @@
 This game features several different car models, it would be boring if all trains were the same.
 This module parses car models from DDS texture.
 """
-from pyglet import resource
+from pyglet import resource as _resource
 
 
 _car_collections = 4
-resource.path = ['img', 'img/main_map.zip']
-resource.reindex()
-_cars_texture = resource.texture('cars_in_one.dds')
+_resource.path = ['img', 'img/main_map.zip']
+_resource.reindex()
+_cars_texture = _resource.texture('cars_in_one.dds')
 
 # CAR_HEAD_IMAGE includes all textures for leading carriage
 CAR_HEAD_IMAGE = []

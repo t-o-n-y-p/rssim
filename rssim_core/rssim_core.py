@@ -9,7 +9,7 @@ from shutil import copyfile
 from logging import FileHandler, Formatter, getLogger
 from datetime import datetime
 
-from pyglet import gl
+from pyglet import gl, resource
 from pyglet.window import Window
 from pyglet.graphics import Batch, OrderedGroup
 from pyshaders import from_files_names
