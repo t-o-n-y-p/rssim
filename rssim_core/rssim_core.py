@@ -165,7 +165,7 @@ class RSSim:
         def on_draw():
             """
             Implements on_draw event handler for surface. Handler is attached using @surface.event decoration.
-            It clears surface and calls draw() function for all batches (inserts shaders if required)
+            This handler clears surface and calls draw() function for all batches (inserts shaders if required)
             """
             self.logger.info('START ON_DRAW')
             # clear surface
@@ -192,7 +192,9 @@ class RSSim:
         def on_mouse_press(x, y, button, modifiers):
             """
             Implements on_mouse_press event handler for surface. Handler is attached using @surface.event decoration.
-            It simply triggers all existing on_mouse_press handlers (from buttons, map move, or app window move).
+            Event is fired when user presses any mouse button.
+            This handler simply triggers all existing on_mouse_press handlers
+            (from buttons, map move, or app window move).
 
             :param x:               mouse cursor X position inside the app window
             :param y:               mouse cursor Y position inside the app window
@@ -210,7 +212,9 @@ class RSSim:
         def on_mouse_release(x, y, button, modifiers):
             """
             Implements on_mouse_release event handler for surface. Handler is attached using @surface.event decoration.
-            It simply triggers all existing on_mouse_release handlers (from buttons, map move, or app window move).
+            Event is fired when user releases any mouse button.
+            This handler simply triggers all existing on_mouse_release handlers
+            (from buttons, map move, or app window move).
 
             :param x:               mouse cursor X position inside the app window
             :param y:               mouse cursor Y position inside the app window
@@ -228,7 +232,9 @@ class RSSim:
         def on_mouse_motion(x, y, dx, dy):
             """
             Implements on_mouse_motion event handler for surface. Handler is attached using @surface.event decoration.
-            It simply triggers all existing on_mouse_motion handlers (from buttons, map move, or app window move).
+            Event is fired when user moves the mouse cursor.
+            This handler simply triggers all existing on_mouse_motion handlers
+            (from buttons, map move, or app window move).
 
             :param x:               mouse cursor X position inside the app window
             :param y:               mouse cursor Y position inside the app window
@@ -246,7 +252,8 @@ class RSSim:
         def on_mouse_drag(x, y, dx, dy, button, modifiers):
             """
             Implements on_mouse_drag event handler for surface. Handler is attached using @surface.event decoration.
-            It simply triggers all existing on_mouse_drag handlers (from map move or app window move).
+            Event is fired when user moves the mouse cursor with any mouse button being held down.
+            This handler simply triggers all existing on_mouse_drag handlers (from map move or app window move).
 
             :param x:               mouse cursor X position inside the app window
             :param y:               mouse cursor Y position inside the app window
@@ -266,7 +273,8 @@ class RSSim:
         def on_mouse_leave(x, y):
             """
             Implements on_mouse_leave event handler for surface. Handler is attached using @surface.event decoration.
-            It simply triggers all existing on_mouse_leave handlers (from buttons).
+            Event is fired when user moves the mouse cursor and it leaves the app window.
+            This handler simply triggers all existing on_mouse_leave handlers (from buttons).
 
             :param x:               mouse cursor X position
             :param y:               mouse cursor Y position

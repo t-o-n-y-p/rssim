@@ -229,12 +229,16 @@ class Button:
         self.logger.debug(f'position: {self.position}')
         self.logger.debug(f'is activated: {self.is_activated}')
         if self.is_activated:
+            # move the button background to the new position
+            # 2 pixels are left for red button border,
+            # that's why background position starts from (button_position + 2)
             self.vertex_list.vertices = (self.position[0] + 2, self.position[1] + 2,
                                          self.position[0] + self.button_size[0] - 2, self.position[1] + 2,
                                          self.position[0] + self.button_size[0] - 2,
                                          self.position[1] + self.button_size[1] - 2,
                                          self.position[0] + 2, self.position[1] + self.button_size[1] - 2)
             self.logger.debug('position applied to background primitive')
+            # move the text label to the center of the button
             if self.text_object is not None:
                 self.text_object.x = self.position[0] + self.button_size[0] // 2
                 self.text_object.y = self.position[1] + self.button_size[1] // 2
@@ -265,49 +269,122 @@ class Button:
 
     @button_is_activated
     def handle_mouse_motion(self, x, y, dx, dy):
+        """
+        When mouse cursor is moved, checks if mouse is over the button or not, changes button state
+        and calls handlers if cursor has just left the button or was just moved over it.
+
+        :param x:               mouse cursor X position inside the app window
+        :param y:               mouse cursor Y position inside the app window
+        :param dx:              relative X position from the previous mouse position
+        :param dy:              relative Y position from the previous mouse position
+        """
+        self.logger.info('START HANDLE_MOUSE_MOTION')
+        self.logger.debug(f'mouse position: {(x, y)}')
+        self.logger.debug(f'button position: {self.position}')
+        self.logger.debug(f'state: {self.state}')
+        # if cursor is on the button and button is not pressed, it means cursor was just moved over the button,
+        # state and background color are changed to "hover" state
         if x in range(self.position[0] + 2, self.position[0] + self.button_size[0] - 2) \
                 and y in range(self.position[1] + 2, self.position[1] + self.button_size[1] - 2):
+            self.logger.debug('cursor on the button')
             if self.state != 'pressed':
+                self.logger.debug('state is not pressed')
                 self.state = 'hover'
+                self.logger.debug(f'state: {self.state}')
                 self.vertex_list.colors = (127, 0, 0, 191, 127, 0, 0, 191, 127, 0, 0, 191, 127, 0, 0, 191)
+                self.logger.debug('background color: 127, 0, 0, 191')
                 self.surface.set_mouse_cursor(self.hand_cursor)
+                self.logger.debug('HAND cursor set')
                 if self.on_hover_action is not None:
+                    self.logger.debug('calling on_hover_action')
                     self.on_hover_action()
+        # if cursor is not on the button and button is not normal, it means cursor has just left the button,
+        # state and background color are changed to "normal" state
         else:
+            self.logger.debug('cursor not on the button')
             if self.state != 'normal':
+                self.logger.debug('state is not normal')
                 self.state = 'normal'
+                self.logger.debug(f'state: {self.state}')
                 if not self.transparent:
                     self.vertex_list.colors = (0, 0, 0, 248, 0, 0, 0, 248, 0, 0, 0, 248, 0, 0, 0, 248)
+                    self.logger.debug('background color: 0, 0, 0, 248')
                 else:
                     self.vertex_list.colors = (0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0)
+                    self.logger.debug('background color: 0, 0, 0, 0')
 
                 self.surface.set_mouse_cursor(self.default_cursor)
+                self.logger.debug('DEFAULT cursor set')
                 if self.on_leave_action is not None:
+                    self.logger.debug('calling on_leave_action')
                     self.on_leave_action()
+
+        self.logger.info('END HANDLE_MOUSE_MOTION')
 
     @button_is_activated
     @cursor_is_over_the_button
     @left_mouse_button
     def handle_mouse_press(self, x, y, button, modifiers):
+        """
+        When mouse cursor is over the button and left button is pressed, changes button state.
+
+        :param x:               mouse cursor X position inside the app window
+        :param y:               mouse cursor Y position inside the app window
+        :param button:          determines which mouse button was pressed
+        :param modifiers:       determines if some modifier key is held down (at the moment we don't use it)
+        """
+        self.logger.info('START HANDLE_MOUSE_PRESS')
         self.state = 'pressed'
+        self.logger.debug(f'state: {self.state}')
         self.vertex_list.colors = (191, 0, 0, 191, 191, 0, 0, 191, 191, 0, 0, 191, 191, 0, 0, 191)
+        self.logger.debug('background color: 191, 0, 0, 191')
+        self.logger.info('END HANDLE_MOUSE_PRESS')
 
     @button_is_activated
     @cursor_is_over_the_button
     @button_is_pressed
     @left_mouse_button
     def handle_mouse_release(self, x, y, button, modifiers):
+        """
+        When mouse cursor is over the button and left button is released, changes button state
+        and calls appropriate action assigned to the button.
+
+        :param x:               mouse cursor X position inside the app window
+        :param y:               mouse cursor Y position inside the app window
+        :param button:          determines which mouse button was pressed
+        :param modifiers:       determines if some modifier key is held down (at the moment we don't use it)
+        """
+        self.logger.info('START HANDLE_MOUSE_RELEASE')
         self.state = 'hover'
+        self.logger.debug(f'state: {self.state}')
         self.vertex_list.colors = (127, 0, 0, 191, 127, 0, 0, 191, 127, 0, 0, 191, 127, 0, 0, 191)
+        self.logger.debug('background color: 127, 0, 0, 191')
         self.surface.set_mouse_cursor(self.default_cursor)
+        self.logger.debug('DEFAULT cursor set')
+        self.logger.debug('calling on_click_action')
         self.on_click_action(self)
+        self.logger.info('END HANDLE_MOUSE_RELEASE')
 
     @button_is_activated
     def handle_mouse_leave(self, x, y):
+        """
+        When mouse cursor leaves the app window, changes button state because cursor is obviously not over the button.
+        Without this handler, in some cases buttons stay in "hover" state when mouse cursor leaves the button placed
+        near the app window edge.
+
+        :param x:               mouse cursor X position
+        :param y:               mouse cursor Y position
+        """
+        self.logger.info('START HANDLE_MOUSE_LEAVE')
         self.state = 'normal'
+        self.logger.debug(f'state: {self.state}')
         if not self.transparent:
             self.vertex_list.colors = (0, 0, 0, 248, 0, 0, 0, 248, 0, 0, 0, 248, 0, 0, 0, 248)
+            self.logger.debug('background color: 0, 0, 0, 248')
         else:
             self.vertex_list.colors = (0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0)
+            self.logger.debug('background color: 0, 0, 0, 0')
 
         self.surface.set_mouse_cursor(self.default_cursor)
+        self.logger.debug('DEFAULT cursor set')
+        self.logger.info('END HANDLE_MOUSE_LEAVE')
