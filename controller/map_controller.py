@@ -473,17 +473,44 @@ class MapController(Controller):
         self.logger.info('END ON_SWITCH_SIGNAL_TO_RED')
 
     def on_update_train_route_sections(self, track, train_route, last_car_position):
+        """
+        Notifies Train route controller about last train car position update.
+
+        :param track:                           train route track number
+        :param train_route:                     train route type
+        :param last_car_position:               train last car position on the route
+        """
+        self.logger.info('START ON_UPDATE_TRAIN_ROUTE_SECTIONS')
         self.train_routes[track][train_route].on_update_train_route_sections(last_car_position)
+        self.logger.info('END ON_UPDATE_TRAIN_ROUTE_SECTIONS')
 
     def on_update_train_route_section_status(self, train_route_data, status):
+        """
+        Notifies Train route controller about particular section status update.
+
+        :param train_route_data:                list of train route track number, type and section number
+        :param status:                          new status
+        """
+        self.logger.info('START ON_UPDATE_TRAIN_ROUTE_SECTION_STATUS')
         self.train_routes[
             train_route_data[TRAIN_ROUTE_DATA_TRACK_NUMBER]
         ][
             train_route_data[TRAIN_ROUTE_DATA_TYPE]
         ].on_update_section_status(train_route_data[TRAIN_ROUTE_DATA_SECTION_NUMBER], status)
+        self.logger.info('END ON_UPDATE_TRAIN_ROUTE_SECTION_STATUS')
 
     def on_train_route_section_force_busy_on(self, section, positions, train_id):
+        """
+        Notifies Railroad switch or Crossover controller about force_busy state change to True.
+
+        :param section:                         Railroad switch or Crossover object info: track numbers and type
+        :param positions:                       indicates which direction is about to be forced busy
+        :param train_id:                        id of the train which is about to pass through
+        """
+        self.logger.info('START ON_TRAIN_ROUTE_SECTION_FORCE_BUSY_ON')
+        self.logger.debug(f'section type: {section[SECTION_TYPE]}')
         if section[SECTION_TYPE] in ('left_railroad_switch', 'right_railroad_switch'):
+            self.logger.debug('section is railroad switch, calling function for railroad switch state update')
             self.switches[
                 section[SECTION_TRACK_NUMBER_1]
             ][
@@ -493,6 +520,7 @@ class MapController(Controller):
             ].on_force_busy_on(positions, train_id)
 
         if section[SECTION_TYPE] in ('left_crossover', 'right_crossover'):
+            self.logger.debug('section is crossover, calling function for crossover state update')
             self.crossovers[
                 section[SECTION_TRACK_NUMBER_1]
             ][
@@ -501,8 +529,19 @@ class MapController(Controller):
                 section[SECTION_TYPE]
             ].on_force_busy_on(positions, train_id)
 
+        self.logger.info('END ON_TRAIN_ROUTE_SECTION_FORCE_BUSY_ON')
+
     def on_train_route_section_force_busy_off(self, section, positions):
+        """
+        Notifies Railroad switch or Crossover controller about force_busy state change to False.
+
+        :param section:                         Railroad switch or Crossover object info: track numbers and type
+        :param positions:                       indicates which direction is about to be left
+        """
+        self.logger.info('START ON_TRAIN_ROUTE_SECTION_FORCE_BUSY_OFF')
+        self.logger.debug(f'section type: {section[SECTION_TYPE]}')
         if section[SECTION_TYPE] in ('left_railroad_switch', 'right_railroad_switch'):
+            self.logger.debug('section is railroad switch, calling function for railroad switch state update')
             self.switches[
                 section[SECTION_TRACK_NUMBER_1]
             ][
@@ -512,6 +551,7 @@ class MapController(Controller):
             ].on_force_busy_off()
 
         if section[SECTION_TYPE] in ('left_crossover', 'right_crossover'):
+            self.logger.debug('section is crossover, calling function for crossover state update')
             self.crossovers[
                 section[SECTION_TRACK_NUMBER_1]
             ][
@@ -520,14 +560,39 @@ class MapController(Controller):
                 section[SECTION_TYPE]
             ].on_force_busy_off(positions)
 
+        self.logger.info('END ON_TRAIN_ROUTE_SECTION_FORCE_BUSY_OFF')
+
     def on_leave_entry(self, entry_id):
+        """
+        Notifies Scheduler controller that entry is ready for new trains approaching.
+
+        :param entry_id:                        entry identification number from 0 to 3
+        """
+        self.logger.info('START ON_LEAVE_ENTRY')
         self.scheduler.on_leave_entry(entry_id)
+        self.logger.info('END ON_LEAVE_ENTRY')
 
     def on_leave_track(self, track):
+        """
+        Notifies the Dispatcher controller the track is clear for any of the next trains.
+
+        :param track:                   track number
+        """
+        self.logger.info('START ON_LEAVE_TRACK')
         self.dispatcher.on_leave_track(track)
+        self.logger.info('END ON_LEAVE_TRACK')
 
     def on_update_train_route_priority(self, track, train_route, priority):
+        """
+        Notifies Train route controller about priority update.
+
+        :param track:                           train rout track number
+        :param train_route:                     train route type
+        :param priority:                        new priority value
+        """
+        self.logger.info('START ON_UPDATE_TRAIN_ROUTE_PRIORITY')
         self.train_routes[track][train_route].on_update_priority(priority)
+        self.logger.info('END ON_UPDATE_TRAIN_ROUTE_PRIORITY')
 
     def on_set_trail_points(self, train_id, trail_points_v2):
         self.trains[train_id].on_set_trail_points(trail_points_v2)
@@ -542,10 +607,28 @@ class MapController(Controller):
         self.trains[train_id].on_set_train_destination_point(first_car_destination_point)
 
     def on_open_train_route(self, track, train_route, train_id, cars):
+        """
+        Notifies Train route controller to open train route.
+
+        :param track:                           train route track number
+        :param train_route:                     train route type
+        :param train_id:                        ID of the train which opens the train route
+        :param cars:                            number of cars in the train
+        """
+        self.logger.info('START ON_OPEN_TRAIN_ROUTE')
         self.train_routes[track][train_route].on_open_train_route(train_id, cars)
+        self.logger.info('END ON_OPEN_TRAIN_ROUTE')
 
     def on_close_train_route(self, track, train_route):
+        """
+        Notifies Train route controller to close train route.
+
+        :param track:                           train route track number
+        :param train_route:                     train route type
+        """
+        self.logger.info('START ON_CLOSE_TRAIN_ROUTE')
         self.train_routes[track][train_route].on_close_train_route()
+        self.logger.info('END ON_CLOSE_TRAIN_ROUTE')
 
     def on_create_train(self, train_id, cars, track, train_route, state, direction, new_direction,
                         current_direction, priority, boarding_time, exp, money):
@@ -563,10 +646,31 @@ class MapController(Controller):
             train.on_deactivate_view()
 
     def on_add_money(self, money):
+        """
+        Notifies Constructor controller about bank account state change when user gains money.
+
+        :param money:                   amount of money gained
+        """
+        self.logger.info('START ON_ADD_MONEY')
         self.constructor.on_add_money(money)
+        self.logger.info('END ON_ADD_MONEY')
 
     def on_pay_money(self, money):
+        """
+        Notifies the model and Map controller about bank account state change when user pays money.
+
+        :param money:                   amount of money spent
+        """
+        self.logger.info('START ON_PAY_MONEY')
         self.constructor.on_pay_money(money)
+        self.logger.info('END ON_PAY_MONEY')
 
     def on_add_car_collection(self, car_collection_id):
+        """
+        Notifies the model that the player has unlocked new car collection.
+
+        :param car_collection_id:               car collection ID to be unlocked
+        """
+        self.logger.info('START ON_ADD_CAR_COLLECTION')
         self.model.on_add_car_collection(car_collection_id)
+        self.logger.info('END ON_ADD_CAR_COLLECTION')
