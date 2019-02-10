@@ -44,7 +44,7 @@ class CrossoverController(Controller):
     @controller_is_not_active
     def on_activate(self):
         """
-        Activates Crossover object: controller and model.
+        Activates Crossover object: controller and model. Model activates the view if necessary.
         """
         self.logger.info('START ON_ACTIVATE')
         self.is_activated = True
@@ -99,7 +99,7 @@ class CrossoverController(Controller):
         this function only changes scale.
         """
         self.logger.info('START ON_ZOOM_IN')
-        self.view.on_change_zoom_factor(1.0, zoom_out_activated=False)
+        self.view.on_change_zoom_factor(ZOOM_IN_SCALE_FACTOR, zoom_out_activated=False)
         self.logger.info('END ON_ZOOM_IN')
 
     def on_zoom_out(self):
@@ -109,7 +109,7 @@ class CrossoverController(Controller):
         this function only changes scale.
         """
         self.logger.info('START ON_ZOOM_OUT')
-        self.view.on_change_zoom_factor(0.5, zoom_out_activated=True)
+        self.view.on_change_zoom_factor(ZOOM_OUT_SCALE_FACTOR, zoom_out_activated=True)
         self.logger.info('END ON_ZOOM_OUT')
 
     def on_activate_view(self):

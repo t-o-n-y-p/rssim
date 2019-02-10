@@ -175,7 +175,7 @@ class MapController(Controller):
             train.on_deactivate_view()
 
     def on_zoom_in(self):
-        self.view.on_change_zoom_factor(1.0, zoom_out_activated=False)
+        self.view.on_change_zoom_factor(ZOOM_IN_SCALE_FACTOR, zoom_out_activated=False)
         for signal in self.signals_list:
             signal.on_zoom_in()
 
@@ -194,7 +194,7 @@ class MapController(Controller):
         self.on_change_base_offset(self.view.base_offset)
 
     def on_zoom_out(self):
-        self.view.on_change_zoom_factor(0.5, zoom_out_activated=True)
+        self.view.on_change_zoom_factor(ZOOM_OUT_SCALE_FACTOR, zoom_out_activated=True)
         for signal in self.signals_list:
             signal.on_zoom_out()
 
@@ -292,8 +292,8 @@ class MapController(Controller):
         self.train_routes[track][train_route].on_update_train_route_sections(last_car_position)
 
     def on_update_train_route_section_status(self, train_route_data, status):
-        self.train_routes[train_route_data[0]][train_route_data[1]].on_update_section_status(train_route_data[2],
-                                                                                             status)
+        self.train_routes[train_route_data[0]][train_route_data[1]]\
+            .on_update_section_status(train_route_data[2], status)
 
     def on_train_route_section_force_busy_on(self, section, positions, train_id):
         if section[0] in ('left_railroad_switch', 'right_railroad_switch'):

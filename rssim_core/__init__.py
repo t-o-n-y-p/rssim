@@ -44,7 +44,7 @@ from view.constructor_view import ConstructorView
 from car_skins import *
 
 
-# ------------------- CONSTANTS -------------------
+# --------------------- CONSTANTS ---------------------
 CURRENT_VERSION = (0, 9, 3)         # current app version
 REQUIRED_TEXTURE_SIZE = 8192        # maximum texture resolution presented in the app
 MIN_RESOLUTION_WIDTH = 1280         # minimum screen resolution width supported by the app UI
@@ -467,7 +467,7 @@ def _create_dispatcher(user_db_connection, user_db_cursor, config_db_cursor, sur
                        batches, groups, map_controller):
     """
     Creates controller, model and view for Dispatcher object.
-    It is responsible for creating trains from schedule and assigning routes to approaching trains.
+    It is responsible for assigning routes to approaching trains.
 
     :param user_db_connection:      connection to the user DB (stores game state and user-defined settings)
     :param user_db_cursor:          user DB cursor (is used to execute user DB queries)

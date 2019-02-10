@@ -25,6 +25,7 @@ class AppController(Controller):
         self.settings = None
         self.fps = None
         self.loader = loader
+        self.logger.debug('loader assigned successfully')
         self.logger.info('END INIT')
 
     def on_update_view(self):

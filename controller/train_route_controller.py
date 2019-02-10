@@ -52,10 +52,10 @@ class TrainRouteController(Controller):
         self.view.on_change_screen_resolution(screen_resolution)
 
     def on_zoom_in(self):
-        self.view.on_change_zoom_factor(1.0, zoom_out_activated=False)
+        self.view.on_change_zoom_factor(ZOOM_IN_SCALE_FACTOR, zoom_out_activated=False)
 
     def on_zoom_out(self):
-        self.view.on_change_zoom_factor(0.5, zoom_out_activated=True)
+        self.view.on_change_zoom_factor(ZOOM_OUT_SCALE_FACTOR, zoom_out_activated=True)
 
     def on_activate_view(self):
         self.model.on_activate_view()

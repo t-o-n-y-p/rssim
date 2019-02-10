@@ -29,7 +29,7 @@ class ConstructorController(Controller):
     @controller_is_not_active
     def on_activate(self):
         """
-        Activates Constructor object: controller and model.
+        Activates Constructor object: controller and model. Model activates the view if necessary.
         """
         self.logger.info('START ON_ACTIVATE')
         self.is_activated = True

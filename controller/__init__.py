@@ -80,6 +80,13 @@ def map_view_is_active(fn):
     return _handle_if_map_view_is_activated
 
 
+# --------------------- CONSTANTS ---------------------
+FRAMES_IN_2_HOURS = 28800           # number of frames in 2 in-game hours
+ZOOM_OUT_SCALE_FACTOR = 0.5         # how much to scale all sprites when map is zoomed out
+ZOOM_IN_SCALE_FACTOR = 1.0          # how much to scale all sprites when map is zoomed in
+# ------------------- END CONSTANTS -------------------
+
+
 class Controller:
     """
     Base class for all controllers in the app.
