@@ -139,7 +139,7 @@ class GameController(Controller):
 
     def on_level_up(self):
         """
-        Notifies the model and Map controller about level change.
+        Notifies the model and Map controller about level update.
         """
         self.logger.info('START ON_LEVEL_UP')
         self.model.on_level_up()

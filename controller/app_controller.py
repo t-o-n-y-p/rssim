@@ -116,12 +116,12 @@ class AppController(Controller):
 
     def on_change_screen_resolution(self, screen_resolution):
         """
-        Notifies the model and all child controllers about screen resolution update.
+        Notifies the view and all child controllers about screen resolution update.
 
         :param screen_resolution:       new screen resolution
         """
         self.logger.info('START ON_CHANGE_SCREEN_RESOLUTION')
-        self.model.on_change_screen_resolution(screen_resolution)
+        self.view.on_change_screen_resolution(screen_resolution)
         self.game.on_change_screen_resolution(screen_resolution)
         self.settings.on_change_screen_resolution(screen_resolution)
         self.fps.on_change_screen_resolution(screen_resolution)

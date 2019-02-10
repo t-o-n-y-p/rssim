@@ -37,9 +37,6 @@ class AppModel(Model):
         self.view.on_fullscreen_mode_turned_off()
         self.on_save_and_commit_state(0)
 
-    def on_change_screen_resolution(self, screen_resolution):
-        self.view.on_change_screen_resolution(screen_resolution)
-
     def on_save_and_commit_state(self, fullscreen_mode):
         self.user_db_cursor.execute('UPDATE graphics SET fullscreen = ?', (fullscreen_mode, ))
         self.user_db_connection.commit()

@@ -142,14 +142,23 @@ class Button:
         :param surface:                         surface to draw all UI objects on
         :param batch:                           UI batch for the button
         :param groups:                          defines drawing layers (some labels and sprites behind others)
+        :param logger:                          telemetry instance
         """
+        self.logger = logger
+        self.logger.info('START BASE CLASS INIT')
         self.is_activated = False
+        self.logger.debug(f'is_activated: {self.is_activated}')
         self.to_activate_on_controller_init = None
         self.state = 'normal'
+        self.logger.debug(f'state: {self.state}')
         self.surface = surface
+        self.logger.debug('surface set successfully')
         self.batch = batch
+        self.logger.debug('batch set successfully')
         self.groups = groups
+        self.logger.debug('groups set successfully')
         self.transparent = True
+        self.logger.debug(f'transparent: {self.transparent}')
         self.paired_button = None
         self.vertex_list = None
         self.text_object = None
@@ -157,6 +166,7 @@ class Button:
         add_font('perfo-bold.ttf')
         self.font_name = None
         self.is_bold = False
+        self.logger.debug(f'is_bold: {self.is_bold}')
         self.font_size = None
         self.position = (0, 0)
         self.button_size = ()
@@ -166,8 +176,10 @@ class Button:
         self.on_hover_action = None
         self.on_leave_action = None
         self.hand_cursor = self.surface.get_system_mouse_cursor(surface.CURSOR_HAND)
+        self.logger.debug('hand_cursor initialized successfully')
         self.default_cursor = self.surface.get_system_mouse_cursor(surface.CURSOR_DEFAULT)
-        self.logger = logger
+        self.logger.debug('default_cursor initialized successfully')
+        self.logger.info('END BASE CLASS INIT')
 
     @button_is_not_activated
     def on_activate(self):

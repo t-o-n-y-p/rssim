@@ -50,7 +50,7 @@ class FPSController(Controller):
     @controller_is_active
     def on_update_fps(self, fps):
         """
-        Notifies the model about FPS value change.
+        Notifies the model about FPS value update.
 
         :param fps:                     new FPS value
         """

@@ -81,9 +81,18 @@ def map_view_is_active(fn):
 
 
 # --------------------- CONSTANTS ---------------------
-FRAMES_IN_2_HOURS = 28800           # number of frames in 2 in-game hours
-ZOOM_OUT_SCALE_FACTOR = 0.5         # how much to scale all sprites when map is zoomed out
-ZOOM_IN_SCALE_FACTOR = 1.0          # how much to scale all sprites when map is zoomed in
+FRAMES_IN_2_HOURS = 28800               # number of frames in 2 in-game hours
+ZOOM_OUT_SCALE_FACTOR = 0.5             # how much to scale all sprites when map is zoomed out
+ZOOM_IN_SCALE_FACTOR = 1.0              # how much to scale all sprites when map is zoomed in
+SIDE_ENTRY_EXIT_MASK = 100              # in base route system generic side entry and exit base routes have code 100
+LEFT_SIDE_ENTRY_FIRST_TRACK = 21        # first available track for left side route is 21st
+RIGHT_SIDE_ENTRY_FIRST_TRACK = 22       # first available track for right side route is 22nd
+SECTION_TYPE = 0                        # meaning of section[] list's element 0
+SECTION_TRACK_NUMBER_1 = 1              # meaning of section[] list's element 1
+SECTION_TRACK_NUMBER_2 = 2              # meaning of section[] list's element 2
+TRAIN_ROUTE_DATA_TRACK_NUMBER = 0       # meaning of train_route_data[] list's element 0
+TRAIN_ROUTE_DATA_TYPE = 1               # meaning of train_route_data[] list's element 1
+TRAIN_ROUTE_DATA_SECTION_NUMBER = 2     # meaning of train_route_data[] list's element 2
 # ------------------- END CONSTANTS -------------------
 
 
@@ -111,17 +120,25 @@ class Controller:
             logger                          telemetry instance
 
         :param parent_controller:           controller which this controller is child for in the hierarchy
+        :param logger:                      telemetry instance
         """
+        self.logger = logger
+        self.logger.info('START BASE CLASS INIT')
         self.model = None
         self.view = None
         self.is_activated = False
         self.parent_controller = parent_controller
+        if self.parent_controller is not None:
+            self.logger.debug(f'parent controller set successfully: {self.parent_controller.__class__.__name__}')
+        else:
+            self.logger.debug('no parent controller set')
+
         self.on_mouse_press_handlers = []
         self.on_mouse_release_handlers = []
         self.on_mouse_motion_handlers = []
         self.on_mouse_drag_handlers = []
         self.on_mouse_leave_handlers = []
-        self.logger = logger
+        self.logger.info('END BASE CLASS INIT')
 
     def on_update_view(self):
         """
