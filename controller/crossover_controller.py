@@ -28,9 +28,11 @@ class CrossoverController(Controller):
         )
         self.logger.info('START INIT')
         self.track_param_1 = track_param_1
+        self.logger.debug(f'track_param_1: {self.track_param_1}')
         self.track_param_2 = track_param_2
+        self.logger.debug(f'track_param_2: {self.track_param_2}')
         self.crossover_type = crossover_type
-        self.logger.debug(f'crossover params: {self.track_param_1} {self.track_param_2} {self.crossover_type}')
+        self.logger.debug(f'crossover_type: {self.crossover_type}')
         self.logger.info('END INIT')
 
     def on_update_view(self):

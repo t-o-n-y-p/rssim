@@ -324,7 +324,7 @@ def _create_signal(user_db_connection, user_db_cursor, config_db_cursor, surface
     :param groups:                  defines drawing layers (some labels and sprites behind others)
     :param map_controller:          Map controller pointer
     :param track:                   signal track number
-    :param base_route:              train route part which signal belongs to
+    :param base_route:              base route (train route part) which signal belongs to
     :return:                        Signal object controller
     """
     controller = SignalController(map_controller, track, base_route)

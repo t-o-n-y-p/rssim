@@ -409,6 +409,7 @@ class MapController(Controller):
         self.view.on_deactivate_zoom_buttons()
         # if mini map is active when user opens schedule screen, it should also be hidden
         self.view.is_mini_map_activated = False
+        self.logger.debug(f'view.is_mini_map_activated: {self.view.is_mini_map_activated}')
         self.logger.info('END ON_OPEN_SCHEDULE')
 
     def on_open_constructor(self):
@@ -426,6 +427,7 @@ class MapController(Controller):
         self.view.on_deactivate_zoom_buttons()
         # if mini map is active when user opens constructor screen, it should also be hidden
         self.view.is_mini_map_activated = False
+        self.logger.debug(f'view.is_mini_map_activated: {self.view.is_mini_map_activated}')
         self.logger.info('END ON_OPEN_CONSTRUCTOR')
 
     @map_view_is_active
@@ -576,7 +578,7 @@ class MapController(Controller):
         """
         Notifies the Dispatcher controller the track is clear for any of the next trains.
 
-        :param track:                   track number
+        :param track:                           track number
         """
         self.logger.info('START ON_LEAVE_TRACK')
         self.dispatcher.on_leave_track(track)
@@ -595,16 +597,49 @@ class MapController(Controller):
         self.logger.info('END ON_UPDATE_TRAIN_ROUTE_PRIORITY')
 
     def on_set_trail_points(self, train_id, trail_points_v2):
+        """
+        Notifies Train controller about trail points update.
+
+        :param train_id:                        ID of the train to update trail points
+        :param trail_points_v2:                 data
+        """
+        self.logger.info('START ON_SET_TRAIL_POINTS')
         self.trains[train_id].on_set_trail_points(trail_points_v2)
+        self.logger.info('END ON_SET_TRAIL_POINTS')
 
     def on_set_train_start_point(self, train_id, first_car_start_point):
+        """
+        Notifies Train controller about initial position update.
+
+        :param train_id:                        ID of the train to update initial position
+        :param first_car_start_point:           data
+        """
+        self.logger.info('START ON_SET_TRAIN_START_POINT')
         self.trains[train_id].on_set_train_start_point(first_car_start_point)
+        self.logger.info('END ON_SET_TRAIN_START_POINT')
 
     def on_set_train_stop_point(self, train_id, first_car_stop_point):
+        """
+        Notifies Train controller where to stop the train if signal is at danger.
+
+        :param train_id:                        ID of the train to update stop point
+        :param first_car_stop_point:            data
+        """
+        self.logger.info('START ON_SET_TRAIN_STOP_POINT')
         self.trains[train_id].on_set_train_stop_point(first_car_stop_point)
+        self.logger.info('END ON_SET_TRAIN_STOP_POINT')
 
     def on_set_train_destination_point(self, train_id, first_car_destination_point):
+        """
+        Notifies Train controller about destination point update.
+        When train reaches destination point, route is completed.
+
+        :param train_id:                        ID of the train to update destination point
+        :param first_car_destination_point:     data
+        """
+        self.logger.info('START ON_SET_TRAIN_DESTINATION_POINT')
         self.trains[train_id].on_set_train_destination_point(first_car_destination_point)
+        self.logger.info('END ON_SET_TRAIN_DESTINATION_POINT')
 
     def on_open_train_route(self, track, train_route, train_id, cars):
         """
@@ -632,18 +667,41 @@ class MapController(Controller):
 
     def on_create_train(self, train_id, cars, track, train_route, state, direction, new_direction,
                         current_direction, priority, boarding_time, exp, money):
+        """
+        Notifies the model to create new train, adds new train to the dictionary, list
+        and notifies Dispatcher controller to add new train.
+
+        :param train_id:                        train identification number
+        :param cars:                            number of cars in the train
+        :param track:                           track number (0 for regular entry and 100 for side entry)
+        :param train_route:                     train route type (left/right approaching or side_approaching)
+        :param state:                           train state: approaching or approaching_pass_through
+        :param direction:                       train arrival direction
+        :param new_direction:                   train departure direction
+        :param current_direction:               train current direction
+        :param priority:                        train priority in the queue
+        :param boarding_time:                   amount of boarding time left for this train
+        :param exp:                             exp gained when boarding finishes
+        :param money:                           money gained when boarding finishes
+        """
+        self.logger.info('START ON_CREATE_TRAIN')
         train = self.model.on_create_train(train_id, cars, track, train_route, state, direction, new_direction,
                                            current_direction, priority, boarding_time, exp, money)
         train.view.on_change_base_offset(self.view.base_offset)
         train.view.on_change_screen_resolution(self.view.screen_resolution)
         train.view.on_change_zoom_factor(self.view.zoom_factor, zoom_out_activated=self.view.zoom_out_activated)
+        # add new train to the list and dictionary
         self.trains[train.train_id] = train
         self.trains_list.append(train)
+        # add new train to the dispatcher
         self.dispatcher.on_add_train(train)
         train.parent_controller.on_open_train_route(track, train_route, train_id, cars)
         train.on_activate()
+        self.logger.debug(f'view.is_activated: {self.view.is_activated}')
         if not self.view.is_activated:
             train.on_deactivate_view()
+
+        self.logger.info('END ON_CREATE_TRAIN')
 
     def on_add_money(self, money):
         """
