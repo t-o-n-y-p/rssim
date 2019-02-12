@@ -7,10 +7,6 @@ class TrainRouteModel(Model):
     def __init__(self, user_db_connection, user_db_cursor, config_db_cursor, track, train_route):
         super().__init__(user_db_connection, user_db_cursor, config_db_cursor,
                          logger=getLogger(f'root.app.game.map.train_route.{track}.{train_route}.model'))
-        self.direction_from_left_to_right = 0
-        self.direction_from_right_to_left = 1
-        self.direction_from_left_to_right_side = 2
-        self.direction_from_right_to_left_side = 3
         self.opened = False
         self.last_opened_by = 0
         self.current_checkpoint = 0
@@ -128,13 +124,13 @@ class TrainRouteModel(Model):
         if self.current_checkpoint == 0:
             self.controller.parent_controller.on_switch_signal_to_red(self.signal_track, self.signal_base_route)
             if self.train_route_sections[0][0] == 'left_entry_base_route':
-                self.controller.parent_controller.on_leave_entry(self.direction_from_left_to_right)
+                self.controller.parent_controller.on_leave_entry(DIRECTION_FROM_LEFT_TO_RIGHT)
             elif self.train_route_sections[0][0] == 'right_entry_base_route':
-                self.controller.parent_controller.on_leave_entry(self.direction_from_right_to_left)
+                self.controller.parent_controller.on_leave_entry(DIRECTION_FROM_RIGHT_TO_LEFT)
             elif self.train_route_sections[0][0] == 'left_side_entry_base_route':
-                self.controller.parent_controller.on_leave_entry(self.direction_from_left_to_right_side)
+                self.controller.parent_controller.on_leave_entry(DIRECTION_FROM_LEFT_TO_RIGHT_SIDE)
             elif self.train_route_sections[0][0] == 'right_side_entry_base_route':
-                self.controller.parent_controller.on_leave_entry(self.direction_from_right_to_left_side)
+                self.controller.parent_controller.on_leave_entry(DIRECTION_FROM_RIGHT_TO_LEFT_SIDE)
             elif self.train_route_sections[0][0] in ('left_exit_platform_base_route', 'right_exit_platform_base_route'):
                 self.controller.parent_controller.on_leave_track(self.controller.track)
 

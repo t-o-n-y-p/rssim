@@ -9,26 +9,6 @@ class SchedulerModel(Model):
     def __init__(self, user_db_connection, user_db_cursor, config_db_cursor):
         super().__init__(user_db_connection, user_db_cursor, config_db_cursor,
                          logger=getLogger('root.app.game.map.scheduler.model'))
-        self.direction_from_left_to_right = 0
-        self.direction_from_right_to_left = 1
-        self.direction_from_left_to_right_side = 2
-        self.direction_from_right_to_left_side = 3
-        self.options_arrival_time_min = 0
-        self.options_arrival_time_max = 1
-        self.options_direction = 2
-        self.options_new_direction = 3
-        self.options_cars_min = 4
-        self.options_cars_max = 5
-        self.base_train_id = 0
-        self.base_arrival_time = 1
-        self.base_direction = 2
-        self.base_new_direction = 3
-        self.base_cars = 4
-        self.base_stop_time = 5
-        self.base_exp = 6
-        self.base_money = 7
-        self.entry_track = [0, 0, 100, 100]
-        self.entry_route = ['left_approaching', 'right_approaching', 'left_side_approaching', 'right_side_approaching']
         self.user_db_cursor.execute('SELECT level, unlocked_tracks, supported_cars_min FROM game_progress')
         self.level, self.unlocked_tracks, self.supported_cars_min = self.user_db_cursor.fetchone()
         self.config_db_cursor.execute('''SELECT arrival_time_min, arrival_time_max, direction, new_direction, 
@@ -64,52 +44,48 @@ class SchedulerModel(Model):
     def on_update_time(self, game_time):
         if game_time + self.schedule_cycle_length >= self.next_cycle_start_time:
             for i in self.schedule_options:
-                if (i[self.options_direction] in (self.direction_from_left_to_right,
-                                                  self.direction_from_right_to_left)
-                        and i[self.options_new_direction] in (self.direction_from_left_to_right,
-                                                              self.direction_from_right_to_left)) \
-                        or ((i[self.options_direction] == self.direction_from_left_to_right_side
-                             or i[self.options_new_direction] == self.direction_from_right_to_left_side)
+                if (i[DIRECTION] in (DIRECTION_FROM_LEFT_TO_RIGHT, DIRECTION_FROM_RIGHT_TO_LEFT)
+                        and i[NEW_DIRECTION] in (DIRECTION_FROM_LEFT_TO_RIGHT, DIRECTION_FROM_RIGHT_TO_LEFT)) \
+                        or ((i[DIRECTION] == DIRECTION_FROM_LEFT_TO_RIGHT_SIDE
+                             or i[NEW_DIRECTION] == DIRECTION_FROM_RIGHT_TO_LEFT_SIDE)
                             and self.unlocked_tracks >= 21)\
-                        or ((i[self.options_direction] == self.direction_from_right_to_left_side
-                             or i[self.options_new_direction] == self.direction_from_left_to_right_side)
+                        or ((i[DIRECTION] == DIRECTION_FROM_RIGHT_TO_LEFT_SIDE
+                             or i[NEW_DIRECTION] == DIRECTION_FROM_LEFT_TO_RIGHT_SIDE)
                             and self.unlocked_tracks >= 22):
-                    cars = choice([i[self.options_cars_min], i[self.options_cars_max]])
+                    cars = choice([i[CARS_MIN], i[CARS_MAX]])
                     self.base_schedule.append(
                         (self.train_counter, self.next_cycle_start_time
-                         + choice(list(range(i[self.options_arrival_time_min], i[self.options_arrival_time_max]))),
-                         i[self.options_direction], i[self.options_new_direction], cars, self.frame_per_car * cars,
+                         + choice(list(range(i[ARRIVAL_TIME_MIN], i[ARRIVAL_TIME_MAX]))),
+                         i[DIRECTION], i[NEW_DIRECTION], cars, self.frame_per_car * cars,
                          self.exp_per_car * cars, self.money_per_car * cars)
                     )
                     self.train_counter = (self.train_counter + 1) % 1000000
 
             self.next_cycle_start_time += self.schedule_cycle_length
-            self.base_schedule = sorted(self.base_schedule, key=itemgetter(self.base_arrival_time))
+            self.base_schedule = sorted(self.base_schedule, key=itemgetter(ARRIVAL_TIME))
 
         self.view.on_update_train_labels(self.base_schedule, game_time)
         for i in self.base_schedule:
-            if game_time >= i[self.base_arrival_time]:
-                if not self.entry_busy_state[i[self.base_direction]]:
-                    self.entry_busy_state[i[self.base_direction]] = True
-                    if i[self.base_cars] < self.supported_cars_min:
+            if game_time >= i[ARRIVAL_TIME]:
+                if not self.entry_busy_state[i[DIRECTION]]:
+                    self.entry_busy_state[i[DIRECTION]] = True
+                    if i[CARS] < self.supported_cars_min:
                         state = 'approaching_pass_through'
-                        self.controller.parent_controller.on_create_train(i[self.base_train_id], i[self.base_cars],
-                                                                          self.entry_track[i[self.base_direction]],
-                                                                          self.entry_route[i[self.base_direction]],
-                                                                          state, i[self.base_direction],
-                                                                          i[self.base_new_direction],
-                                                                          i[self.base_direction],
+                        self.controller.parent_controller.on_create_train(i[TRAIN_ID], i[CARS],
+                                                                          ENTRY_TRACK[i[DIRECTION]],
+                                                                          APPROACHING_TRAIN_ROUTE[i[DIRECTION]],
+                                                                          state, i[DIRECTION],
+                                                                          i[DIRECTION], i[DIRECTION],
                                                                           10000000, 480, 0.0, 0.0)
                     else:
                         state = 'approaching'
-                        self.controller.parent_controller.on_create_train(i[self.base_train_id], i[self.base_cars],
-                                                                          self.entry_track[i[self.base_direction]],
-                                                                          self.entry_route[i[self.base_direction]],
-                                                                          state, i[self.base_direction],
-                                                                          i[self.base_direction],
-                                                                          i[self.base_direction],
-                                                                          10000000, i[self.base_stop_time],
-                                                                          i[self.base_exp], i[self.base_money])
+                        self.controller.parent_controller.on_create_train(i[TRAIN_ID], i[CARS],
+                                                                          ENTRY_TRACK[i[DIRECTION]],
+                                                                          APPROACHING_TRAIN_ROUTE[i[DIRECTION]],
+                                                                          state, i[DIRECTION],
+                                                                          i[NEW_DIRECTION], i[DIRECTION],
+                                                                          10000000, i[STOP_TIME],
+                                                                          i[EXP], i[MONEY])
                     index = self.base_schedule.index(i)
                     self.base_schedule.remove(i)
                     self.view.on_release_train(index)

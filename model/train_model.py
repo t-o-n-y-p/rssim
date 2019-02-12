@@ -7,35 +7,8 @@ class TrainModel(Model):
     def __init__(self, user_db_connection, user_db_cursor, config_db_cursor, train_id):
         super().__init__(user_db_connection, user_db_cursor, config_db_cursor,
                          logger=getLogger(f'root.app.game.map.train.{train_id}.model'))
-        self.direction_from_left_to_right = 0
-        self.direction_from_right_to_left = 1
-        self.direction_from_left_to_right_side = 2
-        self.direction_from_right_to_left_side = 3
-        self.entry_train_route = ('left_entry', 'right_entry', 'left_side_entry', 'right_side_entry')
-        self.exit_train_route = ('right_exit', 'left_exit', 'right_side_exit', 'left_side_exit')
-        self.approaching_train_route = ('left_approaching', 'right_approaching',
-                                        'left_side_approaching', 'right_side_approaching')
-        self.train_acceleration_factor = (0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-                                          1, 1, 1, 1, 1, 1, 1, 2, 2, 2, 2, 2, 3, 3, 3, 3, 4, 4, 4, 4, 5, 5, 5, 6, 6, 6,
-                                          7, 7, 7, 8, 8, 9, 9, 9, 10, 10, 11, 11, 12, 12, 13, 13, 14, 14, 15, 15, 16,
-                                          17, 17, 18, 18, 19, 20, 20, 21, 21, 22, 23, 23, 24, 25, 26, 26, 27, 28,
-                                          29, 29, 30, 31, 32, 32, 33, 34, 35, 36, 37, 37, 38, 39, 40, 41, 42, 43, 44,
-                                          45, 46, 47, 48, 49, 50, 51, 52, 53, 54, 55, 56, 57, 58, 59, 60, 61, 62, 63,
-                                          64, 66, 67, 68, 69, 70, 71, 73, 74, 75, 76, 78, 79, 80, 81, 83, 84, 85, 86,
-                                          88, 89, 90, 92, 93, 95, 96, 97, 99, 100, 102, 103, 104, 106, 107, 109, 110,
-                                          112, 113, 115, 116, 118, 119, 121, 123, 124, 126, 128, 129, 131, 133, 135,
-                                          136, 138, 140, 142, 144, 146, 147, 149, 151, 153, 155, 157, 159, 161, 163,
-                                          165, 168, 170, 172, 174, 176, 178, 181, 183, 185, 187, 190, 192, 194, 197,
-                                          199, 201, 204, 206, 209, 211, 214, 216, 219, 221, 224, 227, 229, 232, 234,
-                                          237, 240, 243, 245, 248, 251, 254, 256, 259, 262, 265, 268, 271, 274, 277,
-                                          280, 283, 286, 289, 292, 295, 299, 302, 305, 309, 312, 316, 319, 323, 326,
-                                          330, 334, 338, 341, 345, 349, 353, 357, 361, 366, 370, 374, 378, 383, 387,
-                                          392, 396, 401, 405, 410, 415, 419, 424, 429, 434, 439, 444, 449, 454, 459,
-                                          464, 470, 475, 480, 486, 491, 497, 502, 508, 513, 519, 525, 531, 536, 542,
-                                          548, 554, 560, 566, 573, 579, 585, 591, 598, 604, 611, 617, 624, 630, 637,
-                                          644, 650, 657, 664, 671, 678, 685)
-        self.train_maximum_speed = 7
-        self.speed_factor_position_limit = len(self.train_acceleration_factor) - 1
+        self.train_maximum_speed = TRAIN_ACCELERATION_FACTOR[-1] - TRAIN_ACCELERATION_FACTOR[-2]
+        self.speed_factor_position_limit = len(TRAIN_ACCELERATION_FACTOR) - 1
         self.cars = 0
         self.track = 0
         self.train_route = ''
@@ -175,7 +148,7 @@ class TrainModel(Model):
                 self.speed_state = 'stop'
                 self.speed = 0
                 self.speed_factor_position = 0
-            elif self.stop_point - self.cars_position[0] <= self.train_acceleration_factor[self.speed_factor_position]:
+            elif self.stop_point - self.cars_position[0] <= TRAIN_ACCELERATION_FACTOR[self.speed_factor_position]:
                 self.speed_state = 'decelerate'
             else:
                 if self.speed_state != 'move':
@@ -203,14 +176,14 @@ class TrainModel(Model):
                     self.speed_state = 'move'
                     self.speed = self.train_maximum_speed
                 else:
-                    self.speed = self.train_acceleration_factor[self.speed_factor_position + 1] \
-                                 - self.train_acceleration_factor[self.speed_factor_position]
+                    self.speed = TRAIN_ACCELERATION_FACTOR[self.speed_factor_position + 1] \
+                               - TRAIN_ACCELERATION_FACTOR[self.speed_factor_position]
                     self.speed_factor_position += 1
 
             if self.speed_state == 'decelerate':
                 self.speed_factor_position -= 1
-                self.speed = self.train_acceleration_factor[self.speed_factor_position + 1] \
-                           - self.train_acceleration_factor[self.speed_factor_position]
+                self.speed = TRAIN_ACCELERATION_FACTOR[self.speed_factor_position + 1] \
+                           - TRAIN_ACCELERATION_FACTOR[self.speed_factor_position]
 
             if self.speed_state != 'stop':
                 car_position_view = []
@@ -226,7 +199,7 @@ class TrainModel(Model):
             self.boarding_time -= 1
             if self.boarding_time == 240:
                 self.current_direction = self.new_direction
-                self.train_route = self.exit_train_route[self.current_direction]
+                self.train_route = EXIT_TRAIN_ROUTE[self.current_direction]
                 if self.direction % 2 != self.new_direction % 2:
                     self.on_switch_direction()
 

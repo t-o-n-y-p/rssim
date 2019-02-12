@@ -10,7 +10,6 @@ class GameModel(Model):
         self.game_paused = False
         self.user_db_cursor.execute('SELECT game_time FROM epoch_timestamp')
         self.game_time = self.user_db_cursor.fetchone()[0]
-        self.maximum_level = 100
         self.user_db_cursor.execute('SELECT level, exp, accumulated_exp, money, money_target FROM game_progress')
         self.level, self.exp, self.accumulated_exp, self.money, self.money_target = self.user_db_cursor.fetchone()
         self.config_db_cursor.execute('''SELECT accumulated_player_progress, player_progress FROM player_progress_config 
@@ -68,7 +67,7 @@ class GameModel(Model):
     def on_add_exp(self, exp):
         self.exp += exp
         self.accumulated_exp += exp
-        if self.accumulated_exp >= self.accumulated_player_progress and self.level < self.maximum_level:
+        if self.accumulated_exp >= self.accumulated_player_progress and self.level < MAXIMUM_LEVEL:
             self.controller.on_level_up()
 
         self.view.on_update_exp(self.exp, self.player_progress)
@@ -76,7 +75,7 @@ class GameModel(Model):
     def on_level_up(self):
         self.exp = self.accumulated_exp - self.accumulated_player_progress
         self.level += 1
-        if self.level == self.maximum_level:
+        if self.level == MAXIMUM_LEVEL:
             self.exp = 0.0
 
         self.config_db_cursor.execute('''SELECT accumulated_player_progress, player_progress FROM player_progress_config 

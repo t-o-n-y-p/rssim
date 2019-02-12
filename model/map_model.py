@@ -16,7 +16,7 @@ def create_train(user_db_connection, user_db_cursor, config_db_cursor, surface, 
     seed()
     model.on_train_init(cars, track, train_route, state, direction, new_direction, current_direction,
                         priority, boarding_time, exp, money, choice(unlocked_car_collections))
-    view = TrainView(user_db_cursor, config_db_cursor, surface, batches, groups)
+    view = TrainView(user_db_cursor, config_db_cursor, surface, batches, groups, train_id)
     view.car_head_image = CAR_HEAD_IMAGE
     view.car_mid_image = CAR_MID_IMAGE
     view.car_tail_image = CAR_TAIL_IMAGE

@@ -21,15 +21,6 @@ class ConstructorModel(Model):
 
         self.user_db_cursor.execute('SELECT money FROM game_progress')
         self.money = self.user_db_cursor.fetchone()[0]
-        self.track_state_locked = 0
-        self.track_state_under_construction = 1
-        self.track_state_construction_time = 2
-        self.track_state_unlock_condition_from_level = 3
-        self.track_state_unlock_condition_from_previous_track = 4
-        self.track_state_unlock_condition_from_environment = 5
-        self.track_state_unlock_available = 6
-        self.track_state_price = 7
-        self.track_state_level = 8
         self.cached_unlocked_tracks = []
 
     @model_is_not_active
@@ -47,26 +38,23 @@ class ConstructorModel(Model):
     def on_update_time(self, game_time):
         unlocked_track = 0
         for track in self.track_state_matrix:
-            if self.track_state_matrix[track][self.track_state_under_construction]:
-                self.track_state_matrix[track][self.track_state_construction_time] -= 1
+            if self.track_state_matrix[track][UNDER_CONSTRUCTION]:
+                self.track_state_matrix[track][CONSTRUCTION_TIME] -= 1
                 self.view.on_update_live_track_state(self.track_state_matrix, track)
-                if self.track_state_matrix[track][self.track_state_construction_time] == 0:
+                if self.track_state_matrix[track][CONSTRUCTION_TIME] == 0:
                     unlocked_track = track
-                    self.track_state_matrix[track][self.track_state_under_construction] = False
-                    self.track_state_matrix[track][self.track_state_locked] = False
+                    self.track_state_matrix[track][UNDER_CONSTRUCTION] = False
+                    self.track_state_matrix[track][LOCKED] = False
                     self.controller.parent_controller.on_unlock_track(track)
                     self.cached_unlocked_tracks.append(track)
                     if track < 32:
-                        self.track_state_matrix[track + 1][self.track_state_unlock_condition_from_previous_track] = True
-                        if self.track_state_matrix[track + 1][self.track_state_unlock_condition_from_level] \
-                                and self.track_state_matrix[track + 1][
-                                                                    self.track_state_unlock_condition_from_environment]:
-                            self.track_state_matrix[track + 1][self.track_state_unlock_condition_from_previous_track] \
-                                = False
-                            self.track_state_matrix[track + 1][self.track_state_unlock_condition_from_level] = False
-                            self.track_state_matrix[track + 1][self.track_state_unlock_condition_from_environment] \
-                                = False
-                            self.track_state_matrix[track + 1][self.track_state_unlock_available] = True
+                        self.track_state_matrix[track + 1][UNLOCK_CONDITION_FROM_PREVIOUS_TRACK] = True
+                        if self.track_state_matrix[track + 1][UNLOCK_CONDITION_FROM_LEVEL] \
+                                and self.track_state_matrix[track + 1][UNLOCK_CONDITION_FROM_ENVIRONMENT]:
+                            self.track_state_matrix[track + 1][UNLOCK_CONDITION_FROM_PREVIOUS_TRACK] = False
+                            self.track_state_matrix[track + 1][UNLOCK_CONDITION_FROM_LEVEL] = False
+                            self.track_state_matrix[track + 1][UNLOCK_CONDITION_FROM_ENVIRONMENT] = False
+                            self.track_state_matrix[track + 1][UNLOCK_AVAILABLE] = True
 
                         self.view.on_update_live_track_state(self.track_state_matrix, track + 1)
 
@@ -91,15 +79,13 @@ class ConstructorModel(Model):
                                            unlock_condition_from_level = ?, unlock_condition_from_previous_track = ?, 
                                            unlock_condition_from_environment = ?, unlock_available = ? 
                                            WHERE track_number = ?''',
-                                        (self.track_state_matrix[track][self.track_state_locked],
-                                         self.track_state_matrix[track][self.track_state_under_construction],
-                                         self.track_state_matrix[track][self.track_state_construction_time],
-                                         self.track_state_matrix[track][self.track_state_unlock_condition_from_level],
-                                         self.track_state_matrix[track][
-                                             self.track_state_unlock_condition_from_previous_track],
-                                         self.track_state_matrix[track][
-                                             self.track_state_unlock_condition_from_environment],
-                                         self.track_state_matrix[track][self.track_state_unlock_available], track)
+                                        (self.track_state_matrix[track][LOCKED],
+                                         self.track_state_matrix[track][UNDER_CONSTRUCTION],
+                                         self.track_state_matrix[track][CONSTRUCTION_TIME],
+                                         self.track_state_matrix[track][UNLOCK_CONDITION_FROM_LEVEL],
+                                         self.track_state_matrix[track][UNLOCK_CONDITION_FROM_PREVIOUS_TRACK],
+                                         self.track_state_matrix[track][UNLOCK_CONDITION_FROM_ENVIRONMENT],
+                                         self.track_state_matrix[track][UNLOCK_AVAILABLE], track)
                                         )
 
     def on_level_up(self, level):
@@ -110,21 +96,21 @@ class ConstructorModel(Model):
             tracks_parsed.append(i[0])
 
         for track in tracks_parsed:
-            self.track_state_matrix[track][self.track_state_unlock_condition_from_level] = True
-            if self.track_state_matrix[track][self.track_state_unlock_condition_from_previous_track] \
-                    and self.track_state_matrix[track][self.track_state_unlock_condition_from_environment]:
-                self.track_state_matrix[track][self.track_state_unlock_condition_from_level] = False
-                self.track_state_matrix[track][self.track_state_unlock_condition_from_previous_track] = False
-                self.track_state_matrix[track][self.track_state_unlock_condition_from_environment] = False
-                self.track_state_matrix[track][self.track_state_unlock_available] = True
+            self.track_state_matrix[track][UNLOCK_CONDITION_FROM_LEVEL] = True
+            if self.track_state_matrix[track][UNLOCK_CONDITION_FROM_PREVIOUS_TRACK] \
+                    and self.track_state_matrix[track][UNLOCK_CONDITION_FROM_ENVIRONMENT]:
+                self.track_state_matrix[track][UNLOCK_CONDITION_FROM_LEVEL] = False
+                self.track_state_matrix[track][UNLOCK_CONDITION_FROM_PREVIOUS_TRACK] = False
+                self.track_state_matrix[track][UNLOCK_CONDITION_FROM_ENVIRONMENT] = False
+                self.track_state_matrix[track][UNLOCK_AVAILABLE] = True
 
             self.view.on_update_live_track_state(self.track_state_matrix, track)
 
     def on_put_track_under_construction(self, track):
         self.controller.parent_controller.parent_controller\
-            .on_pay_money(self.track_state_matrix[track][self.track_state_price])
-        self.track_state_matrix[track][self.track_state_unlock_available] = False
-        self.track_state_matrix[track][self.track_state_under_construction] = True
+            .on_pay_money(self.track_state_matrix[track][PRICE])
+        self.track_state_matrix[track][UNLOCK_AVAILABLE] = False
+        self.track_state_matrix[track][UNDER_CONSTRUCTION] = True
         self.view.on_update_live_track_state(self.track_state_matrix, track)
 
     @maximum_money_not_reached
@@ -132,6 +118,7 @@ class ConstructorModel(Model):
         self.money += money
         if self.money > 99999999.01:
             self.money = 99999999.01
+
         self.view.on_update_money(self.money, self.track_state_matrix)
 
     def on_pay_money(self, money):
