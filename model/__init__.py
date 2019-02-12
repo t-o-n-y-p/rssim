@@ -71,7 +71,8 @@ def not_approaching_route(fn):
 
 
 class Model:
-    def __init__(self, user_db_connection, user_db_cursor, config_db_cursor):
+    def __init__(self, user_db_connection, user_db_cursor, config_db_cursor, logger):
+        self.logger = logger
         self.view = None
         self.controller = None
         self.is_activated = False

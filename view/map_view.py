@@ -1,3 +1,4 @@
+from logging import getLogger
 from time import perf_counter
 
 from pyglet.sprite import Sprite
@@ -36,7 +37,8 @@ class MapView(View):
             button.on_deactivate()
             self.controller.on_open_constructor()
 
-        super().__init__(user_db_cursor, config_db_cursor, surface, batches, groups)
+        super().__init__(user_db_cursor, config_db_cursor, surface, batches, groups,
+                         logger=getLogger('root.app.game.map.view'))
         self.user_db_cursor.execute('SELECT unlocked_tracks FROM game_progress')
         self.unlocked_tracks = self.user_db_cursor.fetchone()[0]
         self.map_offset = ()

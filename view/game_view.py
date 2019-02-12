@@ -1,3 +1,5 @@
+from logging import getLogger
+
 from pyglet.image import load
 from pyglet.sprite import Sprite
 from pyglet.text import Label
@@ -20,7 +22,8 @@ class GameView(View):
             button.paired_button.on_activate()
             self.controller.on_resume_game()
 
-        super().__init__(user_db_cursor, config_db_cursor, surface, batches, groups)
+        super().__init__(user_db_cursor, config_db_cursor, surface, batches, groups,
+                         logger=getLogger('root.app.game.view'))
         self.game_frame_opacity = 0
         self.progress_bar_inactive_image = load('img/game_progress_bars/progress_bar_inactive.png')
         self.progress_bar_exp_inactive = None

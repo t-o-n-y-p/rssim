@@ -1,3 +1,5 @@
+from logging import getLogger
+
 from pyglet.image import load
 from pyglet.sprite import Sprite
 
@@ -5,8 +7,9 @@ from view import *
 
 
 class SignalView(View):
-    def __init__(self, user_db_cursor, config_db_cursor, surface, batches, groups):
-        super().__init__(user_db_cursor, config_db_cursor, surface, batches, groups)
+    def __init__(self, user_db_cursor, config_db_cursor, surface, batches, groups, track, base_route):
+        super().__init__(user_db_cursor, config_db_cursor, surface, batches, groups,
+                         logger=getLogger(f'root.app.game.map.signal.{track}.{base_route}.view'))
         self.red_signal_image = load('img/signals/signal_red.png')
         self.green_signal_image = load('img/signals/signal_green.png')
         self.red_signal_image.anchor_x = 4

@@ -328,9 +328,8 @@ def _create_signal(user_db_connection, user_db_cursor, config_db_cursor, surface
     :return:                        Signal object controller
     """
     controller = SignalController(map_controller, track, base_route)
-    model = SignalModel(user_db_connection, user_db_cursor, config_db_cursor)
-    model.on_signal_setup(track, base_route)
-    view = SignalView(user_db_cursor, config_db_cursor, surface, batches, groups)
+    model = SignalModel(user_db_connection, user_db_cursor, config_db_cursor, track, base_route)
+    view = SignalView(user_db_cursor, config_db_cursor, surface, batches, groups, track, base_route)
     controller.model = model
     model.controller = controller
     controller.view = view
@@ -357,12 +356,11 @@ def _create_train_route(user_db_connection, user_db_cursor, config_db_cursor, su
     :return:                        TrainRoute object controller
     """
     controller = TrainRouteController(map_controller, track, train_route)
-    model = TrainRouteModel(user_db_connection, user_db_cursor, config_db_cursor)
-    model.on_train_route_setup(track, train_route)
+    model = TrainRouteModel(user_db_connection, user_db_cursor, config_db_cursor, track, train_route)
     if model.opened:
         controller.parent_controller.on_set_trail_points(model.last_opened_by, model.trail_points_v2)
 
-    view = TrainRouteView(user_db_cursor, config_db_cursor, surface, batches, groups)
+    view = TrainRouteView(user_db_cursor, config_db_cursor, surface, batches, groups, track, train_route)
     controller.model = model
     model.controller = controller
     controller.view = view
@@ -390,9 +388,10 @@ def _create_railroad_switch(user_db_connection, user_db_cursor, config_db_cursor
     :return:                        RailroadSwitch object controller
     """
     controller = RailroadSwitchController(map_controller, track_param_1, track_param_2, switch_type)
-    model = RailroadSwitchModel(user_db_connection, user_db_cursor, config_db_cursor)
-    model.on_railroad_switch_setup(track_param_1, track_param_2, switch_type)
-    view = RailroadSwitchView(user_db_cursor, config_db_cursor, surface, batches, groups)
+    model = RailroadSwitchModel(user_db_connection, user_db_cursor, config_db_cursor,
+                                track_param_1, track_param_2, switch_type)
+    view = RailroadSwitchView(user_db_cursor, config_db_cursor, surface, batches, groups,
+                              track_param_1, track_param_2, switch_type)
     controller.model = model
     model.controller = controller
     controller.view = view
@@ -420,9 +419,10 @@ def _create_crossover(user_db_connection, user_db_cursor, config_db_cursor, surf
     :return:                        Crossover object controller
     """
     controller = CrossoverController(map_controller, track_param_1, track_param_2, crossover_type)
-    model = CrossoverModel(user_db_connection, user_db_cursor, config_db_cursor)
-    model.on_crossover_setup(track_param_1, track_param_2, crossover_type)
-    view = CrossoverView(user_db_cursor, config_db_cursor, surface, batches, groups)
+    model = CrossoverModel(user_db_connection, user_db_cursor, config_db_cursor,
+                           track_param_1, track_param_2, crossover_type)
+    view = CrossoverView(user_db_cursor, config_db_cursor, surface, batches, groups,
+                         track_param_1, track_param_2, crossover_type)
     controller.model = model
     model.controller = controller
     controller.view = view
@@ -448,9 +448,9 @@ def _create_train(user_db_connection, user_db_cursor, config_db_cursor, surface,
     :return:                        Train object controller
     """
     controller = TrainController(map_controller, train_id)
-    model = TrainModel(user_db_connection, user_db_cursor, config_db_cursor)
+    model = TrainModel(user_db_connection, user_db_cursor, config_db_cursor, train_id)
     model.on_train_setup(train_id)
-    view = TrainView(user_db_cursor, config_db_cursor, surface, batches, groups)
+    view = TrainView(user_db_cursor, config_db_cursor, surface, batches, groups, train_id)
     view.car_head_image = CAR_HEAD_IMAGE
     view.car_mid_image = CAR_MID_IMAGE
     view.car_tail_image = CAR_TAIL_IMAGE

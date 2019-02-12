@@ -1,9 +1,12 @@
+from logging import getLogger
+
 from model import *
 
 
 class GameModel(Model):
     def __init__(self, user_db_connection, user_db_cursor, config_db_cursor):
-        super().__init__(user_db_connection, user_db_cursor, config_db_cursor)
+        super().__init__(user_db_connection, user_db_cursor, config_db_cursor,
+                         logger=getLogger('root.app.game.model'))
         self.game_paused = False
         self.user_db_cursor.execute('SELECT game_time FROM epoch_timestamp')
         self.game_time = self.user_db_cursor.fetchone()[0]

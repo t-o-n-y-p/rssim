@@ -1,11 +1,13 @@
 from ctypes import windll
+from logging import getLogger
 
 from model import *
 
 
 class AppModel(Model):
     def __init__(self, user_db_connection, user_db_cursor, config_db_cursor):
-        super().__init__(user_db_connection, user_db_cursor, config_db_cursor)
+        super().__init__(user_db_connection, user_db_cursor, config_db_cursor,
+                         logger=getLogger('root.app.model'))
         self.config_db_cursor.execute('SELECT app_width, app_height FROM screen_resolution_config')
         self.screen_resolution_config = self.config_db_cursor.fetchall()
         self.fullscreen_mode_available = False

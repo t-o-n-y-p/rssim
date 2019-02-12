@@ -1,3 +1,5 @@
+from logging import getLogger
+
 from pyglet.text import Label
 
 from view import *
@@ -26,7 +28,8 @@ class ConstructorView(View):
             )
             self.buttons.remove(self.buy_buttons.pop(key_for_remove))
 
-        super().__init__(user_db_cursor, config_db_cursor, surface, batches, groups)
+        super().__init__(user_db_cursor, config_db_cursor, surface, batches, groups,
+                         logger=getLogger('root.app.game.map.constructor.view'))
         self.track_cells_positions = ()
         self.environment_cell_positions = ()
         self.constructor_locked_label_offset = [0, 0]

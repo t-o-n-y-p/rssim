@@ -1,9 +1,12 @@
+from logging import getLogger
+
 from model import *
 
 
 class FPSModel(Model):
     def __init__(self, user_db_connection, user_db_cursor, config_db_cursor):
-        super().__init__(user_db_connection, user_db_cursor, config_db_cursor)
+        super().__init__(user_db_connection, user_db_cursor, config_db_cursor,
+                         logger=getLogger('root.app.fps.model'))
         self.fps = 0
 
     @model_is_not_active

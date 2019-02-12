@@ -1,17 +1,23 @@
+from logging import getLogger
+
 from model import *
 
 
 class CrossoverModel(Model):
-    def __init__(self, user_db_connection, user_db_cursor, config_db_cursor):
-        super().__init__(user_db_connection, user_db_cursor, config_db_cursor)
+    def __init__(self, user_db_connection, user_db_cursor, config_db_cursor,
+                 track_param_1, track_param_2, crossover_type):
+        super().__init__(
+            user_db_connection, user_db_cursor, config_db_cursor,
+            logger=getLogger(
+                f'root.app.game.map.crossover.{track_param_1}.{track_param_2}.{crossover_type}.model'
+            )
+        )
         self.busy = {}
         self.force_busy = {}
         self.last_entered_by = {}
+        self.state_change_listeners = {}
         self.current_position_1 = None
         self.current_position_2 = None
-        self.state_change_listeners = {}
-
-    def on_crossover_setup(self, track_param_1, track_param_2, crossover_type):
         self.busy[track_param_1] = {}
         self.busy[track_param_2] = {}
         self.force_busy[track_param_1] = {}

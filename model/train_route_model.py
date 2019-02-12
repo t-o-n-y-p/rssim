@@ -1,9 +1,12 @@
+from logging import getLogger
+
 from model import *
 
 
 class TrainRouteModel(Model):
-    def __init__(self, user_db_connection, user_db_cursor, config_db_cursor):
-        super().__init__(user_db_connection, user_db_cursor, config_db_cursor)
+    def __init__(self, user_db_connection, user_db_cursor, config_db_cursor, track, train_route):
+        super().__init__(user_db_connection, user_db_cursor, config_db_cursor,
+                         logger=getLogger(f'root.app.game.map.train_route.{track}.{train_route}.model'))
         self.direction_from_left_to_right = 0
         self.direction_from_right_to_left = 1
         self.direction_from_left_to_right_side = 2
@@ -23,8 +26,6 @@ class TrainRouteModel(Model):
         self.train_route_section_busy_state = []
         self.priority = 0
         self.cars = 0
-
-    def on_train_route_setup(self, track, train_route):
         self.user_db_cursor.execute('''SELECT opened, last_opened_by, current_checkpoint, priority, cars 
                                        FROM train_routes WHERE track = ? and train_route = ?''', (track, train_route))
         self.opened, self.last_opened_by, self.current_checkpoint, self.priority, self.cars \

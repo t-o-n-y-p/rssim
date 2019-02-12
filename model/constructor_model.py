@@ -1,9 +1,12 @@
+from logging import getLogger
+
 from model import *
 
 
 class ConstructorModel(Model):
     def __init__(self, user_db_connection, user_db_cursor, config_db_cursor):
-        super().__init__(user_db_connection, user_db_cursor, config_db_cursor)
+        super().__init__(user_db_connection, user_db_cursor, config_db_cursor,
+                         logger=getLogger('root.app.game.map.constructor.model'))
         self.user_db_cursor.execute('''SELECT track_number, locked, under_construction, construction_time, 
                                        unlock_condition_from_level, unlock_condition_from_previous_track, 
                                        unlock_condition_from_environment, unlock_available FROM tracks 

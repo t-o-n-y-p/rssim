@@ -1,3 +1,5 @@
+from logging import getLogger
+
 from pyglet.text import Label
 
 from view import *
@@ -5,7 +7,8 @@ from view import *
 
 class FPSView(View):
     def __init__(self, user_db_cursor, config_db_cursor, surface, batches, groups):
-        super().__init__(user_db_cursor, config_db_cursor, surface, batches, groups)
+        super().__init__(user_db_cursor, config_db_cursor, surface, batches, groups,
+                         logger=getLogger('root.app.fps.view'))
         self.fps_label = None
 
     def on_update(self):

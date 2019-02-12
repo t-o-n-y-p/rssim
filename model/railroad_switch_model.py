@@ -1,16 +1,21 @@
+from logging import getLogger
+
 from model import *
 
 
 class RailroadSwitchModel(Model):
-    def __init__(self, user_db_connection, user_db_cursor, config_db_cursor):
-        super().__init__(user_db_connection, user_db_cursor, config_db_cursor)
+    def __init__(self, user_db_connection, user_db_cursor, config_db_cursor, track_param_1, track_param_2, switch_type):
+        super().__init__(
+            user_db_connection, user_db_cursor, config_db_cursor,
+            logger=getLogger(
+                f'root.app.game.map.railroad_switch.{track_param_1}.{track_param_2}.{switch_type}.model'
+            )
+        )
         self.busy = None
         self.force_busy = None
         self.last_entered_by = None
         self.current_position = None
         self.state_change_listeners = []
-
-    def on_railroad_switch_setup(self, track_param_1, track_param_2, switch_type):
         self.user_db_cursor.execute('''SELECT busy, force_busy, last_entered_by, current_position FROM switches 
                                        WHERE track_param_1 = ? AND track_param_2 = ? AND switch_type = ?''',
                                     (track_param_1, track_param_2, switch_type))

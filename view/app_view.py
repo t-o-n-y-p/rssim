@@ -1,3 +1,5 @@
+from logging import getLogger
+
 from pyglet.text import Label
 from pyglet.gl import GL_QUADS
 from win32api import GetCursorPos
@@ -34,7 +36,8 @@ class AppView(View):
             button.on_deactivate()
             self.controller.settings.on_activate()
 
-        super().__init__(user_db_cursor, config_db_cursor, surface, batches, groups)
+        super().__init__(user_db_cursor, config_db_cursor, surface, batches, groups,
+                         logger=getLogger('root.app.view'))
         self.title_label = None
         self.main_frame_sprite = None
         self.close_game_button = CloseGameButton(surface=self.surface, batch=self.batches['ui_batch'],

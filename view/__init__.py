@@ -100,7 +100,8 @@ def signal_is_displayed_on_map(fn):
 
 
 class View:
-    def __init__(self, user_db_cursor, config_db_cursor, surface, batches, groups):
+    def __init__(self, user_db_cursor, config_db_cursor, surface, batches, groups, logger):
+        self.logger = logger
         self.user_db_cursor = user_db_cursor
         self.config_db_cursor = config_db_cursor
         self.controller = None

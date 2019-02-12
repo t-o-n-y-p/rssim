@@ -1,12 +1,14 @@
 from random import choice
 from operator import itemgetter
+from logging import getLogger
 
 from model import *
 
 
 class SchedulerModel(Model):
     def __init__(self, user_db_connection, user_db_cursor, config_db_cursor):
-        super().__init__(user_db_connection, user_db_cursor, config_db_cursor)
+        super().__init__(user_db_connection, user_db_cursor, config_db_cursor,
+                         logger=getLogger('root.app.game.map.scheduler.model'))
         self.direction_from_left_to_right = 0
         self.direction_from_right_to_left = 1
         self.direction_from_left_to_right_side = 2

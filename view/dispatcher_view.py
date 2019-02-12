@@ -1,9 +1,12 @@
+from logging import getLogger
+
 from view import *
 
 
 class DispatcherView(View):
     def __init__(self, user_db_cursor, config_db_cursor, surface, batches, groups):
-        super().__init__(user_db_cursor, config_db_cursor, surface, batches, groups)
+        super().__init__(user_db_cursor, config_db_cursor, surface, batches, groups,
+                         logger=getLogger('root.app.game.map.dispatcher.view'))
 
     def on_update(self):
         pass

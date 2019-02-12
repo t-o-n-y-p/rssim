@@ -1,11 +1,14 @@
+from logging import getLogger
+
 from pyglet.sprite import Sprite
 
 from view import *
 
 
 class TrainView(View):
-    def __init__(self, user_db_cursor, config_db_cursor, surface, batches, groups):
-        super().__init__(user_db_cursor, config_db_cursor, surface, batches, groups)
+    def __init__(self, user_db_cursor, config_db_cursor, surface, batches, groups, train_id):
+        super().__init__(user_db_cursor, config_db_cursor, surface, batches, groups,
+                         logger=getLogger(f'root.app.game.map.train.{train_id}.view'))
         self.car_position = []
         self.car_head_image = []
         self.car_mid_image = []

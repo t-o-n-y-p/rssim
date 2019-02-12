@@ -1,3 +1,5 @@
+from logging import getLogger
+
 from pyglet.text import Label
 
 from view import *
@@ -36,7 +38,8 @@ class SettingsView(View):
 
             self.increment_windowed_resolution_button.on_activate()
 
-        super().__init__(user_db_cursor, config_db_cursor, surface, batches, groups)
+        super().__init__(user_db_cursor, config_db_cursor, surface, batches, groups,
+                         logger=getLogger('root.app.settings.view'))
         self.temp_windowed_resolution = (0, 0)
         self.temp_log_level = 0
         self.medium_line = self.screen_resolution[1] // 2 + self.top_bar_height // 2

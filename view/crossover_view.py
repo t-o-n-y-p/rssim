@@ -1,9 +1,17 @@
+from logging import getLogger
+
 from view import *
 
 
 class CrossoverView(View):
-    def __init__(self, user_db_cursor, config_db_cursor, surface, batches, groups):
-        super().__init__(user_db_cursor, config_db_cursor, surface, batches, groups)
+    def __init__(self, user_db_cursor, config_db_cursor, surface, batches, groups,
+                 track_param_1, track_param_2, crossover_type):
+        super().__init__(
+            user_db_cursor, config_db_cursor, surface, batches, groups,
+            logger=getLogger(
+                f'root.app.game.map.crossover.{track_param_1}.{track_param_2}.{crossover_type}.view'
+            )
+        )
 
     def on_update(self):
         pass

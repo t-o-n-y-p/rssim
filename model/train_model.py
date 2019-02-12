@@ -1,9 +1,12 @@
+from logging import getLogger
+
 from model import *
 
 
 class TrainModel(Model):
-    def __init__(self, user_db_connection, user_db_cursor, config_db_cursor):
-        super().__init__(user_db_connection, user_db_cursor, config_db_cursor)
+    def __init__(self, user_db_connection, user_db_cursor, config_db_cursor, train_id):
+        super().__init__(user_db_connection, user_db_cursor, config_db_cursor,
+                         logger=getLogger(f'root.app.game.map.train.{train_id}.model'))
         self.direction_from_left_to_right = 0
         self.direction_from_right_to_left = 1
         self.direction_from_left_to_right_side = 2

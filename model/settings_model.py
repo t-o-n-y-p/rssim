@@ -1,3 +1,4 @@
+from logging import getLogger
 from ctypes import windll
 
 from model import *
@@ -5,7 +6,8 @@ from model import *
 
 class SettingsModel(Model):
     def __init__(self, user_db_connection, user_db_cursor, config_db_cursor):
-        super().__init__(user_db_connection, user_db_cursor, config_db_cursor)
+        super().__init__(user_db_connection, user_db_cursor, config_db_cursor,
+                         logger=getLogger('root.app.settings.model'))
         self.user_db_cursor.execute('SELECT app_width, app_height FROM graphics')
         self.windowed_resolution = self.user_db_cursor.fetchone()
         self.user_db_cursor.execute('SELECT fullscreen FROM graphics')

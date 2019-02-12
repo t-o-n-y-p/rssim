@@ -1,3 +1,5 @@
+from logging import getLogger
+
 from pyglet.text import Label
 
 from view import *
@@ -9,7 +11,8 @@ class SchedulerView(View):
         def on_close_schedule(button):
             self.controller.on_deactivate_view()
 
-        super().__init__(user_db_cursor, config_db_cursor, surface, batches, groups)
+        super().__init__(user_db_cursor, config_db_cursor, surface, batches, groups,
+                         logger=getLogger('root.app.game.map.scheduler.view'))
         self.departure_text = ['West City', 'East City', 'North-West City', 'South-East City']
         self.schedule_opacity = 0
         self.schedule_top_left_line = [0, 0]

@@ -1,9 +1,12 @@
+from logging import getLogger
+
 from view import *
 
 
 class TrainRouteView(View):
-    def __init__(self, user_db_cursor, config_db_cursor, surface, batches, groups):
-        super().__init__(user_db_cursor, config_db_cursor, surface, batches, groups)
+    def __init__(self, user_db_cursor, config_db_cursor, surface, batches, groups, track, train_route):
+        super().__init__(user_db_cursor, config_db_cursor, surface, batches, groups,
+                         logger=getLogger(f'root.app.game.map.train_route.{track}.{train_route}.view'))
 
     def on_update(self):
         pass
