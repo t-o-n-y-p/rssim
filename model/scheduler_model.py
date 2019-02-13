@@ -48,10 +48,10 @@ class SchedulerModel(Model):
                         and i[NEW_DIRECTION] in (DIRECTION_FROM_LEFT_TO_RIGHT, DIRECTION_FROM_RIGHT_TO_LEFT)) \
                         or ((i[DIRECTION] == DIRECTION_FROM_LEFT_TO_RIGHT_SIDE
                              or i[NEW_DIRECTION] == DIRECTION_FROM_RIGHT_TO_LEFT_SIDE)
-                            and self.unlocked_tracks >= 21)\
+                            and self.unlocked_tracks >= LEFT_SIDE_ENTRY_FIRST_TRACK)\
                         or ((i[DIRECTION] == DIRECTION_FROM_RIGHT_TO_LEFT_SIDE
                              or i[NEW_DIRECTION] == DIRECTION_FROM_LEFT_TO_RIGHT_SIDE)
-                            and self.unlocked_tracks >= 22):
+                            and self.unlocked_tracks >= RIGHT_SIDE_ENTRY_FIRST_TRACK):
                     cars = choice([i[CARS_MIN], i[CARS_MAX]])
                     self.base_schedule.append(
                         (self.train_counter, self.next_cycle_start_time
@@ -59,7 +59,7 @@ class SchedulerModel(Model):
                          i[DIRECTION], i[NEW_DIRECTION], cars, self.frame_per_car * cars,
                          self.exp_per_car * cars, self.money_per_car * cars)
                     )
-                    self.train_counter = (self.train_counter + 1) % 1000000
+                    self.train_counter = (self.train_counter + 1) % TRAIN_ID_LIMIT
 
             self.next_cycle_start_time += self.schedule_cycle_length
             self.base_schedule = sorted(self.base_schedule, key=itemgetter(ARRIVAL_TIME))

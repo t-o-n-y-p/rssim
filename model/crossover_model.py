@@ -16,8 +16,6 @@ class CrossoverModel(Model):
         self.force_busy = {}
         self.last_entered_by = {}
         self.state_change_listeners = {}
-        self.current_position_1 = None
-        self.current_position_2 = None
         self.busy[track_param_1] = {}
         self.busy[track_param_2] = {}
         self.force_busy[track_param_1] = {}

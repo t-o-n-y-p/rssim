@@ -7,10 +7,6 @@ class SignalModel(Model):
     def __init__(self, user_db_connection, user_db_cursor, config_db_cursor, track, base_route):
         super().__init__(user_db_connection, user_db_cursor, config_db_cursor,
                          logger=getLogger(f'root.app.game.map.signal.{track}.{base_route}.model'))
-        self.state = 'red_signal'
-        self.locked = True
-        self.flip_needed = False
-        self.position = (0, 0)
         self.user_db_cursor.execute('SELECT state, locked FROM signals WHERE track = ? AND base_route = ?',
                                     (track, base_route))
         self.state, self.locked = self.user_db_cursor.fetchone()

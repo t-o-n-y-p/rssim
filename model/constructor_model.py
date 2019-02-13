@@ -116,8 +116,8 @@ class ConstructorModel(Model):
     @maximum_money_not_reached
     def on_add_money(self, money):
         self.money += money
-        if self.money > 99999999.01:
-            self.money = 99999999.01
+        if self.money > MONEY_LIMIT:
+            self.money = MONEY_LIMIT
 
         self.view.on_update_money(self.money, self.track_state_matrix)
 

@@ -22,7 +22,7 @@ train_route_controller.py           implements Train route object controller
 
 def controller_is_active(fn):
     """
-    Use this decorator to execute function only if controller object is active.
+    Use this decorator to execute function only if controller is active.
 
     :param fn:                      function to decorate
     :return:                        decorator function
@@ -37,7 +37,7 @@ def controller_is_active(fn):
 
 def controller_is_not_active(fn):
     """
-    Use this decorator to execute function only if controller object is not active.
+    Use this decorator to execute function only if controller is not active.
 
     :param fn:                      function to decorate
     :return:                        decorator function
@@ -52,7 +52,7 @@ def controller_is_not_active(fn):
 
 def game_is_not_paused(fn):
     """
-    Use this decorator within Game object controller to execute function only if game is not paused.
+    Use this decorator within Game controller to execute function only if game is not paused.
 
     :param fn:                      function to decorate
     :return:                        decorator function
@@ -67,7 +67,7 @@ def game_is_not_paused(fn):
 
 def map_view_is_active(fn):
     """
-    Use this decorator within Map object controller to execute function only if Map object view is active.
+    Use this decorator within Map controller to execute function only if Map object view is active.
 
     :param fn:                      function to decorate
     :return:                        decorator function
@@ -127,6 +127,7 @@ class Controller:
         self.model = None
         self.view = None
         self.is_activated = False
+        self.logger.debug(f'is activated: {self.is_activated}')
         self.parent_controller = parent_controller
         if self.parent_controller is not None:
             self.logger.debug(f'parent controller set successfully: {self.parent_controller.__class__.__name__}')

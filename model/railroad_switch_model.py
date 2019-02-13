@@ -11,11 +11,6 @@ class RailroadSwitchModel(Model):
                 f'root.app.game.map.railroad_switch.{track_param_1}.{track_param_2}.{switch_type}.model'
             )
         )
-        self.busy = None
-        self.force_busy = None
-        self.last_entered_by = None
-        self.current_position = None
-        self.state_change_listeners = []
         self.user_db_cursor.execute('''SELECT busy, force_busy, last_entered_by, current_position FROM switches 
                                        WHERE track_param_1 = ? AND track_param_2 = ? AND switch_type = ?''',
                                     (track_param_1, track_param_2, switch_type))
