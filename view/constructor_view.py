@@ -127,8 +127,8 @@ class ConstructorView(View):
         self.constructor_railway_station_caption_sprite = None
         self.constructor_environment_caption_sprite.delete()
         self.constructor_environment_caption_sprite = None
-        for l in self.coming_soon_environment_labels:
-            l.delete()
+        for label in self.coming_soon_environment_labels:
+            label.delete()
 
         for d in self.locked_tracks_labels:
             self.locked_tracks_labels[d].delete()
