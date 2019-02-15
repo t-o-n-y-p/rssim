@@ -241,7 +241,7 @@ class MapController(Controller):
 
     def on_deactivate_view(self):
         """
-        Deactivates the view and all child views if user either closed game screen or opened settings screen.
+        Deactivates the view and child views if user either closed game screen or opened settings screen.
         """
         self.logger.info('START ON_DEACTIVATE_VIEW')
         self.view.on_deactivate()

@@ -106,25 +106,9 @@ class DispatcherController(Controller):
         self.view.on_change_zoom_factor(ZOOM_OUT_SCALE_FACTOR, zoom_out_activated=True)
         self.logger.info('END ON_ZOOM_OUT')
 
-    def on_activate_view(self):
-        """
-        Activates the view if user opened game screen in the app.
-        """
-        self.logger.info('START ON_ACTIVATE_VIEW')
-        self.model.on_activate_view()
-        self.logger.info('END ON_ACTIVATE_VIEW')
-
-    def on_deactivate_view(self):
-        """
-        Deactivates the view if user either closed game screen or opened settings screen.
-        """
-        self.logger.info('START ON_DEACTIVATE_VIEW')
-        self.view.on_deactivate()
-        self.logger.info('END ON_DEACTIVATE_VIEW')
-
     def on_add_train(self, train_controller):
         """
-        Adds approaching train to the dispatcher.
+        Notifies the model to add approaching train to the dispatcher.
         After train is created, it needs to be dispatched to the most suitable track.
 
         :param train_controller:        controller of the train to be added
