@@ -41,10 +41,11 @@ class MapView(View):
                          logger=getLogger('root.app.game.map.view'))
         self.user_db_cursor.execute('SELECT unlocked_tracks FROM game_progress')
         self.unlocked_tracks = self.user_db_cursor.fetchone()[0]
-        self.map_offset = ()
-        self.mini_map_offset = ()
         self.main_map = resource.image(f'full_map_{self.unlocked_tracks}.dds')
         self.environment = resource.image(f'full_map_e_0.dds')
+        self.map_offset = (0, 0)
+        self.mini_map_offset = (0, 0)
+        self.on_change_map_offset()
         self.main_map_sprite = None
         self.environment_sprite = None
         self.mini_map_sprite = None

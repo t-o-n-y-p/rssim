@@ -434,7 +434,7 @@ def _create_crossover(user_db_connection, user_db_cursor, config_db_cursor, surf
 def _create_train(user_db_connection, user_db_cursor, config_db_cursor, surface,
                   batches, groups, map_controller, train_id):
     """
-    Creates controller, model and view for Train object.
+    Creates controller, model and view for Train object from the database.
     It is responsible for properties, UI and events related to the train.
 
     :param user_db_connection:      connection to the user DB (stores game state and user-defined settings)
@@ -450,11 +450,8 @@ def _create_train(user_db_connection, user_db_cursor, config_db_cursor, surface,
     controller = TrainController(map_controller, train_id)
     model = TrainModel(user_db_connection, user_db_cursor, config_db_cursor, train_id)
     model.on_train_setup(train_id)
-    view = TrainView(user_db_cursor, config_db_cursor, surface, batches, groups, train_id)
-    view.car_head_image = CAR_HEAD_IMAGE
-    view.car_mid_image = CAR_MID_IMAGE
-    view.car_tail_image = CAR_TAIL_IMAGE
-    view.boarding_light_image = BOARDING_LIGHT_IMAGE
+    view = TrainView(user_db_cursor, config_db_cursor, surface, batches, groups, train_id,
+                     CAR_HEAD_IMAGE, CAR_MID_IMAGE, CAR_TAIL_IMAGE, BOARDING_LIGHT_IMAGE)
     controller.model = model
     model.controller = controller
     controller.view = view

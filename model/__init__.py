@@ -240,6 +240,7 @@ TRAIN_ID_LIMIT = 1000000                # train ID is limited to 6 digits, 99999
 FULLSCREEN_MODE_TURNED_OFF = 0          # database value for fullscreen mode turned on
 FULLSCREEN_MODE_TURNED_ON = 1           # database value for fullscreen mode turned off
 MAXIMUM_TRACK_NUMBER = 32               # player can have maximum of 32 tracks
+FRAMES_IN_ONE_MINUTE = 240              # indicates how many frames fit in 1 in-game minute
 # ------------------- END CONSTANTS -------------------
 
 

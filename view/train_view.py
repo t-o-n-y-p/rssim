@@ -6,14 +6,15 @@ from view import *
 
 
 class TrainView(View):
-    def __init__(self, user_db_cursor, config_db_cursor, surface, batches, groups, train_id):
+    def __init__(self, user_db_cursor, config_db_cursor, surface, batches, groups, train_id,
+                 car_head_image, car_mid_image, car_tail_image, boarding_light_image):
         super().__init__(user_db_cursor, config_db_cursor, surface, batches, groups,
                          logger=getLogger(f'root.app.game.map.train.{train_id}.view'))
         self.car_position = []
-        self.car_head_image = []
-        self.car_mid_image = []
-        self.car_tail_image = []
-        self.boarding_light_image = []
+        self.car_head_image = car_head_image
+        self.car_mid_image = car_mid_image
+        self.car_tail_image = car_tail_image
+        self.boarding_light_image = boarding_light_image
         self.car_sprites = []
         self.boarding_light_sprites = []
         self.direction = None
