@@ -4,11 +4,50 @@ from model import *
 
 
 class TrainModel(Model):
+    """
+    Implements Train model.
+    Train object is responsible for properties, UI and events related to the train.
+    """
     def __init__(self, user_db_connection, user_db_cursor, config_db_cursor, train_id):
+        """
+        Properties:
+            train_maximum_speed                 maximum speed the train can achieve
+            speed_factor_position_limit         maximum position on acceleration chart
+            cars                                number of cars in the train
+            track                               track number (0 for regular entry and 100 for side entry)
+            train_route                         train route type (left/right approaching or side_approaching)
+            state                               train state: approaching or approaching_pass_through
+            direction                           train arrival direction
+            new_direction                       train departure direction
+            current_direction                   train current direction
+            speed                               current train speed
+            speed_state                         indicates if train accelerates, decelerates, just moves or is still
+            speed_factor_position               acceleration chart position
+            priority                            train priority in the queue
+            boarding_time                       amount of boarding time left for this train
+            exp                                 exp gained when boarding finishes
+            money                               money gained when boarding finishes
+            cars_position                       list of trail point ID for each car (empty if boarding is in progress)
+            cars_position_abs                   list of 2D Cartesian positions for each car
+                                                (used when boarding is in progress)
+            stop_point                          indicates where to stop the train if signal is at danger
+            destination_point                   when train reaches destination point, route is completed
+            trail_points_v2                     list of train route trail points in 2D Cartesian coordinates
+                                                plus rotation angle
+            car_image_collection                number of car collection used for this train
+
+        :param user_db_connection:              connection to the user DB (stores game state and user-defined settings)
+        :param user_db_cursor:                  user DB cursor (is used to execute user DB queries)
+        :param config_db_cursor:                configuration DB cursor (is used to execute configuration DB queries)
+        :param train_id:                        train identification number
+        """
         super().__init__(user_db_connection, user_db_cursor, config_db_cursor,
                          logger=getLogger(f'root.app.game.map.train.{train_id}.model'))
+        self.logger.info('START INIT')
         self.train_maximum_speed = TRAIN_ACCELERATION_FACTOR[-1] - TRAIN_ACCELERATION_FACTOR[-2]
+        self.logger.debug(f'train_maximum_speed: {self.train_maximum_speed}')
         self.speed_factor_position_limit = len(TRAIN_ACCELERATION_FACTOR) - 1
+        self.logger.debug(f'speed_factor_position_limit: {self.speed_factor_position_limit}')
         self.cars = 0
         self.track = 0
         self.train_route = ''
@@ -29,14 +68,38 @@ class TrainModel(Model):
         self.destination_point = 0
         self.trail_points_v2 = []
         self.car_image_collection = 0
+        self.logger.info('END INIT')
 
     def on_train_setup(self, train_id):
+        """
+        This method is used when train is created from saved database entry when user launches the game.
+
+        :param train_id:                        train identification number
+        """
+        self.logger.info('START ON_TRAIN_SETUP')
         self.user_db_cursor.execute('''SELECT * FROM trains WHERE train_id = ?''', (train_id, ))
         train_id, self.cars, self.track, self.train_route, self.state, self.direction, self.new_direction, \
             self.current_direction, self.speed, self.speed_state, self.speed_factor_position, self.priority, \
             self.boarding_time, self.exp, self.money, cars_position_parsed, cars_position_abs_parsed, \
             self.stop_point, self.destination_point, self.car_image_collection \
             = self.user_db_cursor.fetchone()
+        self.logger.debug(f'cars: {self.cars}')
+        self.logger.debug(f'track: {self.track}')
+        self.logger.debug(f'train_route: {self.train_route}')
+        self.logger.debug(f'state: {self.state}')
+        self.logger.debug(f'direction: {self.direction}')
+        self.logger.debug(f'new_direction: {self.new_direction}')
+        self.logger.debug(f'current_direction: {self.current_direction}')
+        self.logger.debug(f'speed: {self.speed}')
+        self.logger.debug(f'speed_state: {self.speed_state}')
+        self.logger.debug(f'speed_factor_position: {self.speed_factor_position}')
+        self.logger.debug(f'priority: {self.priority}')
+        self.logger.debug(f'boarding_time: {self.boarding_time}')
+        self.logger.debug(f'exp: {self.exp}')
+        self.logger.debug(f'money: {self.money}')
+        self.logger.debug(f'stop_point: {self.stop_point}')
+        self.logger.debug(f'destination_point: {self.destination_point}')
+        self.logger.debug(f'car_image_collection: {self.car_image_collection}')
         if cars_position_parsed is not None:
             cars_position_parsed = cars_position_parsed.split(',')
             for i in range(len(cars_position_parsed)):
@@ -44,6 +107,7 @@ class TrainModel(Model):
 
             self.cars_position = cars_position_parsed
 
+        self.logger.debug(f'cars_position: {self.cars_position}')
         if cars_position_abs_parsed is not None:
             cars_position_abs_parsed = cars_position_abs_parsed.split('|')
             for i in range(len(cars_position_abs_parsed)):
@@ -53,16 +117,52 @@ class TrainModel(Model):
 
             self.cars_position_abs = cars_position_abs_parsed
 
+        self.logger.debug(f'cars_position_abs: {self.cars_position_abs}')
+        self.logger.info('END ON_TRAIN_SETUP')
+
     def on_train_init(self, cars, track, train_route, state, direction, new_direction, current_direction,
                       priority, boarding_time, exp, money, car_image_collection):
+        """
+        This method is used when train is created from schedule during the game.
+
+        :param cars:                            number of cars in the train
+        :param track:                           track number (0 for regular entry and 100 for side entry)
+        :param train_route:                     train route type (left/right approaching or side_approaching)
+        :param state:                           train state: approaching or approaching_pass_through
+        :param direction:                       train arrival direction
+        :param new_direction:                   train departure direction
+        :param current_direction:               train current direction
+        :param priority:                        train priority in the queue
+        :param boarding_time:                   amount of boarding time left for this train
+        :param exp:                             exp gained when boarding finishes
+        :param money:                           money gained when boarding finishes
+        :param car_image_collection:            number of car collection used for this train
+        """
+        self.logger.info('START ON_TRAIN_INIT')
         self.cars, self.track, self.train_route, self.state, self.direction, self.new_direction, \
             self.current_direction, self.priority, self.boarding_time, \
             self.exp, self.money, self.car_image_collection \
             = cars, track, train_route, state, direction, new_direction, current_direction, \
             priority, boarding_time, exp, money, car_image_collection
+        self.logger.debug(f'cars: {self.cars}')
+        self.logger.debug(f'track: {self.track}')
+        self.logger.debug(f'train_route: {self.train_route}')
+        self.logger.debug(f'state: {self.state}')
+        self.logger.debug(f'direction: {self.direction}')
+        self.logger.debug(f'new_direction: {self.new_direction}')
+        self.logger.debug(f'current_direction: {self.current_direction}')
+        self.logger.debug(f'priority: {self.priority}')
+        self.logger.debug(f'boarding_time: {self.boarding_time}')
+        self.logger.debug(f'exp: {self.exp}')
+        self.logger.debug(f'money: {self.money}')
+        self.logger.debug(f'car_image_collection: {self.car_image_collection}')
         self.speed = self.train_maximum_speed
         self.speed_state = 'move'
         self.speed_factor_position = self.speed_factor_position_limit
+        self.logger.debug(f'speed: {self.speed}')
+        self.logger.debug(f'speed_state: {self.speed_state}')
+        self.logger.debug(f'speed_factor_position: {self.speed_factor_position}')
+        self.logger.info('END ON_TRAIN_INIT')
 
     def on_set_train_start_point(self, first_car_start_point):
         self.cars_position = []
