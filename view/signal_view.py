@@ -17,10 +17,13 @@ class SignalView(View):
         self.green_signal_image.anchor_x = 4
         self.green_signal_image.anchor_y = 4
         self.signal_sprite = None
-        self.position = (0, 0)
-        self.flip_needed = 0
         self.state = None
         self.locked = None
+        self.config_db_cursor.execute('SELECT x, y, flip_needed FROM signal_config WHERE track = ? AND base_route = ?',
+                                      (track, base_route))
+        x, y, self.flip_needed = self.config_db_cursor.fetchone()
+        self.position = (x, y)
+        self.flip_needed = bool(self.flip_needed)
 
     @signal_is_displayed_on_map
     def on_update(self):
@@ -52,7 +55,7 @@ class SignalView(View):
                                                self.base_offset[1] + self.position[1] // 2)
 
             self.signal_sprite.scale = self.zoom_factor
-            if self.flip_needed == 1:
+            if self.flip_needed:
                 self.signal_sprite.rotation = 180.0
 
     @view_is_active
@@ -87,7 +90,7 @@ class SignalView(View):
                                                     group=self.groups['signal'])
 
                     self.signal_sprite.scale = self.zoom_factor
-                    if self.flip_needed == 1:
+                    if self.flip_needed:
                         self.signal_sprite.rotation = 180.0
             else:
                 self.signal_sprite.position = (x, y)

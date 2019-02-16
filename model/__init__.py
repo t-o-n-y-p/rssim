@@ -212,7 +212,8 @@ ENTRY_TRACK = (0, 0, 100, 100)          # track mask for entry base routes for d
 # schedule options matrix properties
 ARRIVAL_TIME_MIN = 0                    # property #1 indicates min arrival time offset from the beginning of the cycle
 ARRIVAL_TIME_MAX = 1                    # property #0 indicates max arrival time offset from the beginning of the cycle
-# properties ##2&3 indicate direction and new direction
+# property #2 indicates direction
+# property #3 indicates new direction
 CARS_MIN = 4                            # property #4 indicates min number of cars
 CARS_MAX = 5                            # property #5 indicates max number of cars
 # train acceleration matrix (numbers are offsets from the starting point), same is used to decelerate
@@ -241,6 +242,8 @@ FULLSCREEN_MODE_TURNED_OFF = 0          # database value for fullscreen mode tur
 FULLSCREEN_MODE_TURNED_ON = 1           # database value for fullscreen mode turned off
 MAXIMUM_TRACK_NUMBER = 32               # player can have maximum of 32 tracks
 FRAMES_IN_ONE_MINUTE = 240              # indicates how many frames fit in 1 in-game minute
+DEFAULT_PRIORITY = 10000000             # default priority for any new train created
+PASS_THROUGH_BOARDING_TIME = 480        # default boarding time for pass-through trains
 # ------------------- END CONSTANTS -------------------
 
 

@@ -103,6 +103,9 @@ class AppModel(Model):
         :param fullscreen_mode:                 fullscreen mode flag value to be saved
         """
         self.logger.info('START ON_SAVE_AND_COMMIT_STATE')
+        self.logger.debug(f'fullscreen_mode: {fullscreen_mode}')
         self.user_db_cursor.execute('UPDATE graphics SET fullscreen = ?', (fullscreen_mode, ))
+        self.logger.debug('fullscreen mode flag saved successfully')
         self.user_db_connection.commit()
+        self.logger.debug('made commit successfully')
         self.logger.info('END ON_SAVE_AND_COMMIT_STATE')

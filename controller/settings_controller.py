@@ -73,7 +73,7 @@ class SettingsController(Controller):
 
     def on_change_screen_resolution(self, screen_resolution):
         """
-        Notifies the view about screen resolution update.
+        Notifies the model about screen resolution update.
 
         :param screen_resolution:       new screen resolution
         """

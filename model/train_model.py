@@ -197,7 +197,7 @@ class TrainModel(Model):
 
         else:
             self.boarding_time -= 1
-            if self.boarding_time == 240:
+            if self.boarding_time == FRAMES_IN_ONE_MINUTE:
                 self.current_direction = self.new_direction
                 self.train_route = EXIT_TRAIN_ROUTE[self.current_direction]
                 if self.direction % 2 != self.new_direction % 2:
