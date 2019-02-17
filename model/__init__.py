@@ -244,6 +244,7 @@ MAXIMUM_TRACK_NUMBER = 32               # player can have maximum of 32 tracks
 FRAMES_IN_ONE_MINUTE = 240              # indicates how many frames fit in 1 in-game minute
 DEFAULT_PRIORITY = 10000000             # default priority for any new train created
 PASS_THROUGH_BOARDING_TIME = 480        # default boarding time for pass-through trains
+CAR_LENGTH = 251                        # length of the car in pixels
 # ------------------- END CONSTANTS -------------------
 
 
