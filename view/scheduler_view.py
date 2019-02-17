@@ -13,7 +13,6 @@ class SchedulerView(View):
 
         super().__init__(user_db_cursor, config_db_cursor, surface, batches, groups,
                          logger=getLogger('root.app.game.map.scheduler.view'))
-        self.departure_text = ['West City', 'East City', 'North-West City', 'South-East City']
         self.schedule_opacity = 0
         self.schedule_top_left_line = [0, 0]
         self.schedule_departure_top_left_line = [0, 0]
@@ -31,14 +30,6 @@ class SchedulerView(View):
         self.close_schedule_button = CloseScheduleButton(surface=self.surface, batch=self.batches['ui_batch'],
                                                          groups=self.groups, on_click_action=on_close_schedule)
         self.buttons.append(self.close_schedule_button)
-        self.base_train_id = 0
-        self.base_arrival_time = 1
-        self.base_direction = 2
-        self.base_new_direction = 3
-        self.base_cars = 4
-        self.base_stop_time = 5
-        self.base_exp = 6
-        self.base_money = 7
 
     @view_is_not_active
     def on_activate(self):
@@ -79,26 +70,32 @@ class SchedulerView(View):
             if self.schedule_opacity < 255:
                 self.schedule_opacity += 15
 
-            for i in range(min(len(self.base_schedule), 32)):
-                if self.base_schedule[i][1] < self.game_time + 14400 and len(self.train_labels) < (i + 1) * 2:
+            for i in range(min(len(self.base_schedule), SCHEDULE_ROWS * SCHEDULE_COLUMNS)):
+                if self.base_schedule[i][1] < self.game_time + FRAMES_IN_ONE_HOUR \
+                        and len(self.train_labels) < (i + 1) * 2:
                     self.train_labels.append(
                         Label('{0:0>6}    {1:0>2} : {2:0>2}                             {3:0>2}   {4:0>2} : {5:0>2}'
-                              .format(self.base_schedule[i][self.base_train_id],
-                                      (self.base_schedule[i][self.base_arrival_time] // 14400 + 12) % 24,
-                                      (self.base_schedule[i][self.base_arrival_time] // 240) % 60,
-                                      self.base_schedule[i][self.base_cars],
-                                      self.base_schedule[i][self.base_stop_time] // 240,
-                                      (self.base_schedule[i][self.base_stop_time] // 4) % 60),
+                              .format(self.base_schedule[i][TRAIN_ID],
+                                      (self.base_schedule[i][ARRIVAL_TIME] // FRAMES_IN_ONE_HOUR + 12)
+                                      % HOURS_IN_ONE_DAY,
+                                      (self.base_schedule[i][ARRIVAL_TIME] // FRAMES_IN_ONE_MINUTE)
+                                      % MINUTES_IN_ONE_HOUR,
+                                      self.base_schedule[i][CARS],
+                                      self.base_schedule[i][STOP_TIME] // FRAMES_IN_ONE_MINUTE,
+                                      (self.base_schedule[i][STOP_TIME] // FRAMES_IN_ONE_SECOND)
+                                      % SECONDS_IN_ONE_MINUTE),
                               font_name='Perfo', bold=True, font_size=self.schedule_font_size,
-                              x=self.schedule_top_left_line[0] + self.schedule_line_step_x * (i // 16),
-                              y=self.schedule_top_left_line[1] - (i % 16) * self.schedule_line_step_y,
+                              x=self.schedule_top_left_line[0] + self.schedule_line_step_x * (i // SCHEDULE_ROWS),
+                              y=self.schedule_top_left_line[1] - (i % SCHEDULE_ROWS) * self.schedule_line_step_y,
                               anchor_x='center', anchor_y='center', batch=self.batches['ui_batch'],
                               group=self.groups['button_text']))
                     self.train_labels.append(
-                        Label(self.departure_text[self.base_schedule[i][self.base_direction]],
+                        Label(DEPARTURE_TEXT[self.base_schedule[i][DIRECTION]],
                               font_name='Perfo', bold=True, font_size=self.schedule_font_size,
-                              x=self.schedule_departure_top_left_line[0] + self.schedule_line_step_x * (i // 16),
-                              y=self.schedule_departure_top_left_line[1] - (i % 16) * self.schedule_line_step_y,
+                              x=self.schedule_departure_top_left_line[0]
+                                + self.schedule_line_step_x * (i // SCHEDULE_ROWS),
+                              y=self.schedule_departure_top_left_line[1]
+                                - (i % SCHEDULE_ROWS) * self.schedule_line_step_y,
                               anchor_x='center', anchor_y='center', batch=self.batches['ui_batch'],
                               group=self.groups['button_text']))
                     break
@@ -118,13 +115,15 @@ class SchedulerView(View):
             self.right_schedule_caption_sprite.y = self.schedule_left_caption[1]
             self.right_schedule_caption_sprite.font_size = self.schedule_caption_font_size
             for i in range(len(self.train_labels) // 2):
-                self.train_labels[i * 2].x = self.schedule_top_left_line[0] + self.schedule_line_step_x * (i // 16)
-                self.train_labels[i * 2].y = self.schedule_top_left_line[1] - (i % 16) * self.schedule_line_step_y
+                self.train_labels[i * 2].x = self.schedule_top_left_line[0] \
+                                           + self.schedule_line_step_x * (i // SCHEDULE_ROWS)
+                self.train_labels[i * 2].y = self.schedule_top_left_line[1] \
+                                           - (i % SCHEDULE_ROWS) * self.schedule_line_step_y
                 self.train_labels[i * 2].font_size = self.schedule_font_size
                 self.train_labels[i * 2 + 1].x \
-                    = self.schedule_departure_top_left_line[0] + self.schedule_line_step_x * (i // 16)
+                    = self.schedule_departure_top_left_line[0] + self.schedule_line_step_x * (i // SCHEDULE_ROWS)
                 self.train_labels[i * 2 + 1].y \
-                    = self.schedule_departure_top_left_line[1] - (i % 16) * self.schedule_line_step_y
+                    = self.schedule_departure_top_left_line[1] - (i % SCHEDULE_ROWS) * self.schedule_line_step_y
                 self.train_labels[i * 2 + 1].font_size = self.schedule_font_size
 
         self.close_schedule_button.x_margin = self.screen_resolution[0] - 11 * self.bottom_bar_height // 2 + 2

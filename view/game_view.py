@@ -139,24 +139,23 @@ class GameView(View):
                                 y=self.bottom_bar_height // 2,
                                 anchor_x='center', anchor_y='center', batch=self.batches['ui_batch'],
                                 group=self.groups['button_text'])
-        self.money_text = Label('{0:0>8} ¤'.format(0), font_name='Perfo', bold=True, color=(0, 192, 0, 255),
+        self.money_text = Label('{0:0>8} ¤'.format(0), font_name='Perfo', bold=True, color=GREEN,
                                 font_size=int(22 / 80 * self.bottom_bar_height),
                                 x=self.money_offset + int(100 / 80 * self.bottom_bar_height),
                                 y=self.bottom_bar_height // 2,
                                 anchor_x='center', anchor_y='center',
                                 batch=self.batches['ui_batch'], group=self.groups['button_text'])
 
-        self.day_sprite = Label(f'DAY  {1 + self.game_time // 345600}', font_name='Perfo', bold=True,
+        self.day_sprite = Label(f'DAY  {1 + self.game_time // FRAMES_IN_ONE_DAY}', font_name='Perfo', bold=True,
                                 font_size=int(22 / 80 * self.bottom_bar_height),
-                                color=(255, 255, 255, 255),
                                 x=self.screen_resolution[0] - int(181 / 80 * self.bottom_bar_height),
                                 y=int(57 / 80 * self.bottom_bar_height),
                                 anchor_x='center', anchor_y='center', batch=self.batches['ui_batch'],
                                 group=self.groups['button_text'])
-        self.time_sprite = Label('{0:0>2} : {1:0>2}'.format((self.game_time // 14400 + 12) % 24,
-                                                            (self.game_time // 240) % 60),
+        self.time_sprite = Label('{0:0>2} : {1:0>2}'
+                                 .format((self.game_time // FRAMES_IN_ONE_HOUR + 12) % HOURS_IN_ONE_DAY,
+                                         (self.game_time // FRAMES_IN_ONE_MINUTE) % MINUTES_IN_ONE_HOUR),
                                  font_name='Perfo', bold=True, font_size=int(22 / 80 * self.bottom_bar_height),
-                                 color=(255, 255, 255, 255),
                                  x=self.screen_resolution[0] - int(181 / 80 * self.bottom_bar_height),
                                  y=int(26 / 80 * self.bottom_bar_height), anchor_x='center', anchor_y='center',
                                  batch=self.batches['ui_batch'], group=self.groups['button_text'])
@@ -227,9 +226,10 @@ class GameView(View):
     def on_update_game_time(self, game_time):
         self.game_time = game_time
         if self.is_activated:
-            self.time_sprite.text = '{0:0>2} : {1:0>2}'.format((self.game_time // 14400 + 12) % 24,
-                                                               (self.game_time // 240) % 60)
-            self.day_sprite.text = f'DAY  {1 + self.game_time // 345600}'
+            self.time_sprite.text = '{0:0>2} : {1:0>2}'\
+                .format((self.game_time // FRAMES_IN_ONE_HOUR + 12) % HOURS_IN_ONE_DAY,
+                        (self.game_time // FRAMES_IN_ONE_MINUTE) % MINUTES_IN_ONE_HOUR)
+            self.day_sprite.text = f'DAY  {1 + self.game_time // FRAMES_IN_ONE_DAY}'
 
     @view_is_active
     def on_update_exp(self, exp, player_progress):

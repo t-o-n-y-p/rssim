@@ -74,7 +74,7 @@ class AppView(View):
         self.is_activated = True
         self.title_label = Label('Railway Station Simulator', font_name='Arial',
                                  font_size=int(16 / 40 * self.top_bar_height),
-                                 x=10, y=self.screen_resolution[1] - self.top_bar_height // 2,
+                                 x=self.top_bar_height // 4, y=self.screen_resolution[1] - self.top_bar_height // 2,
                                  anchor_x='left', anchor_y='center', batch=self.batches['ui_batch'],
                                  group=self.groups['button_text'])
         if self.main_frame_sprite is None:

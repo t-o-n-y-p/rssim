@@ -99,6 +99,49 @@ def signal_is_displayed_on_map(fn):
     return _handle_if_signal_is_displayed_on_map
 
 
+# --------------------- CONSTANTS ---------------------
+MAP_WIDTH = 8192
+MAP_HEIGHT = 4096
+DEPARTURE_TEXT = ('West City',
+                  'East City',
+                  'North-West City',
+                  'South-East City')
+SCHEDULE_ROWS = 16
+SCHEDULE_COLUMNS = 2
+# colors
+GREY = (112, 112, 112, 255)
+ORANGE = (255, 127, 0, 255)
+GREEN = (0, 192, 0, 255)
+# time
+FRAMES_IN_ONE_DAY = 345600
+FRAMES_IN_ONE_HOUR = 14400
+FRAMES_IN_ONE_MINUTE = 240
+FRAMES_IN_ONE_SECOND = 4
+MINUTES_IN_ONE_HOUR = 60
+SECONDS_IN_ONE_MINUTE = 60
+HOURS_IN_ONE_DAY = 24
+# track state matrix properties
+LOCKED = 0                                      # property #0 indicates if track is locked
+UNDER_CONSTRUCTION = 1                          # property #1 indicates if track is under construction
+CONSTRUCTION_TIME = 2                           # property #2 indicates construction time left
+UNLOCK_CONDITION_FROM_LEVEL = 3                 # property #3 indicates if unlock condition from level is met
+UNLOCK_CONDITION_FROM_PREVIOUS_TRACK = 4        # property #4 indicates if unlock condition from previous track is met
+UNLOCK_CONDITION_FROM_ENVIRONMENT = 5           # property #5 indicates if unlock condition from environment is met
+UNLOCK_AVAILABLE = 6                            # property #6 indicates if all unlock conditions are met
+PRICE = 7                                       # property #7 indicates track price
+LEVEL_REQUIRED = 8                              # property #8 indicates required level for this track
+# base_schedule matrix properties
+TRAIN_ID = 0                            # property #0 indicates train identification number
+ARRIVAL_TIME = 1                        # property #1 indicates arrival time
+DIRECTION = 2                           # property #2 indicates direction
+NEW_DIRECTION = 3                       # property #3 indicates new direction
+CARS = 4                                # property #4 indicates number of cars
+STOP_TIME = 5                           # property #5 indicates how much stop time left
+EXP = 6                                 # property #6 indicates how much exp the train gives
+MONEY = 7                               # property #7 indicates how much money the train gives
+# ------------------- END CONSTANTS -------------------
+
+
 class View:
     def __init__(self, user_db_cursor, config_db_cursor, surface, batches, groups, logger):
         self.logger = logger

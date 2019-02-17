@@ -135,13 +135,13 @@ class MapView(View):
                                               y=self.mini_map_position[1], batch=self.batches['mini_map_batch'],
                                               group=self.groups['mini_environment'])
         self.mini_environment_sprite.opacity = 0
-        self.mini_environment_sprite.scale = self.mini_map_width / 8192
+        self.mini_environment_sprite.scale = self.mini_map_width / MAP_WIDTH
         self.mini_map_sprite = Sprite(self.main_map, x=self.mini_map_position[0],
                                       y=self.mini_map_position[1]
-                                      + int(self.mini_map_offset[1] * (self.screen_resolution[0] // 3 - 6) / 8192),
+                                      + int(self.mini_map_offset[1] * (self.screen_resolution[0] // 3 - 6) / MAP_WIDTH),
                                       batch=self.batches['mini_map_batch'], group=self.groups['mini_map'])
         self.mini_map_sprite.opacity = 0
-        self.mini_map_sprite.scale = self.mini_map_width / 8192
+        self.mini_map_sprite.scale = self.mini_map_width / MAP_WIDTH
 
     @view_is_not_active
     def on_activate(self):
@@ -199,8 +199,9 @@ class MapView(View):
         if self.is_mini_map_activated:
             self.mini_map_sprite.image = self.main_map
             self.mini_map_sprite.update(y=self.mini_map_position[1]
-                                        + int(self.mini_map_offset[1] * (self.screen_resolution[0] // 3 - 6) / 8192),
-                                        scale=self.mini_map_width / 8192)
+                                        + int(self.mini_map_offset[1] * (self.screen_resolution[0] // 3 - 6)
+                                              / MAP_WIDTH),
+                                        scale=self.mini_map_width / MAP_WIDTH)
 
     def on_change_zoom_factor(self, zoom_factor, zoom_out_activated):
         self.zoom_factor = zoom_factor
@@ -212,11 +213,13 @@ class MapView(View):
             self.environment_sprite.scale = zoom_factor
 
         if zoom_out_activated:
-            self.base_offset_upper_right_limit = (self.screen_resolution[0] - 4096, self.screen_resolution[1] - 2048)
+            self.base_offset_upper_right_limit = (self.screen_resolution[0] - MAP_WIDTH // 2,
+                                                  self.screen_resolution[1] - MAP_HEIGHT // 2)
             self.base_offset = (self.base_offset[0] // 2 + self.screen_resolution[0] // 4,
                                 self.base_offset[1] // 2 + self.screen_resolution[1] // 4)
         else:
-            self.base_offset_upper_right_limit = (self.screen_resolution[0] - 8192, self.screen_resolution[1] - 4096)
+            self.base_offset_upper_right_limit = (self.screen_resolution[0] - MAP_WIDTH,
+                                                  self.screen_resolution[1] - MAP_HEIGHT)
             self.base_offset = (self.base_offset[0] * 2 - self.screen_resolution[0] // 2,
                                 self.base_offset[1] * 2 - self.screen_resolution[1] // 2)
 
@@ -224,9 +227,11 @@ class MapView(View):
 
     def on_change_screen_resolution(self, screen_resolution):
         if self.zoom_out_activated:
-            self.base_offset_upper_right_limit = (screen_resolution[0] - 4096, screen_resolution[1] - 2048)
+            self.base_offset_upper_right_limit = (screen_resolution[0] - MAP_WIDTH // 2,
+                                                  screen_resolution[1] - MAP_HEIGHT // 2)
         else:
-            self.base_offset_upper_right_limit = (screen_resolution[0] - 8192, screen_resolution[1] - 4096)
+            self.base_offset_upper_right_limit = (screen_resolution[0] - MAP_WIDTH,
+                                                  screen_resolution[1] - MAP_HEIGHT)
 
         self.base_offset = (self.base_offset[0] + (screen_resolution[0] - self.screen_resolution[0]) // 2,
                             self.base_offset[1] + (screen_resolution[1] - self.screen_resolution[1]) // 2)
@@ -239,11 +244,12 @@ class MapView(View):
         self.mini_map_height = (self.screen_resolution[0] // 3 - 6) // 2
         if self.is_mini_map_activated:
             self.mini_environment_sprite.update(x=self.mini_map_position[0], y=self.mini_map_position[1],
-                                                scale=self.mini_map_width / 8192)
+                                                scale=self.mini_map_width / MAP_WIDTH)
             self.mini_map_sprite.update(x=self.mini_map_position[0],
                                         y=self.mini_map_position[1]
-                                        + int(self.mini_map_offset[1] * (self.screen_resolution[0] // 3 - 6) / 8192),
-                                        scale=self.mini_map_width / 8192)
+                                        + int(self.mini_map_offset[1] * (self.screen_resolution[0] // 3 - 6)
+                                              / MAP_WIDTH),
+                                        scale=self.mini_map_width / MAP_WIDTH)
 
         self.zoom_in_button.x_margin = 0
         self.zoom_in_button.y_margin = self.screen_resolution[1] - self.top_bar_height - self.bottom_bar_height + 2
