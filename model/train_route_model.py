@@ -159,32 +159,67 @@ class TrainRouteModel(Model):
         self.logger.info('END ON_SAVE_STATE')
 
     def on_open_train_route(self, train_id, cars):
+        """
+        Opens train route.
+
+        :param train_id:                        ID of the train which opens the train route
+        :param cars:                            number of cars in the train
+        """
+        self.logger.info('START ON_OPEN_TRAIN_ROUTE')
         self.opened = True
+        self.logger.debug(f'opened: {self.opened}')
         self.last_opened_by = train_id
+        self.logger.debug(f'last_opened_by: {self.last_opened_by}')
         self.cars = cars
+        self.logger.debug(f'cars: {self.cars}')
         self.current_checkpoint = 0
+        self.logger.debug(f'current_checkpoint: {self.current_checkpoint}')
         self.controller.parent_controller.on_set_trail_points(train_id, self.trail_points_v2)
+        self.logger.debug(f'start_point_v2: {self.start_point_v2}')
         if self.start_point_v2 is not None:
             self.controller.parent_controller.on_set_train_start_point(train_id, self.start_point_v2[cars])
 
         self.controller.parent_controller.on_set_train_stop_point(train_id, self.stop_point_v2[cars])
         self.controller.parent_controller.on_set_train_destination_point(train_id, self.destination_point_v2[cars])
         self.train_route_section_busy_state[0] = True
+        self.logger.debug(f'first section state: {self.train_route_section_busy_state[0]}')
+        self.logger.info('END ON_OPEN_TRAIN_ROUTE')
 
     def on_close_train_route(self):
+        """
+        Closes train route.
+        """
+        self.logger.info('START ON_CLOSE_TRAIN_ROUTE')
         self.opened = False
+        self.logger.debug(f'opened: {self.opened}')
         self.current_checkpoint = 0
+        self.logger.debug(f'current_checkpoint: {self.current_checkpoint}')
         self.train_route_section_busy_state[-1] = False
+        self.logger.debug(f'last section state: {self.train_route_section_busy_state[-1]}')
         self.cars = 0
+        self.logger.debug(f'cars: {self.cars}')
+        self.logger.info('END ON_CLOSE_TRAIN_ROUTE')
 
     @train_has_passed_train_route_section
     def on_update_train_route_sections(self, last_car_position):
+        """
+        Updates train route section state based on last car position.
+
+        :param last_car_position:               train last car position on the route
+        """
+        self.logger.info('START ON_UPDATE_TRAIN_ROUTE_SECTIONS')
         self.controller.parent_controller.on_train_route_section_force_busy_off(
             self.train_route_sections[self.current_checkpoint],
             self.train_route_section_positions[self.current_checkpoint])
         self.train_route_section_busy_state[self.current_checkpoint] = False
+        self.logger.debug(f'current_checkpoint: {self.current_checkpoint}')
+        self.logger.debug('section {} state: {}'.format(self.current_checkpoint,
+                                                        self.train_route_section_busy_state[self.current_checkpoint]))
         if self.current_checkpoint == 0:
+            self.logger.debug('number if current checkpoint is 0, update signal state')
             self.controller.parent_controller.on_switch_signal_to_red(self.signal_track, self.signal_base_route)
+            # for entry train route, section 0 is base entry, notify Map controller about entry state update
+            self.logger.debug(f'section 0 type: {self.train_route_sections[0][0]}')
             if self.train_route_sections[0][0] == 'left_entry_base_route':
                 self.controller.parent_controller.on_leave_entry(DIRECTION_FROM_LEFT_TO_RIGHT)
             elif self.train_route_sections[0][0] == 'right_entry_base_route':
@@ -193,19 +228,33 @@ class TrainRouteModel(Model):
                 self.controller.parent_controller.on_leave_entry(DIRECTION_FROM_LEFT_TO_RIGHT_SIDE)
             elif self.train_route_sections[0][0] == 'right_side_entry_base_route':
                 self.controller.parent_controller.on_leave_entry(DIRECTION_FROM_RIGHT_TO_LEFT_SIDE)
+            # for exit train route, section 0 is the track itself, notify Map controller about track state update
             elif self.train_route_sections[0][0] in ('left_exit_platform_base_route', 'right_exit_platform_base_route'):
                 self.controller.parent_controller.on_leave_track(self.controller.track)
 
+        # moving to the next section
         self.current_checkpoint += 1
+        self.logger.debug(f'current_checkpoint: {self.current_checkpoint}')
+        self.logger.info('END ON_UPDATE_TRAIN_ROUTE_SECTIONS')
 
     @train_route_is_opened
     @not_approaching_route
     def on_update_time(self, game_time):
+        """
+        Every frame this method checks if there is a train waiting at signal at danger
+        and if all other sections are not busy. If so, updates signal state and lets train go.
+
+        :param game_time:               current in-game time
+        """
+        self.logger.info('START ON_UPDATE_TIME')
         train_route_busy = False
         for i in range(1, len(self.train_route_sections)):
             train_route_busy = train_route_busy or self.train_route_section_busy_state[i]
 
+        self.logger.debug(f'train_route_busy: {train_route_busy}')
+        self.logger.debug(f'first section busy: {self.train_route_section_busy_state[0]}')
         if self.train_route_section_busy_state[0] and not train_route_busy:
+            self.logger.debug('approaching train detected and train route is not busy')
             self.controller.parent_controller.on_switch_signal_to_green(self.signal_track, self.signal_base_route)
             self.controller.parent_controller.on_set_train_stop_point(self.last_opened_by,
                                                                       self.destination_point_v2[self.cars])
@@ -215,8 +264,14 @@ class TrainRouteModel(Model):
                     self.train_route_section_positions[i],
                     self.last_opened_by)
                 self.train_route_section_busy_state[i] = True
+                self.logger.debug(f'section {i} busy: {self.train_route_section_busy_state[i]}')
 
             self.train_route_section_busy_state[-1] = True
+            self.logger.debug(f'last section busy: {self.train_route_section_busy_state[-1]}')
+        else:
+            self.logger.debug('train route is busy or no approaching train detected')
+
+        self.logger.info('END ON_UPDATE_TIME')
 
     def on_update_priority(self, priority):
         """
