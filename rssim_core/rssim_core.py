@@ -103,7 +103,7 @@ class RSSim:
         self.logger.debug('ui batch created successfully')
         self.groups = {}
         numbered_groups = []
-        for i in range(10):
+        for i in range(12):
             numbered_groups.append(OrderedGroup(i))
 
         self.groups['environment'] = numbered_groups[0]
@@ -116,21 +116,23 @@ class RSSim:
         self.logger.debug('train group created successfully')
         self.groups['boarding_light'] = numbered_groups[3]
         self.logger.debug('boarding_light group created successfully')
-        self.groups['car_skins'] = numbered_groups[3]
-        self.logger.debug('car_skins group created successfully')
-        self.groups['twilight'] = numbered_groups[4]
+        self.groups['environment_2'] = numbered_groups[4]
+        self.logger.debug('environment_2 group created successfully')
+        self.groups['twilight'] = numbered_groups[5]
         self.logger.debug('twilight group created successfully')
-        self.groups['mini_environment'] = numbered_groups[5]
+        self.groups['mini_environment'] = numbered_groups[6]
         self.logger.debug('mini_environment group created successfully')
-        self.groups['mini_map'] = numbered_groups[6]
+        self.groups['mini_map'] = numbered_groups[7]
         self.logger.debug('mini_map group created successfully')
-        self.groups['main_frame'] = numbered_groups[7]
+        self.groups['mini_environment_2'] = numbered_groups[8]
+        self.logger.debug('mini_environment_2 group created successfully')
+        self.groups['main_frame'] = numbered_groups[9]
         self.logger.debug('main_frame group created successfully')
-        self.groups['button_background'] = numbered_groups[8]
+        self.groups['button_background'] = numbered_groups[10]
         self.logger.debug('button_background group created successfully')
-        self.groups['exp_money_time'] = numbered_groups[8]
+        self.groups['exp_money_time'] = numbered_groups[10]
         self.logger.debug('exp_money_time group created successfully')
-        self.groups['button_text'] = numbered_groups[9]
+        self.groups['button_text'] = numbered_groups[11]
         self.logger.debug('button_text group created successfully')
         self.main_frame_shader = from_files_names('shaders/main_frame/shader.vert', 'shaders/main_frame/shader.frag')
         # create surface
