@@ -1,7 +1,35 @@
+"""
+This module implements all views.
+View is an element in MVC pattern which manages all sprites and labels in the app.
+
+
+__init__.py                             implements decorators, constants and base Model class
+app_view.py                             implements App object view
+constructor_view.py                     implements Constructor object view
+crossover_view.py                       implements Crossover object view
+dispatcher_view.py                      implements Dispatcher object view
+fps_view.py                             implements FPS object view
+game_view.py                            implements Game object view
+map_view.py                             implements Map object view
+railroad_switch_view.py                 implements Railroad switch object view
+scheduler_view.py                       implements Scheduler object view
+settings_view.py                        implements Settings object view
+signal_view.py                          implements Signal object view
+train_view.py                           implements Train object view
+train_route_view.py                     implements Train route object view
+"""
+
+
 from pyglet.window import mouse
 
 
 def view_is_active(fn):
+    """
+    Use this decorator to execute function only if view is active.
+
+    :param fn:                      function to decorate
+    :return:                        decorator function
+    """
     def _handle_if_view_is_activated(*args, **kwargs):
         if args[0].is_activated:
             fn(*args, **kwargs)
@@ -10,6 +38,12 @@ def view_is_active(fn):
 
 
 def view_is_not_active(fn):
+    """
+    Use this decorator to execute function only if view is not active.
+
+    :param fn:                      function to decorate
+    :return:                        decorator function
+    """
     def _handle_if_view_is_not_activated(*args, **kwargs):
         if not args[0].is_activated:
             fn(*args, **kwargs)
@@ -18,6 +52,12 @@ def view_is_not_active(fn):
 
 
 def game_window_is_active(fn):
+    """
+    Use this decorator within App view to execute function only if game window is the active window in the system.
+
+    :param fn:                      function to decorate
+    :return:                        decorator function
+    """
     def _handle_if_game_window_is_active(*args, **kwargs):
         if args[0].surface.visible:
             fn(*args, **kwargs)
@@ -26,6 +66,12 @@ def game_window_is_active(fn):
 
 
 def game_is_not_fullscreen(fn):
+    """
+    Use this decorator within App view to execute function only if fullscreen mode is not activated.
+
+    :param fn:                      function to decorate
+    :return:                        decorator function
+    """
     def _handle_if_game_window_is_not_fullscreen(*args, **kwargs):
         if not args[0].surface.fullscreen:
             fn(*args, **kwargs)
@@ -34,6 +80,12 @@ def game_is_not_fullscreen(fn):
 
 
 def app_window_move_mode_enabled(fn):
+    """
+    Use this decorator within App view to execute function only if user is about to move the app window.
+
+    :param fn:                      function to decorate
+    :return:                        decorator function
+    """
     def _handle_if_app_window_move_mode_enabled(*args, **kwargs):
         if args[0].app_window_move_mode:
             fn(*args, **kwargs)
@@ -42,6 +94,12 @@ def app_window_move_mode_enabled(fn):
 
 
 def left_mouse_button(fn):
+    """
+    Use this decorator to execute function only if left mouse button was used.
+
+    :param fn:                      function to decorate
+    :return:                        decorator function
+    """
     def _handle_mouse_if_left_button_was_clicked(*args, **kwargs):
         if args[3] == mouse.LEFT:
             fn(*args, **kwargs)
@@ -50,6 +108,13 @@ def left_mouse_button(fn):
 
 
 def track_is_in_top4(fn):
+    """
+    Use this decorator within Constructor view to execute function
+    only if the track is displayed on constructor screen.
+
+    :param fn:                      function to decorate
+    :return:                        decorator function
+    """
     def _handle_if_track_is_in_top4(*args, **kwargs):
         if args[2] in args[0].locked_tracks_labels:
             fn(*args, **kwargs)
@@ -58,6 +123,13 @@ def track_is_in_top4(fn):
 
 
 def map_move_mode_available(fn):
+    """
+    Use this decorator within Map view to execute function only if user can move the map
+    (schedule, constructor screen, etc. are not opened).
+
+    :param fn:                      function to decorate
+    :return:                        decorator function
+    """
     def _turn_on_move_mode_if_map_move_mode_available(*args, **kwargs):
         if args[0].map_move_mode_available and not args[0].controller.scheduler.view.is_activated \
                 and not args[0].controller.constructor.view.is_activated:
@@ -67,6 +139,12 @@ def map_move_mode_available(fn):
 
 
 def map_move_mode_enabled(fn):
+    """
+    Use this decorator within Map view to execute function only if user is about to move the map.
+
+    :param fn:                      function to decorate
+    :return:                        decorator function
+    """
     def _turn_on_move_mode_if_map_move_mode_enabled(*args, **kwargs):
         if args[0].map_move_mode:
             fn(*args, **kwargs)
@@ -75,6 +153,12 @@ def map_move_mode_enabled(fn):
 
 
 def cursor_is_on_the_map(fn):
+    """
+    Use this decorator within Map view to execute function only if map is under the mouse cursor.
+
+    :param fn:                      function to decorate
+    :return:                        decorator function
+    """
     def _enable_map_move_mode_if_cursor_is_on_the_map(*args, **kwargs):
         if args[1] in range(0, args[0].screen_resolution[0]) \
                 and args[2] in range(args[0].bottom_bar_height, args[0].screen_resolution[1] - args[0].top_bar_height):
@@ -84,6 +168,12 @@ def cursor_is_on_the_map(fn):
 
 
 def mini_map_is_not_active(fn):
+    """
+    Use this decorator within Map view to execute function only if mini-map is not displayed.
+
+    :param fn:                      function to decorate
+    :return:                        decorator function
+    """
     def _handle_if_mini_map_is_not_activated(*args, **kwargs):
         if not args[0].is_mini_map_activated:
             fn(*args, **kwargs)
@@ -92,6 +182,12 @@ def mini_map_is_not_active(fn):
 
 
 def signal_is_displayed_on_map(fn):
+    """
+    Use this decorator within Signal view to execute function only if player can see this signal on the map.
+
+    :param fn:                      function to decorate
+    :return:                        decorator function
+    """
     def _handle_if_signal_is_displayed_on_map(*args, **kwargs):
         if args[0].signal_sprite is not None:
             fn(*args, **kwargs)
@@ -100,23 +196,24 @@ def signal_is_displayed_on_map(fn):
 
 
 # --------------------- CONSTANTS ---------------------
-MAP_WIDTH = 8192
-MAP_HEIGHT = 4096
-DEPARTURE_TEXT = ('West City',
-                  'East City',
-                  'North-West City',
-                  'South-East City')
-SCHEDULE_ROWS = 16
-SCHEDULE_COLUMNS = 2
+MAP_WIDTH = 8192                                # full-size map width
+MAP_HEIGHT = 4096                               # full-size map height
+DEPARTURE_TEXT = ('West City',                  # text on schedule screen for direction #0
+                  'East City',                  # text on schedule screen for direction #1
+                  'North-West City',            # text on schedule screen for direction #2
+                  'South-East City')            # text on schedule screen for direction #3
+SCHEDULE_ROWS = 16                              # number of schedule rows on schedule screen
+SCHEDULE_COLUMNS = 2                            # number of schedule columns on schedule screen
 # colors
-GREY = (112, 112, 112, 255)
-ORANGE = (255, 127, 0, 255)
-GREEN = (0, 192, 0, 255)
+GREY = (112, 112, 112, 255)                     # grey UI color
+ORANGE = (255, 127, 0, 255)                     # orange UI color
+GREEN = (0, 192, 0, 255)                        # green UI color
+RED = (255, 0, 0, 255)                          # red UI color
 # time
-FRAMES_IN_ONE_DAY = 345600
-FRAMES_IN_ONE_HOUR = 14400
-FRAMES_IN_ONE_MINUTE = 240
-FRAMES_IN_ONE_SECOND = 4
+FRAMES_IN_ONE_DAY = 345600                      # indicates how many frames fit in one in-game day
+FRAMES_IN_ONE_HOUR = 14400                      # indicates how many frames fit in one in-game hour
+FRAMES_IN_ONE_MINUTE = 240                      # indicates how many frames fit in one in-game minute
+FRAMES_IN_ONE_SECOND = 4                        # indicates how many frames fit in one in-game second
 MINUTES_IN_ONE_HOUR = 60
 SECONDS_IN_ONE_MINUTE = 60
 HOURS_IN_ONE_DAY = 24
@@ -131,27 +228,67 @@ UNLOCK_AVAILABLE = 6                            # property #6 indicates if all u
 PRICE = 7                                       # property #7 indicates track price
 LEVEL_REQUIRED = 8                              # property #8 indicates required level for this track
 # base_schedule matrix properties
-TRAIN_ID = 0                            # property #0 indicates train identification number
-ARRIVAL_TIME = 1                        # property #1 indicates arrival time
-DIRECTION = 2                           # property #2 indicates direction
-NEW_DIRECTION = 3                       # property #3 indicates new direction
-CARS = 4                                # property #4 indicates number of cars
-STOP_TIME = 5                           # property #5 indicates how much stop time left
-EXP = 6                                 # property #6 indicates how much exp the train gives
-MONEY = 7                               # property #7 indicates how much money the train gives
+TRAIN_ID = 0                                    # property #0 indicates train identification number
+ARRIVAL_TIME = 1                                # property #1 indicates arrival time
+DIRECTION = 2                                   # property #2 indicates direction
+NEW_DIRECTION = 3                               # property #3 indicates new direction
+CARS = 4                                        # property #4 indicates number of cars
+STOP_TIME = 5                                   # property #5 indicates how much stop time left
+EXP = 6                                         # property #6 indicates how much exp the train gives
+MONEY = 7                                       # property #7 indicates how much money the train gives
 # ------------------- END CONSTANTS -------------------
 
 
 class View:
+    """
+    Base class for all views in the app.
+    """
     def __init__(self, user_db_cursor, config_db_cursor, surface, batches, groups, logger):
+        """
+        Properties:
+            logger                              telemetry instance
+            user_db_cursor:                     user DB cursor (is used to execute user DB queries)
+            config_db_cursor:                   configuration DB cursor (is used to execute configuration DB queries)
+            controller                          object controller
+            surface:                            surface to draw all UI objects on
+            batches:                            batches to group all labels and sprites
+            groups:                             defines drawing layers (some labels and sprites behind others)
+            is_activated                        indicates if view is active
+            buttons                             list of all buttons on the view
+            on_mouse_motion_handlers            list of on_mouse_motion event handlers to be appended
+            on_mouse_press_handlers             list of on_mouse_press event handlers to be appended
+            on_mouse_release_handlers           list of on_mouse_release event handlers to be appended
+            on_mouse_drag_handlers              list of on_mouse_drag event handlers to be appended
+            on_mouse_leave_handlers             list of on_mouse_leave event handlers to be appended
+            screen_resolution                   current screen resolution
+            bottom_bar_height                   height of the bottom bar with buttons
+            top_bar_height                      height of the top bar
+            base_offset                         current map base offset
+            zoom_out_activated                  indicated if zoom out map mode is activated
+            zoom_factor                         sprite scale factor
+
+        :param user_db_cursor:                  user DB cursor (is used to execute user DB queries)
+        :param config_db_cursor:                configuration DB cursor (is used to execute configuration DB queries)
+        :param surface:                         surface to draw all UI objects on
+        :param batches:                         batches to group all labels and sprites
+        :param groups:                          defines drawing layers (some labels and sprites behind others)
+        :param logger:                          telemetry instance
+        """
         self.logger = logger
+        self.logger.info('START BASE CLASS INIT')
         self.user_db_cursor = user_db_cursor
+        self.logger.debug('user_db_cursor set successfully')
         self.config_db_cursor = config_db_cursor
+        self.logger.debug('config_db_cursor set successfully')
         self.controller = None
         self.surface = surface
+        self.logger.debug('surface set successfully')
         self.batches = batches
+        self.logger.debug('batches set successfully')
         self.groups = groups
+        self.logger.debug('groups set successfully')
         self.is_activated = False
+        self.logger.debug(f'is activated: {self.is_activated}')
         self.buttons = []
         self.on_mouse_press_handlers = []
         self.on_mouse_release_handlers = []
@@ -159,44 +296,88 @@ class View:
         self.on_mouse_drag_handlers = []
         self.on_mouse_leave_handlers = []
         self.screen_resolution = (1280, 720)
+        self.logger.debug(f'screen_resolution: {self.screen_resolution}')
         self.bottom_bar_height = 72
+        self.logger.debug(f'bottom_bar_height: {self.bottom_bar_height}')
         self.top_bar_height = 36
+        self.logger.debug(f'top_bar_height: {self.top_bar_height}')
         self.base_offset = (-3456, -1688)
+        self.logger.debug(f'base_offset: {self.base_offset}')
         self.zoom_out_activated = False
+        self.logger.debug(f'zoom_out_activated: {self.zoom_out_activated}')
         self.zoom_factor = 1.0
+        self.logger.debug(f'zoom_factor: {self.zoom_factor}')
+        self.logger.info('END BASE CLASS INIT')
 
     def on_update(self):
+        """
+        Updates the view every frame.
+        Usually it is needed for fade-in/fade-out animations
+        or for some views where all sprites are not created at once
+        and remaining sprites are created frame by frame to avoid massive FPS drop.
+        """
         pass
 
     def on_activate(self):
+        """
+        Activates the view and creates all sprites and labels.
+        """
         pass
 
     def on_deactivate(self):
+        """
+        Deactivates the view and destroys all sprites and labels.
+        """
         pass
 
     def on_assign_controller(self, controller):
+        """
+        Links the controller to the view and appends view handlers and all buttons handlers to the controller.
+
+        :param controller:                      object controller
+        """
+        self.logger.info('START ON_ASSIGN_CONTROLLER')
         self.controller = controller
         on_mouse_motion_handlers = []
         on_mouse_press_handlers = []
         on_mouse_release_handlers = []
         on_mouse_leave_handlers = []
+        # collects all handlers from the buttons in four lists
         for b in self.buttons:
             on_mouse_motion_handlers.append(b.handle_mouse_motion)
             on_mouse_press_handlers.append(b.handle_mouse_press)
             on_mouse_release_handlers.append(b.handle_mouse_release)
             on_mouse_leave_handlers.append(b.handle_mouse_leave)
 
+        self.logger.debug(f'number of buttons: {len(self.buttons)}')
+        self.logger.debug(f'number of on_mouse_motion_handlers: {len(on_mouse_motion_handlers)}')
+        self.logger.debug(f'number of on_mouse_press_handlers: {len(on_mouse_press_handlers)}')
+        self.logger.debug(f'number of on_mouse_release_handlers: {len(on_mouse_release_handlers)}')
+        self.logger.debug(f'number of on_mouse_leave_handlers: {len(on_mouse_leave_handlers)}')
+        # appends view handlers
         self.controller.on_append_handlers(on_mouse_motion_handlers=self.on_mouse_motion_handlers,
                                            on_mouse_press_handlers=self.on_mouse_press_handlers,
                                            on_mouse_release_handlers=self.on_mouse_release_handlers,
                                            on_mouse_drag_handlers=self.on_mouse_drag_handlers,
                                            on_mouse_leave_handlers=self.on_mouse_leave_handlers)
+        # appends button handlers
         self.controller.on_append_handlers(on_mouse_motion_handlers=on_mouse_motion_handlers,
                                            on_mouse_press_handlers=on_mouse_press_handlers,
                                            on_mouse_release_handlers=on_mouse_release_handlers,
                                            on_mouse_leave_handlers=on_mouse_leave_handlers)
+        self.logger.info('END ON_ASSIGN_CONTROLLER')
 
     def on_recalculate_ui_properties(self, screen_resolution):
+        """
+        Recalculates top and bottom bar height based on new screen resolution.
+
+        :param screen_resolution:               new screen resolution
+        """
+        self.logger.info('START ON_RECALCULATE_UI_PROPERTIES')
         self.screen_resolution = screen_resolution
+        self.logger.debug(f'screen_resolution: {self.screen_resolution}')
         self.bottom_bar_height = int(72 / 1280 * self.screen_resolution[0])
-        self.top_bar_height = int(72 / 1280 * self.screen_resolution[0]) // 2
+        self.logger.debug(f'bottom_bar_height: {self.bottom_bar_height}')
+        self.top_bar_height = self.bottom_bar_height // 2
+        self.logger.debug(f'top_bar_height: {self.top_bar_height}')
+        self.logger.info('END ON_RECALCULATE_UI_PROPERTIES')
