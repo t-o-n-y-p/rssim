@@ -204,7 +204,7 @@ class AppController(Controller):
 
     def on_set_up_main_frame_shader_uniforms(self, shader):
         """
-        Each time main frame shader is activated we need to set up values for all its uniforms.
+        Each time main frame shader is activated, notifies the view to set up values for all its uniforms.
 
         :param shader:                  main frame shader
         """
