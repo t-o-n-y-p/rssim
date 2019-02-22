@@ -8,48 +8,125 @@ from button.buy_track_button import BuyTrackButton
 
 
 class ConstructorView(View):
+    """
+    Implements Constructor view.
+    Constructor object is responsible for building new tracks and station environment.
+    """
     def __init__(self, user_db_cursor, config_db_cursor, surface, batches, groups):
+        """
+        Button click handlers:
+            on_close_constructor                    on_click handler for close constructor button
+            on_buy_track                            on_click handler for buy track button
+
+        Properties:
+            track_cells_positions               list of positions for track cells
+            environment_cell_positions          list of positions for environment cells
+            locked_label_offset                 "locked" label offset from the cell position
+            buy_button_offset                   buy track button offset from the cell position
+            title_label_offset                  "Track X" label offset from the cell position
+            description_label_offset            track state label offset from the cell position
+            placeholder_offset                  cell placeholder offset from the cell position
+            locked_label_font_size              font size for label indicating that rack is locked
+            title_label_font_size               font size for "Track X" label
+            description_label_font_size         font size for track state label
+            placeholder_font_size               font size for cell placeholder
+            cell_height                         height of all cells
+            interval_between_cells              vertical space between cells
+            railway_station_caption_position    position of "Railway station" label
+            environment_caption_position        position of "Environment" label
+            caption_font_size                   "Railway station" and "Environment" font size
+            constructor_opacity                 general opacity of the constructor screen
+            railway_station_caption_sprite      label for "Railway station" string
+            environment_caption_sprite          label for "Environment" string
+            track_state_matrix                  table with all tracks state properties:
+                                                property #0 indicates if track is locked
+                                                property #1 indicates if track is under construction
+                                                property #2 indicates construction time left
+                                                property #3 indicates if unlock condition from level is met
+                                                property #4 indicates if unlock condition from previous track is met
+                                                property #5 indicates if unlock condition from environment is met
+                                                property #6 indicates if all unlock conditions are met
+                                                property #7 indicates track price
+                                                property #8 indicates required level for this track
+            locked_tracks_labels                list of "locked" labels for tracks
+            title_tracks_labels                 list of "Track X" labels
+            description_tracks_labels           list of track state labels
+            buy_buttons                         list of buy track buttons
+            no_more_tracks_available_labels     list of "No more tracks available" labels
+            coming_soon_environment_labels      list of "Coming soon" labels
+            close_constructor_button            CloseConstructorButton object
+            buttons                             list of all buttons
+            on_buy_track                        on_click handler for buy track button
+            money                               player bank account state
+
+        :param user_db_cursor:                  user DB cursor (is used to execute user DB queries)
+        :param config_db_cursor:                configuration DB cursor (is used to execute configuration DB queries)
+        :param surface:                         surface to draw all UI objects on
+        :param batches:                         batches to group all labels and sprites
+        :param groups:                          defines drawing layers (some labels and sprites behind others)
+        """
         def on_close_constructor(button):
+            """
+            Notifies controller that player has closed constructor screen.
+
+            :param button:                      button that was clicked
+            """
+            self.logger.info('START ON_CLOSE_CONSTRUCTOR')
             self.controller.on_deactivate_view()
+            self.logger.info('END ON_CLOSE_CONSTRUCTOR')
 
         def on_buy_track(button):
+            """
+            Removes buy track button and its handlers.
+            Notifies controller that player has bought the track.
+
+            :param button:                      button that was clicked
+            """
+            self.logger.info('START ON_BUY_TRACK')
             button.on_deactivate()
-            key_for_remove = None
+            key_to_remove = None
             for key, value in self.buy_buttons.items():
                 if value == button:
-                    key_for_remove = key
+                    key_to_remove = key
+                    self.logger.debug(f'key_to_remove: {key_to_remove}')
                     self.controller.on_put_track_under_construction(key)
 
             self.controller.on_detach_handlers(
-                on_mouse_motion_handlers=[self.buy_buttons[key_for_remove].handle_mouse_motion, ],
-                on_mouse_press_handlers=[self.buy_buttons[key_for_remove].handle_mouse_press, ],
-                on_mouse_release_handlers=[self.buy_buttons[key_for_remove].handle_mouse_release, ],
-                on_mouse_leave_handlers=[self.buy_buttons[key_for_remove].handle_mouse_leave, ]
+                on_mouse_motion_handlers=[self.buy_buttons[key_to_remove].handle_mouse_motion, ],
+                on_mouse_press_handlers=[self.buy_buttons[key_to_remove].handle_mouse_press, ],
+                on_mouse_release_handlers=[self.buy_buttons[key_to_remove].handle_mouse_release, ],
+                on_mouse_leave_handlers=[self.buy_buttons[key_to_remove].handle_mouse_leave, ]
             )
-            self.buttons.remove(self.buy_buttons.pop(key_for_remove))
+            self.logger.debug(f'buy_buttons: {self.buy_buttons.keys()}')
+            self.logger.debug(f'number of buttons: {len(self.buttons)}')
+            self.buttons.remove(self.buy_buttons.pop(key_to_remove))
+            self.logger.debug(f'buy_buttons: {self.buy_buttons.keys()}')
+            self.logger.debug(f'number of buttons: {len(self.buttons)}')
+            self.logger.info('END ON_BUY_TRACK')
 
         super().__init__(user_db_cursor, config_db_cursor, surface, batches, groups,
                          logger=getLogger('root.app.game.map.constructor.view'))
+        self.logger.info('START INIT')
         self.track_cells_positions = ()
         self.environment_cell_positions = ()
-        self.constructor_locked_label_offset = [0, 0]
-        self.constructor_build_button_offset = [0, 0]
-        self.constructor_title_text_offset = [0, 0]
-        self.constructor_description_text_offset = [0, 0]
-        self.constructor_placeholder_offset = [0, 0]
-        self.constructor_locked_label_font_size = 0
-        self.constructor_title_text_font_size = 0
-        self.constructor_description_text_font_size = 0
-        self.constructor_placeholder_font_size = 0
-        self.constructor_cell_height = 0
-        self.constructor_interval_between_cells = 0
-        self.constructor_railway_station_caption = [0, 0]
-        self.constructor_environment_caption = [0, 0]
-        self.constructor_caption_font_size = 0
+        self.locked_label_offset = [0, 0]
+        self.buy_button_offset = [0, 0]
+        self.title_label_offset = [0, 0]
+        self.description_label_offset = [0, 0]
+        self.placeholder_offset = [0, 0]
+        self.locked_label_font_size = 0
+        self.title_label_font_size = 0
+        self.description_label_font_size = 0
+        self.placeholder_font_size = 0
+        self.cell_height = 0
+        self.interval_between_cells = 0
+        self.railway_station_caption_position = [0, 0]
+        self.environment_caption_position = [0, 0]
+        self.caption_font_size = 0
         self.on_read_ui_info()
         self.constructor_opacity = 0
-        self.constructor_railway_station_caption_sprite = None
-        self.constructor_environment_caption_sprite = None
+        self.railway_station_caption_sprite = None
+        self.environment_caption_sprite = None
         self.track_state_matrix = None
         self.locked_tracks_labels = {}
         self.title_tracks_labels = {}
@@ -59,90 +136,102 @@ class ConstructorView(View):
         self.coming_soon_environment_labels = []
         self.close_constructor_button = CloseConstructorButton(surface=self.surface, batch=self.batches['ui_batch'],
                                                                groups=self.groups, on_click_action=on_close_constructor)
+        self.logger.debug('buttons created successfully')
         self.buttons.append(self.close_constructor_button)
+        self.logger.debug(f'buttons list length: {len(self.buttons)}')
         self.on_buy_track = on_buy_track
         self.money = 0.0
+        self.logger.info('END INIT')
 
     @view_is_not_active
     def on_activate(self):
+        """
+        Activates the view and creates sprites and labels.
+        """
+        self.logger.info('START ON_ACTIVATE')
         self.is_activated = True
-        self.constructor_railway_station_caption_sprite \
-            = Label('R a i l w a y   s t a t i o n', font_name='Arial', font_size=self.constructor_caption_font_size,
-                    x=self.constructor_railway_station_caption[0],
-                    y=self.constructor_railway_station_caption[1],
+        self.logger.debug(f'is activated: {self.is_activated}')
+        self.railway_station_caption_sprite \
+            = Label('R a i l w a y   s t a t i o n', font_name='Arial', font_size=self.caption_font_size,
+                    x=self.railway_station_caption_position[0],
+                    y=self.railway_station_caption_position[1],
                     anchor_x='center', anchor_y='center',
                     batch=self.batches['ui_batch'], group=self.groups['button_text'])
-        self.constructor_environment_caption_sprite \
-            = Label('E n v i r o n m e n t', font_name='Arial', font_size=self.constructor_caption_font_size,
-                    x=self.constructor_environment_caption[0],
-                    y=self.constructor_environment_caption[1],
+        self.logger.debug(f'railway_station_caption_sprite position: {self.railway_station_caption_position}')
+        self.logger.debug(f'railway_station_caption_sprite font size: {self.caption_font_size}')
+        self.environment_caption_sprite \
+            = Label('E n v i r o n m e n t', font_name='Arial', font_size=self.caption_font_size,
+                    x=self.environment_caption_position[0],
+                    y=self.environment_caption_position[1],
                     anchor_x='center', anchor_y='center',
                     batch=self.batches['ui_batch'], group=self.groups['button_text'])
-        self.coming_soon_environment_labels \
-            = [Label('Coming soon', font_name='Arial', font_size=self.constructor_placeholder_font_size,
-                     color=GREY,
-                     x=self.environment_cell_positions[0][0] + self.constructor_placeholder_offset[0],
-                     y=self.environment_cell_positions[0][1] + self.constructor_placeholder_offset[1],
-                     anchor_x='center', anchor_y='center',
-                     batch=self.batches['ui_batch'], group=self.groups['button_text']),
-               Label('Coming soon', font_name='Arial', font_size=self.constructor_placeholder_font_size,
-                     color=GREY,
-                     x=self.environment_cell_positions[1][0] + self.constructor_placeholder_offset[0],
-                     y=self.environment_cell_positions[1][1] + self.constructor_placeholder_offset[1],
-                     anchor_x='center', anchor_y='center',
-                     batch=self.batches['ui_batch'], group=self.groups['button_text']),
-               Label('Coming soon', font_name='Arial', font_size=self.constructor_placeholder_font_size,
-                     color=GREY,
-                     x=self.environment_cell_positions[2][0] + self.constructor_placeholder_offset[0],
-                     y=self.environment_cell_positions[2][1] + self.constructor_placeholder_offset[1],
-                     anchor_x='center', anchor_y='center',
-                     batch=self.batches['ui_batch'], group=self.groups['button_text']),
-               Label('Coming soon', font_name='Arial', font_size=self.constructor_placeholder_font_size,
-                     color=GREY,
-                     x=self.environment_cell_positions[3][0] + self.constructor_placeholder_offset[0],
-                     y=self.environment_cell_positions[3][1] + self.constructor_placeholder_offset[1],
-                     anchor_x='center', anchor_y='center',
-                     batch=self.batches['ui_batch'], group=self.groups['button_text'])
-               ]
+        self.logger.debug(f'environment_caption_sprite position: {self.environment_caption_position}')
+        self.logger.debug(f'environment_caption_sprite font size: {self.caption_font_size}')
+        for i in range(4):
+            self.coming_soon_environment_labels.append(
+                Label('Coming soon', font_name='Arial', font_size=self.placeholder_font_size,
+                      color=GREY,
+                      x=self.environment_cell_positions[i][0] + self.placeholder_offset[0],
+                      y=self.environment_cell_positions[i][1] + self.placeholder_offset[1],
+                      anchor_x='center', anchor_y='center',
+                      batch=self.batches['ui_batch'], group=self.groups['button_text'])
+            )
+            self.logger.debug('coming_soon_environment_labels {} position: {}'
+                              .format(i, (self.environment_cell_positions[i][0] + self.placeholder_offset[0],
+                                          self.environment_cell_positions[i][1] + self.placeholder_offset[1])))
+            self.logger.debug(f'coming_soon_environment_labels {i} font size: {self.placeholder_font_size}')
 
         for b in self.buttons:
+            self.logger.debug(f'button: {b.__class__.__name__}')
+            self.logger.debug(f'to_activate_on_controller_init: {b.to_activate_on_controller_init}')
             if b.to_activate_on_controller_init:
                 b.on_activate()
 
+        self.logger.info('END ON_ACTIVATE')
+
     @view_is_active
     def on_deactivate(self):
+        """
+        Deactivates the view and destroys all sprites and labels.
+        """
+        self.logger.info('START ON_DEACTIVATE')
         self.is_activated = False
-        self.constructor_railway_station_caption_sprite.delete()
-        self.constructor_railway_station_caption_sprite = None
-        self.constructor_environment_caption_sprite.delete()
-        self.constructor_environment_caption_sprite = None
+        self.logger.debug(f'is activated: {self.is_activated}')
+        self.railway_station_caption_sprite.delete()
+        self.railway_station_caption_sprite = None
+        self.logger.debug(f'railway_station_caption_sprite: {self.railway_station_caption_sprite}')
+        self.environment_caption_sprite.delete()
+        self.environment_caption_sprite = None
+        self.logger.debug(f'environment_caption_sprite: {self.environment_caption_sprite}')
         for label in self.coming_soon_environment_labels:
             label.delete()
 
+        self.coming_soon_environment_labels.clear()
+        self.logger.debug(f'coming_soon_environment_labels: {self.coming_soon_environment_labels}')
         for d in self.locked_tracks_labels:
             self.locked_tracks_labels[d].delete()
 
         self.locked_tracks_labels.clear()
-
+        self.logger.debug(f'locked_tracks_labels: {self.locked_tracks_labels}')
         for d in self.title_tracks_labels:
             self.title_tracks_labels[d].delete()
 
         self.title_tracks_labels.clear()
-
+        self.logger.debug(f'title_tracks_labels: {self.title_tracks_labels}')
         for d in self.description_tracks_labels:
             self.description_tracks_labels[d].delete()
 
         self.description_tracks_labels.clear()
-
+        self.logger.debug(f'description_tracks_labels: {self.description_tracks_labels}')
         for label in self.no_more_tracks_available_labels:
             label.delete()
 
+        self.no_more_tracks_available_labels.clear()
+        self.logger.debug(f'no_more_tracks_available_labels: {self.no_more_tracks_available_labels}')
         for b in self.buttons:
             b.on_deactivate()
 
-        self.locked_tracks_labels = {}
-        self.title_tracks_labels = {}
-        self.description_tracks_labels = {}
+        self.logger.debug(f'number of buttons: {len(self.buttons)}')
         for key in self.buy_buttons:
             self.controller.on_detach_handlers(
                 on_mouse_motion_handlers=[self.buy_buttons[key].handle_mouse_motion, ],
@@ -152,11 +241,17 @@ class ConstructorView(View):
             )
             self.buttons.remove(self.buy_buttons[key])
 
-        self.buy_buttons = {}
-        self.no_more_tracks_available_labels = []
-        self.coming_soon_environment_labels = []
+        self.logger.debug(f'number of buttons: {len(self.buttons)}')
+        self.buy_buttons.clear()
+        self.logger.debug(f'buy_buttons: {self.buy_buttons}')
+        self.logger.info('END ON_DEACTIVATE')
 
     def on_update(self):
+        """
+        Updates fade-in/fade-out animations and create sprites if some are missing.
+        Not all sprites are created at once, they are created one by one to avoid massive FPS drop.
+        """
+        self.logger.info('START ON_UPDATE')
         if self.is_activated:
             if self.constructor_opacity < 255:
                 self.constructor_opacity += 15
@@ -167,10 +262,10 @@ class ConstructorView(View):
                 position_index = available_options + len(self.no_more_tracks_available_labels)
                 self.no_more_tracks_available_labels.append(
                     Label('No more tracks available', font_name='Arial',
-                          font_size=self.constructor_placeholder_font_size,
+                          font_size=self.placeholder_font_size,
                           color=GREY,
-                          x=self.track_cells_positions[position_index][0] + self.constructor_placeholder_offset[0],
-                          y=self.track_cells_positions[position_index][1] + self.constructor_placeholder_offset[1],
+                          x=self.track_cells_positions[position_index][0] + self.placeholder_offset[0],
+                          y=self.track_cells_positions[position_index][1] + self.placeholder_offset[1],
                           anchor_x='center', anchor_y='center',
                           batch=self.batches['ui_batch'], group=self.groups['button_text'])
                 )
@@ -180,34 +275,34 @@ class ConstructorView(View):
                     if self.track_state_matrix[dictionary_keys[i]][UNLOCK_AVAILABLE]:
                         if self.money < self.track_state_matrix[dictionary_keys[i]][PRICE]:
                             self.locked_tracks_labels[dictionary_keys[i]] \
-                                = Label('', font_name='Webdings', font_size=self.constructor_locked_label_font_size,
+                                = Label('', font_name='Webdings', font_size=self.locked_label_font_size,
                                         color=GREY,
-                                        x=self.track_cells_positions[i][0] + self.constructor_locked_label_offset[0],
-                                        y=self.track_cells_positions[i][1] + self.constructor_locked_label_offset[1],
+                                        x=self.track_cells_positions[i][0] + self.locked_label_offset[0],
+                                        y=self.track_cells_positions[i][1] + self.locked_label_offset[1],
                                         anchor_x='center', anchor_y='center', batch=self.batches['ui_batch'],
                                         group=self.groups['button_text'])
                         else:
                             self.locked_tracks_labels[dictionary_keys[i]] \
-                                = Label(' ', font_name='Webdings', font_size=self.constructor_locked_label_font_size,
+                                = Label(' ', font_name='Webdings', font_size=self.locked_label_font_size,
                                         color=GREY,
-                                        x=self.track_cells_positions[i][0] + self.constructor_locked_label_offset[0],
-                                        y=self.track_cells_positions[i][1] + self.constructor_locked_label_offset[1],
+                                        x=self.track_cells_positions[i][0] + self.locked_label_offset[0],
+                                        y=self.track_cells_positions[i][1] + self.locked_label_offset[1],
                                         anchor_x='center', anchor_y='center', batch=self.batches['ui_batch'],
                                         group=self.groups['button_text'])
                             self.buy_buttons[dictionary_keys[i]] \
                                 = BuyTrackButton(surface=self.surface, batch=self.batches['ui_batch'],
                                                  groups=self.groups, on_click_action=self.on_buy_track)
                             self.buy_buttons[dictionary_keys[i]].x_margin \
-                                = self.track_cells_positions[i][0] + self.constructor_build_button_offset[0]
+                                = self.track_cells_positions[i][0] + self.buy_button_offset[0]
                             self.buy_buttons[dictionary_keys[i]].y_margin \
-                                = self.track_cells_positions[i][1] + self.constructor_build_button_offset[1]
+                                = self.track_cells_positions[i][1] + self.buy_button_offset[1]
                             self.buy_buttons[dictionary_keys[i]].on_position_changed(
                                 (self.buy_buttons[dictionary_keys[i]].x_margin,
                                  self.buy_buttons[dictionary_keys[i]].y_margin)
                             )
                             self.buy_buttons[dictionary_keys[i]] \
-                                .on_size_changed((self.constructor_cell_height, self.constructor_cell_height),
-                                                 self.constructor_locked_label_font_size)
+                                .on_size_changed((self.cell_height, self.cell_height),
+                                                 self.locked_label_font_size)
                             self.buttons.append(self.buy_buttons[dictionary_keys[i]])
                             self.buy_buttons[dictionary_keys[i]].on_activate()
                             self.controller.on_append_handlers(
@@ -220,26 +315,26 @@ class ConstructorView(View):
                     else:
                         if not self.track_state_matrix[dictionary_keys[i]][UNDER_CONSTRUCTION]:
                             self.locked_tracks_labels[dictionary_keys[i]] \
-                                = Label('', font_name='Webdings', font_size=self.constructor_locked_label_font_size,
+                                = Label('', font_name='Webdings', font_size=self.locked_label_font_size,
                                         color=GREY,
-                                        x=self.track_cells_positions[i][0] + self.constructor_locked_label_offset[0],
-                                        y=self.track_cells_positions[i][1] + self.constructor_locked_label_offset[1],
+                                        x=self.track_cells_positions[i][0] + self.locked_label_offset[0],
+                                        y=self.track_cells_positions[i][1] + self.locked_label_offset[1],
                                         anchor_x='center', anchor_y='center', batch=self.batches['ui_batch'],
                                         group=self.groups['button_text'])
                         else:
                             self.locked_tracks_labels[dictionary_keys[i]] \
-                                = Label(' ', font_name='Webdings', font_size=self.constructor_locked_label_font_size,
+                                = Label(' ', font_name='Webdings', font_size=self.locked_label_font_size,
                                         color=GREY,
-                                        x=self.track_cells_positions[i][0] + self.constructor_locked_label_offset[0],
-                                        y=self.track_cells_positions[i][1] + self.constructor_locked_label_offset[1],
+                                        x=self.track_cells_positions[i][0] + self.locked_label_offset[0],
+                                        y=self.track_cells_positions[i][1] + self.locked_label_offset[1],
                                         anchor_x='center', anchor_y='center', batch=self.batches['ui_batch'],
                                         group=self.groups['button_text'])
 
                     self.title_tracks_labels[dictionary_keys[i]] \
                         = Label(f'Track {dictionary_keys[i]}', font_name='Arial',
-                                font_size=self.constructor_title_text_font_size,
-                                x=self.track_cells_positions[i][0] + self.constructor_title_text_offset[0],
-                                y=self.track_cells_positions[i][1] + self.constructor_title_text_offset[1],
+                                font_size=self.title_label_font_size,
+                                x=self.track_cells_positions[i][0] + self.title_label_offset[0],
+                                y=self.track_cells_positions[i][1] + self.title_label_offset[1],
                                 anchor_x='left', anchor_y='center', batch=self.batches['ui_batch'],
                                 group=self.groups['button_text'])
 
@@ -247,10 +342,10 @@ class ConstructorView(View):
                         self.description_tracks_labels[dictionary_keys[i]] \
                             = Label('Available for {} ¤'
                                     .format(self.track_state_matrix[dictionary_keys[i]][PRICE]),
-                                    font_name='Arial', font_size=self.constructor_description_text_font_size,
+                                    font_name='Arial', font_size=self.description_label_font_size,
                                     color=GREEN,
-                                    x=self.track_cells_positions[i][0] + self.constructor_description_text_offset[0],
-                                    y=self.track_cells_positions[i][1] + self.constructor_description_text_offset[1],
+                                    x=self.track_cells_positions[i][0] + self.description_label_offset[0],
+                                    y=self.track_cells_positions[i][1] + self.description_label_offset[1],
                                     anchor_x='left', anchor_y='center', batch=self.batches['ui_batch'],
                                     group=self.groups['button_text'])
                     elif self.track_state_matrix[dictionary_keys[i]][UNDER_CONSTRUCTION]:
@@ -259,10 +354,10 @@ class ConstructorView(View):
                             = Label('Under construction. {}h {}min left'
                                     .format(construction_time // FRAMES_IN_ONE_HOUR,
                                             (construction_time // FRAMES_IN_ONE_MINUTE) % MINUTES_IN_ONE_HOUR),
-                                    font_name='Arial', font_size=self.constructor_description_text_font_size,
+                                    font_name='Arial', font_size=self.description_label_font_size,
                                     color=ORANGE,
-                                    x=self.track_cells_positions[i][0] + self.constructor_description_text_offset[0],
-                                    y=self.track_cells_positions[i][1] + self.constructor_description_text_offset[1],
+                                    x=self.track_cells_positions[i][0] + self.description_label_offset[0],
+                                    y=self.track_cells_positions[i][1] + self.description_label_offset[1],
                                     anchor_x='left', anchor_y='center', batch=self.batches['ui_batch'],
                                     group=self.groups['button_text'])
                     else:
@@ -270,34 +365,34 @@ class ConstructorView(View):
                             self.description_tracks_labels[dictionary_keys[i]] \
                                 = Label('Requires level {}'
                                         .format(self.track_state_matrix[dictionary_keys[i]][LEVEL_REQUIRED]),
-                                        font_name='Arial', font_size=self.constructor_description_text_font_size,
+                                        font_name='Arial', font_size=self.description_label_font_size,
                                         color=GREY,
                                         x=self.track_cells_positions[i][0]
-                                          + self.constructor_description_text_offset[0],
+                                          + self.description_label_offset[0],
                                         y=self.track_cells_positions[i][1]
-                                          + self.constructor_description_text_offset[1],
+                                          + self.description_label_offset[1],
                                         anchor_x='left', anchor_y='center', batch=self.batches['ui_batch'],
                                         group=self.groups['button_text'])
                         elif not self.track_state_matrix[dictionary_keys[i]][UNLOCK_CONDITION_FROM_ENVIRONMENT]:
                             self.description_tracks_labels[dictionary_keys[i]] \
                                 = Label('Requires environment Tier X',
-                                        font_name='Arial', font_size=self.constructor_description_text_font_size,
+                                        font_name='Arial', font_size=self.description_label_font_size,
                                         color=GREY,
                                         x=self.track_cells_positions[i][0]
-                                          + self.constructor_description_text_offset[0],
+                                          + self.description_label_offset[0],
                                         y=self.track_cells_positions[i][1]
-                                          + self.constructor_description_text_offset[1],
+                                          + self.description_label_offset[1],
                                         anchor_x='left', anchor_y='center', batch=self.batches['ui_batch'],
                                         group=self.groups['button_text'])
                         elif not self.track_state_matrix[dictionary_keys[i]][UNLOCK_CONDITION_FROM_PREVIOUS_TRACK]:
                             self.description_tracks_labels[dictionary_keys[i]] \
                                 = Label('Build track {} to unlock'.format(dictionary_keys[i] - 1),
-                                        font_name='Arial', font_size=self.constructor_description_text_font_size,
+                                        font_name='Arial', font_size=self.description_label_font_size,
                                         color=GREY,
                                         x=self.track_cells_positions[i][0]
-                                          + self.constructor_description_text_offset[0],
+                                          + self.description_label_offset[0],
                                         y=self.track_cells_positions[i][1]
-                                          + self.constructor_description_text_offset[1],
+                                          + self.description_label_offset[1],
                                         anchor_x='left', anchor_y='center', batch=self.batches['ui_batch'],
                                         group=self.groups['button_text'])
 
@@ -307,54 +402,56 @@ class ConstructorView(View):
             if self.constructor_opacity > 0:
                 self.constructor_opacity -= 15
 
+        self.logger.info('END ON_UPDATE')
+
     def on_change_screen_resolution(self, screen_resolution):
         self.on_recalculate_ui_properties(screen_resolution)
         self.on_read_ui_info()
         if self.is_activated:
-            self.constructor_railway_station_caption_sprite.x = self.constructor_railway_station_caption[0]
-            self.constructor_railway_station_caption_sprite.y = self.constructor_railway_station_caption[1]
-            self.constructor_railway_station_caption_sprite.font_size = self.constructor_caption_font_size
-            self.constructor_environment_caption_sprite.x = self.constructor_environment_caption[0]
-            self.constructor_environment_caption_sprite.y = self.constructor_environment_caption[1]
-            self.constructor_environment_caption_sprite.font_size = self.constructor_caption_font_size
+            self.railway_station_caption_sprite.x = self.railway_station_caption_position[0]
+            self.railway_station_caption_sprite.y = self.railway_station_caption_position[1]
+            self.railway_station_caption_sprite.font_size = self.caption_font_size
+            self.environment_caption_sprite.x = self.environment_caption_position[0]
+            self.environment_caption_sprite.y = self.environment_caption_position[1]
+            self.environment_caption_sprite.font_size = self.caption_font_size
             for i in range(4):
                 self.coming_soon_environment_labels[i].x \
-                    = self.environment_cell_positions[i][0] + self.constructor_placeholder_offset[0]
+                    = self.environment_cell_positions[i][0] + self.placeholder_offset[0]
                 self.coming_soon_environment_labels[i].y \
-                    = self.environment_cell_positions[i][1] + self.constructor_placeholder_offset[1]
-                self.coming_soon_environment_labels[i].font_size = self.constructor_placeholder_font_size
+                    = self.environment_cell_positions[i][1] + self.placeholder_offset[1]
+                self.coming_soon_environment_labels[i].font_size = self.placeholder_font_size
 
             dictionary_keys = list(self.locked_tracks_labels.keys())
             for i in range(len(dictionary_keys)):
                 self.locked_tracks_labels[dictionary_keys[i]].x \
-                    = self.track_cells_positions[i][0] + self.constructor_locked_label_offset[0]
+                    = self.track_cells_positions[i][0] + self.locked_label_offset[0]
                 self.locked_tracks_labels[dictionary_keys[i]].y \
-                    = self.track_cells_positions[i][1] + self.constructor_locked_label_offset[1]
-                self.locked_tracks_labels[dictionary_keys[i]].font_size = self.constructor_locked_label_font_size
+                    = self.track_cells_positions[i][1] + self.locked_label_offset[1]
+                self.locked_tracks_labels[dictionary_keys[i]].font_size = self.locked_label_font_size
                 self.title_tracks_labels[dictionary_keys[i]].x \
-                    = self.track_cells_positions[i][0] + self.constructor_title_text_offset[0]
+                    = self.track_cells_positions[i][0] + self.title_label_offset[0]
                 self.title_tracks_labels[dictionary_keys[i]].y \
-                    = self.track_cells_positions[i][1] + self.constructor_title_text_offset[1]
-                self.title_tracks_labels[dictionary_keys[i]].font_size = self.constructor_title_text_font_size
+                    = self.track_cells_positions[i][1] + self.title_label_offset[1]
+                self.title_tracks_labels[dictionary_keys[i]].font_size = self.title_label_font_size
                 self.description_tracks_labels[dictionary_keys[i]].x \
-                    = self.track_cells_positions[i][0] + self.constructor_description_text_offset[0]
+                    = self.track_cells_positions[i][0] + self.description_label_offset[0]
                 self.description_tracks_labels[dictionary_keys[i]].y \
-                    = self.track_cells_positions[i][1] + self.constructor_description_text_offset[1]
+                    = self.track_cells_positions[i][1] + self.description_label_offset[1]
                 self.description_tracks_labels[dictionary_keys[i]].font_size \
-                    = self.constructor_description_text_font_size
+                    = self.description_label_font_size
 
             dictionary_keys = list(self.buy_buttons.keys())
             for i in range(len(dictionary_keys)):
                 self.buy_buttons[dictionary_keys[i]].x_margin \
-                    = self.track_cells_positions[i][0] + self.constructor_build_button_offset[0]
+                    = self.track_cells_positions[i][0] + self.buy_button_offset[0]
                 self.buy_buttons[dictionary_keys[i]].y_margin \
-                    = self.track_cells_positions[i][1] + self.constructor_build_button_offset[1]
+                    = self.track_cells_positions[i][1] + self.buy_button_offset[1]
                 self.buy_buttons[dictionary_keys[i]].on_position_changed(
                     (self.buy_buttons[dictionary_keys[i]].x_margin, self.buy_buttons[dictionary_keys[i]].y_margin)
                 )
                 self.buy_buttons[dictionary_keys[i]] \
-                    .on_size_changed((self.constructor_cell_height, self.constructor_cell_height),
-                                     self.constructor_locked_label_font_size)
+                    .on_size_changed((self.cell_height, self.cell_height),
+                                     self.locked_label_font_size)
 
         self.close_constructor_button.on_size_changed((self.bottom_bar_height, self.bottom_bar_height),
                                                       int(24 / 80 * self.bottom_bar_height))
@@ -381,16 +478,16 @@ class ConstructorView(View):
                                                              groups=self.groups, on_click_action=self.on_buy_track)
                     self.buy_buttons[track].x_margin \
                         = self.track_cells_positions[list(track_state_matrix.keys()).index(track)][0] \
-                        + self.constructor_build_button_offset[0]
+                        + self.buy_button_offset[0]
                     self.buy_buttons[track].y_margin \
                         = self.track_cells_positions[list(track_state_matrix.keys()).index(track)][1] \
-                        + self.constructor_build_button_offset[1]
+                        + self.buy_button_offset[1]
                     self.buy_buttons[track].on_position_changed(
                         (self.buy_buttons[track].x_margin, self.buy_buttons[track].y_margin)
                     )
                     self.buy_buttons[track] \
-                        .on_size_changed((self.constructor_cell_height, self.constructor_cell_height),
-                                         self.constructor_locked_label_font_size)
+                        .on_size_changed((self.cell_height, self.cell_height),
+                                         self.locked_label_font_size)
                     self.buttons.append(self.buy_buttons[track])
                     self.buy_buttons[track].on_activate()
                     self.controller.on_append_handlers(
@@ -434,7 +531,7 @@ class ConstructorView(View):
 
     @view_is_active
     def on_unlock_track_live(self, track):
-        cell_step = self.constructor_cell_height + self.constructor_interval_between_cells
+        cell_step = self.cell_height + self.interval_between_cells
         self.locked_tracks_labels[track].delete()
         self.locked_tracks_labels.pop(track)
         for t in self.locked_tracks_labels:
@@ -460,19 +557,27 @@ class ConstructorView(View):
             self.no_more_tracks_available_labels[p].y += cell_step
 
     def on_read_ui_info(self):
+        """
+        Reads aff offsets and font size from the database.
+        """
+        self.logger.info('START ON_READ_UI_INFO')
         self.config_db_cursor.execute('''SELECT constructor_railway_station_caption_x, constructor_caption_y
                                          FROM screen_resolution_config WHERE app_width = ? AND app_height = ?''',
                                       (self.screen_resolution[0], self.screen_resolution[1]))
-        self.constructor_railway_station_caption = self.config_db_cursor.fetchone()
+        self.railway_station_caption_position = self.config_db_cursor.fetchone()
+        self.logger.debug(f'railway_station_caption_position: {self.railway_station_caption_position}')
         self.config_db_cursor.execute('''SELECT constructor_environment_caption_x, constructor_caption_y
                                          FROM screen_resolution_config WHERE app_width = ? AND app_height = ?''',
                                       (self.screen_resolution[0], self.screen_resolution[1]))
-        self.constructor_environment_caption = self.config_db_cursor.fetchone()
+        self.environment_caption_position = self.config_db_cursor.fetchone()
+        self.logger.debug(f'environment_caption_position: {self.environment_caption_position}')
         self.config_db_cursor.execute('''SELECT constructor_cell_height, constructor_interval_between_cells
                                          FROM screen_resolution_config WHERE app_width = ? AND app_height = ?''',
                                       (self.screen_resolution[0], self.screen_resolution[1]))
-        self.constructor_cell_height, self.constructor_interval_between_cells = self.config_db_cursor.fetchone()
-        cell_step = self.constructor_cell_height + self.constructor_interval_between_cells
+        self.cell_height, self.interval_between_cells = self.config_db_cursor.fetchone()
+        self.logger.debug(f'cell_height: {self.cell_height}')
+        self.logger.debug(f'interval_between_cells: {self.interval_between_cells}')
+        cell_step = self.cell_height + self.interval_between_cells
         self.config_db_cursor.execute('''SELECT constructor_cell_top_left_x, constructor_cell_top_left_y
                                          FROM screen_resolution_config WHERE app_width = ? AND app_height = ?''',
                                       (self.screen_resolution[0], self.screen_resolution[1]))
@@ -481,6 +586,7 @@ class ConstructorView(View):
                                       (fetched_coords[0], fetched_coords[1] - cell_step),
                                       (fetched_coords[0], fetched_coords[1] - cell_step * 2),
                                       (fetched_coords[0], fetched_coords[1] - cell_step * 3))
+        self.logger.debug(f'track_cells_positions: {self.track_cells_positions}')
         self.config_db_cursor.execute('''SELECT constructor_cell_top_right_x, constructor_cell_top_right_y
                                          FROM screen_resolution_config WHERE app_width = ? AND app_height = ?''',
                                       (self.screen_resolution[0], self.screen_resolution[1]))
@@ -489,6 +595,7 @@ class ConstructorView(View):
                                            (fetched_coords[0], fetched_coords[1] - cell_step),
                                            (fetched_coords[0], fetched_coords[1] - cell_step * 2),
                                            (fetched_coords[0], fetched_coords[1] - cell_step * 3))
+        self.logger.debug(f'environment_cell_positions: {self.environment_cell_positions}')
         self.config_db_cursor.execute('''SELECT constructor_locked_label_offset_x, constructor_locked_label_offset_y,
                                          constructor_build_button_offset_x, constructor_build_button_offset_y,
                                          constructor_title_text_offset_x, constructor_title_text_offset_y,
@@ -499,11 +606,22 @@ class ConstructorView(View):
                                          constructor_caption_font_size 
                                          FROM screen_resolution_config WHERE app_width = ? AND app_height = ?''',
                                       (self.screen_resolution[0], self.screen_resolution[1]))
-        self.constructor_locked_label_offset[0], self.constructor_locked_label_offset[1], \
-            self.constructor_build_button_offset[0], self.constructor_build_button_offset[1], \
-            self.constructor_title_text_offset[0], self.constructor_title_text_offset[1], \
-            self.constructor_description_text_offset[0], self.constructor_description_text_offset[1], \
-            self.constructor_placeholder_offset[0], self.constructor_placeholder_offset[1], \
-            self.constructor_locked_label_font_size, self.constructor_title_text_font_size, \
-            self.constructor_description_text_font_size, self.constructor_placeholder_font_size, \
-            self.constructor_caption_font_size = self.config_db_cursor.fetchone()
+        self.locked_label_offset[0], self.locked_label_offset[1], \
+            self.buy_button_offset[0], self.buy_button_offset[1], \
+            self.title_label_offset[0], self.title_label_offset[1], \
+            self.description_label_offset[0], self.description_label_offset[1], \
+            self.placeholder_offset[0], self.placeholder_offset[1], \
+            self.locked_label_font_size, self.title_label_font_size, \
+            self.description_label_font_size, self.placeholder_font_size, \
+            self.caption_font_size = self.config_db_cursor.fetchone()
+        self.logger.debug(f'locked_label_offset: {self.locked_label_offset}')
+        self.logger.debug(f'buy_button_offset: {self.buy_button_offset}')
+        self.logger.debug(f'title_label_offset: {self.title_label_offset}')
+        self.logger.debug(f'description_label_offset: {self.description_label_offset}')
+        self.logger.debug(f'placeholder_offset: {self.placeholder_offset}')
+        self.logger.debug(f'locked_label_font_size: {self.locked_label_font_size}')
+        self.logger.debug(f'title_label_font_size: {self.title_label_font_size}')
+        self.logger.debug(f'description_label_font_size: {self.description_label_font_size}')
+        self.logger.debug(f'placeholder_font_size: {self.placeholder_font_size}')
+        self.logger.debug(f'caption_font_size: {self.caption_font_size}')
+        self.logger.info('END ON_READ_UI_INFO')
