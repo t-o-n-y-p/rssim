@@ -11,9 +11,6 @@ class FPSView(View):
                          logger=getLogger('root.app.fps.view'))
         self.fps_label = None
 
-    def on_update(self):
-        pass
-
     @view_is_not_active
     def on_activate(self):
         self.is_activated = True

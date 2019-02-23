@@ -163,6 +163,7 @@ class AppView(View):
                                  x=self.top_bar_height // 4, y=self.screen_resolution[1] - self.top_bar_height // 2,
                                  anchor_x='left', anchor_y='center', batch=self.batches['ui_batch'],
                                  group=self.groups['button_text'])
+        self.logger.debug(f'title label text: {self.title_label.text}')
         self.logger.debug(f'title label position: {(self.title_label.x, self.title_label.y)}')
         self.logger.debug(f'title label font size: {self.title_label.font_size}')
         self.logger.debug(f'main_frame_sprite: {self.main_frame_sprite}')

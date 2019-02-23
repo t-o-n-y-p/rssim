@@ -167,6 +167,7 @@ class ConstructorView(View):
                     batch=self.batches['ui_batch'], group=self.groups['button_text'])
         self.logger.debug(f'environment_caption_sprite position: {self.environment_caption_position}')
         self.logger.debug(f'environment_caption_sprite font size: {self.caption_font_size}')
+        # create "Coming soon" labels for environment since it is not yet implemented
         for i in range(4):
             self.coming_soon_environment_labels.append(
                 Label('Coming soon', font_name='Arial', font_size=self.placeholder_font_size,
@@ -253,13 +254,18 @@ class ConstructorView(View):
         """
         self.logger.info('START ON_UPDATE')
         if self.is_activated:
+            self.logger.debug(f'constructor_opacity: {self.constructor_opacity}')
             if self.constructor_opacity < 255:
                 self.constructor_opacity += 15
 
+            # add "No more tracks available" label if number of available tracks is less than 4
             dictionary_keys = list(self.track_state_matrix.keys())
+            self.logger.debug(f'dictionary_keys: {dictionary_keys}')
             available_options = min(len(dictionary_keys), 4)
+            self.logger.debug(f'available_options: {available_options}')
             if available_options < 4 and len(self.no_more_tracks_available_labels) < 4 - available_options:
                 position_index = available_options + len(self.no_more_tracks_available_labels)
+                self.logger.debug(f'available_options: {available_options}')
                 self.no_more_tracks_available_labels.append(
                     Label('No more tracks available', font_name='Arial',
                           font_size=self.placeholder_font_size,
@@ -271,8 +277,18 @@ class ConstructorView(View):
                 )
 
             for i in range(available_options):
+                # create new cell if there are more tracks available;
+                # only 1 cell is created every frame for performance reasons
+                self.logger.debug(f'locked_tracks_labels: {self.locked_tracks_labels.keys()}')
+                self.logger.debug(f'next track: {dictionary_keys[i]}')
                 if dictionary_keys[i] not in self.locked_tracks_labels:
+                    self.logger.debug('unlock_available: {}'
+                                      .format(self.track_state_matrix[dictionary_keys[i]][UNLOCK_AVAILABLE]))
+                    # if track is unlocked and not enough money, create disabled construction label;
+                    # if player has enough money, create button to buy the track
                     if self.track_state_matrix[dictionary_keys[i]][UNLOCK_AVAILABLE]:
+                        self.logger.debug(f'money: {self.money}')
+                        self.logger.debug(f'price: {self.track_state_matrix[dictionary_keys[i]][PRICE]}')
                         if self.money < self.track_state_matrix[dictionary_keys[i]][PRICE]:
                             self.locked_tracks_labels[dictionary_keys[i]] \
                                 = Label('', font_name='Webdings', font_size=self.locked_label_font_size,
@@ -281,6 +297,13 @@ class ConstructorView(View):
                                         y=self.track_cells_positions[i][1] + self.locked_label_offset[1],
                                         anchor_x='center', anchor_y='center', batch=self.batches['ui_batch'],
                                         group=self.groups['button_text'])
+                            self.logger.debug('locked label text: {}'
+                                              .format(self.locked_tracks_labels[dictionary_keys[i]].text))
+                            self.logger.debug('locked label position: {}'
+                                              .format((self.locked_tracks_labels[dictionary_keys[i]].x,
+                                                       self.locked_tracks_labels[dictionary_keys[i]].y)))
+                            self.logger.debug('locked label font size: {}'
+                                              .format(self.locked_tracks_labels[dictionary_keys[i]].font_size))
                         else:
                             self.locked_tracks_labels[dictionary_keys[i]] \
                                 = Label(' ', font_name='Webdings', font_size=self.locked_label_font_size,
@@ -289,6 +312,13 @@ class ConstructorView(View):
                                         y=self.track_cells_positions[i][1] + self.locked_label_offset[1],
                                         anchor_x='center', anchor_y='center', batch=self.batches['ui_batch'],
                                         group=self.groups['button_text'])
+                            self.logger.debug('locked label text: {}'
+                                              .format(self.locked_tracks_labels[dictionary_keys[i]].text))
+                            self.logger.debug('locked label position: {}'
+                                              .format((self.locked_tracks_labels[dictionary_keys[i]].x,
+                                                       self.locked_tracks_labels[dictionary_keys[i]].y)))
+                            self.logger.debug('locked label font size: {}'
+                                              .format(self.locked_tracks_labels[dictionary_keys[i]].font_size))
                             self.buy_buttons[dictionary_keys[i]] \
                                 = BuyTrackButton(surface=self.surface, batch=self.batches['ui_batch'],
                                                  groups=self.groups, on_click_action=self.on_buy_track)
@@ -303,7 +333,9 @@ class ConstructorView(View):
                             self.buy_buttons[dictionary_keys[i]] \
                                 .on_size_changed((self.cell_height, self.cell_height),
                                                  self.locked_label_font_size)
+                            self.logger.debug(f'buttons list length: {len(self.buttons)}')
                             self.buttons.append(self.buy_buttons[dictionary_keys[i]])
+                            self.logger.debug(f'buttons list length: {len(self.buttons)}')
                             self.buy_buttons[dictionary_keys[i]].on_activate()
                             self.controller.on_append_handlers(
                                 on_mouse_motion_handlers=[self.buy_buttons[dictionary_keys[i]].handle_mouse_motion, ],
@@ -312,7 +344,10 @@ class ConstructorView(View):
                                 on_mouse_leave_handlers=[self.buy_buttons[dictionary_keys[i]].handle_mouse_leave, ]
                             )
 
+                    # if track is not available, create locked label if track is not under construction
                     else:
+                        self.logger.debug('under_construction: {}'
+                                          .format(self.track_state_matrix[dictionary_keys[i]][UNDER_CONSTRUCTION]))
                         if not self.track_state_matrix[dictionary_keys[i]][UNDER_CONSTRUCTION]:
                             self.locked_tracks_labels[dictionary_keys[i]] \
                                 = Label('', font_name='Webdings', font_size=self.locked_label_font_size,
@@ -330,6 +365,15 @@ class ConstructorView(View):
                                         anchor_x='center', anchor_y='center', batch=self.batches['ui_batch'],
                                         group=self.groups['button_text'])
 
+                        self.logger.debug('locked label text: {}'
+                                          .format(self.locked_tracks_labels[dictionary_keys[i]].text))
+                        self.logger.debug('locked label position: {}'
+                                          .format((self.locked_tracks_labels[dictionary_keys[i]].x,
+                                                   self.locked_tracks_labels[dictionary_keys[i]].y)))
+                        self.logger.debug('locked label font size: {}'
+                                          .format(self.locked_tracks_labels[dictionary_keys[i]].font_size))
+
+                    # create track cell title and description
                     self.title_tracks_labels[dictionary_keys[i]] \
                         = Label(f'Track {dictionary_keys[i]}', font_name='Arial',
                                 font_size=self.title_label_font_size,
@@ -337,7 +381,26 @@ class ConstructorView(View):
                                 y=self.track_cells_positions[i][1] + self.title_label_offset[1],
                                 anchor_x='left', anchor_y='center', batch=self.batches['ui_batch'],
                                 group=self.groups['button_text'])
+                    self.logger.debug('title label text: {}'
+                                      .format(self.title_tracks_labels[dictionary_keys[i]].text))
+                    self.logger.debug('title label position: {}'
+                                      .format((self.title_tracks_labels[dictionary_keys[i]].x,
+                                               self.title_tracks_labels[dictionary_keys[i]].y)))
+                    self.logger.debug('title label font size: {}'
+                                      .format(self.title_tracks_labels[dictionary_keys[i]].font_size))
 
+                    self.logger.debug('unlock_available: {}'
+                                      .format(self.track_state_matrix[dictionary_keys[i]][UNLOCK_AVAILABLE]))
+                    self.logger.debug('under_construction: {}'
+                                      .format(self.track_state_matrix[dictionary_keys[i]][UNDER_CONSTRUCTION]))
+                    self.logger.debug('unlock_condition_from_level: {}'
+                                      .format(self.track_state_matrix[dictionary_keys[i]][UNLOCK_CONDITION_FROM_LEVEL]))
+                    self.logger.debug('unlock_condition_from_environment: {}'
+                                      .format(self.track_state_matrix[dictionary_keys[i]][
+                                                                            UNLOCK_CONDITION_FROM_ENVIRONMENT]))
+                    self.logger.debug('unlock_condition_from_previous_track: {}'
+                                      .format(self.track_state_matrix[dictionary_keys[i]][
+                                                                            UNLOCK_CONDITION_FROM_PREVIOUS_TRACK]))
                     if self.track_state_matrix[dictionary_keys[i]][UNLOCK_AVAILABLE]:
                         self.description_tracks_labels[dictionary_keys[i]] \
                             = Label('Available for {} ¤'
@@ -350,6 +413,7 @@ class ConstructorView(View):
                                     group=self.groups['button_text'])
                     elif self.track_state_matrix[dictionary_keys[i]][UNDER_CONSTRUCTION]:
                         construction_time = self.track_state_matrix[dictionary_keys[i]][CONSTRUCTION_TIME]
+                        self.logger.debug(f'construction time: {construction_time}')
                         self.description_tracks_labels[dictionary_keys[i]] \
                             = Label('Under construction. {}h {}min left'
                                     .format(construction_time // FRAMES_IN_ONE_HOUR,
@@ -396,51 +460,100 @@ class ConstructorView(View):
                                         anchor_x='left', anchor_y='center', batch=self.batches['ui_batch'],
                                         group=self.groups['button_text'])
 
+                    self.logger.debug('description label text: {}'
+                                      .format(self.description_tracks_labels[dictionary_keys[i]].text))
+                    self.logger.debug('description label position: {}'
+                                      .format((self.description_tracks_labels[dictionary_keys[i]].x,
+                                               self.description_tracks_labels[dictionary_keys[i]].y)))
+                    self.logger.debug('description label font size: {}'
+                                      .format(self.description_tracks_labels[dictionary_keys[i]].font_size))
+                    self.logger.debug('description label font color: {}'
+                                      .format(self.description_tracks_labels[dictionary_keys[i]].color))
                     break
 
         if not self.is_activated:
+            self.logger.debug(f'constructor_opacity: {self.constructor_opacity}')
             if self.constructor_opacity > 0:
                 self.constructor_opacity -= 15
 
         self.logger.info('END ON_UPDATE')
 
     def on_change_screen_resolution(self, screen_resolution):
+        """
+        Updates screen resolution and moves all labels and sprites to its new positions.
+
+        :param screen_resolution:       new screen resolution
+        """
+        self.logger.info('START ON_CHANGE_SCREEN_RESOLUTION')
         self.on_recalculate_ui_properties(screen_resolution)
         self.on_read_ui_info()
+        self.logger.debug(f'is activated: {self.is_activated}')
         if self.is_activated:
             self.railway_station_caption_sprite.x = self.railway_station_caption_position[0]
             self.railway_station_caption_sprite.y = self.railway_station_caption_position[1]
             self.railway_station_caption_sprite.font_size = self.caption_font_size
+            self.logger.debug('railway_station_caption_sprite position: {}'
+                              .format((self.railway_station_caption_sprite.x,
+                                       self.railway_station_caption_sprite.y)))
+            self.logger.debug('railway_station_caption_sprite font size: {}'
+                              .format(self.railway_station_caption_sprite.font_size))
             self.environment_caption_sprite.x = self.environment_caption_position[0]
             self.environment_caption_sprite.y = self.environment_caption_position[1]
             self.environment_caption_sprite.font_size = self.caption_font_size
+            self.logger.debug('environment_caption_sprite position: {}'
+                              .format((self.environment_caption_sprite.x,
+                                       self.environment_caption_sprite.y)))
+            self.logger.debug('environment_caption_sprite font size: {}'
+                              .format(self.environment_caption_sprite.font_size))
             for i in range(4):
                 self.coming_soon_environment_labels[i].x \
                     = self.environment_cell_positions[i][0] + self.placeholder_offset[0]
                 self.coming_soon_environment_labels[i].y \
                     = self.environment_cell_positions[i][1] + self.placeholder_offset[1]
                 self.coming_soon_environment_labels[i].font_size = self.placeholder_font_size
+                self.logger.debug('coming_soon_environment_labels position: {}'
+                                  .format((self.coming_soon_environment_labels[i].x,
+                                           self.coming_soon_environment_labels[i].y)))
+                self.logger.debug('coming_soon_environment_labels font size: {}'
+                                  .format(self.coming_soon_environment_labels[i].font_size))
 
             dictionary_keys = list(self.locked_tracks_labels.keys())
+            self.logger.debug(f'dictionary_keys: {dictionary_keys}')
             for i in range(len(dictionary_keys)):
                 self.locked_tracks_labels[dictionary_keys[i]].x \
                     = self.track_cells_positions[i][0] + self.locked_label_offset[0]
                 self.locked_tracks_labels[dictionary_keys[i]].y \
                     = self.track_cells_positions[i][1] + self.locked_label_offset[1]
                 self.locked_tracks_labels[dictionary_keys[i]].font_size = self.locked_label_font_size
+                self.logger.debug('locked_tracks_labels position: {}'
+                                  .format((self.locked_tracks_labels[dictionary_keys[i]].x,
+                                           self.locked_tracks_labels[dictionary_keys[i]].y)))
+                self.logger.debug('locked_tracks_labels font size: {}'
+                                  .format(self.locked_tracks_labels[dictionary_keys[i]].font_size))
                 self.title_tracks_labels[dictionary_keys[i]].x \
                     = self.track_cells_positions[i][0] + self.title_label_offset[0]
                 self.title_tracks_labels[dictionary_keys[i]].y \
                     = self.track_cells_positions[i][1] + self.title_label_offset[1]
                 self.title_tracks_labels[dictionary_keys[i]].font_size = self.title_label_font_size
+                self.logger.debug('title_tracks_labels position: {}'
+                                  .format((self.title_tracks_labels[dictionary_keys[i]].x,
+                                           self.title_tracks_labels[dictionary_keys[i]].y)))
+                self.logger.debug('title_tracks_labels font size: {}'
+                                  .format(self.title_tracks_labels[dictionary_keys[i]].font_size))
                 self.description_tracks_labels[dictionary_keys[i]].x \
                     = self.track_cells_positions[i][0] + self.description_label_offset[0]
                 self.description_tracks_labels[dictionary_keys[i]].y \
                     = self.track_cells_positions[i][1] + self.description_label_offset[1]
                 self.description_tracks_labels[dictionary_keys[i]].font_size \
                     = self.description_label_font_size
+                self.logger.debug('description_tracks_labels position: {}'
+                                  .format((self.description_tracks_labels[dictionary_keys[i]].x,
+                                           self.description_tracks_labels[dictionary_keys[i]].y)))
+                self.logger.debug('description_tracks_labels font size: {}'
+                                  .format(self.description_tracks_labels[dictionary_keys[i]].font_size))
 
             dictionary_keys = list(self.buy_buttons.keys())
+            self.logger.debug(f'dictionary_keys: {dictionary_keys}')
             for i in range(len(dictionary_keys)):
                 self.buy_buttons[dictionary_keys[i]].x_margin \
                     = self.track_cells_positions[i][0] + self.buy_button_offset[0]
@@ -458,21 +571,49 @@ class ConstructorView(View):
         for b in self.buttons:
             b.on_position_changed((b.x_margin, b.y_margin))
 
+        self.logger.info('END ON_CHANGE_SCREEN_RESOLUTION')
+
     def on_update_money(self, money, track_state_matrix):
+        """
+        Updates bank account state change when user spends or gains money.
+
+        :param money:                   current bank account state
+        :param track_state_matrix       table with all tracks state properties
+        """
+        self.logger.info('START ON_UPDATE_MONEY')
         self.money = money
+        self.logger.debug(f'money: {self.money}')
         self.track_state_matrix = track_state_matrix
+        self.logger.debug(f'track_state_matrix: {self.track_state_matrix}')
         if len(self.track_state_matrix) > 0:
             self.on_update_live_track_state(track_state_matrix, list(track_state_matrix.keys())[0])
 
+        self.logger.info('END ON_UPDATE_MONEY')
+
     @view_is_active
-    @track_is_in_top4
+    @track_cell_is_created
     def on_update_live_track_state(self, track_state_matrix, track):
+        """
+        Updates track state when constructor screen is opened and track cell has been created.
+
+        :param track_state_matrix       table with all tracks state properties
+        :param track:                   track number
+        """
+        self.logger.info('START ON_UPDATE_LIVE_TRACK_STATE')
         self.track_state_matrix = track_state_matrix
+        self.logger.debug(f'track_state_matrix: {self.track_state_matrix}')
+        self.logger.debug(f'unlock_available: {track_state_matrix[track][UNLOCK_AVAILABLE]}')
         if track_state_matrix[track][UNLOCK_AVAILABLE]:
+            self.logger.debug(f'money: {self.money}')
+            self.logger.debug(f'price: {track_state_matrix[track][PRICE]}')
             if self.money < track_state_matrix[track][PRICE]:
                 self.locked_tracks_labels[track].text = ''
+                self.logger.debug(f'locked_tracks_labels text: {self.locked_tracks_labels[track].text}')
             else:
                 self.locked_tracks_labels[track].text = ' '
+                self.logger.debug(f'locked_tracks_labels text: {self.locked_tracks_labels[track].text}')
+                self.logger.debug(f'track: {track}')
+                self.logger.debug(f'buy buttons track numbers: {self.buy_buttons.keys()}')
                 if track not in self.buy_buttons:
                     self.buy_buttons[track] = BuyTrackButton(surface=self.surface, batch=self.batches['ui_batch'],
                                                              groups=self.groups, on_click_action=self.on_buy_track)
@@ -488,7 +629,9 @@ class ConstructorView(View):
                     self.buy_buttons[track] \
                         .on_size_changed((self.cell_height, self.cell_height),
                                          self.locked_label_font_size)
+                    self.logger.debug(f'buttons list length: {len(self.buttons)}')
                     self.buttons.append(self.buy_buttons[track])
+                    self.logger.debug(f'buttons list length: {len(self.buttons)}')
                     self.buy_buttons[track].on_activate()
                     self.controller.on_append_handlers(
                         on_mouse_motion_handlers=[self.buy_buttons[track].handle_mouse_motion, ],
@@ -498,17 +641,31 @@ class ConstructorView(View):
                     )
 
         else:
+            self.logger.debug(f'under_construction: {track_state_matrix[track][UNDER_CONSTRUCTION]}')
             if not track_state_matrix[track][UNDER_CONSTRUCTION]:
                 self.locked_tracks_labels[track].text = ''
             else:
                 self.locked_tracks_labels[track].text = ' '
 
+            self.logger.debug(f'locked_tracks_labels text: {self.locked_tracks_labels[track].text}')
+
+        self.logger.debug('unlock_available: {}'
+                          .format(track_state_matrix[track][UNLOCK_AVAILABLE]))
+        self.logger.debug('under_construction: {}'
+                          .format(track_state_matrix[track][UNDER_CONSTRUCTION]))
+        self.logger.debug('unlock_condition_from_level: {}'
+                          .format(track_state_matrix[track][UNLOCK_CONDITION_FROM_LEVEL]))
+        self.logger.debug('unlock_condition_from_environment: {}'
+                          .format(track_state_matrix[track][UNLOCK_CONDITION_FROM_ENVIRONMENT]))
+        self.logger.debug('unlock_condition_from_previous_track: {}'
+                          .format(track_state_matrix[track][UNLOCK_CONDITION_FROM_PREVIOUS_TRACK]))
         if track_state_matrix[track][UNLOCK_AVAILABLE]:
             self.description_tracks_labels[track].text = 'Available for {} ¤'\
                                                          .format(track_state_matrix[track][PRICE])
             self.description_tracks_labels[track].color = GREEN
         elif track_state_matrix[track][UNDER_CONSTRUCTION]:
             construction_time = track_state_matrix[track][CONSTRUCTION_TIME]
+            self.logger.debug(f'construction time: {construction_time}')
             self.description_tracks_labels[track].text \
                 = 'Under construction. {}h {}min left'\
                   .format(construction_time // FRAMES_IN_ONE_HOUR,
@@ -526,26 +683,60 @@ class ConstructorView(View):
                 self.description_tracks_labels[track].text = 'Build track {} to unlock'.format(track - 1)
                 self.description_tracks_labels[track].color = GREY
 
+        self.logger.debug('description label text: {}'
+                          .format(self.description_tracks_labels[track].text))
+        self.logger.debug('description label font color: {}'
+                          .format(self.description_tracks_labels[track].color))
+        self.logger.info('END ON_UPDATE_LIVE_TRACK_STATE')
+
     def on_update_track_state(self, track_state_matrix, game_time):
+        """
+        Updates track state matrix every frame in case cell for this track is not yet created.
+
+        :param track_state_matrix       table with all tracks state properties
+        :param game_time:               current in-game time
+        """
+        self.logger.info('START ON_UPDATE_TRACK_STATE')
         self.track_state_matrix = track_state_matrix
+        self.logger.debug(f'track_state_matrix: {self.track_state_matrix}')
+        self.logger.info('END ON_UPDATE_TRACK_STATE')
 
     @view_is_active
     def on_unlock_track_live(self, track):
+        """
+        Deletes unlocked track and moves all cells one position to the top of the screen.
+
+        :param track:                   track number
+        """
+        self.logger.info('START ON_UNLOCK_TRACK_LIVE')
         cell_step = self.cell_height + self.interval_between_cells
+        self.logger.debug(f'cell_step: {cell_step}')
+        self.logger.debug(f'locked_tracks_labels: {self.locked_tracks_labels.keys()}')
         self.locked_tracks_labels[track].delete()
         self.locked_tracks_labels.pop(track)
+        self.logger.debug(f'locked_tracks_labels: {self.locked_tracks_labels.keys()}')
         for t in self.locked_tracks_labels:
+            self.logger.debug(f'locked track label Y position: {self.locked_tracks_labels[t].y}')
             self.locked_tracks_labels[t].y += cell_step
+            self.logger.debug(f'locked track label Y position: {self.locked_tracks_labels[t].y}')
 
+        self.logger.debug(f'title_tracks_labels: {self.title_tracks_labels.keys()}')
         self.title_tracks_labels[track].delete()
         self.title_tracks_labels.pop(track)
+        self.logger.debug(f'title_tracks_labels: {self.title_tracks_labels.keys()}')
         for t in self.title_tracks_labels:
+            self.logger.debug(f'title track label Y position: {self.title_tracks_labels[t].y}')
             self.title_tracks_labels[t].y += cell_step
+            self.logger.debug(f'title track label Y position: {self.title_tracks_labels[t].y}')
 
+        self.logger.debug(f'description_tracks_labels: {self.description_tracks_labels.keys()}')
         self.description_tracks_labels[track].delete()
         self.description_tracks_labels.pop(track)
+        self.logger.debug(f'description_tracks_labels: {self.description_tracks_labels.keys()}')
         for t in self.description_tracks_labels:
+            self.logger.debug(f'description track label Y position: {self.description_tracks_labels[t].y}')
             self.description_tracks_labels[t].y += cell_step
+            self.logger.debug(f'description track label Y position: {self.description_tracks_labels[t].y}')
 
         for b in self.buy_buttons:
             self.buy_buttons[b].y_margin += cell_step
@@ -554,7 +745,13 @@ class ConstructorView(View):
             )
 
         for p in range(len(self.no_more_tracks_available_labels)):
+            self.logger.debug('no_more_tracks_available label Y position: {}'
+                              .format(self.no_more_tracks_available_labels[p].y))
             self.no_more_tracks_available_labels[p].y += cell_step
+            self.logger.debug('no_more_tracks_available label Y position: {}'
+                              .format(self.no_more_tracks_available_labels[p].y))
+
+        self.logger.info('END ON_UNLOCK_TRACK_LIVE')
 
     def on_read_ui_info(self):
         """

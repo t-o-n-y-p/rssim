@@ -107,7 +107,7 @@ def left_mouse_button(fn):
     return _handle_mouse_if_left_button_was_clicked
 
 
-def track_is_in_top4(fn):
+def track_cell_is_created(fn):
     """
     Use this decorator within Constructor view to execute function
     only if the track is displayed on constructor screen.
