@@ -157,6 +157,7 @@ class ConstructorView(View):
                     y=self.railway_station_caption_position[1],
                     anchor_x='center', anchor_y='center',
                     batch=self.batches['ui_batch'], group=self.groups['button_text'])
+        self.logger.debug(f'railway_station_caption_sprite text: {self.railway_station_caption_sprite.text}')
         self.logger.debug(f'railway_station_caption_sprite position: {self.railway_station_caption_position}')
         self.logger.debug(f'railway_station_caption_sprite font size: {self.caption_font_size}')
         self.environment_caption_sprite \
@@ -165,6 +166,7 @@ class ConstructorView(View):
                     y=self.environment_caption_position[1],
                     anchor_x='center', anchor_y='center',
                     batch=self.batches['ui_batch'], group=self.groups['button_text'])
+        self.logger.debug(f'railway_station_caption_sprite text: {self.environment_caption_sprite.text}')
         self.logger.debug(f'environment_caption_sprite position: {self.environment_caption_position}')
         self.logger.debug(f'environment_caption_sprite font size: {self.caption_font_size}')
         # create "Coming soon" labels for environment since it is not yet implemented
@@ -177,6 +179,7 @@ class ConstructorView(View):
                       anchor_x='center', anchor_y='center',
                       batch=self.batches['ui_batch'], group=self.groups['button_text'])
             )
+            self.logger.debug(f'coming_soon_environment_labels {i} text: {self.coming_soon_environment_labels[i].text}')
             self.logger.debug('coming_soon_environment_labels {} position: {}'
                               .format(i, (self.environment_cell_positions[i][0] + self.placeholder_offset[0],
                                           self.environment_cell_positions[i][1] + self.placeholder_offset[1])))
@@ -265,7 +268,7 @@ class ConstructorView(View):
             self.logger.debug(f'available_options: {available_options}')
             if available_options < 4 and len(self.no_more_tracks_available_labels) < 4 - available_options:
                 position_index = available_options + len(self.no_more_tracks_available_labels)
-                self.logger.debug(f'available_options: {available_options}')
+                self.logger.debug(f'position_index: {position_index}')
                 self.no_more_tracks_available_labels.append(
                     Label('No more tracks available', font_name='Arial',
                           font_size=self.placeholder_font_size,
@@ -275,6 +278,14 @@ class ConstructorView(View):
                           anchor_x='center', anchor_y='center',
                           batch=self.batches['ui_batch'], group=self.groups['button_text'])
                 )
+                self.logger.debug('no_more_tracks_available_labels {} text: {}'
+                                  .format(position_index, self.no_more_tracks_available_labels[position_index].text))
+                self.logger.debug('no_more_tracks_available_labels {} position: {}'
+                                  .format(position_index, (self.no_more_tracks_available_labels[position_index].x,
+                                                           self.no_more_tracks_available_labels[position_index].y)))
+                self.logger.debug('no_more_tracks_available_labels {} font size: {}'
+                                  .format(position_index,
+                                          self.no_more_tracks_available_labels[position_index].font_size))
 
             for i in range(available_options):
                 # create new cell if there are more tracks available;

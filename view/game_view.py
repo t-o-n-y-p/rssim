@@ -11,6 +11,10 @@ from button.resume_game_button import ResumeGameButton
 
 
 class GameView(View):
+    """
+    Implements Game view.
+    Game object is responsible for properties, UI and events related to the game process.
+    """
     def __init__(self, user_db_cursor, config_db_cursor, surface, batches, groups):
         def on_pause_game(button):
             button.on_deactivate()
