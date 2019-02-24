@@ -15,8 +15,8 @@ class ConstructorView(View):
     def __init__(self, user_db_cursor, config_db_cursor, surface, batches, groups):
         """
         Button click handlers:
-            on_close_constructor                    on_click handler for close constructor button
-            on_buy_track                            on_click handler for buy track button
+            on_close_constructor                on_click handler for close constructor button
+            on_buy_track                        on_click handler for buy track button
 
         Properties:
             track_cells_positions               list of positions for track cells

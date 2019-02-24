@@ -236,7 +236,7 @@ TRAIN_ACCELERATION_FACTOR = (0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 
                              464, 470, 475, 480, 486, 491, 497, 502, 508, 513, 519, 525, 531, 536, 542,
                              548, 554, 560, 566, 573, 579, 585, 591, 598, 604, 611, 617, 624, 630, 637,
                              644, 650, 657, 664, 671, 678, 685)
-MONEY_LIMIT = 99999999.0                # max amount of money the player can have
+MONEY_LIMIT = 9999999999.0              # max amount of money the player can have
 TRAIN_ID_LIMIT = 1000000                # train ID is limited to 6 digits, 999999 is followed by 0
 FULLSCREEN_MODE_TURNED_OFF = 0          # database value for fullscreen mode turned on
 FULLSCREEN_MODE_TURNED_ON = 1           # database value for fullscreen mode turned off
