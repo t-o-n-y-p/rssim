@@ -75,7 +75,7 @@ class GameModel(Model):
         """
         self.logger.info('START ON_ACTIVATE_VIEW')
         self.view.on_activate()
-        self.view.on_update_game_time(self.game_time)
+        self.view.on_update_time(self.game_time)
         self.view.on_update_level(self.level)
         self.view.on_update_exp(self.exp, self.player_progress)
         self.view.on_update_money(self.money, self.money_target)
@@ -119,7 +119,7 @@ class GameModel(Model):
         self.logger.debug(f'game_time: {self.game_time}')
         if self.game_time % FRAMES_IN_ONE_MINUTE == 0:
             self.logger.debug('need to update time on the screen')
-            self.view.on_update_game_time(self.game_time)
+            self.view.on_update_time(self.game_time)
 
         self.game_time += 1
         self.logger.debug(f'game_time: {self.game_time}')
