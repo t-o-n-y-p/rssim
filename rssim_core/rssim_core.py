@@ -251,7 +251,7 @@ class RSSim:
             self.logger.info('END ON_MOUSE_MOTION')
 
         @surface.event
-        def on_mouse_drag(x, y, dx, dy, button, modifiers):
+        def on_mouse_drag(x, y, dx, dy, buttons, modifiers):
             """
             Implements on_mouse_drag event handler for surface. Handler is attached using @surface.event decoration.
             Event is fired when user moves the mouse cursor with any mouse button being held down.
@@ -261,13 +261,13 @@ class RSSim:
             :param y:               mouse cursor Y position inside the app window
             :param dx:              relative X position from the previous mouse position
             :param dy:              relative Y position from the previous mouse position
-            :param button:          determines which mouse button was pressed
+            :param buttons:         determines which mouse button was pressed
             :param modifiers:       determines if some modifier key is held down (at the moment we don't use it)
             """
             self.logger.info('START ON_MOUSE_DRAG')
             for h in self.app.on_mouse_drag_handlers:
                 self.logger.debug('moving to the next handler')
-                h(x, y, dx, dy, button, modifiers)
+                h(x, y, dx, dy, buttons, modifiers)
 
             self.logger.info('END ON_MOUSE_DRAG')
 

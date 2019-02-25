@@ -48,7 +48,7 @@ class FPSView(View):
     @view_is_active
     def on_deactivate(self):
         """
-        Deactivates the view and destroys all sprites and labels.
+        Deactivates the view and destroys all labels and buttons.
         """
         self.logger.info('START ON_DEACTIVATE')
         self.is_activated = False

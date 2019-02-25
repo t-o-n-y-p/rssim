@@ -204,6 +204,7 @@ DEPARTURE_TEXT = ('West City',                  # text on schedule screen for di
                   'South-East City')            # text on schedule screen for direction #3
 SCHEDULE_ROWS = 16                              # number of schedule rows on schedule screen
 SCHEDULE_COLUMNS = 2                            # number of schedule columns on schedule screen
+MINI_MAP_FADE_OUT_TIMER = 1.0                   # time since user releases mouse button after which mini-map disappears
 # colors
 GREY = (112, 112, 112, 255)                     # grey UI color
 ORANGE = (255, 127, 0, 255)                     # orange UI color
@@ -326,7 +327,7 @@ class View:
 
     def on_deactivate(self):
         """
-        Deactivates the view and destroys all sprites and labels.
+        Deactivates the view and destroys all labels and buttons.
         """
         pass
 

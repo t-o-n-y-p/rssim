@@ -91,6 +91,7 @@ class GameView(View):
         self.logger.debug(f'exp_offset: {self.exp_offset}')
         self.money_offset = self.exp_offset + self.bottom_bar_height // 8 \
                           + int(self.progress_bar_inactive_image.width * self.bottom_bar_height / 80)
+        self.logger.debug(f'money_offset: {self.money_offset}')
         self.pause_game_button = PauseGameButton(surface=self.surface, batch=self.batches['ui_batch'],
                                                  groups=self.groups, on_click_action=on_pause_game)
         self.resume_game_button = ResumeGameButton(surface=self.surface, batch=self.batches['ui_batch'],
@@ -131,37 +132,36 @@ class GameView(View):
             self.progress_bar_money_active.opacity += 15
             self.logger.debug(f'progress_bar_money_active opacity: {self.progress_bar_money_active.opacity}')
 
-        if not self.is_activated:
-            if self.game_frame_opacity > 0:
-                self.game_frame_opacity -= 15
-                self.logger.debug(f'game_frame_opacity: {self.game_frame_opacity}')
-                self.progress_bar_exp_inactive.opacity -= 15
-                self.logger.debug(f'progress_bar_exp_inactive opacity: {self.progress_bar_exp_inactive.opacity}')
-                if self.progress_bar_exp_inactive.opacity <= 0:
-                    self.progress_bar_exp_inactive.delete()
-                    self.progress_bar_exp_inactive = None
-                    self.logger.debug(f'progress_bar_exp_inactive: {self.progress_bar_exp_inactive}')
+        if not self.is_activated and self.game_frame_opacity > 0:
+            self.game_frame_opacity -= 15
+            self.logger.debug(f'game_frame_opacity: {self.game_frame_opacity}')
+            self.progress_bar_exp_inactive.opacity -= 15
+            self.logger.debug(f'progress_bar_exp_inactive opacity: {self.progress_bar_exp_inactive.opacity}')
+            if self.progress_bar_exp_inactive.opacity <= 0:
+                self.progress_bar_exp_inactive.delete()
+                self.progress_bar_exp_inactive = None
+                self.logger.debug(f'progress_bar_exp_inactive: {self.progress_bar_exp_inactive}')
 
-                self.progress_bar_exp_active.opacity -= 15
-                self.logger.debug(f'progress_bar_exp_active opacity: {self.progress_bar_exp_active.opacity}')
-                if self.progress_bar_exp_active.opacity <= 0:
-                    self.progress_bar_exp_active.delete()
-                    self.progress_bar_exp_active = None
-                    self.logger.debug(f'progress_bar_exp_active: {self.progress_bar_exp_active}')
+            self.progress_bar_exp_active.opacity -= 15
+            self.logger.debug(f'progress_bar_exp_active opacity: {self.progress_bar_exp_active.opacity}')
+            if self.progress_bar_exp_active.opacity <= 0:
+                self.progress_bar_exp_active.delete()
+                self.progress_bar_exp_active = None
+                self.logger.debug(f'progress_bar_exp_active: {self.progress_bar_exp_active}')
 
-                self.progress_bar_money_inactive.opacity -= 15
-                self.logger.debug(f'progress_bar_money_inactive opacity: {self.progress_bar_money_inactive.opacity}')
-                if self.progress_bar_money_inactive.opacity <= 0:
-                    self.progress_bar_money_inactive.delete()
-                    self.progress_bar_money_inactive = None
-                    self.logger.debug(f'progress_bar_money_inactive: {self.progress_bar_money_inactive}')
+            self.progress_bar_money_inactive.opacity -= 15
+            self.logger.debug(f'progress_bar_money_inactive opacity: {self.progress_bar_money_inactive.opacity}')
+            if self.progress_bar_money_inactive.opacity <= 0:
+                self.progress_bar_money_inactive.delete()
+                self.progress_bar_money_inactive = None
+                self.logger.debug(f'progress_bar_money_inactive: {self.progress_bar_money_inactive}')
 
-                self.progress_bar_money_active.opacity -= 15
-                self.logger.debug(f'progress_bar_money_active opacity: {self.progress_bar_money_active.opacity}')
-                if self.progress_bar_money_active.opacity <= 0:
-                    self.progress_bar_money_active.delete()
-                    self.progress_bar_money_active = None
-                    self.logger.debug(f'progress_bar_money_active: {self.progress_bar_money_active}')
+            self.progress_bar_money_active.opacity -= 15
+            self.logger.debug(f'progress_bar_money_active opacity: {self.progress_bar_money_active.opacity}')
+            if self.progress_bar_money_active.opacity <= 0:
+                self.progress_bar_money_active.delete()
+                self.progress_bar_money_active = None
+                self.logger.debug(f'progress_bar_money_active: {self.progress_bar_money_active}')
 
         self.logger.info('END ON_UPDATE')
 
@@ -273,7 +273,7 @@ class GameView(View):
     @view_is_active
     def on_deactivate(self):
         """
-        Deactivates the view and destroys all sprites and labels.
+        Deactivates the view and destroys all labels and buttons.
         """
         self.logger.info('START ON_DEACTIVATE')
         self.is_activated = False

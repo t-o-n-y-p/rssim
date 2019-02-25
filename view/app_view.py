@@ -184,7 +184,7 @@ class AppView(View):
     @view_is_active
     def on_deactivate(self):
         """
-        Deactivates the view and destroys all sprites and labels.
+        Deactivates the view and destroys all labels and buttons.
         """
         self.logger.info('START ON_DEACTIVATE')
         self.is_activated = False
@@ -303,7 +303,7 @@ class AppView(View):
 
     @game_window_is_active
     @app_window_move_mode_enabled
-    def handle_mouse_drag(self, x, y, dx, dy, button, modifiers):
+    def handle_mouse_drag(self, x, y, dx, dy, buttons, modifiers):
         """
         Moves app window if app window move mode is active and player moves his mouse.
 
@@ -311,7 +311,7 @@ class AppView(View):
         :param y:               mouse cursor Y position inside the app window
         :param dx:              relative X position from the previous mouse position
         :param dy:              relative Y position from the previous mouse position
-        :param button:          determines which mouse button was pressed
+        :param buttons:         determines which mouse button was pressed
         :param modifiers:       determines if some modifier key is held down (at the moment we don't use it)
         """
         self.logger.info('START HANDLE_MOUSE_DRAG')

@@ -7,12 +7,51 @@ from button.close_schedule_button import CloseScheduleButton
 
 
 class SchedulerView(View):
+    """
+    Implements Scheduler view.
+    Scheduler object is responsible for properties, UI and events related to the train schedule.
+    """
     def __init__(self, user_db_cursor, config_db_cursor, surface, batches, groups):
+        """
+        Button click handlers:
+            on_close_schedule                   on_click handler for close schedule button
+
+        Properties:
+            schedule_opacity                    general opacity of the schedule screen
+            schedule_top_left_line              position of schedule top left line label
+            schedule_departure_top_left_line    position of schedule top left line departure label
+            schedule_line_step_x                distance between two schedule rows
+            schedule_line_step_y                distance between two schedule columns
+            schedule_font_size                  font size for schedule table
+            schedule_left_caption               position of schedule caption for left column
+            schedule_caption_font_size          font size for schedule caption
+            train_labels    `                   schedule table labels
+            base_schedule                       generated train queue sorted by arrival time
+            game_time                           current in-game time
+            left_schedule_caption_label         label from caption for left schedule column
+            right_schedule_caption_label        label from caption for right schedule column
+            close_schedule_button               CloseScheduleButton object
+            buttons                             list of all buttons
+
+        :param user_db_cursor:                  user DB cursor (is used to execute user DB queries)
+        :param config_db_cursor:                configuration DB cursor (is used to execute configuration DB queries)
+        :param surface:                         surface to draw all UI objects on
+        :param batches:                         batches to group all labels and sprites
+        :param groups:                          defines drawing layers (some labels and sprites behind others)
+        """
         def on_close_schedule(button):
+            """
+            Notifies controller that player has closed schedule screen.
+
+            :param button:                      button that was clicked
+            """
+            self.logger.info('START ON_CLOSE_SCHEDULE')
             self.controller.on_deactivate_view()
+            self.logger.info('END ON_CLOSE_SCHEDULE')
 
         super().__init__(user_db_cursor, config_db_cursor, surface, batches, groups,
                          logger=getLogger('root.app.game.map.scheduler.view'))
+        self.logger.info('START INIT')
         self.schedule_opacity = 0
         self.schedule_top_left_line = [0, 0]
         self.schedule_departure_top_left_line = [0, 0]
@@ -25,22 +64,25 @@ class SchedulerView(View):
         self.train_labels = []
         self.base_schedule = None
         self.game_time = None
-        self.left_schedule_caption_sprite = None
-        self.right_schedule_caption_sprite = None
+        self.left_schedule_caption_label = None
+        self.right_schedule_caption_label = None
         self.close_schedule_button = CloseScheduleButton(surface=self.surface, batch=self.batches['ui_batch'],
                                                          groups=self.groups, on_click_action=on_close_schedule)
+        self.logger.debug('buttons created successfully')
         self.buttons.append(self.close_schedule_button)
+        self.logger.debug(f'buttons list length: {len(self.buttons)}')
+        self.logger.info('END INIT')
 
     @view_is_not_active
     def on_activate(self):
         self.is_activated = True
-        self.left_schedule_caption_sprite \
+        self.left_schedule_caption_label \
             = Label('Train #          Arrival          Departed from       Cars   Stop, m:s',
                     font_name='Arial', bold=True, font_size=self.schedule_caption_font_size,
                     x=self.schedule_left_caption[0], y=self.schedule_left_caption[1],
                     anchor_x='center', anchor_y='center', batch=self.batches['ui_batch'],
                     group=self.groups['button_text'])
-        self.right_schedule_caption_sprite \
+        self.right_schedule_caption_label \
             = Label('Train #          Arrival          Departed from       Cars   Stop, m:s',
                     font_name='Arial', bold=True, font_size=self.schedule_caption_font_size,
                     x=self.schedule_left_caption[0] + self.schedule_line_step_x, y=self.schedule_left_caption[1],
@@ -54,10 +96,10 @@ class SchedulerView(View):
     @view_is_active
     def on_deactivate(self):
         self.is_activated = False
-        self.left_schedule_caption_sprite.delete()
-        self.left_schedule_caption_sprite = None
-        self.right_schedule_caption_sprite.delete()
-        self.right_schedule_caption_sprite = None
+        self.left_schedule_caption_label.delete()
+        self.left_schedule_caption_label = None
+        self.right_schedule_caption_label.delete()
+        self.right_schedule_caption_label = None
         for label in self.train_labels:
             label.delete()
 
@@ -108,12 +150,12 @@ class SchedulerView(View):
         self.on_recalculate_ui_properties(screen_resolution)
         self.on_read_ui_info()
         if self.is_activated:
-            self.left_schedule_caption_sprite.x = self.schedule_left_caption[0]
-            self.left_schedule_caption_sprite.y = self.schedule_left_caption[1]
-            self.left_schedule_caption_sprite.font_size = self.schedule_caption_font_size
-            self.right_schedule_caption_sprite.x = self.schedule_left_caption[0] + self.schedule_line_step_x
-            self.right_schedule_caption_sprite.y = self.schedule_left_caption[1]
-            self.right_schedule_caption_sprite.font_size = self.schedule_caption_font_size
+            self.left_schedule_caption_label.x = self.schedule_left_caption[0]
+            self.left_schedule_caption_label.y = self.schedule_left_caption[1]
+            self.left_schedule_caption_label.font_size = self.schedule_caption_font_size
+            self.right_schedule_caption_label.x = self.schedule_left_caption[0] + self.schedule_line_step_x
+            self.right_schedule_caption_label.y = self.schedule_left_caption[1]
+            self.right_schedule_caption_label.font_size = self.schedule_caption_font_size
             for i in range(len(self.train_labels) // 2):
                 self.train_labels[i * 2].x = self.schedule_top_left_line[0] \
                                            + self.schedule_line_step_x * (i // SCHEDULE_ROWS)
