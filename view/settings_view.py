@@ -1,4 +1,5 @@
 from logging import getLogger
+from ctypes import windll
 
 from pyglet.text import Label
 
@@ -115,7 +116,11 @@ class SettingsView(View):
         self.medium_line = self.screen_resolution[1] // 2 + self.top_bar_height // 2
         self.logger.debug(f'medium_line: {self.medium_line}')
         self.settings_opacity = 0
-        self.available_windowed_resolutions = []
+        self.config_db_cursor.execute('''SELECT app_width, app_height FROM screen_resolution_config 
+                                         WHERE manual_setup = 1 AND app_width <= ?''',
+                                      (windll.user32.GetSystemMetrics(0),))
+        self.available_windowed_resolutions = self.config_db_cursor.fetchall()
+        self.logger.debug(f'available_windowed_resolutions: {self.available_windowed_resolutions}')
         self.available_windowed_resolutions_position = 0
         self.accept_settings_button = AcceptSettingsButton(surface=self.surface, batch=self.batches['ui_batch'],
                                                            groups=self.groups, on_click_action=on_accept_changes)
@@ -202,23 +207,42 @@ class SettingsView(View):
         self.logger.debug(f'is activated: {self.is_activated}')
         self.temp_windowed_resolution_label.delete()
         self.temp_windowed_resolution_label = None
+        self.logger.debug(f'temp_windowed_resolution_label: {self.temp_windowed_resolution_label}')
         self.windowed_resolution_description_label.delete()
         self.windowed_resolution_description_label = None
+        self.logger.debug(f'windowed_resolution_description_label: {self.windowed_resolution_description_label}')
         for b in self.buttons:
             b.on_deactivate()
 
         self.logger.info('END ON_DEACTIVATE')
 
     def on_change_screen_resolution(self, screen_resolution):
+        """
+        Updates screen resolution and moves all labels and sprites to its new positions.
+
+        :param screen_resolution:       new screen resolution
+        """
+        self.logger.info('START ON_CHANGE_SCREEN_RESOLUTION')
         self.on_recalculate_ui_properties(screen_resolution)
         self.medium_line = self.screen_resolution[1] // 2 + self.top_bar_height // 2
+        self.logger.debug(f'medium_line: {self.medium_line}')
+        self.logger.debug(f'is activated: {self.is_activated}')
         if self.is_activated:
             self.temp_windowed_resolution_label.x = self.screen_resolution[0] // 4
             self.temp_windowed_resolution_label.y = self.medium_line + self.top_bar_height
             self.temp_windowed_resolution_label.font_size = int(16 / 80 * self.bottom_bar_height)
+            self.logger.debug('temp_windowed_resolution_label position: {}'
+                              .format((self.temp_windowed_resolution_label.x, self.temp_windowed_resolution_label.y)))
+            self.logger.debug('temp_windowed_resolution_label font size: {}'
+                              .format(self.temp_windowed_resolution_label.font_size))
             self.windowed_resolution_description_label.x = self.screen_resolution[0] // 4
             self.windowed_resolution_description_label.y = self.medium_line + self.top_bar_height * 2
             self.windowed_resolution_description_label.font_size = int(16 / 80 * self.bottom_bar_height)
+            self.logger.debug('windowed_resolution_description_label position: {}'
+                              .format((self.windowed_resolution_description_label.x,
+                                       self.windowed_resolution_description_label.y)))
+            self.logger.debug('windowed_resolution_description_label font size: {}'
+                              .format(self.windowed_resolution_description_label.font_size))
 
         self.accept_settings_button.x_margin = self.screen_resolution[0] - self.bottom_bar_height * 2 + 2
         self.accept_settings_button.y_margin = 0
@@ -241,19 +265,28 @@ class SettingsView(View):
         for b in self.buttons:
             b.on_position_changed((b.x_margin, b.y_margin))
 
+        self.logger.info('END ON_CHANGE_SCREEN_RESOLUTION')
+
     def on_change_temp_windowed_resolution(self, windowed_resolution):
+        """
+        Updates temp windowed resolution and text label for it.
+
+        :param windowed_resolution:             selected windowed resoltion
+        """
+        self.logger.info('START ON_CHANGE_TEMP_WINDOWED_RESOLUTION')
         self.temp_windowed_resolution = windowed_resolution
+        self.logger.debug(f'temp_windowed_resolution: {self.temp_windowed_resolution}')
         self.temp_windowed_resolution_label.text = 'x'.join(str(t) for t in self.temp_windowed_resolution)
-
-    def on_change_available_windowed_resolutions(self, available_windowed_resolutions):
-        self.available_windowed_resolutions = available_windowed_resolutions
-        self.available_windowed_resolutions_position \
-            = self.available_windowed_resolutions.index(self.temp_windowed_resolution)
-        if self.available_windowed_resolutions_position > 0:
-            self.decrement_windowed_resolution_button.on_activate()
-
-        if self.available_windowed_resolutions_position < len(self.available_windowed_resolutions) - 1:
-            self.increment_windowed_resolution_button.on_activate()
+        self.logger.debug(f'temp_windowed_resolution_label text: {self.temp_windowed_resolution_label.text}')
+        self.logger.info('END ON_CHANGE_TEMP_WINDOWED_RESOLUTION')
 
     def on_change_temp_log_level(self, log_level):
+        """
+        Updates temp log level and text label for it.
+
+        :param log_level:                       selected log level
+        """
+        self.logger.info('START ON_CHANGE_TEMP_LOG_LEVEL')
         self.temp_log_level = log_level
+        self.logger.debug(f'temp_log_level: {self.temp_log_level}')
+        self.logger.info('END ON_CHANGE_TEMP_LOG_LEVEL')

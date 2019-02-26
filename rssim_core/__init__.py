@@ -41,7 +41,7 @@ from view.crossover_view import CrossoverView
 from view.train_view import TrainView
 from view.dispatcher_view import DispatcherView
 from view.constructor_view import ConstructorView
-from car_skins import *
+from textures import *
 
 
 # --------------------- CONSTANTS ---------------------
@@ -329,7 +329,8 @@ def _create_signal(user_db_connection, user_db_cursor, config_db_cursor, surface
     """
     controller = SignalController(map_controller, track, base_route)
     model = SignalModel(user_db_connection, user_db_cursor, config_db_cursor, track, base_route)
-    view = SignalView(user_db_cursor, config_db_cursor, surface, batches, groups, track, base_route)
+    view = SignalView(user_db_cursor, config_db_cursor, surface, batches, groups, track, base_route,
+                      RED_SIGNAL_IMAGE, GREEN_SIGNAL_IMAGE)
     controller.model = model
     model.controller = controller
     controller.view = view

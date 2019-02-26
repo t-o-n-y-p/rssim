@@ -5,7 +5,7 @@ from model import *
 from controller.train_controller import TrainController
 from model.train_model import TrainModel
 from view.train_view import TrainView
-from car_skins import *
+from textures import CAR_HEAD_IMAGE, CAR_MID_IMAGE, CAR_TAIL_IMAGE, BOARDING_LIGHT_IMAGE
 
 
 def _create_train(user_db_connection, user_db_cursor, config_db_cursor, surface, batches, groups, map_controller,

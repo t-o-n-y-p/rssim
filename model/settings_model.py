@@ -15,7 +15,6 @@ class SettingsModel(Model):
             windowed_resolution                 screen resolution in windowed mode
             fullscreen_mode                     indicates if fullscreen mode is enabled by user
             screen_resolution_config            list of all supported app window resolutions
-            available_windowed_resolutions      list of screen resolutions user can select as windowed resolution
             log_level                           telemetry level
             fullscreen_mode_available           indicates if fullscreen mode is available
             fullscreen_resolution               suggested fullscreen mode resolution base on monitor config
@@ -37,11 +36,6 @@ class SettingsModel(Model):
         self.config_db_cursor.execute('SELECT app_width, app_height FROM screen_resolution_config')
         self.screen_resolution_config = self.config_db_cursor.fetchall()
         self.logger.debug(f'screen_resolution_config: {self.screen_resolution_config}')
-        self.config_db_cursor.execute('''SELECT app_width, app_height FROM screen_resolution_config 
-                                         WHERE manual_setup = 1 AND app_width <= ?''',
-                                      (windll.user32.GetSystemMetrics(0),))
-        self.available_windowed_resolutions = self.config_db_cursor.fetchall()
-        self.logger.debug(f'available_windowed_resolutions: {self.available_windowed_resolutions}')
         self.user_db_cursor.execute('SELECT log_level FROM log_options')
         self.log_level = self.user_db_cursor.fetchone()[0]
         self.logger.debug(f'log_level: {self.log_level}')
@@ -83,7 +77,6 @@ class SettingsModel(Model):
         self.view.on_activate()
         self.view.on_change_temp_log_level(self.log_level)
         self.view.on_change_temp_windowed_resolution(self.windowed_resolution)
-        self.view.on_change_available_windowed_resolutions(self.available_windowed_resolutions)
         self.logger.info('END ON_ACTIVATE_VIEW')
 
     @model_is_active

@@ -1,21 +1,33 @@
 from logging import getLogger
 
-from pyglet.image import load
 from pyglet.sprite import Sprite
 
 from view import *
 
 
 class SignalView(View):
-    def __init__(self, user_db_cursor, config_db_cursor, surface, batches, groups, track, base_route):
+    """
+    Implements Signal view.
+    Signal object is responsible for properties, UI and events related to the signal state.
+    """
+    def __init__(self, user_db_cursor, config_db_cursor, surface, batches, groups, track, base_route,
+                 red_signal_image, green_signal_image):
+        """
+
+        :param user_db_cursor:                  user DB cursor (is used to execute user DB queries)
+        :param config_db_cursor:                configuration DB cursor (is used to execute configuration DB queries)
+        :param surface:                         surface to draw all UI objects on
+        :param batches:                         batches to group all labels and sprites
+        :param groups:                          defines drawing layers (some labels and sprites behind others)
+        :param track:                           signal track number
+        :param base_route:                      base route (train route part) which signal belongs to
+        :param red_signal_image                 texture for red signal state
+        :param green_signal_image               texture for green signal state
+        """
         super().__init__(user_db_cursor, config_db_cursor, surface, batches, groups,
                          logger=getLogger(f'root.app.game.map.signal.{track}.{base_route}.view'))
-        self.red_signal_image = load('img/signals/signal_red.png')
-        self.green_signal_image = load('img/signals/signal_green.png')
-        self.red_signal_image.anchor_x = 4
-        self.red_signal_image.anchor_y = 4
-        self.green_signal_image.anchor_x = 4
-        self.green_signal_image.anchor_y = 4
+        self.red_signal_image = red_signal_image
+        self.green_signal_image = green_signal_image
         self.signal_sprite = None
         self.state = None
         self.locked = None
