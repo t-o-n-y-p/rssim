@@ -158,11 +158,10 @@ class SignalView(View):
                 self.logger.debug(f'signal_sprite: {self.signal_sprite}')
         else:
             self.logger.debug('signal is inside the screen, create sprite if needed')
-            self.logger.debug(f'is activated: {self.is_activated}')
-            self.logger.debug(f'is locked: {self.locked}')
-            if self.is_activated and not self.locked:
-                self.logger.debug(f'signal_sprite: {self.signal_sprite}')
-                if self.signal_sprite is None:
+            self.logger.debug(f'signal_sprite: {self.signal_sprite}')
+            if self.signal_sprite is None:
+                self.logger.debug(f'is locked: {self.locked}')
+                if not self.locked:
                     self.logger.debug(f'state: {self.state}')
                     if self.state == 'red_signal':
                         self.signal_sprite = Sprite(self.red_signal_image, x=x, y=y,
@@ -179,9 +178,9 @@ class SignalView(View):
                         self.signal_sprite.rotation = 180.0
 
                     self.logger.debug(f'signal_sprite rotation: {self.signal_sprite.rotation}')
-                else:
-                    self.signal_sprite.position = (x, y)
-                    self.logger.debug(f'signal_sprite position: {self.signal_sprite.position}')
+            else:
+                self.signal_sprite.position = (x, y)
+                self.logger.debug(f'signal_sprite position: {self.signal_sprite.position}')
 
         self.logger.info('END ON_CHANGE_BASE_OFFSET')
 
@@ -198,9 +197,8 @@ class SignalView(View):
         self.zoom_factor = zoom_factor
         self.logger.debug(f'zoom_factor: {self.zoom_factor}')
         self.zoom_out_activated = zoom_out_activated
-        self.logger.debug(f'zoom_out_activated: {self.zoom_out_activated}')
-        self.logger.debug(f'is activated: {self.is_activated}')
-        if self.is_activated:
+        self.logger.debug(f'signal_sprite: {self.signal_sprite}')
+        if self.signal_sprite is not None:
             self.signal_sprite.scale = self.zoom_factor
             self.logger.debug(f'signal_sprite scale: {self.signal_sprite.scale}')
 
@@ -225,8 +223,8 @@ class SignalView(View):
         self.logger.info('START ON_CHANGE_STATE')
         self.state = state
         self.logger.debug(f'state: {self.state}')
-        self.logger.debug(f'is activated: {self.is_activated}')
-        if self.is_activated:
+        self.logger.debug(f'signal_sprite: {self.signal_sprite}')
+        if self.signal_sprite is not None:
             if self.state == 'red_signal':
                 self.signal_sprite.image = self.red_signal_image
                 self.logger.debug('red signal image set successfully')
