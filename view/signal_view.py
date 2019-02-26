@@ -52,19 +52,38 @@ class SignalView(View):
 
     @signal_is_displayed_on_map
     def on_update(self):
+        """
+        Updates fade-in/fade-out animations.
+        """
+        self.logger.info('START ON_UPDATE')
+        self.logger.debug(f'is activated: {self.is_activated}')
+        self.logger.debug(f'signal_sprite opacity: {self.signal_sprite.opacity}')
         if self.is_activated and self.signal_sprite.opacity < 255:
             self.signal_sprite.opacity += 15
+            self.logger.debug(f'signal_sprite opacity: {self.signal_sprite.opacity}')
 
         if not self.is_activated and self.signal_sprite.opacity > 0:
             self.signal_sprite.opacity -= 15
+            self.logger.debug(f'signal_sprite opacity: {self.signal_sprite.opacity}')
             if self.signal_sprite.opacity <= 0:
                 self.signal_sprite.delete()
                 self.signal_sprite = None
+                self.logger.debug(f'signal_sprite: {self.signal_sprite}')
+
+        self.logger.info('END ON_UPDATE')
 
     @view_is_not_active
     def on_activate(self):
+        """
+        Activates the view and creates sprites and labels.
+        """
+        self.logger.info('START ON_ACTIVATE')
         self.is_activated = True
+        self.logger.debug(f'is activated: {self.is_activated}')
+        self.logger.debug(f'signal_sprite: {self.signal_sprite}')
+        self.logger.debug(f'locked: {self.locked}')
         if self.signal_sprite is None and not self.locked:
+            self.logger.debug(f'state: {self.state}')
             if self.state == 'red_signal':
                 self.signal_sprite = Sprite(self.red_signal_image, x=self.base_offset[0] + self.position[0],
                                             y=self.base_offset[1] + self.position[1], batch=self.batches['main_batch'],
@@ -74,24 +93,53 @@ class SignalView(View):
                                             y=self.base_offset[1] + self.position[1], batch=self.batches['main_batch'],
                                             group=self.groups['signal'])
 
+            self.logger.debug(f'zoom_out_activated: {self.zoom_out_activated}')
             if self.zoom_out_activated:
                 self.signal_sprite.position = (self.base_offset[0] + self.position[0] // 2,
                                                self.base_offset[1] + self.position[1] // 2)
 
+            self.logger.debug(f'signal_sprite position: {self.signal_sprite.position}')
             self.signal_sprite.scale = self.zoom_factor
+            self.logger.debug(f'signal_sprite scale: {self.signal_sprite.scale}')
+            self.logger.debug(f'flip_needed: {self.flip_needed}')
             if self.flip_needed:
                 self.signal_sprite.rotation = 180.0
 
+            self.logger.debug(f'signal_sprite rotation: {self.signal_sprite.rotation}')
+
+        self.logger.info('END ON_ACTIVATE')
+
     @view_is_active
     def on_deactivate(self):
+        """
+        Deactivates the view and destroys all labels and buttons.
+        """
+        self.logger.info('START ON_DEACTIVATE')
         self.is_activated = False
+        self.logger.debug(f'is activated: {self.is_activated}')
+        self.logger.info('END ON_DEACTIVATE')
 
     def on_unlock(self):
+        """
+        Unlocks the signal along with the associated track.
+        """
+        self.logger.info('START ON_UNLOCK')
         self.locked = False
+        self.logger.debug(f'locked: {self.locked}')
+        # this workaround is needed for signal to be displayed immediately on the map
         self.on_change_base_offset(self.base_offset)
+        self.logger.info('END ON_UNLOCK')
 
     def on_change_base_offset(self, new_base_offset):
+        """
+        Updates base offset and moves all labels and sprites to its new positions.
+
+        :param new_base_offset:         new base offset
+        """
+        self.logger.info('START ON_CHANGE_BASE_OFFSET')
         self.base_offset = new_base_offset
+        self.logger.debug(f'base_offset: {self.base_offset}')
+        self.logger.debug(f'zoom_out_activated: {self.zoom_out_activated}')
         if self.zoom_out_activated:
             x = self.base_offset[0] + self.position[0] // 2
             y = self.base_offset[1] + self.position[1] // 2
@@ -99,40 +147,91 @@ class SignalView(View):
             x = self.base_offset[0] + self.position[0]
             y = self.base_offset[1] + self.position[1]
 
+        self.logger.debug(f'x, y: {(x, y)}')
+        self.logger.debug(f'screen_resolution: {self.screen_resolution}')
         if x not in range(-10, self.screen_resolution[0] + 10) or y not in range(-10, self.screen_resolution[1] + 10):
+            self.logger.debug('signal is outside of the screen, delete sprite')
+            self.logger.debug(f'signal_sprite: {self.signal_sprite}')
             if self.signal_sprite is not None:
                 self.signal_sprite.delete()
                 self.signal_sprite = None
+                self.logger.debug(f'signal_sprite: {self.signal_sprite}')
         else:
+            self.logger.debug('signal is inside the screen, create sprite if needed')
+            self.logger.debug(f'is activated: {self.is_activated}')
+            self.logger.debug(f'is locked: {self.locked}')
             if self.is_activated and not self.locked:
+                self.logger.debug(f'signal_sprite: {self.signal_sprite}')
                 if self.signal_sprite is None:
-                    if not self.locked:
-                        if self.state == 'red_signal':
-                            self.signal_sprite = Sprite(self.red_signal_image, x=x, y=y,
-                                                        batch=self.batches['main_batch'], group=self.groups['signal'])
-                        else:
-                            self.signal_sprite = Sprite(self.green_signal_image, x=x, y=y,
-                                                        batch=self.batches['main_batch'], group=self.groups['signal'])
+                    self.logger.debug(f'state: {self.state}')
+                    if self.state == 'red_signal':
+                        self.signal_sprite = Sprite(self.red_signal_image, x=x, y=y,
+                                                    batch=self.batches['main_batch'], group=self.groups['signal'])
+                    else:
+                        self.signal_sprite = Sprite(self.green_signal_image, x=x, y=y,
+                                                    batch=self.batches['main_batch'], group=self.groups['signal'])
 
-                        self.signal_sprite.scale = self.zoom_factor
-                        if self.flip_needed:
-                            self.signal_sprite.rotation = 180.0
+                    self.logger.debug(f'signal_sprite position: {self.signal_sprite.position}')
+                    self.signal_sprite.scale = self.zoom_factor
+                    self.logger.debug(f'signal_sprite scale: {self.signal_sprite.scale}')
+                    self.logger.debug(f'flip_needed: {self.flip_needed}')
+                    if self.flip_needed:
+                        self.signal_sprite.rotation = 180.0
+
+                    self.logger.debug(f'signal_sprite rotation: {self.signal_sprite.rotation}')
                 else:
                     self.signal_sprite.position = (x, y)
+                    self.logger.debug(f'signal_sprite position: {self.signal_sprite.position}')
+
+        self.logger.info('END ON_CHANGE_BASE_OFFSET')
 
     def on_change_zoom_factor(self, zoom_factor, zoom_out_activated):
+        """
+        Zooms in/out all sprites.
+        Note that adjusting base offset is made by on_change_base_offset handler,
+        this function only changes scale.
+
+        :param zoom_factor                      sprite scale coefficient
+        :param zoom_out_activated               indicates if zoom out mode is activated
+        """
+        self.logger.info('START ON_CHANGE_ZOOM_FACTOR')
         self.zoom_factor = zoom_factor
+        self.logger.debug(f'zoom_factor: {self.zoom_factor}')
         self.zoom_out_activated = zoom_out_activated
-        if self.signal_sprite is not None:
+        self.logger.debug(f'zoom_out_activated: {self.zoom_out_activated}')
+        self.logger.debug(f'is activated: {self.is_activated}')
+        if self.is_activated:
             self.signal_sprite.scale = self.zoom_factor
+            self.logger.debug(f'signal_sprite scale: {self.signal_sprite.scale}')
+
+        self.logger.info('END ON_CHANGE_ZOOM_FACTOR')
 
     def on_change_screen_resolution(self, screen_resolution):
+        """
+        Updates screen resolution.
+
+        :param screen_resolution:       new screen resolution
+        """
+        self.logger.info('START ON_CHANGE_SCREEN_RESOLUTION')
         self.on_recalculate_ui_properties(screen_resolution)
+        self.logger.info('END ON_CHANGE_SCREEN_RESOLUTION')
 
     def on_change_state(self, state):
+        """
+        Updates signal state and sprite.
+
+        :param state:                   new signal state
+        """
+        self.logger.info('START ON_CHANGE_STATE')
         self.state = state
-        if self.signal_sprite is not None:
+        self.logger.debug(f'state: {self.state}')
+        self.logger.debug(f'is activated: {self.is_activated}')
+        if self.is_activated:
             if self.state == 'red_signal':
                 self.signal_sprite.image = self.red_signal_image
+                self.logger.debug('red signal image set successfully')
             else:
                 self.signal_sprite.image = self.green_signal_image
+                self.logger.debug('green signal image set successfully')
+
+        self.logger.info('END ON_CHANGE_STATE')

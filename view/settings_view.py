@@ -251,7 +251,7 @@ class SettingsView(View):
     def on_change_temp_windowed_resolution(self, windowed_resolution):
         """
         Updates temp windowed resolution and text label for it, windowed resolution position.
-        Activates windowed resolution buttons.
+        Activates and deactivates windowed resolution buttons if needed.
 
         :param windowed_resolution:             selected windowed resoltion
         """
