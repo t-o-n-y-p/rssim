@@ -13,6 +13,14 @@ class SignalView(View):
     def __init__(self, user_db_cursor, config_db_cursor, surface, batches, groups, track, base_route,
                  red_signal_image, green_signal_image):
         """
+        Properties:
+            red_signal_image                    texture for red signal state
+            green_signal_image                  texture for green signal state
+            signal_sprite                       sprite from the signal image
+            state                               signal state: red or green
+            locked                              indicates if signal is locked and should not be displayed on map
+            flip_needed                         indicates if signal image should be rotated
+            position                            signal position on the map
 
         :param user_db_cursor:                  user DB cursor (is used to execute user DB queries)
         :param config_db_cursor:                configuration DB cursor (is used to execute configuration DB queries)
@@ -26,8 +34,10 @@ class SignalView(View):
         """
         super().__init__(user_db_cursor, config_db_cursor, surface, batches, groups,
                          logger=getLogger(f'root.app.game.map.signal.{track}.{base_route}.view'))
+        self.logger.info('START INIT')
         self.red_signal_image = red_signal_image
         self.green_signal_image = green_signal_image
+        self.logger.debug('textures set successfully')
         self.signal_sprite = None
         self.state = None
         self.locked = None
@@ -35,19 +45,21 @@ class SignalView(View):
                                       (track, base_route))
         x, y, self.flip_needed = self.config_db_cursor.fetchone()
         self.position = (x, y)
+        self.logger.debug(f'position: {self.position}')
         self.flip_needed = bool(self.flip_needed)
+        self.logger.debug(f'flip_needed: {self.flip_needed}')
+        self.logger.info('END INIT')
 
     @signal_is_displayed_on_map
     def on_update(self):
         if self.is_activated and self.signal_sprite.opacity < 255:
             self.signal_sprite.opacity += 15
 
-        if not self.is_activated and self.signal_sprite is not None:
-            if self.signal_sprite.opacity > 0:
-                self.signal_sprite.opacity -= 15
-                if self.signal_sprite.opacity <= 0:
-                    self.signal_sprite.delete()
-                    self.signal_sprite = None
+        if not self.is_activated and self.signal_sprite.opacity > 0:
+            self.signal_sprite.opacity -= 15
+            if self.signal_sprite.opacity <= 0:
+                self.signal_sprite.delete()
+                self.signal_sprite = None
 
     @view_is_not_active
     def on_activate(self):
@@ -92,20 +104,21 @@ class SignalView(View):
                 self.signal_sprite.delete()
                 self.signal_sprite = None
         else:
-            if self.signal_sprite is None:
-                if not self.locked:
-                    if self.state == 'red_signal':
-                        self.signal_sprite = Sprite(self.red_signal_image, x=x, y=y, batch=self.batches['main_batch'],
-                                                    group=self.groups['signal'])
-                    else:
-                        self.signal_sprite = Sprite(self.green_signal_image, x=x, y=y, batch=self.batches['main_batch'],
-                                                    group=self.groups['signal'])
+            if self.is_activated and not self.locked:
+                if self.signal_sprite is None:
+                    if not self.locked:
+                        if self.state == 'red_signal':
+                            self.signal_sprite = Sprite(self.red_signal_image, x=x, y=y,
+                                                        batch=self.batches['main_batch'], group=self.groups['signal'])
+                        else:
+                            self.signal_sprite = Sprite(self.green_signal_image, x=x, y=y,
+                                                        batch=self.batches['main_batch'], group=self.groups['signal'])
 
-                    self.signal_sprite.scale = self.zoom_factor
-                    if self.flip_needed:
-                        self.signal_sprite.rotation = 180.0
-            else:
-                self.signal_sprite.position = (x, y)
+                        self.signal_sprite.scale = self.zoom_factor
+                        if self.flip_needed:
+                            self.signal_sprite.rotation = 180.0
+                else:
+                    self.signal_sprite.position = (x, y)
 
     def on_change_zoom_factor(self, zoom_factor, zoom_out_activated):
         self.zoom_factor = zoom_factor

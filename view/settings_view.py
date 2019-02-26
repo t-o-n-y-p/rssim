@@ -67,45 +67,26 @@ class SettingsView(View):
 
         def on_increment_windowed_resolution(button):
             """
-            Notifies controller that player increments windowed resolution on settings screen.
-            Deactivates the button if user has reached last available windowed resolution.
-            Activates decrement windowed resolution button.
+            Updates windowed resolution when user increases it.
 
             :param button:                      button that was clicked
             """
             self.logger.info('START ON_INCREMENT_WINDOWED_RESOLUTION')
-            self.available_windowed_resolutions_position += 1
-            self.logger.debug('available_windowed_resolutions_position: {}'
-                              .format(self.available_windowed_resolutions_position))
             self.on_change_temp_windowed_resolution(
-                self.available_windowed_resolutions[self.available_windowed_resolutions_position]
+                self.available_windowed_resolutions[self.available_windowed_resolutions_position + 1]
             )
-            self.logger.debug(f'number of available windowed resolutions: {len(self.available_windowed_resolutions)}')
-            if self.available_windowed_resolutions_position == len(self.available_windowed_resolutions) - 1:
-                button.on_deactivate()
-
-            self.decrement_windowed_resolution_button.on_activate()
             self.logger.info('END ON_INCREMENT_WINDOWED_RESOLUTION')
 
         def on_decrement_windowed_resolution(button):
             """
-            Notifies controller that player decrements windowed resolution on settings screen.
-            Deactivates the button if user has reached first available windowed resolution.
-            Activates increment windowed resolution button.
+            Updates windowed resolution when user decreases it.
 
             :param button:                      button that was clicked
             """
             self.logger.info('START ON_DECREMENT_WINDOWED_RESOLUTION')
-            self.available_windowed_resolutions_position -= 1
-            self.logger.debug('available_windowed_resolutions_position: {}'
-                              .format(self.available_windowed_resolutions_position))
             self.on_change_temp_windowed_resolution(
-                self.available_windowed_resolutions[self.available_windowed_resolutions_position]
+                self.available_windowed_resolutions[self.available_windowed_resolutions_position - 1]
             )
-            if self.available_windowed_resolutions_position == 0:
-                button.on_deactivate()
-
-            self.increment_windowed_resolution_button.on_activate()
             self.logger.info('END ON_DECREMENT_WINDOWED_RESOLUTION')
 
         super().__init__(user_db_cursor, config_db_cursor, surface, batches, groups,
@@ -269,13 +250,28 @@ class SettingsView(View):
 
     def on_change_temp_windowed_resolution(self, windowed_resolution):
         """
-        Updates temp windowed resolution and text label for it.
+        Updates temp windowed resolution and text label for it, windowed resolution position.
+        Activates windowed resolution buttons.
 
         :param windowed_resolution:             selected windowed resoltion
         """
         self.logger.info('START ON_CHANGE_TEMP_WINDOWED_RESOLUTION')
         self.temp_windowed_resolution = windowed_resolution
         self.logger.debug(f'temp_windowed_resolution: {self.temp_windowed_resolution}')
+        self.available_windowed_resolutions_position \
+            = self.available_windowed_resolutions.index(self.temp_windowed_resolution)
+        self.logger.debug(f'available_windowed_resolutions_position: {self.available_windowed_resolutions_position}')
+        self.logger.debug(f'available_windowed_resolutions length: {len(self.available_windowed_resolutions)}')
+        if self.available_windowed_resolutions_position > 0:
+            self.decrement_windowed_resolution_button.on_activate()
+        else:
+            self.decrement_windowed_resolution_button.on_deactivate()
+
+        if self.available_windowed_resolutions_position < len(self.available_windowed_resolutions) - 1:
+            self.increment_windowed_resolution_button.on_activate()
+        else:
+            self.increment_windowed_resolution_button.on_deactivate()
+
         self.temp_windowed_resolution_label.text = 'x'.join(str(t) for t in self.temp_windowed_resolution)
         self.logger.debug(f'temp_windowed_resolution_label text: {self.temp_windowed_resolution_label.text}')
         self.logger.info('END ON_CHANGE_TEMP_WINDOWED_RESOLUTION')
