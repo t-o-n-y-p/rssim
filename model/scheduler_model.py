@@ -153,7 +153,7 @@ class SchedulerModel(Model):
             self.logger.debug('no need to create new schedule cycle')
 
         # notify the view about both base_schedule and/or game_time update
-        self.view.on_update_train_labels(self.base_schedule, game_time)
+        self.view.on_update_live_schedule(self.base_schedule, game_time)
         # notify Map controller about new train available if arrival time is less or equal than current time
         # and corresponding entry is not busy; only one train at a time is created
         self.logger.debug(f'base_schedule: {self.base_schedule}')

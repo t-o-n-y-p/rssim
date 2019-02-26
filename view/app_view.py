@@ -212,6 +212,7 @@ class AppView(View):
         self.logger.debug(f'new surface size: {self.surface.get_size()}')
         self.logger.debug(f'is activated: {self.is_activated}')
         if self.is_activated:
+            self.title_label.x = self.top_bar_height // 4
             self.title_label.y = self.screen_resolution[1] - self.top_bar_height // 2
             self.title_label.font_size = int(16 / 40 * self.top_bar_height)
             self.logger.debug(f'title label position: {(self.title_label.x, self.title_label.y)}')
