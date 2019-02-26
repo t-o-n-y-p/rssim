@@ -75,23 +75,39 @@ class SchedulerView(View):
 
     @view_is_not_active
     def on_activate(self):
+        """
+        Activates the view and creates sprites and labels.
+        """
+        self.logger.info('START ON_ACTIVATE')
         self.is_activated = True
+        self.logger.debug(f'is activated: {self.is_activated}')
         self.left_schedule_caption_label \
             = Label('Train #          Arrival          Departed from       Cars   Stop, m:s',
                     font_name='Arial', bold=True, font_size=self.schedule_caption_font_size,
                     x=self.schedule_left_caption[0], y=self.schedule_left_caption[1],
                     anchor_x='center', anchor_y='center', batch=self.batches['ui_batch'],
                     group=self.groups['button_text'])
+        self.logger.debug(f'left_schedule_caption_label text: {self.left_schedule_caption_label.text}')
+        self.logger.debug('left_schedule_caption_label position: {}'
+                          .format((self.left_schedule_caption_label.x, self.left_schedule_caption_label.y)))
+        self.logger.debug(f'left_schedule_caption_label font size: {self.left_schedule_caption_label.font_size}')
         self.right_schedule_caption_label \
             = Label('Train #          Arrival          Departed from       Cars   Stop, m:s',
                     font_name='Arial', bold=True, font_size=self.schedule_caption_font_size,
                     x=self.schedule_left_caption[0] + self.schedule_line_step_x, y=self.schedule_left_caption[1],
                     anchor_x='center', anchor_y='center', batch=self.batches['ui_batch'],
                     group=self.groups['button_text'])
-
+        self.logger.debug(f'right_schedule_caption_label text: {self.right_schedule_caption_label.text}')
+        self.logger.debug('right_schedule_caption_label position: {}'
+                          .format((self.right_schedule_caption_label.x, self.right_schedule_caption_label.y)))
+        self.logger.debug(f'right_schedule_caption_label font size: {self.right_schedule_caption_label.font_size}')
         for b in self.buttons:
+            self.logger.debug(f'button: {b.__class__.__name__}')
+            self.logger.debug(f'to_activate_on_controller_init: {b.to_activate_on_controller_init}')
             if b.to_activate_on_controller_init:
                 b.on_activate()
+
+        self.logger.info('END ON_ACTIVATE')
 
     @view_is_active
     def on_deactivate(self):
