@@ -269,18 +269,12 @@ class Model:
         :param logger:                          telemetry instance
         """
         self.logger = logger
-        self.logger.info('START BASE CLASS INIT')
         self.view = None
         self.controller = None
         self.is_activated = False
-        self.logger.debug(f'is activated: {self.is_activated}')
         self.user_db_connection = user_db_connection
-        self.logger.debug('user_db_connection set successfully')
         self.user_db_cursor = user_db_cursor
-        self.logger.debug('user_db_cursor set successfully')
         self.config_db_cursor = config_db_cursor
-        self.logger.debug('config_db_cursor set successfully')
-        self.logger.info('END BASE CLASS INIT')
 
     def on_activate(self):
         """

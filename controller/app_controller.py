@@ -169,11 +169,3 @@ class AppController(Controller):
         :param shader:                  main frame shader
         """
         self.view.on_set_up_main_frame_shader_uniforms(shader)
-
-    def on_save_log_level(self, log_level):
-        """
-        Reserved for future use.
-
-        :param log_level:               new log level
-        """
-        self.loader.on_save_log_level(log_level)

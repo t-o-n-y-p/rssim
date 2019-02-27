@@ -23,9 +23,9 @@ def main():
 
         crash_datetime = datetime.now()
         filename = 'logs/logs_{0}_{1:0>2}-{2:0>2}-{3:0>2}-{4:0>6}.crash'\
-            .format(str(crash_datetime.date()), crash_datetime.time().hour,
-                    crash_datetime.time().minute, crash_datetime.time().second,
-                    crash_datetime.time().microsecond)
+                   .format(str(crash_datetime.date()), crash_datetime.time().hour,
+                           crash_datetime.time().minute, crash_datetime.time().second,
+                           crash_datetime.time().microsecond)
         with open(filename, 'w') as crash_dump:
             crash_dump.write('Traceback (most recent call last):\n')
             print_tb(exc_info()[2], file=crash_dump)

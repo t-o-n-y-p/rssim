@@ -70,47 +70,34 @@ class MapModel(Model):
         """
         super().__init__(user_db_connection, user_db_cursor, config_db_cursor,
                          logger=getLogger('root.app.game.map.model'))
-        self.logger.info('START INIT')
         self.user_db_cursor.execute('SELECT unlocked_tracks FROM game_progress')
         self.unlocked_tracks = self.user_db_cursor.fetchone()[0]
-        self.logger.debug(f'unlocked_tracks: {self.unlocked_tracks}')
         self.user_db_cursor.execute('SELECT unlocked_car_collections FROM game_progress')
         car_collections_string = self.user_db_cursor.fetchone()[0]
         self.unlocked_car_collections = car_collections_string.split(',')
         for i in range(len(self.unlocked_car_collections)):
             self.unlocked_car_collections[i] = int(self.unlocked_car_collections[i])
 
-        self.logger.debug(f'unlocked_car_collections: {self.unlocked_car_collections}')
-        self.logger.info('END INIT')
-
     @model_is_not_active
     def on_activate(self):
         """
         Activates the model and the view.
         """
-        self.logger.info('START ON_ACTIVATE')
         self.is_activated = True
-        self.logger.debug(f'is activated: {self.is_activated}')
         self.on_activate_view()
-        self.logger.info('END ON_ACTIVATE')
 
     def on_activate_view(self):
         """
         Activates the view.
         """
-        self.logger.info('START ON_ACTIVATE_VIEW')
         self.view.on_activate()
-        self.logger.info('END ON_ACTIVATE_VIEW')
 
     @model_is_active
     def on_deactivate(self):
         """
         Deactivates the model.
         """
-        self.logger.info('START ON_DEACTIVATE')
         self.is_activated = False
-        self.logger.debug(f'is activated: {self.is_activated}')
-        self.logger.info('END ON_DEACTIVATE')
 
     def on_unlock_track(self, track):
         """
@@ -118,37 +105,26 @@ class MapModel(Model):
 
         :param track:                   track number
         """
-        self.logger.info('START ON_UNLOCK_TRACK')
         self.unlocked_tracks = track
-        self.logger.debug(f'unlocked_tracks: {self.unlocked_tracks}')
         self.view.on_unlock_track(track)
-        self.logger.info('END ON_UNLOCK_TRACK')
 
     def on_save_state(self):
         """
         Saves map state to user progress database.
         """
-        self.logger.info('START ON_SAVE_STATE')
         car_collections_string = ''
         for i in range(len(self.unlocked_car_collections)):
             car_collections_string += '{},'.format(self.unlocked_car_collections[i])
 
         car_collections_string = car_collections_string[0:len(car_collections_string) - 1]
-        self.logger.debug(f'unlocked_tracks: {self.unlocked_tracks}')
-        self.logger.debug(f'car_collections_string: {car_collections_string}')
         self.user_db_cursor.execute('UPDATE game_progress SET unlocked_tracks = ?, unlocked_car_collections = ?',
                                     (self.unlocked_tracks, car_collections_string))
-        self.logger.debug('number of unlocked tracks and unlocked car collections are saved successfully')
-        self.logger.info('END ON_SAVE_STATE')
 
     def on_clear_trains_info(self):
         """
         Clears currently stores trains info from the database.
         """
-        self.logger.info('START ON_CLEAR_TRAINS_INFO')
         self.user_db_cursor.execute('DELETE FROM trains')
-        self.logger.debug('trains info cleared successfully')
-        self.logger.info('END ON_CLEAR_TRAINS_INFO')
 
     def on_create_train(self, train_id, cars, track, train_route, state, direction, new_direction,
                         current_direction, priority, boarding_time, exp, money):
@@ -180,7 +156,4 @@ class MapModel(Model):
 
         :param car_collection_id:               car collection ID to be unlocked
         """
-        self.logger.info('START ON_ADD_CAR_COLLECTION')
         self.unlocked_car_collections.append(car_collection_id)
-        self.logger.debug(f'unlocked_car_collections: {self.unlocked_car_collections}')
-        self.logger.info('END ON_ADD_CAR_COLLECTION')
