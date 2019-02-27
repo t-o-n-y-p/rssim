@@ -29,7 +29,6 @@ def controller_is_active(fn):
     """
     def _handle_if_controller_is_activated(*args, **kwargs):
         if args[0].is_activated:
-            args[0].logger.debug('controller_is_active decorator passed')
             fn(*args, **kwargs)
 
     return _handle_if_controller_is_activated
@@ -44,7 +43,6 @@ def controller_is_not_active(fn):
     """
     def _handle_if_controller_is_not_activated(*args, **kwargs):
         if not args[0].is_activated:
-            args[0].logger.debug('controller_is_not_active decorator passed')
             fn(*args, **kwargs)
 
     return _handle_if_controller_is_not_activated
@@ -59,7 +57,6 @@ def game_is_not_paused(fn):
     """
     def _update_if_game_is_not_paused(*args, **kwargs):
         if not args[0].model.game_paused:
-            args[0].logger.debug('game_is_not_paused decorator passed')
             fn(*args, **kwargs)
 
     return _update_if_game_is_not_paused
@@ -74,7 +71,6 @@ def map_view_is_active(fn):
     """
     def _handle_if_map_view_is_activated(*args, **kwargs):
         if args[0].view.is_activated:
-            args[0].logger.debug('map_view_is_active decorator passed')
             fn(*args, **kwargs)
 
     return _handle_if_map_view_is_activated
@@ -123,23 +119,15 @@ class Controller:
         :param logger:                      telemetry instance
         """
         self.logger = logger
-        self.logger.info('START BASE CLASS INIT')
         self.model = None
         self.view = None
         self.is_activated = False
-        self.logger.debug(f'is activated: {self.is_activated}')
         self.parent_controller = parent_controller
-        if self.parent_controller is not None:
-            self.logger.debug(f'parent controller set successfully: {self.parent_controller.__class__.__name__}')
-        else:
-            self.logger.debug('no parent controller set')
-
         self.on_mouse_press_handlers = []
         self.on_mouse_release_handlers = []
         self.on_mouse_motion_handlers = []
         self.on_mouse_drag_handlers = []
         self.on_mouse_leave_handlers = []
-        self.logger.info('END BASE CLASS INIT')
 
     def on_update_view(self):
         """
@@ -178,51 +166,20 @@ class Controller:
         :param on_mouse_drag_handlers:              list of on_mouse_drag event handlers to be appended
         :param on_mouse_leave_handlers:             list of on_mouse_leave event handlers to be appended
         """
-        self.logger.info('START ON_APPEND_HANDLERS')
         if on_mouse_motion_handlers is not None:
-            self.logger.debug('on_mouse_motion_handlers is not None')
-            self.logger.debug(f'handlers: {len(self.on_mouse_motion_handlers)}')
-            self.logger.debug(f'handlers to add: {len(on_mouse_motion_handlers)}')
             self.on_mouse_motion_handlers.extend(on_mouse_motion_handlers)
-            self.logger.debug(f'handlers: {len(self.on_mouse_motion_handlers)}')
-        else:
-            self.logger.debug('on_mouse_motion_handlers is None')
 
         if on_mouse_press_handlers is not None:
-            self.logger.debug('on_mouse_press_handlers is not None')
-            self.logger.debug(f'handlers: {len(self.on_mouse_press_handlers)}')
-            self.logger.debug(f'handlers to add: {len(on_mouse_press_handlers)}')
             self.on_mouse_press_handlers.extend(on_mouse_press_handlers)
-            self.logger.debug(f'handlers: {len(self.on_mouse_press_handlers)}')
-        else:
-            self.logger.debug('on_mouse_press_handlers is None')
 
         if on_mouse_release_handlers is not None:
-            self.logger.debug('on_mouse_release_handlers is not None')
-            self.logger.debug(f'handlers: {len(self.on_mouse_release_handlers)}')
-            self.logger.debug(f'handlers to add: {len(on_mouse_release_handlers)}')
             self.on_mouse_release_handlers.extend(on_mouse_release_handlers)
-            self.logger.debug(f'handlers: {len(self.on_mouse_release_handlers)}')
-        else:
-            self.logger.debug('on_mouse_release_handlers is None')
 
         if on_mouse_drag_handlers is not None:
-            self.logger.debug('on_mouse_drag_handlers is not None')
-            self.logger.debug(f'handlers: {len(self.on_mouse_drag_handlers)}')
-            self.logger.debug(f'handlers to add: {len(on_mouse_drag_handlers)}')
             self.on_mouse_drag_handlers.extend(on_mouse_drag_handlers)
-            self.logger.debug(f'handlers: {len(self.on_mouse_drag_handlers)}')
-        else:
-            self.logger.debug('on_mouse_drag_handlers is None')
 
         if on_mouse_leave_handlers is not None:
-            self.logger.debug('on_mouse_leave_handlers is not None')
-            self.logger.debug(f'handlers: {len(self.on_mouse_leave_handlers)}')
-            self.logger.debug(f'handlers to add: {len(on_mouse_leave_handlers)}')
             self.on_mouse_leave_handlers.extend(on_mouse_leave_handlers)
-            self.logger.debug(f'handlers: {len(self.on_mouse_leave_handlers)}')
-        else:
-            self.logger.debug('on_mouse_leave_handlers is None')
 
         # little recursive pattern there: it stops as soon as reaches
         # App object controller (App object does not have parent objects)
@@ -232,8 +189,6 @@ class Controller:
                                                       on_mouse_release_handlers=on_mouse_release_handlers,
                                                       on_mouse_drag_handlers=on_mouse_drag_handlers,
                                                       on_mouse_leave_handlers=on_mouse_leave_handlers)
-
-        self.logger.info('END ON_APPEND_HANDLERS')
 
     def on_detach_handlers(self, on_mouse_motion_handlers=None, on_mouse_press_handlers=None,
                            on_mouse_release_handlers=None, on_mouse_drag_handlers=None,
@@ -249,61 +204,25 @@ class Controller:
         :param on_mouse_drag_handlers:              list of on_mouse_drag event handlers to be detached
         :param on_mouse_leave_handlers:             list of on_mouse_leave event handlers to be detached
         """
-        self.logger.info('START ON_DETACH_HANDLERS')
         if on_mouse_motion_handlers is not None:
-            self.logger.debug('on_mouse_motion_handlers is not None')
-            self.logger.debug(f'handlers: {len(self.on_mouse_motion_handlers)}')
-            self.logger.debug(f'handlers to remove: {len(on_mouse_motion_handlers)}')
             for handler in on_mouse_motion_handlers:
                 self.on_mouse_motion_handlers.remove(handler)
 
-            self.logger.debug(f'handlers: {len(self.on_mouse_motion_handlers)}')
-        else:
-            self.logger.debug('on_mouse_motion_handlers is None')
-
         if on_mouse_press_handlers is not None:
-            self.logger.debug('on_mouse_press_handlers is not None')
-            self.logger.debug(f'handlers: {len(self.on_mouse_press_handlers)}')
-            self.logger.debug(f'handlers to remove: {len(on_mouse_press_handlers)}')
             for handler in on_mouse_press_handlers:
                 self.on_mouse_press_handlers.remove(handler)
 
-            self.logger.debug(f'handlers: {len(self.on_mouse_press_handlers)}')
-        else:
-            self.logger.debug('on_mouse_press_handlers is None')
-
         if on_mouse_release_handlers is not None:
-            self.logger.debug('on_mouse_release_handlers is not None')
-            self.logger.debug(f'handlers: {len(self.on_mouse_release_handlers)}')
-            self.logger.debug(f'handlers to remove: {len(on_mouse_release_handlers)}')
             for handler in on_mouse_release_handlers:
                 self.on_mouse_release_handlers.remove(handler)
 
-            self.logger.debug(f'handlers: {len(self.on_mouse_release_handlers)}')
-        else:
-            self.logger.debug('on_mouse_release_handlers is None')
-
         if on_mouse_drag_handlers is not None:
-            self.logger.debug('on_mouse_drag_handlers is not None')
-            self.logger.debug(f'handlers: {len(self.on_mouse_drag_handlers)}')
-            self.logger.debug(f'handlers to remove: {len(on_mouse_drag_handlers)}')
             for handler in on_mouse_drag_handlers:
                 self.on_mouse_drag_handlers.remove(handler)
 
-            self.logger.debug(f'handlers: {len(self.on_mouse_drag_handlers)}')
-        else:
-            self.logger.debug('on_mouse_drag_handlers is None')
-
         if on_mouse_leave_handlers is not None:
-            self.logger.debug('on_mouse_leave_handlers is not None')
-            self.logger.debug(f'handlers: {len(self.on_mouse_leave_handlers)}')
-            self.logger.debug(f'handlers to remove: {len(on_mouse_leave_handlers)}')
             for handler in on_mouse_leave_handlers:
                 self.on_mouse_leave_handlers.remove(handler)
-
-            self.logger.debug(f'handlers: {len(self.on_mouse_leave_handlers)}')
-        else:
-            self.logger.debug('on_mouse_leave_handlers is None')
 
         # little recursive pattern there: it stops as soon as reaches
         # App object controller (App object does not have parent objects)
@@ -313,5 +232,3 @@ class Controller:
                                                       on_mouse_release_handlers=on_mouse_release_handlers,
                                                       on_mouse_drag_handlers=on_mouse_drag_handlers,
                                                       on_mouse_leave_handlers=on_mouse_leave_handlers)
-
-        self.logger.info('END ON_DETACH_HANDLERS')

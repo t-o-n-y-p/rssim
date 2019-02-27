@@ -38,7 +38,6 @@ def button_is_not_activated(fn):
     """
     def _handle_if_is_not_activated(*args, **kwargs):
         if not args[0].is_activated:
-            args[0].logger.debug('button_is_not_activated decorator passed')
             fn(*args, **kwargs)
 
     return _handle_if_is_not_activated
@@ -53,7 +52,6 @@ def button_is_activated(fn):
     """
     def _handle_if_is_activated(*args, **kwargs):
         if args[0].is_activated:
-            args[0].logger.debug('button_is_activated decorator passed')
             fn(*args, **kwargs)
 
     return _handle_if_is_activated
@@ -68,7 +66,6 @@ def left_mouse_button(fn):
     """
     def _handle_mouse_if_left_button_was_clicked(*args, **kwargs):
         if args[3] == mouse.LEFT:
-            args[0].logger.debug('left_mouse_button decorator passed')
             fn(*args, **kwargs)
 
     return _handle_mouse_if_left_button_was_clicked
@@ -84,7 +81,6 @@ def cursor_is_over_the_button(fn):
     def _handle_if_cursor_is_over_the_button(*args, **kwargs):
         if args[1] in range(args[0].position[0] + 2, args[0].position[0] + args[0].button_size[0] - 2) \
                 and args[2] in range(args[0].position[1] + 2, args[0].position[1] + args[0].button_size[1] - 2):
-            args[0].logger.debug('cursor_is_over_the_button decorator passed')
             fn(*args, **kwargs)
 
     return _handle_if_cursor_is_over_the_button
@@ -99,7 +95,6 @@ def button_is_pressed(fn):
     """
     def _handle_if_button_is_pressed(*args, **kwargs):
         if args[0].state == 'pressed':
-            args[0].logger.debug('button_is_pressed decorator passed')
             fn(*args, **kwargs)
 
     return _handle_if_button_is_pressed
@@ -145,20 +140,13 @@ class Button:
         :param logger:                          telemetry instance
         """
         self.logger = logger
-        self.logger.info('START BASE CLASS INIT')
         self.is_activated = False
-        self.logger.debug(f'is_activated: {self.is_activated}')
         self.to_activate_on_controller_init = None
         self.state = 'normal'
-        self.logger.debug(f'state: {self.state}')
         self.surface = surface
-        self.logger.debug('surface set successfully')
         self.batch = batch
-        self.logger.debug('batch set successfully')
         self.groups = groups
-        self.logger.debug('groups set successfully')
         self.transparent = True
-        self.logger.debug(f'transparent: {self.transparent}')
         self.paired_button = None
         self.vertex_list = None
         self.text_object = None
@@ -166,7 +154,6 @@ class Button:
         add_font('perfo-bold.ttf')
         self.font_name = None
         self.is_bold = False
-        self.logger.debug(f'is_bold: {self.is_bold}')
         self.font_size = None
         self.position = (0, 0)
         self.button_size = ()
@@ -176,22 +163,16 @@ class Button:
         self.on_hover_action = None
         self.on_leave_action = None
         self.hand_cursor = self.surface.get_system_mouse_cursor(surface.CURSOR_HAND)
-        self.logger.debug('hand_cursor initialized successfully')
         self.default_cursor = self.surface.get_system_mouse_cursor(surface.CURSOR_DEFAULT)
-        self.logger.debug('default_cursor initialized successfully')
-        self.logger.info('END BASE CLASS INIT')
 
     @button_is_not_activated
     def on_activate(self):
         """
         Activates the button. Creates background and text label for the button.
         """
-        self.logger.info('START ON_ACTIVATE')
         self.is_activated = True
-        self.logger.debug(f'is activated: {self.is_activated}')
         gl.glEnable(gl.GL_BLEND)
         gl.glBlendFunc(gl.GL_SRC_ALPHA, gl.GL_ONE_MINUS_SRC_ALPHA)
-        self.logger.debug('blending set successfully')
         # 2 pixels are left for red button border,
         # that's why background position starts from (button_position + 2)
         self.vertex_list = self.batch.add(4, gl.GL_QUADS, self.groups['button_background'],
@@ -203,43 +184,27 @@ class Button:
                                            ),
                                           ('c4B', (0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0))
                                           )
-        self.logger.debug('background created successfully')
-        self.logger.debug(f'transparent: {self.transparent}')
         if not self.transparent:
             self.vertex_list.colors = (0, 0, 0, 248, 0, 0, 0, 248, 0, 0, 0, 248, 0, 0, 0, 248)
-            self.logger.debug('background color: 0, 0, 0, 248')
-        else:
-            self.logger.debug('background color: 0, 0, 0, 0')
 
-        self.logger.debug(f'text: {self.text}')
         if self.text not in (None, ''):
             self.text_object = Label(self.text, font_name=self.font_name, bold=self.is_bold, font_size=self.font_size,
                                      x=self.position[0] + self.button_size[0] // 2,
                                      y=self.position[1] + self.button_size[1] // 2,
                                      anchor_x='center', anchor_y='center', batch=self.batch,
                                      group=self.groups['button_text'])
-            self.logger.debug('text label created successfully')
-
-        self.logger.info('END ON_ACTIVATE')
 
     @button_is_activated
     def on_deactivate(self):
         """
         Deactivates the button. Removes background and text label from the graphics memory.
         """
-        self.logger.info('START ON_DEACTIVATE')
         self.is_activated = False
-        self.logger.debug(f'is activated: {self.is_activated}')
         self.vertex_list.delete()
         self.vertex_list = None
-        self.logger.debug(f'vertex list: {self.vertex_list}')
         if self.text_object is not None:
             self.text_object.delete()
             self.text_object = None
-
-        self.logger.debug(f'text object: {self.text_object}')
-
-        self.logger.info('END ON_DEACTIVATE')
 
     def on_position_changed(self, position):
         """
@@ -247,10 +212,7 @@ class Button:
 
         :param position:                        new button position (including 2-pixel borders)
         """
-        self.logger.info('START ON_POSITION_CHANGED')
         self.position = position
-        self.logger.debug(f'position: {self.position}')
-        self.logger.debug(f'is activated: {self.is_activated}')
         if self.is_activated:
             # move the button background to the new position
             # 2 pixels are left for red button border,
@@ -260,16 +222,10 @@ class Button:
                                          self.position[0] + self.button_size[0] - 2,
                                          self.position[1] + self.button_size[1] - 2,
                                          self.position[0] + 2, self.position[1] + self.button_size[1] - 2)
-            self.logger.debug('position applied to background primitive')
             # move the text label to the center of the button
             if self.text_object is not None:
                 self.text_object.x = self.position[0] + self.button_size[0] // 2
                 self.text_object.y = self.position[1] + self.button_size[1] // 2
-                self.logger.debug('position applied to text label')
-            else:
-                self.logger.debug('text label is none, position not applied')
-
-        self.logger.info('END ON_POSITION_CHANGED')
 
     def on_size_changed(self, new_button_size, new_font_size):
         """
@@ -278,17 +234,10 @@ class Button:
         :param new_button_size:                 new width and height (including 2-pixel borders)
         :param new_font_size:                   new text label font size
         """
-        self.logger.info('START ON_SIZE_CHANGED')
         self.button_size = new_button_size
-        self.logger.debug(f'button size: {self.button_size}')
         self.font_size = new_font_size
-        self.logger.debug(f'font size: {self.font_size}')
-        self.logger.debug(f'is activated: {self.is_activated}')
         if self.is_activated:
             self.text_object.font_size = self.font_size
-            self.logger.debug('new font size applied successfully')
-
-        self.logger.info('END ON_SIZE_CHANGED')
 
     @button_is_activated
     def handle_mouse_motion(self, x, y, dx, dy):
@@ -301,48 +250,29 @@ class Button:
         :param dx:              relative X position from the previous mouse position
         :param dy:              relative Y position from the previous mouse position
         """
-        self.logger.info('START HANDLE_MOUSE_MOTION')
-        self.logger.debug(f'mouse position: {(x, y)}')
-        self.logger.debug(f'button position: {self.position}')
-        self.logger.debug(f'state: {self.state}')
         # if cursor is on the button and button is not pressed, it means cursor was just moved over the button,
         # state and background color are changed to "hover" state
         if x in range(self.position[0] + 2, self.position[0] + self.button_size[0] - 2) \
                 and y in range(self.position[1] + 2, self.position[1] + self.button_size[1] - 2):
-            self.logger.debug('cursor on the button')
             if self.state != 'pressed':
-                self.logger.debug('state is not pressed')
                 self.state = 'hover'
-                self.logger.debug(f'state: {self.state}')
                 self.vertex_list.colors = (127, 0, 0, 191, 127, 0, 0, 191, 127, 0, 0, 191, 127, 0, 0, 191)
-                self.logger.debug('background color: 127, 0, 0, 191')
                 self.surface.set_mouse_cursor(self.hand_cursor)
-                self.logger.debug('HAND cursor set')
                 if self.on_hover_action is not None:
-                    self.logger.debug('calling on_hover_action')
                     self.on_hover_action()
         # if cursor is not on the button and button is not normal, it means cursor has just left the button,
         # state and background color are changed to "normal" state
         else:
-            self.logger.debug('cursor not on the button')
             if self.state != 'normal':
-                self.logger.debug('state is not normal')
                 self.state = 'normal'
-                self.logger.debug(f'state: {self.state}')
                 if not self.transparent:
                     self.vertex_list.colors = (0, 0, 0, 248, 0, 0, 0, 248, 0, 0, 0, 248, 0, 0, 0, 248)
-                    self.logger.debug('background color: 0, 0, 0, 248')
                 else:
                     self.vertex_list.colors = (0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0)
-                    self.logger.debug('background color: 0, 0, 0, 0')
 
                 self.surface.set_mouse_cursor(self.default_cursor)
-                self.logger.debug('DEFAULT cursor set')
                 if self.on_leave_action is not None:
-                    self.logger.debug('calling on_leave_action')
                     self.on_leave_action()
-
-        self.logger.info('END HANDLE_MOUSE_MOTION')
 
     @button_is_activated
     @cursor_is_over_the_button
@@ -356,12 +286,8 @@ class Button:
         :param button:          determines which mouse button was pressed
         :param modifiers:       determines if some modifier key is held down (at the moment we don't use it)
         """
-        self.logger.info('START HANDLE_MOUSE_PRESS')
         self.state = 'pressed'
-        self.logger.debug(f'state: {self.state}')
         self.vertex_list.colors = (191, 0, 0, 191, 191, 0, 0, 191, 191, 0, 0, 191, 191, 0, 0, 191)
-        self.logger.debug('background color: 191, 0, 0, 191')
-        self.logger.info('END HANDLE_MOUSE_PRESS')
 
     @button_is_activated
     @cursor_is_over_the_button
@@ -377,16 +303,10 @@ class Button:
         :param button:          determines which mouse button was pressed
         :param modifiers:       determines if some modifier key is held down (at the moment we don't use it)
         """
-        self.logger.info('START HANDLE_MOUSE_RELEASE')
         self.state = 'hover'
-        self.logger.debug(f'state: {self.state}')
         self.vertex_list.colors = (127, 0, 0, 191, 127, 0, 0, 191, 127, 0, 0, 191, 127, 0, 0, 191)
-        self.logger.debug('background color: 127, 0, 0, 191')
         self.surface.set_mouse_cursor(self.default_cursor)
-        self.logger.debug('DEFAULT cursor set')
-        self.logger.debug('calling on_click_action')
         self.on_click_action(self)
-        self.logger.info('END HANDLE_MOUSE_RELEASE')
 
     @button_is_activated
     def handle_mouse_leave(self, x, y):
@@ -398,20 +318,12 @@ class Button:
         :param x:               mouse cursor X position
         :param y:               mouse cursor Y position
         """
-        self.logger.info('START HANDLE_MOUSE_LEAVE')
         self.state = 'normal'
-        self.logger.debug(f'state: {self.state}')
         if not self.transparent:
             self.vertex_list.colors = (0, 0, 0, 248, 0, 0, 0, 248, 0, 0, 0, 248, 0, 0, 0, 248)
-            self.logger.debug('background color: 0, 0, 0, 248')
         else:
             self.vertex_list.colors = (0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0)
-            self.logger.debug('background color: 0, 0, 0, 0')
 
         self.surface.set_mouse_cursor(self.default_cursor)
-        self.logger.debug('DEFAULT cursor set')
         if self.on_leave_action is not None:
-            self.logger.debug('calling on_leave_action')
             self.on_leave_action()
-
-        self.logger.info('END HANDLE_MOUSE_LEAVE')
