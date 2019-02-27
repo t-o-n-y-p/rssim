@@ -276,20 +276,13 @@ class View:
         :param logger:                          telemetry instance
         """
         self.logger = logger
-        self.logger.info('START BASE CLASS INIT')
         self.user_db_cursor = user_db_cursor
-        self.logger.debug('user_db_cursor set successfully')
         self.config_db_cursor = config_db_cursor
-        self.logger.debug('config_db_cursor set successfully')
         self.controller = None
         self.surface = surface
-        self.logger.debug('surface set successfully')
         self.batches = batches
-        self.logger.debug('batches set successfully')
         self.groups = groups
-        self.logger.debug('groups set successfully')
         self.is_activated = False
-        self.logger.debug(f'is activated: {self.is_activated}')
         self.buttons = []
         self.on_mouse_press_handlers = []
         self.on_mouse_release_handlers = []
@@ -297,18 +290,11 @@ class View:
         self.on_mouse_drag_handlers = []
         self.on_mouse_leave_handlers = []
         self.screen_resolution = (1280, 720)
-        self.logger.debug(f'screen_resolution: {self.screen_resolution}')
         self.bottom_bar_height = 72
-        self.logger.debug(f'bottom_bar_height: {self.bottom_bar_height}')
         self.top_bar_height = 36
-        self.logger.debug(f'top_bar_height: {self.top_bar_height}')
         self.base_offset = (-3456, -1688)
-        self.logger.debug(f'base_offset: {self.base_offset}')
         self.zoom_out_activated = False
-        self.logger.debug(f'zoom_out_activated: {self.zoom_out_activated}')
         self.zoom_factor = 1.0
-        self.logger.debug(f'zoom_factor: {self.zoom_factor}')
-        self.logger.info('END BASE CLASS INIT')
 
     def on_update(self):
         """
@@ -337,7 +323,6 @@ class View:
 
         :param controller:                      object controller
         """
-        self.logger.info('START ON_ASSIGN_CONTROLLER')
         self.controller = controller
         on_mouse_motion_handlers = []
         on_mouse_press_handlers = []
@@ -350,11 +335,6 @@ class View:
             on_mouse_release_handlers.append(b.handle_mouse_release)
             on_mouse_leave_handlers.append(b.handle_mouse_leave)
 
-        self.logger.debug(f'number of buttons: {len(self.buttons)}')
-        self.logger.debug(f'number of on_mouse_motion_handlers: {len(on_mouse_motion_handlers)}')
-        self.logger.debug(f'number of on_mouse_press_handlers: {len(on_mouse_press_handlers)}')
-        self.logger.debug(f'number of on_mouse_release_handlers: {len(on_mouse_release_handlers)}')
-        self.logger.debug(f'number of on_mouse_leave_handlers: {len(on_mouse_leave_handlers)}')
         # appends view handlers
         self.controller.on_append_handlers(on_mouse_motion_handlers=self.on_mouse_motion_handlers,
                                            on_mouse_press_handlers=self.on_mouse_press_handlers,
@@ -366,7 +346,6 @@ class View:
                                            on_mouse_press_handlers=on_mouse_press_handlers,
                                            on_mouse_release_handlers=on_mouse_release_handlers,
                                            on_mouse_leave_handlers=on_mouse_leave_handlers)
-        self.logger.info('END ON_ASSIGN_CONTROLLER')
 
     def on_recalculate_ui_properties(self, screen_resolution):
         """
@@ -374,11 +353,6 @@ class View:
 
         :param screen_resolution:               new screen resolution
         """
-        self.logger.info('START ON_RECALCULATE_UI_PROPERTIES')
         self.screen_resolution = screen_resolution
-        self.logger.debug(f'screen_resolution: {self.screen_resolution}')
         self.bottom_bar_height = int(72 / 1280 * self.screen_resolution[0])
-        self.logger.debug(f'bottom_bar_height: {self.bottom_bar_height}')
         self.top_bar_height = self.bottom_bar_height // 2
-        self.logger.debug(f'top_bar_height: {self.top_bar_height}')
-        self.logger.info('END ON_RECALCULATE_UI_PROPERTIES')

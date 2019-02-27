@@ -32,8 +32,6 @@ class SettingsModel(Model):
         self.fullscreen_mode = bool(self.user_db_cursor.fetchone()[0])
         self.config_db_cursor.execute('SELECT app_width, app_height FROM screen_resolution_config')
         self.screen_resolution_config = self.config_db_cursor.fetchall()
-        self.user_db_cursor.execute('SELECT log_level FROM log_options')
-        self.log_level = self.user_db_cursor.fetchone()[0]
         self.fullscreen_mode_available = False
         self.fullscreen_resolution = (0, 0)
         self.screen_resolution = (0, 0)
@@ -60,7 +58,6 @@ class SettingsModel(Model):
         and updates available windowed resolutions.
         """
         self.view.on_activate()
-        self.view.on_change_temp_log_level(self.log_level)
         self.view.on_change_temp_windowed_resolution(self.windowed_resolution)
 
     @model_is_active

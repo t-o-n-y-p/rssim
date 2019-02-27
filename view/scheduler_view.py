@@ -45,13 +45,10 @@ class SchedulerView(View):
 
             :param button:                      button that was clicked
             """
-            self.logger.info('START ON_CLOSE_SCHEDULE')
             self.controller.on_deactivate_view()
-            self.logger.info('END ON_CLOSE_SCHEDULE')
 
         super().__init__(user_db_cursor, config_db_cursor, surface, batches, groups,
                          logger=getLogger('root.app.game.map.scheduler.view'))
-        self.logger.info('START INIT')
         self.schedule_opacity = 0
         self.schedule_top_left_line = [0, 0]
         self.schedule_departure_top_left_line = [0, 0]
@@ -68,91 +65,59 @@ class SchedulerView(View):
         self.right_schedule_caption_label = None
         self.close_schedule_button = CloseScheduleButton(surface=self.surface, batch=self.batches['ui_batch'],
                                                          groups=self.groups, on_click_action=on_close_schedule)
-        self.logger.debug('buttons created successfully')
         self.buttons.append(self.close_schedule_button)
-        self.logger.debug(f'buttons list length: {len(self.buttons)}')
-        self.logger.info('END INIT')
 
     @view_is_not_active
     def on_activate(self):
         """
         Activates the view and creates sprites and labels.
         """
-        self.logger.info('START ON_ACTIVATE')
         self.is_activated = True
-        self.logger.debug(f'is activated: {self.is_activated}')
         self.left_schedule_caption_label \
             = Label('Train #          Arrival          Departed from       Cars   Stop, m:s',
                     font_name='Arial', bold=True, font_size=self.schedule_caption_font_size,
                     x=self.schedule_left_caption[0], y=self.schedule_left_caption[1],
                     anchor_x='center', anchor_y='center', batch=self.batches['ui_batch'],
                     group=self.groups['button_text'])
-        self.logger.debug(f'left_schedule_caption_label text: {self.left_schedule_caption_label.text}')
-        self.logger.debug('left_schedule_caption_label position: {}'
-                          .format((self.left_schedule_caption_label.x, self.left_schedule_caption_label.y)))
-        self.logger.debug(f'left_schedule_caption_label font size: {self.left_schedule_caption_label.font_size}')
         self.right_schedule_caption_label \
             = Label('Train #          Arrival          Departed from       Cars   Stop, m:s',
                     font_name='Arial', bold=True, font_size=self.schedule_caption_font_size,
                     x=self.schedule_left_caption[0] + self.schedule_line_step_x, y=self.schedule_left_caption[1],
                     anchor_x='center', anchor_y='center', batch=self.batches['ui_batch'],
                     group=self.groups['button_text'])
-        self.logger.debug(f'right_schedule_caption_label text: {self.right_schedule_caption_label.text}')
-        self.logger.debug('right_schedule_caption_label position: {}'
-                          .format((self.right_schedule_caption_label.x, self.right_schedule_caption_label.y)))
-        self.logger.debug(f'right_schedule_caption_label font size: {self.right_schedule_caption_label.font_size}')
         for b in self.buttons:
-            self.logger.debug(f'button: {b.__class__.__name__}')
-            self.logger.debug(f'to_activate_on_controller_init: {b.to_activate_on_controller_init}')
             if b.to_activate_on_controller_init:
                 b.on_activate()
-
-        self.logger.info('END ON_ACTIVATE')
 
     @view_is_active
     def on_deactivate(self):
         """
         Deactivates the view and destroys all labels and buttons.
         """
-        self.logger.info('START ON_DEACTIVATE')
         self.is_activated = False
-        self.logger.debug(f'is activated: {self.is_activated}')
         self.left_schedule_caption_label.delete()
         self.left_schedule_caption_label = None
-        self.logger.debug(f'left_schedule_caption_label: {self.left_schedule_caption_label}')
         self.right_schedule_caption_label.delete()
         self.right_schedule_caption_label = None
-        self.logger.debug(f'right_schedule_caption_label: {self.right_schedule_caption_label}')
         for label in self.train_labels:
             label.delete()
 
         self.train_labels.clear()
-        self.logger.debug(f'train_labels: {self.train_labels}')
         for b in self.buttons:
             b.on_deactivate()
-
-        self.logger.info('END ON_DEACTIVATE')
 
     def on_update(self):
         """
         Updates fade-in/fade-out animations and create sprites if some are missing.
         Not all sprites are created at once, they are created one by one to avoid massive FPS drop.
         """
-        self.logger.info('START ON_UPDATE')
-        self.logger.debug(f'is activated: {self.is_activated}')
-        self.logger.debug(f'schedule_opacity: {self.schedule_opacity}')
         if self.is_activated:
             if self.schedule_opacity < 255:
                 self.schedule_opacity += 15
-                self.logger.debug(f'schedule_opacity: {self.schedule_opacity}')
 
-            self.logger.debug(f'base_schedule length: {len(self.base_schedule)}')
-            self.logger.debug(f'train_labels length: {len(self.train_labels)}')
             for i in range(min(len(self.base_schedule), SCHEDULE_ROWS * SCHEDULE_COLUMNS)):
-                self.logger.debug(f'i: {i}')
                 if self.base_schedule[i][ARRIVAL_TIME] < self.game_time + FRAMES_IN_ONE_HOUR \
                         and len(self.train_labels) < (i + 1) * 2:
-                    self.logger.debug(f'base_schedule line: {self.base_schedule[i]}')
                     # 2 sprites are created for each train: departure location (first one)
                     # and all other options (second one)
                     self.train_labels.append(
@@ -171,10 +136,6 @@ class SchedulerView(View):
                               y=self.schedule_top_left_line[1] - (i % SCHEDULE_ROWS) * self.schedule_line_step_y,
                               anchor_x='center', anchor_y='center', batch=self.batches['ui_batch'],
                               group=self.groups['button_text']))
-                    self.logger.debug(f'train_label text: {self.train_labels[-1].text}')
-                    self.logger.debug('train_label position: {}'
-                                      .format((self.train_labels[-1].x, self.train_labels[-1].y)))
-                    self.logger.debug(f'train_label font size: {self.train_labels[-1].font_size}')
                     self.train_labels.append(
                         Label(DEPARTURE_TEXT[self.base_schedule[i][DIRECTION]],
                               font_name='Perfo', bold=True, font_size=self.schedule_font_size,
@@ -184,17 +145,10 @@ class SchedulerView(View):
                               - (i % SCHEDULE_ROWS) * self.schedule_line_step_y,
                               anchor_x='center', anchor_y='center', batch=self.batches['ui_batch'],
                               group=self.groups['button_text']))
-                    self.logger.debug(f'train_label text: {self.train_labels[-1].text}')
-                    self.logger.debug('train_label position: {}'
-                                      .format((self.train_labels[-1].x, self.train_labels[-1].y)))
-                    self.logger.debug(f'train_label font size: {self.train_labels[-1].font_size}')
                     break
 
         if not self.is_activated and self.schedule_opacity > 0:
             self.schedule_opacity -= 15
-            self.logger.debug(f'schedule_opacity: {self.schedule_opacity}')
-
-        self.logger.info('END ON_UPDATE')
 
     def on_change_screen_resolution(self, screen_resolution):
         """
@@ -202,40 +156,26 @@ class SchedulerView(View):
 
         :param screen_resolution:       new screen resolution
         """
-        self.logger.info('START ON_CHANGE_SCREEN_RESOLUTION')
         self.on_recalculate_ui_properties(screen_resolution)
         self.on_read_ui_info()
-        self.logger.debug(f'is activated: {self.is_activated}')
         if self.is_activated:
             self.left_schedule_caption_label.x = self.schedule_left_caption[0]
             self.left_schedule_caption_label.y = self.schedule_left_caption[1]
             self.left_schedule_caption_label.font_size = self.schedule_caption_font_size
-            self.logger.debug('left_schedule_caption_label position: {}'
-                              .format((self.left_schedule_caption_label.x, self.left_schedule_caption_label.y)))
-            self.logger.debug(f'left_schedule_caption_label font size: {self.left_schedule_caption_label.font_size}')
             self.right_schedule_caption_label.x = self.schedule_left_caption[0] + self.schedule_line_step_x
             self.right_schedule_caption_label.y = self.schedule_left_caption[1]
             self.right_schedule_caption_label.font_size = self.schedule_caption_font_size
-            self.logger.debug('right_schedule_caption_label position: {}'
-                              .format((self.right_schedule_caption_label.x, self.right_schedule_caption_label.y)))
-            self.logger.debug(f'right_schedule_caption_label font size: {self.right_schedule_caption_label.font_size}')
             for i in range(len(self.train_labels) // 2):
                 self.train_labels[i * 2].x = self.schedule_top_left_line[0] \
                                            + self.schedule_line_step_x * (i // SCHEDULE_ROWS)
                 self.train_labels[i * 2].y = self.schedule_top_left_line[1] \
                                            - (i % SCHEDULE_ROWS) * self.schedule_line_step_y
                 self.train_labels[i * 2].font_size = self.schedule_font_size
-                self.logger.debug('train_labels position: {}'
-                                  .format((self.train_labels[i * 2].x, self.train_labels[i * 2].y)))
-                self.logger.debug(f'train_labels font size: {self.train_labels[i * 2].font_size}')
                 self.train_labels[i * 2 + 1].x \
                     = self.schedule_departure_top_left_line[0] + self.schedule_line_step_x * (i // SCHEDULE_ROWS)
                 self.train_labels[i * 2 + 1].y \
                     = self.schedule_departure_top_left_line[1] - (i % SCHEDULE_ROWS) * self.schedule_line_step_y
                 self.train_labels[i * 2 + 1].font_size = self.schedule_font_size
-                self.logger.debug('train_labels position: {}'
-                                  .format((self.train_labels[i * 2 + 1].x, self.train_labels[i * 2 + 1].y)))
-                self.logger.debug(f'train_labels font size: {self.train_labels[i * 2 + 1].font_size}')
 
         self.close_schedule_button.x_margin = self.screen_resolution[0] - 11 * self.bottom_bar_height // 2 + 2
         self.close_schedule_button.y_margin = 0
@@ -244,8 +184,6 @@ class SchedulerView(View):
         for b in self.buttons:
             b.on_position_changed((b.x_margin,  b.y_margin))
 
-        self.logger.info('END ON_CHANGE_SCREEN_RESOLUTION')
-
     def on_update_live_schedule(self, base_schedule, game_time):
         """
         Updates base schedule matrix and game time for on_update() method.
@@ -253,12 +191,8 @@ class SchedulerView(View):
         :param base_schedule                       generated train queue sorted by arrival time
         :param game_time                           current in-game time
         """
-        self.logger.info('START ON_UPDATE_LIVE_SCHEDULE')
         self.base_schedule = base_schedule
-        self.logger.debug(f'base_schedule: {self.base_schedule}')
         self.game_time = game_time
-        self.logger.debug(f'game_time: {self.game_time}')
-        self.logger.info('END ON_UPDATE_LIVE_SCHEDULE')
 
     @view_is_active
     def on_release_train(self, index):
@@ -267,29 +201,19 @@ class SchedulerView(View):
 
         :param index:                               train position in table (from 0)
         """
-        self.logger.info('START ON_RELEASE_TRAIN')
-        self.logger.debug(f'index: {index}')
         for i in range(index * 2, len(self.train_labels) // 2 - 1):
-            self.logger.debug(f'row {i // 2} current text: {self.train_labels[i * 2].text}')
-            self.logger.debug(f'row {i // 2} current departure text: {self.train_labels[i * 2 + 1].text}')
             self.train_labels[i * 2].text = self.train_labels[(i + 1) * 2].text
             self.train_labels[i * 2 + 1].text = self.train_labels[(i + 1) * 2 + 1].text
-            self.logger.debug(f'row {i // 2} new text: {self.train_labels[i * 2].text}')
-            self.logger.debug(f'row {i // 2} new departure text: {self.train_labels[i * 2 + 1].text}')
 
-        self.logger.debug(f'train_labels length: {len(self.train_labels)}')
         self.train_labels[-2].delete()
         self.train_labels[-1].delete()
         self.train_labels.pop(-2)
         self.train_labels.pop(-1)
-        self.logger.debug(f'train_labels length: {len(self.train_labels)}')
-        self.logger.info('END ON_RELEASE_TRAIN')
 
     def on_read_ui_info(self):
         """
         Reads aff offsets and font size from the database.
         """
-        self.logger.info('START ON_READ_UI_INFO')
         self.config_db_cursor.execute('''SELECT schedule_top_left_line_x, schedule_top_left_line_y,
                                          schedule_departure_top_left_line_x, schedule_departure_top_left_line_y,
                                          schedule_line_step_x, schedule_line_step_y, schedule_font_size,
@@ -302,11 +226,3 @@ class SchedulerView(View):
             self.schedule_line_step_x, self.schedule_line_step_y, self.schedule_font_size, \
             self.schedule_left_caption[0], self.schedule_left_caption[1], self.schedule_caption_font_size \
             = self.config_db_cursor.fetchone()
-        self.logger.debug(f'schedule_top_left_line: {self.schedule_top_left_line}')
-        self.logger.debug(f'schedule_departure_top_left_line: {self.schedule_departure_top_left_line}')
-        self.logger.debug(f'schedule_line_step_x: {self.schedule_line_step_x}')
-        self.logger.debug(f'schedule_line_step_y: {self.schedule_line_step_y}')
-        self.logger.debug(f'schedule_font_size: {self.schedule_font_size}')
-        self.logger.debug(f'schedule_left_caption: {self.schedule_left_caption}')
-        self.logger.debug(f'schedule_caption_font_size: {self.schedule_caption_font_size}')
-        self.logger.info('END ON_READ_UI_INFO')
