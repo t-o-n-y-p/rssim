@@ -5,7 +5,7 @@ Buttons are used by object views to address player actions in the game.
 
 __init__.py                                         implements decorators, constants and base Button class
 accept_settings_button.py                           Accept button on settings screen
-buy_track_button.py                                 Buy track button on constructor screen
+build_track_button.py                               Build track button on constructor screen
 close_constructor_button.py                         Close constructor button on main game screen
 close_game_button.py                                last button in the top right corner
 close_schedule_button.py                            Close schedule button on main game screen

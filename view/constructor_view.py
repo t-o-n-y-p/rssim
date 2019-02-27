@@ -4,7 +4,7 @@ from pyglet.text import Label
 
 from view import *
 from button.close_constructor_button import CloseConstructorButton
-from button.buy_track_button import BuyTrackButton
+from button.build_track_button import BuildTrackButton
 
 
 class ConstructorView(View):
@@ -51,7 +51,7 @@ class ConstructorView(View):
             locked_tracks_labels                list of "locked" labels for tracks
             title_tracks_labels                 list of "Track X" labels
             description_tracks_labels           list of track state labels
-            buy_buttons                         list of buy track buttons
+            build_track_button                  button which puts track under construction
             no_more_tracks_available_labels     list of "No more tracks available" labels
             coming_soon_environment_labels      list of "Coming soon" labels
             close_constructor_button            CloseConstructorButton object
@@ -81,26 +81,14 @@ class ConstructorView(View):
             :param button:                      button that was clicked
             """
             button.on_deactivate()
-            key_to_remove = None
-            for key, value in self.buy_buttons.items():
-                if value == button:
-                    key_to_remove = key
-                    self.controller.on_put_track_under_construction(key)
-
-            self.controller.on_detach_handlers(
-                on_mouse_motion_handlers=[self.buy_buttons[key_to_remove].handle_mouse_motion, ],
-                on_mouse_press_handlers=[self.buy_buttons[key_to_remove].handle_mouse_press, ],
-                on_mouse_release_handlers=[self.buy_buttons[key_to_remove].handle_mouse_release, ],
-                on_mouse_leave_handlers=[self.buy_buttons[key_to_remove].handle_mouse_leave, ]
-            )
-            self.buttons.remove(self.buy_buttons.pop(key_to_remove))
+            self.controller.on_put_track_under_construction(min(list(self.track_state_matrix.keys())))
 
         super().__init__(user_db_cursor, config_db_cursor, surface, batches, groups,
                          logger=getLogger('root.app.game.map.constructor.view'))
         self.track_cells_positions = ()
         self.environment_cell_positions = ()
         self.locked_label_offset = [0, 0]
-        self.buy_button_offset = [0, 0]
+        self.track_build_button_offset = [0, 0]
         self.title_label_offset = [0, 0]
         self.description_label_offset = [0, 0]
         self.placeholder_offset = [0, 0]
@@ -121,13 +109,20 @@ class ConstructorView(View):
         self.locked_tracks_labels = {}
         self.title_tracks_labels = {}
         self.description_tracks_labels = {}
-        self.buy_buttons = {}
+        self.build_track_button = BuildTrackButton(surface=self.surface, batch=self.batches['ui_batch'],
+                                                   groups=self.groups, on_click_action=on_buy_track)
+        self.build_track_button.x_margin = self.track_cells_positions[0][0] + self.track_build_button_offset[0]
+        self.build_track_button.y_margin = self.track_cells_positions[0][1] + self.track_build_button_offset[1]
+        self.build_track_button.on_position_changed((self.build_track_button.x_margin,
+                                                     self.build_track_button.y_margin))
+        self.build_track_button.on_size_changed((self.cell_height, self.cell_height),
+                                                self.locked_label_font_size)
         self.no_more_tracks_available_labels = []
         self.coming_soon_environment_labels = []
         self.close_constructor_button = CloseConstructorButton(surface=self.surface, batch=self.batches['ui_batch'],
                                                                groups=self.groups, on_click_action=on_close_constructor)
         self.buttons.append(self.close_constructor_button)
-        self.on_buy_track = on_buy_track
+        self.buttons.append(self.build_track_button)
         self.money = 0.0
 
     @view_is_not_active
@@ -196,17 +191,6 @@ class ConstructorView(View):
         for b in self.buttons:
             b.on_deactivate()
 
-        for key in self.buy_buttons:
-            self.controller.on_detach_handlers(
-                on_mouse_motion_handlers=[self.buy_buttons[key].handle_mouse_motion, ],
-                on_mouse_press_handlers=[self.buy_buttons[key].handle_mouse_press, ],
-                on_mouse_release_handlers=[self.buy_buttons[key].handle_mouse_release, ],
-                on_mouse_leave_handlers=[self.buy_buttons[key].handle_mouse_leave, ]
-            )
-            self.buttons.remove(self.buy_buttons[key])
-
-        self.buy_buttons.clear()
-
     def on_update(self):
         """
         Updates fade-in/fade-out animations and create sprites if some are missing.
@@ -246,6 +230,9 @@ class ConstructorView(View):
                                         y=self.track_cells_positions[i][1] + self.locked_label_offset[1],
                                         anchor_x='center', anchor_y='center', batch=self.batches['ui_batch'],
                                         group=self.groups['button_text'])
+                            if dictionary_keys[i] == min(list(self.track_state_matrix.keys())):
+                                self.build_track_button.on_deactivate()
+
                         else:
                             self.locked_tracks_labels[dictionary_keys[i]] \
                                 = Label(' ', font_name='Webdings', font_size=self.locked_label_font_size,
@@ -254,28 +241,7 @@ class ConstructorView(View):
                                         y=self.track_cells_positions[i][1] + self.locked_label_offset[1],
                                         anchor_x='center', anchor_y='center', batch=self.batches['ui_batch'],
                                         group=self.groups['button_text'])
-                            self.buy_buttons[dictionary_keys[i]] \
-                                = BuyTrackButton(surface=self.surface, batch=self.batches['ui_batch'],
-                                                 groups=self.groups, on_click_action=self.on_buy_track)
-                            self.buy_buttons[dictionary_keys[i]].x_margin \
-                                = self.track_cells_positions[i][0] + self.buy_button_offset[0]
-                            self.buy_buttons[dictionary_keys[i]].y_margin \
-                                = self.track_cells_positions[i][1] + self.buy_button_offset[1]
-                            self.buy_buttons[dictionary_keys[i]].on_position_changed(
-                                (self.buy_buttons[dictionary_keys[i]].x_margin,
-                                 self.buy_buttons[dictionary_keys[i]].y_margin)
-                            )
-                            self.buy_buttons[dictionary_keys[i]] \
-                                .on_size_changed((self.cell_height, self.cell_height),
-                                                 self.locked_label_font_size)
-                            self.buttons.append(self.buy_buttons[dictionary_keys[i]])
-                            self.buy_buttons[dictionary_keys[i]].on_activate()
-                            self.controller.on_append_handlers(
-                                on_mouse_motion_handlers=[self.buy_buttons[dictionary_keys[i]].handle_mouse_motion, ],
-                                on_mouse_press_handlers=[self.buy_buttons[dictionary_keys[i]].handle_mouse_press, ],
-                                on_mouse_release_handlers=[self.buy_buttons[dictionary_keys[i]].handle_mouse_release, ],
-                                on_mouse_leave_handlers=[self.buy_buttons[dictionary_keys[i]].handle_mouse_leave, ]
-                            )
+                            self.build_track_button.on_activate()
 
                     # if track is not available, create locked label if track is not under construction
                     else:
@@ -409,18 +375,12 @@ class ConstructorView(View):
                 self.description_tracks_labels[dictionary_keys[i]].font_size \
                     = self.description_label_font_size
 
-            dictionary_keys = list(self.buy_buttons.keys())
-            for i in range(len(dictionary_keys)):
-                self.buy_buttons[dictionary_keys[i]].x_margin \
-                    = self.track_cells_positions[i][0] + self.buy_button_offset[0]
-                self.buy_buttons[dictionary_keys[i]].y_margin \
-                    = self.track_cells_positions[i][1] + self.buy_button_offset[1]
-                self.buy_buttons[dictionary_keys[i]].on_position_changed(
-                    (self.buy_buttons[dictionary_keys[i]].x_margin, self.buy_buttons[dictionary_keys[i]].y_margin)
-                )
-                self.buy_buttons[dictionary_keys[i]] \
-                    .on_size_changed((self.cell_height, self.cell_height),
-                                     self.locked_label_font_size)
+        self.build_track_button.x_margin = self.track_cells_positions[0][0] + self.track_build_button_offset[0]
+        self.build_track_button.y_margin = self.track_cells_positions[0][1] + self.track_build_button_offset[1]
+        self.build_track_button.on_position_changed((self.build_track_button.x_margin,
+                                                     self.build_track_button.y_margin))
+        self.build_track_button.on_size_changed((self.cell_height, self.cell_height),
+                                                self.locked_label_font_size)
 
         self.close_constructor_button.on_size_changed((self.bottom_bar_height, self.bottom_bar_height),
                                                       int(24 / 80 * self.bottom_bar_height))
@@ -452,31 +412,11 @@ class ConstructorView(View):
         if track_state_matrix[track][UNLOCK_AVAILABLE]:
             if self.money < track_state_matrix[track][PRICE]:
                 self.locked_tracks_labels[track].text = ''
+                if track == min(list(self.track_state_matrix.keys())):
+                    self.build_track_button.on_deactivate()
             else:
                 self.locked_tracks_labels[track].text = ' '
-                if track not in self.buy_buttons:
-                    self.buy_buttons[track] = BuyTrackButton(surface=self.surface, batch=self.batches['ui_batch'],
-                                                             groups=self.groups, on_click_action=self.on_buy_track)
-                    self.buy_buttons[track].x_margin \
-                        = self.track_cells_positions[list(track_state_matrix.keys()).index(track)][0] \
-                        + self.buy_button_offset[0]
-                    self.buy_buttons[track].y_margin \
-                        = self.track_cells_positions[list(track_state_matrix.keys()).index(track)][1] \
-                        + self.buy_button_offset[1]
-                    self.buy_buttons[track].on_position_changed(
-                        (self.buy_buttons[track].x_margin, self.buy_buttons[track].y_margin)
-                    )
-                    self.buy_buttons[track] \
-                        .on_size_changed((self.cell_height, self.cell_height),
-                                         self.locked_label_font_size)
-                    self.buttons.append(self.buy_buttons[track])
-                    self.buy_buttons[track].on_activate()
-                    self.controller.on_append_handlers(
-                        on_mouse_motion_handlers=[self.buy_buttons[track].handle_mouse_motion, ],
-                        on_mouse_press_handlers=[self.buy_buttons[track].handle_mouse_press, ],
-                        on_mouse_release_handlers=[self.buy_buttons[track].handle_mouse_release, ],
-                        on_mouse_leave_handlers=[self.buy_buttons[track].handle_mouse_leave, ]
-                    )
+                self.build_track_button.on_activate()
 
         else:
             if not track_state_matrix[track][UNDER_CONSTRUCTION]:
@@ -539,12 +479,6 @@ class ConstructorView(View):
         for t in self.description_tracks_labels:
             self.description_tracks_labels[t].y += cell_step
 
-        for b in self.buy_buttons:
-            self.buy_buttons[b].y_margin += cell_step
-            self.buy_buttons[b].on_position_changed(
-                (self.buy_buttons[b].x_margin, self.buy_buttons[b].y_margin)
-            )
-
         for p in range(len(self.no_more_tracks_available_labels)):
             self.no_more_tracks_available_labels[p].y += cell_step
 
@@ -592,7 +526,7 @@ class ConstructorView(View):
                                          FROM screen_resolution_config WHERE app_width = ? AND app_height = ?''',
                                       (self.screen_resolution[0], self.screen_resolution[1]))
         self.locked_label_offset[0], self.locked_label_offset[1], \
-            self.buy_button_offset[0], self.buy_button_offset[1], \
+            self.track_build_button_offset[0], self.track_build_button_offset[1], \
             self.title_label_offset[0], self.title_label_offset[1], \
             self.description_label_offset[0], self.description_label_offset[1], \
             self.placeholder_offset[0], self.placeholder_offset[1], \

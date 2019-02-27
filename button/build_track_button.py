@@ -3,7 +3,7 @@ from logging import getLogger
 from button import Button
 
 
-class BuyTrackButton(Button):
+class BuildTrackButton(Button):
     """
     Implements Buy track button on constructor screen.
     For properties definition see base Button class.

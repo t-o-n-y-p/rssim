@@ -291,7 +291,7 @@ class AppView(View):
             = int(self.controller.game.map.view.zoom_in_button.is_activated
                   or self.controller.game.map.view.zoom_out_button.is_activated)
         shader.uniforms.track_build_button_is_activated \
-            = int(len(self.controller.game.map.constructor.view.buy_buttons) > 0)
+            = int(self.controller.game.map.constructor.view.build_track_button.is_activated)
         shader.uniforms.mini_map_opacity = self.controller.game.map.view.mini_map_opacity
         shader.uniforms.zoom_out_activated = int(self.controller.game.map.view.zoom_out_activated)
         shader.uniforms.mini_map_position = self.controller.game.map.view.mini_map_position
