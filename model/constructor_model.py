@@ -109,8 +109,10 @@ class ConstructorModel(Model):
 
     def on_save_state(self):
         """
-        Saves track state matrix to user progress database.
+        Saves track state matrix and money target flags to user progress database.
         """
+        self.user_db_cursor.execute('UPDATE graphics SET track_money_target_activated = ?',
+                                    (self.view.track_money_target_activated, ))
         # if some tracks were unlocked since last time the game progress was saved,
         # they are not listed in track state matrix anymore, so their state is updated separately
         for track in self.cached_unlocked_tracks:

@@ -5,4 +5,6 @@ UPDATE tracks SET construction_time = 576000 WHERE track_number IN (19, 20) AND 
 UPDATE tracks SET construction_time = 1728000 WHERE track_number IN (21, 22) AND locked = 1 AND under_construction = 0
 UPDATE tracks SET construction_time = 720000 WHERE track_number IN (23, 24) AND locked = 1 AND under_construction = 0
 UPDATE tracks SET construction_time = 792000 WHERE track_number IN (27, 28) AND locked = 1 AND under_construction = 0
+ALTER TABLE graphics ADD track_money_target_activated integer
+UPDATE graphics SET track_money_target_activated = 0
 UPDATE version SET major = 0, minor = 9, patch = 3

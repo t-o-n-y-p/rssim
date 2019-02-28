@@ -18,8 +18,10 @@ open_schedule_button.py                             Open schedule button on main
 open_settings_button.py                             Open settings button in the bottom right corner
 pause_game_button.py                                Pause button on main game screen
 reject_settings_button.py                           Reject button on settings screen
+reset_track_money_target_button.py                  Reset money target button inside track cell on constructor screen
 restore_button.py                                   middle button in the top right corner (in fullscreen mode)
 resume_game_button.py                               Resume button on main game screen
+set_track_money_target_button.py                    Set money target button inside track cell on constructor screen
 zoom_in_button.py                                   Zoom in button for game map on main game screen
 zoom_out_button.py                                  Zoom out button for game map on main game screen
 """

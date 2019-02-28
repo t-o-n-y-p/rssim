@@ -157,7 +157,7 @@ class GameModel(Model):
 
     def on_update_money_target(self, money_target):
         """
-        Reserved for future use.
+        Updates money target value and notifies the view about value update.
 
         :param money_target:            new money target value
         """

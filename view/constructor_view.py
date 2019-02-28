@@ -5,6 +5,8 @@ from pyglet.text import Label
 from view import *
 from button.close_constructor_button import CloseConstructorButton
 from button.build_track_button import BuildTrackButton
+from button.set_track_money_target_button import SetTrackMoneyTargetButton
+from button.reset_track_money_target_button import ResetTrackMoneyTargetButton
 
 
 class ConstructorView(View):
@@ -17,6 +19,8 @@ class ConstructorView(View):
         Button click handlers:
             on_close_constructor                on_click handler for close constructor button
             on_buy_track                        on_click handler for buy track button
+            on_set_track_money_target           on_click handler for set track money target button
+            on_reset_track_money_target         on_click handler for reset track money target button
 
         Properties:
             track_cells_positions               list of positions for track cells
@@ -52,12 +56,15 @@ class ConstructorView(View):
             title_tracks_labels                 list of "Track X" labels
             description_tracks_labels           list of track state labels
             build_track_button                  button which puts track under construction
+            set_track_money_target_button       SetTrackMoneyTargetButton object
+            reset_track_money_target_button     ResetTrackMoneyTargetButton object
             no_more_tracks_available_labels     list of "No more tracks available" labels
             coming_soon_environment_labels      list of "Coming soon" labels
             close_constructor_button            CloseConstructorButton object
             buttons                             list of all buttons
             on_buy_track                        on_click handler for buy track button
             money                               player bank account state
+            track_money_target_activated        indicates if user tracks money target for upcoming station track
 
         :param user_db_cursor:                  user DB cursor (is used to execute user DB queries)
         :param config_db_cursor:                configuration DB cursor (is used to execute configuration DB queries)
@@ -75,13 +82,42 @@ class ConstructorView(View):
 
         def on_buy_track(button):
             """
-            Removes buy track button and its handlers.
+            Removes buy track button and its handlers. Resets money target and removes money target buttons.
             Notifies controller that player has bought the track.
 
             :param button:                      button that was clicked
             """
             button.on_deactivate()
+            self.set_track_money_target_button.on_deactivate()
+            self.reset_track_money_target_button.on_deactivate()
+            self.track_money_target_activated = False
+            self.controller.parent_controller.parent_controller.on_update_money_target(0)
             self.controller.on_put_track_under_construction(min(list(self.track_state_matrix.keys())))
+
+        def on_set_track_money_target(button):
+            """
+            Sets money target value so user can see how much money left for purchase.
+            Switches money target button state.
+
+            :param button:                      button that was clicked
+            """
+            button.on_deactivate()
+            button.paired_button.on_activate()
+            self.track_money_target_activated = True
+            self.controller.parent_controller.parent_controller.on_update_money_target(
+                self.track_state_matrix[min(list(self.track_state_matrix.keys()))][PRICE]
+            )
+
+        def on_reset_track_money_target(button):
+            """
+            Resets money target value. Switches money target button state.
+
+            :param button:                      button that was clicked
+            """
+            button.on_deactivate()
+            button.paired_button.on_activate()
+            self.track_money_target_activated = False
+            self.controller.parent_controller.parent_controller.on_update_money_target(0)
 
         super().__init__(user_db_cursor, config_db_cursor, surface, batches, groups,
                          logger=getLogger('root.app.game.map.constructor.view'))
@@ -117,13 +153,41 @@ class ConstructorView(View):
                                                      self.build_track_button.y_margin))
         self.build_track_button.on_size_changed((self.cell_height, self.cell_height),
                                                 self.locked_label_font_size)
+        self.set_track_money_target_button \
+            = SetTrackMoneyTargetButton(surface=self.surface, batch=self.batches['ui_batch'],
+                                        groups=self.groups, on_click_action=on_set_track_money_target)
+        self.set_track_money_target_button.x_margin = self.track_cells_positions[0][0] \
+                                                    + self.track_build_button_offset[0] - self.cell_height + 2
+        self.set_track_money_target_button.y_margin = self.track_cells_positions[0][1] \
+                                                    + self.track_build_button_offset[1]
+        self.set_track_money_target_button.on_position_changed((self.set_track_money_target_button.x_margin,
+                                                                self.set_track_money_target_button.y_margin))
+        self.set_track_money_target_button.on_size_changed((self.cell_height, self.cell_height),
+                                                           self.locked_label_font_size)
+        self.reset_track_money_target_button \
+            = ResetTrackMoneyTargetButton(surface=self.surface, batch=self.batches['ui_batch'],
+                                          groups=self.groups, on_click_action=on_reset_track_money_target)
+        self.reset_track_money_target_button.x_margin = self.track_cells_positions[0][0] \
+                                                      + self.track_build_button_offset[0] - self.cell_height + 2
+        self.reset_track_money_target_button.y_margin = self.track_cells_positions[0][1] \
+                                                      + self.track_build_button_offset[1]
+        self.reset_track_money_target_button.on_position_changed((self.reset_track_money_target_button.x_margin,
+                                                                  self.reset_track_money_target_button.y_margin))
+        self.reset_track_money_target_button.on_size_changed((self.cell_height, self.cell_height),
+                                                             int(24 * self.locked_label_font_size / 40))
+        self.set_track_money_target_button.paired_button = self.reset_track_money_target_button
+        self.reset_track_money_target_button.paired_button = self.set_track_money_target_button
         self.no_more_tracks_available_labels = []
         self.coming_soon_environment_labels = []
         self.close_constructor_button = CloseConstructorButton(surface=self.surface, batch=self.batches['ui_batch'],
                                                                groups=self.groups, on_click_action=on_close_constructor)
         self.buttons.append(self.close_constructor_button)
         self.buttons.append(self.build_track_button)
+        self.buttons.append(self.set_track_money_target_button)
+        self.buttons.append(self.reset_track_money_target_button)
         self.money = 0.0
+        self.user_db_cursor.execute('SELECT track_money_target_activated FROM graphics')
+        self.track_money_target_activated = bool(self.user_db_cursor.fetchone()[0])
 
     @view_is_not_active
     def on_activate(self):
@@ -222,6 +286,11 @@ class ConstructorView(View):
                     # if track is unlocked and not enough money, create disabled construction label;
                     # if player has enough money, create button to buy the track
                     if self.track_state_matrix[dictionary_keys[i]][UNLOCK_AVAILABLE]:
+                        if self.track_money_target_activated:
+                            self.reset_track_money_target_button.on_activate()
+                        else:
+                            self.set_track_money_target_button.on_activate()
+
                         if self.money < self.track_state_matrix[dictionary_keys[i]][PRICE]:
                             self.locked_tracks_labels[dictionary_keys[i]] \
                                 = Label('', font_name='Webdings', font_size=self.locked_label_font_size,
@@ -230,8 +299,7 @@ class ConstructorView(View):
                                         y=self.track_cells_positions[i][1] + self.locked_label_offset[1],
                                         anchor_x='center', anchor_y='center', batch=self.batches['ui_batch'],
                                         group=self.groups['button_text'])
-                            if dictionary_keys[i] == min(list(self.track_state_matrix.keys())):
-                                self.build_track_button.on_deactivate()
+                            self.build_track_button.on_deactivate()
 
                         else:
                             self.locked_tracks_labels[dictionary_keys[i]] \
@@ -381,7 +449,22 @@ class ConstructorView(View):
                                                      self.build_track_button.y_margin))
         self.build_track_button.on_size_changed((self.cell_height, self.cell_height),
                                                 self.locked_label_font_size)
-
+        self.set_track_money_target_button.x_margin = self.track_cells_positions[0][0] \
+                                                    + self.track_build_button_offset[0] - self.cell_height + 2
+        self.set_track_money_target_button.y_margin = self.track_cells_positions[0][1] \
+                                                    + self.track_build_button_offset[1]
+        self.set_track_money_target_button.on_position_changed((self.set_track_money_target_button.x_margin,
+                                                                self.set_track_money_target_button.y_margin))
+        self.set_track_money_target_button.on_size_changed((self.cell_height, self.cell_height),
+                                                           self.locked_label_font_size)
+        self.reset_track_money_target_button.x_margin = self.track_cells_positions[0][0] \
+                                                      + self.track_build_button_offset[0] - self.cell_height + 2
+        self.reset_track_money_target_button.y_margin = self.track_cells_positions[0][1] \
+                                                      + self.track_build_button_offset[1]
+        self.reset_track_money_target_button.on_position_changed((self.reset_track_money_target_button.x_margin,
+                                                                  self.reset_track_money_target_button.y_margin))
+        self.reset_track_money_target_button.on_size_changed((self.cell_height, self.cell_height),
+                                                             int(24 * self.locked_label_font_size / 40))
         self.close_constructor_button.on_size_changed((self.bottom_bar_height, self.bottom_bar_height),
                                                       int(24 / 80 * self.bottom_bar_height))
         for b in self.buttons:
@@ -410,10 +493,14 @@ class ConstructorView(View):
         """
         self.track_state_matrix = track_state_matrix
         if track_state_matrix[track][UNLOCK_AVAILABLE]:
+            if self.track_money_target_activated:
+                self.reset_track_money_target_button.on_activate()
+            else:
+                self.set_track_money_target_button.on_activate()
+
             if self.money < track_state_matrix[track][PRICE]:
                 self.locked_tracks_labels[track].text = ''
-                if track == min(list(self.track_state_matrix.keys())):
-                    self.build_track_button.on_deactivate()
+                self.build_track_button.on_deactivate()
             else:
                 self.locked_tracks_labels[track].text = ' '
                 self.build_track_button.on_activate()

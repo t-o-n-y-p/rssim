@@ -118,9 +118,9 @@ class GameController(Controller):
 
     def on_update_money_target(self, money_target):
         """
-        Reserved for future use.
+        Notifies the model to update money target.
 
-        :param money_target:            new money target
+        :param money_target:            new money target value
         """
         self.model.on_update_money_target(money_target)
 
