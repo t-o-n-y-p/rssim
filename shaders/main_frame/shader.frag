@@ -45,6 +45,7 @@ uniform int constructor_opacity = 0;
 uniform int settings_is_activated = 0;
 uniform int zoom_buttons_activated = 1;
 uniform int track_build_button_is_activated = 0;
+uniform int track_money_target_button_is_activated = 0;
 uniform int mini_map_opacity = 0;
 uniform int zoom_out_activated = 0;
 uniform ivec2 mini_map_position = ivec2(0, 0);
@@ -343,6 +344,27 @@ bool is_build_track_button_border_activated(int cell_width, int cell_height)
               );
 }
 
+bool is_track_money_target_button_border_activated(int cell_width, int cell_height)
+/*
+    Returns "true" if pixel belongs to track money target button border on constructor screen
+    and "false" if it does not.
+    Input values:
+        int cell_width - width of a cell
+        int cell_height - height of a cell
+*/
+{
+    int x_left_offset = int(gl_FragCoord[0]) - top_left_cell[0];
+    return gl_FragCoord[1] >= top_left_cell[1] - (cell_height - 1)       // inside the cell from bottom to top
+           && gl_FragCoord[1] <= top_left_cell[1]
+           && (track_money_target_button_is_activated == 1
+               && (x_left_offset == cell_width - 2 * cell_height + 2     // 2-pixel thick left border
+                   || x_left_offset == cell_width - 2 * cell_height + 3
+                   || x_left_offset == cell_width - cell_height          // 2-pixel thick right border
+                   || x_left_offset == cell_width - cell_height + 1
+                  )
+              );
+}
+
 void main()
 /*
     MAIN SHADER FUNCTION
@@ -467,6 +489,7 @@ void main()
             // draw cells and button borders on constructor screen
             if (is_constructor_cell_border(cell_width, cell_height, interval_between_cells_height)
                 || is_build_track_button_border_activated(cell_width, cell_height)
+                || is_track_money_target_button_border_activated(cell_width, cell_height)
                )
                 constructor_result = vec4(1.0, 0.0, 0.0, real_constructor_opacity);
             // background color for other pixels
