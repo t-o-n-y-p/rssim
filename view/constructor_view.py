@@ -506,6 +506,8 @@ class ConstructorView(View):
                 self.build_track_button.on_activate()
 
         else:
+            self.set_track_money_target_button.on_deactivate()
+            self.reset_track_money_target_button.on_deactivate()
             if not track_state_matrix[track][UNDER_CONSTRUCTION]:
                 self.locked_tracks_labels[track].text = ''
             else:
