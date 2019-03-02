@@ -182,7 +182,7 @@ class GameView(View):
                                  y=self.bottom_bar_height // 2,
                                  anchor_x='center', anchor_y='center', batch=self.batches['ui_batch'],
                                  group=self.groups['button_text'])
-        self.money_label = Label('{0:0>10}  ¤'.format(0), font_name='Perfo', bold=True, color=GREEN,
+        self.money_label = Label('0', font_name='Perfo', bold=True, color=GREEN,
                                  font_size=int(22 / 80 * self.bottom_bar_height),
                                  x=self.money_offset + int(self.progress_bar_inactive_image.width / 2 / 80
                                                            * self.bottom_bar_height),
@@ -335,7 +335,8 @@ class GameView(View):
         :param money:                           money value
         :param money_target:                    current money target assigned by player
         """
-        self.money_label.text = '{0:0>10}  ¤'.format(int(money))
+        money_str = '{0:0>10}  ¤'.format(int(money))
+        self.money_label.text = ' '.join((money_str[0], money_str[1:4], money_str[4:7], money_str[7:13]))
         if money_target < 1:
             self.money_percent = 0
         else:

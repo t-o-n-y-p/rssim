@@ -340,8 +340,8 @@ class ConstructorView(View):
                                 group=self.groups['button_text'])
                     if self.track_state_matrix[dictionary_keys[i]][UNLOCK_AVAILABLE]:
                         self.description_tracks_labels[dictionary_keys[i]] \
-                            = Label('Available for {} ¤'
-                                    .format(self.track_state_matrix[dictionary_keys[i]][PRICE]),
+                            = Label('Available for {0:,} ¤'
+                                    .format(self.track_state_matrix[dictionary_keys[i]][PRICE]).replace(',', ' '),
                                     font_name='Arial', font_size=self.description_label_font_size,
                                     color=GREEN,
                                     x=self.track_cells_positions[i][0] + self.description_label_offset[0],
@@ -514,8 +514,8 @@ class ConstructorView(View):
                 self.locked_tracks_labels[track].text = ' '
 
         if track_state_matrix[track][UNLOCK_AVAILABLE]:
-            self.description_tracks_labels[track].text = 'Available for {} ¤'\
-                                                         .format(track_state_matrix[track][PRICE])
+            self.description_tracks_labels[track].text = 'Available for {0:,} ¤'\
+                                                         .format(track_state_matrix[track][PRICE]).replace(',', ' ')
             self.description_tracks_labels[track].color = GREEN
         elif track_state_matrix[track][UNDER_CONSTRUCTION]:
             construction_time = track_state_matrix[track][CONSTRUCTION_TIME]

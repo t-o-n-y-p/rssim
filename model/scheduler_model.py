@@ -39,7 +39,8 @@ class SchedulerModel(Model):
         self.user_db_cursor.execute('SELECT level, unlocked_tracks, supported_cars_min FROM game_progress')
         self.level, self.unlocked_tracks, self.supported_cars_min = self.user_db_cursor.fetchone()
         self.config_db_cursor.execute('''SELECT arrival_time_min, arrival_time_max, direction, new_direction, 
-                                      cars_min, cars_max FROM schedule_options WHERE level = ?''', (self.level, ))
+                                      cars_min, cars_max FROM schedule_options 
+                                      WHERE min_level <= ? AND max_level >= ?''', (self.level, self.level))
         self.schedule_options = self.config_db_cursor.fetchall()
         self.user_db_cursor.execute('SELECT * FROM base_schedule')
         self.base_schedule = self.user_db_cursor.fetchall()
@@ -162,7 +163,8 @@ class SchedulerModel(Model):
         """
         self.level = level
         self.config_db_cursor.execute('''SELECT arrival_time_min, arrival_time_max, direction, new_direction, 
-                                      cars_min, cars_max FROM schedule_options WHERE level = ?''', (self.level, ))
+                                      cars_min, cars_max FROM schedule_options 
+                                      WHERE min_level <= ? AND max_level >= ?''', (self.level, self.level))
         self.schedule_options = self.config_db_cursor.fetchall()
         self.config_db_cursor.execute('''SELECT schedule_cycle_length, frame_per_car, exp_per_car, money_per_car 
                                       FROM player_progress_config WHERE level = ?''',
