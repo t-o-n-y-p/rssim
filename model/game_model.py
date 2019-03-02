@@ -15,10 +15,8 @@ class GameModel(Model):
             game_time                           current in-game time
             level                               current player level
             exp                                 current player exp
-            accumulated_exp                     all accumulated exp from level 1 to current state
             money                               current bank account state
             money_target                        reserved for future use
-            accumulated_player_progress         accumulated exp needed to hit next level
             player_progress                     exp needed to hit next level
 
         :param user_db_connection:              connection to the user DB (stores game state and user-defined settings)
@@ -30,11 +28,11 @@ class GameModel(Model):
         self.game_paused = False
         self.user_db_cursor.execute('SELECT game_time FROM epoch_timestamp')
         self.game_time = self.user_db_cursor.fetchone()[0]
-        self.user_db_cursor.execute('SELECT level, exp, accumulated_exp, money, money_target FROM game_progress')
-        self.level, self.exp, self.accumulated_exp, self.money, self.money_target = self.user_db_cursor.fetchone()
-        self.config_db_cursor.execute('''SELECT accumulated_player_progress, player_progress FROM player_progress_config 
+        self.user_db_cursor.execute('SELECT level, exp, money, money_target FROM game_progress')
+        self.level, self.exp, self.money, self.money_target = self.user_db_cursor.fetchone()
+        self.config_db_cursor.execute('''SELECT player_progress FROM player_progress_config 
                                       WHERE level = ?''', (self.level, ))
-        self.accumulated_player_progress, self.player_progress = self.config_db_cursor.fetchone()
+        self.player_progress = self.config_db_cursor.fetchone()[0]
 
     @model_is_not_active
     def on_activate(self):
@@ -96,8 +94,8 @@ class GameModel(Model):
         Saves game state to user progress database.
         """
         self.user_db_cursor.execute('UPDATE epoch_timestamp SET game_time = ?', (self.game_time, ))
-        self.user_db_cursor.execute('''UPDATE game_progress SET level = ?, exp = ?, accumulated_exp = ?, money = ?, 
-                                    money_target = ?''', (self.level, self.exp, self.accumulated_exp, self.money,
+        self.user_db_cursor.execute('''UPDATE game_progress SET level = ?, exp = ?, money = ?, 
+                                    money_target = ?''', (self.level, self.exp, self.money,
                                                           self.money_target))
 
     @maximum_level_not_reached
@@ -109,8 +107,7 @@ class GameModel(Model):
         :param exp:                     amount of exp gained
         """
         self.exp += exp
-        self.accumulated_exp += exp
-        if self.accumulated_exp >= self.accumulated_player_progress and self.level < MAXIMUM_LEVEL:
+        if self.exp >= self.player_progress and self.level < MAXIMUM_LEVEL:
             self.controller.on_level_up()
 
         self.view.on_update_exp(self.exp, self.player_progress)
@@ -121,14 +118,14 @@ class GameModel(Model):
         Reads new accumulated_player_progress and player_progress values for new level from the database.
         Notifies the view about level update.
         """
-        self.exp = self.accumulated_exp - self.accumulated_player_progress
+        self.exp -= self.player_progress
         self.level += 1
         if self.level == MAXIMUM_LEVEL:
             self.exp = 0.0
 
-        self.config_db_cursor.execute('''SELECT accumulated_player_progress, player_progress FROM player_progress_config 
+        self.config_db_cursor.execute('''SELECT player_progress FROM player_progress_config 
                                       WHERE level = ?''', (self.level, ))
-        self.accumulated_player_progress, self.player_progress = self.config_db_cursor.fetchone()
+        self.player_progress = self.config_db_cursor.fetchone()[0]
         self.view.on_update_level(self.level)
 
     @maximum_money_not_reached
