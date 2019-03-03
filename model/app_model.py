@@ -82,3 +82,12 @@ class AppModel(Model):
         """
         self.user_db_cursor.execute('UPDATE graphics SET fullscreen = ?', (fullscreen_mode, ))
         self.user_db_connection.commit()
+
+    def on_save_and_commit_locale(self, new_locale):
+        """
+        Saves and commits new locale value to the user progress database.
+
+        :param new_locale:                      new value for current locale
+        """
+        self.user_db_cursor.execute('UPDATE localization SET current_locale = ?', (new_locale, ))
+        self.user_db_connection.commit()

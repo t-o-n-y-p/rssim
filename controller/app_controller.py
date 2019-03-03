@@ -176,6 +176,7 @@ class AppController(Controller):
 
         :param new_locale:                      selected locale
         """
+        self.model.on_save_and_commit_locale(new_locale)
         self.view.on_update_current_locale(new_locale)
         self.game.on_update_current_locale(new_locale)
         self.settings.on_update_current_locale(new_locale)

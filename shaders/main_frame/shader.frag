@@ -67,7 +67,7 @@ bool is_general_border()
 
 bool is_top_bar_button_border()
 /*
-    Returns "true" if pixel belongs to any top bar button (close, iconify or fullscreen/restore) border
+    Returns "true" if pixel belongs to any top bar button (close, iconify or fullscreen/restore, locale buttons) border
     and "false" if it does not.
 */
 {
@@ -77,6 +77,9 @@ bool is_top_bar_button_border()
            && (margin == top_bar_height || margin == top_bar_height - 1                // 2 pixels for close button
                || margin == top_bar_height * 2 - 2 || margin == top_bar_height * 2 - 3 // fullscreen/restore button
                || margin == top_bar_height * 3 - 4 || margin == top_bar_height * 3 - 5 // iconify button
+               // locale buttons
+               || gl_FragCoord[0] == top_bar_height - 1 || gl_FragCoord[0] == top_bar_height - 2
+               || gl_FragCoord[0] == top_bar_height * 2 - 3 || gl_FragCoord[0] == top_bar_height * 2 - 4
               );
 }
 

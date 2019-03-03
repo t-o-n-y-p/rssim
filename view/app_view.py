@@ -1,6 +1,7 @@
 from logging import getLogger
 
 from pyglet.text import Label
+from pyglet.sprite import Sprite
 from pyglet.gl import GL_QUADS
 from win32api import GetCursorPos
 from win32gui import GetActiveWindow, GetWindowRect, SetWindowPos
@@ -12,7 +13,10 @@ from button.iconify_game_button import IconifyGameButton
 from button.fullscreen_button import FullscreenButton
 from button.restore_button import RestoreButton
 from button.open_settings_button import OpenSettingsButton
+from button.en_locale_button import ENLocaleButton
+from button.ru_locale_button import RULocaleButton
 from i18n import *
+from textures import FLAG_RU, FLAG_US
 
 
 class AppView(View):
@@ -28,15 +32,21 @@ class AppView(View):
             on_app_window_fullscreen            on_click handler for fullscreen button
             on_app_window_restore               on_click handler for restore button
             on_open_settings                    on_click handler for settings button
+            on_set_en_locale                    on_click handler for EN locale button
+            on_set_ru_locale                    on_click handler for RU locale button
 
         Properties:
             title_label                         text label for game title
             main_frame_sprite                   sprite for main frame
+            flag_us_sprite                      sprite from US flag for locale button
+            flag_ru_sprite                      sprite from RU flag for locale button
             close_game_button                   CloseGameButton object
             iconify_game_button                 IconifyGameButton object
             fullscreen_button                   FullscreenButton object
             restore_button                      RestoreButton object
             open_settings_button                OpenSettingsButton object
+            en_locale_button                    ENLocaleButton object
+            ru_locale_button                    RULocaleButton object
             buttons                             list of all buttons
             app_window_move_mode                indicates if player is about to move the app window
             app_window_move_offset              mouse cursor position at the beginning of the app window move
@@ -101,10 +111,28 @@ class AppView(View):
             button.on_deactivate()
             self.controller.settings.on_activate()
 
+        def on_set_en_locale(button):
+            """
+            Turns on EN locale and notifies controller to update and save current locale.
+
+            :param button:                      button that was clicked
+            """
+            self.controller.on_update_current_locale('en')
+
+        def on_set_ru_locale(button):
+            """
+            Turns on RU locale and notifies controller to update and save current locale.
+
+            :param button:                      button that was clicked
+            """
+            self.controller.on_update_current_locale('ru')
+
         super().__init__(user_db_cursor, config_db_cursor, surface, batches, groups,
                          logger=getLogger('root.app.view'))
         self.title_label = None
         self.main_frame_sprite = None
+        self.flag_us_sprite = None
+        self.flag_ru_sprite = None
         self.close_game_button = CloseGameButton(surface=self.surface, batch=self.batches['ui_batch'],
                                                  groups=self.groups, on_click_action=on_close_game)
         self.iconify_game_button = IconifyGameButton(surface=self.surface, batch=self.batches['ui_batch'],
@@ -115,6 +143,10 @@ class AppView(View):
                                             groups=self.groups, on_click_action=on_app_window_restore)
         self.open_settings_button = OpenSettingsButton(surface=self.surface, batch=self.batches['ui_batch'],
                                                        groups=self.groups, on_click_action=on_open_settings)
+        self.en_locale_button = ENLocaleButton(surface=self.surface, batch=self.batches['ui_batch'],
+                                               groups=self.groups, on_click_action=on_set_en_locale)
+        self.ru_locale_button = RULocaleButton(surface=self.surface, batch=self.batches['ui_batch'],
+                                               groups=self.groups, on_click_action=on_set_ru_locale)
         self.fullscreen_button.paired_button = self.restore_button
         self.restore_button.paired_button = self.fullscreen_button
         self.buttons.append(self.close_game_button)
@@ -122,6 +154,8 @@ class AppView(View):
         self.buttons.append(self.fullscreen_button)
         self.buttons.append(self.restore_button)
         self.buttons.append(self.open_settings_button)
+        self.buttons.append(self.en_locale_button)
+        self.buttons.append(self.ru_locale_button)
         self.app_window_move_mode = False
         self.app_window_move_offset = (0, 0)
         self.game_window_handler = GetActiveWindow()
@@ -139,13 +173,26 @@ class AppView(View):
         self.is_activated = True
         self.title_label = Label(I18N_RESOURCES['game_title_string'][self.current_locale], font_name='Arial',
                                  font_size=int(16 / 40 * self.top_bar_height),
-                                 x=self.top_bar_height // 4, y=self.screen_resolution[1] - self.top_bar_height // 2,
+                                 x=self.top_bar_height * 2 + self.top_bar_height // 4,
+                                 y=self.screen_resolution[1] - self.top_bar_height // 2,
                                  anchor_x='left', anchor_y='center', batch=self.batches['ui_batch'],
                                  group=self.groups['button_text'])
         if self.main_frame_sprite is None:
             self.main_frame_sprite\
                 = self.batches['main_frame'].add(4, GL_QUADS, self.groups['main_frame'],
                                                  ('v2f/static', (-1.0, -1.0, -1.0, 1.0, 1.0, 1.0, 1.0, -1.0)))
+
+        if self.flag_us_sprite is None:
+            self.flag_us_sprite = Sprite(FLAG_US, x=self.top_bar_height // 2,
+                                         y=self.screen_resolution[1] - self.top_bar_height // 2,
+                                         batch=self.batches['ui_batch'], group=self.groups['button_text'])
+            self.flag_us_sprite.scale = 0.6 * self.top_bar_height / 256
+
+        if self.flag_ru_sprite is None:
+            self.flag_ru_sprite = Sprite(FLAG_RU, x=self.top_bar_height - 2 + self.top_bar_height // 2,
+                                         y=self.screen_resolution[1] - self.top_bar_height // 2,
+                                         batch=self.batches['ui_batch'], group=self.groups['button_text'])
+            self.flag_ru_sprite.scale = 0.6 * self.top_bar_height / 256
 
         for b in self.buttons:
             if b.to_activate_on_controller_init:
@@ -161,6 +208,10 @@ class AppView(View):
         self.main_frame_sprite = None
         self.title_label.delete()
         self.title_label = None
+        self.flag_us_sprite.delete()
+        self.flag_us_sprite = None
+        self.flag_ru_sprite.delete()
+        self.flag_ru_sprite = None
         for b in self.buttons:
             b.on_deactivate()
 
@@ -173,31 +224,46 @@ class AppView(View):
         self.on_recalculate_ui_properties(screen_resolution)
         self.surface.set_size(screen_resolution[0], screen_resolution[1])
         if self.is_activated:
-            self.title_label.x = self.top_bar_height // 4
+            self.title_label.x = self.top_bar_height * 2 + self.top_bar_height // 4
             self.title_label.y = self.screen_resolution[1] - self.top_bar_height // 2
             self.title_label.font_size = int(16 / 40 * self.top_bar_height)
-            self.close_game_button.x_margin = self.screen_resolution[0] - self.top_bar_height
-            self.close_game_button.y_margin = self.screen_resolution[1] - self.top_bar_height
-            self.close_game_button.on_size_changed((self.top_bar_height, self.top_bar_height),
-                                                   int(19 / 40 * self.top_bar_height))
-            self.fullscreen_button.x_margin = self.screen_resolution[0] - self.top_bar_height * 2 + 2
-            self.fullscreen_button.y_margin = self.screen_resolution[1] - self.top_bar_height
-            self.fullscreen_button.on_size_changed((self.top_bar_height, self.top_bar_height),
-                                                   int(19 / 40 * self.top_bar_height))
-            self.restore_button.x_margin = self.screen_resolution[0] - self.top_bar_height * 2 + 2
-            self.restore_button.y_margin = self.screen_resolution[1] - self.top_bar_height
-            self.restore_button.on_size_changed((self.top_bar_height, self.top_bar_height),
-                                                int(19 / 40 * self.top_bar_height))
-            self.iconify_game_button.x_margin = self.screen_resolution[0] - self.top_bar_height * 3 + 4
-            self.iconify_game_button.y_margin = self.screen_resolution[1] - self.top_bar_height
-            self.iconify_game_button.on_size_changed((self.top_bar_height, self.top_bar_height),
-                                                     int(19 / 40 * self.top_bar_height))
-            self.open_settings_button.x_margin = self.screen_resolution[0] - self.bottom_bar_height
-            self.open_settings_button.y_margin = 0
-            self.open_settings_button.on_size_changed((self.bottom_bar_height, self.bottom_bar_height),
-                                                      int(30 / 80 * self.bottom_bar_height))
-            for b in self.buttons:
-                b.on_position_changed((b.x_margin, b.y_margin))
+            self.flag_us_sprite.position = (self.top_bar_height // 2,
+                                            self.screen_resolution[1] - self.top_bar_height // 2)
+            self.flag_us_sprite.scale = 0.6 * self.top_bar_height / 256
+            self.flag_ru_sprite.position = (self.top_bar_height // 2 + self.top_bar_height - 2,
+                                            self.screen_resolution[1] - self.top_bar_height // 2)
+            self.flag_ru_sprite.scale = 0.6 * self.top_bar_height / 256
+
+        self.close_game_button.x_margin = self.screen_resolution[0] - self.top_bar_height
+        self.close_game_button.y_margin = self.screen_resolution[1] - self.top_bar_height
+        self.close_game_button.on_size_changed((self.top_bar_height, self.top_bar_height),
+                                               int(19 / 40 * self.top_bar_height))
+        self.fullscreen_button.x_margin = self.screen_resolution[0] - self.top_bar_height * 2 + 2
+        self.fullscreen_button.y_margin = self.screen_resolution[1] - self.top_bar_height
+        self.fullscreen_button.on_size_changed((self.top_bar_height, self.top_bar_height),
+                                               int(19 / 40 * self.top_bar_height))
+        self.restore_button.x_margin = self.screen_resolution[0] - self.top_bar_height * 2 + 2
+        self.restore_button.y_margin = self.screen_resolution[1] - self.top_bar_height
+        self.restore_button.on_size_changed((self.top_bar_height, self.top_bar_height),
+                                            int(19 / 40 * self.top_bar_height))
+        self.iconify_game_button.x_margin = self.screen_resolution[0] - self.top_bar_height * 3 + 4
+        self.iconify_game_button.y_margin = self.screen_resolution[1] - self.top_bar_height
+        self.iconify_game_button.on_size_changed((self.top_bar_height, self.top_bar_height),
+                                                 int(19 / 40 * self.top_bar_height))
+        self.open_settings_button.x_margin = self.screen_resolution[0] - self.bottom_bar_height
+        self.open_settings_button.y_margin = 0
+        self.open_settings_button.on_size_changed((self.bottom_bar_height, self.bottom_bar_height),
+                                                  int(30 / 80 * self.bottom_bar_height))
+        self.en_locale_button.x_margin = 0
+        self.en_locale_button.y_margin = self.screen_resolution[1] - self.top_bar_height
+        self.en_locale_button.on_size_changed((self.top_bar_height, self.top_bar_height),
+                                              int(19 / 40 * self.top_bar_height))
+        self.ru_locale_button.x_margin = self.top_bar_height - 2
+        self.ru_locale_button.y_margin = self.screen_resolution[1] - self.top_bar_height
+        self.ru_locale_button.on_size_changed((self.top_bar_height, self.top_bar_height),
+                                              int(19 / 40 * self.top_bar_height))
+        for b in self.buttons:
+            b.on_position_changed((b.x_margin, b.y_margin))
 
     def on_fullscreen_mode_turned_on(self):
         """
@@ -229,7 +295,8 @@ class AppView(View):
         :param modifiers:       determines if some modifier key is held down (at the moment we don't use it)
         """
         y = self.screen_resolution[1] - y
-        if x in range(self.screen_resolution[0] - self.top_bar_height * 3) and y in range(self.top_bar_height):
+        if x in range(self.top_bar_height * 2, self.screen_resolution[0] - self.top_bar_height * 3) \
+                and y in range(self.top_bar_height):
             self.app_window_move_mode = True
             self.app_window_move_offset = (x, y)
 
