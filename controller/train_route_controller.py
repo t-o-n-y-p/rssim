@@ -143,3 +143,11 @@ class TrainRouteController(Controller):
         Deactivates the view if user either closed game screen or opened settings screen.
         """
         self.view.on_deactivate()
+
+    def on_update_current_locale(self, new_locale):
+        """
+        Notifies the view and child controllers (if any) about current locale value update.
+
+        :param new_locale:                      selected locale
+        """
+        self.view.on_update_current_locale(new_locale)

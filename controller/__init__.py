@@ -232,3 +232,11 @@ class Controller:
                                                       on_mouse_release_handlers=on_mouse_release_handlers,
                                                       on_mouse_drag_handlers=on_mouse_drag_handlers,
                                                       on_mouse_leave_handlers=on_mouse_leave_handlers)
+
+    def on_update_current_locale(self, new_locale):
+        """
+        Notifies the view and child controllers (if any) about current locale value update.
+
+        :param new_locale:                      selected locale
+        """
+        pass

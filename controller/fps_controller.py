@@ -53,3 +53,11 @@ class FPSController(Controller):
         :param screen_resolution:       new screen resolution
         """
         self.view.on_change_screen_resolution(screen_resolution)
+
+    def on_update_current_locale(self, new_locale):
+        """
+        Notifies the view and child controllers (if any) about current locale value update.
+
+        :param new_locale:                      selected locale
+        """
+        self.view.on_update_current_locale(new_locale)

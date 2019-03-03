@@ -100,3 +100,11 @@ class SchedulerController(Controller):
         :param entry_id:                        entry identification number from 0 to 3
         """
         self.model.on_leave_entry(entry_id)
+
+    def on_update_current_locale(self, new_locale):
+        """
+        Notifies the view and child controllers (if any) about current locale value update.
+
+        :param new_locale:                      selected locale
+        """
+        self.view.on_update_current_locale(new_locale)

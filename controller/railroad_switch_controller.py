@@ -117,3 +117,11 @@ class RailroadSwitchController(Controller):
         Notifies model the train has passed the switch.
         """
         self.model.on_force_busy_off()
+
+    def on_update_current_locale(self, new_locale):
+        """
+        Notifies the view and child controllers (if any) about current locale value update.
+
+        :param new_locale:                      selected locale
+        """
+        self.view.on_update_current_locale(new_locale)

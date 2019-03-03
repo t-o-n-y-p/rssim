@@ -267,6 +267,7 @@ class View:
             base_offset                         current map base offset
             zoom_out_activated                  indicated if zoom out map mode is activated
             zoom_factor                         sprite scale factor
+            current_locale                      current locale selected by player
 
         :param user_db_cursor:                  user DB cursor (is used to execute user DB queries)
         :param config_db_cursor:                configuration DB cursor (is used to execute configuration DB queries)
@@ -295,6 +296,8 @@ class View:
         self.base_offset = (-3456, -1688)
         self.zoom_out_activated = False
         self.zoom_factor = 1.0
+        self.user_db_cursor.execute('SELECT current_locale FROM localization')
+        self.current_locale = self.user_db_cursor.fetchone()[0]
 
     def on_update(self):
         """
@@ -356,3 +359,11 @@ class View:
         self.screen_resolution = screen_resolution
         self.bottom_bar_height = int(72 / 1280 * self.screen_resolution[0])
         self.top_bar_height = self.bottom_bar_height // 2
+
+    def on_update_current_locale(self, new_locale):
+        """
+        Updates current locale selected by user and all text labels.
+
+        :param new_locale:                      selected locale
+        """
+        pass

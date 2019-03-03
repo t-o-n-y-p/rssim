@@ -4,4 +4,6 @@ DROP TABLE game_progress
 ALTER TABLE game_progress_temp RENAME TO game_progress
 UPDATE base_schedule SET exp = CAST(exp AS integer)
 UPDATE trains SET exp = CAST(exp AS integer)
+CREATE TABLE localization (current_locale text)
+INSERT INTO localization VALUES ("en")
 UPDATE version SET major = 0, minor = 9, patch = 4

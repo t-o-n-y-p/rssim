@@ -68,7 +68,6 @@ class MapController(Controller):
         for train in self.trains_list:
             train.on_update_view()
 
-
     @controller_is_not_active
     def on_activate(self):
         """
@@ -628,3 +627,25 @@ class MapController(Controller):
         :param car_collection_id:               car collection ID to be unlocked
         """
         self.model.on_add_car_collection(car_collection_id)
+
+    def on_update_current_locale(self, new_locale):
+        """
+        Notifies the view and child controllers (if any) about current locale value update.
+
+        :param new_locale:                      selected locale
+        """
+        self.view.on_update_current_locale(new_locale)
+        for signal in self.signals_list:
+            signal.on_update_current_locale(new_locale)
+
+        for route in self.train_routes_sorted_list:
+            route.on_update_current_locale(new_locale)
+
+        for switch in self.switches_list:
+            switch.on_update_current_locale(new_locale)
+
+        for crossover in self.crossovers_list:
+            crossover.on_update_current_locale(new_locale)
+
+        for train in self.trains_list:
+            train.on_update_current_locale(new_locale)

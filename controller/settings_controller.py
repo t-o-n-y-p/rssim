@@ -68,3 +68,11 @@ class SettingsController(Controller):
         Notifies the model to save user-defined settings to user progress database and commit.
         """
         self.model.on_save_and_commit_state()
+
+    def on_update_current_locale(self, new_locale):
+        """
+        Notifies the view and child controllers (if any) about current locale value update.
+
+        :param new_locale:                      selected locale
+        """
+        self.view.on_update_current_locale(new_locale)

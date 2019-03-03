@@ -169,3 +169,14 @@ class AppController(Controller):
         :param shader:                  main frame shader
         """
         self.view.on_set_up_main_frame_shader_uniforms(shader)
+
+    def on_update_current_locale(self, new_locale):
+        """
+        Notifies the view and child controllers (if any) about current locale value update.
+
+        :param new_locale:                      selected locale
+        """
+        self.view.on_update_current_locale(new_locale)
+        self.game.on_update_current_locale(new_locale)
+        self.settings.on_update_current_locale(new_locale)
+        self.fps.on_update_current_locale(new_locale)

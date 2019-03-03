@@ -149,3 +149,12 @@ class GameController(Controller):
         """
         self.model.on_pay_money(money)
         self.map.on_pay_money(money)
+
+    def on_update_current_locale(self, new_locale):
+        """
+        Notifies the view and child controllers (if any) about current locale value update.
+
+        :param new_locale:                      selected locale
+        """
+        self.view.on_update_current_locale(new_locale)
+        self.map.on_update_current_locale(new_locale)

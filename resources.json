@@ -1,0 +1,76 @@
+﻿{
+	"game_title_string": {
+		"en": "Railway Station Simulator",
+		"ru": "Симулятор железнодорожной станции"
+	},
+	"railway_station_caption_string": {
+		"en": "T r a c k s & p l a t f o r m s",
+		"ru": "П у т и  и  п л а т ф о р м ы"
+	},
+	"environment_caption_string": {
+		"en": "E n v i r o n m e n t",
+		"ru": "О к р у ж е н и е"
+	},
+	"coming_soon_placeholder_string": {
+		"en": "Coming soon",
+		"ru": "Скоро в игре"
+	},
+	"no_more_tracks_available_placeholder_string": {
+		"en": "No more tracks available",
+		"ru": "Больше нет доступных путей"
+	},
+	"title_track_string": {
+		"en": "Track {0}",
+		"ru": "Путь {0}"
+	},
+	"unlock_available_track_description_string": {
+		"en": "Available for {0:,} ¤",
+		"ru": "Доступен за {0:,} ¤"
+	},
+	"under_construction_track_description_string": {
+		"en": "Under construction. {0}h {1}min remaining",
+		"ru": "Идет строительство. Осталось {0}ч {1}мин"
+	},
+	"unlock_condition_from_level_track_description_string": {
+		"en": "Requires level {0}",
+		"ru": "Требуется уровень {0}"
+	},
+	"unlock_condition_from_environment_track_description_string": {
+		"en": "Requires environment Tier {0}",
+		"ru": "Требуется окружение стадии {0}"
+	},
+	"unlock_condition_from_previous_track_track_description_string": {
+		"en": "Build track {0} to unlock",
+		"ru": "Постройте путь {0}, чтобы открыть"
+	},
+	"level_string": {
+		"en": "LEVEL  {0}",
+		"ru": "УРОВЕНЬ  {0}"
+	},
+	"day_string": {
+		"en": "DAY  {0}",
+		"ru": "ДЕНЬ  {0}"
+	},
+	"time_string": {
+		"en": "{0} : {1:0>2} {2}",
+		"ru": "{0:0>2} : {1:0>2}"
+	},
+	"schedule_caption_string": {
+		"en": "Train #          Arrival          Departed from       Cars   Stop, m:s",
+		"ru": "№ поезда       Прибытие          Откуда прибыл     Вагонов    Стоянка"
+	},
+	"schedule_train_label_string": {
+		"en": ["{0:0>4}      {1} : {2:0>2} {3}                             {4:0>2}   {5:0>2} : {6:0>2}",
+			   "{0:0>4}    {1} : {2:0>2} {3}                             {4:0>2}   {5:0>2} : {6:0>2}"],
+		"ru": ["{0:0>4}    {1:0>2} : {2:0>2}                             {4:0>2}   {5:0>2} : {6:0>2}",
+			   "{0:0>4}    {1:0>2} : {2:0>2}                             {4:0>2}   {5:0>2} : {6:0>2}"]
+	},
+	"departed_from_string": {
+		"en": ["West City", "East City", "North-West City", "South-East City"],
+		"ru": ["г. Западный", "г. Восточный", "г. Северо-Западный", "г. Юго-Восточный"]
+	},
+	"windowed_resolution_description_string": {
+		"en": "Game resolution in window mode (not fullscreen):",
+		"ru": "Разрешение игры в оконном режиме (не на полный экран):"
+	}
+}

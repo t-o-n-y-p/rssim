@@ -10,7 +10,7 @@ executables = [Executable('rssim.py',
                           icon='icon.ico')]
 
 include_files = [('db/patch', 'db/patch'), ('db/config.db', 'db/config.db'), ('db/default.db', 'db/default.db'),
-                 'img', 'icon.ico', 'font', 'shaders']
+                 'img', 'icon.ico', 'font', 'shaders', 'resources.json']
 
 excludes = ['PIL', 'test', 'distutils', 'email', 'html', 'http', 'unittest', 'urllib', 'dbm', 'pydoc_data',
             'xml', 'xmlrpc', 'jdcal', 'et-xmlfile', 'openpyxl']
@@ -33,7 +33,7 @@ includes = ['pyglet',
             'pyglet.sprite',
             'pyglet.text', 'pyglet.text.formats',
             'pyglet.window', 'pyglet.window.carbon', 'pyglet.window.cocoa', 'pyglet.window.win32', 'pyglet.window.xlib',
-            'controller', 'model', 'view', 'textures', 'rssim_core', 'exceptions', 'button']
+            'controller', 'model', 'view', 'textures', 'rssim_core', 'exceptions', 'button', 'i18n']
 
 options = {
     'build_exe': {
