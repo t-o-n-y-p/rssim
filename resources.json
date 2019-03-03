@@ -62,5 +62,13 @@
 	"windowed_resolution_description_string": {
 		"en": "Game resolution in window mode:",
 		"ru": "Разрешение игры в оконном режиме:"
+	},
+	"level_up_notification_caption_string": {
+		"en": "Level up!",
+		"ru": "Новый уровень!"
+	},
+	"level_up_notification_message_string": {
+		"en": "Congratulations! You have reached level {0}.",
+		"ru": "Поздравляем! Вы достигли уровня {0}."
 	}
 }

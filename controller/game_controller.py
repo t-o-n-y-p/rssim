@@ -158,3 +158,17 @@ class GameController(Controller):
         """
         self.view.on_update_current_locale(new_locale)
         self.map.on_update_current_locale(new_locale)
+
+    def on_disable_notifications(self):
+        """
+        Disables system notifications for the view and all child controllers.
+        """
+        self.view.on_disable_notifications()
+        self.map.on_disable_notifications()
+
+    def on_enable_notifications(self):
+        """
+        Enables system notifications for the view and all child controllers.
+        """
+        self.view.on_enable_notifications()
+        self.map.on_enable_notifications()

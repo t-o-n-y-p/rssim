@@ -181,3 +181,21 @@ class AppController(Controller):
         self.game.on_update_current_locale(new_locale)
         self.settings.on_update_current_locale(new_locale)
         self.fps.on_update_current_locale(new_locale)
+
+    def on_disable_notifications(self):
+        """
+        Disables system notifications for the view and all child controllers.
+        """
+        self.view.on_disable_notifications()
+        self.game.on_disable_notifications()
+        self.settings.on_disable_notifications()
+        self.fps.on_disable_notifications()
+
+    def on_enable_notifications(self):
+        """
+        Enables system notifications for the view and all child controllers.
+        """
+        self.view.on_enable_notifications()
+        self.game.on_enable_notifications()
+        self.settings.on_enable_notifications()
+        self.fps.on_enable_notifications()

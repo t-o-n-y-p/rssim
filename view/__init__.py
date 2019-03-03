@@ -195,6 +195,20 @@ def signal_is_displayed_on_map(fn):
     return _handle_if_signal_is_displayed_on_map
 
 
+def notifications_enabled(fn):
+    """
+    Use this decorator to execute function only if system notifications are enabled.
+
+    :param fn:                      function to decorate
+    :return:                        decorator function
+    """
+    def _send_notifications_if_they_are_enabled(*args, **kwargs):
+        if args[0].notifications_enabled:
+            fn(*args, **kwargs)
+
+    return _send_notifications_if_they_are_enabled
+
+
 # --------------------- CONSTANTS ---------------------
 MAP_WIDTH = 8192                                # full-size map width
 MAP_HEIGHT = 4096                               # full-size map height
@@ -264,6 +278,7 @@ class View:
             zoom_out_activated                  indicated if zoom out map mode is activated
             zoom_factor                         sprite scale factor
             current_locale                      current locale selected by player
+            notifications_enabled               indicates if app can send system notifications
 
         :param user_db_cursor:                  user DB cursor (is used to execute user DB queries)
         :param config_db_cursor:                configuration DB cursor (is used to execute configuration DB queries)
@@ -294,6 +309,7 @@ class View:
         self.zoom_factor = 1.0
         self.user_db_cursor.execute('SELECT current_locale FROM localization')
         self.current_locale = self.user_db_cursor.fetchone()[0]
+        self.notifications_enabled = False
 
     def on_update(self):
         """
@@ -363,3 +379,15 @@ class View:
         :param new_locale:                      selected locale
         """
         pass
+
+    def on_disable_notifications(self):
+        """
+        Disables sending notifications from this view.
+        """
+        self.notifications_enabled = False
+
+    def on_enable_notifications(self):
+        """
+        Enables sending notifications from this view.
+        """
+        self.notifications_enabled = True

@@ -127,6 +127,7 @@ class GameModel(Model):
                                       WHERE level = ?''', (self.level, ))
         self.player_progress = self.config_db_cursor.fetchone()[0]
         self.view.on_update_level(self.level)
+        self.view.on_send_level_up_notification(self.level)
 
     @maximum_money_not_reached
     def on_add_money(self, money):

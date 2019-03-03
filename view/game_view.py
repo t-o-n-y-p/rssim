@@ -8,6 +8,7 @@ from pyglet.resource import add_font
 from view import *
 from button.pause_game_button import PauseGameButton
 from button.resume_game_button import ResumeGameButton
+from notifications.level_up_notification import LevelUpNotification
 from i18n import I18N_RESOURCES
 
 
@@ -370,3 +371,13 @@ class GameView(View):
             self.level_label.text = I18N_RESOURCES['level_string'][self.current_locale].format(self.level)
             self.day_label.text = I18N_RESOURCES['day_string'][self.current_locale] \
                 .format(1 + self.game_time // FRAMES_IN_ONE_DAY)
+
+    @notifications_enabled
+    def on_send_level_up_notification(self, level):
+        """
+        Sends system notification about level update.
+
+        :param level:                           new level
+        """
+        LevelUpNotification().send(self.current_locale,
+                                   caption_args=(level, ), message_args=(level, ))

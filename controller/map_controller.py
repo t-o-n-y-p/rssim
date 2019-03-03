@@ -652,3 +652,49 @@ class MapController(Controller):
 
         for train in self.trains_list:
             train.on_update_current_locale(new_locale)
+
+    def on_disable_notifications(self):
+        """
+        Disables system notifications for the view and all child controllers.
+        """
+        self.view.on_disable_notifications()
+        self.scheduler.on_disable_notifications()
+        self.dispatcher.on_disable_notifications()
+        self.constructor.on_disable_notifications()
+        for signal in self.signals_list:
+            signal.on_disable_notifications()
+
+        for route in self.train_routes_sorted_list:
+            route.on_disable_notifications()
+
+        for switch in self.switches_list:
+            switch.on_disable_notifications()
+
+        for crossover in self.crossovers_list:
+            crossover.on_disable_notifications()
+
+        for train in self.trains_list:
+            train.on_disable_notifications()
+
+    def on_enable_notifications(self):
+        """
+        Enables system notifications for the view and all child controllers.
+        """
+        self.view.on_enable_notifications()
+        self.scheduler.on_enable_notifications()
+        self.dispatcher.on_enable_notifications()
+        self.constructor.on_enable_notifications()
+        for signal in self.signals_list:
+            signal.on_enable_notifications()
+
+        for route in self.train_routes_sorted_list:
+            route.on_enable_notifications()
+
+        for switch in self.switches_list:
+            switch.on_enable_notifications()
+
+        for crossover in self.crossovers_list:
+            crossover.on_enable_notifications()
+
+        for train in self.trains_list:
+            train.on_enable_notifications()

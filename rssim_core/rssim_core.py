@@ -154,6 +154,38 @@ class RSSim:
             self.batches['ui_batch'].draw()
 
         @surface.event
+        def on_activate():
+            """
+            Implements on_activate event handler for surface. Handler is attached using @surface.event decoration.
+            This handler notifies the app that it cannot send system notifications.
+            """
+            self.app.on_disable_notifications()
+
+        @surface.event
+        def on_show():
+            """
+            Implements on_show event handler for surface. Handler is attached using @surface.event decoration.
+            This handler notifies the app that it cannot send system notifications.
+            """
+            self.app.on_disable_notifications()
+
+        @surface.event
+        def on_deactivate():
+            """
+            Implements on_deactivate event handler for surface. Handler is attached using @surface.event decoration.
+            This handler notifies the app that it can send system notifications.
+            """
+            self.app.on_enable_notifications()
+
+        @surface.event
+        def on_hide():
+            """
+            Implements on_hide event handler for surface. Handler is attached using @surface.event decoration.
+            This handler notifies the app that it can send system notifications.
+            """
+            self.app.on_enable_notifications()
+
+        @surface.event
         def on_mouse_press(x, y, button, modifiers):
             """
             Implements on_mouse_press event handler for surface. Handler is attached using @surface.event decoration.
