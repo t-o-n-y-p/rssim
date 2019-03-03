@@ -13,6 +13,7 @@ from pyglet import gl, resource
 from pyglet.window import Window
 from pyglet.graphics import Batch, OrderedGroup
 from pyshaders import from_files_names
+from win32gui import DestroyWindow
 
 from exceptions import VideoAdapterNotSupportedException, MonitorNotSupportedException
 from rssim_core import *
@@ -25,19 +26,20 @@ class RSSim:
     def __init__(self):
         """
         Properties:
-              user_db_connection      connection to the user DB (stores game state and user-defined settings)
-              user_db_cursor          user DB cursor (is used to execute user DB queries)
-              config_db_connection    connection to the config DB (stores all configuration
-                                      that is not designed to be managed by user)
-              config_db_cursor        configuration DB cursor (is used to execute configuration DB queries)
-              logger                  main game logger
-              log_level               log level for base game logger
-              surface                 surface to draw all UI objects on
-              batches                 batches to group all labels and sprites
-              groups                  defines drawing layers (some labels and sprites behind others)
-              main_frame_shader       shader for main frame primitive (responsible for button borders,
-                                      UI screens background, main app border)
-              app                     App object, is responsible for high-level properties, UI and events
+              user_db_connection        connection to the user DB (stores game state and user-defined settings)
+              user_db_cursor            user DB cursor (is used to execute user DB queries)
+              config_db_connection      connection to the config DB (stores all configuration
+                                        that is not designed to be managed by user)
+              config_db_cursor          configuration DB cursor (is used to execute configuration DB queries)
+              logger                    main game logger
+              log_level                 log level for base game logger
+              surface                   surface to draw all UI objects on
+              batches                   batches to group all labels and sprites
+              groups                    defines drawing layers (some labels and sprites behind others)
+              main_frame_shader         shader for main frame primitive (responsible for button borders,
+                                        UI screens background, main app border)
+              app                       App object, is responsible for high-level properties, UI and events
+              notification_handlers     list of all active system notification handlers
         """
         # determine if video adapter supports all game textures, if not - raise specific exception
         max_texture_size = c_long(0)
@@ -133,6 +135,8 @@ class RSSim:
         if self.app.settings.model.fullscreen_mode and self.app.model.fullscreen_mode_available:
             self.app.on_fullscreen_mode_turned_on()
 
+        self.notification_handlers = []
+
         @surface.event
         def on_draw():
             """
@@ -158,16 +162,26 @@ class RSSim:
             """
             Implements on_activate event handler for surface. Handler is attached using @surface.event decoration.
             This handler notifies the app that it cannot send system notifications.
+            Clears all queued notifications.
             """
             self.app.on_disable_notifications()
+            for h in self.notification_handlers:
+                DestroyWindow(h)
+
+            self.notification_handlers.clear()
 
         @surface.event
         def on_show():
             """
             Implements on_show event handler for surface. Handler is attached using @surface.event decoration.
             This handler notifies the app that it cannot send system notifications.
+            Clears all queued notifications.
             """
             self.app.on_disable_notifications()
+            for h in self.notification_handlers:
+                DestroyWindow(h)
+
+            self.notification_handlers.clear()
 
         @surface.event
         def on_deactivate():

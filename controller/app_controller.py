@@ -199,3 +199,6 @@ class AppController(Controller):
         self.game.on_enable_notifications()
         self.settings.on_enable_notifications()
         self.fps.on_enable_notifications()
+
+    def on_append_notification_handler(self, handler):
+        self.loader.notification_handlers.append(handler)

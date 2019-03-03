@@ -379,5 +379,6 @@ class GameView(View):
 
         :param level:                           new level
         """
-        LevelUpNotification().send(self.current_locale,
-                                   caption_args=(level, ), message_args=(level, ))
+        self.controller.parent_controller.on_append_notification_handler(
+            LevelUpNotification().send(self.current_locale, caption_args=(level, ), message_args=(level, ))
+        )

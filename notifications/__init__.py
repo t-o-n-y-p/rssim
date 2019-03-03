@@ -40,6 +40,7 @@ class Notification:
         :param current_locale:                  currently selected locale
         :param caption_args:                    arguments for caption string in case they are required
         :param message_args:                    arguments for message string in case they are required
+        :return:                                notification handler
         """
         handler = CreateWindow(_wnd_class_instance, "Taskbar", WS_OVERLAPPED | WS_SYSMENU,
                                0, 0, CW_USEDEFAULT, CW_USEDEFAULT,
@@ -52,3 +53,4 @@ class Notification:
                                       icon_handler, I18N_RESOURCES['game_title_string'][current_locale],
                                       I18N_RESOURCES[self.message_key][current_locale].format(*message_args), 200,
                                       I18N_RESOURCES[self.caption_key][current_locale].format(*caption_args)))
+        return handler
