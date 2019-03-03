@@ -34,6 +34,22 @@ class TrainRouteModel(Model):
         :param track:                           route track number
         :param train_route:                     route type (e.g. left/right entry/exit)
         """
+        def sgn(x):
+            """
+            Returns 1 if x is positive, -1 if x is negative and 0 if x == 0.
+            x must be integer.
+
+            :param x:                           argument
+            """
+            if type(x) is not int:
+                raise ValueError
+            elif x == 0:
+                return 0
+            elif x > 0:
+                return 1
+            else:
+                return -1
+
         super().__init__(user_db_connection, user_db_cursor, config_db_cursor,
                          logger=getLogger(f'root.app.game.map.train_route.{track}.{train_route}.model'))
         self.user_db_cursor.execute('''SELECT opened, last_opened_by, current_checkpoint, priority, cars 
@@ -64,16 +80,57 @@ class TrainRouteModel(Model):
                 fetched_data[i] = tuple(fetched_data[i])
 
         self.start_point_v2, self.stop_point_v2, self.destination_point_v2, self.checkpoints_v2 = fetched_data
-        self.config_db_cursor.execute('''SELECT trail_points_v2 FROM train_route_config 
+        # trail points are stores in 3 parts:
+        # first part is straight and is defined by start point and end point (always not null),
+        # second part is defined by list of trail points (can be null),
+        # third part is straight too and is defined by start point and end point (can be null)
+        self.trail_points_v2 = []
+        self.config_db_cursor.execute('''SELECT trail_points_v2_part_1_start, trail_points_v2_part_1_end, 
+                                         trail_points_v2_part_2, trail_points_v2_part_3_start, 
+                                         trail_points_v2_part_3_end FROM train_route_config 
                                          WHERE track = ? and train_route = ?''', (track, train_route))
-        trail_points_v2_parsed = self.config_db_cursor.fetchone()[0].split('|')
-        for i in range(len(trail_points_v2_parsed)):
-            trail_points_v2_parsed[i] = trail_points_v2_parsed[i].split(',')
-            trail_points_v2_parsed[i][0] = int(trail_points_v2_parsed[i][0])
-            trail_points_v2_parsed[i][1] = int(trail_points_v2_parsed[i][1])
-            trail_points_v2_parsed[i][2] = float(trail_points_v2_parsed[i][2])
+        trail_points_v2_part_1_start, trail_points_v2_part_1_end, trail_points_v2_part_2, \
+            trail_points_v2_part_3_start, trail_points_v2_part_3_end = self.config_db_cursor.fetchone()
+        # parse start and end points for first part, append all points in between
+        trail_points_v2_part_1_start_parsed = trail_points_v2_part_1_start.split(',')
+        trail_points_v2_part_1_start_parsed[0] = int(trail_points_v2_part_1_start_parsed[0])
+        trail_points_v2_part_1_start_parsed[1] = int(trail_points_v2_part_1_start_parsed[1])
+        trail_points_v2_part_1_start_parsed[2] = float(trail_points_v2_part_1_start_parsed[2])
+        trail_points_v2_part_1_end_parsed = trail_points_v2_part_1_end.split(',')
+        trail_points_v2_part_1_end_parsed[0] = int(trail_points_v2_part_1_end_parsed[0])
+        trail_points_v2_part_1_end_parsed[1] = int(trail_points_v2_part_1_end_parsed[1])
+        trail_points_v2_part_1_end_parsed[2] = float(trail_points_v2_part_1_end_parsed[2])
+        for i in range(trail_points_v2_part_1_start_parsed[0], trail_points_v2_part_1_end_parsed[0],
+                       sgn(trail_points_v2_part_1_end_parsed[0] - trail_points_v2_part_1_start_parsed[0])):
+            self.trail_points_v2.append((i, trail_points_v2_part_1_start_parsed[1],
+                                         trail_points_v2_part_1_start_parsed[2]))
 
-        self.trail_points_v2 = trail_points_v2_parsed
+        # parse second part, append all points
+        if trail_points_v2_part_2 is not None:
+            trail_points_v2_part_2_parsed = trail_points_v2_part_2.split('|')
+            for i in range(len(trail_points_v2_part_2_parsed)):
+                trail_points_v2_part_2_parsed[i] = trail_points_v2_part_2_parsed[i].split(',')
+                trail_points_v2_part_2_parsed[i][0] = int(trail_points_v2_part_2_parsed[i][0])
+                trail_points_v2_part_2_parsed[i][1] = int(trail_points_v2_part_2_parsed[i][1])
+                trail_points_v2_part_2_parsed[i][2] = float(trail_points_v2_part_2_parsed[i][2])
+
+            self.trail_points_v2.extend(trail_points_v2_part_2_parsed)
+
+        # parse start and end points for third part, append all points in between
+        if trail_points_v2_part_3_start is not None and trail_points_v2_part_3_end is not None:
+            trail_points_v2_part_3_start_parsed = trail_points_v2_part_3_start.split(',')
+            trail_points_v2_part_3_start_parsed[0] = int(trail_points_v2_part_3_start_parsed[0])
+            trail_points_v2_part_3_start_parsed[1] = int(trail_points_v2_part_3_start_parsed[1])
+            trail_points_v2_part_3_start_parsed[2] = float(trail_points_v2_part_3_start_parsed[2])
+            trail_points_v2_part_3_end_parsed = trail_points_v2_part_3_end.split(',')
+            trail_points_v2_part_3_end_parsed[0] = int(trail_points_v2_part_3_end_parsed[0])
+            trail_points_v2_part_3_end_parsed[1] = int(trail_points_v2_part_3_end_parsed[1])
+            trail_points_v2_part_3_end_parsed[2] = float(trail_points_v2_part_3_end_parsed[2])
+            for i in range(trail_points_v2_part_3_start_parsed[0], trail_points_v2_part_3_end_parsed[0],
+                           sgn(trail_points_v2_part_3_end_parsed[0] - trail_points_v2_part_3_start_parsed[0])):
+                self.trail_points_v2.append((i, trail_points_v2_part_3_start_parsed[1],
+                                             trail_points_v2_part_3_start_parsed[2]))
+
         self.config_db_cursor.execute('''SELECT section_type, track_param_1, track_param_2 
                                          FROM train_route_sections WHERE track = ? and train_route = ?''',
                                       (track, train_route))
