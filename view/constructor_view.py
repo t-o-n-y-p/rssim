@@ -7,6 +7,7 @@ from button.close_constructor_button import CloseConstructorButton
 from button.build_track_button import BuildTrackButton
 from button.set_track_money_target_button import SetTrackMoneyTargetButton
 from button.reset_track_money_target_button import ResetTrackMoneyTargetButton
+from i18n import I18N_RESOURCES
 
 
 class ConstructorView(View):
@@ -196,13 +197,15 @@ class ConstructorView(View):
         """
         self.is_activated = True
         self.railway_station_caption_sprite \
-            = Label('R a i l w a y   s t a t i o n', font_name='Arial', font_size=self.caption_font_size,
+            = Label(I18N_RESOURCES['railway_station_caption_string'][self.current_locale],
+                    font_name='Arial', font_size=self.caption_font_size,
                     x=self.railway_station_caption_position[0],
                     y=self.railway_station_caption_position[1],
                     anchor_x='center', anchor_y='center',
                     batch=self.batches['ui_batch'], group=self.groups['button_text'])
         self.environment_caption_sprite \
-            = Label('E n v i r o n m e n t', font_name='Arial', font_size=self.caption_font_size,
+            = Label(I18N_RESOURCES['environment_caption_string'][self.current_locale],
+                    font_name='Arial', font_size=self.caption_font_size,
                     x=self.environment_caption_position[0],
                     y=self.environment_caption_position[1],
                     anchor_x='center', anchor_y='center',
@@ -210,7 +213,8 @@ class ConstructorView(View):
         # create "Coming soon" labels for environment since it is not yet implemented
         for i in range(4):
             self.coming_soon_environment_labels.append(
-                Label('Coming soon', font_name='Arial', font_size=self.placeholder_font_size,
+                Label(I18N_RESOURCES['coming_soon_placeholder_string'][self.current_locale],
+                      font_name='Arial', font_size=self.placeholder_font_size,
                       color=GREY,
                       x=self.environment_cell_positions[i][0] + self.placeholder_offset[0],
                       y=self.environment_cell_positions[i][1] + self.placeholder_offset[1],
@@ -270,9 +274,8 @@ class ConstructorView(View):
             if available_options < 4 and len(self.no_more_tracks_available_labels) < 4 - available_options:
                 position_index = available_options + len(self.no_more_tracks_available_labels)
                 self.no_more_tracks_available_labels.append(
-                    Label('No more tracks available', font_name='Arial',
-                          font_size=self.placeholder_font_size,
-                          color=GREY,
+                    Label(I18N_RESOURCES['no_more_tracks_available_placeholder_string'][self.current_locale],
+                          font_name='Arial', font_size=self.placeholder_font_size, color=GREY,
                           x=self.track_cells_positions[position_index][0] + self.placeholder_offset[0],
                           y=self.track_cells_positions[position_index][1] + self.placeholder_offset[1],
                           anchor_x='center', anchor_y='center',
@@ -332,15 +335,15 @@ class ConstructorView(View):
 
                     # create track cell title and description
                     self.title_tracks_labels[dictionary_keys[i]] \
-                        = Label(f'Track {dictionary_keys[i]}', font_name='Arial',
-                                font_size=self.title_label_font_size,
+                        = Label(I18N_RESOURCES['title_track_string'][self.current_locale].format(dictionary_keys[i]),
+                                font_name='Arial', font_size=self.title_label_font_size,
                                 x=self.track_cells_positions[i][0] + self.title_label_offset[0],
                                 y=self.track_cells_positions[i][1] + self.title_label_offset[1],
                                 anchor_x='left', anchor_y='center', batch=self.batches['ui_batch'],
                                 group=self.groups['button_text'])
                     if self.track_state_matrix[dictionary_keys[i]][UNLOCK_AVAILABLE]:
                         self.description_tracks_labels[dictionary_keys[i]] \
-                            = Label('Available for {0:,} ¤'
+                            = Label(I18N_RESOURCES['unlock_available_track_description_string'][self.current_locale]
                                     .format(self.track_state_matrix[dictionary_keys[i]][PRICE]).replace(',', ' '),
                                     font_name='Arial', font_size=self.description_label_font_size,
                                     color=GREEN,
@@ -351,7 +354,7 @@ class ConstructorView(View):
                     elif self.track_state_matrix[dictionary_keys[i]][UNDER_CONSTRUCTION]:
                         construction_time = self.track_state_matrix[dictionary_keys[i]][CONSTRUCTION_TIME]
                         self.description_tracks_labels[dictionary_keys[i]] \
-                            = Label('Under construction. {}h {}min left'
+                            = Label(I18N_RESOURCES['under_construction_track_description_string'][self.current_locale]
                                     .format(construction_time // FRAMES_IN_ONE_HOUR,
                                             (construction_time // FRAMES_IN_ONE_MINUTE) % MINUTES_IN_ONE_HOUR),
                                     font_name='Arial', font_size=self.description_label_font_size,
@@ -363,10 +366,11 @@ class ConstructorView(View):
                     else:
                         if not self.track_state_matrix[dictionary_keys[i]][UNLOCK_CONDITION_FROM_LEVEL]:
                             self.description_tracks_labels[dictionary_keys[i]] \
-                                = Label('Requires level {}'
+                                = Label(I18N_RESOURCES[
+                                            'unlock_condition_from_level_track_description_string'
+                                        ][self.current_locale]
                                         .format(self.track_state_matrix[dictionary_keys[i]][LEVEL_REQUIRED]),
-                                        font_name='Arial', font_size=self.description_label_font_size,
-                                        color=GREY,
+                                        font_name='Arial', font_size=self.description_label_font_size, color=GREY,
                                         x=self.track_cells_positions[i][0]
                                           + self.description_label_offset[0],
                                         y=self.track_cells_positions[i][1]
@@ -375,9 +379,10 @@ class ConstructorView(View):
                                         group=self.groups['button_text'])
                         elif not self.track_state_matrix[dictionary_keys[i]][UNLOCK_CONDITION_FROM_ENVIRONMENT]:
                             self.description_tracks_labels[dictionary_keys[i]] \
-                                = Label('Requires environment Tier X',
-                                        font_name='Arial', font_size=self.description_label_font_size,
-                                        color=GREY,
+                                = Label(I18N_RESOURCES[
+                                            'unlock_condition_from_environment_track_description_string'
+                                        ][self.current_locale].format(0),
+                                        font_name='Arial', font_size=self.description_label_font_size, color=GREY,
                                         x=self.track_cells_positions[i][0]
                                           + self.description_label_offset[0],
                                         y=self.track_cells_positions[i][1]
@@ -386,9 +391,10 @@ class ConstructorView(View):
                                         group=self.groups['button_text'])
                         elif not self.track_state_matrix[dictionary_keys[i]][UNLOCK_CONDITION_FROM_PREVIOUS_TRACK]:
                             self.description_tracks_labels[dictionary_keys[i]] \
-                                = Label('Build track {} to unlock'.format(dictionary_keys[i] - 1),
-                                        font_name='Arial', font_size=self.description_label_font_size,
-                                        color=GREY,
+                                = Label(I18N_RESOURCES[
+                                            'unlock_condition_from_previous_track_track_description_string'
+                                        ][self.current_locale].format(dictionary_keys[i] - 1),
+                                        font_name='Arial', font_size=self.description_label_font_size, color=GREY,
                                         x=self.track_cells_positions[i][0]
                                           + self.description_label_offset[0],
                                         y=self.track_cells_positions[i][1]
@@ -514,26 +520,33 @@ class ConstructorView(View):
                 self.locked_tracks_labels[track].text = ' '
 
         if track_state_matrix[track][UNLOCK_AVAILABLE]:
-            self.description_tracks_labels[track].text = 'Available for {0:,} ¤'\
-                                                         .format(track_state_matrix[track][PRICE]).replace(',', ' ')
+            self.description_tracks_labels[track].text \
+                = I18N_RESOURCES['unlock_available_track_description_string'][self.current_locale]\
+                .format(track_state_matrix[track][PRICE]).replace(',', ' ')
             self.description_tracks_labels[track].color = GREEN
         elif track_state_matrix[track][UNDER_CONSTRUCTION]:
             construction_time = track_state_matrix[track][CONSTRUCTION_TIME]
             self.description_tracks_labels[track].text \
-                = 'Under construction. {}h {}min left'\
-                  .format(construction_time // FRAMES_IN_ONE_HOUR,
-                          (construction_time // FRAMES_IN_ONE_MINUTE) % MINUTES_IN_ONE_HOUR)
+                = I18N_RESOURCES['under_construction_track_description_string'][self.current_locale]\
+                .format(construction_time // FRAMES_IN_ONE_HOUR,
+                        (construction_time // FRAMES_IN_ONE_MINUTE) % MINUTES_IN_ONE_HOUR)
             self.description_tracks_labels[track].color = ORANGE
         else:
             if not track_state_matrix[track][UNLOCK_CONDITION_FROM_LEVEL]:
-                self.description_tracks_labels[track].text = 'Requires level {}'\
-                                                             .format(track_state_matrix[track][LEVEL_REQUIRED])
+                self.description_tracks_labels[track].text \
+                    = I18N_RESOURCES['unlock_condition_from_level_track_description_string'][self.current_locale]\
+                    .format(track_state_matrix[track][LEVEL_REQUIRED])
                 self.description_tracks_labels[track].color = GREY
             elif not track_state_matrix[track][UNLOCK_CONDITION_FROM_ENVIRONMENT]:
-                self.description_tracks_labels[track].text = 'Requires environment Tier X'
+                self.description_tracks_labels[track].text \
+                    = I18N_RESOURCES['unlock_condition_from_environment_track_description_string'][self.current_locale]\
+                    .format(0)
                 self.description_tracks_labels[track].color = GREY
             elif not track_state_matrix[track][UNLOCK_CONDITION_FROM_PREVIOUS_TRACK]:
-                self.description_tracks_labels[track].text = 'Build track {} to unlock'.format(track - 1)
+                self.description_tracks_labels[track].text \
+                    = I18N_RESOURCES[
+                    'unlock_condition_from_previous_track_track_description_string'
+                ][self.current_locale].format(track - 1)
                 self.description_tracks_labels[track].color = GREY
 
     def on_update_track_state(self, track_state_matrix, game_time):
@@ -622,3 +635,52 @@ class ConstructorView(View):
             self.locked_label_font_size, self.title_label_font_size, \
             self.description_label_font_size, self.placeholder_font_size, \
             self.caption_font_size = self.config_db_cursor.fetchone()
+
+    def on_update_current_locale(self, new_locale):
+        """
+        Updates current locale selected by user and all text labels.
+
+        :param new_locale:                      selected locale
+        """
+        self.current_locale = new_locale
+        if self.is_activated:
+            self.railway_station_caption_sprite.text \
+                = I18N_RESOURCES['railway_station_caption_string'][self.current_locale]
+            self.environment_caption_sprite.text = I18N_RESOURCES['environment_caption_string'][self.current_locale]
+            for i in self.coming_soon_environment_labels:
+                i.text = I18N_RESOURCES['coming_soon_placeholder_string'][self.current_locale]
+
+            for i in self.no_more_tracks_available_labels:
+                i.text = I18N_RESOURCES['no_more_tracks_available_placeholder_string'][self.current_locale]
+
+            for i in self.title_tracks_labels:
+                self.title_tracks_labels[i].text \
+                    = I18N_RESOURCES['title_track_string'][self.current_locale].format(i)
+
+            for i in self.description_tracks_labels:
+                if self.track_state_matrix[i][UNLOCK_AVAILABLE]:
+                    self.description_tracks_labels[i].text \
+                        = I18N_RESOURCES['unlock_available_track_description_string'][self.current_locale]\
+                        .format(self.track_state_matrix[i][PRICE]).replace(',', ' ')
+                elif self.track_state_matrix[i][UNDER_CONSTRUCTION]:
+                    construction_time = self.track_state_matrix[i][CONSTRUCTION_TIME]
+                    self.description_tracks_labels[i].text \
+                        = I18N_RESOURCES['under_construction_track_description_string'][self.current_locale]\
+                        .format(construction_time // FRAMES_IN_ONE_HOUR,
+                                (construction_time // FRAMES_IN_ONE_MINUTE) % MINUTES_IN_ONE_HOUR)
+                else:
+                    if not self.track_state_matrix[i][UNLOCK_CONDITION_FROM_LEVEL]:
+                        self.description_tracks_labels[i].text \
+                            = I18N_RESOURCES[
+                            'unlock_condition_from_level_track_description_string'
+                        ][self.current_locale].format(self.track_state_matrix[i][LEVEL_REQUIRED])
+                    elif not self.track_state_matrix[i][UNLOCK_CONDITION_FROM_ENVIRONMENT]:
+                        self.description_tracks_labels[i].text \
+                            = I18N_RESOURCES[
+                            'unlock_condition_from_environment_track_description_string'
+                        ][self.current_locale].format(0)
+                    elif not self.track_state_matrix[i][UNLOCK_CONDITION_FROM_PREVIOUS_TRACK]:
+                        self.description_tracks_labels[i].text \
+                            = I18N_RESOURCES[
+                            'unlock_condition_from_previous_track_track_description_string'
+                        ][self.current_locale].format(i - 1)

@@ -8,6 +8,7 @@ from button.accept_settings_button import AcceptSettingsButton
 from button.reject_settings_button import RejectSettingsButton
 from button.increment_windowed_resolution_button import IncrementWindowedResolutionButton
 from button.decrement_windowed_resolution_button import DecrementWindowedResolutionButton
+from i18n import I18N_RESOURCES
 
 
 class SettingsView(View):
@@ -132,7 +133,7 @@ class SettingsView(View):
                     anchor_x='center', anchor_y='center', batch=self.batches['ui_batch'],
                     group=self.groups['button_text'])
         self.windowed_resolution_description_label \
-            = Label('Game resolution in window mode (not fullscreen):',
+            = Label(I18N_RESOURCES['windowed_resolution_description_string'][self.current_locale],
                     font_name='Arial', font_size=int(16 / 80 * self.bottom_bar_height),
                     x=self.screen_resolution[0] // 4, y=self.medium_line + self.top_bar_height * 2,
                     anchor_x='center', anchor_y='center', batch=self.batches['ui_batch'],
@@ -212,3 +213,14 @@ class SettingsView(View):
             self.increment_windowed_resolution_button.on_deactivate()
 
         self.temp_windowed_resolution_label.text = 'x'.join(str(t) for t in self.temp_windowed_resolution)
+
+    def on_update_current_locale(self, new_locale):
+        """
+        Updates current locale selected by user and all text labels.
+
+        :param new_locale:                      selected locale
+        """
+        self.current_locale = new_locale
+        if self.is_activated:
+            self.windowed_resolution_description_label.text \
+                = I18N_RESOURCES['windowed_resolution_description_string'][self.current_locale]

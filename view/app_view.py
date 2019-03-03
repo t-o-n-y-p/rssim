@@ -15,8 +15,8 @@ from button.restore_button import RestoreButton
 from button.open_settings_button import OpenSettingsButton
 from button.en_locale_button import ENLocaleButton
 from button.ru_locale_button import RULocaleButton
-from i18n import *
-from textures import FLAG_RU, FLAG_US
+from i18n import I18N_RESOURCES
+from textures import FLAG_RU, FLAG_GB
 
 
 class AppView(View):
@@ -183,7 +183,7 @@ class AppView(View):
                                                  ('v2f/static', (-1.0, -1.0, -1.0, 1.0, 1.0, 1.0, 1.0, -1.0)))
 
         if self.flag_us_sprite is None:
-            self.flag_us_sprite = Sprite(FLAG_US, x=self.top_bar_height // 2,
+            self.flag_us_sprite = Sprite(FLAG_GB, x=self.top_bar_height // 2,
                                          y=self.screen_resolution[1] - self.top_bar_height // 2,
                                          batch=self.batches['ui_batch'], group=self.groups['button_text'])
             self.flag_us_sprite.scale = 0.6 * self.top_bar_height / 256

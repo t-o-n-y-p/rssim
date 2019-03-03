@@ -198,10 +198,6 @@ def signal_is_displayed_on_map(fn):
 # --------------------- CONSTANTS ---------------------
 MAP_WIDTH = 8192                                # full-size map width
 MAP_HEIGHT = 4096                               # full-size map height
-DEPARTURE_TEXT = ('West City',                  # text on schedule screen for direction #0
-                  'East City',                  # text on schedule screen for direction #1
-                  'North-West City',            # text on schedule screen for direction #2
-                  'South-East City')            # text on schedule screen for direction #3
 SCHEDULE_ROWS = 16                              # number of schedule rows on schedule screen
 SCHEDULE_COLUMNS = 2                            # number of schedule columns on schedule screen
 MINI_MAP_FADE_OUT_TIMER = 1.0                   # time since user releases mouse button after which mini-map disappears

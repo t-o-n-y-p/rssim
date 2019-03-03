@@ -159,13 +159,13 @@ bool is_zoom_button_border_activated()
 */
 {
     return zoom_buttons_activated == 1                                                            // button activated
-           && ((gl_FragCoord[1] >= screen_resolution[1] - (top_bar_height - 1 + bottom_bar_height - 1) // right border
+           && ((gl_FragCoord[1] >= screen_resolution[1] - (top_bar_height - 1 + bottom_bar_height - 1) + 2 // right
                 && gl_FragCoord[1] <= screen_resolution[1] - (top_bar_height - 1)
-                && (gl_FragCoord[0] == bottom_bar_height - 1 || gl_FragCoord[0] == bottom_bar_height - 2)
+                && (gl_FragCoord[0] == bottom_bar_height - 3 || gl_FragCoord[0] == bottom_bar_height - 4)
                )
-               || (gl_FragCoord[0] >= 2 && gl_FragCoord[0] <= bottom_bar_height - 3                    // bottom border
-                   && (gl_FragCoord[1] == screen_resolution[1] - (top_bar_height - 1 + bottom_bar_height - 1)
-                       || gl_FragCoord[1] == screen_resolution[1] - (top_bar_height - 1 + bottom_bar_height - 2)
+               || (gl_FragCoord[0] >= 2 && gl_FragCoord[0] <= bottom_bar_height - 5                    // bottom
+                   && (gl_FragCoord[1] == screen_resolution[1] - (top_bar_height - 1 + bottom_bar_height - 1) + 2
+                       || gl_FragCoord[1] == screen_resolution[1] - (top_bar_height - 1 + bottom_bar_height - 2) + 2
                       )
                   )
               );

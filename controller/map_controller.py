@@ -635,6 +635,9 @@ class MapController(Controller):
         :param new_locale:                      selected locale
         """
         self.view.on_update_current_locale(new_locale)
+        self.scheduler.on_update_current_locale(new_locale)
+        self.dispatcher.on_update_current_locale(new_locale)
+        self.constructor.on_update_current_locale(new_locale)
         for signal in self.signals_list:
             signal.on_update_current_locale(new_locale)
 

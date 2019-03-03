@@ -8,6 +8,7 @@ from pyglet.resource import add_font
 from view import *
 from button.pause_game_button import PauseGameButton
 from button.resume_game_button import ResumeGameButton
+from i18n import I18N_RESOURCES
 
 
 class GameView(View):
@@ -175,7 +176,8 @@ class GameView(View):
             self.progress_bar_money_active.scale = self.bottom_bar_height / 80
             self.progress_bar_money_active.opacity = 0
 
-        self.level_label = Label('LEVEL  0', font_name='Perfo', bold=True,
+        self.level_label = Label(I18N_RESOURCES['level_string'][self.current_locale].format(0),
+                                 font_name='Perfo', bold=True,
                                  font_size=int(22 / 80 * self.bottom_bar_height),
                                  x=self.exp_offset + int(self.progress_bar_inactive_image.width / 2 / 80
                                                          * self.bottom_bar_height),
@@ -189,7 +191,8 @@ class GameView(View):
                                  y=self.bottom_bar_height // 2,
                                  anchor_x='center', anchor_y='center',
                                  batch=self.batches['ui_batch'], group=self.groups['button_text'])
-        self.day_label = Label(f'DAY  {1 + self.game_time // FRAMES_IN_ONE_DAY}', font_name='Perfo', bold=True,
+        self.day_label = Label(I18N_RESOURCES['day_string'][self.current_locale]
+                               .format(1 + self.game_time // FRAMES_IN_ONE_DAY), font_name='Perfo', bold=True,
                                font_size=int(22 / 80 * self.bottom_bar_height),
                                x=self.screen_resolution[0] - int(181 / 80 * self.bottom_bar_height),
                                y=int(57 / 80 * self.bottom_bar_height),
@@ -289,7 +292,8 @@ class GameView(View):
             self.time_label.text = '{0:0>2} : {1:0>2}'\
                 .format((self.game_time // FRAMES_IN_ONE_HOUR + 12) % HOURS_IN_ONE_DAY,
                         (self.game_time // FRAMES_IN_ONE_MINUTE) % MINUTES_IN_ONE_HOUR)
-            self.day_label.text = f'DAY  {1 + self.game_time // FRAMES_IN_ONE_DAY}'
+            self.day_label.text = I18N_RESOURCES['day_string'][self.current_locale]\
+                .format(1 + self.game_time // FRAMES_IN_ONE_DAY)
 
     @view_is_active
     def on_update_exp(self, exp, player_progress):
@@ -325,7 +329,7 @@ class GameView(View):
         :param level:                           current player level
         """
         self.level = level
-        self.level_label.text = f'LEVEL  {self.level}'
+        self.level_label.text = I18N_RESOURCES['level_string'][self.current_locale].format(self.level)
 
     @view_is_active
     def on_update_money(self, money, money_target):
@@ -354,3 +358,15 @@ class GameView(View):
                             self.progress_bar_money_active_image.height)
 
         self.progress_bar_money_active.image = image_region
+
+    def on_update_current_locale(self, new_locale):
+        """
+        Updates current locale selected by user and all text labels.
+
+        :param new_locale:                      selected locale
+        """
+        self.current_locale = new_locale
+        if self.is_activated:
+            self.level_label.text = I18N_RESOURCES['level_string'][self.current_locale].format(self.level)
+            self.day_label.text = I18N_RESOURCES['day_string'][self.current_locale] \
+                .format(1 + self.game_time // FRAMES_IN_ONE_DAY)

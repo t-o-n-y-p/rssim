@@ -4,6 +4,7 @@ from pyglet.text import Label
 
 from view import *
 from button.close_schedule_button import CloseScheduleButton
+from i18n import I18N_RESOURCES
 
 
 class SchedulerView(View):
@@ -74,13 +75,13 @@ class SchedulerView(View):
         """
         self.is_activated = True
         self.left_schedule_caption_label \
-            = Label('Train #          Arrival          Departed from       Cars   Stop, m:s',
+            = Label(I18N_RESOURCES['schedule_caption_string'][self.current_locale],
                     font_name='Arial', bold=True, font_size=self.schedule_caption_font_size,
                     x=self.schedule_left_caption[0], y=self.schedule_left_caption[1],
                     anchor_x='center', anchor_y='center', batch=self.batches['ui_batch'],
                     group=self.groups['button_text'])
         self.right_schedule_caption_label \
-            = Label('Train #          Arrival          Departed from       Cars   Stop, m:s',
+            = Label(I18N_RESOURCES['schedule_caption_string'][self.current_locale],
                     font_name='Arial', bold=True, font_size=self.schedule_caption_font_size,
                     x=self.schedule_left_caption[0] + self.schedule_line_step_x, y=self.schedule_left_caption[1],
                     anchor_x='center', anchor_y='center', batch=self.batches['ui_batch'],
@@ -137,7 +138,8 @@ class SchedulerView(View):
                               anchor_x='center', anchor_y='center', batch=self.batches['ui_batch'],
                               group=self.groups['button_text']))
                     self.train_labels.append(
-                        Label(DEPARTURE_TEXT[self.base_schedule[i][DIRECTION]],
+                        Label(I18N_RESOURCES['departed_from_string'][self.current_locale]
+                              [self.base_schedule[i][DIRECTION]],
                               font_name='Perfo', bold=True, font_size=self.schedule_font_size,
                               x=self.schedule_departure_top_left_line[0]
                               + self.schedule_line_step_x * (i // SCHEDULE_ROWS),
@@ -226,3 +228,17 @@ class SchedulerView(View):
             self.schedule_line_step_x, self.schedule_line_step_y, self.schedule_font_size, \
             self.schedule_left_caption[0], self.schedule_left_caption[1], self.schedule_caption_font_size \
             = self.config_db_cursor.fetchone()
+
+    def on_update_current_locale(self, new_locale):
+        """
+        Updates current locale selected by user and all text labels.
+
+        :param new_locale:                      selected locale
+        """
+        self.current_locale = new_locale
+        if self.is_activated:
+            self.left_schedule_caption_label.text = I18N_RESOURCES['schedule_caption_string'][self.current_locale]
+            self.right_schedule_caption_label.text = I18N_RESOURCES['schedule_caption_string'][self.current_locale]
+            for i in range(len(self.train_labels) // 2):
+                self.train_labels[i * 2 + 1].text \
+                    = I18N_RESOURCES['departed_from_string'][self.current_locale][self.base_schedule[i][DIRECTION]]

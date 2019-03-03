@@ -4,8 +4,8 @@
 		"ru": "Симулятор железнодорожной станции"
 	},
 	"railway_station_caption_string": {
-		"en": "T r a c k s & p l a t f o r m s",
-		"ru": "П у т и  и  п л а т ф о р м ы"
+		"en": "T r a c k s  &  p l a t f o r m s",
+		"ru": "П у т и   и   п л а т ф о р м ы"
 	},
 	"environment_caption_string": {
 		"en": "E n v i r o n m e n t",
@@ -51,26 +51,16 @@
 		"en": "DAY  {0}",
 		"ru": "ДЕНЬ  {0}"
 	},
-	"time_string": {
-		"en": "{0} : {1:0>2} {2}",
-		"ru": "{0:0>2} : {1:0>2}"
-	},
 	"schedule_caption_string": {
-		"en": "Train #          Arrival          Departed from       Cars   Stop, m:s",
-		"ru": "№ поезда       Прибытие          Откуда прибыл     Вагонов    Стоянка"
-	},
-	"schedule_train_label_string": {
-		"en": ["{0:0>4}      {1} : {2:0>2} {3}                             {4:0>2}   {5:0>2} : {6:0>2}",
-			   "{0:0>4}    {1} : {2:0>2} {3}                             {4:0>2}   {5:0>2} : {6:0>2}"],
-		"ru": ["{0:0>4}    {1:0>2} : {2:0>2}                             {4:0>2}   {5:0>2} : {6:0>2}",
-			   "{0:0>4}    {1:0>2} : {2:0>2}                             {4:0>2}   {5:0>2} : {6:0>2}"]
+		"en": "Train #          Arrival           Departed from       Cars  Stop, m:s",
+		"ru": "№ поезда      Прибытие         Прибыл из       Длина    Стоянка"
 	},
 	"departed_from_string": {
 		"en": ["West City", "East City", "North-West City", "South-East City"],
 		"ru": ["г. Западный", "г. Восточный", "г. Северо-Западный", "г. Юго-Восточный"]
 	},
 	"windowed_resolution_description_string": {
-		"en": "Game resolution in window mode (not fullscreen):",
-		"ru": "Разрешение игры в оконном режиме (не на полный экран):"
+		"en": "Game resolution in window mode:",
+		"ru": "Разрешение игры в оконном режиме:"
 	}
 }
