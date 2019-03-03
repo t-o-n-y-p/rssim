@@ -201,4 +201,10 @@ class AppController(Controller):
         self.fps.on_enable_notifications()
 
     def on_append_notification_handler(self, handler):
+        """
+        When notification is triggered in background, its handler is added to the list.
+        Then, after app is activated, these notifications are destroyed.
+
+        :param handler:                         notification handler
+        """
         self.loader.notification_handlers.append(handler)
