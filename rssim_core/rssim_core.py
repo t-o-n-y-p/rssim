@@ -13,7 +13,6 @@ from pyglet import gl, resource
 from pyglet.window import Window
 from pyglet.graphics import Batch, OrderedGroup
 from pyshaders import from_files_names
-from win32gui import DestroyWindow
 
 from exceptions import VideoAdapterNotSupportedException, MonitorNotSupportedException
 from rssim_core import *
@@ -39,7 +38,7 @@ class RSSim:
               main_frame_shader         shader for main frame primitive (responsible for button borders,
                                         UI screens background, main app border)
               app                       App object, is responsible for high-level properties, UI and events
-              notification_handlers     list of all active system notification handlers
+              notifications             list of all active system notifications
         """
         # determine if video adapter supports all game textures, if not - raise specific exception
         max_texture_size = c_long(0)
@@ -135,7 +134,7 @@ class RSSim:
         if self.app.settings.model.fullscreen_mode and self.app.model.fullscreen_mode_available:
             self.app.on_fullscreen_mode_turned_on()
 
-        self.notification_handlers = []
+        self.notifications = []
 
         @surface.event
         def on_draw():
@@ -165,10 +164,10 @@ class RSSim:
             Clears all queued notifications.
             """
             self.app.on_disable_notifications()
-            for h in self.notification_handlers:
-                DestroyWindow(h)
+            for h in self.notifications:
+                h.destroy()
 
-            self.notification_handlers.clear()
+            self.notifications.clear()
 
         @surface.event
         def on_show():
@@ -178,10 +177,10 @@ class RSSim:
             Clears all queued notifications.
             """
             self.app.on_disable_notifications()
-            for h in self.notification_handlers:
-                DestroyWindow(h)
+            for h in self.notifications:
+                h.destroy()
 
-            self.notification_handlers.clear()
+            self.notifications.clear()
 
         @surface.event
         def on_deactivate():
