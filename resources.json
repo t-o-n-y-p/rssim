@@ -64,19 +64,27 @@
 		"ru": "Разрешение игры в оконном режиме:"
 	},
 	"level_up_notification_caption_string": {
-		"en": "Level up!",
-		"ru": "Новый уровень!"
+		"en": "Level up",
+		"ru": "Новый уровень"
 	},
 	"level_up_notification_message_string": {
 		"en": "Congratulations! You have reached level {0}.",
-		"ru": "Поздравляем! Вы достигли уровня {0}."
+		"ru": "Поздравляем! Ты достиг уровня {0}."
 	},
 	"track_unlocked_notification_caption_string": {
-		"en": "New track available!",
-		"ru": "Доступен новый путь!"
+		"en": "New track available",
+		"ru": "Доступен новый путь"
 	},
 	"track_unlocked_notification_message_string": {
 		"en": "Track {0} has just been unlocked. Return to the game to check out the price.",
-		"ru": "Только что открыт путь {0}. Вернитесь в игру, чтобы узнать цену."
+		"ru": "Только что открыт путь {0}. Вернись в игру, чтобы узнать цену."
+	},
+	"track_construction_completed_notification_caption_string": {
+		"en": "Construction completed",
+		"ru": "Строительство завершено"
+	},
+	"track_construction_completed_notification_message_string": {
+		"en": "Track {0} is ready to accept trains. Don't miss the first one!",
+		"ru": "Путь {0} готов к приему поездов. Не пропусти первый поезд!"
 	}
 }

@@ -84,6 +84,7 @@ class ConstructorModel(Model):
                     unlocked_track = track
                     self.track_state_matrix[track][UNDER_CONSTRUCTION] = False
                     self.track_state_matrix[track][LOCKED] = False
+                    self.view.on_send_track_construction_completed_notification(track)
                     self.controller.parent_controller.on_unlock_track(track)
                     # track is added to cached_unlocked_tracks list to be then correctly saved in the database
                     self.cached_unlocked_tracks.append(track)

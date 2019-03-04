@@ -8,6 +8,7 @@ from button.build_track_button import BuildTrackButton
 from button.set_track_money_target_button import SetTrackMoneyTargetButton
 from button.reset_track_money_target_button import ResetTrackMoneyTargetButton
 from notifications.track_unlocked_notification import TrackUnlockedNotification
+from notifications.track_construction_completed_notification import TrackConstructionCompletedNotification
 from i18n import I18N_RESOURCES
 
 
@@ -686,6 +687,7 @@ class ConstructorView(View):
                             'unlock_condition_from_previous_track_track_description_string'
                         ][self.current_locale].format(i - 1)
 
+    @notifications_enabled
     def on_send_track_unlocked_notification(self, track):
         """
         Sends system notification when new track is unlocked.
@@ -696,3 +698,15 @@ class ConstructorView(View):
         track_unlocked_notification.send(self.current_locale, message_args=(track,))
         self.controller.parent_controller.parent_controller.parent_controller\
             .on_append_notification(track_unlocked_notification)
+
+    @notifications_enabled
+    def on_send_track_construction_completed_notification(self, track):
+        """
+        Sends system notification when track construction is completed.
+
+        :param track:                           track number
+        """
+        track_construction_completed_notification = TrackConstructionCompletedNotification()
+        track_construction_completed_notification.send(self.current_locale, message_args=(track,))
+        self.controller.parent_controller.parent_controller.parent_controller\
+            .on_append_notification(track_construction_completed_notification)
