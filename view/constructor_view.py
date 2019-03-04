@@ -7,6 +7,7 @@ from button.close_constructor_button import CloseConstructorButton
 from button.build_track_button import BuildTrackButton
 from button.set_track_money_target_button import SetTrackMoneyTargetButton
 from button.reset_track_money_target_button import ResetTrackMoneyTargetButton
+from notifications.track_unlocked_notification import TrackUnlockedNotification
 from i18n import I18N_RESOURCES
 
 
@@ -684,3 +685,14 @@ class ConstructorView(View):
                             = I18N_RESOURCES[
                             'unlock_condition_from_previous_track_track_description_string'
                         ][self.current_locale].format(i - 1)
+
+    def on_send_track_unlocked_notification(self, track):
+        """
+        Sends system notification when new track is unlocked.
+
+        :param track:                           track number
+        """
+        track_unlocked_notification = TrackUnlockedNotification()
+        track_unlocked_notification.send(self.current_locale, message_args=(track,))
+        self.controller.parent_controller.parent_controller.parent_controller\
+            .on_append_notification(track_unlocked_notification)

@@ -70,5 +70,13 @@
 	"level_up_notification_message_string": {
 		"en": "Congratulations! You have reached level {0}.",
 		"ru": "Поздравляем! Вы достигли уровня {0}."
+	},
+	"track_unlocked_notification_caption_string": {
+		"en": "New track available!",
+		"ru": "Доступен новый путь!"
+	},
+	"track_unlocked_notification_message_string": {
+		"en": "Track {0} has just been unlocked. Return to the game to check out the price.",
+		"ru": "Только что открыт путь {0}. Вернитесь в игру, чтобы узнать цену."
 	}
 }

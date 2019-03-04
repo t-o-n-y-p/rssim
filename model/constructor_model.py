@@ -91,12 +91,7 @@ class ConstructorModel(Model):
                     if track < MAXIMUM_TRACK_NUMBER:
                         self.track_state_matrix[track + 1][UNLOCK_CONDITION_FROM_PREVIOUS_TRACK] = True
                         # if all three conditions are met for the next track, it becomes available for construction
-                        if self.track_state_matrix[track + 1][UNLOCK_CONDITION_FROM_LEVEL] \
-                                and self.track_state_matrix[track + 1][UNLOCK_CONDITION_FROM_ENVIRONMENT]:
-                            self.track_state_matrix[track + 1][UNLOCK_CONDITION_FROM_PREVIOUS_TRACK] = False
-                            self.track_state_matrix[track + 1][UNLOCK_CONDITION_FROM_LEVEL] = False
-                            self.track_state_matrix[track + 1][UNLOCK_CONDITION_FROM_ENVIRONMENT] = False
-                            self.track_state_matrix[track + 1][UNLOCK_AVAILABLE] = True
+                        self.on_check_unlock_conditions(track + 1)
 
                         self.view.on_update_live_track_state(self.track_state_matrix, track + 1)
 
@@ -155,12 +150,7 @@ class ConstructorModel(Model):
         for track in tracks_parsed:
             self.track_state_matrix[track][UNLOCK_CONDITION_FROM_LEVEL] = True
             # if all three conditions are met, track is available for construction
-            if self.track_state_matrix[track][UNLOCK_CONDITION_FROM_PREVIOUS_TRACK] \
-                    and self.track_state_matrix[track][UNLOCK_CONDITION_FROM_ENVIRONMENT]:
-                self.track_state_matrix[track][UNLOCK_CONDITION_FROM_LEVEL] = False
-                self.track_state_matrix[track][UNLOCK_CONDITION_FROM_PREVIOUS_TRACK] = False
-                self.track_state_matrix[track][UNLOCK_CONDITION_FROM_ENVIRONMENT] = False
-                self.track_state_matrix[track][UNLOCK_AVAILABLE] = True
+            self.on_check_unlock_conditions(track)
 
             self.view.on_update_live_track_state(self.track_state_matrix, track)
 
@@ -197,3 +187,19 @@ class ConstructorModel(Model):
         """
         self.money -= money
         self.view.on_update_money(self.money, self.track_state_matrix)
+
+    def on_check_unlock_conditions(self, track):
+        """
+        Checks if all 3 unlock conditions are met.
+        If so, unlocks the track and notifies the view to send notification.
+
+        :param track:                           track number to check
+        """
+        if self.track_state_matrix[track][UNLOCK_CONDITION_FROM_PREVIOUS_TRACK] \
+                and self.track_state_matrix[track][UNLOCK_CONDITION_FROM_ENVIRONMENT] \
+                and self.track_state_matrix[track][UNLOCK_CONDITION_FROM_LEVEL]:
+            self.track_state_matrix[track][UNLOCK_CONDITION_FROM_LEVEL] = False
+            self.track_state_matrix[track][UNLOCK_CONDITION_FROM_PREVIOUS_TRACK] = False
+            self.track_state_matrix[track][UNLOCK_CONDITION_FROM_ENVIRONMENT] = False
+            self.track_state_matrix[track][UNLOCK_AVAILABLE] = True
+            self.view.on_send_track_unlocked_notification(track)
