@@ -111,6 +111,8 @@ class GameView(View):
         self.user_db_cursor.execute('''SELECT level_up_notification_enabled, enough_money_notification_enabled
                                        FROM notification_settings''')
         self.level_up_notification_enabled, self.enough_money_notification_enabled = self.user_db_cursor.fetchone()
+        self.level_up_notification_enabled = bool(self.level_up_notification_enabled)
+        self.enough_money_notification_enabled = bool(self.enough_money_notification_enabled)
 
     def on_update(self):
         """

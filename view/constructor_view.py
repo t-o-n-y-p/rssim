@@ -154,34 +154,12 @@ class ConstructorView(View):
         self.description_tracks_labels = {}
         self.build_track_button = BuildTrackButton(surface=self.surface, batch=self.batches['ui_batch'],
                                                    groups=self.groups, on_click_action=on_buy_track)
-        self.build_track_button.x_margin = self.track_cells_positions[0][0] + self.track_build_button_offset[0]
-        self.build_track_button.y_margin = self.track_cells_positions[0][1] + self.track_build_button_offset[1]
-        self.build_track_button.on_position_changed((self.build_track_button.x_margin,
-                                                     self.build_track_button.y_margin))
-        self.build_track_button.on_size_changed((self.cell_height, self.cell_height),
-                                                self.locked_label_font_size)
         self.set_track_money_target_button \
             = SetTrackMoneyTargetButton(surface=self.surface, batch=self.batches['ui_batch'],
                                         groups=self.groups, on_click_action=on_set_track_money_target)
-        self.set_track_money_target_button.x_margin = self.track_cells_positions[0][0] \
-                                                    + self.track_build_button_offset[0] - self.cell_height + 2
-        self.set_track_money_target_button.y_margin = self.track_cells_positions[0][1] \
-                                                    + self.track_build_button_offset[1]
-        self.set_track_money_target_button.on_position_changed((self.set_track_money_target_button.x_margin,
-                                                                self.set_track_money_target_button.y_margin))
-        self.set_track_money_target_button.on_size_changed((self.cell_height, self.cell_height),
-                                                           self.locked_label_font_size)
         self.reset_track_money_target_button \
             = ResetTrackMoneyTargetButton(surface=self.surface, batch=self.batches['ui_batch'],
                                           groups=self.groups, on_click_action=on_reset_track_money_target)
-        self.reset_track_money_target_button.x_margin = self.track_cells_positions[0][0] \
-                                                      + self.track_build_button_offset[0] - self.cell_height + 2
-        self.reset_track_money_target_button.y_margin = self.track_cells_positions[0][1] \
-                                                      + self.track_build_button_offset[1]
-        self.reset_track_money_target_button.on_position_changed((self.reset_track_money_target_button.x_margin,
-                                                                  self.reset_track_money_target_button.y_margin))
-        self.reset_track_money_target_button.on_size_changed((self.cell_height, self.cell_height),
-                                                             int(24 * self.locked_label_font_size / 40))
         self.set_track_money_target_button.paired_button = self.reset_track_money_target_button
         self.reset_track_money_target_button.paired_button = self.set_track_money_target_button
         self.no_more_tracks_available_labels = []
@@ -199,6 +177,8 @@ class ConstructorView(View):
                                        construction_completed_notification_enabled FROM notification_settings''')
         self.feature_unlocked_notification_enabled, self.construction_completed_notification_enabled \
             = self.user_db_cursor.fetchone()
+        self.feature_unlocked_notification_enabled = bool(self.feature_unlocked_notification_enabled)
+        self.construction_completed_notification_enabled = bool(self.construction_completed_notification_enabled)
 
     @view_is_not_active
     def on_activate(self):
