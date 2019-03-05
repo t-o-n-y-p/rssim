@@ -68,6 +68,10 @@ class ConstructorView(View):
             on_buy_track                        on_click handler for buy track button
             money                               player bank account state
             track_money_target_activated        indicates if user tracks money target for upcoming station track
+            feature_unlocked_notification_enabled
+                                indicates if feature unlocked notifications are enabled by user in game settings
+            construction_completed_notification_enabled
+                                indicates if construction completed notifications are enabled by user in game settings
 
         :param user_db_cursor:                  user DB cursor (is used to execute user DB queries)
         :param config_db_cursor:                configuration DB cursor (is used to execute configuration DB queries)
@@ -191,6 +195,10 @@ class ConstructorView(View):
         self.money = 0.0
         self.user_db_cursor.execute('SELECT track_money_target_activated FROM graphics')
         self.track_money_target_activated = bool(self.user_db_cursor.fetchone()[0])
+        self.user_db_cursor.execute('''SELECT feature_unlocked_notification_enabled, 
+                                       construction_completed_notification_enabled FROM notification_settings''')
+        self.feature_unlocked_notification_enabled, self.construction_completed_notification_enabled \
+            = self.user_db_cursor.fetchone()
 
     @view_is_not_active
     def on_activate(self):
@@ -701,7 +709,8 @@ class ConstructorView(View):
         """
         self.track_money_target_activated = False
 
-    @notifications_enabled
+    @notifications_available
+    @feature_unlocked_notification_enabled
     def on_send_track_unlocked_notification(self, track):
         """
         Sends system notification when new track is unlocked.
@@ -713,7 +722,8 @@ class ConstructorView(View):
         self.controller.parent_controller.parent_controller.parent_controller\
             .on_append_notification(track_unlocked_notification)
 
-    @notifications_enabled
+    @notifications_available
+    @construction_completed_notification_enabled
     def on_send_track_construction_completed_notification(self, track):
         """
         Sends system notification when track construction is completed.

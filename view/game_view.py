@@ -21,30 +21,34 @@ class GameView(View):
     def __init__(self, user_db_cursor, config_db_cursor, surface, batches, groups):
         """
         Button click handlers:
-            on_pause_game                       on_click handler for pause game button
-            on_resume_game                      on_click handler for resume game button
+            on_pause_game                           on_click handler for pause game button
+            on_resume_game                          on_click handler for resume game button
 
         Properties:
-            game_frame_opacity                  overall opacity of all game sprites
-            progress_bar_inactive_image         base image for exp amd money progress bar
-            progress_bar_exp_inactive           sprite from base image for exp progress bar
-            progress_bar_money_inactive         sprite from base image for money progress bar
-            progress_bar_exp_active_image       image for exp progress bar
-            progress_bar_money_active_image     image for money progress bar
-            progress_bar_exp_active             sprite from image for exp progress bar
-            progress_bar_money_active           sprite from image for money progress bar
-            exp_offset                          offset from the left edge for exp progress bar
-            money_offset                        offset from the left edge for money progress bar
-            pause_game_button                   PauseGameButton object
-            resume_game_button                  ResumeGameButton object
-            buttons                             list of all buttons
-            day_label                           "DAY X" label
-            time_label                          time label
-            level_label                         "LEVEL X" label
-            money_label                         money label
-            game_time                           in-game timestamp
-            exp_percent                         exp percentage for current level
-            money_percent                       money percentage from money target
+            game_frame_opacity                      overall opacity of all game sprites
+            progress_bar_inactive_image             base image for exp amd money progress bar
+            progress_bar_exp_inactive               sprite from base image for exp progress bar
+            progress_bar_money_inactive             sprite from base image for money progress bar
+            progress_bar_exp_active_image           image for exp progress bar
+            progress_bar_money_active_image         image for money progress bar
+            progress_bar_exp_active                 sprite from image for exp progress bar
+            progress_bar_money_active               sprite from image for money progress bar
+            exp_offset                              offset from the left edge for exp progress bar
+            money_offset                            offset from the left edge for money progress bar
+            pause_game_button                       PauseGameButton object
+            resume_game_button                      ResumeGameButton object
+            buttons                                 list of all buttons
+            day_label                               "DAY X" label
+            time_label                              time label
+            level_label                             "LEVEL X" label
+            money_label                             money label
+            game_time                               in-game timestamp
+            exp_percent                             exp percentage for current level
+            money_percent                           money percentage from money target
+            level_up_notification_enabled           indicates if level up notifications are enabled by user
+                                                    in game settings
+            enough_money_notification_enabled       indicates if enough money notifications are enabled by user
+                                                    in game settings
 
         :param user_db_cursor:                  user DB cursor (is used to execute user DB queries)
         :param config_db_cursor:                configuration DB cursor (is used to execute configuration DB queries)
@@ -104,6 +108,9 @@ class GameView(View):
         self.exp_percent = 0
         self.money_percent = 0
         self.level = 0
+        self.user_db_cursor.execute('''SELECT level_up_notification_enabled, enough_money_notification_enabled
+                                       FROM notification_settings''')
+        self.level_up_notification_enabled, self.enough_money_notification_enabled = self.user_db_cursor.fetchone()
 
     def on_update(self):
         """
@@ -373,7 +380,8 @@ class GameView(View):
             self.day_label.text = I18N_RESOURCES['day_string'][self.current_locale] \
                 .format(1 + self.game_time // FRAMES_IN_ONE_DAY)
 
-    @notifications_enabled
+    @notifications_available
+    @level_up_notification_enabled
     def on_send_level_up_notification(self, level):
         """
         Sends system notification about level update.
@@ -384,7 +392,8 @@ class GameView(View):
         level_up_notification.send(self.current_locale, message_args=(level,))
         self.controller.parent_controller.on_append_notification(level_up_notification)
 
-    @notifications_enabled
+    @notifications_available
+    @enough_money_notification_enabled
     def on_send_enough_money_track_notification(self):
         """
         Notifies the player he/she can now buy the next track.

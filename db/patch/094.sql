@@ -6,4 +6,6 @@ UPDATE base_schedule SET exp = CAST(exp AS integer)
 UPDATE trains SET exp = CAST(exp AS integer)
 CREATE TABLE localization (current_locale text)
 INSERT INTO localization VALUES ("en")
+CREATE TABLE notification_settings (level_up_notification_enabled integer, feature_unlocked_notification_enabled integer, construction_completed_notification_enabled integer, enough_money_notification_enabled integer)
+INSERT INTO notification_settings VALUES (1, 1, 1, 1)
 UPDATE version SET major = 0, minor = 9, patch = 4

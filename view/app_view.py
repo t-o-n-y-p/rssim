@@ -281,7 +281,6 @@ class AppView(View):
         """
         self.surface.set_fullscreen(fullscreen=False)
 
-    @game_window_is_active
     @game_is_not_fullscreen
     @left_mouse_button
     @view_is_active
@@ -300,7 +299,6 @@ class AppView(View):
             self.app_window_move_mode = True
             self.app_window_move_offset = (x, y)
 
-    @game_window_is_active
     @left_mouse_button
     def handle_mouse_release(self, x, y, button, modifiers):
         """
@@ -313,7 +311,6 @@ class AppView(View):
         """
         self.app_window_move_mode = False
 
-    @game_window_is_active
     @app_window_move_mode_enabled
     def handle_mouse_drag(self, x, y, dx, dy, buttons, modifiers):
         """
