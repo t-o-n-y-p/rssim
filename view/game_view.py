@@ -9,6 +9,7 @@ from view import *
 from button.pause_game_button import PauseGameButton
 from button.resume_game_button import ResumeGameButton
 from notifications.level_up_notification import LevelUpNotification
+from notifications.enough_money_track_notification import EnoughMoneyTrackNotification
 from i18n import I18N_RESOURCES
 
 
@@ -382,3 +383,12 @@ class GameView(View):
         level_up_notification = LevelUpNotification()
         level_up_notification.send(self.current_locale, message_args=(level,))
         self.controller.parent_controller.on_append_notification(level_up_notification)
+
+    @notifications_enabled
+    def on_send_enough_money_track_notification(self):
+        """
+        Notifies the player he/she can now buy the next track.
+        """
+        enough_money_track_notification = EnoughMoneyTrackNotification()
+        enough_money_track_notification.send(self.current_locale)
+        self.controller.parent_controller.on_append_notification(enough_money_track_notification)

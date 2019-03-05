@@ -23,6 +23,7 @@ class ConstructorModel(Model):
                                                 property #8 indicates required level for this track
             money                               player bank account state
             cached_unlocked_tracks              stores unlocked track number to remove it from constructor later
+            track_money_target_activated        indicates if user tracks money target for upcoming station track
 
         :param user_db_connection:              connection to the user DB (stores game state and user-defined settings)
         :param user_db_cursor:                  user DB cursor (is used to execute user DB queries)
@@ -45,6 +46,8 @@ class ConstructorModel(Model):
 
         self.user_db_cursor.execute('SELECT money FROM game_progress')
         self.money = self.user_db_cursor.fetchone()[0]
+        self.user_db_cursor.execute('SELECT track_money_target_activated FROM graphics')
+        self.track_money_target_activated = bool(self.user_db_cursor.fetchone()[0])
 
     @model_is_not_active
     def on_activate(self):
@@ -108,7 +111,7 @@ class ConstructorModel(Model):
         Saves track state matrix and money target flags to user progress database.
         """
         self.user_db_cursor.execute('UPDATE graphics SET track_money_target_activated = ?',
-                                    (self.view.track_money_target_activated, ))
+                                    (int(self.track_money_target_activated), ))
         # if some tracks were unlocked since last time the game progress was saved,
         # they are not listed in track state matrix anymore, so their state is updated separately
         for track in self.cached_unlocked_tracks:
@@ -204,3 +207,19 @@ class ConstructorModel(Model):
             self.track_state_matrix[track][UNLOCK_CONDITION_FROM_ENVIRONMENT] = False
             self.track_state_matrix[track][UNLOCK_AVAILABLE] = True
             self.view.on_send_track_unlocked_notification(track)
+
+    def on_activate_track_money_target(self):
+        """
+        Updates track_money_target_activated flag value.
+        Notifies view that track money target was activated.
+        """
+        self.track_money_target_activated = True
+        self.view.on_activate_track_money_target()
+
+    def on_deactivate_track_money_target(self):
+        """
+        Updates track_money_target_activated flag value.
+        Notifies view that track money target was deactivated.
+        """
+        self.track_money_target_activated = False
+        self.view.on_deactivate_track_money_target()

@@ -128,3 +128,15 @@ class ConstructorController(Controller):
         Enables system notifications for the view and all child controllers.
         """
         self.view.on_enable_notifications()
+
+    def on_activate_track_money_target(self):
+        """
+        Notifies model that track money target was activated.
+        """
+        self.model.on_activate_track_money_target()
+
+    def on_deactivate_track_money_target(self):
+        """
+        Notifies model that track money target was deactivated.
+        """
+        self.model.on_deactivate_track_money_target()

@@ -93,7 +93,7 @@ class ConstructorView(View):
             button.on_deactivate()
             self.set_track_money_target_button.on_deactivate()
             self.reset_track_money_target_button.on_deactivate()
-            self.track_money_target_activated = False
+            self.controller.on_deactivate_track_money_target()
             self.controller.parent_controller.parent_controller.on_update_money_target(0)
             self.controller.on_put_track_under_construction(min(list(self.track_state_matrix.keys())))
 
@@ -106,7 +106,7 @@ class ConstructorView(View):
             """
             button.on_deactivate()
             button.paired_button.on_activate()
-            self.track_money_target_activated = True
+            self.controller.on_activate_track_money_target()
             self.controller.parent_controller.parent_controller.on_update_money_target(
                 self.track_state_matrix[min(list(self.track_state_matrix.keys()))][PRICE]
             )
@@ -119,7 +119,7 @@ class ConstructorView(View):
             """
             button.on_deactivate()
             button.paired_button.on_activate()
-            self.track_money_target_activated = False
+            self.controller.on_deactivate_track_money_target()
             self.controller.parent_controller.parent_controller.on_update_money_target(0)
 
         super().__init__(user_db_cursor, config_db_cursor, surface, batches, groups,
@@ -686,6 +686,20 @@ class ConstructorView(View):
                             = I18N_RESOURCES[
                             'unlock_condition_from_previous_track_track_description_string'
                         ][self.current_locale].format(i - 1)
+
+    def on_activate_track_money_target(self):
+        """
+        Updates track_money_target_activated flag value.
+        Money target buttons are displayed based on this flag.
+        """
+        self.track_money_target_activated = True
+
+    def on_deactivate_track_money_target(self):
+        """
+        Updates track_money_target_activated flag value.
+        Money target buttons are displayed based on this flag.
+        """
+        self.track_money_target_activated = False
 
     @notifications_enabled
     def on_send_track_unlocked_notification(self, track):

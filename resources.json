@@ -86,5 +86,13 @@
 	"track_construction_completed_notification_message_string": {
 		"en": "Track {0} is ready to accept trains. Don't miss the first one!",
 		"ru": "Путь {0} готов к приему поездов. Не пропусти первый поезд!"
+	},
+	"enough_money_track_notification_caption_string": {
+		"en": "Enough savings",
+		"ru": "Успешное накопление"
+	},
+	"enough_money_track_notification_message_string": {
+		"en": "Return to the game and buy the next track for your station.",
+		"ru": "Вернись в игру и купи следующий путь для твоего вокзала."
 	}
 }
