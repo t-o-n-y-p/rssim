@@ -15,7 +15,6 @@ from button.restore_button import RestoreButton
 from button.open_settings_button import OpenSettingsButton
 from button.en_locale_button import ENLocaleButton
 from button.ru_locale_button import RULocaleButton
-from i18n import I18N_RESOURCES
 from textures import FLAG_RU, FLAG_GB
 
 
@@ -171,7 +170,7 @@ class AppView(View):
         Activates the view and creates all sprites and labels.
         """
         self.is_activated = True
-        self.title_label = Label(I18N_RESOURCES['game_title_string'][self.current_locale], font_name='Arial',
+        self.title_label = Label('Railway Station Simulator', font_name='Arial',
                                  font_size=int(16 / 40 * self.top_bar_height),
                                  x=self.top_bar_height * 2 + self.top_bar_height // 4,
                                  y=self.screen_resolution[1] - self.top_bar_height // 2,
@@ -369,13 +368,3 @@ class AppView(View):
             = int(self.controller.settings.view.decrement_windowed_resolution_button.is_activated)
         shader.uniforms.is_increment_resolution_button_activated \
             = int(self.controller.settings.view.increment_windowed_resolution_button.is_activated)
-
-    def on_update_current_locale(self, new_locale):
-        """
-        Updates current locale selected by user and all text labels.
-
-        :param new_locale:                      selected locale
-        """
-        self.current_locale = new_locale
-        if self.is_activated:
-            self.title_label.text = I18N_RESOURCES['game_title_string'][self.current_locale]

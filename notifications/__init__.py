@@ -51,9 +51,9 @@ class Notification:
                                     0, 0, _wnd_class.hInstance, None)
         UpdateWindow(self.handler)
         Shell_NotifyIcon(NIM_ADD, (self.handler, 0, NIF_ICON | NIF_MESSAGE | NIF_TIP, WM_USER + 20, self.icon_handler,
-                                   I18N_RESOURCES['game_title_string'][current_locale]))
+                                   'Railway Station Simulator'))
         Shell_NotifyIcon(NIM_MODIFY, (self.handler, 0, NIF_INFO, WM_USER + 20,
-                                      self.icon_handler, I18N_RESOURCES['game_title_string'][current_locale],
+                                      self.icon_handler, 'Railway Station Simulator',
                                       I18N_RESOURCES[self.message_key][current_locale].format(*message_args), 200,
                                       I18N_RESOURCES[self.caption_key][current_locale].format(*caption_args)))
 
