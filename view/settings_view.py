@@ -129,13 +129,13 @@ class SettingsView(View):
         self.temp_windowed_resolution_label \
             = Label('x'.join(str(t) for t in self.temp_windowed_resolution),
                     font_name='Arial', font_size=int(16 / 80 * self.bottom_bar_height),
-                    x=self.screen_resolution[0] // 4, y=self.medium_line + self.top_bar_height,
+                    x=self.screen_resolution[0] // 4, y=self.medium_line - int(5 * self.top_bar_height / 8),
                     anchor_x='center', anchor_y='center', batch=self.batches['ui_batch'],
                     group=self.groups['button_text'])
         self.windowed_resolution_description_label \
             = Label(I18N_RESOURCES['windowed_resolution_description_string'][self.current_locale],
                     font_name='Arial', font_size=int(16 / 80 * self.bottom_bar_height),
-                    x=self.screen_resolution[0] // 4, y=self.medium_line + self.top_bar_height * 2,
+                    x=self.screen_resolution[0] // 4, y=self.medium_line + int(5 * self.top_bar_height / 8),
                     anchor_x='center', anchor_y='center', batch=self.batches['ui_batch'],
                     group=self.groups['button_text'])
         for b in self.buttons:
@@ -165,10 +165,10 @@ class SettingsView(View):
         self.medium_line = self.screen_resolution[1] // 2 + self.top_bar_height // 2
         if self.is_activated:
             self.temp_windowed_resolution_label.x = self.screen_resolution[0] // 4
-            self.temp_windowed_resolution_label.y = self.medium_line + self.top_bar_height
+            self.temp_windowed_resolution_label.y = self.medium_line - int(5 * self.top_bar_height / 8)
             self.temp_windowed_resolution_label.font_size = int(16 / 80 * self.bottom_bar_height)
             self.windowed_resolution_description_label.x = self.screen_resolution[0] // 4
-            self.windowed_resolution_description_label.y = self.medium_line + self.top_bar_height * 2
+            self.windowed_resolution_description_label.y = self.medium_line + int(5 * self.top_bar_height / 8)
             self.windowed_resolution_description_label.font_size = int(16 / 80 * self.bottom_bar_height)
 
         self.accept_settings_button.x_margin = self.screen_resolution[0] - self.bottom_bar_height * 2 + 2
@@ -181,12 +181,12 @@ class SettingsView(View):
                                                     self.bottom_bar_height // 2)
         self.increment_windowed_resolution_button.x_margin \
             = 11 * self.screen_resolution[0] // 32 - self.top_bar_height // 2
-        self.increment_windowed_resolution_button.y_margin = self.medium_line + self.top_bar_height // 2
+        self.increment_windowed_resolution_button.y_margin = self.medium_line - int(9 * self.top_bar_height / 8)
         self.increment_windowed_resolution_button.on_size_changed((self.top_bar_height, self.top_bar_height),
                                                                   int(16 / 40 * self.top_bar_height))
         self.decrement_windowed_resolution_button.x_margin \
             = 5 * self.screen_resolution[0] // 32 - self.top_bar_height // 2
-        self.decrement_windowed_resolution_button.y_margin = self.medium_line + self.top_bar_height // 2
+        self.decrement_windowed_resolution_button.y_margin = self.medium_line - int(9 * self.top_bar_height / 8)
         self.decrement_windowed_resolution_button.on_size_changed((self.top_bar_height, self.top_bar_height),
                                                                   int(16 / 40 * self.top_bar_height))
         for b in self.buttons:
