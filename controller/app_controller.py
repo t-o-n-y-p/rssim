@@ -208,3 +208,35 @@ class AppController(Controller):
         :param notification:                    notification object
         """
         self.loader.notifications.append(notification)
+
+    def on_change_level_up_notification_state(self, notification_state):
+        """
+        Notifies the Game controller about level up notification state update.
+
+        :param notification_state:              new notification state defined by player
+        """
+        self.game.on_change_level_up_notification_state(notification_state)
+
+    def on_change_feature_unlocked_notification_state(self, notification_state):
+        """
+        Notifies the Game controller about feature unlocked notification state update.
+
+        :param notification_state:              new notification state defined by player
+        """
+        self.game.on_change_feature_unlocked_notification_state(notification_state)
+
+    def on_change_construction_completed_notification_state(self, notification_state):
+        """
+        Notifies the Game controller about construction completed notification state update.
+
+        :param notification_state:              new notification state defined by player
+        """
+        self.game.on_change_construction_completed_notification_state(notification_state)
+
+    def on_change_enough_money_notification_state(self, notification_state):
+        """
+        Notifies the Game controller about enough money notification state update.
+
+        :param notification_state:              new notification state defined by player
+        """
+        self.game.on_change_enough_money_notification_state(notification_state)

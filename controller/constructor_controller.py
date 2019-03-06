@@ -140,3 +140,19 @@ class ConstructorController(Controller):
         Notifies model that track money target was deactivated.
         """
         self.model.on_deactivate_track_money_target()
+
+    def on_change_feature_unlocked_notification_state(self, notification_state):
+        """
+        Notifies the view about feature unlocked notification state update.
+
+        :param notification_state:              new notification state defined by player
+        """
+        self.view.on_change_feature_unlocked_notification_state(notification_state)
+
+    def on_change_construction_completed_notification_state(self, notification_state):
+        """
+        Notifies the view about construction completed notification state update.
+
+        :param notification_state:              new notification state defined by player
+        """
+        self.view.on_change_construction_completed_notification_state(notification_state)

@@ -38,6 +38,14 @@ class SettingsView(View):
             buttons                                     list of all buttons
             temp_windowed_resolution_label              label from temp windowed resolution
             windowed_resolution_description_label       label from windowed resolution setting description
+            temp_level_up_notification_enabled
+                                level up notification flag value selected by player before making decision
+            temp_feature_unlocked_notification_enabled
+                                feature unlocked notification flag value selected by player before making decision
+            temp_construction_completed_notification_enabled
+                                construction completed notification flag value selected by player before making decision
+            temp_enough_money_notification_enabled
+                                enough money notification flag value selected by player before making decision
 
         :param user_db_cursor:                  user DB cursor (is used to execute user DB queries)
         :param config_db_cursor:                configuration DB cursor (is used to execute configuration DB queries)
@@ -85,6 +93,10 @@ class SettingsView(View):
         super().__init__(user_db_cursor, config_db_cursor, surface, batches, groups,
                          logger=getLogger('root.app.settings.view'))
         self.temp_windowed_resolution = (0, 0)
+        self.temp_level_up_notification_enabled = False
+        self.temp_feature_unlocked_notification_enabled = False
+        self.temp_construction_completed_notification_enabled = False
+        self.temp_enough_money_notification_enabled = False
         self.temp_log_level = 0
         self.medium_line = self.screen_resolution[1] // 2 + self.top_bar_height // 2
         self.settings_opacity = 0
@@ -197,7 +209,7 @@ class SettingsView(View):
         Updates temp windowed resolution and text label for it, windowed resolution position.
         Activates and deactivates windowed resolution buttons if needed.
 
-        :param windowed_resolution:             selected windowed resoltion
+        :param windowed_resolution:             selected windowed resolution
         """
         self.temp_windowed_resolution = windowed_resolution
         self.available_windowed_resolutions_position \
@@ -213,6 +225,21 @@ class SettingsView(View):
             self.increment_windowed_resolution_button.on_deactivate()
 
         self.temp_windowed_resolution_label.text = 'x'.join(str(t) for t in self.temp_windowed_resolution)
+
+    def on_change_temp_notification_flags(self, level_up, feature_unlocked, construction_completed, enough_money):
+        """
+        Updates temp notification flags.
+        Activates and deactivates corresponding checkbox buttons.
+
+        :param level_up:                        flag value for level up notification
+        :param feature_unlocked:                flag value for feature unlocked notification
+        :param construction_completed:          flag value for construction completed notification
+        :param enough_money:                    flag value for enough money notification
+        """
+        self.temp_level_up_notification_enabled = level_up
+        self.temp_feature_unlocked_notification_enabled = feature_unlocked
+        self.temp_construction_completed_notification_enabled = construction_completed
+        self.temp_enough_money_notification_enabled = enough_money
 
     def on_update_current_locale(self, new_locale):
         """

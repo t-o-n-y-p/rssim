@@ -698,3 +698,19 @@ class MapController(Controller):
 
         for train in self.trains_list:
             train.on_enable_notifications()
+
+    def on_change_feature_unlocked_notification_state(self, notification_state):
+        """
+        Notifies the Constructor controller about feature unlocked notification state update.
+
+        :param notification_state:              new notification state defined by player
+        """
+        self.constructor.on_change_feature_unlocked_notification_state(notification_state)
+
+    def on_change_construction_completed_notification_state(self, notification_state):
+        """
+        Notifies the Constructor controller about construction completed notification state update.
+
+        :param notification_state:              new notification state defined by player
+        """
+        self.constructor.on_change_construction_completed_notification_state(notification_state)

@@ -385,3 +385,19 @@ class GameView(View):
         enough_money_track_notification = EnoughMoneyTrackNotification()
         enough_money_track_notification.send(self.current_locale)
         self.controller.parent_controller.on_append_notification(enough_money_track_notification)
+
+    def on_change_level_up_notification_state(self, notification_state):
+        """
+        Updates level up notification state.
+
+        :param notification_state:              new notification state defined by player
+        """
+        self.level_up_notification_enabled = notification_state
+
+    def on_change_enough_money_notification_state(self, notification_state):
+        """
+        Updates enough money notification state.
+
+        :param notification_state:              new notification state defined by player
+        """
+        self.enough_money_notification_enabled = notification_state

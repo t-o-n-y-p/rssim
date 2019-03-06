@@ -714,3 +714,19 @@ class ConstructorView(View):
         track_construction_completed_notification.send(self.current_locale, message_args=(track,))
         self.controller.parent_controller.parent_controller.parent_controller\
             .on_append_notification(track_construction_completed_notification)
+
+    def on_change_feature_unlocked_notification_state(self, notification_state):
+        """
+        Updates feature unlocked notification state.
+
+        :param notification_state:              new notification state defined by player
+        """
+        self.feature_unlocked_notification_enabled = notification_state
+
+    def on_change_construction_completed_notification_state(self, notification_state):
+        """
+        Updates construction completed notification state.
+
+        :param notification_state:              new notification state defined by player
+        """
+        self.construction_completed_notification_enabled = notification_state
