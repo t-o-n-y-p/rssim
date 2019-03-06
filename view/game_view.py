@@ -203,7 +203,7 @@ class GameView(View):
         self.time_label = Label('{0:0>2} : {1:0>2}'
                                 .format((self.game_time // FRAMES_IN_ONE_HOUR + 12) % HOURS_IN_ONE_DAY,
                                         (self.game_time // FRAMES_IN_ONE_MINUTE) % MINUTES_IN_ONE_HOUR),
-                                font_name='Perfo', bold=True, font_size=int(36 / 80 * self.bottom_bar_height),
+                                font_name='Perfo', bold=True, font_size=int(32 / 80 * self.bottom_bar_height),
                                 x=self.screen_resolution[0] - int(181 / 80 * self.bottom_bar_height),
                                 y=self.bottom_bar_height // 2, anchor_x='center', anchor_y='center',
                                 batch=self.batches['ui_batch'], group=self.groups['button_text'])
@@ -247,7 +247,7 @@ class GameView(View):
             self.money_label.font_size = int(22 / 80 * self.bottom_bar_height)
             self.time_label.x = self.screen_resolution[0] - int(181 / 80 * self.bottom_bar_height)
             self.time_label.y = self.bottom_bar_height // 2
-            self.time_label.font_size = int(36 / 80 * self.bottom_bar_height)
+            self.time_label.font_size = int(32 / 80 * self.bottom_bar_height)
             self.progress_bar_exp_inactive.scale = self.bottom_bar_height / 80
             self.progress_bar_exp_inactive.position = (self.exp_offset, self.bottom_bar_height // 8)
             self.progress_bar_money_inactive.scale = self.bottom_bar_height / 80
