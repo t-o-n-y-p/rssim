@@ -38,7 +38,6 @@ class GameView(View):
             pause_game_button                       PauseGameButton object
             resume_game_button                      ResumeGameButton object
             buttons                                 list of all buttons
-            day_label                               "DAY X" label
             time_label                              time label
             level_label                             "LEVEL X" label
             money_label                             money label
@@ -100,7 +99,6 @@ class GameView(View):
         self.buttons.append(self.pause_game_button)
         self.buttons.append(self.resume_game_button)
         add_font('perfo-bold.ttf')
-        self.day_label = None
         self.time_label = None
         self.level_label = None
         self.money_label = None
@@ -202,19 +200,12 @@ class GameView(View):
                                  y=self.bottom_bar_height // 2,
                                  anchor_x='center', anchor_y='center',
                                  batch=self.batches['ui_batch'], group=self.groups['button_text'])
-        self.day_label = Label(I18N_RESOURCES['day_string'][self.current_locale]
-                               .format(1 + self.game_time // FRAMES_IN_ONE_DAY), font_name='Perfo', bold=True,
-                               font_size=int(22 / 80 * self.bottom_bar_height),
-                               x=self.screen_resolution[0] - int(181 / 80 * self.bottom_bar_height),
-                               y=int(57 / 80 * self.bottom_bar_height),
-                               anchor_x='center', anchor_y='center', batch=self.batches['ui_batch'],
-                               group=self.groups['button_text'])
         self.time_label = Label('{0:0>2} : {1:0>2}'
                                 .format((self.game_time // FRAMES_IN_ONE_HOUR + 12) % HOURS_IN_ONE_DAY,
                                         (self.game_time // FRAMES_IN_ONE_MINUTE) % MINUTES_IN_ONE_HOUR),
-                                font_name='Perfo', bold=True, font_size=int(22 / 80 * self.bottom_bar_height),
+                                font_name='Perfo', bold=True, font_size=int(36 / 80 * self.bottom_bar_height),
                                 x=self.screen_resolution[0] - int(181 / 80 * self.bottom_bar_height),
-                                y=int(26 / 80 * self.bottom_bar_height), anchor_x='center', anchor_y='center',
+                                y=self.bottom_bar_height // 2, anchor_x='center', anchor_y='center',
                                 batch=self.batches['ui_batch'], group=self.groups['button_text'])
         for b in self.buttons:
             if b.to_activate_on_controller_init:
@@ -230,8 +221,6 @@ class GameView(View):
         self.level_label = None
         self.money_label.delete()
         self.money_label = None
-        self.day_label.delete()
-        self.day_label = None
         self.time_label.delete()
         self.time_label = None
         for b in self.buttons:
@@ -256,12 +245,9 @@ class GameView(View):
                                                          * self.bottom_bar_height)
             self.money_label.y = self.bottom_bar_height // 2
             self.money_label.font_size = int(22 / 80 * self.bottom_bar_height)
-            self.day_label.x = self.screen_resolution[0] - int(181 / 80 * self.bottom_bar_height)
-            self.day_label.y = int(57 / 80 * self.bottom_bar_height)
-            self.day_label.font_size = int(22 / 80 * self.bottom_bar_height)
             self.time_label.x = self.screen_resolution[0] - int(181 / 80 * self.bottom_bar_height)
-            self.time_label.y = int(26 / 80 * self.bottom_bar_height)
-            self.time_label.font_size = int(22 / 80 * self.bottom_bar_height)
+            self.time_label.y = self.bottom_bar_height // 2
+            self.time_label.font_size = int(36 / 80 * self.bottom_bar_height)
             self.progress_bar_exp_inactive.scale = self.bottom_bar_height / 80
             self.progress_bar_exp_inactive.position = (self.exp_offset, self.bottom_bar_height // 8)
             self.progress_bar_money_inactive.scale = self.bottom_bar_height / 80
@@ -303,8 +289,6 @@ class GameView(View):
             self.time_label.text = '{0:0>2} : {1:0>2}'\
                 .format((self.game_time // FRAMES_IN_ONE_HOUR + 12) % HOURS_IN_ONE_DAY,
                         (self.game_time // FRAMES_IN_ONE_MINUTE) % MINUTES_IN_ONE_HOUR)
-            self.day_label.text = I18N_RESOURCES['day_string'][self.current_locale]\
-                .format(1 + self.game_time // FRAMES_IN_ONE_DAY)
 
     @view_is_active
     def on_update_exp(self, exp, player_progress):
@@ -379,8 +363,6 @@ class GameView(View):
         self.current_locale = new_locale
         if self.is_activated:
             self.level_label.text = I18N_RESOURCES['level_string'][self.current_locale].format(self.level)
-            self.day_label.text = I18N_RESOURCES['day_string'][self.current_locale] \
-                .format(1 + self.game_time // FRAMES_IN_ONE_DAY)
 
     @notifications_available
     @level_up_notification_enabled

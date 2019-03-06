@@ -43,10 +43,6 @@
 		"en": "LEVEL  {0}",
 		"ru": "УРОВЕНЬ  {0}"
 	},
-	"day_string": {
-		"en": "DAY  {0}",
-		"ru": "ДЕНЬ  {0}"
-	},
 	"schedule_caption_string": {
 		"en": "Train #          Arrival           Departed from       Cars  Stop, m:s",
 		"ru": "№ поезда      Прибытие         Прибыл из       Длина    Стоянка"
