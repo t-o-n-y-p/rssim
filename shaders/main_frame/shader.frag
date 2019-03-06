@@ -27,8 +27,10 @@
         int mini_map_height - minipmap height; is provided already calculated for performance reasons
         int is_decrement_resolution_button_activated - flag to determine if decrement resolution button
             on settings screen is activated
+        ivec2 decrement_resolution_button_position - position of the decrement resolution button bottom left corner
         int is_increment_resolution_button_activated - flag to determine if increment resolution button
             on settings screen is activated
+        ivec2 increment_resolution_button_position - position of the increment resolution button bottom left corner
 */
 #version 330 core
 layout(pixel_center_integer) in vec4 gl_FragCoord;
@@ -52,7 +54,9 @@ uniform ivec2 mini_map_position = ivec2(0, 0);
 uniform int mini_map_width = 0;
 uniform int mini_map_height = 0;
 uniform int is_decrement_resolution_button_activated = 0;
+uniform ivec2 decrement_resolution_button_position = ivec2(0, 0);
 uniform int is_increment_resolution_button_activated = 0;
+uniform ivec2 increment_resolution_button_position = ivec2(0, 0);
 
 bool is_general_border()
 /*
@@ -225,19 +229,11 @@ bool is_mini_map_viewport_border()
                 );
 }
 
-bool is_settings_view_button_border()
+bool is_resolution_settings_button_border()
 /*
-    Returns "true" if pixel belongs to settings view buttons borders and "false" if it does not.
+    Returns "true" if pixel belongs to resolution settings view buttons borders and "false" if it does not.
 */
 {
-    // medium_line - Y position of settings screen center
-    int medium_line = screen_resolution[1] / 2 + top_bar_height / 2;
-    // decrement_resolution_button_position - position of the bottom left corner for decrement resolution button
-    ivec2 decrement_resolution_button_position = ivec2(5 * screen_resolution[0] / 32 - top_bar_height / 2,
-                                                       medium_line + top_bar_height / 2);
-    // increment_resolution_button_position - position of the bottom left corner for increment resolution button
-    ivec2 increment_resolution_button_position = ivec2(11 * screen_resolution[0] / 32 - top_bar_height / 2,
-                                                       medium_line + top_bar_height / 2);
     int settings_decrement_x_margin = int(gl_FragCoord[0]) - decrement_resolution_button_position[0];
     int settings_resolution_y_margin = int(gl_FragCoord[1]) - decrement_resolution_button_position[1];
     int settings_increment_x_margin = int(gl_FragCoord[0]) - increment_resolution_button_position[0];
@@ -451,7 +447,7 @@ void main()
             mini_map_result = vec4(0.0);
 
         // draw all buttons on settings screen
-        if (settings_is_activated == 1 && is_settings_view_button_border())
+        if (settings_is_activated == 1 && is_resolution_settings_button_border())
             settings_result = vec4(1.0, 0.0, 0.0, 1.0);
         // just transparent if settings screen is not activated
         else
