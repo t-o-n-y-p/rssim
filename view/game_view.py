@@ -6,6 +6,7 @@ from pyglet.text import Label
 from pyglet.resource import add_font
 
 from view import *
+from button import create_two_state_button
 from button.pause_game_button import PauseGameButton
 from button.resume_game_button import ResumeGameButton
 from notifications.level_up_notification import LevelUpNotification
@@ -90,12 +91,11 @@ class GameView(View):
         self.exp_offset = self.bottom_bar_height + self.bottom_bar_height // 8
         self.money_offset = self.exp_offset + self.bottom_bar_height // 8 \
                           + int(self.progress_bar_inactive_image.width * self.bottom_bar_height / 80)
-        self.pause_game_button = PauseGameButton(surface=self.surface, batch=self.batches['ui_batch'],
-                                                 groups=self.groups, on_click_action=on_pause_game)
-        self.resume_game_button = ResumeGameButton(surface=self.surface, batch=self.batches['ui_batch'],
-                                                   groups=self.groups, on_click_action=on_resume_game)
-        self.pause_game_button.paired_button = self.resume_game_button
-        self.resume_game_button.paired_button = self.pause_game_button
+        self.pause_game_button, self.resume_game_button \
+            = create_two_state_button(PauseGameButton(surface=self.surface, batch=self.batches['ui_batch'],
+                                                      groups=self.groups, on_click_action=on_pause_game),
+                                      ResumeGameButton(surface=self.surface, batch=self.batches['ui_batch'],
+                                                       groups=self.groups, on_click_action=on_resume_game))
         self.buttons.append(self.pause_game_button)
         self.buttons.append(self.resume_game_button)
         add_font('perfo-bold.ttf')

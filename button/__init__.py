@@ -102,6 +102,19 @@ def button_is_pressed(fn):
     return _handle_if_button_is_pressed
 
 
+def create_two_state_button(first_button_object, second_button_object):
+    """
+    Makes button pair from 2 Button objects representing single button with 2 states.
+
+    :param first_button_object:                 Button object for the first state
+    :param second_button_object:                Button object for the second state
+    :return:                                    two paired Button objects
+    """
+    first_button_object.paired_button = second_button_object
+    second_button_object.paired_button = first_button_object
+    return first_button_object, second_button_object
+
+
 class Button:
     """
     Base class for all buttons in the app.

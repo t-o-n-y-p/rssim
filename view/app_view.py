@@ -8,6 +8,7 @@ from win32gui import GetActiveWindow, GetWindowRect, SetWindowPos
 from win32con import HWND_TOP, SWP_NOREDRAW
 
 from view import *
+from button import create_two_state_button
 from button.close_game_button import CloseGameButton
 from button.iconify_game_button import IconifyGameButton
 from button.fullscreen_button import FullscreenButton
@@ -136,18 +137,17 @@ class AppView(View):
                                                  groups=self.groups, on_click_action=on_close_game)
         self.iconify_game_button = IconifyGameButton(surface=self.surface, batch=self.batches['ui_batch'],
                                                      groups=self.groups, on_click_action=on_iconify_game)
-        self.fullscreen_button = FullscreenButton(surface=self.surface, batch=self.batches['ui_batch'],
-                                                  groups=self.groups, on_click_action=on_app_window_fullscreen)
-        self.restore_button = RestoreButton(surface=self.surface, batch=self.batches['ui_batch'],
-                                            groups=self.groups, on_click_action=on_app_window_restore)
+        self.fullscreen_button, self.restore_button \
+            = create_two_state_button(FullscreenButton(surface=self.surface, batch=self.batches['ui_batch'],
+                                                       groups=self.groups, on_click_action=on_app_window_fullscreen),
+                                      RestoreButton(surface=self.surface, batch=self.batches['ui_batch'],
+                                                    groups=self.groups, on_click_action=on_app_window_restore))
         self.open_settings_button = OpenSettingsButton(surface=self.surface, batch=self.batches['ui_batch'],
                                                        groups=self.groups, on_click_action=on_open_settings)
         self.en_locale_button = ENLocaleButton(surface=self.surface, batch=self.batches['ui_batch'],
                                                groups=self.groups, on_click_action=on_set_en_locale)
         self.ru_locale_button = RULocaleButton(surface=self.surface, batch=self.batches['ui_batch'],
                                                groups=self.groups, on_click_action=on_set_ru_locale)
-        self.fullscreen_button.paired_button = self.restore_button
-        self.restore_button.paired_button = self.fullscreen_button
         self.buttons.append(self.close_game_button)
         self.buttons.append(self.iconify_game_button)
         self.buttons.append(self.fullscreen_button)

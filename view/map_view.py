@@ -5,6 +5,7 @@ from pyglet.sprite import Sprite
 from pyglet import resource
 
 from view import *
+from button import create_two_state_button
 from button.zoom_in_button import ZoomInButton
 from button.zoom_out_button import ZoomOutButton
 from button.open_schedule_button import OpenScheduleButton
@@ -139,18 +140,21 @@ class MapView(View):
         self.base_offset_lower_left_limit = (0, 0)
         self.base_offset_upper_right_limit = (self.screen_resolution[0] - MAP_WIDTH,
                                               self.screen_resolution[1] - MAP_HEIGHT)
-        self.zoom_in_button = ZoomInButton(surface=self.surface, batch=self.batches['ui_batch'], groups=self.groups,
-                                           on_click_action=on_click_zoom_in_button, on_hover_action=on_hover_action,
-                                           on_leave_action=on_leave_action)
-        self.zoom_out_button = ZoomOutButton(surface=self.surface, batch=self.batches['ui_batch'], groups=self.groups,
-                                             on_click_action=on_click_zoom_out_button, on_hover_action=on_hover_action,
-                                             on_leave_action=on_leave_action)
+        self.zoom_in_button, self.zoom_out_button \
+            = create_two_state_button(ZoomInButton(surface=self.surface,
+                                                   batch=self.batches['ui_batch'], groups=self.groups,
+                                                   on_click_action=on_click_zoom_in_button,
+                                                   on_hover_action=on_hover_action,
+                                                   on_leave_action=on_leave_action),
+                                      ZoomOutButton(surface=self.surface,
+                                                    batch=self.batches['ui_batch'], groups=self.groups,
+                                                    on_click_action=on_click_zoom_out_button,
+                                                    on_hover_action=on_hover_action,
+                                                    on_leave_action=on_leave_action))
         self.open_schedule_button = OpenScheduleButton(surface=self.surface, batch=self.batches['ui_batch'],
                                                        groups=self.groups, on_click_action=on_open_schedule)
         self.open_constructor_button = OpenConstructorButton(surface=self.surface, batch=self.batches['ui_batch'],
                                                              groups=self.groups, on_click_action=on_open_constructor)
-        self.zoom_in_button.paired_button = self.zoom_out_button
-        self.zoom_out_button.paired_button = self.zoom_in_button
         self.buttons.append(self.zoom_in_button)
         self.buttons.append(self.zoom_out_button)
         self.buttons.append(self.open_schedule_button)

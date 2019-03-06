@@ -3,6 +3,7 @@ from logging import getLogger
 from pyglet.text import Label
 
 from view import *
+from button import create_two_state_button
 from button.close_constructor_button import CloseConstructorButton
 from button.build_track_button import BuildTrackButton
 from button.set_track_money_target_button import SetTrackMoneyTargetButton
@@ -154,14 +155,13 @@ class ConstructorView(View):
         self.description_tracks_labels = {}
         self.build_track_button = BuildTrackButton(surface=self.surface, batch=self.batches['ui_batch'],
                                                    groups=self.groups, on_click_action=on_buy_track)
-        self.set_track_money_target_button \
-            = SetTrackMoneyTargetButton(surface=self.surface, batch=self.batches['ui_batch'],
-                                        groups=self.groups, on_click_action=on_set_track_money_target)
-        self.reset_track_money_target_button \
-            = ResetTrackMoneyTargetButton(surface=self.surface, batch=self.batches['ui_batch'],
-                                          groups=self.groups, on_click_action=on_reset_track_money_target)
-        self.set_track_money_target_button.paired_button = self.reset_track_money_target_button
-        self.reset_track_money_target_button.paired_button = self.set_track_money_target_button
+        self.set_track_money_target_button, self.reset_track_money_target_button \
+            = create_two_state_button(SetTrackMoneyTargetButton(surface=self.surface, batch=self.batches['ui_batch'],
+                                                                groups=self.groups,
+                                                                on_click_action=on_set_track_money_target),
+                                      ResetTrackMoneyTargetButton(surface=self.surface, batch=self.batches['ui_batch'],
+                                                                  groups=self.groups,
+                                                                  on_click_action=on_reset_track_money_target))
         self.no_more_tracks_available_labels = []
         self.coming_soon_environment_labels = []
         self.close_constructor_button = CloseConstructorButton(surface=self.surface, batch=self.batches['ui_batch'],
