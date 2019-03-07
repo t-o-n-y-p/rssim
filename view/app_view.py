@@ -375,3 +375,11 @@ class AppView(View):
             = int(self.controller.settings.view.increment_windowed_resolution_button.is_activated)
         shader.uniforms.increment_resolution_button_position \
             = self.controller.settings.view.increment_windowed_resolution_button.position
+        shader.uniforms.level_up_checkbox_position \
+            = self.controller.settings.view.level_up_checked_checkbox_button.position
+        shader.uniforms.feature_unlocked_checkbox_position \
+            = self.controller.settings.view.feature_unlocked_checked_checkbox_button.position
+        shader.uniforms.construction_completed_checkbox_position \
+            = self.controller.settings.view.construction_completed_checked_checkbox_button.position
+        shader.uniforms.enough_money_checkbox_position \
+            = self.controller.settings.view.enough_money_checked_checkbox_button.position

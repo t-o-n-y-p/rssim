@@ -31,6 +31,14 @@
         int is_increment_resolution_button_activated - flag to determine if increment resolution button
             on settings screen is activated
         ivec2 increment_resolution_button_position - position of the increment resolution button bottom left corner
+        ivec2 level_up_checkbox_position - position of the level up notifications checkbox button bottom left corner
+        ivec2 feature_unlocked_checkbox_position - position of the feature unlocked notifications checkbox button
+            bottom left corner
+        ivec2 construction_completed_checkbox_position - position of the construction completed notifications
+            checkbox button bottom left corner
+        ivec2 enough_money_checkbox_position - position of the enough money notifications checkbox button
+            bottom left corner
+
 */
 #version 330 core
 layout(pixel_center_integer) in vec4 gl_FragCoord;
@@ -57,6 +65,10 @@ uniform int is_decrement_resolution_button_activated = 0;
 uniform ivec2 decrement_resolution_button_position = ivec2(0, 0);
 uniform int is_increment_resolution_button_activated = 0;
 uniform ivec2 increment_resolution_button_position = ivec2(0, 0);
+uniform ivec2 level_up_checkbox_position = ivec2(0, 0);
+uniform ivec2 feature_unlocked_checkbox_position = ivec2(0, 0);
+uniform ivec2 construction_completed_checkbox_position = ivec2(0, 0);
+uniform ivec2 enough_money_checkbox_position = ivec2(0, 0);
 
 bool is_general_border()
 /*
@@ -268,6 +280,61 @@ bool is_resolution_settings_button_border()
                 );
 }
 
+bool is_notification_settings_button_border()
+/*
+    Returns "true" if pixel belongs to notification settings view buttons borders and "false" if it does not.
+*/
+{
+    int settings_resolution_x_margin = int(gl_FragCoord[0]) - level_up_checkbox_position[0];
+    int level_up_checkbox_y_margin = int(gl_FragCoord[1]) - level_up_checkbox_position[1];
+    int feature_unlocked_checkbox_y_margin = int(gl_FragCoord[1]) - feature_unlocked_checkbox_position[1];
+    int construction_completed_checkbox_y_margin = int(gl_FragCoord[1]) - construction_completed_checkbox_position[1];
+    int enough_money_checkbox_y_margin = int(gl_FragCoord[1]) - enough_money_checkbox_position[1];
+    bool is_level_up_checkbox_border
+    = ((settings_resolution_x_margin == 0 || settings_resolution_x_margin == 1
+        || settings_resolution_x_margin == top_bar_height - 1
+        || settings_resolution_x_margin == top_bar_height - 2
+       ) && level_up_checkbox_y_margin >= 0 && level_up_checkbox_y_margin <= top_bar_height - 1
+      ) || ((level_up_checkbox_y_margin == 0 || level_up_checkbox_y_margin == 1
+             || level_up_checkbox_y_margin == top_bar_height - 1
+             || level_up_checkbox_y_margin == top_bar_height - 2
+            ) && settings_resolution_x_margin >= 0 && settings_resolution_x_margin <= top_bar_height - 1
+           );
+    bool is_feature_unlocked_checkbox_border
+    = ((settings_resolution_x_margin == 0 || settings_resolution_x_margin == 1
+        || settings_resolution_x_margin == top_bar_height - 1
+        || settings_resolution_x_margin == top_bar_height - 2
+       ) && feature_unlocked_checkbox_y_margin >= 0 && feature_unlocked_checkbox_y_margin <= top_bar_height - 1
+      ) || ((feature_unlocked_checkbox_y_margin == 0 || feature_unlocked_checkbox_y_margin == 1
+             || feature_unlocked_checkbox_y_margin == top_bar_height - 1
+             || feature_unlocked_checkbox_y_margin == top_bar_height - 2
+            ) && settings_resolution_x_margin >= 0 && settings_resolution_x_margin <= top_bar_height - 1
+           );
+    bool is_construction_completed_checkbox_border
+    = ((settings_resolution_x_margin == 0 || settings_resolution_x_margin == 1
+        || settings_resolution_x_margin == top_bar_height - 1
+        || settings_resolution_x_margin == top_bar_height - 2
+       ) && construction_completed_checkbox_y_margin >= 0
+         && construction_completed_checkbox_y_margin <= top_bar_height - 1
+      ) || ((construction_completed_checkbox_y_margin == 0 || construction_completed_checkbox_y_margin == 1
+             || construction_completed_checkbox_y_margin == top_bar_height - 1
+             || construction_completed_checkbox_y_margin == top_bar_height - 2
+            ) && settings_resolution_x_margin >= 0 && settings_resolution_x_margin <= top_bar_height - 1
+           );
+    bool is_enough_money_checkbox_border
+    = ((settings_resolution_x_margin == 0 || settings_resolution_x_margin == 1
+        || settings_resolution_x_margin == top_bar_height - 1
+        || settings_resolution_x_margin == top_bar_height - 2
+       ) && enough_money_checkbox_y_margin >= 0 && enough_money_checkbox_y_margin <= top_bar_height - 1
+      ) || ((enough_money_checkbox_y_margin == 0 || enough_money_checkbox_y_margin == 1
+             || enough_money_checkbox_y_margin == top_bar_height - 1
+             || enough_money_checkbox_y_margin == top_bar_height - 2
+            ) && settings_resolution_x_margin >= 0 && settings_resolution_x_margin <= top_bar_height - 1
+           );
+    return is_level_up_checkbox_border || is_feature_unlocked_checkbox_border
+           || is_construction_completed_checkbox_border || is_enough_money_checkbox_border;
+}
+
 bool is_schedule_left_line(int line_width)
 /*
     Returns "true" if pixel belongs to the left gradient line on schedule screen and "false" if it does not.
@@ -447,7 +514,8 @@ void main()
             mini_map_result = vec4(0.0);
 
         // draw all buttons on settings screen
-        if (settings_is_activated == 1 && is_resolution_settings_button_border())
+        if (settings_is_activated == 1 && (is_resolution_settings_button_border()
+                                           || is_notification_settings_button_border()))
             settings_result = vec4(1.0, 0.0, 0.0, 1.0);
         // just transparent if settings screen is not activated
         else
