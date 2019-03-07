@@ -63,17 +63,17 @@
 		"en": "station level is increased",
 		"ru": "уровень станции увеличивается"
 	},
-	"feature_unlocked_notification_description": {
+	"feature_unlocked_notification_description_string": {
 		"en": "any new feature is unlocked",
 		"ru": "становится доступна новая функиональность"
 	},
 	"construction_completed_notification_description_string": {
-		"en": "new track construction is completed",
-		"ru": "завершается строительство нового пути"
+		"en": "construction is completed",
+		"ru": "завершается строительство"
 	},
 	"enough_money_notification_description_string": {
-		"en": "there is enough money to buy new track",
-		"ru": "накопились деньги на покупку нового пути"
+		"en": "there is enough money to start next construction",
+		"ru": "накопились деньги на новое строительство"
 	},
 	"level_up_notification_caption_string": {
 		"en": "Level up",

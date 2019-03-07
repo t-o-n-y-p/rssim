@@ -13,5 +13,5 @@ class CheckedCheckboxButton(Button):
         self.to_activate_on_controller_init = False
         self.text = ''
         self.font_name = 'Webdings'
-        self.base_font_size_property = 32 / 80
+        self.base_font_size_property = 42 / 80
         self.on_click_action = on_click_action

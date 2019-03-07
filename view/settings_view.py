@@ -282,14 +282,48 @@ class SettingsView(View):
         self.temp_windowed_resolution_label \
             = Label('x'.join(str(t) for t in self.temp_windowed_resolution),
                     font_name='Arial', font_size=int(16 / 80 * self.bottom_bar_height),
-                    x=self.screen_resolution[0] // 4, y=self.medium_line - int(5 * self.top_bar_height / 8),
+                    x=self.screen_resolution[0] // 4, y=self.medium_line - self.top_bar_height // 8 * 5,
                     anchor_x='center', anchor_y='center', batch=self.batches['ui_batch'],
                     group=self.groups['button_text'])
         self.windowed_resolution_description_label \
             = Label(I18N_RESOURCES['windowed_resolution_description_string'][self.current_locale],
                     font_name='Arial', font_size=int(16 / 80 * self.bottom_bar_height),
-                    x=self.screen_resolution[0] // 4, y=self.medium_line + int(5 * self.top_bar_height / 8),
+                    x=self.screen_resolution[0] // 4, y=self.medium_line + self.top_bar_height // 8 * 5,
                     anchor_x='center', anchor_y='center', batch=self.batches['ui_batch'],
+                    group=self.groups['button_text'])
+        self.notification_description_label \
+            = Label(I18N_RESOURCES['notification_description_string'][self.current_locale],
+                    font_name='Arial', font_size=int(16 / 80 * self.bottom_bar_height),
+                    x=3 * self.screen_resolution[0] // 4, y=self.medium_line + self.top_bar_height // 8 * 20,
+                    anchor_x='center', anchor_y='center', batch=self.batches['ui_batch'],
+                    group=self.groups['button_text'])
+        self.level_up_notification_description_label \
+            = Label(I18N_RESOURCES['level_up_notification_description_string'][self.current_locale],
+                    font_name='Arial', font_size=int(16 / 80 * self.bottom_bar_height),
+                    x=self.screen_resolution[0] // 2 + self.top_bar_height * 4,
+                    y=self.medium_line + self.top_bar_height // 8 * 10,
+                    anchor_x='left', anchor_y='center', batch=self.batches['ui_batch'],
+                    group=self.groups['button_text'])
+        self.feature_unlocked_notification_description_label \
+            = Label(I18N_RESOURCES['feature_unlocked_notification_description_string'][self.current_locale],
+                    font_name='Arial', font_size=int(16 / 80 * self.bottom_bar_height),
+                    x=self.screen_resolution[0] // 2 + self.top_bar_height * 4,
+                    y=self.medium_line,
+                    anchor_x='left', anchor_y='center', batch=self.batches['ui_batch'],
+                    group=self.groups['button_text'])
+        self.construction_completed_notification_description_label \
+            = Label(I18N_RESOURCES['construction_completed_notification_description_string'][self.current_locale],
+                    font_name='Arial', font_size=int(16 / 80 * self.bottom_bar_height),
+                    x=self.screen_resolution[0] // 2 + self.top_bar_height * 4,
+                    y=self.medium_line - self.top_bar_height // 8 * 10,
+                    anchor_x='left', anchor_y='center', batch=self.batches['ui_batch'],
+                    group=self.groups['button_text'])
+        self.enough_money_notification_description_label \
+            = Label(I18N_RESOURCES['enough_money_notification_description_string'][self.current_locale],
+                    font_name='Arial', font_size=int(16 / 80 * self.bottom_bar_height),
+                    x=self.screen_resolution[0] // 2 + self.top_bar_height * 4,
+                    y=self.medium_line - self.top_bar_height // 8 * 20,
+                    anchor_x='left', anchor_y='center', batch=self.batches['ui_batch'],
                     group=self.groups['button_text'])
         for b in self.buttons:
             if b.to_activate_on_controller_init:
@@ -305,6 +339,16 @@ class SettingsView(View):
         self.temp_windowed_resolution_label = None
         self.windowed_resolution_description_label.delete()
         self.windowed_resolution_description_label = None
+        self.notification_description_label.delete()
+        self.notification_description_label = None
+        self.level_up_notification_description_label.delete()
+        self.level_up_notification_description_label = None
+        self.feature_unlocked_notification_description_label.delete()
+        self.feature_unlocked_notification_description_label = None
+        self.construction_completed_notification_description_label.delete()
+        self.construction_completed_notification_description_label = None
+        self.enough_money_notification_description_label.delete()
+        self.enough_money_notification_description_label = None
         for b in self.buttons:
             b.on_deactivate()
 
@@ -318,11 +362,31 @@ class SettingsView(View):
         self.medium_line = self.screen_resolution[1] // 2 + self.top_bar_height // 2
         if self.is_activated:
             self.temp_windowed_resolution_label.x = self.screen_resolution[0] // 4
-            self.temp_windowed_resolution_label.y = self.medium_line - int(5 * self.top_bar_height / 8)
+            self.temp_windowed_resolution_label.y = self.medium_line - self.top_bar_height // 8 * 5
             self.temp_windowed_resolution_label.font_size = int(16 / 80 * self.bottom_bar_height)
             self.windowed_resolution_description_label.x = self.screen_resolution[0] // 4
-            self.windowed_resolution_description_label.y = self.medium_line + int(5 * self.top_bar_height / 8)
+            self.windowed_resolution_description_label.y = self.medium_line + self.top_bar_height // 8 * 5
             self.windowed_resolution_description_label.font_size = int(16 / 80 * self.bottom_bar_height)
+            self.notification_description_label.x = 3 * self.screen_resolution[0] // 4
+            self.notification_description_label.y = self.medium_line + self.top_bar_height // 8 * 20
+            self.notification_description_label.font_size = int(16 / 80 * self.bottom_bar_height)
+            self.level_up_notification_description_label.x = self.screen_resolution[0] // 2 + self.top_bar_height * 4
+            self.level_up_notification_description_label.y = self.medium_line + self.top_bar_height // 8 * 10
+            self.level_up_notification_description_label.font_size = int(16 / 80 * self.bottom_bar_height)
+            self.feature_unlocked_notification_description_label.x \
+                = self.screen_resolution[0] // 2 + self.top_bar_height * 4
+            self.feature_unlocked_notification_description_label.y = self.medium_line
+            self.feature_unlocked_notification_description_label.font_size = int(16 / 80 * self.bottom_bar_height)
+            self.construction_completed_notification_description_label.x \
+                = self.screen_resolution[0] // 2 + self.top_bar_height * 4
+            self.construction_completed_notification_description_label.y \
+                = self.medium_line - self.top_bar_height // 8 * 10
+            self.construction_completed_notification_description_label.font_size = int(16 / 80 * self.bottom_bar_height)
+            self.enough_money_notification_description_label.x \
+                = self.screen_resolution[0] // 2 + self.top_bar_height * 4
+            self.enough_money_notification_description_label.y \
+                = self.medium_line - self.top_bar_height // 8 * 20
+            self.enough_money_notification_description_label.font_size = int(16 / 80 * self.bottom_bar_height)
 
         self.accept_settings_button.x_margin = self.screen_resolution[0] - self.bottom_bar_height * 2 + 2
         self.accept_settings_button.y_margin = 0
@@ -336,50 +400,49 @@ class SettingsView(View):
                                                         * self.bottom_bar_height))
         self.increment_windowed_resolution_button.x_margin \
             = 11 * self.screen_resolution[0] // 32 - self.top_bar_height // 2
-        self.increment_windowed_resolution_button.y_margin = self.medium_line - int(9 * self.top_bar_height / 8)
+        self.increment_windowed_resolution_button.y_margin = self.medium_line - self.top_bar_height // 8 * 9
         self.increment_windowed_resolution_button\
             .on_size_changed((self.top_bar_height, self.top_bar_height),
                              int(self.increment_windowed_resolution_button.base_font_size_property
                                  * self.top_bar_height))
         self.decrement_windowed_resolution_button.x_margin \
             = 5 * self.screen_resolution[0] // 32 - self.top_bar_height // 2
-        self.decrement_windowed_resolution_button.y_margin = self.medium_line - int(9 * self.top_bar_height / 8)
+        self.decrement_windowed_resolution_button.y_margin = self.medium_line - self.top_bar_height // 8 * 9
         self.decrement_windowed_resolution_button\
             .on_size_changed((self.top_bar_height, self.top_bar_height),
                              int(self.decrement_windowed_resolution_button.base_font_size_property
                                  * self.top_bar_height))
         self.level_up_checked_checkbox_button.x_margin \
             = self.screen_resolution[0] // 2 + self.bottom_bar_height
-        self.level_up_checked_checkbox_button.y_margin = self.medium_line + int(3 * self.top_bar_height / 4)
+        self.level_up_checked_checkbox_button.y_margin = self.medium_line + self.top_bar_height // 8 * 6
         self.level_up_checked_checkbox_button\
             .on_size_changed((self.top_bar_height, self.top_bar_height),
                              int(self.level_up_checked_checkbox_button.base_font_size_property
                                  * self.top_bar_height))
         self.level_up_unchecked_checkbox_button.x_margin \
             = self.screen_resolution[0] // 2 + self.bottom_bar_height
-        self.level_up_unchecked_checkbox_button.y_margin = self.medium_line + int(3 * self.top_bar_height / 4)
+        self.level_up_unchecked_checkbox_button.y_margin = self.medium_line + self.top_bar_height // 8 * 6
         self.level_up_unchecked_checkbox_button\
             .on_size_changed((self.top_bar_height, self.top_bar_height),
                              int(self.level_up_unchecked_checkbox_button.base_font_size_property
                                  * self.top_bar_height))
         self.feature_unlocked_checked_checkbox_button.x_margin \
             = self.screen_resolution[0] // 2 + self.bottom_bar_height
-        self.feature_unlocked_checked_checkbox_button.y_margin = self.medium_line - self.top_bar_height // 2
+        self.feature_unlocked_checked_checkbox_button.y_margin = self.medium_line - self.top_bar_height // 8 * 4
         self.feature_unlocked_checked_checkbox_button\
             .on_size_changed((self.top_bar_height, self.top_bar_height),
                              int(self.feature_unlocked_checked_checkbox_button.base_font_size_property
                                  * self.top_bar_height))
         self.feature_unlocked_unchecked_checkbox_button.x_margin \
             = self.screen_resolution[0] // 2 + self.bottom_bar_height
-        self.feature_unlocked_unchecked_checkbox_button.y_margin = self.medium_line - self.top_bar_height // 2
+        self.feature_unlocked_unchecked_checkbox_button.y_margin = self.medium_line - self.top_bar_height // 8 * 4
         self.feature_unlocked_unchecked_checkbox_button\
             .on_size_changed((self.top_bar_height, self.top_bar_height),
                              int(self.feature_unlocked_unchecked_checkbox_button.base_font_size_property
                                  * self.top_bar_height))
         self.construction_completed_checked_checkbox_button.x_margin \
             = self.screen_resolution[0] // 2 + self.bottom_bar_height
-        self.construction_completed_checked_checkbox_button.y_margin = self.medium_line \
-                                                                       - int(7 * self.top_bar_height / 4)
+        self.construction_completed_checked_checkbox_button.y_margin = self.medium_line - self.top_bar_height // 8 * 14
         self.construction_completed_checked_checkbox_button\
             .on_size_changed((self.top_bar_height, self.top_bar_height),
                              int(self.construction_completed_checked_checkbox_button.base_font_size_property
@@ -387,21 +450,21 @@ class SettingsView(View):
         self.construction_completed_unchecked_checkbox_button.x_margin \
             = self.screen_resolution[0] // 2 + self.bottom_bar_height
         self.construction_completed_unchecked_checkbox_button.y_margin = self.medium_line \
-                                                                         - int(7 * self.top_bar_height / 4)
+                                                                         - self.top_bar_height // 8 * 14
         self.construction_completed_unchecked_checkbox_button\
             .on_size_changed((self.top_bar_height, self.top_bar_height),
                              int(self.construction_completed_unchecked_checkbox_button.base_font_size_property
                                  * self.top_bar_height))
         self.enough_money_checked_checkbox_button.x_margin \
             = self.screen_resolution[0] // 2 + self.bottom_bar_height
-        self.enough_money_checked_checkbox_button.y_margin = self.medium_line - 3 * self.top_bar_height
+        self.enough_money_checked_checkbox_button.y_margin = self.medium_line - self.top_bar_height // 8 * 24
         self.enough_money_checked_checkbox_button\
             .on_size_changed((self.top_bar_height, self.top_bar_height),
                              int(self.enough_money_checked_checkbox_button.base_font_size_property
                                  * self.top_bar_height))
         self.enough_money_unchecked_checkbox_button.x_margin \
             = self.screen_resolution[0] // 2 + self.bottom_bar_height
-        self.enough_money_unchecked_checkbox_button.y_margin = self.medium_line - 3 * self.top_bar_height
+        self.enough_money_unchecked_checkbox_button.y_margin = self.medium_line - self.top_bar_height // 8 * 24
         self.enough_money_unchecked_checkbox_button\
             .on_size_changed((self.top_bar_height, self.top_bar_height),
                              int(self.enough_money_unchecked_checkbox_button.base_font_size_property
@@ -475,3 +538,13 @@ class SettingsView(View):
         if self.is_activated:
             self.windowed_resolution_description_label.text \
                 = I18N_RESOURCES['windowed_resolution_description_string'][self.current_locale]
+            self.notification_description_label.text \
+                = I18N_RESOURCES['notification_description_string'][self.current_locale]
+            self.level_up_notification_description_label.text \
+                = I18N_RESOURCES['level_up_notification_description_string'][self.current_locale]
+            self.feature_unlocked_notification_description_label.text \
+                = I18N_RESOURCES['feature_unlocked_notification_description_string'][self.current_locale]
+            self.construction_completed_notification_description_label.text \
+                = I18N_RESOURCES['construction_completed_notification_description_string'][self.current_locale]
+            self.enough_money_notification_description_label.text \
+                = I18N_RESOURCES['enough_money_notification_description_string'][self.current_locale]
