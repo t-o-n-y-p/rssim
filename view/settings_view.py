@@ -348,6 +348,64 @@ class SettingsView(View):
             .on_size_changed((self.top_bar_height, self.top_bar_height),
                              int(self.decrement_windowed_resolution_button.base_font_size_property
                                  * self.top_bar_height))
+        self.level_up_checked_checkbox_button.x_margin \
+            = self.screen_resolution[0] // 2 + self.bottom_bar_height
+        self.level_up_checked_checkbox_button.y_margin = self.medium_line + int(3 * self.top_bar_height / 4)
+        self.level_up_checked_checkbox_button\
+            .on_size_changed((self.top_bar_height, self.top_bar_height),
+                             int(self.level_up_checked_checkbox_button.base_font_size_property
+                                 * self.top_bar_height))
+        self.level_up_unchecked_checkbox_button.x_margin \
+            = self.screen_resolution[0] // 2 + self.bottom_bar_height
+        self.level_up_unchecked_checkbox_button.y_margin = self.medium_line + int(3 * self.top_bar_height / 4)
+        self.level_up_unchecked_checkbox_button\
+            .on_size_changed((self.top_bar_height, self.top_bar_height),
+                             int(self.level_up_unchecked_checkbox_button.base_font_size_property
+                                 * self.top_bar_height))
+        self.feature_unlocked_checked_checkbox_button.x_margin \
+            = self.screen_resolution[0] // 2 + self.bottom_bar_height
+        self.feature_unlocked_checked_checkbox_button.y_margin = self.medium_line - self.top_bar_height // 2
+        self.feature_unlocked_checked_checkbox_button\
+            .on_size_changed((self.top_bar_height, self.top_bar_height),
+                             int(self.feature_unlocked_checked_checkbox_button.base_font_size_property
+                                 * self.top_bar_height))
+        self.feature_unlocked_unchecked_checkbox_button.x_margin \
+            = self.screen_resolution[0] // 2 + self.bottom_bar_height
+        self.feature_unlocked_unchecked_checkbox_button.y_margin = self.medium_line - self.top_bar_height // 2
+        self.feature_unlocked_unchecked_checkbox_button\
+            .on_size_changed((self.top_bar_height, self.top_bar_height),
+                             int(self.feature_unlocked_unchecked_checkbox_button.base_font_size_property
+                                 * self.top_bar_height))
+        self.construction_completed_checked_checkbox_button.x_margin \
+            = self.screen_resolution[0] // 2 + self.bottom_bar_height
+        self.construction_completed_checked_checkbox_button.y_margin = self.medium_line \
+                                                                       - int(7 * self.top_bar_height / 4)
+        self.construction_completed_checked_checkbox_button\
+            .on_size_changed((self.top_bar_height, self.top_bar_height),
+                             int(self.construction_completed_checked_checkbox_button.base_font_size_property
+                                 * self.top_bar_height))
+        self.construction_completed_unchecked_checkbox_button.x_margin \
+            = self.screen_resolution[0] // 2 + self.bottom_bar_height
+        self.construction_completed_unchecked_checkbox_button.y_margin = self.medium_line \
+                                                                         - int(7 * self.top_bar_height / 4)
+        self.construction_completed_unchecked_checkbox_button\
+            .on_size_changed((self.top_bar_height, self.top_bar_height),
+                             int(self.construction_completed_unchecked_checkbox_button.base_font_size_property
+                                 * self.top_bar_height))
+        self.enough_money_checked_checkbox_button.x_margin \
+            = self.screen_resolution[0] // 2 + self.bottom_bar_height
+        self.enough_money_checked_checkbox_button.y_margin = self.medium_line - 3 * self.top_bar_height
+        self.enough_money_checked_checkbox_button\
+            .on_size_changed((self.top_bar_height, self.top_bar_height),
+                             int(self.enough_money_checked_checkbox_button.base_font_size_property
+                                 * self.top_bar_height))
+        self.enough_money_unchecked_checkbox_button.x_margin \
+            = self.screen_resolution[0] // 2 + self.bottom_bar_height
+        self.enough_money_unchecked_checkbox_button.y_margin = self.medium_line - 3 * self.top_bar_height
+        self.enough_money_unchecked_checkbox_button\
+            .on_size_changed((self.top_bar_height, self.top_bar_height),
+                             int(self.enough_money_unchecked_checkbox_button.base_font_size_property
+                                 * self.top_bar_height))
         for b in self.buttons:
             b.on_position_changed((b.x_margin, b.y_margin))
 
@@ -376,7 +434,7 @@ class SettingsView(View):
     def on_change_temp_notification_flags(self, level_up, feature_unlocked, construction_completed, enough_money):
         """
         Updates temp notification flags.
-        Activates and deactivates corresponding checkbox buttons.
+        Activates corresponding checkbox buttons.
 
         :param level_up:                        flag value for level up notification
         :param feature_unlocked:                flag value for feature unlocked notification
@@ -384,9 +442,28 @@ class SettingsView(View):
         :param enough_money:                    flag value for enough money notification
         """
         self.temp_level_up_notification_enabled = level_up
+        if self.temp_level_up_notification_enabled:
+            self.level_up_checked_checkbox_button.on_activate()
+        else:
+            self.level_up_unchecked_checkbox_button.on_activate()
+
         self.temp_feature_unlocked_notification_enabled = feature_unlocked
+        if self.temp_feature_unlocked_notification_enabled:
+            self.feature_unlocked_checked_checkbox_button.on_activate()
+        else:
+            self.feature_unlocked_unchecked_checkbox_button.on_activate()
+
         self.temp_construction_completed_notification_enabled = construction_completed
+        if self.temp_construction_completed_notification_enabled:
+            self.construction_completed_checked_checkbox_button.on_activate()
+        else:
+            self.construction_completed_unchecked_checkbox_button.on_activate()
+
         self.temp_enough_money_notification_enabled = enough_money
+        if self.temp_enough_money_notification_enabled:
+            self.enough_money_checked_checkbox_button.on_activate()
+        else:
+            self.enough_money_unchecked_checkbox_button.on_activate()
 
     def on_update_current_locale(self, new_locale):
         """
