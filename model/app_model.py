@@ -89,5 +89,5 @@ class AppModel(Model):
 
         :param new_locale:                      new value for current locale
         """
-        self.user_db_cursor.execute('UPDATE localization SET current_locale = ?', (new_locale, ))
+        self.user_db_cursor.execute('UPDATE i18n SET current_locale = ?', (new_locale, ))
         self.user_db_connection.commit()

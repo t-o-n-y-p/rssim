@@ -207,7 +207,7 @@ APPROACHING_TRAIN_ROUTE = ('left_approaching',                      # approachin
                            'right_approaching',                     # approaching train route types, direction 1
                            'left_side_approaching',                 # approaching train route types, direction 2
                            'right_side_approaching')                # approaching train route types, direction 3
-MAXIMUM_LEVEL = 369                     # maximum level the player can reach in the game
+MAXIMUM_LEVEL = 350                     # maximum level the player can reach in the game
 ENTRY_TRACK = (0, 0, 100, 100)          # track mask for entry base routes for directions 0-3
 # schedule options matrix properties
 ARRIVAL_TIME_MIN = 0                    # property #1 indicates min arrival time offset from the beginning of the cycle

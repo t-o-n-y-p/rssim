@@ -355,7 +355,7 @@ class View:
         self.base_offset = (-3456, -1688)
         self.zoom_out_activated = False
         self.zoom_factor = 1.0
-        self.user_db_cursor.execute('SELECT current_locale FROM localization')
+        self.user_db_cursor.execute('SELECT current_locale FROM i18n')
         self.current_locale = self.user_db_cursor.fetchone()[0]
         self.all_notifications_enabled = False
 
