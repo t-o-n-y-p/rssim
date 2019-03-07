@@ -55,6 +55,26 @@
 		"en": "Game resolution in window mode:",
 		"ru": "Разрешение игры в оконном режиме:"
 	},
+	"notification_description_string": {
+		"en": "Send notifications while in background when:",
+		"ru": "Отправлять нотификации, пока игра в фоне, когда:"
+	},
+	"level_up_notification_description_string": {
+		"en": "station level is increased",
+		"ru": "уровень станции увеличивается"
+	},
+	"feature_unlocked_notification_description": {
+		"en": "any new feature is unlocked",
+		"ru": "становится доступна новая функиональность"
+	},
+	"construction_completed_notification_description_string": {
+		"en": "new track construction is completed",
+		"ru": "завершается строительство нового пути"
+	},
+	"enough_money_notification_description_string": {
+		"en": "there is enough money to buy new track",
+		"ru": "накопились деньги на покупку нового пути"
+	},
 	"level_up_notification_caption_string": {
 		"en": "Level up",
 		"ru": "Новый уровень"

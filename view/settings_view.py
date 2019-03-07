@@ -4,10 +4,13 @@ from ctypes import windll
 from pyglet.text import Label
 
 from view import *
+from button import create_two_state_button
 from button.accept_settings_button import AcceptSettingsButton
 from button.reject_settings_button import RejectSettingsButton
 from button.increment_windowed_resolution_button import IncrementWindowedResolutionButton
 from button.decrement_windowed_resolution_button import DecrementWindowedResolutionButton
+from button.checked_checkbox_button import CheckedCheckboxButton
+from button.unchecked_checkbox_button import UncheckedCheckboxButton
 from i18n import I18N_RESOURCES
 
 
@@ -23,6 +26,15 @@ class SettingsView(View):
             on_reject_changes                           on_click handler for reject settings button
             on_increment_windowed_resolution            on_click handler for increment windowed resolution button
             on_decrement_windowed_resolution            on_click handler for decrement windowed resolution button
+            on_click handlers for corresponding checked and unchecked checkbox buttons:
+                on_check_level_up_notifications
+                on_uncheck_level_up_notifications
+                on_check_feature_unlocked_notifications
+                on_uncheck_feature_unlocked_notifications
+                on_check_construction_completed_notifications
+                on_uncheck_construction_completed_notifications
+                on_check_enough_money_notifications
+                on_uncheck_enough_money_notifications
 
         Properties:
             temp_windowed_resolution                    windowed resolution selected by player before making decision
@@ -38,6 +50,12 @@ class SettingsView(View):
             buttons                                     list of all buttons
             temp_windowed_resolution_label              label from temp windowed resolution
             windowed_resolution_description_label       label from windowed resolution setting description
+            notification_description_label              label from notifications settings description
+            labels from corresponding notification settings description:
+                level_up_notification_description_label
+                feature_unlocked_notification_description_label
+                construction_completed_notification_description_label
+                enough_money_notification_description_label
             temp_level_up_notification_enabled
                                 level up notification flag value selected by player before making decision
             temp_feature_unlocked_notification_enabled
@@ -90,6 +108,86 @@ class SettingsView(View):
                 self.available_windowed_resolutions[self.available_windowed_resolutions_position - 1]
             )
 
+        def on_check_level_up_notifications(button):
+            """
+            Enables temp level up notifications flag.
+
+            :param button:                      button that was clicked
+            """
+            button.on_deactivate()
+            button.paired_button.on_activate()
+            self.temp_level_up_notification_enabled = True
+
+        def on_uncheck_level_up_notifications(button):
+            """
+            Disables temp level up notifications flag.
+
+            :param button:                      button that was clicked
+            """
+            button.on_deactivate()
+            button.paired_button.on_activate()
+            self.temp_level_up_notification_enabled = False
+
+        def on_check_feature_unlocked_notifications(button):
+            """
+            Enables temp feature unlocked notifications flag.
+
+            :param button:                      button that was clicked
+            """
+            button.on_deactivate()
+            button.paired_button.on_activate()
+            self.temp_feature_unlocked_notification_enabled = True
+
+        def on_uncheck_feature_unlocked_notifications(button):
+            """
+            Disables temp feature unlocked notifications flag.
+
+            :param button:                      button that was clicked
+            """
+            button.on_deactivate()
+            button.paired_button.on_activate()
+            self.temp_feature_unlocked_notification_enabled = False
+
+        def on_check_construction_completed_notifications(button):
+            """
+            Enables temp construction completed notifications flag.
+
+            :param button:                      button that was clicked
+            """
+            button.on_deactivate()
+            button.paired_button.on_activate()
+            self.temp_construction_completed_notification_enabled = True
+
+        def on_uncheck_construction_completed_notifications(button):
+            """
+            Disables temp construction completed notifications flag.
+
+            :param button:                      button that was clicked
+            """
+            button.on_deactivate()
+            button.paired_button.on_activate()
+            self.temp_construction_completed_notification_enabled = False
+
+        def on_check_enough_money_notifications(button):
+            """
+            Enables temp enough money notifications flag.
+
+            :param button:                      button that was clicked
+            """
+            button.on_deactivate()
+            button.paired_button.on_activate()
+            self.temp_enough_money_notification_enabled = True
+
+        def on_uncheck_enough_money_notifications(button):
+            """
+            Disables temp enough money notifications flag.
+
+            :param button:                      button that was clicked
+            """
+            button.on_deactivate()
+            button.paired_button.on_activate()
+            self.temp_enough_money_notification_enabled = False
+
         super().__init__(user_db_cursor, config_db_cursor, surface, batches, groups,
                          logger=getLogger('root.app.settings.view'))
         self.temp_windowed_resolution = (0, 0)
@@ -117,10 +215,53 @@ class SettingsView(View):
         self.decrement_windowed_resolution_button \
             = DecrementWindowedResolutionButton(surface=self.surface, batch=self.batches['ui_batch'],
                                                 groups=self.groups, on_click_action=on_decrement_windowed_resolution)
+        self.level_up_checked_checkbox_button, self.level_up_unchecked_checkbox_button \
+            = create_two_state_button(CheckedCheckboxButton(surface=self.surface,
+                                                            batch=self.batches['ui_batch'], groups=self.groups,
+                                                            on_click_action=on_uncheck_level_up_notifications),
+                                      UncheckedCheckboxButton(surface=self.surface,
+                                                              batch=self.batches['ui_batch'], groups=self.groups,
+                                                              on_click_action=on_check_level_up_notifications))
+        self.feature_unlocked_checked_checkbox_button, self.feature_unlocked_unchecked_checkbox_button \
+            = create_two_state_button(CheckedCheckboxButton(surface=self.surface,
+                                                            batch=self.batches['ui_batch'], groups=self.groups,
+                                                            on_click_action=on_uncheck_feature_unlocked_notifications),
+                                      UncheckedCheckboxButton(surface=self.surface,
+                                                              batch=self.batches['ui_batch'], groups=self.groups,
+                                                              on_click_action=on_check_feature_unlocked_notifications))
+        self.construction_completed_checked_checkbox_button, self.construction_completed_unchecked_checkbox_button \
+            = create_two_state_button(CheckedCheckboxButton(surface=self.surface,
+                                                            batch=self.batches['ui_batch'], groups=self.groups,
+                                                            on_click_action
+                                                            =on_uncheck_construction_completed_notifications),
+                                      UncheckedCheckboxButton(surface=self.surface,
+                                                              batch=self.batches['ui_batch'], groups=self.groups,
+                                                              on_click_action
+                                                              =on_check_construction_completed_notifications))
+        self.enough_money_checked_checkbox_button, self.enough_money_unchecked_checkbox_button \
+            = create_two_state_button(CheckedCheckboxButton(surface=self.surface,
+                                                            batch=self.batches['ui_batch'], groups=self.groups,
+                                                            on_click_action=on_uncheck_enough_money_notifications),
+                                      UncheckedCheckboxButton(surface=self.surface,
+                                                              batch=self.batches['ui_batch'], groups=self.groups,
+                                                              on_click_action=on_check_enough_money_notifications))
         self.buttons.append(self.increment_windowed_resolution_button)
         self.buttons.append(self.decrement_windowed_resolution_button)
+        self.buttons.append(self.level_up_checked_checkbox_button)
+        self.buttons.append(self.level_up_unchecked_checkbox_button)
+        self.buttons.append(self.feature_unlocked_checked_checkbox_button)
+        self.buttons.append(self.feature_unlocked_unchecked_checkbox_button)
+        self.buttons.append(self.construction_completed_checked_checkbox_button)
+        self.buttons.append(self.construction_completed_unchecked_checkbox_button)
+        self.buttons.append(self.enough_money_checked_checkbox_button)
+        self.buttons.append(self.enough_money_unchecked_checkbox_button)
         self.temp_windowed_resolution_label = None
         self.windowed_resolution_description_label = None
+        self.notification_description_label = None
+        self.level_up_notification_description_label = None
+        self.feature_unlocked_notification_description_label = None
+        self.construction_completed_notification_description_label = None
+        self.enough_money_notification_description_label = None
 
     def on_update(self):
         """
