@@ -363,17 +363,19 @@ class MapView(View):
         self.zoom_in_button.x_margin = 0
         self.zoom_in_button.y_margin = self.screen_resolution[1] - self.top_bar_height - self.top_bar_height * 2 + 4
         self.zoom_in_button.on_size_changed((self.top_bar_height * 2 - 2, self.top_bar_height * 2 - 2),
-                                            int(30 / 80 * self.bottom_bar_height))
+                                            int(self.zoom_in_button.base_font_size_property * self.bottom_bar_height))
         self.zoom_out_button.x_margin = 0
         self.zoom_out_button.y_margin = self.screen_resolution[1] - self.top_bar_height - self.top_bar_height * 2 + 4
         self.zoom_out_button.on_size_changed((self.top_bar_height * 2 - 2, self.top_bar_height * 2 - 2),
-                                             int(30 / 80 * self.bottom_bar_height))
+                                             int(self.zoom_out_button.base_font_size_property * self.bottom_bar_height))
         self.open_schedule_button.x_margin = self.screen_resolution[0] - 11 * self.bottom_bar_height // 2 + 2
         self.open_schedule_button.y_margin = 0
         self.open_schedule_button.on_size_changed((self.bottom_bar_height, self.bottom_bar_height),
-                                                  int(32 / 80 * self.bottom_bar_height))
+                                                  int(self.open_schedule_button.base_font_size_property
+                                                      * self.bottom_bar_height))
         self.open_constructor_button.on_size_changed((self.bottom_bar_height, self.bottom_bar_height),
-                                                     int(34 / 80 * self.bottom_bar_height))
+                                                     int(self.open_constructor_button.base_font_size_property
+                                                         * self.bottom_bar_height))
         for b in self.buttons:
             b.on_position_changed((b.x_margin, b.y_margin))
 

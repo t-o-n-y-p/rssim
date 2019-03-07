@@ -62,6 +62,7 @@ class FPSView(View):
         :param screen_resolution:       new screen resolution
         """
         self.on_recalculate_ui_properties(screen_resolution)
-        self.fps_label.x = self.screen_resolution[0] - self.top_bar_height * 3 - 10
-        self.fps_label.y = self.screen_resolution[1] - self.top_bar_height // 2
-        self.fps_label.font_size = int(16 / 40 * self.top_bar_height)
+        if self.is_activated:
+            self.fps_label.x = self.screen_resolution[0] - self.top_bar_height * 3 - 10
+            self.fps_label.y = self.screen_resolution[1] - self.top_bar_height // 2
+            self.fps_label.font_size = int(16 / 40 * self.top_bar_height)

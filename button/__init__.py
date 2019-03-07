@@ -11,7 +11,7 @@ close_game_button.py                                last button in the top right
 close_schedule_button.py                            Close schedule button on main game screen
 decrement_windowed_resolution_button.py             "-" button for windowed resolution on settings screen
 fullscreen_button.py                                middle button in the top right corner (in windowed mode)
-iconify_game_button.py                              first button in the top right corner
+iconify_button.py                              first button in the top right corner
 increment_windowed_resolution_button.py             "+" button for windowed resolution on settings screen
 open_constructor_button.py                          Open constructor button on main game screen
 open_schedule_button.py                             Open schedule button on main game screen
@@ -137,6 +137,7 @@ class Button:
             text                                string for text label
             font_name                           button label font
             is_bold                             indicates if button label is bold
+            base_font_size_property             font size relative coefficient from button size
             font_size                           button label font size
             position                            left bottom corner position (including 2-pixel border)
             button_size                         button width and height (including 2-pixel borders)
@@ -156,7 +157,7 @@ class Button:
         """
         self.logger = logger
         self.is_activated = False
-        self.to_activate_on_controller_init = None
+        self.to_activate_on_controller_init = False
         self.state = 'normal'
         self.surface = surface
         self.batch = batch
@@ -169,9 +170,10 @@ class Button:
         add_font('perfo-bold.ttf')
         self.font_name = None
         self.is_bold = False
-        self.font_size = None
+        self.base_font_size_property = 0.5
+        self.font_size = 10
         self.position = (0, 0)
-        self.button_size = ()
+        self.button_size = (0, 0)
         self.x_margin = 0
         self.y_margin = 0
         self.on_click_action = None

@@ -13,8 +13,5 @@ class CloseGameButton(Button):
         self.to_activate_on_controller_init = True
         self.text = ''
         self.font_name = 'Webdings'
-        self.font_size = 19
-        self.x_margin = 1240
-        self.y_margin = 680
-        self.button_size = (40, 40)
+        self.base_font_size_property = 38 / 80
         self.on_click_action = on_click_action

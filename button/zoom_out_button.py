@@ -15,10 +15,7 @@ class ZoomOutButton(Button):
         self.text = '> <'
         self.font_name = 'Perfo'
         self.is_bold = True
-        self.font_size = 30
-        self.x_margin = 0
-        self.y_margin = 602
-        self.button_size = (80, 80)
+        self.base_font_size_property = 30 / 80
         self.on_click_action = on_click_action
         self.on_hover_action = on_hover_action
         self.on_leave_action = on_leave_action

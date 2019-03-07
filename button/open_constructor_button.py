@@ -13,8 +13,5 @@ class OpenConstructorButton(Button):
         self.to_activate_on_controller_init = True
         self.text = ''
         self.font_name = 'Webdings'
-        self.font_size = 34
-        self.x_margin = 0
-        self.y_margin = 0
-        self.button_size = (80, 80)
+        self.base_font_size_property = 34 / 80
         self.on_click_action = on_click_action

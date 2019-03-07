@@ -441,28 +441,23 @@ class ConstructorView(View):
 
         self.build_track_button.x_margin = self.track_cells_positions[0][0] + self.track_build_button_offset[0]
         self.build_track_button.y_margin = self.track_cells_positions[0][1] + self.track_build_button_offset[1]
-        self.build_track_button.on_position_changed((self.build_track_button.x_margin,
-                                                     self.build_track_button.y_margin))
         self.build_track_button.on_size_changed((self.cell_height, self.cell_height),
                                                 self.locked_label_font_size)
         self.set_track_money_target_button.x_margin = self.track_cells_positions[0][0] \
                                                     + self.track_build_button_offset[0] - self.cell_height + 2
         self.set_track_money_target_button.y_margin = self.track_cells_positions[0][1] \
                                                     + self.track_build_button_offset[1]
-        self.set_track_money_target_button.on_position_changed((self.set_track_money_target_button.x_margin,
-                                                                self.set_track_money_target_button.y_margin))
         self.set_track_money_target_button.on_size_changed((self.cell_height, self.cell_height),
                                                            self.locked_label_font_size)
         self.reset_track_money_target_button.x_margin = self.track_cells_positions[0][0] \
                                                       + self.track_build_button_offset[0] - self.cell_height + 2
         self.reset_track_money_target_button.y_margin = self.track_cells_positions[0][1] \
                                                       + self.track_build_button_offset[1]
-        self.reset_track_money_target_button.on_position_changed((self.reset_track_money_target_button.x_margin,
-                                                                  self.reset_track_money_target_button.y_margin))
         self.reset_track_money_target_button.on_size_changed((self.cell_height, self.cell_height),
                                                              int(24 * self.locked_label_font_size / 40))
         self.close_constructor_button.on_size_changed((self.bottom_bar_height, self.bottom_bar_height),
-                                                      int(24 / 80 * self.bottom_bar_height))
+                                                      int(self.close_constructor_button.base_font_size_property
+                                                          * self.bottom_bar_height))
         for b in self.buttons:
             b.on_position_changed((b.x_margin, b.y_margin))
 

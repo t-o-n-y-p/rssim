@@ -13,8 +13,5 @@ class AcceptSettingsButton(Button):
         self.to_activate_on_controller_init = True
         self.text = ''
         self.font_name = 'Webdings'
-        self.font_size = 48
-        self.x_margin = 1122
-        self.y_margin = 0
-        self.button_size = (80, 80)
+        self.base_font_size_property = 48 / 80
         self.on_click_action = on_click_action

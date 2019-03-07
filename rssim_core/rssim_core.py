@@ -126,10 +126,10 @@ class RSSim:
         self.app = create_app(user_db_connection=self.user_db_connection, user_db_cursor=self.user_db_cursor,
                               config_db_cursor=self.config_db_cursor,
                               surface=self.surface, batches=self.batches, groups=self.groups, loader=self)
-        # activate app after it is created
-        self.app.on_activate()
         # initially app is created using default minimal screen resolution; now we change it to user resolution
         self.app.on_change_screen_resolution(self.app.settings.model.screen_resolution)
+        # activate app after it is created
+        self.app.on_activate()
         # and same about fullscreen mode
         if self.app.settings.model.fullscreen_mode and self.app.model.fullscreen_mode_available:
             self.app.on_fullscreen_mode_turned_on()

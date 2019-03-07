@@ -10,7 +10,7 @@ from win32con import HWND_TOP, SWP_NOREDRAW
 from view import *
 from button import create_two_state_button
 from button.close_game_button import CloseGameButton
-from button.iconify_game_button import IconifyGameButton
+from button.iconify_button import IconifyButton
 from button.fullscreen_button import FullscreenButton
 from button.restore_button import RestoreButton
 from button.open_settings_button import OpenSettingsButton
@@ -28,7 +28,7 @@ class AppView(View):
         """
         Button click handlers:
             on_close_game                       on_click handler for close game button
-            on_iconify_game                     on_click handler for iconify game button
+            on_iconify_game                     on_click handler for iconify button
             on_app_window_fullscreen            on_click handler for fullscreen button
             on_app_window_restore               on_click handler for restore button
             on_open_settings                    on_click handler for settings button
@@ -41,7 +41,7 @@ class AppView(View):
             flag_us_sprite                      sprite from US flag for locale button
             flag_ru_sprite                      sprite from RU flag for locale button
             close_game_button                   CloseGameButton object
-            iconify_game_button                 IconifyGameButton object
+            iconify_button                      IconifyButton object
             fullscreen_button                   FullscreenButton object
             restore_button                      RestoreButton object
             open_settings_button                OpenSettingsButton object
@@ -135,8 +135,8 @@ class AppView(View):
         self.flag_ru_sprite = None
         self.close_game_button = CloseGameButton(surface=self.surface, batch=self.batches['ui_batch'],
                                                  groups=self.groups, on_click_action=on_close_game)
-        self.iconify_game_button = IconifyGameButton(surface=self.surface, batch=self.batches['ui_batch'],
-                                                     groups=self.groups, on_click_action=on_iconify_game)
+        self.iconify_button = IconifyButton(surface=self.surface, batch=self.batches['ui_batch'],
+                                            groups=self.groups, on_click_action=on_iconify_game)
         self.fullscreen_button, self.restore_button \
             = create_two_state_button(FullscreenButton(surface=self.surface, batch=self.batches['ui_batch'],
                                                        groups=self.groups, on_click_action=on_app_window_fullscreen),
@@ -149,7 +149,7 @@ class AppView(View):
         self.ru_locale_button = RULocaleButton(surface=self.surface, batch=self.batches['ui_batch'],
                                                groups=self.groups, on_click_action=on_set_ru_locale)
         self.buttons.append(self.close_game_button)
-        self.buttons.append(self.iconify_game_button)
+        self.buttons.append(self.iconify_button)
         self.buttons.append(self.fullscreen_button)
         self.buttons.append(self.restore_button)
         self.buttons.append(self.open_settings_button)
@@ -236,31 +236,34 @@ class AppView(View):
         self.close_game_button.x_margin = self.screen_resolution[0] - self.top_bar_height
         self.close_game_button.y_margin = self.screen_resolution[1] - self.top_bar_height
         self.close_game_button.on_size_changed((self.top_bar_height, self.top_bar_height),
-                                               int(19 / 40 * self.top_bar_height))
+                                               int(self.close_game_button.base_font_size_property
+                                                   * self.top_bar_height))
         self.fullscreen_button.x_margin = self.screen_resolution[0] - self.top_bar_height * 2 + 2
         self.fullscreen_button.y_margin = self.screen_resolution[1] - self.top_bar_height
         self.fullscreen_button.on_size_changed((self.top_bar_height, self.top_bar_height),
-                                               int(19 / 40 * self.top_bar_height))
+                                               int(self.fullscreen_button.base_font_size_property
+                                                   * self.top_bar_height))
         self.restore_button.x_margin = self.screen_resolution[0] - self.top_bar_height * 2 + 2
         self.restore_button.y_margin = self.screen_resolution[1] - self.top_bar_height
         self.restore_button.on_size_changed((self.top_bar_height, self.top_bar_height),
-                                            int(19 / 40 * self.top_bar_height))
-        self.iconify_game_button.x_margin = self.screen_resolution[0] - self.top_bar_height * 3 + 4
-        self.iconify_game_button.y_margin = self.screen_resolution[1] - self.top_bar_height
-        self.iconify_game_button.on_size_changed((self.top_bar_height, self.top_bar_height),
-                                                 int(19 / 40 * self.top_bar_height))
+                                            int(self.restore_button.base_font_size_property * self.top_bar_height))
+        self.iconify_button.x_margin = self.screen_resolution[0] - self.top_bar_height * 3 + 4
+        self.iconify_button.y_margin = self.screen_resolution[1] - self.top_bar_height
+        self.iconify_button.on_size_changed((self.top_bar_height, self.top_bar_height),
+                                            int(self.iconify_button.base_font_size_property * self.top_bar_height))
         self.open_settings_button.x_margin = self.screen_resolution[0] - self.bottom_bar_height
         self.open_settings_button.y_margin = 0
         self.open_settings_button.on_size_changed((self.bottom_bar_height, self.bottom_bar_height),
-                                                  int(30 / 80 * self.bottom_bar_height))
+                                                  int(self.open_settings_button.base_font_size_property
+                                                      * self.bottom_bar_height))
         self.en_locale_button.x_margin = 0
         self.en_locale_button.y_margin = self.screen_resolution[1] - self.top_bar_height
         self.en_locale_button.on_size_changed((self.top_bar_height, self.top_bar_height),
-                                              int(19 / 40 * self.top_bar_height))
+                                              int(self.en_locale_button.base_font_size_property * self.top_bar_height))
         self.ru_locale_button.x_margin = self.top_bar_height - 2
         self.ru_locale_button.y_margin = self.screen_resolution[1] - self.top_bar_height
         self.ru_locale_button.on_size_changed((self.top_bar_height, self.top_bar_height),
-                                              int(19 / 40 * self.top_bar_height))
+                                              int(self.ru_locale_button.base_font_size_property * self.top_bar_height))
         for b in self.buttons:
             b.on_position_changed((b.x_margin, b.y_margin))
 

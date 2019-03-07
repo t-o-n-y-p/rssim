@@ -13,8 +13,5 @@ class ResetTrackMoneyTargetButton(Button):
         self.to_activate_on_controller_init = False
         self.text = ''
         self.font_name = 'Webdings'
-        self.font_size = 24
-        self.x_margin = 0
-        self.y_margin = 0
-        self.button_size = (80, 80)
+        self.base_font_size_property = 24 / 80
         self.on_click_action = on_click_action

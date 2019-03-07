@@ -186,21 +186,27 @@ class SettingsView(View):
         self.accept_settings_button.x_margin = self.screen_resolution[0] - self.bottom_bar_height * 2 + 2
         self.accept_settings_button.y_margin = 0
         self.accept_settings_button.on_size_changed((self.bottom_bar_height, self.bottom_bar_height),
-                                                    int(48 / 80 * self.bottom_bar_height))
+                                                    int(self.accept_settings_button.base_font_size_property
+                                                        * self.bottom_bar_height))
         self.reject_settings_button.x_margin = self.screen_resolution[0] - self.bottom_bar_height
         self.reject_settings_button.y_margin = 0
         self.reject_settings_button.on_size_changed((self.bottom_bar_height, self.bottom_bar_height),
-                                                    self.bottom_bar_height // 2)
+                                                    int(self.reject_settings_button.base_font_size_property
+                                                        * self.bottom_bar_height))
         self.increment_windowed_resolution_button.x_margin \
             = 11 * self.screen_resolution[0] // 32 - self.top_bar_height // 2
         self.increment_windowed_resolution_button.y_margin = self.medium_line - int(9 * self.top_bar_height / 8)
-        self.increment_windowed_resolution_button.on_size_changed((self.top_bar_height, self.top_bar_height),
-                                                                  int(16 / 40 * self.top_bar_height))
+        self.increment_windowed_resolution_button\
+            .on_size_changed((self.top_bar_height, self.top_bar_height),
+                             int(self.increment_windowed_resolution_button.base_font_size_property
+                                 * self.top_bar_height))
         self.decrement_windowed_resolution_button.x_margin \
             = 5 * self.screen_resolution[0] // 32 - self.top_bar_height // 2
         self.decrement_windowed_resolution_button.y_margin = self.medium_line - int(9 * self.top_bar_height / 8)
-        self.decrement_windowed_resolution_button.on_size_changed((self.top_bar_height, self.top_bar_height),
-                                                                  int(16 / 40 * self.top_bar_height))
+        self.decrement_windowed_resolution_button\
+            .on_size_changed((self.top_bar_height, self.top_bar_height),
+                             int(self.decrement_windowed_resolution_button.base_font_size_property
+                                 * self.top_bar_height))
         for b in self.buttons:
             b.on_position_changed((b.x_margin, b.y_margin))
 
