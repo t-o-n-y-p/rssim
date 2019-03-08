@@ -59,11 +59,8 @@ class TrainRouteModel(Model):
         self.opened = bool(self.opened)
         self.user_db_cursor.execute('''SELECT train_route_section_busy_state FROM train_routes
                                        WHERE track = ? and train_route = ?''', (track, train_route))
-        busy_state_parsed = self.user_db_cursor.fetchone()[0].split(',')
-        for i in range(len(busy_state_parsed)):
-            busy_state_parsed[i] = bool(int(busy_state_parsed[i]))
-
-        self.train_route_section_busy_state = busy_state_parsed
+        self.train_route_section_busy_state \
+            = list(map(bool, list(map(int, self.user_db_cursor.fetchone()[0].split(',')))))
         self.config_db_cursor.execute('''SELECT signal_track, signal_base_route FROM train_route_config
                                          WHERE track = ? and train_route = ?''', (track, train_route))
         self.signal_track, self.signal_base_route = self.config_db_cursor.fetchone()
@@ -73,11 +70,7 @@ class TrainRouteModel(Model):
         fetched_data = list(self.config_db_cursor.fetchone())
         for i in range(len(fetched_data)):
             if fetched_data[i] is not None:
-                fetched_data[i] = fetched_data[i].split(',')
-                for j in range(len(fetched_data[i])):
-                    fetched_data[i][j] = int(fetched_data[i][j])
-
-                fetched_data[i] = tuple(fetched_data[i])
+                fetched_data[i] = tuple(map(int, fetched_data[i].split(',')))
 
         self.start_point_v2, self.stop_point_v2, self.destination_point_v2, self.checkpoints_v2 = fetched_data
         # trail points are stores in 3 parts:
@@ -169,11 +162,7 @@ class TrainRouteModel(Model):
                                        priority = ?, cars = ? WHERE track = ? and train_route = ?''',
                                     (int(self.opened), self.last_opened_by, self.current_checkpoint, self.priority,
                                      self.cars, self.controller.track, self.controller.train_route))
-        busy_state_string = ''
-        for i in self.train_route_section_busy_state:
-            busy_state_string += f'{int(i)},'
-
-        busy_state_string = busy_state_string[0:len(busy_state_string) - 1]
+        busy_state_string = ','.join(list(map(str, list(map(int, self.train_route_section_busy_state)))))
         self.user_db_cursor.execute('''UPDATE train_routes SET train_route_section_busy_state = ? 
                                        WHERE track = ? and train_route = ?''',
                                     (busy_state_string, self.controller.track, self.controller.train_route))

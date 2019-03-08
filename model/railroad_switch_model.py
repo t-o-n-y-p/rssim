@@ -30,12 +30,14 @@ class RailroadSwitchModel(Model):
                 f'root.app.game.map.railroad_switch.{track_param_1}.{track_param_2}.{switch_type}.model'
             )
         )
-        self.user_db_cursor.execute('''SELECT busy, force_busy, last_entered_by, current_position FROM switches 
+        self.user_db_cursor.execute('''SELECT busy, force_busy FROM switches 
                                        WHERE track_param_1 = ? AND track_param_2 = ? AND switch_type = ?''',
                                     (track_param_1, track_param_2, switch_type))
-        self.busy, self.force_busy, self.last_entered_by, self.current_position = self.user_db_cursor.fetchone()
-        self.busy = bool(self.force_busy)
-        self.force_busy = bool(self.force_busy)
+        self.busy, self.force_busy = list(map(bool, self.user_db_cursor.fetchone()))
+        self.user_db_cursor.execute('''SELECT last_entered_by, current_position FROM switches 
+                                       WHERE track_param_1 = ? AND track_param_2 = ? AND switch_type = ?''',
+                                    (track_param_1, track_param_2, switch_type))
+        self.last_entered_by, self.current_position = self.user_db_cursor.fetchone()
         self.config_db_cursor.execute('''SELECT track, train_route, section_number FROM train_route_sections
                                          WHERE track_param_1 = ? AND track_param_2 = ? AND section_type = ?''',
                                       (track_param_1, track_param_2, switch_type))

@@ -38,7 +38,7 @@ class SettingsModel(Model):
         self.user_db_cursor.execute('SELECT app_width, app_height FROM graphics')
         self.windowed_resolution = self.user_db_cursor.fetchone()
         self.user_db_cursor.execute('SELECT fullscreen, display_fps FROM graphics')
-        self.fullscreen_mode, self.display_fps = map(bool, self.user_db_cursor.fetchone())
+        self.fullscreen_mode, self.display_fps = tuple(map(bool, self.user_db_cursor.fetchone()))
         self.config_db_cursor.execute('SELECT app_width, app_height FROM screen_resolution_config')
         self.screen_resolution_config = self.config_db_cursor.fetchall()
         self.fullscreen_mode_available = False
@@ -56,7 +56,7 @@ class SettingsModel(Model):
         self.user_db_cursor.execute('SELECT * FROM notification_settings')
         self.level_up_notification_enabled, self.feature_unlocked_notification_enabled, \
             self.construction_completed_notification_enabled, self.enough_money_notification_enabled \
-            = map(bool, self.user_db_cursor.fetchone())
+            = tuple(map(bool, self.user_db_cursor.fetchone()))
 
     @model_is_not_active
     def on_activate(self):
@@ -124,8 +124,8 @@ class SettingsModel(Model):
                                        feature_unlocked_notification_enabled = ?, 
                                        construction_completed_notification_enabled = ?, 
                                        enough_money_notification_enabled = ?''',
-                                    (int(self.level_up_notification_enabled),
-                                     int(self.feature_unlocked_notification_enabled),
-                                     int(self.construction_completed_notification_enabled),
-                                     int(self.enough_money_notification_enabled)))
+                                    tuple(map(int, (self.level_up_notification_enabled,
+                                                    self.feature_unlocked_notification_enabled,
+                                                    self.construction_completed_notification_enabled,
+                                                    self.enough_money_notification_enabled))))
         self.user_db_connection.commit()

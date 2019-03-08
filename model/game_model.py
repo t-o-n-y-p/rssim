@@ -31,7 +31,7 @@ class GameModel(Model):
         self.user_db_cursor.execute('SELECT level, exp, money, money_target FROM game_progress')
         self.level, self.exp, self.money, self.money_target = self.user_db_cursor.fetchone()
         self.config_db_cursor.execute('''SELECT player_progress FROM player_progress_config 
-                                      WHERE level = ?''', (self.level, ))
+                                         WHERE level = ?''', (self.level, ))
         self.player_progress = self.config_db_cursor.fetchone()[0]
 
     @model_is_not_active
@@ -95,8 +95,7 @@ class GameModel(Model):
         """
         self.user_db_cursor.execute('UPDATE epoch_timestamp SET game_time = ?', (self.game_time, ))
         self.user_db_cursor.execute('''UPDATE game_progress SET level = ?, exp = ?, money = ?, 
-                                    money_target = ?''', (self.level, self.exp, self.money,
-                                                          self.money_target))
+                                    money_target = ?''', (self.level, self.exp, self.money, self.money_target))
 
     @maximum_level_not_reached
     def on_add_exp(self, exp):

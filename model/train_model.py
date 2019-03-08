@@ -79,18 +79,12 @@ class TrainModel(Model):
             self.stop_point, self.destination_point, self.car_image_collection \
             = self.user_db_cursor.fetchone()
         if cars_position_parsed is not None:
-            cars_position_parsed = cars_position_parsed.split(',')
-            for i in range(len(cars_position_parsed)):
-                cars_position_parsed[i] = int(cars_position_parsed[i])
-
-            self.cars_position = cars_position_parsed
+            self.cars_position = list(map(int, cars_position_parsed.split(',')))
 
         if cars_position_abs_parsed is not None:
             cars_position_abs_parsed = cars_position_abs_parsed.split('|')
             for i in range(len(cars_position_abs_parsed)):
-                cars_position_abs_parsed[i] = cars_position_abs_parsed[i].split(',')
-                cars_position_abs_parsed[i][0] = int(cars_position_abs_parsed[i][0])
-                cars_position_abs_parsed[i][1] = int(cars_position_abs_parsed[i][1])
+                cars_position_abs_parsed[i] = list(map(int, cars_position_abs_parsed[i].split(',')))
 
             self.cars_position_abs = cars_position_abs_parsed
 
@@ -195,19 +189,15 @@ class TrainModel(Model):
         """
         cars_position_string = None
         if len(self.cars_position) > 0:
-            cars_position_string = ''
-            for i in self.cars_position:
-                cars_position_string += f'{i},'
+            cars_position_string = ','.join(list(map(str, self.cars_position)))
 
-            cars_position_string = cars_position_string[0:len(cars_position_string) - 1]
-
+        cars_position_abs_strings_list = []
         cars_position_abs_string = None
         if len(self.cars_position_abs) > 0:
-            cars_position_abs_string = ''
             for i in self.cars_position_abs:
-                cars_position_abs_string += f'{i[0]},{i[1]}|'
+                cars_position_abs_strings_list.append(','.join(list(map(str, i))))
 
-            cars_position_abs_string = cars_position_abs_string[0:len(cars_position_abs_string) - 1]
+            cars_position_abs_string = '|'.join(list(map(str, cars_position_abs_strings_list)))
 
         self.user_db_cursor.execute('''INSERT INTO trains VALUES 
                                        (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)''',

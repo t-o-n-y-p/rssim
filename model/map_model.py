@@ -73,10 +73,7 @@ class MapModel(Model):
         self.user_db_cursor.execute('SELECT unlocked_tracks FROM game_progress')
         self.unlocked_tracks = self.user_db_cursor.fetchone()[0]
         self.user_db_cursor.execute('SELECT unlocked_car_collections FROM game_progress')
-        car_collections_string = self.user_db_cursor.fetchone()[0]
-        self.unlocked_car_collections = car_collections_string.split(',')
-        for i in range(len(self.unlocked_car_collections)):
-            self.unlocked_car_collections[i] = int(self.unlocked_car_collections[i])
+        self.unlocked_car_collections = list(map(int, self.user_db_cursor.fetchone()[0].split(',')))
 
     @model_is_not_active
     def on_activate(self):
@@ -112,13 +109,8 @@ class MapModel(Model):
         """
         Saves map state to user progress database.
         """
-        car_collections_string = ''
-        for i in range(len(self.unlocked_car_collections)):
-            car_collections_string += '{},'.format(self.unlocked_car_collections[i])
-
-        car_collections_string = car_collections_string[0:len(car_collections_string) - 1]
         self.user_db_cursor.execute('UPDATE game_progress SET unlocked_tracks = ?, unlocked_car_collections = ?',
-                                    (self.unlocked_tracks, car_collections_string))
+                                    (self.unlocked_tracks, ','.join(list(map(str, self.unlocked_car_collections)))))
 
     def on_clear_trains_info(self):
         """

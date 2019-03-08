@@ -128,13 +128,17 @@ class ConstructorModel(Model):
                                            unlock_condition_from_level = ?, unlock_condition_from_previous_track = ?, 
                                            unlock_condition_from_environment = ?, unlock_available = ? 
                                            WHERE track_number = ?''',
-                                        (self.track_state_matrix[track][LOCKED],
-                                         self.track_state_matrix[track][UNDER_CONSTRUCTION],
-                                         self.track_state_matrix[track][CONSTRUCTION_TIME],
-                                         self.track_state_matrix[track][UNLOCK_CONDITION_FROM_LEVEL],
-                                         self.track_state_matrix[track][UNLOCK_CONDITION_FROM_PREVIOUS_TRACK],
-                                         self.track_state_matrix[track][UNLOCK_CONDITION_FROM_ENVIRONMENT],
-                                         self.track_state_matrix[track][UNLOCK_AVAILABLE], track)
+                                        tuple(
+                                            map(int,
+                                                (self.track_state_matrix[track][LOCKED],
+                                                 self.track_state_matrix[track][UNDER_CONSTRUCTION],
+                                                 self.track_state_matrix[track][CONSTRUCTION_TIME],
+                                                 self.track_state_matrix[track][UNLOCK_CONDITION_FROM_LEVEL],
+                                                 self.track_state_matrix[track][UNLOCK_CONDITION_FROM_PREVIOUS_TRACK],
+                                                 self.track_state_matrix[track][UNLOCK_CONDITION_FROM_ENVIRONMENT],
+                                                 self.track_state_matrix[track][UNLOCK_AVAILABLE], track)
+                                                )
+                                            )
                                         )
 
     def on_level_up(self, level):

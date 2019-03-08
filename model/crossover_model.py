@@ -37,26 +37,22 @@ class CrossoverModel(Model):
         self.last_entered_by = {track_param_1: {}, track_param_2: {}}
         self.state_change_listeners = {track_param_1: {}, track_param_2: {}}
         self.user_db_cursor.execute('''SELECT busy_1_1, busy_1_2, busy_2_1, busy_2_2, force_busy_1_1, force_busy_1_2, 
-                                       force_busy_2_1, force_busy_2_2, last_entered_by_1_1, last_entered_by_1_2, 
-                                       last_entered_by_2_1, last_entered_by_2_2, current_position_1, current_position_2 
-                                       FROM crossovers 
+                                       force_busy_2_1, force_busy_2_2 FROM crossovers 
                                        WHERE track_param_1 = ? AND track_param_2 = ? AND crossover_type = ?''',
                                     (track_param_1, track_param_2, crossover_type))
         self.busy[track_param_1][track_param_1], self.busy[track_param_1][track_param_2], \
             self.busy[track_param_2][track_param_1], self.busy[track_param_2][track_param_2], \
             self.force_busy[track_param_1][track_param_1], self.force_busy[track_param_1][track_param_2], \
-            self.force_busy[track_param_2][track_param_1], self.force_busy[track_param_2][track_param_2], \
-            self.last_entered_by[track_param_1][track_param_1], self.last_entered_by[track_param_1][track_param_2], \
+            self.force_busy[track_param_2][track_param_1], self.force_busy[track_param_2][track_param_2] \
+            = tuple(map(bool, self.user_db_cursor.fetchone()))
+        self.user_db_cursor.execute('''SELECT last_entered_by_1_1, last_entered_by_1_2, 
+                                       last_entered_by_2_1, last_entered_by_2_2, 
+                                       current_position_1, current_position_2 FROM crossovers 
+                                       WHERE track_param_1 = ? AND track_param_2 = ? AND crossover_type = ?''',
+                                    (track_param_1, track_param_2, crossover_type))
+        self.last_entered_by[track_param_1][track_param_1], self.last_entered_by[track_param_1][track_param_2], \
             self.last_entered_by[track_param_2][track_param_1], self.last_entered_by[track_param_2][track_param_2], \
             self.current_position_1, self.current_position_2 = self.user_db_cursor.fetchone()
-        self.busy[track_param_1][track_param_1] = bool(self.busy[track_param_1][track_param_1])
-        self.busy[track_param_1][track_param_2] = bool(self.busy[track_param_1][track_param_2])
-        self.busy[track_param_2][track_param_1] = bool(self.busy[track_param_2][track_param_1])
-        self.busy[track_param_2][track_param_2] = bool(self.busy[track_param_2][track_param_2])
-        self.force_busy[track_param_1][track_param_1] = bool(self.force_busy[track_param_1][track_param_1])
-        self.force_busy[track_param_1][track_param_2] = bool(self.force_busy[track_param_1][track_param_2])
-        self.force_busy[track_param_2][track_param_1] = bool(self.force_busy[track_param_2][track_param_1])
-        self.force_busy[track_param_2][track_param_2] = bool(self.force_busy[track_param_2][track_param_2])
         self.config_db_cursor.execute('''SELECT track, train_route, section_number FROM train_route_sections
                                          WHERE track_param_1 = ? AND track_param_2 = ? AND section_type = ?
                                          AND position_1 = ? AND position_2 = ?''',

@@ -48,11 +48,7 @@ class SchedulerModel(Model):
         self.user_db_cursor.execute('SELECT train_counter, next_cycle_start_time FROM scheduler')
         self.train_counter, self.next_cycle_start_time = self.user_db_cursor.fetchone()
         self.user_db_cursor.execute('SELECT entry_busy_state FROM scheduler')
-        entry_busy_state_parsed = self.user_db_cursor.fetchone()[0].split(',')
-        for i in range(len(entry_busy_state_parsed)):
-            entry_busy_state_parsed[i] = bool(int(entry_busy_state_parsed[i]))
-
-        self.entry_busy_state = entry_busy_state_parsed
+        self.entry_busy_state = list(map(bool, list(map(int, self.user_db_cursor.fetchone()[0].split(',')))))
         self.config_db_cursor.execute('''SELECT schedule_cycle_length, frame_per_car, exp_to_money 
                                       FROM player_progress_config WHERE level = ?''',
                                       (self.level, ))
@@ -148,11 +144,10 @@ class SchedulerModel(Model):
         """
         Saves schedule matrix to user progress database.
         """
-        entry_busy_state_string = '{},{},{},{}'.format(int(self.entry_busy_state[0]), int(self.entry_busy_state[1]),
-                                                       int(self.entry_busy_state[2]), int(self.entry_busy_state[3]))
         self.user_db_cursor.execute('''UPDATE scheduler SET train_counter = ?, next_cycle_start_time = ?, 
                                        entry_busy_state = ?''',
-                                    (self.train_counter, self.next_cycle_start_time, entry_busy_state_string))
+                                    (self.train_counter, self.next_cycle_start_time,
+                                     ','.join(list(map(str, list(map(int, self.entry_busy_state)))))))
         self.user_db_cursor.execute('DELETE FROM base_schedule')
         self.user_db_cursor.executemany('INSERT INTO base_schedule VALUES (?, ?, ?, ?, ?, ?, ?, ?)', self.base_schedule)
         self.user_db_cursor.execute('UPDATE game_progress SET supported_cars_min = ?', (self.supported_cars_min, ))
