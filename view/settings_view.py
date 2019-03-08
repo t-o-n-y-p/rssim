@@ -37,6 +37,7 @@ class SettingsView(View):
                 on_uncheck_enough_money_notifications
 
         Properties:
+            temp_display_fps                            display_fps flag value selected by player before making decision
             temp_windowed_resolution                    windowed resolution selected by player before making decision
             temp_log_level                              log level selected by player before making decision
             medium_line                                 Y position of the middle of settings screen
@@ -49,6 +50,7 @@ class SettingsView(View):
             decrement_windowed_resolution_button        DecrementWindowedResolutionButton object
             buttons                                     list of all buttons
             temp_windowed_resolution_label              label from temp windowed resolution
+            display_fps_description_label               label from display FPS flag description
             windowed_resolution_description_label       label from windowed resolution setting description
             notification_description_label              label from notifications settings description
             labels from corresponding notification settings description:
@@ -188,9 +190,30 @@ class SettingsView(View):
             button.paired_button.on_activate()
             self.temp_enough_money_notification_enabled = False
 
+        def on_enable_display_fps(button):
+            """
+            Enables display_fps flag.
+
+            :param button:                      button that was clicked
+            """
+            button.on_deactivate()
+            button.paired_button.on_activate()
+            self.temp_display_fps = True
+
+        def on_disable_display_fps(button):
+            """
+            Disables display_fps flag.
+
+            :param button:                      button that was clicked
+            """
+            button.on_deactivate()
+            button.paired_button.on_activate()
+            self.temp_display_fps = False
+
         super().__init__(user_db_cursor, config_db_cursor, surface, batches, groups,
                          logger=getLogger('root.app.settings.view'))
         self.temp_windowed_resolution = (0, 0)
+        self.temp_display_fps = False
         self.temp_level_up_notification_enabled = False
         self.temp_feature_unlocked_notification_enabled = False
         self.temp_construction_completed_notification_enabled = False
@@ -245,6 +268,13 @@ class SettingsView(View):
                                       UncheckedCheckboxButton(surface=self.surface,
                                                               batch=self.batches['ui_batch'], groups=self.groups,
                                                               on_click_action=on_check_enough_money_notifications))
+        self.display_fps_checked_checkbox_button, self.display_fps_unchecked_checkbox_button \
+            = create_two_state_button(CheckedCheckboxButton(surface=self.surface,
+                                                            batch=self.batches['ui_batch'], groups=self.groups,
+                                                            on_click_action=on_disable_display_fps),
+                                      UncheckedCheckboxButton(surface=self.surface,
+                                                              batch=self.batches['ui_batch'], groups=self.groups,
+                                                              on_click_action=on_enable_display_fps))
         self.buttons.append(self.increment_windowed_resolution_button)
         self.buttons.append(self.decrement_windowed_resolution_button)
         self.buttons.append(self.level_up_checked_checkbox_button)
@@ -255,8 +285,11 @@ class SettingsView(View):
         self.buttons.append(self.construction_completed_unchecked_checkbox_button)
         self.buttons.append(self.enough_money_checked_checkbox_button)
         self.buttons.append(self.enough_money_unchecked_checkbox_button)
+        self.buttons.append(self.display_fps_checked_checkbox_button)
+        self.buttons.append(self.display_fps_unchecked_checkbox_button)
         self.temp_windowed_resolution_label = None
         self.windowed_resolution_description_label = None
+        self.display_fps_description_label = None
         self.notification_description_label = None
         self.level_up_notification_description_label = None
         self.feature_unlocked_notification_description_label = None
@@ -282,14 +315,20 @@ class SettingsView(View):
         self.temp_windowed_resolution_label \
             = Label('x'.join(str(t) for t in self.temp_windowed_resolution),
                     font_name='Arial', font_size=int(16 / 80 * self.bottom_bar_height),
-                    x=self.screen_resolution[0] // 4, y=self.medium_line - self.top_bar_height // 8 * 5,
+                    x=self.screen_resolution[0] // 4, y=self.medium_line + self.top_bar_height // 8 * 5,
                     anchor_x='center', anchor_y='center', batch=self.batches['ui_batch'],
                     group=self.groups['button_text'])
         self.windowed_resolution_description_label \
             = Label(I18N_RESOURCES['windowed_resolution_description_string'][self.current_locale],
                     font_name='Arial', font_size=int(16 / 80 * self.bottom_bar_height),
-                    x=self.screen_resolution[0] // 4, y=self.medium_line + self.top_bar_height // 8 * 5,
+                    x=self.screen_resolution[0] // 4, y=self.medium_line + self.top_bar_height // 8 * 15,
                     anchor_x='center', anchor_y='center', batch=self.batches['ui_batch'],
+                    group=self.groups['button_text'])
+        self.display_fps_description_label \
+            = Label(I18N_RESOURCES['display_fps_description_string'][self.current_locale],
+                    font_name='Arial', font_size=int(16 / 80 * self.bottom_bar_height),
+                    x=self.top_bar_height * 4, y=self.medium_line - self.top_bar_height // 8 * 15,
+                    anchor_x='left', anchor_y='center', batch=self.batches['ui_batch'],
                     group=self.groups['button_text'])
         self.notification_description_label \
             = Label(I18N_RESOURCES['notification_description_string'][self.current_locale],
@@ -339,6 +378,8 @@ class SettingsView(View):
         self.temp_windowed_resolution_label = None
         self.windowed_resolution_description_label.delete()
         self.windowed_resolution_description_label = None
+        self.display_fps_description_label.delete()
+        self.display_fps_description_label = None
         self.notification_description_label.delete()
         self.notification_description_label = None
         self.level_up_notification_description_label.delete()
@@ -362,11 +403,14 @@ class SettingsView(View):
         self.medium_line = self.screen_resolution[1] // 2 + self.top_bar_height // 2
         if self.is_activated:
             self.temp_windowed_resolution_label.x = self.screen_resolution[0] // 4
-            self.temp_windowed_resolution_label.y = self.medium_line - self.top_bar_height // 8 * 5
+            self.temp_windowed_resolution_label.y = self.medium_line + self.top_bar_height // 8 * 5
             self.temp_windowed_resolution_label.font_size = int(16 / 80 * self.bottom_bar_height)
             self.windowed_resolution_description_label.x = self.screen_resolution[0] // 4
-            self.windowed_resolution_description_label.y = self.medium_line + self.top_bar_height // 8 * 5
+            self.windowed_resolution_description_label.y = self.medium_line + self.top_bar_height // 8 * 15
             self.windowed_resolution_description_label.font_size = int(16 / 80 * self.bottom_bar_height)
+            self.display_fps_description_label.x = self.top_bar_height * 4
+            self.display_fps_description_label.y = self.medium_line - self.top_bar_height // 8 * 15
+            self.display_fps_description_label.font_size = int(16 / 80 * self.bottom_bar_height)
             self.notification_description_label.x = 3 * self.screen_resolution[0] // 4
             self.notification_description_label.y = self.medium_line + self.top_bar_height // 8 * 20
             self.notification_description_label.font_size = int(16 / 80 * self.bottom_bar_height)
@@ -400,17 +444,29 @@ class SettingsView(View):
                                                         * self.bottom_bar_height))
         self.increment_windowed_resolution_button.x_margin \
             = 11 * self.screen_resolution[0] // 32 - self.top_bar_height // 2
-        self.increment_windowed_resolution_button.y_margin = self.medium_line - self.top_bar_height // 8 * 9
+        self.increment_windowed_resolution_button.y_margin = self.medium_line + self.top_bar_height // 8
         self.increment_windowed_resolution_button\
             .on_size_changed((self.top_bar_height, self.top_bar_height),
                              int(self.increment_windowed_resolution_button.base_font_size_property
                                  * self.top_bar_height))
         self.decrement_windowed_resolution_button.x_margin \
             = 5 * self.screen_resolution[0] // 32 - self.top_bar_height // 2
-        self.decrement_windowed_resolution_button.y_margin = self.medium_line - self.top_bar_height // 8 * 9
+        self.decrement_windowed_resolution_button.y_margin = self.medium_line + self.top_bar_height // 8
         self.decrement_windowed_resolution_button\
             .on_size_changed((self.top_bar_height, self.top_bar_height),
                              int(self.decrement_windowed_resolution_button.base_font_size_property
+                                 * self.top_bar_height))
+        self.display_fps_checked_checkbox_button.x_margin = self.bottom_bar_height
+        self.display_fps_checked_checkbox_button.y_margin = self.medium_line - self.top_bar_height // 8 * 19
+        self.display_fps_checked_checkbox_button\
+            .on_size_changed((self.top_bar_height, self.top_bar_height),
+                             int(self.display_fps_checked_checkbox_button.base_font_size_property
+                                 * self.top_bar_height))
+        self.display_fps_unchecked_checkbox_button.x_margin = self.bottom_bar_height
+        self.display_fps_unchecked_checkbox_button.y_margin = self.medium_line - self.top_bar_height // 8 * 19
+        self.display_fps_unchecked_checkbox_button\
+            .on_size_changed((self.top_bar_height, self.top_bar_height),
+                             int(self.display_fps_unchecked_checkbox_button.base_font_size_property
                                  * self.top_bar_height))
         self.level_up_checked_checkbox_button.x_margin \
             = self.screen_resolution[0] // 2 + self.bottom_bar_height
@@ -471,6 +527,19 @@ class SettingsView(View):
                                  * self.top_bar_height))
         for b in self.buttons:
             b.on_position_changed((b.x_margin, b.y_margin))
+
+    def on_change_temp_display_fps(self, display_fps):
+        """
+        Updates temp display fps value.
+        Activates and deactivates display_fps checkbox buttons if needed.
+
+        :param display_fps:                     indicates if FPS value is displayed in game
+        """
+        self.temp_display_fps = display_fps
+        if self.temp_display_fps:
+            self.display_fps_checked_checkbox_button.on_activate()
+        else:
+            self.display_fps_unchecked_checkbox_button.on_activate()
 
     def on_change_temp_windowed_resolution(self, windowed_resolution):
         """
@@ -538,6 +607,8 @@ class SettingsView(View):
         if self.is_activated:
             self.windowed_resolution_description_label.text \
                 = I18N_RESOURCES['windowed_resolution_description_string'][self.current_locale]
+            self.display_fps_description_label.text \
+                = I18N_RESOURCES['display_fps_description_string'][self.current_locale]
             self.notification_description_label.text \
                 = I18N_RESOURCES['notification_description_string'][self.current_locale]
             self.level_up_notification_description_label.text \

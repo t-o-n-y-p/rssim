@@ -383,3 +383,5 @@ class AppView(View):
             = self.controller.settings.view.construction_completed_checked_checkbox_button.position
         shader.uniforms.enough_money_checkbox_position \
             = self.controller.settings.view.enough_money_checked_checkbox_button.position
+        shader.uniforms.display_fps_checkbox_position \
+            = self.controller.settings.view.display_fps_checked_checkbox_button.position

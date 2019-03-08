@@ -73,3 +73,11 @@ class FPSController(Controller):
         Enables system notifications for the view and all child controllers.
         """
         self.view.on_enable_notifications()
+
+    def on_update_display_fps(self, display_fps):
+        """
+        Notifies the model about display_fps flag value update.
+
+        :param display_fps:                     new flag value
+        """
+        self.model.on_update_display_fps(display_fps)

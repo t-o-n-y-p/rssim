@@ -69,6 +69,7 @@ uniform ivec2 level_up_checkbox_position = ivec2(0, 0);
 uniform ivec2 feature_unlocked_checkbox_position = ivec2(0, 0);
 uniform ivec2 construction_completed_checkbox_position = ivec2(0, 0);
 uniform ivec2 enough_money_checkbox_position = ivec2(0, 0);
+uniform ivec2 display_fps_checkbox_position = ivec2(0, 0);
 
 bool is_general_border()
 /*
@@ -277,6 +278,24 @@ bool is_resolution_settings_button_border()
                              )
                        )
                  ) && is_increment_resolution_button_activated == 1
+                );
+}
+
+bool is_display_fps_button_border()
+/*
+    Returns "true" if pixel belongs to display FPS button borders and "false" if it does not.
+*/
+{
+    int settings_display_fps_x_margin = int(gl_FragCoord[0]) - display_fps_checkbox_position[0];
+    int settings_display_fps_y_margin = int(gl_FragCoord[1]) - display_fps_checkbox_position[1];
+    return ((settings_display_fps_x_margin == 0 || settings_display_fps_x_margin == 1
+             || settings_display_fps_x_margin == top_bar_height - 1
+             || settings_display_fps_x_margin == top_bar_height - 2
+            ) && settings_display_fps_y_margin >= 0 && settings_display_fps_y_margin <= top_bar_height - 1
+           ) || ((settings_display_fps_y_margin == 0 || settings_display_fps_y_margin == 1
+                  || settings_display_fps_y_margin == top_bar_height - 1
+                  || settings_display_fps_y_margin == top_bar_height - 2
+                 ) && settings_display_fps_x_margin >= 0 && settings_display_fps_x_margin <= top_bar_height - 1
                 );
 }
 
@@ -515,7 +534,8 @@ void main()
 
         // draw all buttons on settings screen
         if (settings_is_activated == 1 && (is_resolution_settings_button_border()
-                                           || is_notification_settings_button_border()))
+                                           || is_notification_settings_button_border()
+                                           || is_display_fps_button_border()))
             settings_result = vec4(1.0, 0.0, 0.0, 1.0);
         // just transparent if settings screen is not activated
         else

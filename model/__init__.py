@@ -151,6 +151,21 @@ def not_approaching_route(fn):
     return _handle_if_train_route_is_not_approaching_route
 
 
+def display_fps_enabled(fn):
+    """
+    Use this decorator within FPS model to execute function
+    only if display_fps flag is enabled.
+
+    :param fn:                      function to decorate
+    :return:                        decorator function
+    """
+    def _execute_if_display_fps_enabled(*args, **kwargs):
+        if args[0].display_fps:
+            fn(*args, **kwargs)
+
+    return _execute_if_display_fps_enabled
+
+
 # --------------------- CONSTANTS ---------------------
 LEFT_SIDE_ENTRY_FIRST_TRACK = 21        # first available track for left side route is 21st
 RIGHT_SIDE_ENTRY_FIRST_TRACK = 22       # first available track for right side route is 22nd

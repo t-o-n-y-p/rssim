@@ -12,6 +12,7 @@ class SettingsModel(Model):
     def __init__(self, user_db_connection, user_db_cursor, config_db_cursor):
         """
         Properties:
+            display_fps                         indicates if FPS value is displayed in game
             windowed_resolution                 screen resolution in windowed mode
             fullscreen_mode                     indicates if fullscreen mode is enabled by user
             screen_resolution_config            list of all supported app window resolutions
@@ -36,8 +37,8 @@ class SettingsModel(Model):
                          logger=getLogger('root.app.settings.model'))
         self.user_db_cursor.execute('SELECT app_width, app_height FROM graphics')
         self.windowed_resolution = self.user_db_cursor.fetchone()
-        self.user_db_cursor.execute('SELECT fullscreen FROM graphics')
-        self.fullscreen_mode = bool(self.user_db_cursor.fetchone()[0])
+        self.user_db_cursor.execute('SELECT fullscreen, display_fps FROM graphics')
+        self.fullscreen_mode, self.display_fps = map(bool, self.user_db_cursor.fetchone())
         self.config_db_cursor.execute('SELECT app_width, app_height FROM screen_resolution_config')
         self.screen_resolution_config = self.config_db_cursor.fetchall()
         self.fullscreen_mode_available = False
@@ -71,6 +72,7 @@ class SettingsModel(Model):
         and updates available windowed resolutions.
         """
         self.view.on_activate()
+        self.view.on_change_temp_display_fps(self.display_fps)
         self.view.on_change_temp_windowed_resolution(self.windowed_resolution)
         self.view.on_change_temp_notification_flags(self.level_up_notification_enabled,
                                                     self.feature_unlocked_notification_enabled,
@@ -98,6 +100,8 @@ class SettingsModel(Model):
         Notifies the app controller about user-defined settings update.
         Saves user-defined settings to user progress database and makes commit.
         """
+        self.display_fps = self.view.temp_display_fps
+        self.controller.parent_controller.fps.on_update_display_fps(self.display_fps)
         self.windowed_resolution = self.view.temp_windowed_resolution
         if not self.view.surface.fullscreen:
             self.controller.parent_controller.on_change_screen_resolution(self.windowed_resolution)
@@ -114,7 +118,8 @@ class SettingsModel(Model):
         self.controller.parent_controller\
             .on_change_enough_money_notification_state(self.enough_money_notification_enabled)
 
-        self.user_db_cursor.execute('UPDATE graphics SET app_width = ?, app_height = ?', self.windowed_resolution)
+        self.user_db_cursor.execute('UPDATE graphics SET app_width = ?, app_height = ?, display_fps = ?',
+                                    (self.windowed_resolution[0], self.windowed_resolution[1], int(self.display_fps)))
         self.user_db_cursor.execute('''UPDATE notification_settings SET level_up_notification_enabled = ?, 
                                        feature_unlocked_notification_enabled = ?, 
                                        construction_completed_notification_enabled = ?, 
