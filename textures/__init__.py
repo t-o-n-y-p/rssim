@@ -5,7 +5,7 @@ This module parses car models from DDS texture.
 from pyglet import resource as _resource
 
 
-_car_collections = 4
+_car_collections = 12
 _resource.path = ['img', 'img/textures.zip']
 _resource.reindex()
 _cars_texture = _resource.texture('cars_in_one.dds')
