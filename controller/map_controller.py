@@ -308,7 +308,6 @@ class MapController(Controller):
         for train in self.trains_list:
             train.on_save_state()
 
-
     def on_update_time(self, game_time):
         """
         Notifies all Train route controllers sorted by priority, Train controllers,
@@ -619,14 +618,6 @@ class MapController(Controller):
         :param money:                   amount of money spent
         """
         self.constructor.on_pay_money(money)
-
-    def on_add_car_collection(self, car_collection_id):
-        """
-        Notifies the model that the player has unlocked new car collection.
-
-        :param car_collection_id:               car collection ID to be unlocked
-        """
-        self.model.on_add_car_collection(car_collection_id)
 
     def on_update_current_locale(self, new_locale):
         """

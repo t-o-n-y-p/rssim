@@ -5,7 +5,7 @@ from model import *
 from controller.train_controller import TrainController
 from model.train_model import TrainModel
 from view.train_view import TrainView
-from textures import CAR_HEAD_IMAGE, CAR_MID_IMAGE, CAR_TAIL_IMAGE, BOARDING_LIGHT_IMAGE
+from textures import CAR_COLLECTIONS, CAR_HEAD_IMAGE, CAR_MID_IMAGE, CAR_TAIL_IMAGE, BOARDING_LIGHT_IMAGE
 
 
 def _create_train(user_db_connection, user_db_cursor, config_db_cursor, surface, batches, groups, map_controller,
@@ -98,11 +98,15 @@ class MapModel(Model):
 
     def on_unlock_track(self, track):
         """
-        Updates number of unlocked tracks. Notifies the view about number of unlocked tracks update.
+        Updates number of unlocked tracks. Adds new car collection if required.
+        Notifies the view about number of unlocked tracks update.
 
         :param track:                   track number
         """
         self.unlocked_tracks = track
+        if self.unlocked_tracks in CAR_COLLECTION_UNLOCK_TRACK_LIST:
+            self.on_add_new_car_collection()
+
         self.view.on_unlock_track(track)
 
     def on_save_state(self):
@@ -142,10 +146,13 @@ class MapModel(Model):
                              state, direction, new_direction, current_direction, priority, boarding_time, exp, money,
                              self.unlocked_car_collections)
 
-    def on_add_car_collection(self, car_collection_id):
+    def on_add_new_car_collection(self):
         """
-        Adds new car collection the player has just unlocked.
-
-        :param car_collection_id:               car collection ID to be unlocked
+        Adds new car collection, randomly selected from available collections.
         """
-        self.unlocked_car_collections.append(car_collection_id)
+        all_collections_set = set(range(CAR_COLLECTIONS))
+        available_car_collections = list(all_collections_set.difference(set(self.unlocked_car_collections)))
+        if len(available_car_collections) > 0:
+            seed()
+            selected_collection = choice(available_car_collections)
+            self.unlocked_car_collections.append(selected_collection)

@@ -5,14 +5,14 @@ This module parses car models from DDS texture.
 from pyglet import resource as _resource
 
 
-_car_collections = 12
+CAR_COLLECTIONS = 12
 _resource.path = ['img', 'img/textures.zip']
 _resource.reindex()
 _cars_texture = _resource.texture('cars_in_one.dds')
 
 # CAR_HEAD_IMAGE includes all textures for leading carriage
 CAR_HEAD_IMAGE = []
-for i in range(_car_collections):
+for i in range(CAR_COLLECTIONS):
     CAR_HEAD_IMAGE.append([])
     for j in range(4):
         CAR_HEAD_IMAGE[i].append(_cars_texture.get_region(j * 251, i * 41, 251, 41))
@@ -25,7 +25,7 @@ for i in range(len(CAR_HEAD_IMAGE)):
 
 # CAR_MID_IMAGE includes all textures for middle carriage
 CAR_MID_IMAGE = []
-for i in range(_car_collections):
+for i in range(CAR_COLLECTIONS):
     CAR_MID_IMAGE.append([])
     for j in range(4):
         CAR_MID_IMAGE[i].append(_cars_texture.get_region((j + 4) * 251, i * 41, 251, 41))
@@ -38,7 +38,7 @@ for i in range(len(CAR_MID_IMAGE)):
 
 # CAR_TAIL_IMAGE includes all textures for trailing carriage
 CAR_TAIL_IMAGE = []
-for i in range(_car_collections):
+for i in range(CAR_COLLECTIONS):
     CAR_TAIL_IMAGE.append([])
     for j in range(4):
         CAR_TAIL_IMAGE[i].append(_cars_texture.get_region((j + 8) * 251, i * 41, 251, 41))
@@ -51,7 +51,7 @@ for i in range(len(CAR_TAIL_IMAGE)):
 
 # BOARDING_LIGHT_IMAGE includes all textures for boarding lights - they are enabled if boarding is in progress
 BOARDING_LIGHT_IMAGE = []
-for i in range(_car_collections):
+for i in range(CAR_COLLECTIONS):
     BOARDING_LIGHT_IMAGE.append(_cars_texture.get_region(12 * 251, i * 41, 251, 41))
 
 # anchor is set to the carriage middle point
