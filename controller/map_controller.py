@@ -181,15 +181,8 @@ class MapController(Controller):
         self.model.on_unlock_track(track)
         self.scheduler.on_unlock_track(track)
         self.dispatcher.on_unlock_track(track)
-        for i in self.signals[track]:
-            self.signals[track][i].on_unlock()
-
-        # when left or right side entry becomes available, unlock corresponding side entry signal
-        if track == LEFT_SIDE_ENTRY_FIRST_TRACK:
-            self.signals[SIDE_ENTRY_EXIT_MASK]['left_side_entry_base_route'].on_unlock()
-
-        if track == RIGHT_SIDE_ENTRY_FIRST_TRACK:
-            self.signals[SIDE_ENTRY_EXIT_MASK]['right_side_entry_base_route'].on_unlock()
+        for (track_number, base_route) in self.model.get_signals_to_unlock_with_track(track):
+            self.signals[track_number][base_route].on_unlock()
 
     def on_activate_view(self):
         """

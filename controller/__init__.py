@@ -80,9 +80,6 @@ def map_view_is_active(fn):
 FRAMES_IN_2_HOURS = 28800               # number of frames in 2 in-game hours
 ZOOM_OUT_SCALE_FACTOR = 0.5             # how much to scale all sprites when map is zoomed out
 ZOOM_IN_SCALE_FACTOR = 1.0              # how much to scale all sprites when map is zoomed in
-SIDE_ENTRY_EXIT_MASK = 100              # in base route system generic side entry and exit base routes have code 100
-LEFT_SIDE_ENTRY_FIRST_TRACK = 21        # first available track for left side route is 21st
-RIGHT_SIDE_ENTRY_FIRST_TRACK = 22       # first available track for right side route is 22nd
 SECTION_TYPE = 0                        # meaning of section[] list's element 0
 SECTION_TRACK_NUMBER_1 = 1              # meaning of section[] list's element 1
 SECTION_TRACK_NUMBER_2 = 2              # meaning of section[] list's element 2

@@ -156,3 +156,14 @@ class MapModel(Model):
             seed()
             selected_collection = choice(available_car_collections)
             self.unlocked_car_collections.append(selected_collection)
+
+    def get_signals_to_unlock_with_track(self, track):
+        """
+        Returns list of signal identifiers for signals which should be unlocked with given track.
+
+        :param track:                           track which is unlocked
+        :return:                                list of (track, base_route) pairs
+        """
+        self.config_db_cursor.execute('SELECT track, base_route FROM signal_config WHERE track_unlocked_with = ?',
+                                      (track, ))
+        return self.config_db_cursor.fetchall()
