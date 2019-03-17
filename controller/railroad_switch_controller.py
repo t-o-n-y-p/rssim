@@ -137,3 +137,9 @@ class RailroadSwitchController(Controller):
         Enables system notifications for the view and all child controllers.
         """
         self.view.on_enable_notifications()
+
+    def on_unlock(self):
+        """
+        Notifies model the switch was unlocked.
+        """
+        self.model.on_unlock()

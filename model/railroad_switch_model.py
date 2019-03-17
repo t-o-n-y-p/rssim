@@ -16,6 +16,7 @@ class RailroadSwitchModel(Model):
             last_entered_by                     train ID which made the switch direction force_busy last time
             state_change_listeners              train route sections which share this switch
             current_position                    current switch position
+            locked                              indicates if switch is available for player
 
         :param user_db_connection:              connection to the user DB (stores game state and user-defined settings)
         :param user_db_cursor:                  user DB cursor (is used to execute user DB queries)
@@ -42,6 +43,10 @@ class RailroadSwitchModel(Model):
                                          WHERE track_param_1 = ? AND track_param_2 = ? AND section_type = ?''',
                                       (track_param_1, track_param_2, switch_type))
         self.state_change_listeners = self.config_db_cursor.fetchall()
+        self.user_db_cursor.execute('''SELECT locked FROM switches 
+                                       WHERE track_param_1 = ? AND track_param_2 = ? AND switch_type = ?''',
+                                    (track_param_1, track_param_2, switch_type))
+        self.locked = bool(self.user_db_cursor.fetchone()[0])
 
     @model_is_not_active
     def on_activate(self):
@@ -72,10 +77,10 @@ class RailroadSwitchModel(Model):
         track_param_2 = self.controller.track_param_2
         switch_type = self.controller.switch_type
         self.user_db_cursor.execute('''UPDATE switches SET busy = ?, force_busy = ?, 
-                                       last_entered_by = ?, current_position = ? 
+                                       last_entered_by = ?, current_position = ?, locked = ? 
                                        WHERE track_param_1 = ? AND track_param_2 = ? AND switch_type = ?''',
                                     (int(self.busy), int(self.force_busy), self.last_entered_by, self.current_position,
-                                     track_param_1, track_param_2, switch_type))
+                                     int(self.locked), track_param_1, track_param_2, switch_type))
 
     def on_force_busy_on(self, positions, train_id):
         """
@@ -88,6 +93,7 @@ class RailroadSwitchModel(Model):
         self.busy = True
         self.last_entered_by = train_id
         self.current_position = positions[0]
+        self.view.on_change_current_position(self.current_position)
         for listener in self.state_change_listeners:
             self.controller.parent_controller.on_update_train_route_section_status(listener, status=True)
 
@@ -99,3 +105,10 @@ class RailroadSwitchModel(Model):
         self.busy = False
         for listener in self.state_change_listeners:
             self.controller.parent_controller.on_update_train_route_section_status(listener, status=False)
+
+    def on_unlock(self):
+        """
+        Updates switch lock state. Notifies the view about lock state update.
+        """
+        self.locked = False
+        self.view.on_unlock()

@@ -75,3 +75,6 @@ FLAG_GB.anchor_x = 128
 FLAG_GB.anchor_y = 128
 FLAG_RU.anchor_x = 128
 FLAG_RU.anchor_y = 128
+
+SWITCHES_STRAIGHT = _resource.texture('switches_straight.dds')
+SWITCHES_DIVERGING = _resource.texture('switches_diverging.dds')

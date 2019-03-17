@@ -181,8 +181,14 @@ class MapController(Controller):
         self.model.on_unlock_track(track)
         self.scheduler.on_unlock_track(track)
         self.dispatcher.on_unlock_track(track)
-        for (track_number, base_route) in self.model.get_signals_to_unlock_with_track(track):
-            self.signals[track_number][base_route].on_unlock()
+        for (track_param, base_route) in self.model.get_signals_to_unlock_with_track(track):
+            self.signals[track_param][base_route].on_unlock()
+
+        for (track_param_1, track_param_2, switch_type) in self.model.get_switches_to_unlock_with_track(track):
+            self.switches[track_param_1][track_param_2][switch_type].on_unlock()
+
+        for (track_param_1, track_param_2, crossover_type) in self.model.get_crossovers_to_unlock_with_track(track):
+            self.crossovers[track_param_1][track_param_2][crossover_type].on_unlock()
 
     def on_activate_view(self):
         """

@@ -162,8 +162,30 @@ class MapModel(Model):
         Returns list of signal identifiers for signals which should be unlocked with given track.
 
         :param track:                           track which is unlocked
-        :return:                                list of (track, base_route) pairs
+        :return:                                list of (track_param, base_route) pairs
         """
         self.config_db_cursor.execute('SELECT track, base_route FROM signal_config WHERE track_unlocked_with = ?',
                                       (track, ))
+        return self.config_db_cursor.fetchall()
+
+    def get_switches_to_unlock_with_track(self, track):
+        """
+        Returns list of switches identifiers for switches which should be unlocked with given track.
+
+        :param track:                           track which is unlocked
+        :return:                                list of (track_param_1, track_param_2, switch_type) groups of three
+        """
+        self.config_db_cursor.execute('''SELECT track_param_1, track_param_2, switch_type 
+                                         FROM switches_config WHERE track_unlocked_with = ?''', (track, ))
+        return self.config_db_cursor.fetchall()
+
+    def get_crossovers_to_unlock_with_track(self, track):
+        """
+        Returns list of crossovers identifiers for crossovers which should be unlocked with given track.
+
+        :param track:                           track which is unlocked
+        :return:                                list of (track_param_1, track_param_2, crossover_type) groups of three
+        """
+        self.config_db_cursor.execute('''SELECT track_param_1, track_param_2, crossover_type 
+                                         FROM crossovers_config WHERE track_unlocked_with = ?''', (track, ))
         return self.config_db_cursor.fetchall()
