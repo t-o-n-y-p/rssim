@@ -6,14 +6,14 @@ from traceback import print_tb
 from win32api import MessageBoxEx
 import win32con
 
-from exceptions import VideoAdapterNotSupportedException, MonitorNotSupportedException
+from exceptions import VideoAdapterNotSupportedException, MonitorNotSupportedException, UpdateIncompatibleException
 from rssim_core.rssim_core import RSSim
 
 
 def main():
     try:
         RSSim().run()
-    except (VideoAdapterNotSupportedException, MonitorNotSupportedException) as e:
+    except (VideoAdapterNotSupportedException, MonitorNotSupportedException, UpdateIncompatibleException) as e:
         MessageBoxEx(win32con.NULL, e.text, e.caption,
                      win32con.MB_OK | win32con.MB_ICONERROR | win32con.MB_DEFBUTTON1
                      | win32con.MB_SYSTEMMODAL | win32con.MB_SETFOREGROUND, 0)

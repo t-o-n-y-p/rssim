@@ -14,7 +14,7 @@ from pyglet.window import Window
 from pyglet.graphics import Batch, OrderedGroup
 from pyshaders import from_files_names
 
-from exceptions import VideoAdapterNotSupportedException, MonitorNotSupportedException
+from exceptions import VideoAdapterNotSupportedException, MonitorNotSupportedException, UpdateIncompatibleException
 from rssim_core import *
 
 
@@ -341,17 +341,20 @@ class RSSim:
         logger.debug(f'user DB version: {user_db_version}')
         logger.debug(f'current game version: {CURRENT_VERSION}')
         if user_db_version < CURRENT_VERSION:
-            logger.debug('upgrading database...')
-            for patch in range(user_db_version[2] + 1, CURRENT_VERSION[2] + 1):
-                logger.debug(f'start 0.9.{patch} migration')
-                with open(f'db/patch/09{patch}.sql', 'r') as migration:
-                    # simply execute each line in the migration script
-                    for line in migration.readlines():
-                        self.user_db_cursor.execute(line)
-                        logger.debug(f'executed request: {line}')
+            if user_db_version >= (0, 9, 4):
+                logger.debug('upgrading database...')
+                for patch in range(user_db_version[2] + 1, CURRENT_VERSION[2] + 1):
+                    logger.debug(f'start 0.9.{patch} migration')
+                    with open(f'db/patch/09{patch}.sql', 'r') as migration:
+                        # simply execute each line in the migration script
+                        for line in migration.readlines():
+                            self.user_db_cursor.execute(line)
+                            logger.debug(f'executed request: {line}')
 
-                self.user_db_connection.commit()
-                logger.debug(f'0.9.{patch} migration complete')
+                    self.user_db_connection.commit()
+                    logger.debug(f'0.9.{patch} migration complete')
+            else:
+                raise UpdateIncompatibleException
         else:
             logger.debug('user DB version is up to date')
 

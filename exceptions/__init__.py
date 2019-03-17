@@ -18,3 +18,13 @@ class MonitorNotSupportedException(Exception):
         super().__init__()
         self.text = 'Unfortunately, your monitor resolution is too low to launch this game. \nOnly 1280x720 and higher resolutions are supported.'
         self.caption = 'Monitor Resolution Error'
+
+
+class UpdateIncompatibleException(Exception):
+    """
+    This exception is raised when current app version is incompatible with previous versions.
+    """
+    def __init__(self):
+        super().__init__()
+        self.text = 'Unfortunately, current game version is incompatible with your previous game version. \nYou need to play the game again from scratch.'
+        self.caption = 'Update failed'
