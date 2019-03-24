@@ -62,6 +62,7 @@ class MapModel(Model):
         """
         Properties:
             unlocked_tracks                     number of tracks available for player and trains
+            unlocked_environment                environment tier available for player
             unlocked_car_collections            list of car collections which can be used for new trains
 
         :param user_db_connection:              connection to the user DB (stores game state and user-defined settings)
@@ -70,8 +71,8 @@ class MapModel(Model):
         """
         super().__init__(user_db_connection, user_db_cursor, config_db_cursor,
                          logger=getLogger('root.app.game.map.model'))
-        self.user_db_cursor.execute('SELECT unlocked_tracks FROM game_progress')
-        self.unlocked_tracks = self.user_db_cursor.fetchone()[0]
+        self.user_db_cursor.execute('SELECT unlocked_tracks, unlocked_environment FROM game_progress')
+        self.unlocked_tracks, self.unlocked_environment = self.user_db_cursor.fetchone()
         self.user_db_cursor.execute('SELECT unlocked_car_collections FROM game_progress')
         self.unlocked_car_collections = list(map(int, self.user_db_cursor.fetchone()[0].split(',')))
 
@@ -113,8 +114,10 @@ class MapModel(Model):
         """
         Saves map state to user progress database.
         """
-        self.user_db_cursor.execute('UPDATE game_progress SET unlocked_tracks = ?, unlocked_car_collections = ?',
-                                    (self.unlocked_tracks, ','.join(list(map(str, self.unlocked_car_collections)))))
+        self.user_db_cursor.execute('''UPDATE game_progress SET unlocked_tracks = ?, unlocked_environment = ?, 
+                                       unlocked_car_collections = ?''',
+                                    (self.unlocked_tracks, self.unlocked_environment,
+                                     ','.join(list(map(str, self.unlocked_car_collections)))))
 
     def on_clear_trains_info(self):
         """

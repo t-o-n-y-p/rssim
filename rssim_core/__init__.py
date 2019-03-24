@@ -45,7 +45,7 @@ from textures import *
 
 
 # --------------------- CONSTANTS ---------------------
-CURRENT_VERSION = (0, 9, 4)         # current app version
+CURRENT_VERSION = (0, 9, 5)         # current app version
 REQUIRED_TEXTURE_SIZE = 8192        # maximum texture resolution presented in the app
 MIN_RESOLUTION_WIDTH = 1280         # minimum screen resolution width supported by the app UI
 MIN_RESOLUTION_HEIGHT = 720         # minimum screen resolution height supported by the app UI

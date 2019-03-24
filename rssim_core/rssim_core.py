@@ -341,7 +341,7 @@ class RSSim:
         logger.debug(f'user DB version: {user_db_version}')
         logger.debug(f'current game version: {CURRENT_VERSION}')
         if user_db_version < CURRENT_VERSION:
-            if user_db_version >= (0, 9, 4):
+            if user_db_version >= (0, 9, 5):
                 logger.debug('upgrading database...')
                 for patch in range(user_db_version[2] + 1, CURRENT_VERSION[2] + 1):
                     logger.debug(f'start 0.9.{patch} migration')
@@ -353,6 +353,7 @@ class RSSim:
 
                     self.user_db_connection.commit()
                     logger.debug(f'0.9.{patch} migration complete')
+            # update from versions < 0.9.5 is not supported
             else:
                 raise UpdateIncompatibleException
         else:

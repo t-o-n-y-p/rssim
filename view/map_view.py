@@ -29,6 +29,7 @@ class MapView(View):
 
         Properties:
             unlocked_tracks                     number of unlocked tracks in the game
+            unlocked_environment                environment tier available for player
             main_map                            main map texture
             environment                         environment texture
             map_offset                          additional offset from map base offset for smaller maps
@@ -119,10 +120,10 @@ class MapView(View):
 
         super().__init__(user_db_cursor, config_db_cursor, surface, batches, groups,
                          logger=getLogger('root.app.game.map.view'))
-        self.user_db_cursor.execute('SELECT unlocked_tracks FROM game_progress')
-        self.unlocked_tracks = self.user_db_cursor.fetchone()[0]
+        self.user_db_cursor.execute('SELECT unlocked_tracks, unlocked_environment FROM game_progress')
+        self.unlocked_tracks, self.unlocked_environment = self.user_db_cursor.fetchone()
         self.main_map = resource.image(f'full_map_{self.unlocked_tracks}.dds')
-        self.environment = resource.image('full_map_e_0.dds')
+        self.environment = resource.image(f'full_map_e_{self.unlocked_environment}.dds')
         self.map_offset = (0, 0)
         self.mini_map_offset = (0, 0)
         self.on_change_map_offset()
