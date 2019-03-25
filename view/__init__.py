@@ -276,16 +276,18 @@ FRAMES_IN_ONE_SECOND = 4                        # indicates how many frames fit 
 MINUTES_IN_ONE_HOUR = 60
 SECONDS_IN_ONE_MINUTE = 60
 HOURS_IN_ONE_DAY = 24
-# track state matrix properties
-LOCKED = 0                                      # property #0 indicates if track is locked
-UNDER_CONSTRUCTION = 1                          # property #1 indicates if track is under construction
+# track and environment state matrix properties
+LOCKED = 0                                      # property #0 indicates if track/env. is locked
+UNDER_CONSTRUCTION = 1                          # property #1 indicates if track/env. is under construction
 CONSTRUCTION_TIME = 2                           # property #2 indicates construction time left
 UNLOCK_CONDITION_FROM_LEVEL = 3                 # property #3 indicates if unlock condition from level is met
 UNLOCK_CONDITION_FROM_PREVIOUS_TRACK = 4        # property #4 indicates if unlock condition from previous track is met
+UNLOCK_CONDITION_FROM_PREVIOUS_ENVIRONMENT = 4  # property #4 indicates if unlock condition from previous env. is met
 UNLOCK_CONDITION_FROM_ENVIRONMENT = 5           # property #5 indicates if unlock condition from environment is met
 UNLOCK_AVAILABLE = 6                            # property #6 indicates if all unlock conditions are met
-PRICE = 7                                       # property #7 indicates track price
-LEVEL_REQUIRED = 8                              # property #8 indicates required level for this track
+PRICE = 7                                       # property #7 indicates track/env. price
+LEVEL_REQUIRED = 8                              # property #8 indicates required level for this track/env.
+ENVIRONMENT_REQUIRED = 9                        # property #9 indicates required environment tier for this track
 # base_schedule matrix properties
 TRAIN_ID = 0                                    # property #0 indicates train identification number
 ARRIVAL_TIME = 1                                # property #1 indicates arrival time

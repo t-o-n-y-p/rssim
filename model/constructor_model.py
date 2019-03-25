@@ -21,8 +21,20 @@ class ConstructorModel(Model):
                                                 property #6 indicates if all unlock conditions are met
                                                 property #7 indicates track price
                                                 property #8 indicates required level for this track
+                                                property #9 indicates required environment tier for this track
+            environment_state_matrix            table with all environment state properties:
+                                                property #0 indicates if environment is locked
+                                                property #1 indicates if environment is under construction
+                                                property #2 indicates construction time left
+                                                property #3 indicates if unlock condition from level is met
+                                                property #4 indicates if unlock condition from previous env. is met
+                                                property #5 is reserved
+                                                property #6 indicates if all unlock conditions are met
+                                                property #7 indicates environment price
+                                                property #8 indicates required level for this environment
             money                               player bank account state
             cached_unlocked_tracks              stores unlocked track number to remove it from constructor later
+            cached_unlocked_tiers               stores unlocked environment tier number to remove it from constructor
             track_money_target_activated        indicates if user tracks money target for upcoming station track
 
         :param user_db_connection:              connection to the user DB (stores game state and user-defined settings)
@@ -32,7 +44,9 @@ class ConstructorModel(Model):
         super().__init__(user_db_connection, user_db_cursor, config_db_cursor,
                          logger=getLogger('root.app.game.map.constructor.model'))
         self.track_state_matrix = {}
+        self.environment_state_matrix = {}
         self.cached_unlocked_tracks = []
+        self.cached_unlocked_tiers = []
         self.user_db_cursor.execute('''SELECT track_number, locked, under_construction, construction_time, 
                                        unlock_condition_from_level, unlock_condition_from_previous_track, 
                                        unlock_condition_from_environment, unlock_available FROM tracks 
@@ -41,8 +55,19 @@ class ConstructorModel(Model):
         for info in track_info_fetched:
             self.track_state_matrix[info[0]] = [bool(info[1]), bool(info[2]), info[3], bool(info[4]), bool(info[5]),
                                                 bool(info[6]), bool(info[7])]
-            self.config_db_cursor.execute('SELECT price, level FROM track_config WHERE track_number = ?', (info[0], ))
+            self.config_db_cursor.execute('''SELECT price, level, environment_tier FROM track_config 
+                                             WHERE track_number = ?''', (info[0], ))
             self.track_state_matrix[info[0]].extend(self.config_db_cursor.fetchone())
+
+        self.user_db_cursor.execute('''SELECT tier, locked, under_construction, construction_time, 
+                                       unlock_condition_from_level, unlock_condition_from_previous_environment,
+                                       unlock_available FROM environment WHERE locked = 1''')
+        environment_info_fetched = self.user_db_cursor.fetchall()
+        for info in environment_info_fetched:
+            self.environment_state_matrix[info[0]] = [bool(info[1]), bool(info[2]), info[3], bool(info[4]),
+                                                      bool(info[5]), 0, bool(info[6])]
+            self.config_db_cursor.execute('SELECT price, level FROM environment_config WHERE tier = ?', (info[0], ))
+            self.environment_state_matrix[info[0]].extend(self.config_db_cursor.fetchone())
 
         self.user_db_cursor.execute('SELECT money FROM game_progress')
         self.money = self.user_db_cursor.fetchone()[0]
@@ -67,7 +92,7 @@ class ConstructorModel(Model):
         """
         Updates bank account state and activates the Constructor view.
         """
-        self.view.on_update_money(self.money, self.track_state_matrix)
+        self.view.on_update_money(self.money, self.track_state_matrix, self.environment_state_matrix)
         self.view.on_activate()
 
     def on_update_time(self, game_time):
@@ -95,7 +120,7 @@ class ConstructorModel(Model):
                     if track < MAXIMUM_TRACK_NUMBER:
                         self.track_state_matrix[track + 1][UNLOCK_CONDITION_FROM_PREVIOUS_TRACK] = True
                         # if all three conditions are met for the next track, it becomes available for construction
-                        self.on_check_unlock_conditions(track + 1)
+                        self.on_check_track_unlock_conditions(track + 1)
 
                         self.view.on_update_live_track_state(self.track_state_matrix, track + 1)
 
@@ -141,6 +166,32 @@ class ConstructorModel(Model):
                                             )
                                         )
 
+        # same for environment
+        for tier in self.cached_unlocked_tiers:
+            self.user_db_cursor.execute('''UPDATE environment SET locked = 0, under_construction = 0, 
+                                           construction_time = 0, unlock_condition_from_level = 0, 
+                                           unlock_condition_from_previous_environment = 0, 
+                                           unlock_available = 0 WHERE tier = ?''', (tier, ))
+
+        self.cached_unlocked_tiers = []
+        for tier in self.environment_state_matrix:
+            self.user_db_cursor.execute('''UPDATE environment SET locked = ?, under_construction = ?, 
+                                           construction_time = ?, unlock_condition_from_level = ?, 
+                                           unlock_condition_from_previous_environment = ?, 
+                                           unlock_available = ? WHERE tier = ?''',
+                                        tuple(
+                                            map(int,
+                                                (self.environment_state_matrix[tier][LOCKED],
+                                                 self.environment_state_matrix[tier][UNDER_CONSTRUCTION],
+                                                 self.environment_state_matrix[tier][CONSTRUCTION_TIME],
+                                                 self.environment_state_matrix[tier][UNLOCK_CONDITION_FROM_LEVEL],
+                                                 self.environment_state_matrix[tier][
+                                                     UNLOCK_CONDITION_FROM_PREVIOUS_ENVIRONMENT],
+                                                 self.environment_state_matrix[tier][UNLOCK_AVAILABLE], tier)
+                                                )
+                                            )
+                                        )
+
     def on_level_up(self, level):
         """
         Checks if there are some tracks to be unlocked when player hits new level and adjusts its state properly.
@@ -158,7 +209,7 @@ class ConstructorModel(Model):
         for track in tracks_parsed:
             self.track_state_matrix[track][UNLOCK_CONDITION_FROM_LEVEL] = True
             # if all three conditions are met, track is available for construction
-            self.on_check_unlock_conditions(track)
+            self.on_check_track_unlock_conditions(track)
 
             self.view.on_update_live_track_state(self.track_state_matrix, track)
 
@@ -196,7 +247,7 @@ class ConstructorModel(Model):
         self.money -= money
         self.view.on_update_money(self.money, self.track_state_matrix)
 
-    def on_check_unlock_conditions(self, track):
+    def on_check_track_unlock_conditions(self, track):
         """
         Checks if all 3 unlock conditions are met.
         If so, unlocks the track and notifies the view to send notification.

@@ -56,6 +56,17 @@ class ConstructorView(View):
                                                 property #6 indicates if all unlock conditions are met
                                                 property #7 indicates track price
                                                 property #8 indicates required level for this track
+                                                property #9 indicates required environment tier for this track
+            environment_state_matrix            table with all environment state properties:
+                                                property #0 indicates if environment is locked
+                                                property #1 indicates if environment is under construction
+                                                property #2 indicates construction time left
+                                                property #3 indicates if unlock condition from level is met
+                                                property #4 indicates if unlock condition from previous env. is met
+                                                property #5 is reserved
+                                                property #6 indicates if all unlock conditions are met
+                                                property #7 indicates environment price
+                                                property #8 indicates required level for this environment
             locked_tracks_labels                list of "locked" labels for tracks
             title_tracks_labels                 list of "Track X" labels
             description_tracks_labels           list of track state labels
@@ -63,7 +74,6 @@ class ConstructorView(View):
             set_track_money_target_button       SetTrackMoneyTargetButton object
             reset_track_money_target_button     ResetTrackMoneyTargetButton object
             no_more_tracks_available_labels     list of "No more tracks available" labels
-            coming_soon_environment_labels      list of "Coming soon" labels
             close_constructor_button            CloseConstructorButton object
             buttons                             list of all buttons
             on_buy_track                        on_click handler for buy track button
@@ -150,6 +160,7 @@ class ConstructorView(View):
         self.railway_station_caption_sprite = None
         self.environment_caption_sprite = None
         self.track_state_matrix = None
+        self.environment_state_matrix = None
         self.locked_tracks_labels = {}
         self.title_tracks_labels = {}
         self.description_tracks_labels = {}
@@ -163,7 +174,6 @@ class ConstructorView(View):
                                                                   groups=self.groups,
                                                                   on_click_action=on_reset_track_money_target))
         self.no_more_tracks_available_labels = []
-        self.coming_soon_environment_labels = []
         self.close_constructor_button = CloseConstructorButton(surface=self.surface, batch=self.batches['ui_batch'],
                                                                groups=self.groups, on_click_action=on_close_constructor)
         self.buttons.append(self.close_constructor_button)
@@ -200,17 +210,6 @@ class ConstructorView(View):
                     y=self.environment_caption_position[1],
                     anchor_x='center', anchor_y='center',
                     batch=self.batches['ui_batch'], group=self.groups['button_text'])
-        # create "Coming soon" labels for environment since it is not yet implemented
-        for i in range(4):
-            self.coming_soon_environment_labels.append(
-                Label(I18N_RESOURCES['coming_soon_placeholder_string'][self.current_locale],
-                      font_name='Arial', font_size=self.placeholder_font_size,
-                      color=GREY,
-                      x=self.environment_cell_positions[i][0] + self.placeholder_offset[0],
-                      y=self.environment_cell_positions[i][1] + self.placeholder_offset[1],
-                      anchor_x='center', anchor_y='center',
-                      batch=self.batches['ui_batch'], group=self.groups['button_text'])
-            )
 
         for b in self.buttons:
             if b.to_activate_on_controller_init:
@@ -226,10 +225,6 @@ class ConstructorView(View):
         self.railway_station_caption_sprite = None
         self.environment_caption_sprite.delete()
         self.environment_caption_sprite = None
-        for label in self.coming_soon_environment_labels:
-            label.delete()
-
-        self.coming_soon_environment_labels.clear()
         for d in self.locked_tracks_labels:
             self.locked_tracks_labels[d].delete()
 
@@ -371,7 +366,8 @@ class ConstructorView(View):
                             self.description_tracks_labels[dictionary_keys[i]] \
                                 = Label(I18N_RESOURCES[
                                             'unlock_condition_from_environment_track_description_string'
-                                        ][self.current_locale].format(0),
+                                        ][self.current_locale]
+                                        .format(self.track_state_matrix[dictionary_keys[i]][ENVIRONMENT_REQUIRED]),
                                         font_name='Arial', font_size=self.description_label_font_size, color=GREY,
                                         x=self.track_cells_positions[i][0]
                                           + self.description_label_offset[0],
@@ -413,12 +409,6 @@ class ConstructorView(View):
             self.environment_caption_sprite.x = self.environment_caption_position[0]
             self.environment_caption_sprite.y = self.environment_caption_position[1]
             self.environment_caption_sprite.font_size = self.caption_font_size
-            for i in range(4):
-                self.coming_soon_environment_labels[i].x \
-                    = self.environment_cell_positions[i][0] + self.placeholder_offset[0]
-                self.coming_soon_environment_labels[i].y \
-                    = self.environment_cell_positions[i][1] + self.placeholder_offset[1]
-                self.coming_soon_environment_labels[i].font_size = self.placeholder_font_size
 
             dictionary_keys = list(self.locked_tracks_labels.keys())
             for i in range(len(dictionary_keys)):
@@ -461,17 +451,22 @@ class ConstructorView(View):
         for b in self.buttons:
             b.on_position_changed((b.x_margin, b.y_margin))
 
-    def on_update_money(self, money, track_state_matrix):
+    def on_update_money(self, money, track_state_matrix, environment_state_matrix):
         """
         Updates bank account state change when user spends or gains money.
 
-        :param money:                   current bank account state
-        :param track_state_matrix       table with all tracks state properties
+        :param money:                           current bank account state
+        :param track_state_matrix               table with all tracks state properties
+        :param environment_state_matrix         table with all environment state properties
         """
         self.money = money
         self.track_state_matrix = track_state_matrix
+        self.environment_state_matrix = environment_state_matrix
         if len(self.track_state_matrix) > 0:
-            self.on_update_live_track_state(track_state_matrix, list(track_state_matrix.keys())[0])
+            self.on_update_live_track_state(track_state_matrix, min(list(track_state_matrix.keys())))
+
+        if len(self.environment_state_matrix) > 0:
+            self.on_update_live_environment_state(environment_state_matrix, min(list(environment_state_matrix.keys())))
 
     @view_is_active
     @track_cell_is_created
@@ -542,6 +537,15 @@ class ConstructorView(View):
         :param game_time:               current in-game time
         """
         self.track_state_matrix = track_state_matrix
+
+    def on_update_environment_state(self, environment_state_matrix, game_time):
+        """
+        Updates environment state matrix every frame in case cell for this track is not yet created.
+
+        :param environment_state_matrix         table with all environment state properties
+        :param game_time:                       current in-game time
+        """
+        self.environment_state_matrix = environment_state_matrix
 
     @view_is_active
     def on_unlock_track_live(self, track):
@@ -632,8 +636,6 @@ class ConstructorView(View):
             self.railway_station_caption_sprite.text \
                 = I18N_RESOURCES['railway_station_caption_string'][self.current_locale]
             self.environment_caption_sprite.text = I18N_RESOURCES['environment_caption_string'][self.current_locale]
-            for i in self.coming_soon_environment_labels:
-                i.text = I18N_RESOURCES['coming_soon_placeholder_string'][self.current_locale]
 
             for i in self.no_more_tracks_available_labels:
                 i.text = I18N_RESOURCES['no_more_tracks_available_placeholder_string'][self.current_locale]

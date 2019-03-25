@@ -15,6 +15,10 @@
 		"en": "No more tracks available",
 		"ru": "Больше нет доступных путей"
 	},
+	"no_more_tiers_available_placeholder_string": {
+		"en": "No more tiers available",
+		"ru": "Больше нет доступных стадий"
+	},
 	"title_track_string": {
 		"en": "Track {0}",
 		"ru": "Путь {0}"
@@ -123,6 +127,14 @@
 		"en": "Track {0} has just been unlocked. Return to the game to check out the price.",
 		"ru": "Только что открыт путь {0}. Вернись в игру, чтобы узнать цену."
 	},
+	"environment_unlocked_notification_caption_string": {
+		"en": "New environment available",
+		"ru": "Доступно новое окружение"
+	},
+	"environment_unlocked_notification_message_string": {
+		"en": "Environment Tier {0} has just been unlocked. Return to the game to check out the price.",
+		"ru": "Только что открыто окружение Стадии {0}. Вернись в игру, чтобы узнать цену."
+	},
 	"track_construction_completed_notification_caption_string": {
 		"en": "Construction completed",
 		"ru": "Строительство завершено"
@@ -131,6 +143,14 @@
 		"en": "Track {0} is ready to accept trains. Don't miss the first one!",
 		"ru": "Путь {0} готов к приему поездов. Не пропусти первый поезд!"
 	},
+	"environment_construction_completed_notification_caption_string": {
+		"en": "Construction completed",
+		"ru": "Строительство завершено"
+	},
+	"environment_construction_completed_notification_message_string": {
+		"en": "Environment Tier {0} is ready. Check out what's new!",
+		"ru": "Окружение Стадии {0} готово. Посмотри, что изменилось!"
+	},
 	"enough_money_track_notification_caption_string": {
 		"en": "Enough savings",
 		"ru": "Успешное накопление"
@@ -138,5 +158,13 @@
 	"enough_money_track_notification_message_string": {
 		"en": "Return to the game and buy the next track for your station.",
 		"ru": "Вернись в игру и купи следующий путь для твоего вокзала."
+	},
+	"enough_money_environment_notification_caption_string": {
+		"en": "Enough savings",
+		"ru": "Успешное накопление"
+	},
+	"enough_money_environment_notification_message_string": {
+		"en": "Return to the game and buy new environment for your station.",
+		"ru": "Вернись в игру и купи новое окружение для твоего вокзала."
 	}
 }
