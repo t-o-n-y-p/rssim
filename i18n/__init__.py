@@ -5,7 +5,7 @@ with codecs.open('resources.json', 'r', 'utf-8-sig') as resource_file:
     I18N_RESOURCES = json.load(resource_file)
 
 
-def i18n_number_category(locale, x):
+def i18n_number_category(x, locale):
     """
     Returns localization category of a given number in the given locale.
     Source of expectations: https://www.unicode.org/cldr/charts/34/supplemental/language_plural_rules.html
