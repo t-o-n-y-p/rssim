@@ -9,6 +9,8 @@ from button.build_track_button import BuildTrackButton
 from button.set_track_money_target_button import SetTrackMoneyTargetButton
 from button.reset_track_money_target_button import ResetTrackMoneyTargetButton
 from notifications.track_unlocked_notification import TrackUnlockedNotification
+from notifications.environment_unlocked_notification import EnvironmentUnlockedNotification
+from notifications.environment_construction_completed_notification import EnvironmentConstructionCompletedNotification
 from notifications.track_construction_completed_notification import TrackConstructionCompletedNotification
 from i18n import I18N_RESOURCES
 
@@ -68,12 +70,16 @@ class ConstructorView(View):
                                                 property #7 indicates environment price
                                                 property #8 indicates required level for this environment
             locked_tracks_labels                list of "locked" labels for tracks
+            locked_tiers_labels                 list of "locked" labels for environment tiers
             title_tracks_labels                 list of "Track X" labels
+            title_tiers_labels                  list of "Tier X" labels
             description_tracks_labels           list of track state labels
+            description_tiers_labels            list of environment tiers state labels
             build_track_button                  button which puts track under construction
             set_track_money_target_button       SetTrackMoneyTargetButton object
             reset_track_money_target_button     ResetTrackMoneyTargetButton object
             no_more_tracks_available_labels     list of "No more tracks available" labels
+            no_more_tiers_available_labels      list of "No more tiers available" labels
             close_constructor_button            CloseConstructorButton object
             buttons                             list of all buttons
             on_buy_track                        on_click handler for buy track button
@@ -162,8 +168,11 @@ class ConstructorView(View):
         self.track_state_matrix = None
         self.environment_state_matrix = None
         self.locked_tracks_labels = {}
+        self.locked_tiers_labels = {}
         self.title_tracks_labels = {}
+        self.title_tiers_labels = {}
         self.description_tracks_labels = {}
+        self.description_tiers_labels = {}
         self.build_track_button = BuildTrackButton(surface=self.surface, batch=self.batches['ui_batch'],
                                                    groups=self.groups, on_click_action=on_buy_track)
         self.set_track_money_target_button, self.reset_track_money_target_button \
@@ -174,6 +183,7 @@ class ConstructorView(View):
                                                                   groups=self.groups,
                                                                   on_click_action=on_reset_track_money_target))
         self.no_more_tracks_available_labels = []
+        self.no_more_tiers_available_labels = []
         self.close_constructor_button = CloseConstructorButton(surface=self.surface, batch=self.batches['ui_batch'],
                                                                groups=self.groups, on_click_action=on_close_constructor)
         self.buttons.append(self.close_constructor_button)
@@ -241,6 +251,10 @@ class ConstructorView(View):
             label.delete()
 
         self.no_more_tracks_available_labels.clear()
+        for label in self.no_more_tiers_available_labels:
+            label.delete()
+
+        self.no_more_tiers_available_labels.clear()
         for b in self.buttons:
             b.on_deactivate()
 
@@ -573,6 +587,32 @@ class ConstructorView(View):
         for p in range(len(self.no_more_tracks_available_labels)):
             self.no_more_tracks_available_labels[p].y += cell_step
 
+    @view_is_active
+    def on_unlock_environment_live(self, tier):
+        """
+        Deletes unlocked tier and moves all cells one position to the top of the screen.
+
+        :param tier:                    environment tier number
+        """
+        cell_step = self.cell_height + self.interval_between_cells
+        self.locked_tiers_labels[tier].delete()
+        self.locked_tiers_labels.pop(tier)
+        for t in self.locked_tiers_labels:
+            self.locked_tiers_labels[t].y += cell_step
+
+        self.title_tiers_labels[tier].delete()
+        self.title_tiers_labels.pop(tier)
+        for t in self.title_tiers_labels:
+            self.title_tiers_labels[t].y += cell_step
+
+        self.description_tiers_labels[tier].delete()
+        self.description_tiers_labels.pop(tier)
+        for t in self.description_tiers_labels:
+            self.description_tiers_labels[t].y += cell_step
+
+        for p in range(len(self.no_more_tiers_available_labels)):
+            self.no_more_tiers_available_labels[p].y += cell_step
+
     def on_read_ui_info(self):
         """
         Reads aff offsets and font size from the database.
@@ -700,6 +740,19 @@ class ConstructorView(View):
             .on_append_notification(track_unlocked_notification)
 
     @notifications_available
+    @feature_unlocked_notification_enabled
+    def on_send_environment_unlocked_notification(self, tier):
+        """
+        Sends system notification when new environment tier is unlocked.
+
+        :param tier:                            environment tier number
+        """
+        environment_unlocked_notification = EnvironmentUnlockedNotification()
+        environment_unlocked_notification.send(self.current_locale, message_args=(tier,))
+        self.controller.parent_controller.parent_controller.parent_controller\
+            .on_append_notification(environment_unlocked_notification)
+
+    @notifications_available
     @construction_completed_notification_enabled
     def on_send_track_construction_completed_notification(self, track):
         """
@@ -711,6 +764,19 @@ class ConstructorView(View):
         track_construction_completed_notification.send(self.current_locale, message_args=(track,))
         self.controller.parent_controller.parent_controller.parent_controller\
             .on_append_notification(track_construction_completed_notification)
+
+    @notifications_available
+    @construction_completed_notification_enabled
+    def on_send_environment_construction_completed_notification(self, tier):
+        """
+        Sends system notification when environment tier construction is completed.
+
+        :param tier:                            environment tier number
+        """
+        environment_construction_completed_notification = EnvironmentConstructionCompletedNotification()
+        environment_construction_completed_notification.send(self.current_locale, message_args=(tier,))
+        self.controller.parent_controller.parent_controller.parent_controller\
+            .on_append_notification(environment_construction_completed_notification)
 
     def on_change_feature_unlocked_notification_state(self, notification_state):
         """

@@ -258,6 +258,7 @@ TRAIN_ID_LIMIT = 1000000                # train ID is limited to 6 digits, 99999
 FULLSCREEN_MODE_TURNED_OFF = 0          # database value for fullscreen mode turned on
 FULLSCREEN_MODE_TURNED_ON = 1           # database value for fullscreen mode turned off
 MAXIMUM_TRACK_NUMBER = 32               # player can have maximum of 32 tracks
+MAXIMUM_ENVIRONMENT_TIER = 6            # player can have environment tier 6 at most
 FRAMES_IN_ONE_MINUTE = 240              # indicates how many frames fit in 1 in-game minute
 DEFAULT_PRIORITY = 10000000             # default priority for any new train created
 PASS_THROUGH_BOARDING_TIME = 480        # default boarding time for pass-through trains

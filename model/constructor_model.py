@@ -130,6 +130,34 @@ class ConstructorModel(Model):
             self.track_state_matrix.pop(unlocked_track)
 
         self.view.on_update_track_state(self.track_state_matrix, game_time)
+        # same for environment
+        unlocked_tier = 0
+        for tier in self.environment_state_matrix:
+            if self.environment_state_matrix[tier][UNDER_CONSTRUCTION]:
+                self.environment_state_matrix[tier][CONSTRUCTION_TIME] -= 1
+                self.view.on_update_live_environment_state(self.environment_state_matrix, tier)
+                if self.environment_state_matrix[tier][CONSTRUCTION_TIME] == 0:
+                    unlocked_tier = tier
+                    self.environment_state_matrix[tier][UNDER_CONSTRUCTION] = False
+                    self.environment_state_matrix[tier][LOCKED] = False
+                    self.view.on_send_environment_construction_completed_notification(tier)
+                    self.controller.parent_controller.on_unlock_environment(tier)
+                    # track is added to cached_unlocked_tracks list to be then correctly saved in the database
+                    self.cached_unlocked_tiers.append(tier)
+                    # if there are more tracks to unlock, unlock condition for the next track is met
+                    if tier < MAXIMUM_ENVIRONMENT_TIER:
+                        self.environment_state_matrix[tier + 1][UNLOCK_CONDITION_FROM_PREVIOUS_ENVIRONMENT] = True
+                        # if all three conditions are met for the next track, it becomes available for construction
+                        self.on_check_environment_unlock_conditions(tier + 1)
+
+                        self.view.on_update_live_environment_state(self.environment_state_matrix, tier + 1)
+
+                    self.view.on_unlock_environment_live(tier)
+
+        if unlocked_tier > 0:
+            self.environment_state_matrix.pop(unlocked_tier)
+
+        self.view.on_update_environment_state(self.environment_state_matrix, game_time)
 
     def on_save_state(self):
         """
@@ -213,6 +241,19 @@ class ConstructorModel(Model):
 
             self.view.on_update_live_track_state(self.track_state_matrix, track)
 
+        # same for environment
+        self.config_db_cursor.execute('SELECT tier FROM environment_config WHERE level = ?', (level, ))
+        raw_tiers = self.config_db_cursor.fetchall()
+        tiers_parsed = []
+        for i in raw_tiers:
+            tiers_parsed.append(i[0])
+
+        for tier in tiers_parsed:
+            self.environment_state_matrix[tier][UNLOCK_CONDITION_FROM_LEVEL] = True
+            self.on_check_environment_unlock_conditions(tier)
+
+            self.view.on_update_live_environment_state(self.environment_state_matrix, tier)
+
     def on_put_track_under_construction(self, track):
         """
         Notifies Game controller to take money from the player and puts track under construction.
@@ -225,6 +266,18 @@ class ConstructorModel(Model):
         self.track_state_matrix[track][UNDER_CONSTRUCTION] = True
         self.view.on_update_live_track_state(self.track_state_matrix, track)
 
+    def on_put_environment_under_construction(self, tier):
+        """
+        Notifies Game controller to take money from the player and puts environment tier under construction.
+
+        :param tier:                    environment tier number
+        """
+        self.controller.parent_controller.parent_controller\
+            .on_pay_money(self.environment_state_matrix[tier][PRICE])
+        self.environment_state_matrix[tier][UNLOCK_AVAILABLE] = False
+        self.environment_state_matrix[tier][UNDER_CONSTRUCTION] = True
+        self.view.on_update_live_environment_state(self.environment_state_matrix, tier)
+
     @maximum_money_not_reached
     def on_add_money(self, money):
         """
@@ -236,7 +289,7 @@ class ConstructorModel(Model):
         if self.money > MONEY_LIMIT:
             self.money = MONEY_LIMIT
 
-        self.view.on_update_money(self.money, self.track_state_matrix)
+        self.view.on_update_money(self.money, self.track_state_matrix, self.environment_state_matrix)
 
     def on_pay_money(self, money):
         """
@@ -245,7 +298,7 @@ class ConstructorModel(Model):
         :param money:                   amount of money spent
         """
         self.money -= money
-        self.view.on_update_money(self.money, self.track_state_matrix)
+        self.view.on_update_money(self.money, self.track_state_matrix, self.environment_state_matrix)
 
     def on_check_track_unlock_conditions(self, track):
         """
@@ -262,6 +315,20 @@ class ConstructorModel(Model):
             self.track_state_matrix[track][UNLOCK_CONDITION_FROM_ENVIRONMENT] = False
             self.track_state_matrix[track][UNLOCK_AVAILABLE] = True
             self.view.on_send_track_unlocked_notification(track)
+
+    def on_check_environment_unlock_conditions(self, tier):
+        """
+        Checks if all 2 unlock conditions are met.
+        If so, unlocks the tier and notifies the view to send notification.
+
+        :param tier:                            environment tier to check
+        """
+        if self.environment_state_matrix[tier][UNLOCK_CONDITION_FROM_PREVIOUS_ENVIRONMENT] \
+                and self.environment_state_matrix[tier][UNLOCK_CONDITION_FROM_LEVEL]:
+            self.environment_state_matrix[tier][UNLOCK_CONDITION_FROM_PREVIOUS_ENVIRONMENT] = False
+            self.environment_state_matrix[tier][UNLOCK_CONDITION_FROM_LEVEL] = False
+            self.environment_state_matrix[tier][UNLOCK_AVAILABLE] = True
+            self.view.on_send_environment_unlocked_notification(tier)
 
     def on_activate_track_money_target(self):
         """
