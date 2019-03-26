@@ -43,8 +43,7 @@ class ConstructorModel(Model):
         """
         super().__init__(user_db_connection, user_db_cursor, config_db_cursor,
                          logger=getLogger('root.app.game.map.constructor.model'))
-        self.track_state_matrix = {}
-        self.environment_state_matrix = {}
+        self.construction_state_matrix = [{}, {}]
         self.cached_unlocked_tracks = []
         self.cached_unlocked_tiers = []
         self.user_db_cursor.execute('''SELECT track_number, locked, under_construction, construction_time, 
@@ -53,21 +52,21 @@ class ConstructorModel(Model):
                                        WHERE locked = 1''')
         track_info_fetched = self.user_db_cursor.fetchall()
         for info in track_info_fetched:
-            self.track_state_matrix[info[0]] = [bool(info[1]), bool(info[2]), info[3], bool(info[4]), bool(info[5]),
-                                                bool(info[6]), bool(info[7])]
+            self.construction_state_matrix[0][info[0]] = [bool(info[1]), bool(info[2]), info[3], bool(info[4]),
+                                                          bool(info[5]), bool(info[6]), bool(info[7])]
             self.config_db_cursor.execute('''SELECT price, level, environment_tier FROM track_config 
                                              WHERE track_number = ?''', (info[0], ))
-            self.track_state_matrix[info[0]].extend(self.config_db_cursor.fetchone())
+            self.construction_state_matrix[0][info[0]].extend(self.config_db_cursor.fetchone())
 
         self.user_db_cursor.execute('''SELECT tier, locked, under_construction, construction_time, 
                                        unlock_condition_from_level, unlock_condition_from_previous_environment,
                                        unlock_available FROM environment WHERE locked = 1''')
         environment_info_fetched = self.user_db_cursor.fetchall()
         for info in environment_info_fetched:
-            self.environment_state_matrix[info[0]] = [bool(info[1]), bool(info[2]), info[3], bool(info[4]),
-                                                      bool(info[5]), 0, bool(info[6])]
+            self.construction_state_matrix[1][info[0]] = [bool(info[1]), bool(info[2]), info[3], bool(info[4]),
+                                                          bool(info[5]), 1, bool(info[6])]
             self.config_db_cursor.execute('SELECT price, level FROM environment_config WHERE tier = ?', (info[0], ))
-            self.environment_state_matrix[info[0]].extend(self.config_db_cursor.fetchone())
+            self.construction_state_matrix[1][info[0]].extend(self.config_db_cursor.fetchone())
 
         self.user_db_cursor.execute('SELECT money FROM game_progress')
         self.money = self.user_db_cursor.fetchone()[0]
@@ -92,7 +91,7 @@ class ConstructorModel(Model):
         """
         Updates bank account state and activates the Constructor view.
         """
-        self.view.on_update_money(self.money, self.track_state_matrix, self.environment_state_matrix)
+        self.view.on_update_money(self.money, self.construction_state_matrix)
         self.view.on_activate()
 
     def on_update_time(self, game_time):

@@ -118,6 +118,11 @@ class ConstructorView(View):
             self.controller.parent_controller.parent_controller.on_update_money_target(0)
             self.controller.on_put_track_under_construction(min(list(self.track_state_matrix.keys())))
 
+        def on_buy_construction_action(construction_type, entity_number):
+            self.controller.on_deactivate_track_money_target()
+            self.controller.parent_controller.parent_controller.on_update_money_target(0)
+            self.controller.on_put_under_construction(construction_type, entity_number)
+
         def on_set_track_money_target(button):
             """
             Sets money target value so user can see how much money left for purchase.
@@ -132,6 +137,19 @@ class ConstructorView(View):
                 self.track_state_matrix[min(list(self.track_state_matrix.keys()))][PRICE]
             )
 
+        def on_set_money_target_action(construction_type, row, entity_number):
+            self.controller.on_activate_track_money_target()
+            for i in self.constructor_cells[construction_type]:
+                if i != row:
+                    self.constructor_cells[construction_type][i].on_deactivate_money_target()
+
+            for i in self.constructor_cells[(construction_type + 1) % 2]:
+                self.constructor_cells[(construction_type + 1) % 2][i].on_deactivate_money_target()
+
+            self.controller.parent_controller.parent_controller.on_update_money_target(
+                self.construction_state_matrix[construction_type][entity_number][PRICE]
+            )
+
         def on_reset_track_money_target(button):
             """
             Resets money target value. Switches money target button state.
@@ -140,6 +158,10 @@ class ConstructorView(View):
             """
             button.on_deactivate()
             button.paired_button.on_activate()
+            self.controller.on_deactivate_track_money_target()
+            self.controller.parent_controller.parent_controller.on_update_money_target(0)
+
+        def on_reset_money_target_action():
             self.controller.on_deactivate_track_money_target()
             self.controller.parent_controller.parent_controller.on_update_money_target(0)
 
