@@ -98,6 +98,7 @@ class ConstructorCell:
         self.build_button = None
         self.buttons = [self.enable_track_money_target, self.disable_track_money_target, self.build_button]
         self.money = 0
+        self.money_target_activated = False
 
     @cell_is_active
     def on_assign_new_data(self, entity_number, data):
@@ -286,6 +287,7 @@ class ConstructorCell:
 
     def on_activate_money_target(self):
         if len(self.data) > 0:
+            self.money_target_activated = True
             self.enable_track_money_target.on_deactivate()
             if self.data[UNLOCK_AVAILABLE]:
                 self.disable_track_money_target.on_activate()
@@ -294,6 +296,7 @@ class ConstructorCell:
 
     def on_deactivate_money_target(self):
         if len(self.data) > 0:
+            self.money_target_activated = False
             self.disable_track_money_target.on_deactivate()
             if self.data[UNLOCK_AVAILABLE]:
                 self.enable_track_money_target.on_activate()

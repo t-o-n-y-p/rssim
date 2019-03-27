@@ -9,38 +9,6 @@ class ConstructorModel(Model):
     Constructor object is responsible for building new tracks and station environment.
     """
     def __init__(self, user_db_connection, user_db_cursor, config_db_cursor):
-        """
-        Properties:
-            track_state_matrix                  table with all tracks state properties:
-                                                property #0 indicates if track is locked
-                                                property #1 indicates if track is under construction
-                                                property #2 indicates construction time left
-                                                property #3 indicates if unlock condition from level is met
-                                                property #4 indicates if unlock condition from previous track is met
-                                                property #5 indicates if unlock condition from environment is met
-                                                property #6 indicates if all unlock conditions are met
-                                                property #7 indicates track price
-                                                property #8 indicates required level for this track
-                                                property #9 indicates required environment tier for this track
-            environment_state_matrix            table with all environment state properties:
-                                                property #0 indicates if environment is locked
-                                                property #1 indicates if environment is under construction
-                                                property #2 indicates construction time left
-                                                property #3 indicates if unlock condition from level is met
-                                                property #4 indicates if unlock condition from previous env. is met
-                                                property #5 is reserved
-                                                property #6 indicates if all unlock conditions are met
-                                                property #7 indicates environment price
-                                                property #8 indicates required level for this environment
-            money                               player bank account state
-            cached_unlocked_tracks              stores unlocked track number to remove it from constructor later
-            cached_unlocked_tiers               stores unlocked environment tier number to remove it from constructor
-            track_money_target_activated        indicates if user tracks money target for upcoming station track
-
-        :param user_db_connection:              connection to the user DB (stores game state and user-defined settings)
-        :param user_db_cursor:                  user DB cursor (is used to execute user DB queries)
-        :param config_db_cursor:                configuration DB cursor (is used to execute configuration DB queries)
-        """
         super().__init__(user_db_connection, user_db_cursor, config_db_cursor,
                          logger=getLogger('root.app.game.map.constructor.model'))
         self.construction_state_matrix = [{}, {}]
@@ -52,26 +20,28 @@ class ConstructorModel(Model):
                                        WHERE locked = 1''')
         track_info_fetched = self.user_db_cursor.fetchall()
         for info in track_info_fetched:
-            self.construction_state_matrix[0][info[0]] = [bool(info[1]), bool(info[2]), info[3], bool(info[4]),
-                                                          bool(info[5]), bool(info[6]), bool(info[7])]
+            self.construction_state_matrix[TRACKS][info[0]] = [bool(info[1]), bool(info[2]), info[3], bool(info[4]),
+                                                               bool(info[5]), bool(info[6]), bool(info[7])]
             self.config_db_cursor.execute('''SELECT price, level, environment_tier FROM track_config 
                                              WHERE track_number = ?''', (info[0], ))
-            self.construction_state_matrix[0][info[0]].extend(self.config_db_cursor.fetchone())
+            self.construction_state_matrix[TRACKS][info[0]].extend(self.config_db_cursor.fetchone())
 
         self.user_db_cursor.execute('''SELECT tier, locked, under_construction, construction_time, 
                                        unlock_condition_from_level, unlock_condition_from_previous_environment,
                                        unlock_available FROM environment WHERE locked = 1''')
         environment_info_fetched = self.user_db_cursor.fetchall()
         for info in environment_info_fetched:
-            self.construction_state_matrix[1][info[0]] = [bool(info[1]), bool(info[2]), info[3], bool(info[4]),
-                                                          bool(info[5]), 1, bool(info[6])]
+            self.construction_state_matrix[ENVIRONMENT][info[0]] = [bool(info[1]), bool(info[2]), info[3],
+                                                                    bool(info[4]), bool(info[5]), 1, bool(info[6])]
             self.config_db_cursor.execute('SELECT price, level FROM environment_config WHERE tier = ?', (info[0], ))
-            self.construction_state_matrix[1][info[0]].extend(self.config_db_cursor.fetchone())
+            self.construction_state_matrix[ENVIRONMENT][info[0]].extend(self.config_db_cursor.fetchone())
 
         self.user_db_cursor.execute('SELECT money FROM game_progress')
         self.money = self.user_db_cursor.fetchone()[0]
-        self.user_db_cursor.execute('SELECT track_money_target_activated FROM graphics')
-        self.track_money_target_activated = bool(self.user_db_cursor.fetchone()[0])
+        self.user_db_cursor.execute('SELECT money_target_activated FROM graphics')
+        self.money_target_activated = bool(self.user_db_cursor.fetchone()[0])
+        self.user_db_cursor.execute('SELECT money_target_cell_position FROM graphics')
+        self.money_target_cell_position = list(map(int, self.user_db_cursor.fetchone()[0].split(',')))
 
     @model_is_not_active
     def on_activate(self):
@@ -91,7 +61,8 @@ class ConstructorModel(Model):
         """
         Updates bank account state and activates the Constructor view.
         """
-        self.view.on_update_money(self.money, self.construction_state_matrix)
+        self.view.on_update_construction_state(self.construction_state_matrix)
+        self.view.on_update_money(self.money)
         self.view.on_activate()
 
     def on_update_time(self, game_time):
@@ -103,67 +74,64 @@ class ConstructorModel(Model):
         """
         # unlocked_track stores track number if some track was unlocked and 0 otherwise
         unlocked_track = 0
-        for track in self.track_state_matrix:
-            if self.track_state_matrix[track][UNDER_CONSTRUCTION]:
-                self.track_state_matrix[track][CONSTRUCTION_TIME] -= 1
-                self.view.on_update_live_track_state(self.track_state_matrix, track)
-                if self.track_state_matrix[track][CONSTRUCTION_TIME] == 0:
+        for track in self.construction_state_matrix[TRACKS]:
+            if self.construction_state_matrix[TRACKS][track][UNDER_CONSTRUCTION]:
+                self.construction_state_matrix[TRACKS][track][CONSTRUCTION_TIME] -= 1
+                if self.construction_state_matrix[TRACKS][track][CONSTRUCTION_TIME] == 0:
                     unlocked_track = track
-                    self.track_state_matrix[track][UNDER_CONSTRUCTION] = False
-                    self.track_state_matrix[track][LOCKED] = False
+                    self.construction_state_matrix[TRACKS][track][UNDER_CONSTRUCTION] = False
+                    self.construction_state_matrix[TRACKS][track][LOCKED] = False
                     self.view.on_send_track_construction_completed_notification(track)
                     self.controller.parent_controller.on_unlock_track(track)
                     # track is added to cached_unlocked_tracks list to be then correctly saved in the database
                     self.cached_unlocked_tracks.append(track)
                     # if there are more tracks to unlock, unlock condition for the next track is met
                     if track < MAXIMUM_TRACK_NUMBER:
-                        self.track_state_matrix[track + 1][UNLOCK_CONDITION_FROM_PREVIOUS_TRACK] = True
+                        self.construction_state_matrix[TRACKS][track + 1][UNLOCK_CONDITION_FROM_PREVIOUS_TRACK] = True
                         # if all three conditions are met for the next track, it becomes available for construction
                         self.on_check_track_unlock_conditions(track + 1)
 
-                        self.view.on_update_live_track_state(self.track_state_matrix, track + 1)
+                    self.view.on_unlock_construction(TRACKS, track)
 
-                    self.view.on_unlock_track_live(track)
+                self.view.on_update_construction_state(self.construction_state_matrix)
 
         if unlocked_track > 0:
-            self.track_state_matrix.pop(unlocked_track)
+            self.construction_state_matrix[TRACKS].pop(unlocked_track)
 
-        self.view.on_update_track_state(self.track_state_matrix, game_time)
         # same for environment
         unlocked_tier = 0
-        for tier in self.environment_state_matrix:
-            if self.environment_state_matrix[tier][UNDER_CONSTRUCTION]:
-                self.environment_state_matrix[tier][CONSTRUCTION_TIME] -= 1
-                self.view.on_update_live_environment_state(self.environment_state_matrix, tier)
-                if self.environment_state_matrix[tier][CONSTRUCTION_TIME] == 0:
+        for tier in self.construction_state_matrix[ENVIRONMENT]:
+            if self.construction_state_matrix[ENVIRONMENT][tier][UNDER_CONSTRUCTION]:
+                self.construction_state_matrix[ENVIRONMENT][tier][CONSTRUCTION_TIME] -= 1
+                if self.construction_state_matrix[ENVIRONMENT][tier][CONSTRUCTION_TIME] == 0:
                     unlocked_tier = tier
-                    self.environment_state_matrix[tier][UNDER_CONSTRUCTION] = False
-                    self.environment_state_matrix[tier][LOCKED] = False
+                    self.construction_state_matrix[ENVIRONMENT][tier][UNDER_CONSTRUCTION] = False
+                    self.construction_state_matrix[ENVIRONMENT][tier][LOCKED] = False
                     self.view.on_send_environment_construction_completed_notification(tier)
                     self.controller.parent_controller.on_unlock_environment(tier)
                     # track is added to cached_unlocked_tracks list to be then correctly saved in the database
                     self.cached_unlocked_tiers.append(tier)
                     # if there are more tracks to unlock, unlock condition for the next track is met
                     if tier < MAXIMUM_ENVIRONMENT_TIER:
-                        self.environment_state_matrix[tier + 1][UNLOCK_CONDITION_FROM_PREVIOUS_ENVIRONMENT] = True
+                        self.construction_state_matrix[ENVIRONMENT][tier + 1][
+                            UNLOCK_CONDITION_FROM_PREVIOUS_ENVIRONMENT] = True
                         # if all three conditions are met for the next track, it becomes available for construction
                         self.on_check_environment_unlock_conditions(tier + 1)
 
-                        self.view.on_update_live_environment_state(self.environment_state_matrix, tier + 1)
+                    self.view.on_unlock_construction(ENVIRONMENT, tier)
 
-                    self.view.on_unlock_environment_live(tier)
+                self.view.on_update_construction_state(self.construction_state_matrix)
 
         if unlocked_tier > 0:
-            self.environment_state_matrix.pop(unlocked_tier)
-
-        self.view.on_update_environment_state(self.environment_state_matrix, game_time)
+            self.construction_state_matrix[ENVIRONMENT].pop(unlocked_tier)
 
     def on_save_state(self):
         """
         Saves track state matrix and money target flags to user progress database.
         """
-        self.user_db_cursor.execute('UPDATE graphics SET track_money_target_activated = ?',
-                                    (int(self.track_money_target_activated), ))
+        self.user_db_cursor.execute('UPDATE graphics SET money_target_activated = ?, money_target_cell_position = ?',
+                                    (int(self.money_target_activated),
+                                     ','.join(list(map(str, self.money_target_cell_position)))))
         # if some tracks were unlocked since last time the game progress was saved,
         # they are not listed in track state matrix anymore, so their state is updated separately
         for track in self.cached_unlocked_tracks:
@@ -175,20 +143,24 @@ class ConstructorModel(Model):
 
         self.cached_unlocked_tracks = []
         # locked tracks state is saved from track_state_matrix the same way it was read
-        for track in self.track_state_matrix:
+        for track in self.construction_state_matrix[TRACKS]:
             self.user_db_cursor.execute('''UPDATE tracks SET locked = ?, under_construction = ?, construction_time = ?, 
                                            unlock_condition_from_level = ?, unlock_condition_from_previous_track = ?, 
                                            unlock_condition_from_environment = ?, unlock_available = ? 
                                            WHERE track_number = ?''',
                                         tuple(
                                             map(int,
-                                                (self.track_state_matrix[track][LOCKED],
-                                                 self.track_state_matrix[track][UNDER_CONSTRUCTION],
-                                                 self.track_state_matrix[track][CONSTRUCTION_TIME],
-                                                 self.track_state_matrix[track][UNLOCK_CONDITION_FROM_LEVEL],
-                                                 self.track_state_matrix[track][UNLOCK_CONDITION_FROM_PREVIOUS_TRACK],
-                                                 self.track_state_matrix[track][UNLOCK_CONDITION_FROM_ENVIRONMENT],
-                                                 self.track_state_matrix[track][UNLOCK_AVAILABLE], track)
+                                                (self.construction_state_matrix[TRACKS][track][LOCKED],
+                                                 self.construction_state_matrix[TRACKS][track][UNDER_CONSTRUCTION],
+                                                 self.construction_state_matrix[TRACKS][track][CONSTRUCTION_TIME],
+                                                 self.construction_state_matrix[TRACKS][track][
+                                                     UNLOCK_CONDITION_FROM_LEVEL],
+                                                 self.construction_state_matrix[TRACKS][track][
+                                                     UNLOCK_CONDITION_FROM_PREVIOUS_TRACK],
+                                                 self.construction_state_matrix[TRACKS][track][
+                                                     UNLOCK_CONDITION_FROM_ENVIRONMENT],
+                                                 self.construction_state_matrix[TRACKS][track][UNLOCK_AVAILABLE],
+                                                 track)
                                                 )
                                             )
                                         )
@@ -201,20 +173,22 @@ class ConstructorModel(Model):
                                            unlock_available = 0 WHERE tier = ?''', (tier, ))
 
         self.cached_unlocked_tiers = []
-        for tier in self.environment_state_matrix:
+        for tier in self.construction_state_matrix[ENVIRONMENT]:
             self.user_db_cursor.execute('''UPDATE environment SET locked = ?, under_construction = ?, 
                                            construction_time = ?, unlock_condition_from_level = ?, 
                                            unlock_condition_from_previous_environment = ?, 
                                            unlock_available = ? WHERE tier = ?''',
                                         tuple(
                                             map(int,
-                                                (self.environment_state_matrix[tier][LOCKED],
-                                                 self.environment_state_matrix[tier][UNDER_CONSTRUCTION],
-                                                 self.environment_state_matrix[tier][CONSTRUCTION_TIME],
-                                                 self.environment_state_matrix[tier][UNLOCK_CONDITION_FROM_LEVEL],
-                                                 self.environment_state_matrix[tier][
+                                                (self.construction_state_matrix[ENVIRONMENT][tier][LOCKED],
+                                                 self.construction_state_matrix[ENVIRONMENT][tier][UNDER_CONSTRUCTION],
+                                                 self.construction_state_matrix[ENVIRONMENT][tier][CONSTRUCTION_TIME],
+                                                 self.construction_state_matrix[ENVIRONMENT][tier][
+                                                     UNLOCK_CONDITION_FROM_LEVEL],
+                                                 self.construction_state_matrix[ENVIRONMENT][tier][
                                                      UNLOCK_CONDITION_FROM_PREVIOUS_ENVIRONMENT],
-                                                 self.environment_state_matrix[tier][UNLOCK_AVAILABLE], tier)
+                                                 self.construction_state_matrix[ENVIRONMENT][tier][UNLOCK_AVAILABLE],
+                                                 tier)
                                                 )
                                             )
                                         )
@@ -234,11 +208,12 @@ class ConstructorModel(Model):
 
         # adjusts "unlock_from_level" condition for all tracks
         for track in tracks_parsed:
-            self.track_state_matrix[track][UNLOCK_CONDITION_FROM_LEVEL] = True
+            self.construction_state_matrix[TRACKS][track][UNLOCK_CONDITION_FROM_LEVEL] = True
             # if all three conditions are met, track is available for construction
             self.on_check_track_unlock_conditions(track)
 
-            self.view.on_update_live_track_state(self.track_state_matrix, track)
+        if len(tracks_parsed) > 0:
+            self.view.on_update_construction_state(self.construction_state_matrix)
 
         # same for environment
         self.config_db_cursor.execute('SELECT tier FROM environment_config WHERE level = ?', (level, ))
@@ -248,34 +223,18 @@ class ConstructorModel(Model):
             tiers_parsed.append(i[0])
 
         for tier in tiers_parsed:
-            self.environment_state_matrix[tier][UNLOCK_CONDITION_FROM_LEVEL] = True
+            self.construction_state_matrix[ENVIRONMENT][tier][UNLOCK_CONDITION_FROM_LEVEL] = True
             self.on_check_environment_unlock_conditions(tier)
 
-            self.view.on_update_live_environment_state(self.environment_state_matrix, tier)
+        if len(tiers_parsed) > 0:
+            self.view.on_update_construction_state(self.construction_state_matrix)
 
-    def on_put_track_under_construction(self, track):
-        """
-        Notifies Game controller to take money from the player and puts track under construction.
-
-        :param track:                   track number
-        """
+    def on_put_under_construction(self, construction_type, entity_number):
         self.controller.parent_controller.parent_controller\
-            .on_pay_money(self.track_state_matrix[track][PRICE])
-        self.track_state_matrix[track][UNLOCK_AVAILABLE] = False
-        self.track_state_matrix[track][UNDER_CONSTRUCTION] = True
-        self.view.on_update_live_track_state(self.track_state_matrix, track)
-
-    def on_put_environment_under_construction(self, tier):
-        """
-        Notifies Game controller to take money from the player and puts environment tier under construction.
-
-        :param tier:                    environment tier number
-        """
-        self.controller.parent_controller.parent_controller\
-            .on_pay_money(self.environment_state_matrix[tier][PRICE])
-        self.environment_state_matrix[tier][UNLOCK_AVAILABLE] = False
-        self.environment_state_matrix[tier][UNDER_CONSTRUCTION] = True
-        self.view.on_update_live_environment_state(self.environment_state_matrix, tier)
+            .on_pay_money(self.construction_state_matrix[construction_type][entity_number][PRICE])
+        self.construction_state_matrix[construction_type][entity_number][UNLOCK_AVAILABLE] = False
+        self.construction_state_matrix[construction_type][entity_number][UNDER_CONSTRUCTION] = True
+        self.view.on_update_construction_state(self.construction_state_matrix)
 
     @maximum_money_not_reached
     def on_add_money(self, money):
@@ -288,7 +247,7 @@ class ConstructorModel(Model):
         if self.money > MONEY_LIMIT:
             self.money = MONEY_LIMIT
 
-        self.view.on_update_money(self.money, self.track_state_matrix, self.environment_state_matrix)
+        self.view.on_update_money(self.money)
 
     def on_pay_money(self, money):
         """
@@ -297,7 +256,7 @@ class ConstructorModel(Model):
         :param money:                   amount of money spent
         """
         self.money -= money
-        self.view.on_update_money(self.money, self.track_state_matrix, self.environment_state_matrix)
+        self.view.on_update_money(self.money)
 
     def on_check_track_unlock_conditions(self, track):
         """
@@ -306,13 +265,13 @@ class ConstructorModel(Model):
 
         :param track:                           track number to check
         """
-        if self.track_state_matrix[track][UNLOCK_CONDITION_FROM_PREVIOUS_TRACK] \
-                and self.track_state_matrix[track][UNLOCK_CONDITION_FROM_ENVIRONMENT] \
-                and self.track_state_matrix[track][UNLOCK_CONDITION_FROM_LEVEL]:
-            self.track_state_matrix[track][UNLOCK_CONDITION_FROM_LEVEL] = False
-            self.track_state_matrix[track][UNLOCK_CONDITION_FROM_PREVIOUS_TRACK] = False
-            self.track_state_matrix[track][UNLOCK_CONDITION_FROM_ENVIRONMENT] = False
-            self.track_state_matrix[track][UNLOCK_AVAILABLE] = True
+        if self.construction_state_matrix[TRACKS][track][UNLOCK_CONDITION_FROM_PREVIOUS_TRACK] \
+                and self.construction_state_matrix[TRACKS][track][UNLOCK_CONDITION_FROM_ENVIRONMENT] \
+                and self.construction_state_matrix[TRACKS][track][UNLOCK_CONDITION_FROM_LEVEL]:
+            self.construction_state_matrix[TRACKS][track][UNLOCK_CONDITION_FROM_LEVEL] = False
+            self.construction_state_matrix[TRACKS][track][UNLOCK_CONDITION_FROM_PREVIOUS_TRACK] = False
+            self.construction_state_matrix[TRACKS][track][UNLOCK_CONDITION_FROM_ENVIRONMENT] = False
+            self.construction_state_matrix[TRACKS][track][UNLOCK_AVAILABLE] = True
             self.view.on_send_track_unlocked_notification(track)
 
     def on_check_environment_unlock_conditions(self, tier):
@@ -322,25 +281,29 @@ class ConstructorModel(Model):
 
         :param tier:                            environment tier to check
         """
-        if self.environment_state_matrix[tier][UNLOCK_CONDITION_FROM_PREVIOUS_ENVIRONMENT] \
-                and self.environment_state_matrix[tier][UNLOCK_CONDITION_FROM_LEVEL]:
-            self.environment_state_matrix[tier][UNLOCK_CONDITION_FROM_PREVIOUS_ENVIRONMENT] = False
-            self.environment_state_matrix[tier][UNLOCK_CONDITION_FROM_LEVEL] = False
-            self.environment_state_matrix[tier][UNLOCK_AVAILABLE] = True
+        if self.construction_state_matrix[ENVIRONMENT][tier][UNLOCK_CONDITION_FROM_PREVIOUS_ENVIRONMENT] \
+                and self.construction_state_matrix[ENVIRONMENT][tier][UNLOCK_CONDITION_FROM_LEVEL]:
+            self.construction_state_matrix[ENVIRONMENT][tier][UNLOCK_CONDITION_FROM_PREVIOUS_ENVIRONMENT] = False
+            self.construction_state_matrix[ENVIRONMENT][tier][UNLOCK_CONDITION_FROM_LEVEL] = False
+            self.construction_state_matrix[ENVIRONMENT][tier][UNLOCK_AVAILABLE] = True
             self.view.on_send_environment_unlocked_notification(tier)
 
-    def on_activate_track_money_target(self):
+    def on_activate_money_target(self, construction_type, row):
         """
         Updates track_money_target_activated flag value.
         Notifies view that track money target was activated.
-        """
-        self.track_money_target_activated = True
-        self.view.on_activate_track_money_target()
 
-    def on_deactivate_track_money_target(self):
+        :param construction_type:               column to activate money target: tracks or environment
+        :param row:                             number of cell in a given column
+        """
+        self.money_target_activated = True
+        self.money_target_cell_position = [construction_type, row]
+        self.view.on_activate_money_target(construction_type, row)
+
+    def on_deactivate_money_target(self):
         """
         Updates track_money_target_activated flag value.
         Notifies view that track money target was deactivated.
         """
-        self.track_money_target_activated = False
-        self.view.on_deactivate_track_money_target()
+        self.money_target_activated = False
+        self.view.on_deactivate_money_target()

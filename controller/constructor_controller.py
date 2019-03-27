@@ -129,17 +129,20 @@ class ConstructorController(Controller):
         """
         self.view.on_enable_notifications()
 
-    def on_activate_track_money_target(self):
+    def on_activate_money_target(self, construction_type, row):
         """
-        Notifies model that track money target was activated.
-        """
-        self.model.on_activate_track_money_target()
+        Notifies model that money target was activated at given cell.
 
-    def on_deactivate_track_money_target(self):
+        :param construction_type:               column to activate money target: tracks or environment
+        :param row:                             number of cell in a given column
         """
-        Notifies model that track money target was deactivated.
+        self.model.on_activate_money_target(construction_type, row)
+
+    def on_deactivate_money_target(self):
         """
-        self.model.on_deactivate_track_money_target()
+        Notifies model that money target was deactivated.
+        """
+        self.model.on_deactivate_money_target()
 
     def on_change_feature_unlocked_notification_state(self, notification_state):
         """

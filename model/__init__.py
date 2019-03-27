@@ -265,6 +265,10 @@ PASS_THROUGH_BOARDING_TIME = 480        # default boarding time for pass-through
 CAR_LENGTH = 251                        # length of the car in pixels
 # when any track from this list is unlocked, new car collection is added
 CAR_COLLECTION_UNLOCK_TRACK_LIST = (6, 10, 14, 18, 21, 22, 26, 30)
+TRACKS = 0
+ENVIRONMENT = 1
+CONSTRUCTOR_VIEW_TRACK_CELLS = 4
+CONSTRUCTOR_VIEW_ENVIRONMENT_CELLS = 4
 # ------------------- END CONSTANTS -------------------
 
 
