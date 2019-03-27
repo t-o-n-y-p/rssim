@@ -218,7 +218,7 @@ class ConstructorCell:
     @cell_is_active
     def on_deactivate(self):
         self.is_activated = False
-        self.data.clear()
+        self.data = []
         if self.locked_label is not None:
             self.locked_label.delete()
             self.locked_label = None

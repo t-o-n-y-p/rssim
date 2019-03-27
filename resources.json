@@ -20,12 +20,12 @@
 		"ru": "Больше нет доступных стадий"
 	},
 	"title_track_string": {
-		"en": "Track {0}",
-		"ru": "Путь {0}"
+		"en": "Station: Track {0}",
+		"ru": "Станция: Путь {0}"
 	},
 	"title_environment_string": {
-		"en": "Tier {0}",
-		"ru": "Стадия {0}"
+		"en": "Environment: Tier {0}",
+		"ru": "Окружение: Стадия {0}"
 	},
 	"unlock_available_track_description_string": {
 		"en": "Available for {0:,} ¤",
