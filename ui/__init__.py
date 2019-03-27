@@ -79,8 +79,8 @@ class ConstructorCell:
 
         def on_buy_construction(button):
             button.on_deactivate()
-            self.enable_money_target.on_deactivate()
-            self.disable_money_target.on_deactivate()
+            self.enable_money_target_button.on_deactivate()
+            self.disable_money_target_button.on_deactivate()
             on_buy_construction_action(self.construction_type, self.entity_number)
 
         self.is_activated = False
@@ -89,8 +89,8 @@ class ConstructorCell:
         self.entity_number = None
         self.data = None
         self.screen_resolution = (0, 0)
-        self.position = (0, 0)
-        self.size = (0, 0)
+        self.position = [0, 0]
+        self.size = [0, 0]
         self.locked_label = None
         self.title_key = None
         self.title_label = None
@@ -98,14 +98,14 @@ class ConstructorCell:
         self.description_label = None
         self.placeholder_key = None
         self.placeholder_label = None
-        self.enable_money_target, self.disable_money_target \
+        self.enable_money_target_button, self.disable_money_target_button \
             = create_two_state_button(SetMoneyTargetButton(surface=self.surface, batch=self.batches['ui_batch'],
                                                            groups=self.groups, on_click_action=on_set_money_target),
                                       ResetMoneyTargetButton(surface=self.surface, batch=self.batches['ui_batch'],
                                                              groups=self.groups, on_click_action=on_reset_money_target))
         self.build_button = BuildConstructionButton(surface=self.surface, batch=self.batches['ui_batch'],
                                                     groups=self.groups, on_click_action=on_buy_construction)
-        self.buttons = [self.enable_money_target, self.disable_money_target, self.build_button]
+        self.buttons = [self.enable_money_target_button, self.disable_money_target_button, self.build_button]
         self.money = 0
         self.money_target_activated = False
 
@@ -181,11 +181,12 @@ class ConstructorCell:
     def on_update_state(self, data):
         if data[UNLOCK_AVAILABLE] and not self.data[UNLOCK_AVAILABLE]:
             self.on_update_build_button_state()
-            self.enable_money_target.on_activate()
-            self.disable_money_target.on_deactivate()
+            self.enable_money_target_button.on_activate()
+            self.disable_money_target_button.on_deactivate()
 
         self.data = data
-        self.on_update_description_label()
+        if self.is_activated:
+            self.on_update_description_label()
 
     def on_update_money(self, money):
         self.money = money
@@ -272,18 +273,18 @@ class ConstructorCell:
 
         self.build_button.on_size_changed((self.size[1], self.size[1]),
                                           int(self.build_button.base_font_size_property * self.size[1]))
-        self.enable_money_target.on_size_changed((self.size[1], self.size[1]),
-                                                 int(self.enable_money_target.base_font_size_property
+        self.enable_money_target_button.on_size_changed((self.size[1], self.size[1]),
+                                                        int(self.enable_money_target_button.base_font_size_property
                                                            * self.size[1]))
-        self.disable_money_target.on_size_changed((self.size[1], self.size[1]),
-                                                  int(self.disable_money_target.base_font_size_property
+        self.disable_money_target_button.on_size_changed((self.size[1], self.size[1]),
+                                                         int(self.disable_money_target_button.base_font_size_property
                                                             * self.size[1]))
         self.build_button.x_margin = self.position[0] + self.size[0] - self.size[1]
         self.build_button.y_margin = self.position[1]
-        self.enable_money_target.x_margin = self.position[0] + self.size[0] - self.size[1] * 2 + 2
-        self.enable_money_target.y_margin = self.position[1]
-        self.disable_money_target.x_margin = self.position[0] + self.size[0] - self.size[1] * 2 + 2
-        self.disable_money_target.y_margin = self.position[1]
+        self.enable_money_target_button.x_margin = self.position[0] + self.size[0] - self.size[1] * 2 + 2
+        self.enable_money_target_button.y_margin = self.position[1]
+        self.disable_money_target_button.x_margin = self.position[0] + self.size[0] - self.size[1] * 2 + 2
+        self.disable_money_target_button.y_margin = self.position[1]
 
     def on_update_current_locale(self, new_locale):
         self.current_locale = new_locale
@@ -297,17 +298,17 @@ class ConstructorCell:
     def on_activate_money_target(self):
         if len(self.data) > 0:
             self.money_target_activated = True
-            self.enable_money_target.on_deactivate()
+            self.enable_money_target_button.on_deactivate()
             if self.data[UNLOCK_AVAILABLE]:
-                self.disable_money_target.on_activate()
+                self.disable_money_target_button.on_activate()
             else:
-                self.disable_money_target.on_deactivate()
+                self.disable_money_target_button.on_deactivate()
 
     def on_deactivate_money_target(self):
         if len(self.data) > 0:
             self.money_target_activated = False
-            self.disable_money_target.on_deactivate()
+            self.disable_money_target_button.on_deactivate()
             if self.data[UNLOCK_AVAILABLE]:
-                self.enable_money_target.on_activate()
+                self.enable_money_target_button.on_activate()
             else:
-                self.enable_money_target.on_deactivate()
+                self.enable_money_target_button.on_deactivate()

@@ -256,7 +256,7 @@ class ConstructorView(View):
         self.config_db_cursor.execute('''SELECT constructor_caption_font_size 
                                          FROM screen_resolution_config WHERE app_width = ? AND app_height = ?''',
                                       (self.screen_resolution[0], self.screen_resolution[1]))
-        self.caption_font_size = self.config_db_cursor.fetchone()
+        self.caption_font_size = self.config_db_cursor.fetchone()[0]
 
     def on_update_current_locale(self, new_locale):
         """
