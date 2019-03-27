@@ -59,6 +59,7 @@ class ConstructorView(View):
         self.railway_station_caption_position = [0, 0]
         self.environment_caption_sprite = None
         self.environment_caption_position = [0, 0]
+        self.caption_font_size = 0
         self.construction_state_matrix = None
         self.money = 0
         self.close_constructor_button = CloseConstructorButton(surface=self.surface, batch=self.batches['ui_batch'],
@@ -76,6 +77,13 @@ class ConstructorView(View):
                                                            self.groups, self.current_locale, on_buy_construction_action,
                                                            on_set_money_target_action, on_reset_money_target_action)
             self.buttons.extend(self.constructor_cells[1][j].buttons)
+
+        self.user_db_cursor.execute('''SELECT feature_unlocked_notification_enabled, 
+                                       construction_completed_notification_enabled FROM notification_settings''')
+        self.feature_unlocked_notification_enabled, self.construction_completed_notification_enabled \
+            = self.user_db_cursor.fetchone()
+        self.feature_unlocked_notification_enabled = bool(self.feature_unlocked_notification_enabled)
+        self.construction_completed_notification_enabled = bool(self.construction_completed_notification_enabled)
 
     @view_is_not_active
     def on_activate(self):
@@ -200,6 +208,13 @@ class ConstructorView(View):
 
     def on_update_construction_state(self, construction_state_matrix, game_time):
         self.construction_state_matrix = construction_state_matrix
+        remaining_tracks = sorted(list(self.construction_state_matrix[0].keys()))
+        for j in range(min(len(remaining_tracks), 4)):
+            self.constructor_cells[0][j].on_update_state(self.construction_state_matrix[0][remaining_tracks[j]])
+
+        remaining_tiers = sorted(list(self.construction_state_matrix[1].keys()))
+        for j in range(min(len(remaining_tiers), 4)):
+            self.constructor_cells[1][j].on_update_state(self.construction_state_matrix[1][remaining_tiers[j]])
 
     @view_is_active
     def on_unlock_track_live(self, track):
@@ -265,45 +280,10 @@ class ConstructorView(View):
                                          FROM screen_resolution_config WHERE app_width = ? AND app_height = ?''',
                                       (self.screen_resolution[0], self.screen_resolution[1]))
         self.environment_caption_position = self.config_db_cursor.fetchone()
-        self.config_db_cursor.execute('''SELECT constructor_cell_height, constructor_interval_between_cells
+        self.config_db_cursor.execute('''SELECT constructor_caption_font_size 
                                          FROM screen_resolution_config WHERE app_width = ? AND app_height = ?''',
                                       (self.screen_resolution[0], self.screen_resolution[1]))
-        self.cell_height, self.interval_between_cells = self.config_db_cursor.fetchone()
-        cell_step = self.cell_height + self.interval_between_cells
-        self.config_db_cursor.execute('''SELECT constructor_cell_top_left_x, constructor_cell_top_left_y
-                                         FROM screen_resolution_config WHERE app_width = ? AND app_height = ?''',
-                                      (self.screen_resolution[0], self.screen_resolution[1]))
-        fetched_coords = self.config_db_cursor.fetchone()
-        self.track_cells_positions = ((fetched_coords[0], fetched_coords[1]),
-                                      (fetched_coords[0], fetched_coords[1] - cell_step),
-                                      (fetched_coords[0], fetched_coords[1] - cell_step * 2),
-                                      (fetched_coords[0], fetched_coords[1] - cell_step * 3))
-        self.config_db_cursor.execute('''SELECT constructor_cell_top_right_x, constructor_cell_top_right_y
-                                         FROM screen_resolution_config WHERE app_width = ? AND app_height = ?''',
-                                      (self.screen_resolution[0], self.screen_resolution[1]))
-        fetched_coords = self.config_db_cursor.fetchone()
-        self.environment_cell_positions = ((fetched_coords[0], fetched_coords[1]),
-                                           (fetched_coords[0], fetched_coords[1] - cell_step),
-                                           (fetched_coords[0], fetched_coords[1] - cell_step * 2),
-                                           (fetched_coords[0], fetched_coords[1] - cell_step * 3))
-        self.config_db_cursor.execute('''SELECT constructor_locked_label_offset_x, constructor_locked_label_offset_y,
-                                         constructor_build_button_offset_x, constructor_build_button_offset_y,
-                                         constructor_title_text_offset_x, constructor_title_text_offset_y,
-                                         constructor_description_text_offset_x, constructor_description_text_offset_y,
-                                         constructor_placeholder_offset_x, constructor_placeholder_offset_y,
-                                         constructor_locked_label_font_size, constructor_title_text_font_size,
-                                         constructor_description_text_font_size, constructor_placeholder_font_size,
-                                         constructor_caption_font_size 
-                                         FROM screen_resolution_config WHERE app_width = ? AND app_height = ?''',
-                                      (self.screen_resolution[0], self.screen_resolution[1]))
-        self.locked_label_offset[0], self.locked_label_offset[1], \
-            self.track_build_button_offset[0], self.track_build_button_offset[1], \
-            self.title_label_offset[0], self.title_label_offset[1], \
-            self.description_label_offset[0], self.description_label_offset[1], \
-            self.placeholder_offset[0], self.placeholder_offset[1], \
-            self.locked_label_font_size, self.title_label_font_size, \
-            self.description_label_font_size, self.placeholder_font_size, \
-            self.caption_font_size = self.config_db_cursor.fetchone()
+        self.caption_font_size = self.config_db_cursor.fetchone()
 
     def on_update_current_locale(self, new_locale):
         """
@@ -317,54 +297,11 @@ class ConstructorView(View):
                 = I18N_RESOURCES['railway_station_caption_string'][self.current_locale]
             self.environment_caption_sprite.text = I18N_RESOURCES['environment_caption_string'][self.current_locale]
 
-            for i in self.no_more_tracks_available_labels:
-                i.text = I18N_RESOURCES['no_more_tracks_available_placeholder_string'][self.current_locale]
+        for j in range(4):
+            self.constructor_cells[0][j].on_update_current_locale(self.current_locale)
 
-            for i in self.title_tracks_labels:
-                self.title_tracks_labels[i].text \
-                    = I18N_RESOURCES['title_track_string'][self.current_locale].format(i)
-
-            for i in self.description_tracks_labels:
-                if self.track_state_matrix[i][UNLOCK_AVAILABLE]:
-                    self.description_tracks_labels[i].text \
-                        = I18N_RESOURCES['unlock_available_track_description_string'][self.current_locale]\
-                        .format(self.track_state_matrix[i][PRICE]).replace(',', ' ')
-                elif self.track_state_matrix[i][UNDER_CONSTRUCTION]:
-                    construction_time = self.track_state_matrix[i][CONSTRUCTION_TIME]
-                    self.description_tracks_labels[i].text \
-                        = I18N_RESOURCES['under_construction_track_description_string'][self.current_locale]\
-                        .format(construction_time // FRAMES_IN_ONE_HOUR,
-                                (construction_time // FRAMES_IN_ONE_MINUTE) % MINUTES_IN_ONE_HOUR)
-                else:
-                    if not self.track_state_matrix[i][UNLOCK_CONDITION_FROM_LEVEL]:
-                        self.description_tracks_labels[i].text \
-                            = I18N_RESOURCES[
-                            'unlock_condition_from_level_track_description_string'
-                        ][self.current_locale].format(self.track_state_matrix[i][LEVEL_REQUIRED])
-                    elif not self.track_state_matrix[i][UNLOCK_CONDITION_FROM_ENVIRONMENT]:
-                        self.description_tracks_labels[i].text \
-                            = I18N_RESOURCES[
-                            'unlock_condition_from_environment_track_description_string'
-                        ][self.current_locale].format(0)
-                    elif not self.track_state_matrix[i][UNLOCK_CONDITION_FROM_PREVIOUS_TRACK]:
-                        self.description_tracks_labels[i].text \
-                            = I18N_RESOURCES[
-                            'unlock_condition_from_previous_track_track_description_string'
-                        ][self.current_locale].format(i - 1)
-
-    def on_activate_track_money_target(self):
-        """
-        Updates track_money_target_activated flag value.
-        Money target buttons are displayed based on this flag.
-        """
-        self.track_money_target_activated = True
-
-    def on_deactivate_track_money_target(self):
-        """
-        Updates track_money_target_activated flag value.
-        Money target buttons are displayed based on this flag.
-        """
-        self.track_money_target_activated = False
+        for j in range(4):
+            self.constructor_cells[1][j].on_update_current_locale(self.current_locale)
 
     @notifications_available
     @feature_unlocked_notification_enabled
