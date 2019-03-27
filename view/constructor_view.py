@@ -66,17 +66,19 @@ class ConstructorView(View):
                                                                groups=self.groups, on_click_action=on_close_constructor)
         self.buttons = [self.close_constructor_button, ]
         self.constructor_cells = [[], []]
-        for j in range(4):
-            self.constructor_cells[0][j] = TrackCell(0, j, self.config_db_cursor, self.surface, self.batches,
-                                                     self.groups, self.current_locale, on_buy_construction_action,
-                                                     on_set_money_target_action, on_reset_money_target_action)
-            self.buttons.extend(self.constructor_cells[0][j].buttons)
+        for j in range(CONSTRUCTOR_VIEW_TRACK_CELLS):
+            self.constructor_cells[TRACKS][j] \
+                = TrackCell(TRACKS, j, self.config_db_cursor, self.surface, self.batches, self.groups,
+                            self.current_locale, on_buy_construction_action,
+                            on_set_money_target_action, on_reset_money_target_action)
+            self.buttons.extend(self.constructor_cells[TRACKS][j].buttons)
 
-        for j in range(4):
-            self.constructor_cells[1][j] = EnvironmentCell(0, j, self.config_db_cursor, self.surface, self.batches,
-                                                           self.groups, self.current_locale, on_buy_construction_action,
-                                                           on_set_money_target_action, on_reset_money_target_action)
-            self.buttons.extend(self.constructor_cells[1][j].buttons)
+        for j in range(CONSTRUCTOR_VIEW_ENVIRONMENT_CELLS):
+            self.constructor_cells[ENVIRONMENT][j] \
+                = EnvironmentCell(ENVIRONMENT, j, self.config_db_cursor, self.surface, self.batches, self.groups,
+                                  self.current_locale, on_buy_construction_action,
+                                  on_set_money_target_action, on_reset_money_target_action)
+            self.buttons.extend(self.constructor_cells[ENVIRONMENT][j].buttons)
 
         self.user_db_cursor.execute('''SELECT feature_unlocked_notification_enabled, 
                                        construction_completed_notification_enabled FROM notification_settings''')
@@ -120,11 +122,11 @@ class ConstructorView(View):
         self.railway_station_caption_sprite = None
         self.environment_caption_sprite.delete()
         self.environment_caption_sprite = None
-        for j in range(4):
-            self.constructor_cells[0][j].on_deactivate()
+        for j in range(CONSTRUCTOR_VIEW_TRACK_CELLS):
+            self.constructor_cells[TRACKS][j].on_deactivate()
 
-        for j in range(4):
-            self.constructor_cells[1][j].on_deactivate()
+        for j in range(CONSTRUCTOR_VIEW_ENVIRONMENT_CELLS):
+            self.constructor_cells[ENVIRONMENT][j].on_deactivate()
 
         for b in self.buttons:
             b.on_deactivate()
@@ -138,32 +140,34 @@ class ConstructorView(View):
             if self.constructor_opacity < 255:
                 self.constructor_opacity += 15
 
-            remaining_tracks = sorted(list(self.construction_state_matrix[0].keys()))
-            for j in range(min(len(remaining_tracks), 4)):
-                if not self.constructor_cells[0][j].is_activated:
-                    self.constructor_cells[0][j].on_activate()
-                    self.constructor_cells[0][j]\
-                        .on_assign_new_data(remaining_tracks[j], self.construction_state_matrix[0][remaining_tracks[j]])
+            remaining_tracks = sorted(list(self.construction_state_matrix[TRACKS].keys()))
+            for j in range(min(len(remaining_tracks), CONSTRUCTOR_VIEW_TRACK_CELLS)):
+                if not self.constructor_cells[TRACKS][j].is_activated:
+                    self.constructor_cells[TRACKS][j].on_activate()
+                    self.constructor_cells[TRACKS][j]\
+                        .on_assign_new_data(remaining_tracks[j],
+                                            self.construction_state_matrix[TRACKS][remaining_tracks[j]])
                     return
 
-            for j in range(len(remaining_tracks), 4):
-                if not self.constructor_cells[0][j].is_activated:
-                    self.constructor_cells[0][j].on_activate()
-                    self.constructor_cells[0][j].on_assign_new_data(0, [])
+            for j in range(len(remaining_tracks), CONSTRUCTOR_VIEW_TRACK_CELLS):
+                if not self.constructor_cells[TRACKS][j].is_activated:
+                    self.constructor_cells[TRACKS][j].on_activate()
+                    self.constructor_cells[TRACKS][j].on_assign_new_data(0, [])
                     return
 
-            remaining_tiers = sorted(list(self.construction_state_matrix[1].keys()))
-            for j in range(min(len(remaining_tiers), 4)):
-                if not self.constructor_cells[1][j].is_activated:
-                    self.constructor_cells[1][j].on_activate()
-                    self.constructor_cells[1][j]\
-                        .on_assign_new_data(remaining_tiers[j], self.construction_state_matrix[1][remaining_tiers[j]])
+            remaining_tiers = sorted(list(self.construction_state_matrix[ENVIRONMENT].keys()))
+            for j in range(min(len(remaining_tiers), CONSTRUCTOR_VIEW_ENVIRONMENT_CELLS)):
+                if not self.constructor_cells[ENVIRONMENT][j].is_activated:
+                    self.constructor_cells[ENVIRONMENT][j].on_activate()
+                    self.constructor_cells[ENVIRONMENT][j]\
+                        .on_assign_new_data(remaining_tiers[j],
+                                            self.construction_state_matrix[ENVIRONMENT][remaining_tiers[j]])
                     return
 
-            for j in range(len(remaining_tiers), 4):
-                if not self.constructor_cells[1][j].is_activated:
-                    self.constructor_cells[1][j].on_activate()
-                    self.constructor_cells[1][j].on_assign_new_data(0, [])
+            for j in range(len(remaining_tiers), CONSTRUCTOR_VIEW_ENVIRONMENT_CELLS):
+                if not self.constructor_cells[ENVIRONMENT][j].is_activated:
+                    self.constructor_cells[ENVIRONMENT][j].on_activate()
+                    self.constructor_cells[ENVIRONMENT][j].on_assign_new_data(0, [])
                     return
 
         if not self.is_activated:
@@ -186,11 +190,11 @@ class ConstructorView(View):
             self.environment_caption_sprite.y = self.environment_caption_position[1]
             self.environment_caption_sprite.font_size = self.caption_font_size
 
-        for j in range(4):
-            self.constructor_cells[0][j].on_change_screen_resolution(screen_resolution)
+        for j in range(CONSTRUCTOR_VIEW_TRACK_CELLS):
+            self.constructor_cells[TRACKS][j].on_change_screen_resolution(screen_resolution)
 
-        for j in range(4):
-            self.constructor_cells[1][j].on_change_screen_resolution(screen_resolution)
+        for j in range(CONSTRUCTOR_VIEW_ENVIRONMENT_CELLS):
+            self.constructor_cells[ENVIRONMENT][j].on_change_screen_resolution(screen_resolution)
 
         self.close_constructor_button.on_size_changed((self.bottom_bar_height, self.bottom_bar_height),
                                                       int(self.close_constructor_button.base_font_size_property
@@ -200,21 +204,23 @@ class ConstructorView(View):
 
     def on_update_money(self, money):
         self.money = money
-        for j in range(4):
-            self.constructor_cells[0][j].on_update_money(money)
+        for j in range(CONSTRUCTOR_VIEW_TRACK_CELLS):
+            self.constructor_cells[TRACKS][j].on_update_money(money)
 
-        for j in range(4):
-            self.constructor_cells[1][j].on_update_money(money)
+        for j in range(CONSTRUCTOR_VIEW_ENVIRONMENT_CELLS):
+            self.constructor_cells[ENVIRONMENT][j].on_update_money(money)
 
     def on_update_construction_state(self, construction_state_matrix, game_time):
         self.construction_state_matrix = construction_state_matrix
-        remaining_tracks = sorted(list(self.construction_state_matrix[0].keys()))
-        for j in range(min(len(remaining_tracks), 4)):
-            self.constructor_cells[0][j].on_update_state(self.construction_state_matrix[0][remaining_tracks[j]])
+        remaining_tracks = sorted(list(self.construction_state_matrix[TRACKS].keys()))
+        for j in range(min(len(remaining_tracks), CONSTRUCTOR_VIEW_TRACK_CELLS)):
+            self.constructor_cells[TRACKS][j]\
+                .on_update_state(self.construction_state_matrix[TRACKS][remaining_tracks[j]])
 
-        remaining_tiers = sorted(list(self.construction_state_matrix[1].keys()))
-        for j in range(min(len(remaining_tiers), 4)):
-            self.constructor_cells[1][j].on_update_state(self.construction_state_matrix[1][remaining_tiers[j]])
+        remaining_tiers = sorted(list(self.construction_state_matrix[ENVIRONMENT].keys()))
+        for j in range(min(len(remaining_tiers), CONSTRUCTOR_VIEW_ENVIRONMENT_CELLS)):
+            self.constructor_cells[ENVIRONMENT][j]\
+                .on_update_state(self.construction_state_matrix[ENVIRONMENT][remaining_tiers[j]])
 
     @view_is_active
     def on_unlock_track_live(self, track):
@@ -241,32 +247,6 @@ class ConstructorView(View):
 
         for p in range(len(self.no_more_tracks_available_labels)):
             self.no_more_tracks_available_labels[p].y += cell_step
-
-    @view_is_active
-    def on_unlock_environment_live(self, tier):
-        """
-        Deletes unlocked tier and moves all cells one position to the top of the screen.
-
-        :param tier:                    environment tier number
-        """
-        cell_step = self.cell_height + self.interval_between_cells
-        self.locked_tiers_labels[tier].delete()
-        self.locked_tiers_labels.pop(tier)
-        for t in self.locked_tiers_labels:
-            self.locked_tiers_labels[t].y += cell_step
-
-        self.title_tiers_labels[tier].delete()
-        self.title_tiers_labels.pop(tier)
-        for t in self.title_tiers_labels:
-            self.title_tiers_labels[t].y += cell_step
-
-        self.description_tiers_labels[tier].delete()
-        self.description_tiers_labels.pop(tier)
-        for t in self.description_tiers_labels:
-            self.description_tiers_labels[t].y += cell_step
-
-        for p in range(len(self.no_more_tiers_available_labels)):
-            self.no_more_tiers_available_labels[p].y += cell_step
 
     def on_read_ui_info(self):
         """
@@ -297,11 +277,11 @@ class ConstructorView(View):
                 = I18N_RESOURCES['railway_station_caption_string'][self.current_locale]
             self.environment_caption_sprite.text = I18N_RESOURCES['environment_caption_string'][self.current_locale]
 
-        for j in range(4):
-            self.constructor_cells[0][j].on_update_current_locale(self.current_locale)
+        for j in range(CONSTRUCTOR_VIEW_TRACK_CELLS):
+            self.constructor_cells[TRACKS][j].on_update_current_locale(self.current_locale)
 
-        for j in range(4):
-            self.constructor_cells[1][j].on_update_current_locale(self.current_locale)
+        for j in range(CONSTRUCTOR_VIEW_ENVIRONMENT_CELLS):
+            self.constructor_cells[ENVIRONMENT][j].on_update_current_locale(self.current_locale)
 
     @notifications_available
     @feature_unlocked_notification_enabled

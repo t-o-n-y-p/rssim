@@ -32,6 +32,34 @@ HOURS_IN_ONE_DAY = 24
 # ------------------- END CONSTANTS -------------------
 
 
+def cell_is_active(fn):
+    """
+    Use this decorator to execute function only if cell is active.
+
+    :param fn:                      function to decorate
+    :return:                        decorator function
+    """
+    def _handle_if_cell_is_activated(*args, **kwargs):
+        if args[0].is_activated:
+            fn(*args, **kwargs)
+
+    return _handle_if_cell_is_activated
+
+
+def cell_is_not_active(fn):
+    """
+    Use this decorator to execute function only if cell is not active.
+
+    :param fn:                      function to decorate
+    :return:                        decorator function
+    """
+    def _handle_if_cell_is_not_activated(*args, **kwargs):
+        if not args[0].is_activated:
+            fn(*args, **kwargs)
+
+    return _handle_if_cell_is_not_activated
+
+
 class ConstructorCell:
     def __init__(self, construction_type, row, config_db_cursor, surface, batches, groups, current_locale,
                  on_buy_construction_action, on_set_money_target_action, on_reset_money_target_action):
@@ -71,6 +99,7 @@ class ConstructorCell:
         self.buttons = [self.enable_track_money_target, self.disable_track_money_target, self.build_button]
         self.money = 0
 
+    @cell_is_active
     def on_assign_new_data(self, entity_number, data):
         self.entity_number = entity_number
         self.data = data
@@ -152,6 +181,7 @@ class ConstructorCell:
         self.money = money
         self.on_update_build_button_state()
 
+    @cell_is_active
     def on_update_build_button_state(self):
         if self.data[UNLOCK_AVAILABLE]:
             if self.money >= self.data[PRICE]:
@@ -170,9 +200,11 @@ class ConstructorCell:
                                               anchor_x='center', anchor_y='center',
                                               batch=self.batches['ui_batch'], group=self.groups['button_text'])
 
+    @cell_is_not_active
     def on_activate(self):
         self.is_activated = True
 
+    @cell_is_active
     def on_deactivate(self):
         self.is_activated = False
         self.data.clear()
@@ -245,11 +277,12 @@ class ConstructorCell:
 
     def on_update_current_locale(self, new_locale):
         self.current_locale = new_locale
-        if len(self.data) == 0 or self.entity_number == 0:
-            self.placeholder_label.text = I18N_RESOURCES[self.placeholder_key][self.current_locale]
-        else:
-            self.title_label.text = I18N_RESOURCES[self.title_key][self.current_locale].format(self.entity_number)
-            self.on_update_description_label()
+        if self.is_activated:
+            if len(self.data) == 0 or self.entity_number == 0:
+                self.placeholder_label.text = I18N_RESOURCES[self.placeholder_key][self.current_locale]
+            else:
+                self.title_label.text = I18N_RESOURCES[self.title_key][self.current_locale].format(self.entity_number)
+                self.on_update_description_label()
 
     def on_activate_money_target(self):
         if len(self.data) > 0:

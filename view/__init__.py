@@ -263,6 +263,10 @@ MAP_HEIGHT = 4096                               # full-size map height
 SCHEDULE_ROWS = 16                              # number of schedule rows on schedule screen
 SCHEDULE_COLUMNS = 2                            # number of schedule columns on schedule screen
 MINI_MAP_FADE_OUT_TIMER = 1.0                   # time since user releases mouse button after which mini-map disappears
+TRACKS = 0
+ENVIRONMENT = 1
+CONSTRUCTOR_VIEW_TRACK_CELLS = 4
+CONSTRUCTOR_VIEW_ENVIRONMENT_CELLS = 4
 # colors
 GREY = (112, 112, 112, 255)                     # grey UI color
 ORANGE = (255, 127, 0, 255)                     # orange UI color
