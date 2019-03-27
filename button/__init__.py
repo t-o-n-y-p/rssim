@@ -1,30 +1,3 @@
-"""
-This module implements all buttons.
-Buttons are used by object views to address player actions in the game.
-
-
-__init__.py                                         implements decorators, constants and base Button class
-accept_settings_button.py                           Accept button on settings screen
-build_track_button.py                               Build track button on constructor screen
-close_constructor_button.py                         Close constructor button on main game screen
-close_game_button.py                                last button in the top right corner
-close_schedule_button.py                            Close schedule button on main game screen
-decrement_windowed_resolution_button.py             "-" button for windowed resolution on settings screen
-fullscreen_button.py                                middle button in the top right corner (in windowed mode)
-iconify_button.py                              first button in the top right corner
-increment_windowed_resolution_button.py             "+" button for windowed resolution on settings screen
-open_constructor_button.py                          Open constructor button on main game screen
-open_schedule_button.py                             Open schedule button on main game screen
-open_settings_button.py                             Open settings button in the bottom right corner
-pause_game_button.py                                Pause button on main game screen
-reject_settings_button.py                           Reject button on settings screen
-reset_track_money_target_button.py                  Reset money target button inside track cell on constructor screen
-restore_button.py                                   middle button in the top right corner (in fullscreen mode)
-resume_game_button.py                               Resume button on main game screen
-set_track_money_target_button.py                    Set money target button inside track cell on constructor screen
-zoom_in_button.py                                   Zoom in button for game map on main game screen
-zoom_out_button.py                                  Zoom out button for game map on main game screen
-"""
 from pyglet import gl
 from pyglet.text import Label
 from pyglet.window import mouse
