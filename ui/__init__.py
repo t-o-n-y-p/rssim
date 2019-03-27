@@ -68,6 +68,7 @@ class ConstructorCell:
         self.enable_track_money_target, self.disable_track_money_target = None, None
         self.build_button = None
         self.buttons = [self.enable_track_money_target, self.disable_track_money_target, self.build_button]
+        self.money = 0
 
     def on_assign_new_data(self, entity_number, data):
         self.entity_number = entity_number
@@ -131,14 +132,28 @@ class ConstructorCell:
                                                anchor_x='left', anchor_y='center',
                                                batch=self.batches['ui_batch'], group=self.groups['button_text'])
 
-            self.on_update_state(self.data)
+            self.on_update_description_label()
+            self.on_update_build_button_state()
 
-    def on_update_state(self, data):
+    def on_update_description_label(self):
         pass
 
+    def on_update_state(self, data):
+        if data[UNLOCK_AVAILABLE] and not self.data[UNLOCK_AVAILABLE]:
+            self.on_update_build_button_state()
+            self.enable_track_money_target.on_activate()
+            self.disable_track_money_target.on_deactivate()
+
+        self.data = data
+        self.on_update_description_label()
+
     def on_update_money(self, money):
+        self.money = money
+        self.on_update_build_button_state()
+
+    def on_update_build_button_state(self):
         if self.data[UNLOCK_AVAILABLE]:
-            if money >= self.data[PRICE]:
+            if self.money >= self.data[PRICE]:
                 self.build_button.on_activate()
                 if self.locked_label is not None:
                     self.locked_label.delete()
@@ -228,7 +243,15 @@ class ConstructorCell:
             self.placeholder_label.text = I18N_RESOURCES[self.placeholder_key][self.current_locale]
         else:
             self.title_label.text = I18N_RESOURCES[self.title_key][self.current_locale].format(self.entity_number)
-            self.on_update_state(self.data)
+            self.on_update_description_label()
+
+    def on_activate_money_target(self):
+        if len(self.data) > 0:
+            self.enable_track_money_target.on_deactivate()
+            if self.data[UNLOCK_AVAILABLE]:
+                self.disable_track_money_target.on_activate()
+            else:
+                self.disable_track_money_target.on_deactivate()
 
     def on_deactivate_money_target(self):
         if len(self.data) > 0:
@@ -237,8 +260,3 @@ class ConstructorCell:
                 self.enable_track_money_target.on_activate()
             else:
                 self.enable_track_money_target.on_deactivate()
-
-    def on_activate_money_target(self):
-        if len(self.data) > 0:
-            self.disable_track_money_target.on_activate()
-            self.enable_track_money_target.on_deactivate()

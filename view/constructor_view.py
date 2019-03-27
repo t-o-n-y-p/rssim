@@ -3,11 +3,9 @@ from logging import getLogger
 from pyglet.text import Label
 
 from view import *
-from button import create_two_state_button
+from ui.track_cell import TrackCell
+from ui.environment_cell import EnvironmentCell
 from button.close_constructor_button import CloseConstructorButton
-from button.build_track_button import BuildTrackButton
-from button.set_track_money_target_button import SetTrackMoneyTargetButton
-from button.reset_track_money_target_button import ResetTrackMoneyTargetButton
 from notifications.track_unlocked_notification import TrackUnlockedNotification
 from notifications.environment_unlocked_notification import EnvironmentUnlockedNotification
 from notifications.environment_construction_completed_notification import EnvironmentConstructionCompletedNotification
@@ -21,81 +19,6 @@ class ConstructorView(View):
     Constructor object is responsible for building new tracks and station environment.
     """
     def __init__(self, user_db_cursor, config_db_cursor, surface, batches, groups):
-        """
-        Button click handlers:
-            on_close_constructor                on_click handler for close constructor button
-            on_buy_track                        on_click handler for buy track button
-            on_set_track_money_target           on_click handler for set track money target button
-            on_reset_track_money_target         on_click handler for reset track money target button
-
-        Properties:
-            track_cells_positions               list of positions for track cells
-            environment_cell_positions          list of positions for environment cells
-            locked_label_offset                 "locked" label offset from the cell position
-            buy_button_offset                   buy track button offset from the cell position
-            title_label_offset                  "Track X" label offset from the cell position
-            description_label_offset            track state label offset from the cell position
-            placeholder_offset                  cell placeholder offset from the cell position
-            locked_label_font_size              font size for label indicating that rack is locked
-            title_label_font_size               font size for "Track X" label
-            description_label_font_size         font size for track state label
-            placeholder_font_size               font size for cell placeholder
-            cell_height                         height of all cells
-            interval_between_cells              vertical space between cells
-            railway_station_caption_position    position of "Railway station" label
-            environment_caption_position        position of "Environment" label
-            caption_font_size                   "Railway station" and "Environment" font size
-            constructor_opacity                 general opacity of the constructor screen
-            railway_station_caption_sprite      label for "Railway station" string
-            environment_caption_sprite          label for "Environment" string
-            track_state_matrix                  table with all tracks state properties:
-                                                property #0 indicates if track is locked
-                                                property #1 indicates if track is under construction
-                                                property #2 indicates construction time left
-                                                property #3 indicates if unlock condition from level is met
-                                                property #4 indicates if unlock condition from previous track is met
-                                                property #5 indicates if unlock condition from environment is met
-                                                property #6 indicates if all unlock conditions are met
-                                                property #7 indicates track price
-                                                property #8 indicates required level for this track
-                                                property #9 indicates required environment tier for this track
-            environment_state_matrix            table with all environment state properties:
-                                                property #0 indicates if environment is locked
-                                                property #1 indicates if environment is under construction
-                                                property #2 indicates construction time left
-                                                property #3 indicates if unlock condition from level is met
-                                                property #4 indicates if unlock condition from previous env. is met
-                                                property #5 is reserved
-                                                property #6 indicates if all unlock conditions are met
-                                                property #7 indicates environment price
-                                                property #8 indicates required level for this environment
-            locked_tracks_labels                list of "locked" labels for tracks
-            locked_tiers_labels                 list of "locked" labels for environment tiers
-            title_tracks_labels                 list of "Track X" labels
-            title_tiers_labels                  list of "Tier X" labels
-            description_tracks_labels           list of track state labels
-            description_tiers_labels            list of environment tiers state labels
-            build_track_button                  button which puts track under construction
-            set_track_money_target_button       SetTrackMoneyTargetButton object
-            reset_track_money_target_button     ResetTrackMoneyTargetButton object
-            no_more_tracks_available_labels     list of "No more tracks available" labels
-            no_more_tiers_available_labels      list of "No more tiers available" labels
-            close_constructor_button            CloseConstructorButton object
-            buttons                             list of all buttons
-            on_buy_track                        on_click handler for buy track button
-            money                               player bank account state
-            track_money_target_activated        indicates if user tracks money target for upcoming station track
-            feature_unlocked_notification_enabled
-                                indicates if feature unlocked notifications are enabled by user in game settings
-            construction_completed_notification_enabled
-                                indicates if construction completed notifications are enabled by user in game settings
-
-        :param user_db_cursor:                  user DB cursor (is used to execute user DB queries)
-        :param config_db_cursor:                configuration DB cursor (is used to execute configuration DB queries)
-        :param surface:                         surface to draw all UI objects on
-        :param batches:                         batches to group all labels and sprites
-        :param groups:                          defines drawing layers (some labels and sprites behind others)
-        """
         def on_close_constructor(button):
             """
             Notifies controller that player has closed constructor screen.
@@ -104,123 +27,54 @@ class ConstructorView(View):
             """
             self.controller.on_deactivate_view()
 
-        def on_buy_track(button):
-            """
-            Removes buy track button and its handlers. Resets money target and removes money target buttons.
-            Notifies controller that player has bought the track.
-
-            :param button:                      button that was clicked
-            """
-            button.on_deactivate()
-            self.set_track_money_target_button.on_deactivate()
-            self.reset_track_money_target_button.on_deactivate()
-            self.controller.on_deactivate_track_money_target()
-            self.controller.parent_controller.parent_controller.on_update_money_target(0)
-            self.controller.on_put_track_under_construction(min(list(self.track_state_matrix.keys())))
-
         def on_buy_construction_action(construction_type, entity_number):
             self.controller.on_deactivate_track_money_target()
             self.controller.parent_controller.parent_controller.on_update_money_target(0)
             self.controller.on_put_under_construction(construction_type, entity_number)
 
-        def on_set_track_money_target(button):
-            """
-            Sets money target value so user can see how much money left for purchase.
-            Switches money target button state.
-
-            :param button:                      button that was clicked
-            """
-            button.on_deactivate()
-            button.paired_button.on_activate()
-            self.controller.on_activate_track_money_target()
-            self.controller.parent_controller.parent_controller.on_update_money_target(
-                self.track_state_matrix[min(list(self.track_state_matrix.keys()))][PRICE]
-            )
-
         def on_set_money_target_action(construction_type, row, entity_number):
             self.controller.on_activate_track_money_target()
-            for i in self.constructor_cells[construction_type]:
+            for i in range(len(self.constructor_cells[construction_type])):
                 if i != row:
                     self.constructor_cells[construction_type][i].on_deactivate_money_target()
 
-            for i in self.constructor_cells[(construction_type + 1) % 2]:
+            for i in range(len(self.constructor_cells[(construction_type + 1) % 2])):
                 self.constructor_cells[(construction_type + 1) % 2][i].on_deactivate_money_target()
 
+            self.money_target_activated = True
+            self.money_target_position = (construction_type, row)
             self.controller.parent_controller.parent_controller.on_update_money_target(
                 self.construction_state_matrix[construction_type][entity_number][PRICE]
             )
 
-        def on_reset_track_money_target(button):
-            """
-            Resets money target value. Switches money target button state.
-
-            :param button:                      button that was clicked
-            """
-            button.on_deactivate()
-            button.paired_button.on_activate()
-            self.controller.on_deactivate_track_money_target()
-            self.controller.parent_controller.parent_controller.on_update_money_target(0)
-
         def on_reset_money_target_action():
             self.controller.on_deactivate_track_money_target()
+            self.money_target_activated = False
             self.controller.parent_controller.parent_controller.on_update_money_target(0)
 
         super().__init__(user_db_cursor, config_db_cursor, surface, batches, groups,
                          logger=getLogger('root.app.game.map.constructor.view'))
-        self.track_cells_positions = ()
-        self.environment_cell_positions = ()
-        self.locked_label_offset = [0, 0]
-        self.track_build_button_offset = [0, 0]
-        self.title_label_offset = [0, 0]
-        self.description_label_offset = [0, 0]
-        self.placeholder_offset = [0, 0]
-        self.locked_label_font_size = 0
-        self.title_label_font_size = 0
-        self.description_label_font_size = 0
-        self.placeholder_font_size = 0
-        self.cell_height = 0
-        self.interval_between_cells = 0
-        self.railway_station_caption_position = [0, 0]
-        self.environment_caption_position = [0, 0]
-        self.caption_font_size = 0
-        self.on_read_ui_info()
         self.constructor_opacity = 0
         self.railway_station_caption_sprite = None
+        self.railway_station_caption_position = [0, 0]
         self.environment_caption_sprite = None
-        self.track_state_matrix = None
-        self.environment_state_matrix = None
-        self.locked_tracks_labels = {}
-        self.locked_tiers_labels = {}
-        self.title_tracks_labels = {}
-        self.title_tiers_labels = {}
-        self.description_tracks_labels = {}
-        self.description_tiers_labels = {}
-        self.build_track_button = BuildTrackButton(surface=self.surface, batch=self.batches['ui_batch'],
-                                                   groups=self.groups, on_click_action=on_buy_track)
-        self.set_track_money_target_button, self.reset_track_money_target_button \
-            = create_two_state_button(SetTrackMoneyTargetButton(surface=self.surface, batch=self.batches['ui_batch'],
-                                                                groups=self.groups,
-                                                                on_click_action=on_set_track_money_target),
-                                      ResetTrackMoneyTargetButton(surface=self.surface, batch=self.batches['ui_batch'],
-                                                                  groups=self.groups,
-                                                                  on_click_action=on_reset_track_money_target))
-        self.no_more_tracks_available_labels = []
-        self.no_more_tiers_available_labels = []
+        self.environment_caption_position = [0, 0]
+        self.construction_state_matrix = None
         self.close_constructor_button = CloseConstructorButton(surface=self.surface, batch=self.batches['ui_batch'],
                                                                groups=self.groups, on_click_action=on_close_constructor)
-        self.buttons.append(self.close_constructor_button)
-        self.buttons.append(self.build_track_button)
-        self.buttons.append(self.set_track_money_target_button)
-        self.buttons.append(self.reset_track_money_target_button)
-        self.money = 0.0
-        self.user_db_cursor.execute('SELECT track_money_target_activated FROM graphics')
-        self.track_money_target_activated = bool(self.user_db_cursor.fetchone()[0])
-        self.user_db_cursor.execute('''SELECT feature_unlocked_notification_enabled, 
-                                       construction_completed_notification_enabled FROM notification_settings''')
-        self.feature_unlocked_notification_enabled, self.construction_completed_notification_enabled \
-            = self.user_db_cursor.fetchone()
-        self.feature_unlocked_notification_enabled = bool(self.feature_unlocked_notification_enabled)
-        self.construction_completed_notification_enabled = bool(self.construction_completed_notification_enabled)
+        self.buttons = [self.close_constructor_button, ]
+        self.constructor_cells = [[], []]
+        for j in range(4):
+            self.constructor_cells[0][j] = TrackCell(0, j, self.config_db_cursor, self.surface, self.batches,
+                                                     self.groups, self.current_locale, on_buy_construction_action,
+                                                     on_set_money_target_action, on_reset_money_target_action)
+            self.buttons.extend(self.constructor_cells[0][j].buttons)
+
+        for j in range(4):
+            self.constructor_cells[1][j] = EnvironmentCell(0, j, self.config_db_cursor, self.surface, self.batches,
+                                                           self.groups, self.current_locale, on_buy_construction_action,
+                                                           on_set_money_target_action, on_reset_money_target_action)
+            self.buttons.extend(self.constructor_cells[1][j].buttons)
 
     @view_is_not_active
     def on_activate(self):
@@ -257,26 +111,12 @@ class ConstructorView(View):
         self.railway_station_caption_sprite = None
         self.environment_caption_sprite.delete()
         self.environment_caption_sprite = None
-        for d in self.locked_tracks_labels:
-            self.locked_tracks_labels[d].delete()
+        for j in range(4):
+            self.constructor_cells[0][j].on_deactivate()
 
-        self.locked_tracks_labels.clear()
-        for d in self.title_tracks_labels:
-            self.title_tracks_labels[d].delete()
+        for j in range(4):
+            self.constructor_cells[1][j].on_deactivate()
 
-        self.title_tracks_labels.clear()
-        for d in self.description_tracks_labels:
-            self.description_tracks_labels[d].delete()
-
-        self.description_tracks_labels.clear()
-        for label in self.no_more_tracks_available_labels:
-            label.delete()
-
-        self.no_more_tracks_available_labels.clear()
-        for label in self.no_more_tiers_available_labels:
-            label.delete()
-
-        self.no_more_tiers_available_labels.clear()
         for b in self.buttons:
             b.on_deactivate()
 
@@ -288,154 +128,6 @@ class ConstructorView(View):
         if self.is_activated:
             if self.constructor_opacity < 255:
                 self.constructor_opacity += 15
-
-            dictionary_keys = list(self.track_state_matrix.keys())
-            available_options = min(len(dictionary_keys), 4)
-            for i in range(available_options):
-                # create new cell if there are more tracks available;
-                # only 1 cell is created every frame for performance reasons
-                if dictionary_keys[i] not in self.locked_tracks_labels:
-                    # if track is unlocked and not enough money, create disabled construction label;
-                    # if player has enough money, create button to buy the track
-                    if self.track_state_matrix[dictionary_keys[i]][UNLOCK_AVAILABLE]:
-                        if self.track_money_target_activated:
-                            self.reset_track_money_target_button.on_activate()
-                        else:
-                            self.set_track_money_target_button.on_activate()
-
-                        if self.money < self.track_state_matrix[dictionary_keys[i]][PRICE]:
-                            self.locked_tracks_labels[dictionary_keys[i]] \
-                                = Label('', font_name='Webdings', font_size=self.locked_label_font_size, color=GREY,
-                                        x=self.track_cells_positions[i][0] + self.locked_label_offset[0],
-                                        y=self.track_cells_positions[i][1] + self.locked_label_offset[1],
-                                        anchor_x='center', anchor_y='center', batch=self.batches['ui_batch'],
-                                        group=self.groups['button_text'])
-                            self.build_track_button.on_deactivate()
-
-                        else:
-                            self.locked_tracks_labels[dictionary_keys[i]] \
-                                = Label(' ', font_name='Webdings', font_size=self.locked_label_font_size, color=GREY,
-                                        x=self.track_cells_positions[i][0] + self.locked_label_offset[0],
-                                        y=self.track_cells_positions[i][1] + self.locked_label_offset[1],
-                                        anchor_x='center', anchor_y='center', batch=self.batches['ui_batch'],
-                                        group=self.groups['button_text'])
-                            self.build_track_button.on_activate()
-
-                    # if track is not available, create locked label if track is not under construction
-                    else:
-                        if not self.track_state_matrix[dictionary_keys[i]][UNDER_CONSTRUCTION]:
-                            self.locked_tracks_labels[dictionary_keys[i]] \
-                                = Label('', font_name='Webdings', font_size=self.locked_label_font_size, color=GREY,
-                                        x=self.track_cells_positions[i][0] + self.locked_label_offset[0],
-                                        y=self.track_cells_positions[i][1] + self.locked_label_offset[1],
-                                        anchor_x='center', anchor_y='center', batch=self.batches['ui_batch'],
-                                        group=self.groups['button_text'])
-                        else:
-                            self.locked_tracks_labels[dictionary_keys[i]] \
-                                = Label(' ', font_name='Webdings', font_size=self.locked_label_font_size, color=GREY,
-                                        x=self.track_cells_positions[i][0] + self.locked_label_offset[0],
-                                        y=self.track_cells_positions[i][1] + self.locked_label_offset[1],
-                                        anchor_x='center', anchor_y='center', batch=self.batches['ui_batch'],
-                                        group=self.groups['button_text'])
-
-                    # create track cell title and description
-                    self.title_tracks_labels[dictionary_keys[i]] \
-                        = Label(I18N_RESOURCES['title_track_string'][self.current_locale].format(dictionary_keys[i]),
-                                font_name='Arial', font_size=self.title_label_font_size,
-                                x=self.track_cells_positions[i][0] + self.title_label_offset[0],
-                                y=self.track_cells_positions[i][1] + self.title_label_offset[1],
-                                anchor_x='left', anchor_y='center', batch=self.batches['ui_batch'],
-                                group=self.groups['button_text'])
-                    if self.track_state_matrix[dictionary_keys[i]][UNLOCK_AVAILABLE]:
-                        self.description_tracks_labels[dictionary_keys[i]] \
-                            = Label(I18N_RESOURCES['unlock_available_track_description_string'][self.current_locale]
-                                    .format(self.track_state_matrix[dictionary_keys[i]][PRICE]).replace(',', ' '),
-                                    font_name='Arial', font_size=self.description_label_font_size, color=GREEN,
-                                    x=self.track_cells_positions[i][0] + self.description_label_offset[0],
-                                    y=self.track_cells_positions[i][1] + self.description_label_offset[1],
-                                    anchor_x='left', anchor_y='center', batch=self.batches['ui_batch'],
-                                    group=self.groups['button_text'])
-                    elif self.track_state_matrix[dictionary_keys[i]][UNDER_CONSTRUCTION]:
-                        construction_time = self.track_state_matrix[dictionary_keys[i]][CONSTRUCTION_TIME]
-                        self.description_tracks_labels[dictionary_keys[i]] \
-                            = Label(I18N_RESOURCES['under_construction_track_description_string'][self.current_locale]
-                                    .format(construction_time // FRAMES_IN_ONE_HOUR,
-                                            (construction_time // FRAMES_IN_ONE_MINUTE) % MINUTES_IN_ONE_HOUR),
-                                    font_name='Arial', font_size=self.description_label_font_size, color=ORANGE,
-                                    x=self.track_cells_positions[i][0] + self.description_label_offset[0],
-                                    y=self.track_cells_positions[i][1] + self.description_label_offset[1],
-                                    anchor_x='left', anchor_y='center', batch=self.batches['ui_batch'],
-                                    group=self.groups['button_text'])
-                    else:
-                        if not self.track_state_matrix[dictionary_keys[i]][UNLOCK_CONDITION_FROM_LEVEL]:
-                            self.description_tracks_labels[dictionary_keys[i]] \
-                                = Label(I18N_RESOURCES[
-                                            'unlock_condition_from_level_track_description_string'
-                                        ][self.current_locale]
-                                        .format(self.track_state_matrix[dictionary_keys[i]][LEVEL_REQUIRED]),
-                                        font_name='Arial', font_size=self.description_label_font_size, color=GREY,
-                                        x=self.track_cells_positions[i][0] + self.description_label_offset[0],
-                                        y=self.track_cells_positions[i][1] + self.description_label_offset[1],
-                                        anchor_x='left', anchor_y='center', batch=self.batches['ui_batch'],
-                                        group=self.groups['button_text'])
-                        elif not self.track_state_matrix[dictionary_keys[i]][UNLOCK_CONDITION_FROM_ENVIRONMENT]:
-                            self.description_tracks_labels[dictionary_keys[i]] \
-                                = Label(I18N_RESOURCES[
-                                            'unlock_condition_from_environment_track_description_string'
-                                        ][self.current_locale]
-                                        .format(self.track_state_matrix[dictionary_keys[i]][ENVIRONMENT_REQUIRED]),
-                                        font_name='Arial', font_size=self.description_label_font_size, color=GREY,
-                                        x=self.track_cells_positions[i][0] + self.description_label_offset[0],
-                                        y=self.track_cells_positions[i][1] + self.description_label_offset[1],
-                                        anchor_x='left', anchor_y='center', batch=self.batches['ui_batch'],
-                                        group=self.groups['button_text'])
-                        elif not self.track_state_matrix[dictionary_keys[i]][UNLOCK_CONDITION_FROM_PREVIOUS_TRACK]:
-                            self.description_tracks_labels[dictionary_keys[i]] \
-                                = Label(I18N_RESOURCES[
-                                            'unlock_condition_from_previous_track_track_description_string'
-                                        ][self.current_locale].format(dictionary_keys[i] - 1),
-                                        font_name='Arial', font_size=self.description_label_font_size, color=GREY,
-                                        x=self.track_cells_positions[i][0] + self.description_label_offset[0],
-                                        y=self.track_cells_positions[i][1] + self.description_label_offset[1],
-                                        anchor_x='left', anchor_y='center', batch=self.batches['ui_batch'],
-                                        group=self.groups['button_text'])
-
-                    return
-
-            dictionary_keys = list(self.environment_state_matrix.keys())
-            available_options = min(len(dictionary_keys), 4)
-
-            # ------------------------------- add environment cells
-
-            # add "No more tracks available" label if number of available tracks or tiers is less than 4
-            dictionary_keys = list(self.track_state_matrix.keys())
-            available_options = min(len(dictionary_keys), 4)
-            if available_options < 4 and len(self.no_more_tracks_available_labels) < 4 - available_options:
-                position_index = available_options + len(self.no_more_tracks_available_labels)
-                self.no_more_tracks_available_labels.append(
-                    Label(I18N_RESOURCES['no_more_tracks_available_placeholder_string'][self.current_locale],
-                          font_name='Arial', font_size=self.placeholder_font_size, color=GREY,
-                          x=self.track_cells_positions[position_index][0] + self.placeholder_offset[0],
-                          y=self.track_cells_positions[position_index][1] + self.placeholder_offset[1],
-                          anchor_x='center', anchor_y='center',
-                          batch=self.batches['ui_batch'], group=self.groups['button_text'])
-                )
-                return
-
-            dictionary_keys = list(self.environment_state_matrix.keys())
-            available_options = min(len(dictionary_keys), 4)
-            if available_options < 4 and len(self.no_more_tiers_available_labels) < 4 - available_options:
-                position_index = available_options + len(self.no_more_tiers_available_labels)
-                self.no_more_tiers_available_labels.append(
-                    Label(I18N_RESOURCES['no_more_tiers_available_placeholder_string'][self.current_locale],
-                          font_name='Arial', font_size=self.placeholder_font_size, color=GREY,
-                          x=self.track_cells_positions[position_index][0] + self.placeholder_offset[0]
-                            + self.screen_resolution[0] // 2,
-                          y=self.track_cells_positions[position_index][1] + self.placeholder_offset[1],
-                          anchor_x='center', anchor_y='center',
-                          batch=self.batches['ui_batch'], group=self.groups['button_text'])
-                )
-                return
 
         if not self.is_activated:
             if self.constructor_opacity > 0:
