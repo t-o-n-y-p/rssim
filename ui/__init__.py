@@ -51,6 +51,7 @@ class ConstructorCell:
             self.disable_track_money_target.on_deactivate()
             on_buy_construction_action(self.construction_type, self.entity_number)
 
+        self.is_activated = False
         self.construction_type, self.row, self.config_db_cursor = construction_type, row, config_db_cursor
         self.surface, self.batches, self.groups, self.current_locale = surface, batches, groups, current_locale
         self.entity_number = None
@@ -169,7 +170,11 @@ class ConstructorCell:
                                               anchor_x='center', anchor_y='center',
                                               batch=self.batches['ui_batch'], group=self.groups['button_text'])
 
+    def on_activate(self):
+        self.is_activated = True
+
     def on_deactivate(self):
+        self.is_activated = False
         self.data.clear()
         if self.locked_label is not None:
             self.locked_label.delete()
@@ -231,11 +236,12 @@ class ConstructorCell:
         self.disable_track_money_target.on_size_changed((self.size[1], self.size[1]),
                                                         int(self.disable_track_money_target.base_font_size_property
                                                             * self.size[1]))
-        self.build_button.on_position_changed((self.position[0] + self.size[0] - self.size[1], self.position[1]))
-        self.enable_track_money_target.on_position_changed((self.position[0] + self.size[0] - self.size[1] * 2 + 2,
-                                                            self.position[1]))
-        self.disable_track_money_target.on_position_changed((self.position[0] + self.size[0] - self.size[1] * 2 + 2,
-                                                             self.position[1]))
+        self.build_button.x_margin = self.position[0] + self.size[0] - self.size[1]
+        self.build_button.y_margin = self.position[1]
+        self.enable_track_money_target.x_margin = self.position[0] + self.size[0] - self.size[1] * 2 + 2
+        self.enable_track_money_target.y_margin = self.position[1]
+        self.disable_track_money_target.x_margin = self.position[0] + self.size[0] - self.size[1] * 2 + 2
+        self.disable_track_money_target.y_margin = self.position[1]
 
     def on_update_current_locale(self, new_locale):
         self.current_locale = new_locale

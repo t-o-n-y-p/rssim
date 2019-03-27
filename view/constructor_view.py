@@ -60,6 +60,7 @@ class ConstructorView(View):
         self.environment_caption_sprite = None
         self.environment_caption_position = [0, 0]
         self.construction_state_matrix = None
+        self.money = 0
         self.close_constructor_button = CloseConstructorButton(surface=self.surface, batch=self.batches['ui_batch'],
                                                                groups=self.groups, on_click_action=on_close_constructor)
         self.buttons = [self.close_constructor_button, ]
@@ -129,6 +130,34 @@ class ConstructorView(View):
             if self.constructor_opacity < 255:
                 self.constructor_opacity += 15
 
+            remaining_tracks = sorted(list(self.construction_state_matrix[0].keys()))
+            for j in range(min(len(remaining_tracks), 4)):
+                if not self.constructor_cells[0][j].is_activated:
+                    self.constructor_cells[0][j].on_activate()
+                    self.constructor_cells[0][j]\
+                        .on_assign_new_data(remaining_tracks[j], self.construction_state_matrix[0][remaining_tracks[j]])
+                    return
+
+            for j in range(len(remaining_tracks), 4):
+                if not self.constructor_cells[0][j].is_activated:
+                    self.constructor_cells[0][j].on_activate()
+                    self.constructor_cells[0][j].on_assign_new_data(0, [])
+                    return
+
+            remaining_tiers = sorted(list(self.construction_state_matrix[1].keys()))
+            for j in range(min(len(remaining_tiers), 4)):
+                if not self.constructor_cells[1][j].is_activated:
+                    self.constructor_cells[1][j].on_activate()
+                    self.constructor_cells[1][j]\
+                        .on_assign_new_data(remaining_tiers[j], self.construction_state_matrix[1][remaining_tiers[j]])
+                    return
+
+            for j in range(len(remaining_tiers), 4):
+                if not self.constructor_cells[1][j].is_activated:
+                    self.constructor_cells[1][j].on_activate()
+                    self.constructor_cells[1][j].on_assign_new_data(0, [])
+                    return
+
         if not self.is_activated:
             if self.constructor_opacity > 0:
                 self.constructor_opacity -= 15
@@ -149,142 +178,28 @@ class ConstructorView(View):
             self.environment_caption_sprite.y = self.environment_caption_position[1]
             self.environment_caption_sprite.font_size = self.caption_font_size
 
-            dictionary_keys = list(self.locked_tracks_labels.keys())
-            for i in range(len(dictionary_keys)):
-                self.locked_tracks_labels[dictionary_keys[i]].x \
-                    = self.track_cells_positions[i][0] + self.locked_label_offset[0]
-                self.locked_tracks_labels[dictionary_keys[i]].y \
-                    = self.track_cells_positions[i][1] + self.locked_label_offset[1]
-                self.locked_tracks_labels[dictionary_keys[i]].font_size = self.locked_label_font_size
-                self.title_tracks_labels[dictionary_keys[i]].x \
-                    = self.track_cells_positions[i][0] + self.title_label_offset[0]
-                self.title_tracks_labels[dictionary_keys[i]].y \
-                    = self.track_cells_positions[i][1] + self.title_label_offset[1]
-                self.title_tracks_labels[dictionary_keys[i]].font_size = self.title_label_font_size
-                self.description_tracks_labels[dictionary_keys[i]].x \
-                    = self.track_cells_positions[i][0] + self.description_label_offset[0]
-                self.description_tracks_labels[dictionary_keys[i]].y \
-                    = self.track_cells_positions[i][1] + self.description_label_offset[1]
-                self.description_tracks_labels[dictionary_keys[i]].font_size \
-                    = self.description_label_font_size
+        for j in range(4):
+            self.constructor_cells[0][j].on_change_screen_resolution(screen_resolution)
 
-        self.build_track_button.x_margin = self.track_cells_positions[0][0] + self.track_build_button_offset[0]
-        self.build_track_button.y_margin = self.track_cells_positions[0][1] + self.track_build_button_offset[1]
-        self.build_track_button.on_size_changed((self.cell_height, self.cell_height),
-                                                self.locked_label_font_size)
-        self.set_track_money_target_button.x_margin = self.track_cells_positions[0][0] \
-                                                    + self.track_build_button_offset[0] - self.cell_height + 2
-        self.set_track_money_target_button.y_margin = self.track_cells_positions[0][1] \
-                                                    + self.track_build_button_offset[1]
-        self.set_track_money_target_button.on_size_changed((self.cell_height, self.cell_height),
-                                                           self.locked_label_font_size)
-        self.reset_track_money_target_button.x_margin = self.track_cells_positions[0][0] \
-                                                      + self.track_build_button_offset[0] - self.cell_height + 2
-        self.reset_track_money_target_button.y_margin = self.track_cells_positions[0][1] \
-                                                      + self.track_build_button_offset[1]
-        self.reset_track_money_target_button.on_size_changed((self.cell_height, self.cell_height),
-                                                             int(24 * self.locked_label_font_size / 40))
+        for j in range(4):
+            self.constructor_cells[1][j].on_change_screen_resolution(screen_resolution)
+
         self.close_constructor_button.on_size_changed((self.bottom_bar_height, self.bottom_bar_height),
                                                       int(self.close_constructor_button.base_font_size_property
                                                           * self.bottom_bar_height))
         for b in self.buttons:
             b.on_position_changed((b.x_margin, b.y_margin))
 
-    def on_update_money(self, money, track_state_matrix, environment_state_matrix):
-        """
-        Updates bank account state change when user spends or gains money.
-
-        :param money:                           current bank account state
-        :param track_state_matrix               table with all tracks state properties
-        :param environment_state_matrix         table with all environment state properties
-        """
+    def on_update_money(self, money):
         self.money = money
-        self.track_state_matrix = track_state_matrix
-        self.environment_state_matrix = environment_state_matrix
-        if len(self.track_state_matrix) > 0:
-            self.on_update_live_track_state(track_state_matrix, min(list(track_state_matrix.keys())))
+        for j in range(4):
+            self.constructor_cells[0][j].on_update_money(money)
 
-        if len(self.environment_state_matrix) > 0:
-            self.on_update_live_environment_state(environment_state_matrix, min(list(environment_state_matrix.keys())))
+        for j in range(4):
+            self.constructor_cells[1][j].on_update_money(money)
 
-    @view_is_active
-    @track_cell_is_created
-    def on_update_live_track_state(self, track_state_matrix, track):
-        """
-        Updates track state when constructor screen is opened and track cell has been created.
-
-        :param track_state_matrix       table with all tracks state properties
-        :param track:                   track number
-        """
-        self.track_state_matrix = track_state_matrix
-        if track_state_matrix[track][UNLOCK_AVAILABLE]:
-            if self.track_money_target_activated:
-                self.reset_track_money_target_button.on_activate()
-            else:
-                self.set_track_money_target_button.on_activate()
-
-            if self.money < track_state_matrix[track][PRICE]:
-                self.locked_tracks_labels[track].text = ''
-                self.build_track_button.on_deactivate()
-            else:
-                self.locked_tracks_labels[track].text = ' '
-                self.build_track_button.on_activate()
-
-        else:
-            self.set_track_money_target_button.on_deactivate()
-            self.reset_track_money_target_button.on_deactivate()
-            if not track_state_matrix[track][UNDER_CONSTRUCTION]:
-                self.locked_tracks_labels[track].text = ''
-            else:
-                self.locked_tracks_labels[track].text = ' '
-
-        if track_state_matrix[track][UNLOCK_AVAILABLE]:
-            self.description_tracks_labels[track].text \
-                = I18N_RESOURCES['unlock_available_track_description_string'][self.current_locale]\
-                .format(track_state_matrix[track][PRICE]).replace(',', ' ')
-            self.description_tracks_labels[track].color = GREEN
-        elif track_state_matrix[track][UNDER_CONSTRUCTION]:
-            construction_time = track_state_matrix[track][CONSTRUCTION_TIME]
-            self.description_tracks_labels[track].text \
-                = I18N_RESOURCES['under_construction_track_description_string'][self.current_locale]\
-                .format(construction_time // FRAMES_IN_ONE_HOUR,
-                        (construction_time // FRAMES_IN_ONE_MINUTE) % MINUTES_IN_ONE_HOUR)
-            self.description_tracks_labels[track].color = ORANGE
-        else:
-            if not track_state_matrix[track][UNLOCK_CONDITION_FROM_LEVEL]:
-                self.description_tracks_labels[track].text \
-                    = I18N_RESOURCES['unlock_condition_from_level_track_description_string'][self.current_locale]\
-                    .format(track_state_matrix[track][LEVEL_REQUIRED])
-                self.description_tracks_labels[track].color = GREY
-            elif not track_state_matrix[track][UNLOCK_CONDITION_FROM_ENVIRONMENT]:
-                self.description_tracks_labels[track].text \
-                    = I18N_RESOURCES['unlock_condition_from_environment_track_description_string'][self.current_locale]\
-                    .format(0)
-                self.description_tracks_labels[track].color = GREY
-            elif not track_state_matrix[track][UNLOCK_CONDITION_FROM_PREVIOUS_TRACK]:
-                self.description_tracks_labels[track].text \
-                    = I18N_RESOURCES[
-                    'unlock_condition_from_previous_track_track_description_string'
-                ][self.current_locale].format(track - 1)
-                self.description_tracks_labels[track].color = GREY
-
-    def on_update_track_state(self, track_state_matrix, game_time):
-        """
-        Updates track state matrix every frame in case cell for this track is not yet created.
-
-        :param track_state_matrix       table with all tracks state properties
-        :param game_time:               current in-game time
-        """
-        self.track_state_matrix = track_state_matrix
-
-    def on_update_environment_state(self, environment_state_matrix, game_time):
-        """
-        Updates environment state matrix every frame in case cell for this track is not yet created.
-
-        :param environment_state_matrix         table with all environment state properties
-        :param game_time:                       current in-game time
-        """
-        self.environment_state_matrix = environment_state_matrix
+    def on_update_construction_state(self, construction_state_matrix, game_time):
+        self.construction_state_matrix = construction_state_matrix
 
     @view_is_active
     def on_unlock_track_live(self, track):
