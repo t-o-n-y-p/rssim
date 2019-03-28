@@ -178,6 +178,7 @@ class ConstructorCell:
     def on_update_description_label(self):
         pass
 
+    @cell_is_active
     def on_update_state(self, data):
         if data[UNLOCK_AVAILABLE] and not self.data[UNLOCK_AVAILABLE]:
             self.on_update_build_button_state()

@@ -17,7 +17,7 @@
 	},
 	"no_more_tiers_available_placeholder_string": {
 		"en": "No more tiers available",
-		"ru": "Больше нет доступных стадий"
+		"ru": "Больше нет доступных этапов"
 	},
 	"title_track_string": {
 		"en": "Station: Track {0}",
@@ -25,7 +25,7 @@
 	},
 	"title_environment_string": {
 		"en": "Environment: Tier {0}",
-		"ru": "Окружение: Стадия {0}"
+		"ru": "Окружение: Этап {0}"
 	},
 	"unlock_available_track_description_string": {
 		"en": "Available for {0:,} ¤",
@@ -33,7 +33,7 @@
 	},
 	"unlock_available_environment_description_string": {
 		"en": "Available for {0:,} ¤",
-		"ru": "Доступна за {0:,} ¤"
+		"ru": "Доступен за {0:,} ¤"
 	},
 	"under_construction_track_description_string": {
 		"en": "Under construction. {0}h {1}min remaining",
@@ -60,8 +60,8 @@
 		"ru": "Требуется уровень {0}"
 	},
 	"unlock_condition_from_environment_track_description_string": {
-		"en": "Requires environment Tier {0}",
-		"ru": "Требуется окружение Стадии {0}"
+		"en": "Requires Environment: Tier {0}",
+		"ru": "Требуется Окружение: Этап {0}"
 	},
 	"unlock_condition_from_previous_track_track_description_string": {
 		"en": "Build track {0} to unlock",
@@ -69,7 +69,7 @@
 	},
 	"unlock_condition_from_previous_environment_environment_description_string": {
 		"en": "Build Tier {0} to unlock",
-		"ru": "Постройте Стадию {0}, чтобы открыть"
+		"ru": "Постройте Этап {0}, чтобы открыть"
 	},
 	"level_string": {
 		"en": "LEVEL  {0}",
@@ -93,11 +93,11 @@
 	},
 	"level_up_notification_description_string": {
 		"en": "station level is increased",
-		"ru": "уровень станции увеличивается"
+		"ru": "достигнут новый уровень"
 	},
 	"feature_unlocked_notification_description_string": {
 		"en": "any new feature is unlocked",
-		"ru": "становится доступна новая функиональность"
+		"ru": "становится доступна новая функциональность"
 	},
 	"construction_completed_notification_description_string": {
 		"en": "construction is completed",
@@ -133,7 +133,7 @@
 	},
 	"environment_unlocked_notification_message_string": {
 		"en": "Environment Tier {0} has just been unlocked. Return to the game to check out the price.",
-		"ru": "Только что открыто окружение Стадии {0}. Вернись в игру, чтобы узнать цену."
+		"ru": "Только что открыто Окружение: Этап {0}. Вернись в игру, чтобы узнать цену."
 	},
 	"track_construction_completed_notification_caption_string": {
 		"en": "Construction completed",
@@ -149,7 +149,7 @@
 	},
 	"environment_construction_completed_notification_message_string": {
 		"en": "Environment Tier {0} is ready. Check out what's new!",
-		"ru": "Окружение Стадии {0} готово. Посмотри, что изменилось!"
+		"ru": "Окружение: Этап {0} готово. Посмотри, что изменилось!"
 	},
 	"enough_money_track_notification_caption_string": {
 		"en": "Enough savings",
