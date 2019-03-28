@@ -34,15 +34,12 @@ class ConstructorView(View):
 
         def on_set_money_target_action(construction_type, row, entity_number):
             self.controller.on_activate_money_target(construction_type, row)
-            self.money_target_activated = True
-            self.money_target_position = (construction_type, row)
             self.controller.parent_controller.parent_controller.on_update_money_target(
                 self.construction_state_matrix[construction_type][entity_number][PRICE]
             )
 
         def on_reset_money_target_action():
             self.controller.on_deactivate_track_money_target()
-            self.money_target_activated = False
             self.controller.parent_controller.parent_controller.on_update_money_target(0)
 
         super().__init__(user_db_cursor, config_db_cursor, surface, batches, groups,
@@ -83,6 +80,10 @@ class ConstructorView(View):
             = self.user_db_cursor.fetchone()
         self.feature_unlocked_notification_enabled = bool(self.feature_unlocked_notification_enabled)
         self.construction_completed_notification_enabled = bool(self.construction_completed_notification_enabled)
+        self.user_db_cursor.execute('SELECT money_target_activated FROM graphics')
+        self.money_target_activated = bool(self.user_db_cursor.fetchone()[0])
+        self.user_db_cursor.execute('SELECT money_target_cell_position FROM graphics')
+        self.money_target_cell_position = list(map(int, self.user_db_cursor.fetchone()[0].split(',')))
 
     @view_is_not_active
     def on_activate(self):
@@ -144,6 +145,9 @@ class ConstructorView(View):
                     self.constructor_cells[TRACKS][j]\
                         .on_assign_new_data(remaining_tracks[j],
                                             self.construction_state_matrix[TRACKS][remaining_tracks[j]])
+                    if self.money_target_cell_position == (TRACKS, j):
+                        self.constructor_cells[TRACKS][j].on_activate_money_target()
+
                     return
 
             for j in range(len(remaining_tracks), CONSTRUCTOR_VIEW_TRACK_CELLS):
@@ -159,6 +163,9 @@ class ConstructorView(View):
                     self.constructor_cells[ENVIRONMENT][j]\
                         .on_assign_new_data(remaining_tiers[j],
                                             self.construction_state_matrix[ENVIRONMENT][remaining_tiers[j]])
+                    if self.money_target_cell_position == (ENVIRONMENT, j):
+                        self.constructor_cells[ENVIRONMENT][j].on_activate_money_target()
+
                     return
 
             for j in range(len(remaining_tiers), CONSTRUCTOR_VIEW_ENVIRONMENT_CELLS):
@@ -277,12 +284,20 @@ class ConstructorView(View):
             self.constructor_cells[ENVIRONMENT][j].on_update_current_locale(self.current_locale)
 
     def on_activate_money_target(self, construction_type, row):
+        self.money_target_activated = True
+        self.money_target_cell_position = (construction_type, row)
         for i in range(len(self.constructor_cells)):
             for j in range(len(self.constructor_cells[i])):
                 if i == construction_type and j == row:
                     self.constructor_cells[i][j].on_activate_money_target()
                 else:
                     self.constructor_cells[i][j].on_deactivate_money_target()
+
+    def on_deactivate_money_target(self):
+        self.money_target_activated = False
+        for i in range(len(self.constructor_cells)):
+            for j in range(len(self.constructor_cells[i])):
+                self.constructor_cells[i][j].on_deactivate_money_target()
 
     @notifications_available
     @feature_unlocked_notification_enabled

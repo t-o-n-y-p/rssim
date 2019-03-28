@@ -296,8 +296,8 @@ class ConstructorCell:
                 self.on_update_description_label()
 
     def on_activate_money_target(self):
+        self.money_target_activated = True
         if len(self.data) > 0:
-            self.money_target_activated = True
             self.enable_money_target_button.on_deactivate()
             if self.data[UNLOCK_AVAILABLE]:
                 self.disable_money_target_button.on_activate()
@@ -305,8 +305,8 @@ class ConstructorCell:
                 self.disable_money_target_button.on_deactivate()
 
     def on_deactivate_money_target(self):
+        self.money_target_activated = False
         if len(self.data) > 0:
-            self.money_target_activated = False
             self.disable_money_target_button.on_deactivate()
             if self.data[UNLOCK_AVAILABLE]:
                 self.enable_money_target_button.on_activate()
