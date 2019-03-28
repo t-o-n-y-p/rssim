@@ -45,11 +45,6 @@ class ConstructorView(View):
         super().__init__(user_db_cursor, config_db_cursor, surface, batches, groups,
                          logger=getLogger('root.app.game.map.constructor.view'))
         self.constructor_opacity = 0
-        self.railway_station_caption_sprite = None
-        self.railway_station_caption_position = [0, 0]
-        self.environment_caption_sprite = None
-        self.environment_caption_position = [0, 0]
-        self.caption_font_size = 0
         self.construction_state_matrix = None
         self.money = 0
         self.close_constructor_button = CloseConstructorButton(surface=self.surface, batch=self.batches['ui_batch'],
@@ -91,21 +86,6 @@ class ConstructorView(View):
         Activates the view and creates sprites and labels.
         """
         self.is_activated = True
-        self.railway_station_caption_sprite \
-            = Label(I18N_RESOURCES['railway_station_caption_string'][self.current_locale],
-                    font_name='Arial', font_size=self.caption_font_size,
-                    x=self.railway_station_caption_position[0],
-                    y=self.railway_station_caption_position[1],
-                    anchor_x='center', anchor_y='center',
-                    batch=self.batches['ui_batch'], group=self.groups['button_text'])
-        self.environment_caption_sprite \
-            = Label(I18N_RESOURCES['environment_caption_string'][self.current_locale],
-                    font_name='Arial', font_size=self.caption_font_size,
-                    x=self.environment_caption_position[0],
-                    y=self.environment_caption_position[1],
-                    anchor_x='center', anchor_y='center',
-                    batch=self.batches['ui_batch'], group=self.groups['button_text'])
-
         for b in self.buttons:
             if b.to_activate_on_controller_init:
                 b.on_activate()
@@ -116,10 +96,6 @@ class ConstructorView(View):
         Deactivates the view and destroys all labels and buttons.
         """
         self.is_activated = False
-        self.railway_station_caption_sprite.delete()
-        self.railway_station_caption_sprite = None
-        self.environment_caption_sprite.delete()
-        self.environment_caption_sprite = None
         for j in range(CONSTRUCTOR_VIEW_TRACK_CELLS):
             self.constructor_cells[TRACKS][j].on_deactivate()
 
@@ -185,15 +161,6 @@ class ConstructorView(View):
         :param screen_resolution:       new screen resolution
         """
         self.on_recalculate_ui_properties(screen_resolution)
-        self.on_read_ui_info()
-        if self.is_activated:
-            self.railway_station_caption_sprite.x = self.railway_station_caption_position[0]
-            self.railway_station_caption_sprite.y = self.railway_station_caption_position[1]
-            self.railway_station_caption_sprite.font_size = self.caption_font_size
-            self.environment_caption_sprite.x = self.environment_caption_position[0]
-            self.environment_caption_sprite.y = self.environment_caption_position[1]
-            self.environment_caption_sprite.font_size = self.caption_font_size
-
         for j in range(CONSTRUCTOR_VIEW_TRACK_CELLS):
             self.constructor_cells[TRACKS][j].on_change_screen_resolution(screen_resolution)
 
@@ -247,24 +214,6 @@ class ConstructorView(View):
         for j in range(len(remaining_tiers), CONSTRUCTOR_VIEW_ENVIRONMENT_CELLS):
             self.constructor_cells[ENVIRONMENT][j].on_assign_new_data(0, [])
 
-    def on_read_ui_info(self):
-        """
-        Reads aff offsets and font size from the database.
-        """
-        self.config_db_cursor.execute('''SELECT constructor_railway_station_caption_x, 
-                                         constructor_railway_station_caption_y FROM screen_resolution_config 
-                                         WHERE app_width = ? AND app_height = ?''',
-                                      (self.screen_resolution[0], self.screen_resolution[1]))
-        self.railway_station_caption_position = self.config_db_cursor.fetchone()
-        self.config_db_cursor.execute('''SELECT constructor_environment_caption_x, constructor_environment_caption_y
-                                         FROM screen_resolution_config WHERE app_width = ? AND app_height = ?''',
-                                      (self.screen_resolution[0], self.screen_resolution[1]))
-        self.environment_caption_position = self.config_db_cursor.fetchone()
-        self.config_db_cursor.execute('''SELECT constructor_caption_font_size 
-                                         FROM screen_resolution_config WHERE app_width = ? AND app_height = ?''',
-                                      (self.screen_resolution[0], self.screen_resolution[1]))
-        self.caption_font_size = self.config_db_cursor.fetchone()[0]
-
     def on_update_current_locale(self, new_locale):
         """
         Updates current locale selected by user and all text labels.
@@ -272,11 +221,6 @@ class ConstructorView(View):
         :param new_locale:                      selected locale
         """
         self.current_locale = new_locale
-        if self.is_activated:
-            self.railway_station_caption_sprite.text \
-                = I18N_RESOURCES['railway_station_caption_string'][self.current_locale]
-            self.environment_caption_sprite.text = I18N_RESOURCES['environment_caption_string'][self.current_locale]
-
         for j in range(CONSTRUCTOR_VIEW_TRACK_CELLS):
             self.constructor_cells[TRACKS][j].on_update_current_locale(self.current_locale)
 
