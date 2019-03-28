@@ -1,7 +1,5 @@
 from logging import getLogger
 
-from pyglet.text import Label
-
 from view import *
 from ui.track_cell import TrackCell
 from ui.environment_cell import EnvironmentCell
@@ -10,7 +8,6 @@ from notifications.track_unlocked_notification import TrackUnlockedNotification
 from notifications.environment_unlocked_notification import EnvironmentUnlockedNotification
 from notifications.environment_construction_completed_notification import EnvironmentConstructionCompletedNotification
 from notifications.track_construction_completed_notification import TrackConstructionCompletedNotification
-from i18n import I18N_RESOURCES
 
 
 class ConstructorView(View):
@@ -28,9 +25,9 @@ class ConstructorView(View):
             self.controller.on_deactivate_view()
 
         def on_buy_construction_action(construction_type, entity_number):
-            self.controller.on_deactivate_track_money_target()
-            self.controller.parent_controller.parent_controller.on_update_money_target(0)
             self.controller.on_put_under_construction(construction_type, entity_number)
+            self.controller.on_deactivate_money_target()
+            self.controller.parent_controller.parent_controller.on_update_money_target(0)
 
         def on_set_money_target_action(construction_type, row, entity_number):
             self.controller.on_activate_money_target(construction_type, row)
@@ -39,7 +36,7 @@ class ConstructorView(View):
             )
 
         def on_reset_money_target_action():
-            self.controller.on_deactivate_track_money_target()
+            self.controller.on_deactivate_money_target()
             self.controller.parent_controller.parent_controller.on_update_money_target(0)
 
         super().__init__(user_db_cursor, config_db_cursor, surface, batches, groups,
@@ -121,7 +118,7 @@ class ConstructorView(View):
                     self.constructor_cells[TRACKS][j]\
                         .on_assign_new_data(remaining_tracks[j],
                                             self.construction_state_matrix[TRACKS][remaining_tracks[j]])
-                    if self.money_target_cell_position == (TRACKS, j):
+                    if self.money_target_activated and self.money_target_cell_position == (TRACKS, j):
                         self.constructor_cells[TRACKS][j].on_activate_money_target()
 
                     return
@@ -139,7 +136,7 @@ class ConstructorView(View):
                     self.constructor_cells[ENVIRONMENT][j]\
                         .on_assign_new_data(remaining_tiers[j],
                                             self.construction_state_matrix[ENVIRONMENT][remaining_tiers[j]])
-                    if self.money_target_cell_position == (ENVIRONMENT, j):
+                    if self.money_target_activated and self.money_target_cell_position == (ENVIRONMENT, j):
                         self.constructor_cells[ENVIRONMENT][j].on_activate_money_target()
 
                     return

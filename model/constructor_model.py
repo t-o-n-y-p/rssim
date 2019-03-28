@@ -230,11 +230,11 @@ class ConstructorModel(Model):
             self.view.on_update_construction_state(self.construction_state_matrix)
 
     def on_put_under_construction(self, construction_type, entity_number):
-        self.controller.parent_controller.parent_controller\
-            .on_pay_money(self.construction_state_matrix[construction_type][entity_number][PRICE])
         self.construction_state_matrix[construction_type][entity_number][UNLOCK_AVAILABLE] = False
         self.construction_state_matrix[construction_type][entity_number][UNDER_CONSTRUCTION] = True
         self.view.on_update_construction_state(self.construction_state_matrix)
+        self.controller.parent_controller.parent_controller\
+            .on_pay_money(self.construction_state_matrix[construction_type][entity_number][PRICE])
 
     @maximum_money_not_reached
     def on_add_money(self, money):

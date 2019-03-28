@@ -23,16 +23,20 @@ class EnvironmentCell(ConstructorCell):
                 = I18N_RESOURCES[self.description_keys['UNDER_CONSTRUCTION']][self.current_locale][
                     i18n_number_category(days_left, self.current_locale)
                 ].format(days_left)
+            self.description_label.color = ORANGE
         elif self.data[UNLOCK_AVAILABLE]:
             self.description_label.text \
                 = I18N_RESOURCES[self.description_keys['UNLOCK_AVAILABLE']][self.current_locale]\
                 .format(self.data[PRICE]).replace(',', ' ')
+            self.description_label.color = GREEN
         elif not self.data[UNLOCK_CONDITION_FROM_LEVEL]:
             self.description_label.text \
                 = I18N_RESOURCES[self.description_keys['UNLOCK_CONDITION_FROM_LEVEL']][self.current_locale]\
                 .format(self.data[LEVEL_REQUIRED])
+            self.description_label.color = GREY
         elif not self.data[UNLOCK_CONDITION_FROM_PREVIOUS_ENVIRONMENT]:
             self.description_label.text \
                 = I18N_RESOURCES[
                     self.description_keys['UNLOCK_CONDITION_FROM_PREVIOUS_ENVIRONMENT']][self.current_locale]\
                 .format(self.entity_number - 1)
+            self.description_label.color = GREY

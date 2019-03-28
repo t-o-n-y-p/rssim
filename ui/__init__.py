@@ -70,22 +70,25 @@ class ConstructorCell:
         def on_set_money_target(button):
             button.on_deactivate()
             button.paired_button.on_activate()
-            on_set_money_target_action(self.construction_type, self.row, self.entity_number)
+            self.on_set_money_target_action(self.construction_type, self.row, self.entity_number)
 
         def on_reset_money_target(button):
             button.on_deactivate()
             button.paired_button.on_activate()
-            on_reset_money_target_action()
+            self.on_reset_money_target_action()
 
         def on_buy_construction(button):
             button.on_deactivate()
             self.enable_money_target_button.on_deactivate()
             self.disable_money_target_button.on_deactivate()
-            on_buy_construction_action(self.construction_type, self.entity_number)
+            self.on_buy_construction_action(self.construction_type, self.entity_number)
 
         self.is_activated = False
         self.construction_type, self.row, self.config_db_cursor = construction_type, row, config_db_cursor
         self.surface, self.batches, self.groups, self.current_locale = surface, batches, groups, current_locale
+        self.on_buy_construction_action = on_buy_construction_action
+        self.on_set_money_target_action = on_set_money_target_action
+        self.on_reset_money_target_action = on_reset_money_target_action
         self.entity_number = None
         self.data = None
         self.screen_resolution = (0, 0)

@@ -85,13 +85,8 @@ class ConstructorController(Controller):
         """
         self.model.on_level_up(level)
 
-    def on_put_track_under_construction(self, track):
-        """
-        Notifies the model to put track under construction when user buys it.
-
-        :param track:                   track number
-        """
-        self.model.on_put_track_under_construction(track)
+    def on_put_under_construction(self, construction_type, entity_number):
+        self.model.on_put_under_construction(construction_type, entity_number)
 
     def on_add_money(self, money):
         """
