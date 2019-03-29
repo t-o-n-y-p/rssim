@@ -183,11 +183,12 @@ class ConstructorCell:
 
     @cell_is_active
     def on_update_state(self, data):
-        old_data = self.data
         self.data = data
-        if self.data[UNLOCK_AVAILABLE] and not old_data[UNLOCK_AVAILABLE]:
+        if self.data[UNLOCK_AVAILABLE]:
             self.on_update_build_button_state()
-            self.on_deactivate_money_target()
+            if not self.money_target_activated and not self.enable_money_target_button.is_activated \
+                    and not self.disable_money_target_button.is_activated:
+                self.on_deactivate_money_target()
 
         if self.is_activated:
             self.on_update_description_label()

@@ -26,7 +26,7 @@ class ConstructorView(View):
 
         def on_buy_construction_action(construction_type, row, entity_number):
             self.controller.on_put_under_construction(construction_type, entity_number)
-            if self.money_target_activated and self.money_target_cell_position == (construction_type, row):
+            if self.money_target_activated and self.money_target_cell_position == [construction_type, row]:
                 self.controller.on_deactivate_money_target()
                 self.controller.parent_controller.parent_controller.on_update_money_target(0)
 
@@ -119,7 +119,7 @@ class ConstructorView(View):
                     self.constructor_cells[TRACKS][j]\
                         .on_assign_new_data(remaining_tracks[j],
                                             self.construction_state_matrix[TRACKS][remaining_tracks[j]])
-                    if self.money_target_activated and self.money_target_cell_position == (TRACKS, j):
+                    if self.money_target_activated and self.money_target_cell_position == [TRACKS, j]:
                         self.constructor_cells[TRACKS][j].on_activate_money_target()
                     else:
                         self.constructor_cells[TRACKS][j].on_deactivate_money_target()
@@ -139,7 +139,7 @@ class ConstructorView(View):
                     self.constructor_cells[ENVIRONMENT][j]\
                         .on_assign_new_data(remaining_tiers[j],
                                             self.construction_state_matrix[ENVIRONMENT][remaining_tiers[j]])
-                    if self.money_target_activated and self.money_target_cell_position == (ENVIRONMENT, j):
+                    if self.money_target_activated and self.money_target_cell_position == [ENVIRONMENT, j]:
                         self.constructor_cells[ENVIRONMENT][j].on_activate_money_target()
                     else:
                         self.constructor_cells[ENVIRONMENT][j].on_deactivate_money_target()
@@ -208,7 +208,7 @@ class ConstructorView(View):
                 self.constructor_cells[TRACKS][j] \
                     .on_assign_new_data(remaining_tracks[j],
                                         self.construction_state_matrix[TRACKS][remaining_tracks[j]])
-                if self.money_target_activated and self.money_target_cell_position == (TRACKS, j):
+                if self.money_target_activated and self.money_target_cell_position == [TRACKS, j]:
                     self.constructor_cells[TRACKS][j].on_activate_money_target()
                 else:
                     self.constructor_cells[TRACKS][j].on_deactivate_money_target()
@@ -223,7 +223,7 @@ class ConstructorView(View):
                 self.constructor_cells[ENVIRONMENT][j] \
                     .on_assign_new_data(remaining_tiers[j],
                                         self.construction_state_matrix[ENVIRONMENT][remaining_tiers[j]])
-                if self.money_target_activated and self.money_target_cell_position == (ENVIRONMENT, j):
+                if self.money_target_activated and self.money_target_cell_position == [ENVIRONMENT, j]:
                     self.constructor_cells[TRACKS][j].on_activate_money_target()
                 else:
                     self.constructor_cells[TRACKS][j].on_deactivate_money_target()
@@ -246,7 +246,7 @@ class ConstructorView(View):
 
     def on_activate_money_target(self, construction_type, row):
         self.money_target_activated = True
-        self.money_target_cell_position = (construction_type, row)
+        self.money_target_cell_position = [construction_type, row]
         for i in range(len(self.constructor_cells)):
             for j in range(len(self.constructor_cells[i])):
                 if i == construction_type and j == row:

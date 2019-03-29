@@ -97,6 +97,9 @@ class ConstructorModel(Model):
 
         if unlocked_track > 0:
             self.construction_state_matrix[TRACKS].pop(unlocked_track)
+            if self.money_target_activated and self.money_target_cell_position[0] == TRACKS \
+                    and self.money_target_cell_position[1] > 0:
+                self.money_target_cell_position[1] -= 1
 
         # same for environment
         unlocked_tier = 0
@@ -124,6 +127,9 @@ class ConstructorModel(Model):
 
         if unlocked_tier > 0:
             self.construction_state_matrix[ENVIRONMENT].pop(unlocked_tier)
+            if self.money_target_activated and self.money_target_cell_position[0] == ENVIRONMENT \
+                    and self.money_target_cell_position[1] > 0:
+                self.money_target_cell_position[1] -= 1
 
     def on_save_state(self):
         """
