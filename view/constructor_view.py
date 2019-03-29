@@ -24,10 +24,11 @@ class ConstructorView(View):
             """
             self.controller.on_deactivate_view()
 
-        def on_buy_construction_action(construction_type, entity_number):
+        def on_buy_construction_action(construction_type, row, entity_number):
             self.controller.on_put_under_construction(construction_type, entity_number)
-            self.controller.on_deactivate_money_target()
-            self.controller.parent_controller.parent_controller.on_update_money_target(0)
+            if self.money_target_activated and self.money_target_cell_position == (construction_type, row):
+                self.controller.on_deactivate_money_target()
+                self.controller.parent_controller.parent_controller.on_update_money_target(0)
 
         def on_set_money_target_action(construction_type, row, entity_number):
             self.controller.on_activate_money_target(construction_type, row)

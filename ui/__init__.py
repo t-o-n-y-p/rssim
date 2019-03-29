@@ -81,7 +81,7 @@ class ConstructorCell:
             button.on_deactivate()
             self.enable_money_target_button.on_deactivate()
             self.disable_money_target_button.on_deactivate()
-            self.on_buy_construction_action(self.construction_type, self.entity_number)
+            self.on_buy_construction_action(self.construction_type, self.row, self.entity_number)
 
         self.is_activated = False
         self.construction_type, self.row, self.config_db_cursor = construction_type, row, config_db_cursor
@@ -183,11 +183,12 @@ class ConstructorCell:
 
     @cell_is_active
     def on_update_state(self, data):
-        if data[UNLOCK_AVAILABLE] and not self.data[UNLOCK_AVAILABLE]:
+        old_data = self.data
+        self.data = data
+        if self.data[UNLOCK_AVAILABLE] and not old_data[UNLOCK_AVAILABLE]:
             self.on_update_build_button_state()
             self.on_deactivate_money_target()
 
-        self.data = data
         if self.is_activated:
             self.on_update_description_label()
 
