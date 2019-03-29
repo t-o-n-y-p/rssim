@@ -185,8 +185,7 @@ class ConstructorCell:
     def on_update_state(self, data):
         if data[UNLOCK_AVAILABLE] and not self.data[UNLOCK_AVAILABLE]:
             self.on_update_build_button_state()
-            self.enable_money_target_button.on_activate()
-            self.disable_money_target_button.on_deactivate()
+            self.on_deactivate_money_target()
 
         self.data = data
         if self.is_activated:

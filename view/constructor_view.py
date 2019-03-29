@@ -196,6 +196,10 @@ class ConstructorView(View):
 
     @view_is_active
     def on_unlock_construction(self, construction_type, entity_number):
+        if self.money_target_activated and self.money_target_cell_position[0] == construction_type \
+                and self.money_target_cell_position[1] > 0:
+            self.money_target_cell_position[1] -= 1
+
         if construction_type == TRACKS:
             remaining_tracks = sorted(list(self.construction_state_matrix[TRACKS].keys()))
             remaining_tracks.remove(entity_number)
@@ -203,6 +207,10 @@ class ConstructorView(View):
                 self.constructor_cells[TRACKS][j] \
                     .on_assign_new_data(remaining_tracks[j],
                                         self.construction_state_matrix[TRACKS][remaining_tracks[j]])
+                if self.money_target_activated and self.money_target_cell_position == (TRACKS, j):
+                    self.constructor_cells[TRACKS][j].on_activate_money_target()
+                else:
+                    self.constructor_cells[TRACKS][j].on_deactivate_money_target()
 
             for j in range(len(remaining_tracks), CONSTRUCTOR_VIEW_TRACK_CELLS):
                 self.constructor_cells[TRACKS][j].on_assign_new_data(0, [])
@@ -214,15 +222,13 @@ class ConstructorView(View):
                 self.constructor_cells[ENVIRONMENT][j] \
                     .on_assign_new_data(remaining_tiers[j],
                                         self.construction_state_matrix[ENVIRONMENT][remaining_tiers[j]])
+                if self.money_target_activated and self.money_target_cell_position == (ENVIRONMENT, j):
+                    self.constructor_cells[TRACKS][j].on_activate_money_target()
+                else:
+                    self.constructor_cells[TRACKS][j].on_deactivate_money_target()
 
             for j in range(len(remaining_tiers), CONSTRUCTOR_VIEW_ENVIRONMENT_CELLS):
                 self.constructor_cells[ENVIRONMENT][j].on_assign_new_data(0, [])
-
-        if self.money_target_activated and self.money_target_cell_position[0] == construction_type \
-                and self.money_target_cell_position[1] > 0:
-            self.on_deactivate_money_target()
-            self.money_target_cell_position[1] -= 1
-            self.on_activate_money_target(*self.money_target_cell_position)
 
     def on_update_current_locale(self, new_locale):
         """
