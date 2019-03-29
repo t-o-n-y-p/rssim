@@ -137,7 +137,7 @@ class GameModel(Model):
         :param money:                   amount of money gained
         """
         if self.money_target > 0 and self.money < self.money_target <= self.money + money:
-            if self.controller.map.constructor.model.track_money_target_activated:
+            if self.controller.map.constructor.model.money_target_activated:
                 self.view.on_send_enough_money_track_notification()
 
         self.money += money

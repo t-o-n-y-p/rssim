@@ -214,6 +214,8 @@ class ConstructorCell:
                                               y=self.position[1] + self.size[1] // 2,
                                               anchor_x='center', anchor_y='center',
                                               batch=self.batches['ui_batch'], group=self.groups['button_text'])
+                else:
+                    self.locked_label.text = ''
 
     @cell_is_not_active
     def on_activate(self):
