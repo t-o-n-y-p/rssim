@@ -27,11 +27,11 @@
 		"en": "Available for {0:,} ¤",
 		"ru": "Доступен за {0:,} ¤"
 	},
-	"under_construction_track_description_string": {
+	"under_construction_hours_minutes_description_string": {
 		"en": "Under construction. {0}h {1}min remaining",
 		"ru": "Идет строительство. Осталось {0}ч {1}мин"
 	},
-	"under_construction_environment_description_string": {
+	"under_construction_days_description_string": {
 		"en": {
 			"one": "Under construction. {0} day remaining",
 			"other": "Under construction. {0} days remaining"

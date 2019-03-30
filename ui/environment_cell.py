@@ -1,3 +1,5 @@
+from math import ceil
+
 from ui import *
 from i18n import I18N_RESOURCES, i18n_number_category
 
@@ -9,7 +11,9 @@ class EnvironmentCell(ConstructorCell):
                          on_buy_construction_action, on_set_money_target_action, on_reset_money_target_action)
         self.title_key = 'title_environment_string'
         self.placeholder_key = 'no_more_tiers_available_placeholder_string'
-        self.description_keys = {'UNDER_CONSTRUCTION': 'under_construction_environment_description_string',
+        self.description_keys = {'UNDER_CONSTRUCTION':
+                                     {'hours': 'under_construction_hours_minutes_description_string',
+                                      'days': 'under_construction_days_description_string'},
                                  'UNLOCK_AVAILABLE': 'unlock_available_environment_description_string',
                                  'UNLOCK_CONDITION_FROM_LEVEL':
                                      'unlock_condition_from_level_environment_description_string',
@@ -18,10 +22,16 @@ class EnvironmentCell(ConstructorCell):
 
     def on_update_description_label(self):
         if self.data[UNDER_CONSTRUCTION]:
-            days_left = self.data[CONSTRUCTION_TIME] // FRAMES_IN_ONE_DAY
-            text = I18N_RESOURCES[self.description_keys['UNDER_CONSTRUCTION']][self.current_locale][
-                i18n_number_category(days_left, self.current_locale)
-            ].format(days_left)
+            if self.data[CONSTRUCTION_TIME] >= FRAMES_IN_ONE_DAY:
+                days_left = self.data[CONSTRUCTION_TIME] // FRAMES_IN_ONE_DAY
+                text = I18N_RESOURCES[self.description_keys['UNDER_CONSTRUCTION']['days']][self.current_locale][
+                    i18n_number_category(days_left, self.current_locale)
+                ].format(days_left)
+            else:
+                text = I18N_RESOURCES[self.description_keys['UNDER_CONSTRUCTION']['hours']][self.current_locale]\
+                    .format(self.data[CONSTRUCTION_TIME] // FRAMES_IN_ONE_HOUR,
+                            (self.data[CONSTRUCTION_TIME] // FRAMES_IN_ONE_MINUTE) % MINUTES_IN_ONE_HOUR)
+
             if self.description_label.text != text:
                 self.description_label.text = text
                 self.description_label.color = ORANGE
