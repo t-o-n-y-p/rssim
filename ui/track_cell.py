@@ -1,5 +1,3 @@
-from math import ceil
-
 from ui import *
 from i18n import I18N_RESOURCES, i18n_number_category
 
