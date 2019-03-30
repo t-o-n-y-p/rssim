@@ -61,7 +61,14 @@ class ConstructorModel(Model):
         """
         Updates bank account state and activates the Constructor view.
         """
-        self.view.on_update_construction_state(self.construction_state_matrix)
+        remaining_tracks = sorted(list(self.construction_state_matrix[TRACKS].keys()))
+        for j in range(min(len(remaining_tracks), CONSTRUCTOR_VIEW_TRACK_CELLS)):
+            self.view.on_update_construction_state(self.construction_state_matrix, TRACKS, remaining_tracks[j])
+
+        remaining_tiers = sorted(list(self.construction_state_matrix[ENVIRONMENT].keys()))
+        for j in range(min(len(remaining_tiers), CONSTRUCTOR_VIEW_ENVIRONMENT_CELLS)):
+            self.view.on_update_construction_state(self.construction_state_matrix, ENVIRONMENT, remaining_tiers[j])
+
         self.view.on_update_money(self.money)
         self.view.on_activate()
 
@@ -93,7 +100,7 @@ class ConstructorModel(Model):
 
                     self.view.on_unlock_construction(TRACKS, track)
                 else:
-                    self.view.on_update_construction_state(self.construction_state_matrix)
+                    self.view.on_update_construction_state(self.construction_state_matrix, TRACKS, track)
 
         if unlocked_track > 0:
             self.construction_state_matrix[TRACKS].pop(unlocked_track)
@@ -114,6 +121,12 @@ class ConstructorModel(Model):
                     self.controller.parent_controller.on_unlock_environment(tier)
                     # track is added to cached_unlocked_tracks list to be then correctly saved in the database
                     self.cached_unlocked_tiers.append(tier)
+                    # unlock condition from environment is made up
+                    for track in self.construction_state_matrix[TRACKS]:
+                        if self.construction_state_matrix[TRACKS][track][ENVIRONMENT_REQUIRED] == tier:
+                            self.construction_state_matrix[TRACKS][track][UNLOCK_CONDITION_FROM_ENVIRONMENT] = True
+                            self.on_check_track_unlock_conditions(track)
+
                     # if there are more tracks to unlock, unlock condition for the next track is met
                     if tier < MAXIMUM_ENVIRONMENT_TIER:
                         self.construction_state_matrix[ENVIRONMENT][tier + 1][
@@ -123,7 +136,7 @@ class ConstructorModel(Model):
 
                     self.view.on_unlock_construction(ENVIRONMENT, tier)
                 else:
-                    self.view.on_update_construction_state(self.construction_state_matrix)
+                    self.view.on_update_construction_state(self.construction_state_matrix, ENVIRONMENT, tier)
 
         if unlocked_tier > 0:
             self.construction_state_matrix[ENVIRONMENT].pop(unlocked_tier)
@@ -217,9 +230,7 @@ class ConstructorModel(Model):
             self.construction_state_matrix[TRACKS][track][UNLOCK_CONDITION_FROM_LEVEL] = True
             # if all three conditions are met, track is available for construction
             self.on_check_track_unlock_conditions(track)
-
-        if len(tracks_parsed) > 0:
-            self.view.on_update_construction_state(self.construction_state_matrix)
+            self.view.on_update_construction_state(self.construction_state_matrix, TRACKS, track)
 
         # same for environment
         self.config_db_cursor.execute('SELECT tier FROM environment_config WHERE level = ?', (level, ))
@@ -231,14 +242,12 @@ class ConstructorModel(Model):
         for tier in tiers_parsed:
             self.construction_state_matrix[ENVIRONMENT][tier][UNLOCK_CONDITION_FROM_LEVEL] = True
             self.on_check_environment_unlock_conditions(tier)
-
-        if len(tiers_parsed) > 0:
-            self.view.on_update_construction_state(self.construction_state_matrix)
+            self.view.on_update_construction_state(self.construction_state_matrix, ENVIRONMENT, tier)
 
     def on_put_under_construction(self, construction_type, entity_number):
         self.construction_state_matrix[construction_type][entity_number][UNLOCK_AVAILABLE] = False
         self.construction_state_matrix[construction_type][entity_number][UNDER_CONSTRUCTION] = True
-        self.view.on_update_construction_state(self.construction_state_matrix)
+        self.view.on_update_construction_state(self.construction_state_matrix, construction_type, entity_number)
         self.controller.parent_controller.parent_controller\
             .on_pay_money(self.construction_state_matrix[construction_type][entity_number][PRICE])
 

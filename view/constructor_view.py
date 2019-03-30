@@ -183,17 +183,16 @@ class ConstructorView(View):
         for j in range(CONSTRUCTOR_VIEW_ENVIRONMENT_CELLS):
             self.constructor_cells[ENVIRONMENT][j].on_update_money(money)
 
-    def on_update_construction_state(self, construction_state_matrix, game_time=0):
+    def on_update_construction_state(self, construction_state_matrix, construction_type, entity_number, game_time=0):
         self.construction_state_matrix = construction_state_matrix
-        remaining_tracks = sorted(list(self.construction_state_matrix[TRACKS].keys()))
-        for j in range(min(len(remaining_tracks), CONSTRUCTOR_VIEW_TRACK_CELLS)):
-            self.constructor_cells[TRACKS][j]\
-                .on_update_state(self.construction_state_matrix[TRACKS][remaining_tracks[j]])
-
-        remaining_tiers = sorted(list(self.construction_state_matrix[ENVIRONMENT].keys()))
-        for j in range(min(len(remaining_tiers), CONSTRUCTOR_VIEW_ENVIRONMENT_CELLS)):
-            self.constructor_cells[ENVIRONMENT][j]\
-                .on_update_state(self.construction_state_matrix[ENVIRONMENT][remaining_tiers[j]])
+        if construction_type == TRACKS:
+            remaining_tracks = sorted(list(self.construction_state_matrix[TRACKS].keys()))
+            self.constructor_cells[construction_type][remaining_tracks.index(entity_number)]\
+                .on_update_state(self.construction_state_matrix[TRACKS][entity_number])
+        elif construction_type == ENVIRONMENT:
+            remaining_tiers = sorted(list(self.construction_state_matrix[ENVIRONMENT].keys()))
+            self.constructor_cells[construction_type][remaining_tiers.index(entity_number)]\
+                .on_update_state(self.construction_state_matrix[ENVIRONMENT][entity_number])
 
     @view_is_active
     def on_unlock_construction(self, construction_type, entity_number):
