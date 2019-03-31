@@ -260,6 +260,7 @@ FULLSCREEN_MODE_TURNED_ON = 1           # database value for fullscreen mode tur
 MAXIMUM_TRACK_NUMBER = 32               # player can have maximum of 32 tracks
 MAXIMUM_ENVIRONMENT_TIER = 6            # player can have environment tier 6 at most
 FRAMES_IN_ONE_MINUTE = 240              # indicates how many frames fit in 1 in-game minute
+FRAMES_IN_ONE_HOUR = 14400              # indicates how many frames fit in one in-game hour
 DEFAULT_PRIORITY = 10000000             # default priority for any new train created
 PASS_THROUGH_BOARDING_TIME = 480        # default boarding time for pass-through trains
 CAR_LENGTH = 251                        # length of the car in pixels

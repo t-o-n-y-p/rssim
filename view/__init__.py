@@ -260,7 +260,7 @@ def construction_completed_notification_enabled(fn):
 # --------------------- CONSTANTS ---------------------
 MAP_WIDTH = 8192                                # full-size map width
 MAP_HEIGHT = 4096                               # full-size map height
-SCHEDULE_ROWS = 16                              # number of schedule rows on schedule screen
+SCHEDULE_ROWS = 10                              # number of schedule rows on schedule screen
 SCHEDULE_COLUMNS = 2                            # number of schedule columns on schedule screen
 MINI_MAP_FADE_OUT_TIMER = 1.0                   # time since user releases mouse button after which mini-map disappears
 TRACKS = 0
