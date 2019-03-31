@@ -8,8 +8,6 @@ from button.reset_money_target_button import ResetMoneyTargetButton
 
 
 # --------------------- CONSTANTS ---------------------
-SCHEDULE_ROWS = 10                              # number of schedule rows on schedule screen
-SCHEDULE_COLUMNS = 2                            # number of schedule columns on schedule screen
 # track and environment state matrix properties
 LOCKED = 0                                      # property #0 indicates if track/env. is locked
 UNDER_CONSTRUCTION = 1                          # property #1 indicates if track/env. is under construction
@@ -394,7 +392,7 @@ class ScheduleRow:
                                 (self.data[ARRIVAL_TIME] // FRAMES_IN_ONE_MINUTE) % MINUTES_IN_ONE_HOUR,
                                 self.data[CARS], self.data[STOP_TIME] // FRAMES_IN_ONE_MINUTE,
                                 (self.data[STOP_TIME] // FRAMES_IN_ONE_SECOND) % SECONDS_IN_ONE_MINUTE),
-                        font_name='Perfo', bold=True, font_size=self.size[1] // 2,
+                        font_name='Perfo', bold=True, font_size=self.size[1] // 5 * 3,
                         x=self.position[0], y=self.position[1], anchor_x='center', anchor_y='center',
                         batch=self.batches['ui_batch'], group=self.groups['button_text'])
         else:
@@ -409,7 +407,7 @@ class ScheduleRow:
         if self.arrival_sprite is None:
             self.arrival_sprite \
                 = Label(I18N_RESOURCES['departed_from_string'][self.current_locale][self.data[DIRECTION]],
-                        font_name='Perfo', bold=True, font_size=self.size[1] // 2,
+                        font_name='Perfo', bold=True, font_size=self.size[1] // 5 * 3,
                         x=self.position[0] + self.size[0] // 16, y=self.position[1],
                         anchor_x='center', anchor_y='center', batch=self.batches['ui_batch'],
                         group=self.groups['button_text'])
@@ -436,12 +434,12 @@ class ScheduleRow:
         if self.main_sprite is not None:
             self.main_sprite.x = self.position[0]
             self.main_sprite.y = self.position[1]
-            self.main_sprite.font_size = self.size[1] // 2
+            self.main_sprite.font_size = self.size[1] // 5 * 3
 
         if self.arrival_sprite is not None:
             self.arrival_sprite.x = self.position[0] + self.size[0] // 16
             self.arrival_sprite.y = self.position[1]
-            self.arrival_sprite.font_size = self.size[1] // 2
+            self.arrival_sprite.font_size = self.size[1] // 5 * 3
 
     def on_update_current_locale(self, new_locale):
         self.current_locale = new_locale

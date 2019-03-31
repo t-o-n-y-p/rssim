@@ -201,7 +201,7 @@ class SchedulerView(View):
         self.schedule_left_caption_position = (top_left_row_position[0], top_left_row_position[1] + size[1])
         self.schedule_right_caption_position = (top_left_row_position[0] + size[0] + schedule_interval_between_columns,
                                                 top_left_row_position[1] + size[1])
-        self.schedule_caption_font_size = size[1] // 2
+        self.schedule_caption_font_size = size[1] // 5 * 3
 
     def on_update_current_locale(self, new_locale):
         """
