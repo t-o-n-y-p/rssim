@@ -110,6 +110,10 @@ class MapModel(Model):
 
         self.view.on_unlock_track(track)
 
+    def on_unlock_environment(self, tier):
+        self.unlocked_environment = tier
+        self.view.on_unlock_environment(tier)
+
     def on_save_state(self):
         """
         Saves map state to user progress database.

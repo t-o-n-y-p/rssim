@@ -190,6 +190,9 @@ class MapController(Controller):
         for (track_param_1, track_param_2, crossover_type) in self.model.get_crossovers_to_unlock_with_track(track):
             self.crossovers[track_param_1][track_param_2][crossover_type].on_unlock()
 
+    def on_unlock_environment(self, tier):
+        self.model.on_unlock_environment(tier)
+
     def on_activate_view(self):
         """
         Activates the view and all Signal, Train route, Railroad switch, Crossover, Train views

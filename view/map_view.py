@@ -303,6 +303,17 @@ class MapView(View):
                                         + int(self.mini_map_offset[1] * self.mini_map_width / MAP_WIDTH),
                                         scale=self.mini_map_width / MAP_WIDTH)
 
+    def on_unlock_environment(self, tier):
+        self.unlocked_environment = tier
+        self.environment = resource.image(f'full_map_e_{tier}.dds')
+        if self.is_activated:
+            self.environment_sprite.image = self.environment
+
+        if self.is_mini_map_activated:
+            self.mini_environment_sprite.image = self.environment
+            self.mini_environment_sprite.update(y=self.mini_map_position[1],
+                                                scale=self.mini_map_width / MAP_WIDTH)
+
     def on_change_zoom_factor(self, zoom_factor, zoom_out_activated):
         """
         Zooms in/out all sprites.
