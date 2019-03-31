@@ -261,12 +261,8 @@ class GameView(View):
         self.pause_game_button.y_margin = 0
         self.resume_game_button.x_margin = self.screen_resolution[0] - 9 * self.bottom_bar_height // 2
         self.resume_game_button.y_margin = 0
-        self.pause_game_button.on_size_changed((self.bottom_bar_height, self.bottom_bar_height),
-                                               int(self.pause_game_button.base_font_size_property
-                                                   * self.bottom_bar_height))
-        self.resume_game_button.on_size_changed((self.bottom_bar_height, self.bottom_bar_height),
-                                                int(self.resume_game_button.base_font_size_property
-                                                    * self.bottom_bar_height))
+        self.pause_game_button.on_size_changed((self.bottom_bar_height, self.bottom_bar_height))
+        self.resume_game_button.on_size_changed((self.bottom_bar_height, self.bottom_bar_height))
         for b in self.buttons:
             b.on_position_changed((b.x_margin, b.y_margin))
 

@@ -434,97 +434,69 @@ class SettingsView(View):
 
         self.accept_settings_button.x_margin = self.screen_resolution[0] - self.bottom_bar_height * 2 + 2
         self.accept_settings_button.y_margin = 0
-        self.accept_settings_button.on_size_changed((self.bottom_bar_height, self.bottom_bar_height),
-                                                    int(self.accept_settings_button.base_font_size_property
-                                                        * self.bottom_bar_height))
+        self.accept_settings_button.on_size_changed((self.bottom_bar_height, self.bottom_bar_height))
         self.reject_settings_button.x_margin = self.screen_resolution[0] - self.bottom_bar_height
         self.reject_settings_button.y_margin = 0
-        self.reject_settings_button.on_size_changed((self.bottom_bar_height, self.bottom_bar_height),
-                                                    int(self.reject_settings_button.base_font_size_property
-                                                        * self.bottom_bar_height))
+        self.reject_settings_button.on_size_changed((self.bottom_bar_height, self.bottom_bar_height))
         self.increment_windowed_resolution_button.x_margin \
             = 11 * self.screen_resolution[0] // 32 - self.top_bar_height // 2
         self.increment_windowed_resolution_button.y_margin = self.medium_line + self.top_bar_height // 8
         self.increment_windowed_resolution_button\
-            .on_size_changed((self.top_bar_height, self.top_bar_height),
-                             int(self.increment_windowed_resolution_button.base_font_size_property
-                                 * self.top_bar_height))
+            .on_size_changed((self.top_bar_height, self.top_bar_height))
         self.decrement_windowed_resolution_button.x_margin \
             = 5 * self.screen_resolution[0] // 32 - self.top_bar_height // 2
         self.decrement_windowed_resolution_button.y_margin = self.medium_line + self.top_bar_height // 8
         self.decrement_windowed_resolution_button\
-            .on_size_changed((self.top_bar_height, self.top_bar_height),
-                             int(self.decrement_windowed_resolution_button.base_font_size_property
-                                 * self.top_bar_height))
+            .on_size_changed((self.top_bar_height, self.top_bar_height))
         self.display_fps_checked_checkbox_button.x_margin = self.bottom_bar_height
         self.display_fps_checked_checkbox_button.y_margin = self.medium_line - self.top_bar_height // 8 * 19
         self.display_fps_checked_checkbox_button\
-            .on_size_changed((self.top_bar_height, self.top_bar_height),
-                             int(self.display_fps_checked_checkbox_button.base_font_size_property
-                                 * self.top_bar_height))
+            .on_size_changed((self.top_bar_height, self.top_bar_height))
         self.display_fps_unchecked_checkbox_button.x_margin = self.bottom_bar_height
         self.display_fps_unchecked_checkbox_button.y_margin = self.medium_line - self.top_bar_height // 8 * 19
         self.display_fps_unchecked_checkbox_button\
-            .on_size_changed((self.top_bar_height, self.top_bar_height),
-                             int(self.display_fps_unchecked_checkbox_button.base_font_size_property
-                                 * self.top_bar_height))
+            .on_size_changed((self.top_bar_height, self.top_bar_height))
         self.level_up_checked_checkbox_button.x_margin \
             = self.screen_resolution[0] // 2 + self.bottom_bar_height
         self.level_up_checked_checkbox_button.y_margin = self.medium_line + self.top_bar_height // 8 * 6
         self.level_up_checked_checkbox_button\
-            .on_size_changed((self.top_bar_height, self.top_bar_height),
-                             int(self.level_up_checked_checkbox_button.base_font_size_property
-                                 * self.top_bar_height))
+            .on_size_changed((self.top_bar_height, self.top_bar_height))
         self.level_up_unchecked_checkbox_button.x_margin \
             = self.screen_resolution[0] // 2 + self.bottom_bar_height
         self.level_up_unchecked_checkbox_button.y_margin = self.medium_line + self.top_bar_height // 8 * 6
         self.level_up_unchecked_checkbox_button\
-            .on_size_changed((self.top_bar_height, self.top_bar_height),
-                             int(self.level_up_unchecked_checkbox_button.base_font_size_property
-                                 * self.top_bar_height))
+            .on_size_changed((self.top_bar_height, self.top_bar_height))
         self.feature_unlocked_checked_checkbox_button.x_margin \
             = self.screen_resolution[0] // 2 + self.bottom_bar_height
         self.feature_unlocked_checked_checkbox_button.y_margin = self.medium_line - self.top_bar_height // 8 * 4
         self.feature_unlocked_checked_checkbox_button\
-            .on_size_changed((self.top_bar_height, self.top_bar_height),
-                             int(self.feature_unlocked_checked_checkbox_button.base_font_size_property
-                                 * self.top_bar_height))
+            .on_size_changed((self.top_bar_height, self.top_bar_height))
         self.feature_unlocked_unchecked_checkbox_button.x_margin \
             = self.screen_resolution[0] // 2 + self.bottom_bar_height
         self.feature_unlocked_unchecked_checkbox_button.y_margin = self.medium_line - self.top_bar_height // 8 * 4
         self.feature_unlocked_unchecked_checkbox_button\
-            .on_size_changed((self.top_bar_height, self.top_bar_height),
-                             int(self.feature_unlocked_unchecked_checkbox_button.base_font_size_property
-                                 * self.top_bar_height))
+            .on_size_changed((self.top_bar_height, self.top_bar_height))
         self.construction_completed_checked_checkbox_button.x_margin \
             = self.screen_resolution[0] // 2 + self.bottom_bar_height
         self.construction_completed_checked_checkbox_button.y_margin = self.medium_line - self.top_bar_height // 8 * 14
         self.construction_completed_checked_checkbox_button\
-            .on_size_changed((self.top_bar_height, self.top_bar_height),
-                             int(self.construction_completed_checked_checkbox_button.base_font_size_property
-                                 * self.top_bar_height))
+            .on_size_changed((self.top_bar_height, self.top_bar_height))
         self.construction_completed_unchecked_checkbox_button.x_margin \
             = self.screen_resolution[0] // 2 + self.bottom_bar_height
         self.construction_completed_unchecked_checkbox_button.y_margin = self.medium_line \
                                                                          - self.top_bar_height // 8 * 14
         self.construction_completed_unchecked_checkbox_button\
-            .on_size_changed((self.top_bar_height, self.top_bar_height),
-                             int(self.construction_completed_unchecked_checkbox_button.base_font_size_property
-                                 * self.top_bar_height))
+            .on_size_changed((self.top_bar_height, self.top_bar_height))
         self.enough_money_checked_checkbox_button.x_margin \
             = self.screen_resolution[0] // 2 + self.bottom_bar_height
         self.enough_money_checked_checkbox_button.y_margin = self.medium_line - self.top_bar_height // 8 * 24
         self.enough_money_checked_checkbox_button\
-            .on_size_changed((self.top_bar_height, self.top_bar_height),
-                             int(self.enough_money_checked_checkbox_button.base_font_size_property
-                                 * self.top_bar_height))
+            .on_size_changed((self.top_bar_height, self.top_bar_height))
         self.enough_money_unchecked_checkbox_button.x_margin \
             = self.screen_resolution[0] // 2 + self.bottom_bar_height
         self.enough_money_unchecked_checkbox_button.y_margin = self.medium_line - self.top_bar_height // 8 * 24
         self.enough_money_unchecked_checkbox_button\
-            .on_size_changed((self.top_bar_height, self.top_bar_height),
-                             int(self.enough_money_unchecked_checkbox_button.base_font_size_property
-                                 * self.top_bar_height))
+            .on_size_changed((self.top_bar_height, self.top_bar_height))
         for b in self.buttons:
             b.on_position_changed((b.x_margin, b.y_margin))
 

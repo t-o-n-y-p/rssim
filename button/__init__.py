@@ -217,15 +217,14 @@ class Button:
                 self.text_object.x = self.position[0] + self.button_size[0] // 2
                 self.text_object.y = self.position[1] + self.button_size[1] // 2
 
-    def on_size_changed(self, new_button_size, new_font_size):
+    def on_size_changed(self, new_button_size):
         """
         Applies new size for the button when notified about it.
 
         :param new_button_size:                 new width and height (including 2-pixel borders)
-        :param new_font_size:                   new text label font size
         """
         self.button_size = new_button_size
-        self.font_size = new_font_size
+        self.font_size = int(self.base_font_size_property * min(self.button_size))
         if self.is_activated:
             self.text_object.font_size = self.font_size
 

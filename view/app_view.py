@@ -235,35 +235,25 @@ class AppView(View):
 
         self.close_game_button.x_margin = self.screen_resolution[0] - self.top_bar_height
         self.close_game_button.y_margin = self.screen_resolution[1] - self.top_bar_height
-        self.close_game_button.on_size_changed((self.top_bar_height, self.top_bar_height),
-                                               int(self.close_game_button.base_font_size_property
-                                                   * self.top_bar_height))
+        self.close_game_button.on_size_changed((self.top_bar_height, self.top_bar_height))
         self.fullscreen_button.x_margin = self.screen_resolution[0] - self.top_bar_height * 2 + 2
         self.fullscreen_button.y_margin = self.screen_resolution[1] - self.top_bar_height
-        self.fullscreen_button.on_size_changed((self.top_bar_height, self.top_bar_height),
-                                               int(self.fullscreen_button.base_font_size_property
-                                                   * self.top_bar_height))
+        self.fullscreen_button.on_size_changed((self.top_bar_height, self.top_bar_height))
         self.restore_button.x_margin = self.screen_resolution[0] - self.top_bar_height * 2 + 2
         self.restore_button.y_margin = self.screen_resolution[1] - self.top_bar_height
-        self.restore_button.on_size_changed((self.top_bar_height, self.top_bar_height),
-                                            int(self.restore_button.base_font_size_property * self.top_bar_height))
+        self.restore_button.on_size_changed((self.top_bar_height, self.top_bar_height))
         self.iconify_button.x_margin = self.screen_resolution[0] - self.top_bar_height * 3 + 4
         self.iconify_button.y_margin = self.screen_resolution[1] - self.top_bar_height
-        self.iconify_button.on_size_changed((self.top_bar_height, self.top_bar_height),
-                                            int(self.iconify_button.base_font_size_property * self.top_bar_height))
+        self.iconify_button.on_size_changed((self.top_bar_height, self.top_bar_height))
         self.open_settings_button.x_margin = self.screen_resolution[0] - self.bottom_bar_height
         self.open_settings_button.y_margin = 0
-        self.open_settings_button.on_size_changed((self.bottom_bar_height, self.bottom_bar_height),
-                                                  int(self.open_settings_button.base_font_size_property
-                                                      * self.bottom_bar_height))
+        self.open_settings_button.on_size_changed((self.bottom_bar_height, self.bottom_bar_height))
         self.en_locale_button.x_margin = 0
         self.en_locale_button.y_margin = self.screen_resolution[1] - self.top_bar_height
-        self.en_locale_button.on_size_changed((self.top_bar_height, self.top_bar_height),
-                                              int(self.en_locale_button.base_font_size_property * self.top_bar_height))
+        self.en_locale_button.on_size_changed((self.top_bar_height, self.top_bar_height))
         self.ru_locale_button.x_margin = self.top_bar_height - 2
         self.ru_locale_button.y_margin = self.screen_resolution[1] - self.top_bar_height
-        self.ru_locale_button.on_size_changed((self.top_bar_height, self.top_bar_height),
-                                              int(self.ru_locale_button.base_font_size_property * self.top_bar_height))
+        self.ru_locale_button.on_size_changed((self.top_bar_height, self.top_bar_height))
         for b in self.buttons:
             b.on_position_changed((b.x_margin, b.y_margin))
 

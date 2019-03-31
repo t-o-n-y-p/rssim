@@ -169,9 +169,7 @@ class ConstructorView(View):
         for j in range(CONSTRUCTOR_VIEW_ENVIRONMENT_CELLS):
             self.constructor_cells[ENVIRONMENT][j].on_change_screen_resolution(screen_resolution)
 
-        self.close_constructor_button.on_size_changed((self.bottom_bar_height, self.bottom_bar_height),
-                                                      int(self.close_constructor_button.base_font_size_property
-                                                          * self.bottom_bar_height))
+        self.close_constructor_button.on_size_changed((self.bottom_bar_height, self.bottom_bar_height))
         for b in self.buttons:
             b.on_position_changed((b.x_margin, b.y_margin))
 

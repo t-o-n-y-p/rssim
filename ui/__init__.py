@@ -315,14 +315,9 @@ class ConstructorCell:
             self.placeholder_label.y = self.position[1] + self.size[1] // 2
             self.placeholder_label.font_size = int(11 * self.size[1] / 40)
 
-        self.build_button.on_size_changed((self.size[1], self.size[1]),
-                                          int(self.build_button.base_font_size_property * self.size[1]))
-        self.enable_money_target_button.on_size_changed((self.size[1], self.size[1]),
-                                                        int(self.enable_money_target_button.base_font_size_property
-                                                           * self.size[1]))
-        self.disable_money_target_button.on_size_changed((self.size[1], self.size[1]),
-                                                         int(self.disable_money_target_button.base_font_size_property
-                                                            * self.size[1]))
+        self.build_button.on_size_changed((self.size[1], self.size[1]))
+        self.enable_money_target_button.on_size_changed((self.size[1], self.size[1]))
+        self.disable_money_target_button.on_size_changed((self.size[1], self.size[1]))
         self.build_button.x_margin = self.position[0] + self.size[0] - self.size[1]
         self.build_button.y_margin = self.position[1]
         self.enable_money_target_button.x_margin = self.position[0] + self.size[0] - self.size[1] * 2 + 2
