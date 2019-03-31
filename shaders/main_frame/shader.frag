@@ -354,28 +354,6 @@ bool is_notification_settings_button_border()
            || is_construction_completed_checkbox_border || is_enough_money_checkbox_border;
 }
 
-bool is_schedule_left_line(int line_width)
-/*
-    Returns "true" if pixel belongs to the left gradient line on schedule screen and "false" if it does not.
-    Input value:
-        int line_width - width of the gradient line
-*/
-{
-    return gl_FragCoord[0] >= top_left_cell[0] && gl_FragCoord[0] <= top_left_cell[0] + line_width - 1
-           && (gl_FragCoord[1] == top_left_cell[1] || gl_FragCoord[1] == top_left_cell[1] - 1);  // 2-pixel thick line
-}
-
-bool is_schedule_right_line(int line_width)
-/*
-    Returns "true" if pixel belongs to the right gradient line on schedule screen and "false" if it does not.
-    Input value:
-        int line_width - width of the gradient line
-*/
-{
-    return gl_FragCoord[0] >= top_right_cell[0] && gl_FragCoord[0] <= top_right_cell[0] + line_width - 1
-           && (gl_FragCoord[1] == top_left_cell[1] || gl_FragCoord[1] == top_left_cell[1] - 1);  // 2-pixel thick line
-}
-
 bool is_constructor_cell_border(int cell_width, int cell_height, int interval_between_cells_height)
 /*
     Returns "true" if pixel belongs to any cell border on constructor screen and "false" if it does not.
@@ -544,29 +522,7 @@ void main()
         if (schedule_opacity > 0)
         {
             float real_schedule_opacity = float(schedule_opacity) / 255.0 * 0.94;
-            // draw left gradient line
-            if (is_schedule_left_line(cell_width))
-            {
-                // distance from the line center
-                gradient_coeff = (float(top_left_cell[0]) + float(cell_width) / 2.0 - float(gl_FragCoord[0]))
-                / (float(cell_width) / 2.0);
-                // gradient color
-                schedule_coeff = (255.0 - abs(int(gradient_coeff * gradient_coeff * gradient_coeff * 255.0))) / 255.0;
-                schedule_result = vec4(vec3(schedule_coeff), real_schedule_opacity);
-            }
-            // draw right gradient line
-            else if (is_schedule_right_line(cell_width))
-            {
-                // distance from the line center
-                gradient_coeff = (float(top_right_cell[0]) + float(cell_width) / 2.0 - float(gl_FragCoord[0]))
-                / (float(cell_width) / 2.0);
-                // gradient color
-                schedule_coeff = (255.0 - abs(int(gradient_coeff * gradient_coeff * gradient_coeff * 255.0))) / 255.0;
-                schedule_result = vec4(vec3(schedule_coeff), real_schedule_opacity);
-            }
-            // background color for other pixels
-            else
-                schedule_result = vec4(vec3(0.0), real_schedule_opacity);
+            schedule_result = vec4(vec3(0.0), real_schedule_opacity);
         }
         // just transparent if schedule screen is not activated
         else

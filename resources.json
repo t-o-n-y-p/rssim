@@ -68,8 +68,8 @@
 		"ru": "УРОВЕНЬ  {0}"
 	},
 	"schedule_caption_string": {
-		"en": "Train #          Arrival           Departed from       Cars  Stop, m:s",
-		"ru": "№ поезда      Прибытие         Прибыл из       Длина    Стоянка"
+		"en": "Train #     Arrival           From         Cars     Stop",
+		"ru": "# поезда   Прибытие        Откуда   Длина  Стоянка"
 	},
 	"departed_from_string": {
 		"en": ["West City", "East City", "North-West City", "South-East City"],
