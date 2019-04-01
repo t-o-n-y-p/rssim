@@ -20,20 +20,16 @@ class SchedulerView(View):
 
         Properties:
             schedule_opacity                    general opacity of the schedule screen
-            schedule_top_left_line              position of schedule top left line label
-            schedule_departure_top_left_line    position of schedule top left line departure label
-            schedule_line_step_x                distance between two schedule rows
-            schedule_line_step_y                distance between two schedule columns
-            schedule_font_size                  font size for schedule table
-            schedule_left_caption               position of schedule caption for left column
-            schedule_caption_font_size          font size for schedule caption
-            train_labels    `                   schedule table labels
-            base_schedule                       generated train queue sorted by arrival time
+            schedule_left_caption_position      position for schedule table caption, left side
+            schedule_right_caption_position     position for schedule table caption, right side
+            schedule_caption_font_size          font size for schedule table caption
+            base_schedule                       generated train queue sorted by arrival time within an hour
             game_time                           current in-game time
             left_schedule_caption_label         label from caption for left schedule column
             right_schedule_caption_label        label from caption for right schedule column
             close_schedule_button               CloseScheduleButton object
             buttons                             list of all buttons
+            schedule_rows                       list of content rows on schedule screen
 
         :param user_db_cursor:                  user DB cursor (is used to execute user DB queries)
         :param config_db_cursor:                configuration DB cursor (is used to execute configuration DB queries)
@@ -56,7 +52,6 @@ class SchedulerView(View):
         self.schedule_right_caption_position = (0, 0)
         self.schedule_caption_font_size = 0
         self.on_read_ui_info()
-        self.train_labels = []
         self.base_schedule = None
         self.game_time = None
         self.left_schedule_caption_label = None

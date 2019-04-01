@@ -241,10 +241,10 @@ MAP_HEIGHT = 4096                               # full-size map height
 SCHEDULE_ROWS = 12                              # number of schedule rows on schedule screen
 SCHEDULE_COLUMNS = 2                            # number of schedule columns on schedule screen
 MINI_MAP_FADE_OUT_TIMER = 1.0                   # time since user releases mouse button after which mini-map disappears
-TRACKS = 0
-ENVIRONMENT = 1
-CONSTRUCTOR_VIEW_TRACK_CELLS = 4
-CONSTRUCTOR_VIEW_ENVIRONMENT_CELLS = 4
+TRACKS = 0                                      # matrix #0 stores tracks state
+ENVIRONMENT = 1                                 # matrix #1 stores environment tiers state
+CONSTRUCTOR_VIEW_TRACK_CELLS = 4                # number of cells for tracks on constructor screen
+CONSTRUCTOR_VIEW_ENVIRONMENT_CELLS = 4          # number of cells for environment tiers on constructor screen
 # colors
 GREY = (112, 112, 112, 255)                     # grey UI color
 ORANGE = (255, 127, 0, 255)                     # orange UI color
@@ -270,15 +270,6 @@ UNLOCK_AVAILABLE = 6                            # property #6 indicates if all u
 PRICE = 7                                       # property #7 indicates track/env. price
 LEVEL_REQUIRED = 8                              # property #8 indicates required level for this track/env.
 ENVIRONMENT_REQUIRED = 9                        # property #9 indicates required environment tier for this track
-# base_schedule matrix properties
-TRAIN_ID = 0                                    # property #0 indicates train identification number
-ARRIVAL_TIME = 1                                # property #1 indicates arrival time
-DIRECTION = 2                                   # property #2 indicates direction
-NEW_DIRECTION = 3                               # property #3 indicates new direction
-CARS = 4                                        # property #4 indicates number of cars
-STOP_TIME = 5                                   # property #5 indicates how much stop time left
-EXP = 6                                         # property #6 indicates how much exp the train gives
-MONEY = 7                                       # property #7 indicates how much money the train gives
 # ------------------- END CONSTANTS -------------------
 
 

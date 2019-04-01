@@ -16,6 +16,37 @@ class ConstructorView(View):
     Constructor object is responsible for building new tracks and station environment.
     """
     def __init__(self, user_db_cursor, config_db_cursor, surface, batches, groups):
+        """
+        Button click handlers:
+            on_close_constructor                on_click handler for close constructor button
+
+        Constructor cell actions handlers:
+            on_buy_construction_action          is activated when player buys construction
+            on_set_money_target_action          is activated when money target is activated by player
+            on_reset_money_target_action        is activated when money target is deactivated by player
+
+        Properties:
+            constructor_opacity                                 general opacity of constructor screen
+            construction_state_matrix                           tracks and environment state storage
+            money                                               current amount of money
+            close_constructor_button                            CloseConstructorButton object
+            buttons                                             list of all buttons
+            constructor_cells                                   track and environment cells on constructor screen
+            feature_unlocked_notification_enabled               indicates if notifications about track/tier unlock event
+                                                                are enabled
+            construction_completed_notification_enabled         indicates if notifications about track/tier construction
+                                                                ending event are enabled
+            money_target_activated                              indicates if money target for any construction
+                                                                is activated
+            money_target_cell_position                          column and row of constructor view cell
+                                                                the target was last activated
+
+        :param user_db_cursor:                  user DB cursor (is used to execute user DB queries)
+        :param config_db_cursor:                configuration DB cursor (is used to execute configuration DB queries)
+        :param surface:                         surface to draw all UI objects on
+        :param batches:                         batches to group all labels and sprites
+        :param groups:                          defines drawing layers (some labels and sprites behind others)
+        """
         def on_close_constructor(button):
             """
             Notifies controller that player has closed constructor screen.
@@ -25,18 +56,35 @@ class ConstructorView(View):
             self.controller.on_deactivate_view()
 
         def on_buy_construction_action(construction_type, row, entity_number):
+            """
+            Puts given entity under construction and deactivates money target if this cell was selected.
+
+            :param construction_type:       type of construction: track or environment
+            :param row:                     number of cell on constructor screen
+            :param entity_number:           number of track or environment tier
+            """
             self.controller.on_put_under_construction(construction_type, entity_number)
             if self.money_target_activated and self.money_target_cell_position == [construction_type, row]:
                 self.controller.on_deactivate_money_target()
                 self.controller.parent_controller.parent_controller.on_update_money_target(0)
 
         def on_set_money_target_action(construction_type, row, entity_number):
+            """
+            Enables and activates money target for given cell on constructor screen.
+
+            :param construction_type:       type of construction: track or environment
+            :param row:                     number of cell on constructor screen
+            :param entity_number:           number of track or environment tier
+            """
             self.controller.on_activate_money_target(construction_type, row)
             self.controller.parent_controller.parent_controller.on_update_money_target(
                 self.construction_state_matrix[construction_type][entity_number][PRICE]
             )
 
         def on_reset_money_target_action():
+            """
+            Disables and deactivates money target.
+            """
             self.controller.on_deactivate_money_target()
             self.controller.parent_controller.parent_controller.on_update_money_target(0)
 
@@ -174,6 +222,11 @@ class ConstructorView(View):
             b.on_position_changed((b.x_margin, b.y_margin))
 
     def on_update_money(self, money):
+        """
+        Updates bank account state to determine if player has enough money to buy something.
+
+        :param money:                   new bank account state
+        """
         self.money = money
         for j in range(CONSTRUCTOR_VIEW_TRACK_CELLS):
             self.constructor_cells[TRACKS][j].on_update_money(money)
@@ -182,6 +235,14 @@ class ConstructorView(View):
             self.constructor_cells[ENVIRONMENT][j].on_update_money(money)
 
     def on_update_construction_state(self, construction_state_matrix, construction_type, entity_number, game_time=0):
+        """
+        Updates state for given construction.
+
+        :param construction_state_matrix:       tracks and environment state storage
+        :param construction_type:               type of construction: track or environment
+        :param entity_number:                   number of track or environment tier
+        :param game_time:                       current in-game time
+        """
         self.construction_state_matrix = construction_state_matrix
         if construction_type == TRACKS:
             remaining_tracks = sorted(list(self.construction_state_matrix[TRACKS].keys()))
@@ -194,6 +255,13 @@ class ConstructorView(View):
 
     @view_is_active
     def on_unlock_construction(self, construction_type, entity_number):
+        """
+        Removes unlocked construction from constructor screen and updates all cells.
+
+        :param construction_type:               type of construction: track or environment
+        :param entity_number:                   number of track or environment tier
+        :return:
+        """
         if self.money_target_activated and self.money_target_cell_position[0] == construction_type \
                 and self.money_target_cell_position[1] > 0:
             self.money_target_cell_position[1] -= 1
@@ -242,6 +310,12 @@ class ConstructorView(View):
             self.constructor_cells[ENVIRONMENT][j].on_update_current_locale(self.current_locale)
 
     def on_activate_money_target(self, construction_type, row):
+        """
+        Activates money target on given cell.
+
+        :param construction_type:       type of construction: track or environment
+        :param row:                     number of cell on constructor screen
+        """
         self.money_target_activated = True
         self.money_target_cell_position = [construction_type, row]
         for i in range(len(self.constructor_cells)):
@@ -252,6 +326,9 @@ class ConstructorView(View):
                     self.constructor_cells[i][j].on_deactivate_money_target()
 
     def on_deactivate_money_target(self):
+        """
+        Deactivates money target for all cells.
+        """
         self.money_target_activated = False
         for i in range(len(self.constructor_cells)):
             for j in range(len(self.constructor_cells[i])):

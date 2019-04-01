@@ -284,10 +284,9 @@ class MapView(View):
 
     def on_unlock_track(self, track):
         """
-        Updates number of unlocked tracks.
+        Updates number of unlocked tracks, map and mini-map.
 
         :param track:                   track number
-        :return:
         """
         self.unlocked_tracks = track
         self.main_map = resource.image(f'full_map_{track}.dds')
@@ -304,6 +303,11 @@ class MapView(View):
                                         scale=self.mini_map_width / MAP_WIDTH)
 
     def on_unlock_environment(self, tier):
+        """
+        Updates number of unlocked environment tiers, map and mini-map.
+
+        :param tier:                    environment tier number
+        """
         self.unlocked_environment = tier
         self.environment = resource.image(f'full_map_e_{tier}.dds')
         if self.is_activated:
