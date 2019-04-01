@@ -1,3 +1,5 @@
+from logging import getLogger
+
 from pyglet.text import Label
 
 from i18n import I18N_RESOURCES
@@ -120,6 +122,7 @@ class ConstructorCell:
             self.disable_money_target_button.on_deactivate()
             self.on_buy_construction_action(self.construction_type, self.row, self.entity_number)
 
+        self.logger = getLogger(f'root.app.game.map.constructor.view.cell.{construction_type}.{row}')
         self.is_activated = False
         self.construction_type, self.row, self.config_db_cursor = construction_type, row, config_db_cursor
         self.surface, self.batches, self.groups, self.current_locale = surface, batches, groups, current_locale
@@ -355,6 +358,7 @@ class ConstructorCell:
 
 class ScheduleRow:
     def __init__(self, column, row, config_db_cursor, surface, batches, groups, current_locale):
+        self.logger = getLogger(f'root.app.game.map.scheduler.view.row.{column}.{row}')
         self.column, self.row, self.config_db_cursor = column, row, config_db_cursor
         self.surface, self.batches, self.groups, self.current_locale = surface, batches, groups, current_locale
         self.data = None
