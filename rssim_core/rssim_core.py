@@ -1,6 +1,3 @@
-"""
-Implements RSSim class - base class for game launch and main loop.
-"""
 from ctypes import c_long, windll
 from sqlite3 import connect
 from time import perf_counter

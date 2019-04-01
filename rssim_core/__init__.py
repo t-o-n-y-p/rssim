@@ -1,7 +1,3 @@
-"""
-__init__.py       implements functions to create all objects in the app.
-rssim_core.py     implements RSSim class - base class for game launch and main loop.
-"""
 from controller.app_controller import AppController
 from controller.game_controller import GameController
 from controller.map_controller import MapController
