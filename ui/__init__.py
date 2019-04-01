@@ -104,19 +104,88 @@ def row_is_not_active(fn):
 
 
 class ConstructorCell:
+    """
+    Implements base class for constructor cell.
+    """
     def __init__(self, construction_type, row, config_db_cursor, surface, batches, groups, current_locale,
                  on_buy_construction_action, on_set_money_target_action, on_reset_money_target_action):
+        """
+        Button click handlers:
+            on_set_money_target                 on_click handler for set money target button
+            on_reset_money_target               on_click handler for reset money target button
+            on_buy_construction                 on_click handler for build construction button
+
+        Properties:
+            logger                              telemetry instance
+            is_activated                        indicates if cell is active
+            construction_type                   type of construction: track or environment
+            row                                 number of cell on constructor screen
+            config_db_cursor                    configuration DB cursor (is used to execute configuration DB queries)
+            surface                             surface to draw all UI objects on
+            batches                             batches to group all labels and sprites
+            groups                              defines drawing layers (some labels and sprites behind others)
+            current_locale                      current locale selected by player
+            on_buy_construction_action          is activated when player buys construction
+            on_set_money_target_action          is activated when money target is activated by player
+            on_reset_money_target_action        is activated when money target is deactivated by player
+            entity_number                       number of track or environment tier
+            data                                one row of data from construction state matrix
+            screen_resolution                   current game window resolution
+            position                            position of the left bottom corner of the cell
+            size                                cell width and height
+            locked_label                        label for locked entity or not enough money case
+            title_key                           resource key for cell title
+            title_label                         label for cell title
+            description_keys                    dictionary of resource keys for cell description
+            description_label                   label for cell description
+            placeholder_key                     resource key for cell placeholder
+            placeholder_label                   label for cell placeholder
+            enable_money_target_button          SetMoneyTargetButton object
+            disable_money_target_button         ResetMoneyTargetButton object
+            build_button                        BuildConstructionButton object
+            buttons                             list of all buttons
+            money                               amount of money the player can operate
+            money_target_activated              indicates if money target is activated for this cell
+
+        :param construction_type:               type of construction: track or environment
+        :param row:                             number of cell on constructor screen
+        :param config_db_cursor:                configuration DB cursor (is used to execute configuration DB queries)
+        :param surface:                         surface to draw all UI objects on
+        :param batches:                         batches to group all labels and sprites
+        :param groups:                          defines drawing layers (some labels and sprites behind others)
+        :param current_locale:                  current locale selected by player
+        :param on_buy_construction_action:      is activated when player buys construction
+        :param on_set_money_target_action:      is activated when money target is activated by player
+        :param on_reset_money_target_action:    is activated when money target is deactivated by player
+        """
         def on_set_money_target(button):
+            """
+            Deactivates set target button, activated reset target button.
+            Notifies the view about money target update.
+
+            :param button:                      button that was clicked
+            """
             button.on_deactivate()
             button.paired_button.on_activate()
             self.on_set_money_target_action(self.construction_type, self.row, self.entity_number)
 
         def on_reset_money_target(button):
+            """
+            Deactivates reset target button, activated set target button.
+            Notifies the view about money target update.
+
+            :param button:                      button that was clicked
+            """
             button.on_deactivate()
             button.paired_button.on_activate()
             self.on_reset_money_target_action()
 
         def on_buy_construction(button):
+            """
+            Deactivates all buttons. Notifies the view about construction state update.
+
+            :param button:                      button that was clicked
+            """
             button.on_deactivate()
             self.enable_money_target_button.on_deactivate()
             self.disable_money_target_button.on_deactivate()
@@ -154,8 +223,15 @@ class ConstructorCell:
 
     @cell_is_active
     def on_assign_new_data(self, entity_number, data):
+        """
+        Fully updates data inside the cell.
+
+        :param entity_number:           number of the track or environment tier
+        :param data:                    one row of data from construction state matrix
+        """
         self.entity_number = entity_number
         self.data = data
+        # when data is empty, it means no more tracks/tiers are available, only placeholder is active
         if len(self.data) == 0 or self.entity_number == 0:
             if self.placeholder_label is None:
                 self.placeholder_label = Label(I18N_RESOURCES[self.placeholder_key][self.current_locale],
@@ -219,11 +295,22 @@ class ConstructorCell:
             self.on_update_build_button_state()
 
     def on_update_description_label(self):
+        """
+        Updates cell description based on data.
+        Different constructions have different states, so this method must be overridden by subclasses.
+        """
         pass
 
     @cell_is_active
     def on_update_state(self, data):
+        """
+        Updates buttons and description state.
+
+        :param data:                    one row of data from construction state matrix
+        """
         self.data = data
+        # when UNLOCK_AVAILABLE flag becomes enabled, we need to activate build button
+        # (or locked label if there is no enough money) and set money target button
         if self.data[UNLOCK_AVAILABLE]:
             self.on_update_build_button_state()
             if not self.money_target_activated and not self.enable_money_target_button.is_activated \
@@ -234,11 +321,19 @@ class ConstructorCell:
             self.on_update_description_label()
 
     def on_update_money(self, money):
+        """
+        Updates cell state based on available money.
+
+        :param money:                   amount of money the player can operate
+        """
         self.money = money
         self.on_update_build_button_state()
 
     @cell_is_active
     def on_update_build_button_state(self):
+        """
+        Updates locked label and build button state based on available money.
+        """
         if self.data[UNLOCK_AVAILABLE]:
             if self.money >= self.data[PRICE]:
                 self.build_button.on_activate()
@@ -260,10 +355,16 @@ class ConstructorCell:
 
     @cell_is_not_active
     def on_activate(self):
+        """
+        Activates the cell.
+        """
         self.is_activated = True
 
     @cell_is_active
     def on_deactivate(self):
+        """
+        Deactivates the cell, deletes all labels, deactivates all buttons.
+        """
         self.is_activated = False
         self.data = []
         if self.locked_label is not None:
@@ -285,8 +386,13 @@ class ConstructorCell:
         for b in self.buttons:
             b.on_deactivate()
 
-    def on_change_screen_resolution(self, new_screen_resolution):
-        self.screen_resolution = new_screen_resolution
+    def on_change_screen_resolution(self, screen_resolution):
+        """
+        Updates screen resolution and moves all labels and sprites to its new positions.
+
+        :param screen_resolution:       new screen resolution
+        """
+        self.screen_resolution = screen_resolution
         self.config_db_cursor.execute('''SELECT constructor_top_left_cell_x, constructor_top_left_cell_y
                                          FROM screen_resolution_config WHERE app_width = ? AND app_height = ?''',
                                       (self.screen_resolution[0], self.screen_resolution[1]))
@@ -329,6 +435,11 @@ class ConstructorCell:
         self.disable_money_target_button.y_margin = self.position[1]
 
     def on_update_current_locale(self, new_locale):
+        """
+        Updates current locale selected by user and all text labels.
+
+        :param new_locale:                      selected locale
+        """
         self.current_locale = new_locale
         if self.is_activated:
             if len(self.data) == 0 or self.entity_number == 0:
@@ -338,6 +449,9 @@ class ConstructorCell:
                 self.on_update_description_label()
 
     def on_activate_money_target(self):
+        """
+        Activates money target for the cell and all appropriate buttons.
+        """
         self.money_target_activated = True
         if self.is_activated and len(self.data) > 0:
             self.enable_money_target_button.on_deactivate()
@@ -347,6 +461,9 @@ class ConstructorCell:
                 self.disable_money_target_button.on_deactivate()
 
     def on_deactivate_money_target(self):
+        """
+        Deactivates money target for the cell and all appropriate buttons.
+        """
         self.money_target_activated = False
         if self.is_activated and len(self.data) > 0:
             self.disable_money_target_button.on_deactivate()
@@ -357,7 +474,36 @@ class ConstructorCell:
 
 
 class ScheduleRow:
+    """
+    Implements base class for schedule row.
+    """
     def __init__(self, column, row, config_db_cursor, surface, batches, groups, current_locale):
+        """
+        Properties:
+            logger                              telemetry instance
+            is_activated                        indicates if schedule row is activated
+            column                              number of schedule column
+            row                                 number of schedule row
+            config_db_cursor                    configuration DB cursor (is used to execute configuration DB queries)
+            surface                             surface to draw all UI objects on
+            batches                             batches to group all labels and sprites
+            groups                              defines drawing layers (some labels and sprites behind others)
+            current_locale                      current locale selected by player
+            data                                one row of data from base schedule matrix
+            main_sprite                         label for all params except departure location
+            arrival_sprite                      label for departure location
+            screen_resolution                   current game window resolution
+            position                            position of the middle point of schedule row
+            size                                schedule row width and height
+
+        :param column:                          number of schedule column
+        :param row:                             number of schedule row
+        :param config_db_cursor:                configuration DB cursor (is used to execute configuration DB queries)
+        :param surface:                         surface to draw all UI objects on
+        :param batches:                         batches to group all labels and sprites
+        :param groups:                          defines drawing layers (some labels and sprites behind others)
+        :param current_locale:                  current locale selected by player
+        """
         self.logger = getLogger(f'root.app.game.map.scheduler.view.row.{column}.{row}')
         self.column, self.row, self.config_db_cursor = column, row, config_db_cursor
         self.surface, self.batches, self.groups, self.current_locale = surface, batches, groups, current_locale
@@ -370,10 +516,16 @@ class ScheduleRow:
         self.is_activated = False
 
     def on_activate(self):
+        """
+        Activates the schedule row.
+        """
         self.is_activated = True
 
     @row_is_active
     def on_deactivate(self):
+        """
+        Deactivates the schedule row, deletes all labels, deactivates all buttons.
+        """
         self.is_activated = False
         self.data = []
         self.main_sprite.delete()
@@ -382,6 +534,11 @@ class ScheduleRow:
         self.arrival_sprite = None
 
     def on_assign_data(self, data):
+        """
+        Fully updates data inside the schedule row.
+
+        :param data:                    one row of data from base schedule matrix
+        """
         self.data = data
         if self.main_sprite is None:
             self.main_sprite \
@@ -413,8 +570,13 @@ class ScheduleRow:
         else:
             self.arrival_sprite.text = I18N_RESOURCES['departed_from_string'][self.current_locale][self.data[DIRECTION]]
 
-    def on_change_screen_resolution(self, new_screen_resolution):
-        self.screen_resolution = new_screen_resolution
+    def on_change_screen_resolution(self, screen_resolution):
+        """
+        Updates screen resolution and moves all labels and sprites to its new positions.
+
+        :param screen_resolution:       new screen resolution
+        """
+        self.screen_resolution = screen_resolution
         self.config_db_cursor.execute('''SELECT schedule_cell_width, schedule_cell_height 
                                          FROM screen_resolution_config WHERE app_width = ? AND app_height = ?''',
                                       (self.screen_resolution[0], self.screen_resolution[1]))
@@ -441,6 +603,11 @@ class ScheduleRow:
             self.arrival_sprite.font_size = self.size[1] // 5 * 3
 
     def on_update_current_locale(self, new_locale):
+        """
+        Updates current locale selected by user and all text labels.
+
+        :param new_locale:                      selected locale
+        """
         self.current_locale = new_locale
         if self.arrival_sprite is not None:
             self.arrival_sprite.text = I18N_RESOURCES['departed_from_string'][self.current_locale][self.data[DIRECTION]]

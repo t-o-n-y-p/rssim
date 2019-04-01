@@ -3,6 +3,10 @@ from i18n import I18N_RESOURCES, i18n_number_category
 
 
 class TrackCell(ConstructorCell):
+    """
+    Implements Track cell class for constructor screen.
+    For properties definition see base ConstructorCell class.
+    """
     def __init__(self, column, row, config_db_cursor, surface, batches, groups, current_locale,
                  on_buy_construction_action, on_set_money_target_action, on_reset_money_target_action):
         super().__init__(column, row, config_db_cursor, surface, batches, groups, current_locale,
@@ -20,6 +24,9 @@ class TrackCell(ConstructorCell):
                                      'unlock_condition_from_environment_track_description_string'}
 
     def on_update_description_label(self):
+        """
+        Updates track cell description based on data.
+        """
         if self.data[UNDER_CONSTRUCTION]:
             if self.data[CONSTRUCTION_TIME] >= FRAMES_IN_ONE_DAY:
                 days_left = self.data[CONSTRUCTION_TIME] // FRAMES_IN_ONE_DAY
