@@ -191,6 +191,11 @@ class MapController(Controller):
             self.crossovers[track_param_1][track_param_2][crossover_type].on_unlock()
 
     def on_unlock_environment(self, tier):
+        """
+        Notifies the model that given environment tier is unlocked,
+
+        :param tier:                    environment tier number
+        """
         self.model.on_unlock_environment(tier)
 
     def on_activate_view(self):

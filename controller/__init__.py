@@ -1,25 +1,3 @@
-"""
-This module implements all controllers.
-Controller is an element in MVC pattern which dispatches all possible events to models, views and child controllers.
-
-
-__init__.py                         implements decorators, constants and base Controller class
-app_controller.py                   implements App object controller
-constructor_controller.py           implements Constructor object controller
-crossover_controller.py             implements Crossover object controller
-dispatcher_controller.py            implements Dispatcher object controller
-fps_controller.py                   implements FPS object controller
-game_controller.py                  implements Game object controller
-map_controller.py                   implements Map object controller
-railroad_switch_controller.py       implements Railroad switch object controller
-scheduler_controller.py             implements Scheduler object controller
-settings_controller.py              implements Settings object controller
-signal_controller.py                implements Signal object controller
-train_controller.py                 implements Train object controller
-train_route_controller.py           implements Train route object controller
-"""
-
-
 def controller_is_active(fn):
     """
     Use this decorator to execute function only if controller is active.
@@ -77,7 +55,7 @@ def map_view_is_active(fn):
 
 
 # --------------------- CONSTANTS ---------------------
-FRAMES_IN_2_HOURS = 28800               # number of frames in 2 in-game hours
+FRAMES_IN_ONE_HOUR = 14400              # number of frames in 1 in-game hour
 ZOOM_OUT_SCALE_FACTOR = 0.5             # how much to scale all sprites when map is zoomed out
 ZOOM_IN_SCALE_FACTOR = 1.0              # how much to scale all sprites when map is zoomed in
 SECTION_TYPE = 0                        # meaning of section[] list's element 0

@@ -1,25 +1,3 @@
-"""
-This module implements all models.
-Model is an element in MVC pattern which includes all business logic.
-
-
-__init__.py                             implements decorators, constants and base Model class
-app_model.py                            implements App object model
-constructor_model.py                    implements Constructor object model
-crossover_model.py                      implements Crossover object model
-dispatcher_model.py                     implements Dispatcher object model
-fps_model.py                            implements FPS object model
-game_model.py                           implements Game object model
-map_model.py                            implements Map object model
-railroad_switch_model.py                implements Railroad switch object model
-scheduler_model.py                      implements Scheduler object model
-settings_model.py                       implements Settings object model
-signal_model.py                         implements Signal object model
-train_model.py                          implements Train object model
-train_route_model.py                    implements Train route object model
-"""
-
-
 def model_is_active(fn):
     """
     Use this decorator to execute function only if model is active.
@@ -55,11 +33,11 @@ def fullscreen_mode_available(fn):
     :param fn:                      function to decorate
     :return:                        decorator function
     """
-    def _turn_fullscren_mode_on_if_available(*args, **kwargs):
+    def _turn_fullscreen_mode_on_if_available(*args, **kwargs):
         if args[0].fullscreen_mode_available:
             fn(*args, **kwargs)
 
-    return _turn_fullscren_mode_on_if_available
+    return _turn_fullscreen_mode_on_if_available
 
 
 def maximum_money_not_reached(fn):

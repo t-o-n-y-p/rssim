@@ -44,7 +44,6 @@ class Notification:
         :param current_locale:                  currently selected locale
         :param caption_args:                    arguments for caption string in case they are required
         :param message_args:                    arguments for message string in case they are required
-        :return:                                notification handler
         """
         self.handler = CreateWindow(_wnd_class_instance, "Taskbar", WS_OVERLAPPED | WS_SYSMENU,
                                     0, 0, CW_USEDEFAULT, CW_USEDEFAULT,

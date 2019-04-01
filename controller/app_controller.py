@@ -115,7 +115,8 @@ class AppController(Controller):
 
     def on_activate_main_menu_view(self):
         """
-        Reserved for future use.
+        Notifies Game controller to activate the main menu screen
+        in case the settings screen was opened from main menu screen and then user closes settings screen.
         """
         pass
 
@@ -129,7 +130,7 @@ class AppController(Controller):
     def on_deactivate_current_view(self):
         """
         Determines where the user is located when Open settings button was clicked on:
-        either game screen or main menu screen (not implemented at the moment).
+        either game screen or main menu screen.
         Corresponding flag is enabled for Settings controller.
         """
         if self.game.view.is_activated:
@@ -149,18 +150,6 @@ class AppController(Controller):
         :param fps:                     new FPS value
         """
         self.fps.on_update_fps(fps)
-
-    def on_display_fps(self):
-        """
-        Reserved for future use.
-        """
-        self.fps.on_activate()
-
-    def on_hide_fps(self):
-        """
-        Reserved for future use.
-        """
-        self.fps.on_deactivate()
 
     def on_set_up_main_frame_shader_uniforms(self, shader):
         """

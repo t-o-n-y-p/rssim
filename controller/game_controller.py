@@ -66,14 +66,6 @@ class GameController(Controller):
         """
         self.model.on_resume_game()
 
-    def on_unlock_track(self, track):
-        """
-        Notifies the map the track is unlocked.
-
-        :param track:                   track number
-        """
-        self.map.on_unlock_track(track)
-
     def on_activate_view(self):
         """
         Activates the view and Map controller if user opened game screen in the app.
@@ -98,7 +90,7 @@ class GameController(Controller):
         """
         self.map.on_update_time(self.model.game_time)
         self.model.on_update_time()
-        if self.model.game_time % FRAMES_IN_2_HOURS == 0:
+        if self.model.game_time % (FRAMES_IN_ONE_HOUR * 2) == 0:
             self.on_save_and_commit_state()
 
     def on_save_and_commit_state(self):
@@ -126,7 +118,7 @@ class GameController(Controller):
 
     def on_add_exp(self, exp):
         """
-        Notifies the model about exp change when user gains exp.
+        Notifies the model about exp update when user gains exp.
 
         :param exp:                     amount of exp gained
         """
@@ -134,7 +126,7 @@ class GameController(Controller):
 
     def on_add_money(self, money):
         """
-        Notifies the model and Map controller about bank account state change when user gains money.
+        Notifies the model and Map controller about bank account state update when user gains money.
 
         :param money:                   amount of money gained
         """
@@ -143,7 +135,7 @@ class GameController(Controller):
 
     def on_pay_money(self, money):
         """
-        Notifies the model and Map controller about bank account state change when user pays money.
+        Notifies the model and Map controller about bank account state update when user pays money.
 
         :param money:                   amount of money spent
         """

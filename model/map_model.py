@@ -111,6 +111,12 @@ class MapModel(Model):
         self.view.on_unlock_track(track)
 
     def on_unlock_environment(self, tier):
+        """
+        Updates number of unlocked environment tiers.
+        Notifies the view about number of unlocked environment tiers update.
+
+        :param tier:                    environment tier number
+        """
         self.unlocked_environment = tier
         self.view.on_unlock_environment(tier)
 

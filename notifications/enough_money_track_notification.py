@@ -5,7 +5,7 @@ from notifications import Notification
 
 class EnoughMoneyTrackNotification(Notification):
     """
-    Implements Level up notification.
+    Implements Enough money notification for track.
     It is triggered when user has money target activated and has saved this amount of money.
     """
     def __init__(self):

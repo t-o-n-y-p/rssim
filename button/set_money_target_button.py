@@ -5,7 +5,7 @@ from button import Button
 
 class SetMoneyTargetButton(Button):
     """
-    Implements money target button on constructor screen.
+    Implements set money target button on constructor screen.
     For properties definition see base Button class.
     """
     def __init__(self, surface, batch, groups, on_click_action):

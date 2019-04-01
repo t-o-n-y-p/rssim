@@ -1,25 +1,3 @@
-"""
-This module implements all views.
-View is an element in MVC pattern which manages all sprites and labels in the app.
-
-
-__init__.py                             implements decorators, constants and base Model class
-app_view.py                             implements App object view
-constructor_view.py                     implements Constructor object view
-crossover_view.py                       implements Crossover object view
-dispatcher_view.py                      implements Dispatcher object view
-fps_view.py                             implements FPS object view
-game_view.py                            implements Game object view
-map_view.py                             implements Map object view
-railroad_switch_view.py                 implements Railroad switch object view
-scheduler_view.py                       implements Scheduler object view
-settings_view.py                        implements Settings object view
-signal_view.py                          implements Signal object view
-train_view.py                           implements Train object view
-train_route_view.py                     implements Train route object view
-"""
-
-
 from pyglet.window import mouse
 
 

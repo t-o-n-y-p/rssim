@@ -86,6 +86,12 @@ class ConstructorController(Controller):
         self.model.on_level_up(level)
 
     def on_put_under_construction(self, construction_type, entity_number):
+        """
+        Notifies model to put construction with given type and number under construction.
+
+        :param construction_type:       type of construction: track or environment
+        :param entity_number:           number of track or environment tier
+        """
         self.model.on_put_under_construction(construction_type, entity_number)
 
     def on_add_money(self, money):

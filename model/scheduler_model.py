@@ -26,10 +26,8 @@ class SchedulerModel(Model):
             schedule_cycle_length               length of schedule cycle at current level in frames
             frame_per_car                       property to calculate boarding time for train
                                                 based on level and number of cars
-            exp_per_car                         property to calculate exp for train
-                                                based on level and number of cars
-            money_per_car                       property to calculate money gained for train
-                                                based on level and number of cars
+            exp_to_money                        coefficient to calculate gained money
+                                                based on gained exp and current level
 
         :param user_db_connection:              connection to the user DB (stores game state and user-defined settings)
         :param user_db_cursor:                  user DB cursor (is used to execute user DB queries)
