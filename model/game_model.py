@@ -131,14 +131,17 @@ class GameModel(Model):
     @maximum_money_not_reached
     def on_add_money(self, money):
         """
+        Notifies the view to send notification if money target is reached.
         Updates bank account state change when user gains money.
         Notifies the view about state change.
 
         :param money:                   amount of money gained
         """
         if self.money_target > 0 and self.money < self.money_target <= self.money + money:
-            if self.controller.map.constructor.model.money_target_activated:
+            if self.controller.map.constructor.model.money_target_cell_position[0] == TRACKS:
                 self.view.on_send_enough_money_track_notification()
+            elif self.controller.map.constructor.model.money_target_cell_position[0] == ENVIRONMENT:
+                self.view.on_send_enough_money_environment_notification()
 
         self.money += money
         if self.money > MONEY_LIMIT:
