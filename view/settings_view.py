@@ -4,13 +4,13 @@ from ctypes import windll
 from pyglet.text import Label
 
 from view import *
-from button import create_two_state_button
-from button.accept_settings_button import AcceptSettingsButton
-from button.reject_settings_button import RejectSettingsButton
-from button.increment_windowed_resolution_button import IncrementWindowedResolutionButton
-from button.decrement_windowed_resolution_button import DecrementWindowedResolutionButton
-from button.checked_checkbox_button import CheckedCheckboxButton
-from button.unchecked_checkbox_button import UncheckedCheckboxButton
+from ui.button import create_two_state_button
+from ui.button.accept_settings_button import AcceptSettingsButton
+from ui.button.reject_settings_button import RejectSettingsButton
+from ui.button.increment_windowed_resolution_button import IncrementWindowedResolutionButton
+from ui.button.decrement_windowed_resolution_button import DecrementWindowedResolutionButton
+from ui.button.checked_checkbox_button import CheckedCheckboxButton
+from ui.button.unchecked_checkbox_button import UncheckedCheckboxButton
 from i18n import I18N_RESOURCES
 
 

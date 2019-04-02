@@ -4,7 +4,7 @@ from pyglet.text import Label
 
 from view import *
 from ui import ScheduleRow
-from button.close_schedule_button import CloseScheduleButton
+from ui.button.close_schedule_button import CloseScheduleButton
 from i18n import I18N_RESOURCES
 
 

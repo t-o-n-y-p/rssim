@@ -5,11 +5,11 @@ from pyglet.sprite import Sprite
 from pyglet import resource
 
 from view import *
-from button import create_two_state_button
-from button.zoom_in_button import ZoomInButton
-from button.zoom_out_button import ZoomOutButton
-from button.open_schedule_button import OpenScheduleButton
-from button.open_constructor_button import OpenConstructorButton
+from ui.button import create_two_state_button
+from ui.button.zoom_in_button import ZoomInButton
+from ui.button.zoom_out_button import ZoomOutButton
+from ui.button.open_schedule_button import OpenScheduleButton
+from ui.button.open_constructor_button import OpenConstructorButton
 
 
 class MapView(View):

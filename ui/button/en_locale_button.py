@@ -1,6 +1,6 @@
 from logging import getLogger
 
-from button import Button
+from ui.button import Button
 
 
 class ENLocaleButton(Button):

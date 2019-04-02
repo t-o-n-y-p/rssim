@@ -8,14 +8,14 @@ from win32gui import GetActiveWindow, GetWindowRect, SetWindowPos
 from win32con import HWND_TOP, SWP_NOREDRAW
 
 from view import *
-from button import create_two_state_button
-from button.close_game_button import CloseGameButton
-from button.iconify_button import IconifyButton
-from button.fullscreen_button import FullscreenButton
-from button.restore_button import RestoreButton
-from button.open_settings_button import OpenSettingsButton
-from button.en_locale_button import ENLocaleButton
-from button.ru_locale_button import RULocaleButton
+from ui.button import create_two_state_button
+from ui.button.close_game_button import CloseGameButton
+from ui.button.iconify_button import IconifyButton
+from ui.button.fullscreen_button import FullscreenButton
+from ui.button.restore_button import RestoreButton
+from ui.button.open_settings_button import OpenSettingsButton
+from ui.button.en_locale_button import ENLocaleButton
+from ui.button.ru_locale_button import RULocaleButton
 from textures import FLAG_RU, FLAG_GB
 
 

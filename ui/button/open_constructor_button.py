@@ -1,6 +1,6 @@
 from logging import getLogger
 
-from button import Button
+from ui.button import Button
 
 
 class OpenConstructorButton(Button):
@@ -13,5 +13,5 @@ class OpenConstructorButton(Button):
         self.to_activate_on_controller_init = True
         self.text = ''
         self.font_name = 'Webdings'
-        self.base_font_size_property = 34 / 80
+        self.base_font_size_property = 32 / 80
         self.on_click_action = on_click_action

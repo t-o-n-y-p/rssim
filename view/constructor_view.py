@@ -3,7 +3,7 @@ from logging import getLogger
 from view import *
 from ui.track_cell import TrackCell
 from ui.environment_cell import EnvironmentCell
-from button.close_constructor_button import CloseConstructorButton
+from ui.button.close_constructor_button import CloseConstructorButton
 from notifications.track_unlocked_notification import TrackUnlockedNotification
 from notifications.environment_unlocked_notification import EnvironmentUnlockedNotification
 from notifications.environment_construction_completed_notification import EnvironmentConstructionCompletedNotification

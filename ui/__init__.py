@@ -3,10 +3,10 @@ from logging import getLogger
 from pyglet.text import Label
 
 from i18n import I18N_RESOURCES
-from button import create_two_state_button
-from button.build_construction_button import BuildConstructionButton
-from button.set_money_target_button import SetMoneyTargetButton
-from button.reset_money_target_button import ResetMoneyTargetButton
+from ui.button import create_two_state_button
+from ui.button.build_construction_button import BuildConstructionButton
+from ui.button.set_money_target_button import SetMoneyTargetButton
+from ui.button.reset_money_target_button import ResetMoneyTargetButton
 
 
 # --------------------- CONSTANTS ---------------------

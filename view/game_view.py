@@ -6,9 +6,9 @@ from pyglet.text import Label
 from pyglet.resource import add_font
 
 from view import *
-from button import create_two_state_button
-from button.pause_game_button import PauseGameButton
-from button.resume_game_button import ResumeGameButton
+from ui.button import create_two_state_button
+from ui.button.pause_game_button import PauseGameButton
+from ui.button.resume_game_button import ResumeGameButton
 from notifications.level_up_notification import LevelUpNotification
 from notifications.enough_money_track_notification import EnoughMoneyTrackNotification
 from notifications.enough_money_environment_notification import EnoughMoneyEnvironmentNotification
