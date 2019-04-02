@@ -608,3 +608,36 @@ class ScheduleRow:
         self.current_locale = new_locale
         if self.arrival_sprite is not None:
             self.arrival_sprite.text = I18N_RESOURCES['departed_from_string'][self.current_locale][self.data[DIRECTION]]
+
+
+class Checkbox:
+    def __init__(self, column, row, config_db_cursor, surface, batches, groups, current_locale,
+                 on_uncheck_action, on_check_action, logger):
+        self.logger = logger
+        self.column, self.row, self.config_db_cursor = column, row, config_db_cursor
+        self.surface, self.batches, self.groups, self.current_locale = surface, batches, groups, current_locale
+        self.checked_checkbox_button, self.unchecked_checkbox_button \
+            = create_two_state_button(CheckedCheckboxButton(surface=self.surface,
+                                                            batch=self.batches['ui_batch'], groups=self.groups,
+                                                            on_click_action=on_uncheck_action),
+                                      UncheckedCheckboxButton(surface=self.surface,
+                                                              batch=self.batches['ui_batch'], groups=self.groups,
+                                                              on_click_action=on_check_action))
+        self.screen_resolution = (1280, 720)
+        self.height = 0
+        self.description_key = None
+        self.description_label = None
+        self.is_activated = False
+
+    def on_activate(self):
+        self.is_activated = True
+        self.description_label = None
+
+    def on_change_screen_resolution(self, screen_resolution):
+        """
+        Updates screen resolution and moves all labels and sprites to its new positions.
+
+        :param screen_resolution:       new screen resolution
+        """
+        self.screen_resolution = screen_resolution
+        self.height = int(72 / 1280 * self.screen_resolution[0]) // 2
