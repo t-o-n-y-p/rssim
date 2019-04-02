@@ -7,9 +7,9 @@ class TrackCell(ConstructorCell):
     Implements Track cell class for constructor screen.
     For properties definition see base ConstructorCell class.
     """
-    def __init__(self, column, row, config_db_cursor, surface, batches, groups, current_locale,
+    def __init__(self, column, row, surface, batches, groups, current_locale,
                  on_buy_construction_action, on_set_money_target_action, on_reset_money_target_action):
-        super().__init__(column, row, config_db_cursor, surface, batches, groups, current_locale,
+        super().__init__(column, row, surface, batches, groups, current_locale,
                          on_buy_construction_action, on_set_money_target_action, on_reset_money_target_action)
         self.title_key = 'title_track_string'
         self.placeholder_key = 'no_more_tracks_available_placeholder_string'

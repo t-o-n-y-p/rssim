@@ -63,8 +63,7 @@ class SchedulerView(View):
         for i in range(SCHEDULE_COLUMNS):
             column = []
             for j in range(SCHEDULE_ROWS):
-                column.append(ScheduleRow(i, j, self.config_db_cursor, self.surface, self.batches, self.groups,
-                                          self.current_locale))
+                column.append(ScheduleRow(i, j, self.surface, self.batches, self.groups, self.current_locale))
 
             self.schedule_rows.append(column)
 
@@ -176,21 +175,21 @@ class SchedulerView(View):
 
     def on_read_ui_info(self):
         """
-        Reads aff offsets and font size from the database.
+        Calculates all offsets and font sizes.
         """
-        self.config_db_cursor.execute('''SELECT schedule_cell_width, schedule_cell_height 
-                                         FROM screen_resolution_config WHERE app_width = ? AND app_height = ?''',
-                                      (self.screen_resolution[0], self.screen_resolution[1]))
-        size = self.config_db_cursor.fetchone()
-        self.config_db_cursor.execute('''SELECT schedule_top_left_row_middle_point_x, 
-                                         schedule_top_left_row_middle_point_y FROM screen_resolution_config 
-                                         WHERE app_width = ? AND app_height = ?''',
-                                      (self.screen_resolution[0], self.screen_resolution[1]))
-        top_left_row_position = self.config_db_cursor.fetchone()
-        self.config_db_cursor.execute('''SELECT schedule_interval_between_columns FROM screen_resolution_config 
-                                         WHERE app_width = ? AND app_height = ?''',
-                                      (self.screen_resolution[0], self.screen_resolution[1]))
-        schedule_interval_between_columns = self.config_db_cursor.fetchone()[0]
+        general_height = 4 * int(72 / 1280 * self.screen_resolution[0]) \
+                         + 3 * int(72 / 1280 * self.screen_resolution[0]) // 4
+        size = (int(6.875 * int(72 / 1280 * self.screen_resolution[0])),
+                general_height // (SCHEDULE_ROWS + 1))
+        schedule_interval_between_columns = int(72 / 1280 * self.screen_resolution[0]) // 4
+        top_left_row_position = (self.screen_resolution[0] // 2
+                                 - int(6.875 * int(72 / 1280 * self.screen_resolution[0])) // 2
+                                 - schedule_interval_between_columns // 2,
+                                 self.screen_resolution[1]
+                                 - ((self.screen_resolution[1] - int(72 / 1280 * self.screen_resolution[0]) // 2
+                                     - int(72 / 1280 * self.screen_resolution[0]) - general_height) // 2
+                                    + size[1] // 2 * 3)
+                                 - int(72 / 1280 * self.screen_resolution[0]) // 2)
         self.schedule_left_caption_position = (top_left_row_position[0], top_left_row_position[1] + size[1])
         self.schedule_right_caption_position = (top_left_row_position[0] + size[0] + schedule_interval_between_columns,
                                                 top_left_row_position[1] + size[1])

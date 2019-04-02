@@ -100,7 +100,7 @@ class ConstructorView(View):
         environment_cells = []
         for j in range(CONSTRUCTOR_VIEW_TRACK_CELLS):
             track_cells.append(
-                TrackCell(TRACKS, j, self.config_db_cursor, self.surface, self.batches, self.groups,
+                TrackCell(TRACKS, j, self.surface, self.batches, self.groups,
                           self.current_locale, on_buy_construction_action,
                           on_set_money_target_action, on_reset_money_target_action)
             )
@@ -108,7 +108,7 @@ class ConstructorView(View):
 
         for j in range(CONSTRUCTOR_VIEW_ENVIRONMENT_CELLS):
             environment_cells.append(
-                EnvironmentCell(ENVIRONMENT, j, self.config_db_cursor, self.surface, self.batches, self.groups,
+                EnvironmentCell(ENVIRONMENT, j, self.surface, self.batches, self.groups,
                                 self.current_locale, on_buy_construction_action,
                                 on_set_money_target_action, on_reset_money_target_action)
             )

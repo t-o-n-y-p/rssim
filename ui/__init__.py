@@ -7,9 +7,13 @@ from ui.button import create_two_state_button
 from ui.button.build_construction_button import BuildConstructionButton
 from ui.button.set_money_target_button import SetMoneyTargetButton
 from ui.button.reset_money_target_button import ResetMoneyTargetButton
+from ui.button.checked_checkbox_button import CheckedCheckboxButton
+from ui.button.unchecked_checkbox_button import UncheckedCheckboxButton
 
 
 # --------------------- CONSTANTS ---------------------
+SCHEDULE_ROWS = 12                              # number of schedule rows on schedule screen
+SCHEDULE_COLUMNS = 2                            # number of schedule columns on schedule screen
 # track and environment state matrix properties
 LOCKED = 0                                      # property #0 indicates if track/env. is locked
 UNDER_CONSTRUCTION = 1                          # property #1 indicates if track/env. is under construction
@@ -107,7 +111,7 @@ class ConstructorCell:
     """
     Implements base class for constructor cell.
     """
-    def __init__(self, construction_type, row, config_db_cursor, surface, batches, groups, current_locale,
+    def __init__(self, construction_type, row, surface, batches, groups, current_locale,
                  on_buy_construction_action, on_set_money_target_action, on_reset_money_target_action):
         """
         Button click handlers:
@@ -120,7 +124,6 @@ class ConstructorCell:
             is_activated                        indicates if cell is active
             construction_type                   type of construction: track or environment
             row                                 number of cell on constructor screen
-            config_db_cursor                    configuration DB cursor (is used to execute configuration DB queries)
             surface                             surface to draw all UI objects on
             batches                             batches to group all labels and sprites
             groups                              defines drawing layers (some labels and sprites behind others)
@@ -149,7 +152,6 @@ class ConstructorCell:
 
         :param construction_type:               type of construction: track or environment
         :param row:                             number of cell on constructor screen
-        :param config_db_cursor:                configuration DB cursor (is used to execute configuration DB queries)
         :param surface:                         surface to draw all UI objects on
         :param batches:                         batches to group all labels and sprites
         :param groups:                          defines drawing layers (some labels and sprites behind others)
@@ -193,7 +195,7 @@ class ConstructorCell:
 
         self.logger = getLogger(f'root.app.game.map.constructor.view.cell.{construction_type}.{row}')
         self.is_activated = False
-        self.construction_type, self.row, self.config_db_cursor = construction_type, row, config_db_cursor
+        self.construction_type, self.row = construction_type, row
         self.surface, self.batches, self.groups, self.current_locale = surface, batches, groups, current_locale
         self.on_buy_construction_action = on_buy_construction_action
         self.on_set_money_target_action = on_set_money_target_action
@@ -393,15 +395,12 @@ class ConstructorCell:
         :param screen_resolution:       new screen resolution
         """
         self.screen_resolution = screen_resolution
-        self.config_db_cursor.execute('''SELECT constructor_top_left_cell_x, constructor_top_left_cell_y
-                                         FROM screen_resolution_config WHERE app_width = ? AND app_height = ?''',
-                                      (self.screen_resolution[0], self.screen_resolution[1]))
-        fetched_coords = self.config_db_cursor.fetchone()
-        self.config_db_cursor.execute('''SELECT constructor_cell_width, constructor_cell_height, 
-                                         constructor_interval_between_cells
-                                         FROM screen_resolution_config WHERE app_width = ? AND app_height = ?''',
-                                      (self.screen_resolution[0], self.screen_resolution[1]))
-        self.size[0], self.size[1], interval_between_cells = self.config_db_cursor.fetchone()
+        self.size = (int(6.875 * int(72 / 1280 * self.screen_resolution[0])),
+                     int(72 / 1280 * self.screen_resolution[0]))
+        interval_between_cells = int(72 / 1280 * self.screen_resolution[0]) // 4
+        general_height = 4 * self.size[1] + 3 * interval_between_cells
+        fetched_coords = (self.screen_resolution[0] // 2 - self.size[0] - interval_between_cells // 2,
+                          self.screen_resolution[1] // 2 + general_height // 2 - self.size[1] // 4 - self.size[1] // 2)
         self.position = (fetched_coords[0] + self.construction_type * (self.size[0] + interval_between_cells),
                          fetched_coords[1] - self.row * (self.size[1] + interval_between_cells))
         if self.locked_label is not None:
@@ -477,14 +476,13 @@ class ScheduleRow:
     """
     Implements base class for schedule row.
     """
-    def __init__(self, column, row, config_db_cursor, surface, batches, groups, current_locale):
+    def __init__(self, column, row, surface, batches, groups, current_locale):
         """
         Properties:
             logger                              telemetry instance
             is_activated                        indicates if schedule row is activated
             column                              number of schedule column
             row                                 number of schedule row
-            config_db_cursor                    configuration DB cursor (is used to execute configuration DB queries)
             surface                             surface to draw all UI objects on
             batches                             batches to group all labels and sprites
             groups                              defines drawing layers (some labels and sprites behind others)
@@ -498,14 +496,13 @@ class ScheduleRow:
 
         :param column:                          number of schedule column
         :param row:                             number of schedule row
-        :param config_db_cursor:                configuration DB cursor (is used to execute configuration DB queries)
         :param surface:                         surface to draw all UI objects on
         :param batches:                         batches to group all labels and sprites
         :param groups:                          defines drawing layers (some labels and sprites behind others)
         :param current_locale:                  current locale selected by player
         """
         self.logger = getLogger(f'root.app.game.map.scheduler.view.row.{column}.{row}')
-        self.column, self.row, self.config_db_cursor = column, row, config_db_cursor
+        self.column, self.row = column, row
         self.surface, self.batches, self.groups, self.current_locale = surface, batches, groups, current_locale
         self.data = None
         self.main_sprite = None
@@ -577,19 +574,19 @@ class ScheduleRow:
         :param screen_resolution:       new screen resolution
         """
         self.screen_resolution = screen_resolution
-        self.config_db_cursor.execute('''SELECT schedule_cell_width, schedule_cell_height 
-                                         FROM screen_resolution_config WHERE app_width = ? AND app_height = ?''',
-                                      (self.screen_resolution[0], self.screen_resolution[1]))
-        self.size = self.config_db_cursor.fetchone()
-        self.config_db_cursor.execute('''SELECT schedule_top_left_row_middle_point_x, 
-                                         schedule_top_left_row_middle_point_y FROM screen_resolution_config 
-                                         WHERE app_width = ? AND app_height = ?''',
-                                      (self.screen_resolution[0], self.screen_resolution[1]))
-        top_left_row_position = self.config_db_cursor.fetchone()
-        self.config_db_cursor.execute('''SELECT schedule_interval_between_columns FROM screen_resolution_config 
-                                         WHERE app_width = ? AND app_height = ?''',
-                                      (self.screen_resolution[0], self.screen_resolution[1]))
-        schedule_interval_between_columns = self.config_db_cursor.fetchone()[0]
+        general_height = 4 * int(72 / 1280 * self.screen_resolution[0]) \
+                         + 3 * int(72 / 1280 * self.screen_resolution[0]) // 4
+        self.size = (int(6.875 * int(72 / 1280 * self.screen_resolution[0])),
+                     general_height // (SCHEDULE_ROWS + 1))
+        schedule_interval_between_columns = int(72 / 1280 * self.screen_resolution[0]) // 4
+        top_left_row_position = (self.screen_resolution[0] // 2
+                                 - int(6.875 * int(72 / 1280 * self.screen_resolution[0])) // 2
+                                 - schedule_interval_between_columns // 2,
+                                 self.screen_resolution[1]
+                                 - ((self.screen_resolution[1] - int(72 / 1280 * self.screen_resolution[0]) // 2
+                                     - int(72 / 1280 * self.screen_resolution[0]) - general_height) // 2
+                                    + self.size[1] // 2 * 3)
+                                 - int(72 / 1280 * self.screen_resolution[0]) // 2)
         self.position = (top_left_row_position[0] + self.column * (self.size[0] + schedule_interval_between_columns),
                          top_left_row_position[1] - self.row * self.size[1])
         if self.main_sprite is not None:
