@@ -1,5 +1,5 @@
 from ui import *
-from ui.constructor_cell import ConstructorCell
+from ui.constructor import ConstructorCell
 from i18n import I18N_RESOURCES, i18n_number_category
 
 

@@ -85,7 +85,7 @@ class Checkbox:
         row_step = 5 * self.height // 8
         column_step = self.screen_resolution[0] // 4
         self.anchor_left_center_point = (self.screen_resolution[0] // 4 + self.column * column_step,
-                                         medium_line - self.row * row_step)
+                                         medium_line + self.row * row_step)
         self.checked_checkbox_button.on_size_changed((self.height, self.height))
         self.unchecked_checkbox_button.on_size_changed((self.height, self.height))
         self.checked_checkbox_button.x_margin = self.anchor_left_center_point[0] \
