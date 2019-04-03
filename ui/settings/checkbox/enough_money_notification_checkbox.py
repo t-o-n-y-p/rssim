@@ -1,11 +1,11 @@
 from logging import getLogger
 
-from ui.checkbox import *
+from ui.settings.checkbox import *
 
 
-class ConstructionCompletedNotificationCheckbox(Checkbox):
+class EnoughMoneyNotificationCheckbox(Checkbox):
     def __init__(self, column, row, on_update_state_action, surface, batches, groups, current_locale):
         super().__init__(column, row, on_update_state_action, surface, batches, groups, current_locale,
                          logger=getLogger(
-                             'root.app.settings.view.checkbox.construction_completed_notification_checkbox'))
-        self.description_key = 'construction_completed_notification_description_string'
+                             'root.app.settings.view.checkbox.enough_money_notification_checkbox'))
+        self.description_key = 'enough_money_notification_description_string'

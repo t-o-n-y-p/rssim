@@ -1,6 +1,6 @@
 from logging import getLogger
 
-from ui.checkbox import *
+from ui.settings.checkbox import *
 
 
 class LevelUpNotificationCheckbox(Checkbox):
