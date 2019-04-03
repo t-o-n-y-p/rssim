@@ -112,7 +112,7 @@ class RSSim:
         self.groups['button_background'] = numbered_groups[10]
         self.groups['exp_money_time'] = numbered_groups[10]
         self.groups['button_text'] = numbered_groups[11]
-        self.main_frame_shader = from_files_names('shaders/main_frame/shader.vert', 'shaders/main_frame/shader.frag')
+        self.game_frame_shader = from_files_names('shaders/game_frame/shader.vert', 'shaders/game_frame/shader.frag')
         # create surface
         surface = Window(width=MIN_RESOLUTION_WIDTH, height=MIN_RESOLUTION_HEIGHT,
                          caption='Railway Station Simulator', style='borderless', fullscreen=False, vsync=False)
@@ -146,10 +146,7 @@ class RSSim:
             # draw mini map batch: mini map
             self.batches['mini_map_batch'].draw()
             # draw main frame batch with main frame shader: main app borders, button borders, UI screens background
-            self.main_frame_shader.use()
-            self.app.on_set_up_main_frame_shader_uniforms(self.main_frame_shader)
-            self.batches['main_frame'].draw()
-            self.main_frame_shader.clear()
+            self.app.on_apply_shaders_and_draw_vertices()
             # draw ui batch: text labels, buttons
             self.batches['ui_batch'].draw()
 

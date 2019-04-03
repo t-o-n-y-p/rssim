@@ -151,13 +151,8 @@ class AppController(Controller):
         """
         self.fps.on_update_fps(fps)
 
-    def on_set_up_main_frame_shader_uniforms(self, shader):
-        """
-        Each time main frame shader is activated, notifies the view to set up values for all its uniforms.
-
-        :param shader:                  main frame shader
-        """
-        self.view.on_set_up_main_frame_shader_uniforms(shader)
+    def on_apply_shaders_and_draw_vertices(self):
+        self.view.on_apply_shaders_and_draw_vertices()
 
     def on_update_current_locale(self, new_locale):
         """

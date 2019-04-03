@@ -7,48 +7,13 @@
         color_frag - calculated normalized RGBA color for the pixel
     Uniforms (all positions are in 2D Cartesian coordinates from the left bottom point):
         ivec2 screen_resolution - current resolution of the game window
-        ivec2 base_offset - sign-inverted game map offset; is used for viewport border on the mini-map
-        int bottom_bar_height - height of the bottom bar; is provided already calculated for performance reasons
         int top_bar_height - height of the top bar; is provided already calculated for performance reasons
-        ivec2 top_left_cell - position of the top left corner for the top left cell on constructor screen;
-            schedule also uses it for gradient line
-        ivec2 top_right_cell - position of the top left corner for the top right cell on constructor screen;
-            schedule also uses it for gradient line
-        int game_frame_opacity - opacity of the bottom bar, its edges, and button edges
-        int schedule_opacity - opacity of the schedule screen
-        int constructor_opacity - opacity of the constructor screen
-        int settings_is_activated - flag to determine if we need to draw button borders for settings screen
-        int zoom_buttons_activated - flag to determine if we need to draw map zoom button borders
-        int track_build_button_is_activated - flag to determine if we need to draw track build button borders
-        int mini_map_opacity - opacity of the mini-map
-        int zoom_out_activated - flag to determine map scale; is used for viewport border on the mini-map
-        ivec2 mini_map_position - position of the bottom left corner for the mini-map
-        int mini_map_width - mini-map width; is provided already calculated for performance reasons
-        int mini_map_height - minipmap height; is provided already calculated for performance reasons
-        int settings_opacity - general opacity for setings screen
 */
 #version 330 core
 layout(pixel_center_integer) in vec4 gl_FragCoord;
 out vec4 color_frag;
 uniform ivec2 screen_resolution = ivec2(1280, 720);
-uniform ivec2 base_offset = ivec2(0, 0);
-uniform int bottom_bar_height = 72;
 uniform int top_bar_height = 36;
-uniform ivec2 top_left_cell = ivec2(0, 0);
-uniform ivec2 top_right_cell = ivec2(0, 0);
-uniform int game_frame_opacity = 0;
-uniform int schedule_opacity = 0;
-uniform int constructor_opacity = 0;
-uniform int settings_is_activated = 0;
-uniform int zoom_buttons_activated = 1;
-uniform int track_build_button_is_activated = 0;
-uniform int track_money_target_button_is_activated = 0;
-uniform int mini_map_opacity = 0;
-uniform int zoom_out_activated = 0;
-uniform ivec2 mini_map_position = ivec2(0, 0);
-uniform int mini_map_width = 0;
-uniform int mini_map_height = 0;
-uniform int settings_opacity = 0;
 
 bool is_general_border()
 /*
@@ -89,325 +54,23 @@ bool is_inside_top_bar()
            && gl_FragCoord[1] <= screen_resolution[1] - 3;
 }
 
-bool is_inside_bottom_bar_or_bar_border()
-/*
-    Returns "true" if pixel belongs to the bottom bar or its top border and "false" if it does not.
-*/
-{
-    return gl_FragCoord[0] >= 2 && gl_FragCoord[0] <= screen_resolution[0] - 3  // between app window side borders
-           && gl_FragCoord[1] >= 2                                              // between bottom
-           && gl_FragCoord[1] <= bottom_bar_height - 1;                         // and (including) top borders
-}
-
-bool is_bottom_bar_border()
-/*
-    Returns "true" if pixel belongs to the bottom bar top border and "false" if it does not.
-*/
-{
-    return gl_FragCoord[1] == bottom_bar_height - 2 || gl_FragCoord[1] == bottom_bar_height - 1;
-}
-
-bool is_bottom_bar_button_border()
-/*
-    Returns "true" if pixel belongs to the bottom bar button borders and "false" if it does not.
-*/
-{
-    int margin = screen_resolution[0] - int(gl_FragCoord[0]);
-    int game_time_margin = int(3.5 * float(bottom_bar_height));
-    return gl_FragCoord[0] == bottom_bar_height - 1                               // constructor button border
-           || gl_FragCoord[0] == bottom_bar_height - 2
-           || margin == bottom_bar_height || margin == bottom_bar_height - 1      // settings button border
-           || margin == game_time_margin + 1 || margin == game_time_margin + 2    // pause/resume button right border
-           || margin == game_time_margin + bottom_bar_height                      // pause/resume button left border
-           || margin == game_time_margin + bottom_bar_height - 1
-           || margin == game_time_margin + 2 * bottom_bar_height - 2              // schedule button border
-           || margin == game_time_margin + 2 * bottom_bar_height - 3;
-}
-
-bool is_accept_reject_settings_button_border()
-/*
-    Returns "true" if pixel belongs to the accept/reject buttons borders and "false" if it does not.
-*/
-{
-    int margin = screen_resolution[0] - int(gl_FragCoord[0]);
-    return margin == bottom_bar_height || margin == bottom_bar_height - 1            // reject button side border
-           || margin == 2 * bottom_bar_height - 2                                    // accept button side border
-           || margin == 2 * bottom_bar_height - 3
-           || ((gl_FragCoord[1] == bottom_bar_height - 1                             // top border for both buttons
-                || gl_FragCoord[1] == bottom_bar_height - 2
-               ) && margin > 2 && margin < 2 * bottom_bar_height - 2
-              );
-}
-
-bool is_inside_main_part_of_the_window()
-/*
-    Returns "true" if pixel belongs to the large space between top and bottom bars and "false" if it does not.
-*/
-{
-    return gl_FragCoord[0] >= 2 && gl_FragCoord[0] <= screen_resolution[0] - 3   // between app window side borders
-           && gl_FragCoord[1] >= bottom_bar_height                               // between bottom and top bars
-           && gl_FragCoord[1] <= screen_resolution[1] - top_bar_height - 1;
-}
-
-bool is_zoom_button_border_activated()
-/*
-    Returns "true" if pixel belongs to the zoom button borders (and button is activated) and "false" if it does not.
-*/
-{
-    return zoom_buttons_activated == 1                                                            // button activated
-           && ((gl_FragCoord[1] >= screen_resolution[1] - (top_bar_height - 1 + top_bar_height * 2 - 1) + 2 // right
-                && gl_FragCoord[1] <= screen_resolution[1] - (top_bar_height - 1)
-                && (gl_FragCoord[0] == top_bar_height * 2 - 3 || gl_FragCoord[0] == top_bar_height * 2 - 4)
-               )
-               || (gl_FragCoord[0] >= 2 && gl_FragCoord[0] <= bottom_bar_height - 5                    // bottom
-                   && (gl_FragCoord[1] == screen_resolution[1] - (top_bar_height - 1 + top_bar_height * 2 - 1) + 2
-                       || gl_FragCoord[1] == screen_resolution[1] - (top_bar_height - 1 + top_bar_height * 2 - 2) + 2
-                      )
-                  )
-              );
-}
-
-bool is_mini_map_border()
-/*
-    Returns "true" if pixel belongs to the mini-map borders and "false" if it does not.
-*/
-{
-    return ((gl_FragCoord[0] == mini_map_position[0]                                        // left border
-             || gl_FragCoord[0] == mini_map_position[0] + mini_map_width - 1                // right border
-            ) && gl_FragCoord[1] >= mini_map_position[1]
-              && gl_FragCoord[1] <= mini_map_position[1] + mini_map_height - 1
-           ) || ((gl_FragCoord[1] == mini_map_position[1]                                   // bottom border
-                  || gl_FragCoord[1] == mini_map_position[1] + mini_map_height - 1          // top border
-                 ) && gl_FragCoord[0] >= mini_map_position[0]
-                   && gl_FragCoord[0] <= mini_map_position[0] + mini_map_width - 1
-                );
-}
-
-bool is_mini_map_viewport_border()
-/*
-    Returns "true" if pixel belongs to the mini-map viewport borders and "false" if it does not.
-*/
-{
-    /*
-        calculate viewport border positions based on map scale and mini-map position and size
-        margin_left - left border X position
-        margin_right - right border X position
-        margin_down - bottom border Y position
-        margin_up - top border Y position
-    */
-    int margin_left, margin_right, margin_down, margin_up;
-    if (zoom_out_activated == 1)
-    {
-        margin_left = int(float(base_offset[0]) / 4096.0 * mini_map_width);
-        margin_right = margin_left + int(float(screen_resolution[0] - 1) / 4096.0 * mini_map_width);
-        margin_down = int(float(base_offset[1]) / 2048.0 * mini_map_height);
-        margin_up = margin_down + int(float(screen_resolution[1] - 1) / 2048.0 * mini_map_height);
-    }
-    else
-    {
-        margin_left = int(float(base_offset[0]) / 8192.0 * mini_map_width);
-        margin_right = margin_left + int(float(screen_resolution[0] - 1) / 8192.0 * mini_map_width);
-        margin_down = int(float(base_offset[1]) / 4096.0 * mini_map_height);
-        margin_up = margin_down + int(float(screen_resolution[1] - 1) / 4096.0 * mini_map_height);
-    }
-    return ((gl_FragCoord[0] - mini_map_position[0] == margin_left                  // left border in place
-             || gl_FragCoord[0] - mini_map_position[0] == margin_right              // right border in place
-            ) && gl_FragCoord[1] - mini_map_position[1] >= margin_down              // between top and bottom borders
-              && gl_FragCoord[1] - mini_map_position[1] <= margin_up
-           ) || ((gl_FragCoord[1] - mini_map_position[1] == margin_down             // top border in place
-                  || gl_FragCoord[1] - mini_map_position[1] == margin_up            // bottom border in place
-                 ) && gl_FragCoord[0] - mini_map_position[0] >= margin_left         // between left and right borders
-                   && gl_FragCoord[0] - mini_map_position[0] <= margin_right
-                );
-}
-
-bool is_constructor_cell_border(int cell_width, int cell_height, int interval_between_cells_height)
-/*
-    Returns "true" if pixel belongs to any cell border on constructor screen and "false" if it does not.
-    Input values:
-        int cell_width - width of a cell
-        int cell_height - height of a cell
-        int interval_between_cells_height - vertical interval between cells
-*/
-{
-    for (int i = 0; i < 4; ++i)  // we have 4 cells in each column; right after first match function returns "true"
-    {
-        int y_offset = top_left_cell[1] - i * (cell_height + interval_between_cells_height) - int(gl_FragCoord[1]);
-        int x_left_offset = int(gl_FragCoord[0]) - top_left_cell[0];
-        int x_right_offset = int(gl_FragCoord[0]) - top_right_cell[0];
-        // top and bottom borders for the current cell (left and right)
-        if (((gl_FragCoord[0] >= top_left_cell[0] && gl_FragCoord[0] <= top_left_cell[0] + cell_width - 1)
-             || (gl_FragCoord[0] >= top_right_cell[0] && gl_FragCoord[0] <= top_right_cell[0] + cell_width - 1)
-            ) && (y_offset == 0 || y_offset == 1 || y_offset == cell_height - 1 || y_offset == cell_height - 2)
-           )
-            return true;
-
-        // left and right borders for the current cell (left and right)
-        if (gl_FragCoord[1] >= top_left_cell[1] - i * (cell_height + interval_between_cells_height) - (cell_height - 1)
-            && gl_FragCoord[1] <= top_left_cell[1] - i * (cell_height + interval_between_cells_height)
-            && (x_left_offset == 0 || x_left_offset == 1
-                || x_left_offset == cell_width - 1 || x_left_offset == cell_width - 2
-                || x_right_offset == 0 || x_right_offset == 1
-                || x_right_offset == cell_width - 1 || x_right_offset == cell_width - 2
-               )
-           )
-            return true;
-    }
-    return false;    // if no matches were found
-}
-
-bool is_build_track_button_border_activated(int cell_width, int cell_height)
-/*
-    Returns "true" if pixel belongs to track build button border on constructor screen and "false" if it does not.
-    Input values:
-        int cell_width - width of a cell
-        int cell_height - height of a cell
-*/
-{
-    int x_left_offset = int(gl_FragCoord[0]) - top_left_cell[0];
-    return gl_FragCoord[1] >= top_left_cell[1] - (cell_height - 1)       // inside the cell from bottom to top
-           && gl_FragCoord[1] <= top_left_cell[1]
-           && (track_build_button_is_activated == 1
-               && (x_left_offset == cell_width - cell_height             // 2-pixel thick line
-                   || x_left_offset == cell_width - cell_height + 1
-                  )
-              );
-}
-
-bool is_track_money_target_button_border_activated(int cell_width, int cell_height)
-/*
-    Returns "true" if pixel belongs to track money target button border on constructor screen
-    and "false" if it does not.
-    Input values:
-        int cell_width - width of a cell
-        int cell_height - height of a cell
-*/
-{
-    int x_left_offset = int(gl_FragCoord[0]) - top_left_cell[0];
-    return gl_FragCoord[1] >= top_left_cell[1] - (cell_height - 1)       // inside the cell from bottom to top
-           && gl_FragCoord[1] <= top_left_cell[1]
-           && (track_money_target_button_is_activated == 1
-               && (x_left_offset == cell_width - 2 * cell_height + 2     // 2-pixel thick left border
-                   || x_left_offset == cell_width - 2 * cell_height + 3
-                   || x_left_offset == cell_width - cell_height          // 2-pixel thick right border
-                   || x_left_offset == cell_width - cell_height + 1
-                  )
-              );
-}
-
 void main()
 /*
     MAIN SHADER FUNCTION
     Calculates intermediate color for all possible cases and mixes it
 */
 {
+    float top_bar_opacity = 0.94;
     // draw app window border and top bar border
     if (is_general_border())
         color_frag = vec4(1.0, 0.0, 0.0, 1.0);
 
     // fill top bar with color and draw top bar buttons borders
-    if (is_inside_top_bar())
+    else if (is_inside_top_bar())
         if (is_top_bar_button_border())
             color_frag = vec4(1.0, 0.0, 0.0, 1.0);
         else
-            color_frag = vec4(vec3(0.0), 0.94);
-
-    // calculate bottom bar color using game frame opacity and settings state
-    if (is_inside_bottom_bar_or_bar_border())
-    {
-        vec4 game_frame_result, settings_result;
-        if (game_frame_opacity > 0)
-        {
-            float real_game_frame_border_opacity = float(game_frame_opacity) / 255.0;
-            float real_game_frame_opacity = float(game_frame_opacity) / 255.0 * 0.94;
-            // draw bottom bar border
-            if (is_bottom_bar_border())
-                game_frame_result = vec4(1.0, 0.0, 0.0, real_game_frame_border_opacity);
-            else
-                // draw bottom bar buttons borders
-                if (is_bottom_bar_button_border())
-                    game_frame_result = vec4(1.0, 0.0, 0.0, real_game_frame_border_opacity);
-                // fill bottom bar with color
-                else
-                    game_frame_result = vec4(vec3(0.0), real_game_frame_opacity);
-        }
-        // just transparent if there is not bottom bar on the screen
-        else
-            game_frame_result = vec4(0.0);
-
-        // draw accert/reject settings buttons borders if settings screen is activated
-        if (settings_is_activated == 1 && is_accept_reject_settings_button_border())
-            settings_result = vec4(1.0, 0.0, 0.0, 1.0);
-        else
-            settings_result = vec4(0.0);
-
-        // mix game frame and settings results proportionally
-        color_frag = game_frame_result * float(game_frame_opacity) / 255.0 + settings_result;
-    }
-
-    // calculate main part of the window using results for every possible screen
-    if (is_inside_main_part_of_the_window())
-    {
-        vec4 schedule_result, constructor_result, zoom_buttons_result, settings_result, mini_map_result;
-        float real_constructor_opacity = float(constructor_opacity) / 255.0 * 0.94;
-        float gradient_coeff, schedule_coeff;
-        int cell_height = int(0.05625 * float(screen_resolution[0]));
-        int cell_width = int(6.875 * float(cell_height));
-        int interval_between_cells_height = int(0.25 * float(cell_height));
-        // draw zoom button borders
-        if (is_zoom_button_border_activated())
-            zoom_buttons_result = vec4(1.0, 0.0, 0.0, 1.0);
-        else
-            zoom_buttons_result = vec4(0.0);
-
-        if (mini_map_opacity > 0)
-        {
-            float real_mini_map_opacity = float(mini_map_opacity) / 255.0;
-            // draw black mini-map border
-            if (is_mini_map_border())
-                mini_map_result = vec4(vec3(0.0), real_mini_map_opacity);
-            else
-                mini_map_result = vec4(0.0);
-
-            // draw mini-map viewport border
-            if (is_mini_map_viewport_border())
-                mini_map_result = vec4(1.0, 0.5, 0.0, real_mini_map_opacity);
-        }
-        // just transparent if there is no mini-map on the screen
-        else
-            mini_map_result = vec4(0.0);
-
-        if (settings_is_activated == 1)
-            settings_result = vec4(vec3(0.0), settings_opacity);
-        else
-            settings_result = vec4(0.0);
-
-        if (schedule_opacity > 0)
-        {
-            float real_schedule_opacity = float(schedule_opacity) / 255.0 * 0.94;
-            schedule_result = vec4(vec3(0.0), real_schedule_opacity);
-        }
-        // just transparent if schedule screen is not activated
-        else
-            schedule_result = vec4(0.0);
-
-        if (constructor_opacity > 0)
-            // draw cells and button borders on constructor screen
-            if (is_constructor_cell_border(cell_width, cell_height, interval_between_cells_height)
-                || is_build_track_button_border_activated(cell_width, cell_height)
-                || is_track_money_target_button_border_activated(cell_width, cell_height)
-               )
-                constructor_result = vec4(1.0, 0.0, 0.0, real_constructor_opacity);
-            // background color for other pixels
-            else
-                constructor_result = vec4(vec3(0.0), real_constructor_opacity);
-        // just transparent if constructor screen is not activated
-        else
-            constructor_result = vec4(0.0);
-
-        // mix all results proportionally
-        color_frag = schedule_result * float(schedule_opacity) / 255.0
-        + constructor_result * float(constructor_opacity) / 255.0
-        + zoom_buttons_result + settings_result + mini_map_result * float(mini_map_opacity) / 255.0;
-    }
+            color_frag = vec4(vec3(0.0), top_bar_opacity);
+    else
+        color_frag = vec4(0.0);
 }

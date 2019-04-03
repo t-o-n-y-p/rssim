@@ -4,6 +4,7 @@ from pyglet.image import load
 from pyglet.sprite import Sprite
 from pyglet.text import Label
 from pyglet.resource import add_font
+from pyglet.gl import GL_QUADS
 
 from view import *
 from ui.button import create_two_state_button
@@ -112,6 +113,7 @@ class GameView(View):
         self.level_up_notification_enabled, self.enough_money_notification_enabled = self.user_db_cursor.fetchone()
         self.level_up_notification_enabled = bool(self.level_up_notification_enabled)
         self.enough_money_notification_enabled = bool(self.enough_money_notification_enabled)
+        self.game_frame_sprite = None
 
     def on_update(self):
         """
@@ -152,6 +154,11 @@ class GameView(View):
         Activates the view and creates all sprites and labels.
         """
         self.is_activated = True
+        if self.game_frame_sprite is None:
+            self.game_frame_sprite\
+                = self.batches['main_frame'].add(4, GL_QUADS, self.groups['main_frame'],
+                                                 ('v2f/static', (-1.0, -1.0, -1.0, 1.0, 1.0, 1.0, 1.0, -1.0)))
+
         if self.progress_bar_exp_inactive is None:
             self.progress_bar_exp_inactive = Sprite(self.progress_bar_inactive_image,
                                                     x=self.exp_offset,
@@ -218,6 +225,8 @@ class GameView(View):
         Deactivates the view and destroys all labels and buttons.
         """
         self.is_activated = False
+        self.game_frame_sprite.delete()
+        self.game_frame_sprite = None
         self.level_label.delete()
         self.level_label = None
         self.money_label.delete()

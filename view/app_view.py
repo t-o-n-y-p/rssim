@@ -6,6 +6,7 @@ from pyglet.gl import GL_QUADS
 from win32api import GetCursorPos
 from win32gui import GetActiveWindow, GetWindowRect, SetWindowPos
 from win32con import HWND_TOP, SWP_NOREDRAW
+from pyshaders import from_files_names
 
 from view import *
 from ui.button import create_two_state_button
@@ -163,6 +164,7 @@ class AppView(View):
         self.on_mouse_press_handlers.append(self.handle_mouse_press)
         self.on_mouse_release_handlers.append(self.handle_mouse_release)
         self.on_mouse_drag_handlers.append(self.handle_mouse_drag)
+        self.main_frame_shader = from_files_names('shaders/main_frame/shader.vert', 'shaders/main_frame/shader.frag')
 
     @view_is_not_active
     def on_activate(self):
@@ -323,42 +325,9 @@ class AppView(View):
                      self.game_window_position[2] - self.game_window_position[0],
                      self.game_window_position[3] - self.game_window_position[1], SWP_NOREDRAW)
 
-    def on_set_up_main_frame_shader_uniforms(self, shader):
-        """
-        Each time main frame shader is activated we need to set up values for all its uniforms.
-
-        :param shader:                  main frame shader
-        """
-        shader.uniforms.screen_resolution = self.screen_resolution
-        shader.uniforms.base_offset = ((-1) * self.controller.game.map.view.base_offset[0],
-                                       (-1) * self.controller.game.map.view.base_offset[1])
-        shader.uniforms.bottom_bar_height = self.bottom_bar_height
-        shader.uniforms.top_bar_height = self.top_bar_height
-        shader.uniforms.top_left_cell \
-            = (self.controller.game.map.constructor.view.constructor_cells[0][0].position[0],
-               self.controller.game.map.constructor.view.constructor_cells[0][0].position[1]
-               + self.controller.game.map.constructor.view.constructor_cells[0][0].size[1] - 1)
-        shader.uniforms.top_right_cell \
-            = (self.controller.game.map.constructor.view.constructor_cells[1][0].position[0],
-               self.controller.game.map.constructor.view.constructor_cells[1][0].position[1]
-               + self.controller.game.map.constructor.view.constructor_cells[1][0].size[1] - 1)
-        shader.uniforms.game_frame_opacity = self.controller.game.view.game_frame_opacity
-        shader.uniforms.schedule_opacity = self.controller.game.map.scheduler.view.schedule_opacity
-        shader.uniforms.constructor_opacity = self.controller.game.map.constructor.view.constructor_opacity
-        shader.uniforms.settings_is_activated = int(self.controller.settings.view.is_activated)
-        shader.uniforms.zoom_buttons_activated \
-            = int(self.controller.game.map.view.zoom_in_button.is_activated
-                  or self.controller.game.map.view.zoom_out_button.is_activated)
-        shader.uniforms.track_build_button_is_activated \
-            = int(self.controller.game.map.constructor.view.constructor_cells[0][0].build_button.is_activated)
-        shader.uniforms.track_money_target_button_is_activated \
-            = int(self.controller.game.map.constructor.view.constructor_cells[0][0]
-                  .enable_money_target_button.is_activated
-                  or self.controller.game.map.constructor.view.constructor_cells[0][0]
-                  .disable_money_target_button.is_activated)
-        shader.uniforms.mini_map_opacity = self.controller.game.map.view.mini_map_opacity
-        shader.uniforms.zoom_out_activated = int(self.controller.game.map.view.zoom_out_activated)
-        shader.uniforms.mini_map_position = self.controller.game.map.view.mini_map_position
-        shader.uniforms.mini_map_width = self.controller.game.map.view.mini_map_width
-        shader.uniforms.mini_map_height = self.controller.game.map.view.mini_map_height
-        shader.uniforms.settings_opacity = self.controller.settings.view.settings_opacity
+    def on_apply_shaders_and_draw_vertices(self):
+        self.main_frame_shader.use()
+        self.main_frame_shader.uniforms.screen_resolution = self.screen_resolution
+        self.main_frame_shader.uniforms.top_bar_height = self.top_bar_height
+        self.main_frame_sprite.draw(GL_QUADS)
+        self.main_frame_shader.clear()
