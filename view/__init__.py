@@ -237,6 +237,14 @@ def construction_completed_notification_enabled(fn):
     return _send_notification_if_construction_completed_notification_enabled
 
 
+def game_frame_opacity_exists(fn):
+    def _handle_if_game_frame_opacity_is_positive(*args, **kwargs):
+        if args[0].game_frame_opacity > 0:
+            fn(*args, **kwargs)
+
+    return _handle_if_game_frame_opacity_is_positive
+
+
 # --------------------- CONSTANTS ---------------------
 MAP_WIDTH = 8192                                # full-size map width
 MAP_HEIGHT = 4096                               # full-size map height

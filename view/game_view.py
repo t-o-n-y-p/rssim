@@ -5,6 +5,7 @@ from pyglet.sprite import Sprite
 from pyglet.text import Label
 from pyglet.resource import add_font
 from pyglet.gl import GL_QUADS
+from pyshaders import from_files_names
 
 from view import *
 from ui.button import create_two_state_button
@@ -114,6 +115,7 @@ class GameView(View):
         self.level_up_notification_enabled = bool(self.level_up_notification_enabled)
         self.enough_money_notification_enabled = bool(self.enough_money_notification_enabled)
         self.game_frame_sprite = None
+        self.game_frame_shader = from_files_names('shaders/game_frame/shader.vert', 'shaders/game_frame/shader.frag')
 
     def on_update(self):
         """
@@ -128,6 +130,10 @@ class GameView(View):
 
         if not self.is_activated and self.game_frame_opacity > 0:
             self.game_frame_opacity -= 15
+            if self.game_frame_opacity <= 0:
+                self.game_frame_sprite.delete()
+                self.game_frame_sprite = None
+
             self.progress_bar_exp_inactive.opacity -= 15
             if self.progress_bar_exp_inactive.opacity <= 0:
                 self.progress_bar_exp_inactive.delete()
@@ -225,8 +231,6 @@ class GameView(View):
         Deactivates the view and destroys all labels and buttons.
         """
         self.is_activated = False
-        self.game_frame_sprite.delete()
-        self.game_frame_sprite = None
         self.level_label.delete()
         self.level_label = None
         self.money_label.delete()
@@ -421,3 +425,12 @@ class GameView(View):
         :param notification_state:              new notification state defined by player
         """
         self.enough_money_notification_enabled = notification_state
+
+    @game_frame_opacity_exists
+    def on_apply_shaders_and_draw_vertices(self):
+        self.game_frame_shader.use()
+        self.game_frame_shader.uniforms.screen_resolution = self.screen_resolution
+        self.game_frame_shader.uniforms.bottom_bar_height = self.bottom_bar_height
+        self.game_frame_shader.uniforms.game_frame_opacity = self.game_frame_opacity
+        self.game_frame_sprite.draw(GL_QUADS)
+        self.game_frame_shader.clear()

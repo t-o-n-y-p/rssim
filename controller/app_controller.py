@@ -153,6 +153,7 @@ class AppController(Controller):
 
     def on_apply_shaders_and_draw_vertices(self):
         self.view.on_apply_shaders_and_draw_vertices()
+        self.game.on_apply_shaders_and_draw_vertices()
 
     def on_update_current_locale(self, new_locale):
         """

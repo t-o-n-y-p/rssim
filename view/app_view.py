@@ -325,6 +325,7 @@ class AppView(View):
                      self.game_window_position[2] - self.game_window_position[0],
                      self.game_window_position[3] - self.game_window_position[1], SWP_NOREDRAW)
 
+    @view_is_active
     def on_apply_shaders_and_draw_vertices(self):
         self.main_frame_shader.use()
         self.main_frame_shader.uniforms.screen_resolution = self.screen_resolution

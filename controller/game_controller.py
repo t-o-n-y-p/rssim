@@ -196,3 +196,6 @@ class GameController(Controller):
         :param notification_state:              new notification state defined by player
         """
         self.view.on_change_enough_money_notification_state(notification_state)
+
+    def on_apply_shaders_and_draw_vertices(self):
+        self.view.on_apply_shaders_and_draw_vertices()

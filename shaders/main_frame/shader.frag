@@ -60,7 +60,7 @@ void main()
     Calculates intermediate color for all possible cases and mixes it
 */
 {
-    float top_bar_opacity = 0.94;
+    float top_bar_opacity = 0.97;
     // draw app window border and top bar border
     if (is_general_border())
         color_frag = vec4(1.0, 0.0, 0.0, 1.0);
