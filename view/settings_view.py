@@ -85,6 +85,8 @@ class SettingsView(View):
                                                            groups=self.groups, on_click_action=on_reject_changes)
         self.buttons.append(self.reject_settings_button)
         self.buttons.extend(self.screen_resolution_control.buttons)
+        self.buttons.extend(self.display_fps_checkbox.buttons)
+        self.buttons.extend(self.notifications_checkbox_group.buttons)
 
     def on_update(self):
         """

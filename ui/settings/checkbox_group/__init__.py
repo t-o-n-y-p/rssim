@@ -24,6 +24,8 @@ class CheckboxGroup:
                                        x=self.anchor_left_center_point[0] + self.screen_resolution[0] // 4,
                                        y=self.anchor_left_center_point[1], anchor_x='center', anchor_y='center',
                                        batch=self.batches['ui_batch'], group=self.groups['button_text'])
+        for checkbox in self.checkboxes:
+            checkbox.on_activate()
 
     def on_init_state(self, checkbox_state_list):
         for i in range(len(self.checkboxes)):

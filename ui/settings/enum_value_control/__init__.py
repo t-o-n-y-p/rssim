@@ -56,7 +56,7 @@ class EnumValueControl:
         self.description_label = Label(I18N_RESOURCES[self.description_key][self.current_locale],
                                        font_name='Arial', font_size=self.height // 5 * 2,
                                        x=self.anchor_center_point[0], y=self.anchor_center_point[1],
-                                       anchor_x='left', anchor_y='center',
+                                       anchor_x='center', anchor_y='center',
                                        batch=self.batches['ui_batch'], group=self.groups['button_text'])
 
     def on_deactivate(self):
@@ -91,7 +91,7 @@ class EnumValueControl:
         self.height = int(72 / 1280 * self.screen_resolution[0]) // 2
         row_step = 5 * self.height // 8
         column_step = self.screen_resolution[0] // 4
-        self.anchor_center_point = (self.screen_resolution[0] // 4 + self.column * column_step,
+        self.anchor_center_point = (self.screen_resolution[0] // 2 + self.column * column_step,
                                     medium_line + self.row * row_step)
         if self.description_label is not None:
             self.description_label.x = self.anchor_center_point[0]
@@ -105,10 +105,10 @@ class EnumValueControl:
 
         self.increment_button.on_size_changed((self.height, self.height))
         self.decrement_button.on_size_changed((self.height, self.height))
-        self.increment_button.x_margin = self.anchor_center_point[0] - 3 * self.screen_resolution[0] // 32 \
+        self.increment_button.x_margin = self.anchor_center_point[0] + 3 * self.screen_resolution[0] // 32 \
                                          - self.height // 2
         self.increment_button.y_margin = self.anchor_center_point[1] - row_step * 2 - self.height // 2
-        self.decrement_button.x_margin = self.anchor_center_point[0] + 3 * self.screen_resolution[0] // 32 \
+        self.decrement_button.x_margin = self.anchor_center_point[0] - 3 * self.screen_resolution[0] // 32 \
                                          - self.height // 2
         self.decrement_button.y_margin = self.anchor_center_point[1] - row_step * 2 - self.height // 2
 
