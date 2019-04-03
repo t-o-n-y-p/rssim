@@ -71,13 +71,13 @@ class SettingsModel(Model):
         Activates the Settings view, updates temp values for log level, windowed resolution
         and updates available windowed resolutions.
         """
-        self.view.on_activate()
-        self.view.on_change_temp_display_fps(self.display_fps)
+        self.view.temp_display_fps = self.display_fps
         self.view.on_change_temp_windowed_resolution(self.windowed_resolution)
-        self.view.on_change_temp_notification_flags(self.level_up_notification_enabled,
-                                                    self.feature_unlocked_notification_enabled,
-                                                    self.construction_completed_notification_enabled,
-                                                    self.enough_money_notification_enabled)
+        self.view.temp_level_up_notification_enabled = self.level_up_notification_enabled
+        self.view.temp_feature_unlocked_notification_enabled = self.feature_unlocked_notification_enabled
+        self.view.temp_construction_completed_notification_enabled = self.construction_completed_notification_enabled
+        self.view.temp_enough_money_notification_enabled = self.enough_money_notification_enabled
+        self.view.on_activate()
 
     @model_is_active
     def on_deactivate(self):

@@ -25,20 +25,7 @@
         ivec2 mini_map_position - position of the bottom left corner for the mini-map
         int mini_map_width - mini-map width; is provided already calculated for performance reasons
         int mini_map_height - minipmap height; is provided already calculated for performance reasons
-        int is_decrement_resolution_button_activated - flag to determine if decrement resolution button
-            on settings screen is activated
-        ivec2 decrement_resolution_button_position - position of the decrement resolution button bottom left corner
-        int is_increment_resolution_button_activated - flag to determine if increment resolution button
-            on settings screen is activated
-        ivec2 increment_resolution_button_position - position of the increment resolution button bottom left corner
-        ivec2 level_up_checkbox_position - position of the level up notifications checkbox button bottom left corner
-        ivec2 feature_unlocked_checkbox_position - position of the feature unlocked notifications checkbox button
-            bottom left corner
-        ivec2 construction_completed_checkbox_position - position of the construction completed notifications
-            checkbox button bottom left corner
-        ivec2 enough_money_checkbox_position - position of the enough money notifications checkbox button
-            bottom left corner
-
+        int settings_opacity - general opacity for setings screen
 */
 #version 330 core
 layout(pixel_center_integer) in vec4 gl_FragCoord;
@@ -61,15 +48,7 @@ uniform int zoom_out_activated = 0;
 uniform ivec2 mini_map_position = ivec2(0, 0);
 uniform int mini_map_width = 0;
 uniform int mini_map_height = 0;
-uniform int is_decrement_resolution_button_activated = 0;
-uniform ivec2 decrement_resolution_button_position = ivec2(0, 0);
-uniform int is_increment_resolution_button_activated = 0;
-uniform ivec2 increment_resolution_button_position = ivec2(0, 0);
-uniform ivec2 level_up_checkbox_position = ivec2(0, 0);
-uniform ivec2 feature_unlocked_checkbox_position = ivec2(0, 0);
-uniform ivec2 construction_completed_checkbox_position = ivec2(0, 0);
-uniform ivec2 enough_money_checkbox_position = ivec2(0, 0);
-uniform ivec2 display_fps_checkbox_position = ivec2(0, 0);
+uniform int settings_opacity = 0;
 
 bool is_general_border()
 /*
@@ -242,118 +221,6 @@ bool is_mini_map_viewport_border()
                 );
 }
 
-bool is_resolution_settings_button_border()
-/*
-    Returns "true" if pixel belongs to resolution settings view buttons borders and "false" if it does not.
-*/
-{
-    int settings_decrement_x_margin = int(gl_FragCoord[0]) - decrement_resolution_button_position[0];
-    int settings_resolution_y_margin = int(gl_FragCoord[1]) - decrement_resolution_button_position[1];
-    int settings_increment_x_margin = int(gl_FragCoord[0]) - increment_resolution_button_position[0];
-    return ((((settings_decrement_x_margin == 0 || settings_decrement_x_margin == 1        // 2 pixels for left border
-               || settings_decrement_x_margin == top_bar_height - 2                        // 2 pixels for right border
-               || settings_decrement_x_margin == top_bar_height - 1
-              ) && settings_resolution_y_margin >= 0                                 // between top and bottom borders
-                && settings_resolution_y_margin <= top_bar_height - 1
-             ) || ((settings_resolution_y_margin == 0 || settings_resolution_y_margin == 1 // 2 pixels for bottom border
-                    || settings_resolution_y_margin == top_bar_height - 2                  // 2 pixels for top border
-                    || settings_resolution_y_margin == top_bar_height - 1
-                   ) && ((settings_decrement_x_margin >= 0       // between top and bottom borders for decrement button
-                          && settings_decrement_x_margin <= top_bar_height - 1
-                         )
-                        )
-                  )
-            ) && is_decrement_resolution_button_activated == 1
-           ) || ((((settings_increment_x_margin == 0 || settings_increment_x_margin == 1   // 2 pixels for left border
-                    || settings_increment_x_margin == top_bar_height - 2                   // 2 pixels for right border
-                    || settings_increment_x_margin == top_bar_height - 1
-                   ) && settings_resolution_y_margin >= 0                            // between top and bottom borders
-                     && settings_resolution_y_margin <= top_bar_height - 1
-                  ) || ((settings_resolution_y_margin == 0 || settings_resolution_y_margin == 1 // 2-pixel bottom border
-                         || settings_resolution_y_margin == top_bar_height - 2                  // 2-pixes top border
-                         || settings_resolution_y_margin == top_bar_height - 1
-                        ) && ((settings_increment_x_margin >= 0 // between top and bottom borders for increment button
-                               && settings_increment_x_margin <= top_bar_height - 1
-                              )
-                             )
-                       )
-                 ) && is_increment_resolution_button_activated == 1
-                );
-}
-
-bool is_display_fps_button_border()
-/*
-    Returns "true" if pixel belongs to display FPS button borders and "false" if it does not.
-*/
-{
-    int settings_display_fps_x_margin = int(gl_FragCoord[0]) - display_fps_checkbox_position[0];
-    int settings_display_fps_y_margin = int(gl_FragCoord[1]) - display_fps_checkbox_position[1];
-    return ((settings_display_fps_x_margin == 0 || settings_display_fps_x_margin == 1
-             || settings_display_fps_x_margin == top_bar_height - 1
-             || settings_display_fps_x_margin == top_bar_height - 2
-            ) && settings_display_fps_y_margin >= 0 && settings_display_fps_y_margin <= top_bar_height - 1
-           ) || ((settings_display_fps_y_margin == 0 || settings_display_fps_y_margin == 1
-                  || settings_display_fps_y_margin == top_bar_height - 1
-                  || settings_display_fps_y_margin == top_bar_height - 2
-                 ) && settings_display_fps_x_margin >= 0 && settings_display_fps_x_margin <= top_bar_height - 1
-                );
-}
-
-bool is_notification_settings_button_border()
-/*
-    Returns "true" if pixel belongs to notification settings view buttons borders and "false" if it does not.
-*/
-{
-    int settings_resolution_x_margin = int(gl_FragCoord[0]) - level_up_checkbox_position[0];
-    int level_up_checkbox_y_margin = int(gl_FragCoord[1]) - level_up_checkbox_position[1];
-    int feature_unlocked_checkbox_y_margin = int(gl_FragCoord[1]) - feature_unlocked_checkbox_position[1];
-    int construction_completed_checkbox_y_margin = int(gl_FragCoord[1]) - construction_completed_checkbox_position[1];
-    int enough_money_checkbox_y_margin = int(gl_FragCoord[1]) - enough_money_checkbox_position[1];
-    bool is_level_up_checkbox_border
-    = ((settings_resolution_x_margin == 0 || settings_resolution_x_margin == 1
-        || settings_resolution_x_margin == top_bar_height - 1
-        || settings_resolution_x_margin == top_bar_height - 2
-       ) && level_up_checkbox_y_margin >= 0 && level_up_checkbox_y_margin <= top_bar_height - 1
-      ) || ((level_up_checkbox_y_margin == 0 || level_up_checkbox_y_margin == 1
-             || level_up_checkbox_y_margin == top_bar_height - 1
-             || level_up_checkbox_y_margin == top_bar_height - 2
-            ) && settings_resolution_x_margin >= 0 && settings_resolution_x_margin <= top_bar_height - 1
-           );
-    bool is_feature_unlocked_checkbox_border
-    = ((settings_resolution_x_margin == 0 || settings_resolution_x_margin == 1
-        || settings_resolution_x_margin == top_bar_height - 1
-        || settings_resolution_x_margin == top_bar_height - 2
-       ) && feature_unlocked_checkbox_y_margin >= 0 && feature_unlocked_checkbox_y_margin <= top_bar_height - 1
-      ) || ((feature_unlocked_checkbox_y_margin == 0 || feature_unlocked_checkbox_y_margin == 1
-             || feature_unlocked_checkbox_y_margin == top_bar_height - 1
-             || feature_unlocked_checkbox_y_margin == top_bar_height - 2
-            ) && settings_resolution_x_margin >= 0 && settings_resolution_x_margin <= top_bar_height - 1
-           );
-    bool is_construction_completed_checkbox_border
-    = ((settings_resolution_x_margin == 0 || settings_resolution_x_margin == 1
-        || settings_resolution_x_margin == top_bar_height - 1
-        || settings_resolution_x_margin == top_bar_height - 2
-       ) && construction_completed_checkbox_y_margin >= 0
-         && construction_completed_checkbox_y_margin <= top_bar_height - 1
-      ) || ((construction_completed_checkbox_y_margin == 0 || construction_completed_checkbox_y_margin == 1
-             || construction_completed_checkbox_y_margin == top_bar_height - 1
-             || construction_completed_checkbox_y_margin == top_bar_height - 2
-            ) && settings_resolution_x_margin >= 0 && settings_resolution_x_margin <= top_bar_height - 1
-           );
-    bool is_enough_money_checkbox_border
-    = ((settings_resolution_x_margin == 0 || settings_resolution_x_margin == 1
-        || settings_resolution_x_margin == top_bar_height - 1
-        || settings_resolution_x_margin == top_bar_height - 2
-       ) && enough_money_checkbox_y_margin >= 0 && enough_money_checkbox_y_margin <= top_bar_height - 1
-      ) || ((enough_money_checkbox_y_margin == 0 || enough_money_checkbox_y_margin == 1
-             || enough_money_checkbox_y_margin == top_bar_height - 1
-             || enough_money_checkbox_y_margin == top_bar_height - 2
-            ) && settings_resolution_x_margin >= 0 && settings_resolution_x_margin <= top_bar_height - 1
-           );
-    return is_level_up_checkbox_border || is_feature_unlocked_checkbox_border
-           || is_construction_completed_checkbox_border || is_enough_money_checkbox_border;
-}
-
 bool is_constructor_cell_border(int cell_width, int cell_height, int interval_between_cells_height)
 /*
     Returns "true" if pixel belongs to any cell border on constructor screen and "false" if it does not.
@@ -510,12 +377,8 @@ void main()
         else
             mini_map_result = vec4(0.0);
 
-        // draw all buttons on settings screen
-        if (settings_is_activated == 1 && (is_resolution_settings_button_border()
-                                           || is_notification_settings_button_border()
-                                           || is_display_fps_button_border()))
-            settings_result = vec4(1.0, 0.0, 0.0, 1.0);
-        // just transparent if settings screen is not activated
+        if (settings_is_activated == 1)
+            settings_result = vec4(vec3(0.0), settings_opacity);
         else
             settings_result = vec4(0.0);
 

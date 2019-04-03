@@ -361,21 +361,4 @@ class AppView(View):
         shader.uniforms.mini_map_position = self.controller.game.map.view.mini_map_position
         shader.uniforms.mini_map_width = self.controller.game.map.view.mini_map_width
         shader.uniforms.mini_map_height = self.controller.game.map.view.mini_map_height
-        shader.uniforms.is_decrement_resolution_button_activated \
-            = int(self.controller.settings.view.decrement_windowed_resolution_button.is_activated)
-        shader.uniforms.decrement_resolution_button_position \
-            = self.controller.settings.view.decrement_windowed_resolution_button.position
-        shader.uniforms.is_increment_resolution_button_activated \
-            = int(self.controller.settings.view.increment_windowed_resolution_button.is_activated)
-        shader.uniforms.increment_resolution_button_position \
-            = self.controller.settings.view.increment_windowed_resolution_button.position
-        shader.uniforms.level_up_checkbox_position \
-            = self.controller.settings.view.level_up_checked_checkbox_button.position
-        shader.uniforms.feature_unlocked_checkbox_position \
-            = self.controller.settings.view.feature_unlocked_checked_checkbox_button.position
-        shader.uniforms.construction_completed_checkbox_position \
-            = self.controller.settings.view.construction_completed_checked_checkbox_button.position
-        shader.uniforms.enough_money_checkbox_position \
-            = self.controller.settings.view.enough_money_checked_checkbox_button.position
-        shader.uniforms.display_fps_checkbox_position \
-            = self.controller.settings.view.display_fps_checked_checkbox_button.position
+        shader.uniforms.settings_opacity = self.controller.settings.view.settings_opacity

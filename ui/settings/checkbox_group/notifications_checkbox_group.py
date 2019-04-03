@@ -11,15 +11,15 @@ class NotificationsCheckboxGroup(CheckboxGroup):
     def __init__(self, column, row, surface, batches, groups, current_locale, on_update_state_actions):
         super().__init__(column, row, surface, batches, groups, current_locale,
                          logger=getLogger('root.app.settings.view.checkbox_group.notifications_checkbox_group'))
+        self.description_key = 'notification_description_string'
         self.checkboxes \
-            = [LevelUpNotificationCheckbox(column, row - 2, on_update_state_actions['level_up'],
+            = [LevelUpNotificationCheckbox(column, row - 2, on_update_state_actions[0],
                                            surface, batches, groups, current_locale),
-               FeatureUnlockedNotificationCheckbox(column, row - 4, on_update_state_actions['feature_unlocked'],
+               FeatureUnlockedNotificationCheckbox(column, row - 4, on_update_state_actions[1],
                                                    surface, batches, groups, current_locale),
-               ConstructionCompletedNotificationCheckbox(column, row - 6,
-                                                         on_update_state_actions['construction_completed'],
+               ConstructionCompletedNotificationCheckbox(column, row - 6, on_update_state_actions[2],
                                                          surface, batches, groups, current_locale),
-               EnoughMoneyNotificationCheckbox(column, row - 8, on_update_state_actions['enough_money'],
+               EnoughMoneyNotificationCheckbox(column, row - 8, on_update_state_actions[3],
                                                surface, batches, groups, current_locale)]
 
         for checkbox in self.checkboxes:
