@@ -3,7 +3,7 @@ from logging import getLogger
 from pyglet.text import Label
 
 from view import *
-from ui import ScheduleRow
+from ui.schedule_row import ScheduleRow
 from ui.button.close_schedule_button import CloseScheduleButton
 from i18n import I18N_RESOURCES
 

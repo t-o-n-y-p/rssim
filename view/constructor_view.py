@@ -1,8 +1,8 @@
 from logging import getLogger
 
 from view import *
-from ui.track_cell import TrackCell
-from ui.environment_cell import EnvironmentCell
+from ui.constructor_cell.track_cell import TrackCell
+from ui.constructor_cell.environment_cell import EnvironmentCell
 from ui.button.close_constructor_button import CloseConstructorButton
 from notifications.track_unlocked_notification import TrackUnlockedNotification
 from notifications.environment_unlocked_notification import EnvironmentUnlockedNotification
