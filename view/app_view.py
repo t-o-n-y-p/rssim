@@ -38,7 +38,7 @@ class AppView(View):
 
         Properties:
             title_label                         text label for game title
-            main_frame_sprite                   sprite for main frame
+            app_view_shader_sprite              sprite for app view shader
             flag_us_sprite                      sprite from US flag for locale button
             flag_ru_sprite                      sprite from RU flag for locale button
             close_game_button                   CloseGameButton object
@@ -57,6 +57,7 @@ class AppView(View):
             on_mouse_press_handlers             list of on_mouse_press event handlers
             on_mouse_release_handlers           list of on_mouse_release event handlers
             on_mouse_drag_handlers              list of on_mouse_drag event handlers
+            app_view_shader                     shader for main app window border, top bar and its buttons
 
         :param user_db_cursor:                  user DB cursor (is used to execute user DB queries)
         :param config_db_cursor:                configuration DB cursor (is used to execute configuration DB queries)
@@ -131,7 +132,7 @@ class AppView(View):
         super().__init__(user_db_cursor, config_db_cursor, surface, batches, groups,
                          logger=getLogger('root.app.view'))
         self.title_label = None
-        self.main_frame_sprite = None
+        self.app_view_shader_sprite = None
         self.flag_us_sprite = None
         self.flag_ru_sprite = None
         self.close_game_button = CloseGameButton(surface=self.surface, batch=self.batches['ui_batch'],
@@ -164,7 +165,7 @@ class AppView(View):
         self.on_mouse_press_handlers.append(self.handle_mouse_press)
         self.on_mouse_release_handlers.append(self.handle_mouse_release)
         self.on_mouse_drag_handlers.append(self.handle_mouse_drag)
-        self.main_frame_shader = from_files_names('shaders/main_frame/shader.vert', 'shaders/main_frame/shader.frag')
+        self.app_view_shader = from_files_names('shaders/app_view/shader.vert', 'shaders/app_view/shader.frag')
 
     @view_is_not_active
     def on_activate(self):
@@ -178,8 +179,8 @@ class AppView(View):
                                  y=self.screen_resolution[1] - self.top_bar_height // 2,
                                  anchor_x='left', anchor_y='center', batch=self.batches['ui_batch'],
                                  group=self.groups['button_text'])
-        if self.main_frame_sprite is None:
-            self.main_frame_sprite\
+        if self.app_view_shader_sprite is None:
+            self.app_view_shader_sprite\
                 = self.batches['main_frame'].add(4, GL_QUADS, self.groups['main_frame'],
                                                  ('v2f/static', (-1.0, -1.0, -1.0, 1.0, 1.0, 1.0, 1.0, -1.0)))
 
@@ -205,8 +206,8 @@ class AppView(View):
         Deactivates the view and destroys all labels and buttons.
         """
         self.is_activated = False
-        self.main_frame_sprite.delete()
-        self.main_frame_sprite = None
+        self.app_view_shader_sprite.delete()
+        self.app_view_shader_sprite = None
         self.title_label.delete()
         self.title_label = None
         self.flag_us_sprite.delete()
@@ -327,8 +328,11 @@ class AppView(View):
 
     @view_is_active
     def on_apply_shaders_and_draw_vertices(self):
-        self.main_frame_shader.use()
-        self.main_frame_shader.uniforms.screen_resolution = self.screen_resolution
-        self.main_frame_shader.uniforms.top_bar_height = self.top_bar_height
-        self.main_frame_sprite.draw(GL_QUADS)
-        self.main_frame_shader.clear()
+        """
+        Activates the shader, initializes all shader uniforms, draws shader sprite and deactivates the shader.
+        """
+        self.app_view_shader.use()
+        self.app_view_shader.uniforms.screen_resolution = self.screen_resolution
+        self.app_view_shader.uniforms.top_bar_height = self.top_bar_height
+        self.app_view_shader_sprite.draw(GL_QUADS)
+        self.app_view_shader.clear()

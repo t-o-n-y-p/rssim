@@ -32,8 +32,6 @@ class RSSim:
               surface                   surface to draw all UI objects on
               batches                   batches to group all labels and sprites
               groups                    defines drawing layers (some labels and sprites behind others)
-              main_frame_shader         shader for main frame primitive (responsible for button borders,
-                                        UI screens background, main app border)
               app                       App object, is responsible for high-level properties, UI and events
               notifications             list of all active system notifications
         """
@@ -112,7 +110,6 @@ class RSSim:
         self.groups['button_background'] = numbered_groups[10]
         self.groups['exp_money_time'] = numbered_groups[10]
         self.groups['button_text'] = numbered_groups[11]
-        self.game_frame_shader = from_files_names('shaders/game_frame/shader.vert', 'shaders/game_frame/shader.frag')
         # create surface
         surface = Window(width=MIN_RESOLUTION_WIDTH, height=MIN_RESOLUTION_HEIGHT,
                          caption='Railway Station Simulator', style='borderless', fullscreen=False, vsync=False)
@@ -145,7 +142,7 @@ class RSSim:
             self.batches['main_batch'].draw()
             # draw mini map batch: mini map
             self.batches['mini_map_batch'].draw()
-            # draw main frame batch with main frame shader: main app borders, button borders, UI screens background
+            # draw all vertices with shaders
             self.app.on_apply_shaders_and_draw_vertices()
             # draw ui batch: text labels, buttons
             self.batches['ui_batch'].draw()

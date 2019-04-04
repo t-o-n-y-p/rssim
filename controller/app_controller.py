@@ -152,6 +152,9 @@ class AppController(Controller):
         self.fps.on_update_fps(fps)
 
     def on_apply_shaders_and_draw_vertices(self):
+        """
+        Notifies the view and child controllers to draw all sprites with shaders.
+        """
         self.view.on_apply_shaders_and_draw_vertices()
         self.game.on_apply_shaders_and_draw_vertices()
 

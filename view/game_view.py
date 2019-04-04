@@ -52,6 +52,8 @@ class GameView(View):
                                                     in game settings
             enough_money_notification_enabled       indicates if enough money notifications are enabled by user
                                                     in game settings
+            game_view_shader                        shader for bottom bar border and its buttons
+            game_view_shader_sprite                 sprite for game view shader
 
         :param user_db_cursor:                  user DB cursor (is used to execute user DB queries)
         :param config_db_cursor:                configuration DB cursor (is used to execute configuration DB queries)
@@ -114,8 +116,8 @@ class GameView(View):
         self.level_up_notification_enabled, self.enough_money_notification_enabled = self.user_db_cursor.fetchone()
         self.level_up_notification_enabled = bool(self.level_up_notification_enabled)
         self.enough_money_notification_enabled = bool(self.enough_money_notification_enabled)
-        self.game_frame_sprite = None
-        self.game_frame_shader = from_files_names('shaders/game_frame/shader.vert', 'shaders/game_frame/shader.frag')
+        self.game_view_shader_sprite = None
+        self.game_view_shader = from_files_names('shaders/game_view/shader.vert', 'shaders/game_view/shader.frag')
 
     def on_update(self):
         """
@@ -131,8 +133,8 @@ class GameView(View):
         if not self.is_activated and self.game_frame_opacity > 0:
             self.game_frame_opacity -= 15
             if self.game_frame_opacity <= 0:
-                self.game_frame_sprite.delete()
-                self.game_frame_sprite = None
+                self.game_view_shader_sprite.delete()
+                self.game_view_shader_sprite = None
 
             self.progress_bar_exp_inactive.opacity -= 15
             if self.progress_bar_exp_inactive.opacity <= 0:
@@ -160,9 +162,9 @@ class GameView(View):
         Activates the view and creates all sprites and labels.
         """
         self.is_activated = True
-        if self.game_frame_sprite is None:
+        if self.game_view_shader_sprite is None:
             top_edge_position = -1.0 + self.bottom_bar_height / self.screen_resolution[1] * 2
-            self.game_frame_sprite\
+            self.game_view_shader_sprite\
                 = self.batches['main_frame'].add(4, GL_QUADS, self.groups['main_frame'],
                                                  ('v2f/static', (-1.0, -1.0, -1.0, top_edge_position,
                                                                  1.0, top_edge_position, 1.0, -1.0)))
@@ -430,9 +432,12 @@ class GameView(View):
 
     @game_frame_opacity_exists
     def on_apply_shaders_and_draw_vertices(self):
-        self.game_frame_shader.use()
-        self.game_frame_shader.uniforms.screen_resolution = self.screen_resolution
-        self.game_frame_shader.uniforms.bottom_bar_height = self.bottom_bar_height
-        self.game_frame_shader.uniforms.game_frame_opacity = self.game_frame_opacity
-        self.game_frame_sprite.draw(GL_QUADS)
-        self.game_frame_shader.clear()
+        """
+        Activates the shader, initializes all shader uniforms, draws shader sprite and deactivates the shader.
+        """
+        self.game_view_shader.use()
+        self.game_view_shader.uniforms.screen_resolution = self.screen_resolution
+        self.game_view_shader.uniforms.bottom_bar_height = self.bottom_bar_height
+        self.game_view_shader.uniforms.game_frame_opacity = self.game_frame_opacity
+        self.game_view_shader_sprite.draw(GL_QUADS)
+        self.game_view_shader.clear()

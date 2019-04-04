@@ -198,4 +198,7 @@ class GameController(Controller):
         self.view.on_change_enough_money_notification_state(notification_state)
 
     def on_apply_shaders_and_draw_vertices(self):
+        """
+        Notifies the view and child controllers to draw all sprites with shaders.
+        """
         self.view.on_apply_shaders_and_draw_vertices()
