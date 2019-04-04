@@ -161,9 +161,11 @@ class GameView(View):
         """
         self.is_activated = True
         if self.game_frame_sprite is None:
+            top_edge_position = -1.0 + self.bottom_bar_height / self.screen_resolution[1] * 2
             self.game_frame_sprite\
                 = self.batches['main_frame'].add(4, GL_QUADS, self.groups['main_frame'],
-                                                 ('v2f/static', (-1.0, -1.0, -1.0, 1.0, 1.0, 1.0, 1.0, -1.0)))
+                                                 ('v2f/static', (-1.0, -1.0, -1.0, top_edge_position,
+                                                                 1.0, top_edge_position, 1.0, -1.0)))
 
         if self.progress_bar_exp_inactive is None:
             self.progress_bar_exp_inactive = Sprite(self.progress_bar_inactive_image,
