@@ -16,7 +16,6 @@
 #version 330 core
 layout(pixel_center_integer) in vec4 gl_FragCoord;
 out vec4 color_frag;
-uniform ivec2 screen_resolution = ivec2(1280, 720);
 uniform int map_opacity = 0;
 uniform int is_button_activated[1];
 uniform int button_x[1];

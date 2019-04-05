@@ -497,12 +497,12 @@ class MapView(View):
 
         self.mini_map_offset = (0, (MAP_HEIGHT - self.main_map.height) // 2)
 
+    @map_opacity_exists
     def on_apply_shaders_and_draw_vertices(self):
         """
         Activates the shader, initializes all shader uniforms, draws shader sprite and deactivates the shader.
         """
         self.map_view_shader.use()
-        self.map_view_shader.uniforms.screen_resolution = self.screen_resolution
         self.map_view_shader.uniforms.map_opacity = self.map_opacity
         self.map_view_shader.uniforms.is_button_activated \
             = [int(self.zoom_in_button.is_activated or self.zoom_out_button.is_activated), ]
