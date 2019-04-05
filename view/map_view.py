@@ -1,5 +1,6 @@
 from logging import getLogger
 from time import perf_counter
+from math import ceil
 
 from pyglet.sprite import Sprite
 from pyglet import resource
@@ -59,6 +60,10 @@ class MapView(View):
             on_mouse_press_handlers             list of on_mouse_press event handlers
             on_mouse_release_handlers           list of on_mouse_release event handlers
             on_mouse_drag_handlers              list of on_mouse_drag event handlers
+            map_view_shader                     shader for map area and its buttons
+            map_view_shader_sprite              sprite for map view shader
+            map_view_shader_upper_limit         upper edge for game_view_shader_sprite
+            map_view_shader_bottom_limit        lower edge for game_view_shader_sprite
 
         :param user_db_cursor:                  user DB cursor (is used to execute user DB queries)
         :param config_db_cursor:                configuration DB cursor (is used to execute configuration DB queries)
@@ -140,6 +145,9 @@ class MapView(View):
         self.mini_map_width = 0
         self.mini_map_height = 0
         self.mini_map_position = (0, 0)
+        self.mini_map_frame_position = (0, 0)
+        self.mini_map_frame_width = 0
+        self.mini_map_frame_height = 0
         self.base_offset_lower_left_limit = (0, 0)
         self.base_offset_upper_right_limit = (self.screen_resolution[0] - MAP_WIDTH,
                                               self.screen_resolution[1] - MAP_HEIGHT)
@@ -351,13 +359,25 @@ class MapView(View):
                                                   self.screen_resolution[1] - MAP_HEIGHT // 2)
             self.base_offset = (self.base_offset[0] // 2 + self.screen_resolution[0] // 4,
                                 self.base_offset[1] // 2 + self.screen_resolution[1] // 4)
+            self.check_base_offset_limits()
+            self.mini_map_frame_position = (ceil(-self.base_offset[0] / (MAP_WIDTH // 2) * self.mini_map_width)
+                                            + self.mini_map_position[0],
+                                            ceil(-self.base_offset[1] / (MAP_HEIGHT // 2) * self.mini_map_height)
+                                            + self.mini_map_position[1])
+            self.mini_map_frame_width = int(self.screen_resolution[0] / (MAP_WIDTH // 2) * self.mini_map_width)
+            self.mini_map_frame_height = int(self.screen_resolution[1] / (MAP_HEIGHT // 2) * self.mini_map_height)
         else:
             self.base_offset_upper_right_limit = (self.screen_resolution[0] - MAP_WIDTH,
                                                   self.screen_resolution[1] - MAP_HEIGHT)
             self.base_offset = (self.base_offset[0] * 2 - self.screen_resolution[0] // 2,
                                 self.base_offset[1] * 2 - self.screen_resolution[1] // 2)
-
-        self.check_base_offset_limits()
+            self.check_base_offset_limits()
+            self.mini_map_frame_position = (ceil(-self.base_offset[0] / MAP_WIDTH * self.mini_map_width)
+                                            + self.mini_map_position[0],
+                                            ceil(-self.base_offset[1] / MAP_HEIGHT * self.mini_map_height)
+                                            + self.mini_map_position[1])
+            self.mini_map_frame_width = int(self.screen_resolution[0] / MAP_WIDTH * self.mini_map_width)
+            self.mini_map_frame_height = int(self.screen_resolution[1] / MAP_HEIGHT * self.mini_map_height)
 
     def on_change_screen_resolution(self, screen_resolution):
         """
@@ -388,6 +408,21 @@ class MapView(View):
         self.mini_map_height = round(self.mini_map_width / 2)
         self.mini_map_position = (self.screen_resolution[0] - self.mini_map_width - 8,
                                   self.screen_resolution[1] - self.top_bar_height - 6 - self.mini_map_height)
+        if self.zoom_out_activated:
+            self.mini_map_frame_width = int(self.screen_resolution[0] / (MAP_WIDTH // 2) * self.mini_map_width)
+            self.mini_map_frame_height = int(self.screen_resolution[1] / (MAP_HEIGHT // 2) * self.mini_map_height)
+            self.mini_map_frame_position = (ceil(-self.base_offset[0] / (MAP_WIDTH // 2) * self.mini_map_width)
+                                            + self.mini_map_position[0],
+                                            ceil(-self.base_offset[1] / (MAP_HEIGHT // 2) * self.mini_map_height)
+                                            + self.mini_map_position[1])
+        else:
+            self.mini_map_frame_width = int(self.screen_resolution[0] / MAP_WIDTH * self.mini_map_width)
+            self.mini_map_frame_height = int(self.screen_resolution[1] / MAP_HEIGHT * self.mini_map_height)
+            self.mini_map_frame_position = (ceil(-self.base_offset[0] / MAP_WIDTH * self.mini_map_width)
+                                            + self.mini_map_position[0],
+                                            ceil(-self.base_offset[1] / MAP_HEIGHT * self.mini_map_height)
+                                            + self.mini_map_position[1])
+
         if self.is_mini_map_activated:
             self.mini_environment_sprite.update(x=self.mini_map_position[0], y=self.mini_map_position[1],
                                                 scale=self.mini_map_width / MAP_WIDTH)
@@ -455,6 +490,17 @@ class MapView(View):
         """
         self.base_offset = (self.base_offset[0] + dx, self.base_offset[1] + dy)
         self.check_base_offset_limits()
+        if self.zoom_out_activated:
+            self.mini_map_frame_position = (ceil(-self.base_offset[0] / (MAP_WIDTH // 2) * self.mini_map_width)
+                                            + self.mini_map_position[0],
+                                            ceil(-self.base_offset[1] / (MAP_HEIGHT // 2) * self.mini_map_height)
+                                            + self.mini_map_position[1])
+        else:
+            self.mini_map_frame_position = (ceil(-self.base_offset[0] / MAP_WIDTH * self.mini_map_width)
+                                            + self.mini_map_position[0],
+                                            ceil(-self.base_offset[1] / MAP_HEIGHT * self.mini_map_height)
+                                            + self.mini_map_position[1])
+
         self.controller.on_change_base_offset(self.base_offset)
 
     @left_mouse_button
@@ -515,5 +561,11 @@ class MapView(View):
         self.map_view_shader.uniforms.button_h \
             = [self.zoom_in_button.button_size[1], ]
         self.map_view_shader.uniforms.number_of_buttons = 1
+        self.map_view_shader.uniforms.mini_map_opacity = self.mini_map_opacity
+        self.map_view_shader.uniforms.mini_map_position_size = (self.mini_map_position[0], self.mini_map_position[1],
+                                                                self.mini_map_width, self.mini_map_height)
+        self.map_view_shader.uniforms.mini_map_frame_position_size \
+            = (self.mini_map_frame_position[0], self.mini_map_frame_position[1],
+               self.mini_map_frame_width, self.mini_map_frame_height)
         self.map_view_shader_sprite.draw(GL_QUADS)
         self.map_view_shader.clear()

@@ -52,7 +52,7 @@ class GameView(View):
                                                     in game settings
             enough_money_notification_enabled       indicates if enough money notifications are enabled by user
                                                     in game settings
-            game_view_shader                        shader for bottom bar border and its buttons
+            game_view_shader                        shader for bottom bar and its buttons
             game_view_shader_sprite                 sprite for game view shader
             game_view_shader_upper_limit            upper edge for game_view_shader_sprite
 

@@ -6,7 +6,6 @@
     Output value:
         color_frag - calculated normalized RGBA color for the pixel
     Uniforms (all positions are in 2D Cartesian coordinates from the left bottom point):
-        ivec2 screen_resolution - current resolution of the game window
         int is_button_activated[] - indicates if button with given index is activated
         int button_x[] - X position of button with given index
         int button_y[] - Y position of button with given index
@@ -23,6 +22,9 @@ uniform int button_y[1];
 uniform int button_w[1];
 uniform int button_h[1];
 uniform int number_of_buttons = 1;
+uniform int mini_map_opacity = 0;
+uniform ivec4 mini_map_position_size = ivec4(0, 0, 0, 0);
+uniform ivec4 mini_map_frame_position_size = ivec4(0, 0, 0, 0);
 
 bool is_button_border()
 {
@@ -47,16 +49,42 @@ bool is_button_border()
     return false;
 }
 
+bool is_mini_map_border()
+{
+    int margin_x = int(gl_FragCoord[0]) - mini_map_position_size.x;
+    int margin_y = int(gl_FragCoord[1]) - mini_map_position_size.y;
+    return ((margin_x >= 0 && margin_x <= mini_map_position_size[2] - 1
+             && (margin_y == 0 || margin_y == mini_map_position_size[3] - 1)
+            ) || (margin_y >= 0 && margin_y <= mini_map_position_size[3] - 1
+                  && (margin_x == 0 || margin_x == mini_map_position_size[2] - 1)
+                 )
+           );
+}
+
+bool is_mini_map_frame_border()
+{
+    int margin_x = int(gl_FragCoord[0]) - mini_map_frame_position_size.x;
+    int margin_y = int(gl_FragCoord[1]) - mini_map_frame_position_size.y;
+    return ((margin_x >= 0 && margin_x <= mini_map_frame_position_size[2] - 1
+             && (margin_y == 0 || margin_y == mini_map_frame_position_size[3] - 1)
+            ) || (margin_y >= 0 && margin_y <= mini_map_frame_position_size[3] - 1
+                  && (margin_x == 0 || margin_x == mini_map_frame_position_size[2] - 1)
+                 )
+           );
+}
+
 void main()
 /*
     MAIN SHADER FUNCTION
     Calculates intermediate color for all possible cases and mixes it
 */
 {
-    // calculate bottom bar color using game frame opacity and settings state
-    if (is_button_border())
+    if (is_mini_map_frame_border())
+        color_frag = vec4(1.0, 0.5, 0.0, float(mini_map_opacity) / 255.0);
+    else if (is_mini_map_border())
+        color_frag = vec4(vec3(0.0), float(mini_map_opacity) / 255.0);
+    else if (is_button_border())
         color_frag = vec4(1.0, 0.0, 0.0, float(map_opacity) / 255.0);
-    // just transparent if there is not bottom bar on the screen
     else
         color_frag = vec4(0.0);
 }
