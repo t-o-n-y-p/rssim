@@ -117,7 +117,8 @@ class GameView(View):
         self.level_up_notification_enabled = bool(self.level_up_notification_enabled)
         self.enough_money_notification_enabled = bool(self.enough_money_notification_enabled)
         self.game_view_shader_sprite = None
-        self.game_view_shader = from_files_names('shaders/game_view/shader.vert', 'shaders/game_view/shader.frag')
+        self.game_view_shader = from_files_names('shaders/shader.vert', 'shaders/game_view/shader.frag')
+        self.game_view_shader_upper_limit = 0.0
 
     def on_update(self):
         """
@@ -165,7 +166,8 @@ class GameView(View):
         if self.game_view_shader_sprite is None:
             self.game_view_shader_sprite\
                 = self.batches['main_frame'].add(4, GL_QUADS, self.groups['main_frame'],
-                                                 ('v2f/static', (-1.0, -1.0, -1.0, -0.5, 1.0, -0.5, 1.0, -1.0)))
+                                                 ('v2f/static', (-1.0, -1.0, -1.0, self.game_view_shader_upper_limit,
+                                                                 1.0, self.game_view_shader_upper_limit, 1.0, -1.0)))
 
         if self.progress_bar_exp_inactive is None:
             self.progress_bar_exp_inactive = Sprite(self.progress_bar_inactive_image,
@@ -252,6 +254,7 @@ class GameView(View):
         self.exp_offset = self.bottom_bar_height + self.bottom_bar_height // 8
         self.money_offset = self.exp_offset + self.bottom_bar_height // 8 \
                           + int(self.progress_bar_inactive_image.width * self.bottom_bar_height / 80)
+        self.game_view_shader_upper_limit = self.bottom_bar_height / self.screen_resolution[1] * 2 - 1
         if self.is_activated:
             self.level_label.x = self.exp_offset + int(self.progress_bar_inactive_image.width / 2 / 80
                                                        * self.bottom_bar_height)
@@ -272,6 +275,8 @@ class GameView(View):
                                                 scale=self.bottom_bar_height / 80)
             self.progress_bar_money_active.update(x=self.money_offset, y=self.bottom_bar_height // 8,
                                                   scale=self.bottom_bar_height / 80)
+            self.game_view_shader_sprite.vertices = (-1.0, -1.0, -1.0, self.game_view_shader_upper_limit,
+                                                     1.0, self.game_view_shader_upper_limit, 1.0, -1.0)
 
         self.pause_game_button.x_margin = self.screen_resolution[0] - 9 * self.bottom_bar_height // 2
         self.pause_game_button.y_margin = 0

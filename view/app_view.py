@@ -165,7 +165,7 @@ class AppView(View):
         self.on_mouse_press_handlers.append(self.handle_mouse_press)
         self.on_mouse_release_handlers.append(self.handle_mouse_release)
         self.on_mouse_drag_handlers.append(self.handle_mouse_drag)
-        self.app_view_shader = from_files_names('shaders/app_view/shader.vert', 'shaders/app_view/shader.frag')
+        self.app_view_shader = from_files_names('shaders/shader.vert', 'shaders/app_view/shader.frag')
 
     @view_is_not_active
     def on_activate(self):
