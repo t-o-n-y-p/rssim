@@ -9,7 +9,6 @@
         ivec2 screen_resolution - current resolution of the game window
         int bottom_bar_height - height of the bottom bar; is provided already calculated for performance reasons
         int game_frame_opacity - opacity of the bottom bar, its edges, and button edges
-        int settings_is_activated - flag to determine if we need to draw button borders for settings screen
 */
 #version 330 core
 layout(pixel_center_integer) in vec4 gl_FragCoord;

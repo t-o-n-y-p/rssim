@@ -54,6 +54,7 @@ class GameView(View):
                                                     in game settings
             game_view_shader                        shader for bottom bar border and its buttons
             game_view_shader_sprite                 sprite for game view shader
+            game_view_shader_upper_limit            upper edge for game_view_shader_sprite
 
         :param user_db_cursor:                  user DB cursor (is used to execute user DB queries)
         :param config_db_cursor:                configuration DB cursor (is used to execute configuration DB queries)

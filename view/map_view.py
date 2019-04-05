@@ -3,6 +3,8 @@ from time import perf_counter
 
 from pyglet.sprite import Sprite
 from pyglet import resource
+from pyglet.gl import GL_QUADS
+from pyshaders import from_files_names
 
 from view import *
 from ui.button import create_two_state_button
@@ -165,6 +167,10 @@ class MapView(View):
         self.on_mouse_press_handlers.append(self.handle_mouse_press)
         self.on_mouse_release_handlers.append(self.handle_mouse_release)
         self.on_mouse_drag_handlers.append(self.handle_mouse_drag)
+        self.map_view_shader_sprite = None
+        self.map_view_shader = from_files_names('shaders/shader.vert', 'shaders/map_view/shader.frag')
+        self.map_view_shader_bottom_limit = 0.0
+        self.map_view_shader_upper_limit = 0.0
 
     def on_update(self):
         """
@@ -237,6 +243,12 @@ class MapView(View):
         Activates the view and creates all sprites and labels.
         """
         self.is_activated = True
+        self.map_view_shader_sprite \
+            = self.batches['main_frame'].add(4, GL_QUADS, self.groups['main_frame'],
+                                             ('v2f/static', (-1.0, self.map_view_shader_bottom_limit,
+                                                             -1.0, self.map_view_shader_upper_limit,
+                                                             1.0, self.map_view_shader_upper_limit,
+                                                             1.0, self.map_view_shader_bottom_limit)))
         self.on_change_map_offset()
         if self.main_map_sprite is None:
             self.main_map_sprite = Sprite(self.main_map, x=self.base_offset[0] + self.map_offset[0],
@@ -364,6 +376,14 @@ class MapView(View):
                             self.base_offset[1] + (screen_resolution[1] - self.screen_resolution[1]) // 2)
         self.check_base_offset_limits()
         self.on_recalculate_ui_properties(screen_resolution)
+        self.map_view_shader_bottom_limit = self.bottom_bar_height / self.screen_resolution[1] * 2 - 1
+        self.map_view_shader_upper_limit = 1 - self.top_bar_height / self.screen_resolution[1] * 2
+        if self.is_activated:
+            self.map_view_shader_sprite.vertices = (-1.0, self.map_view_shader_bottom_limit,
+                                                    -1.0, self.map_view_shader_upper_limit,
+                                                    1.0, self.map_view_shader_upper_limit,
+                                                    1.0, self.map_view_shader_bottom_limit)
+
         self.mini_map_width = self.screen_resolution[0] // 4
         self.mini_map_height = round(self.mini_map_width / 2)
         self.mini_map_position = (self.screen_resolution[0] - self.mini_map_width - 8,
@@ -476,3 +496,24 @@ class MapView(View):
             self.map_offset = (0, (MAP_HEIGHT - self.main_map.height) // 2)
 
         self.mini_map_offset = (0, (MAP_HEIGHT - self.main_map.height) // 2)
+
+    def on_apply_shaders_and_draw_vertices(self):
+        """
+        Activates the shader, initializes all shader uniforms, draws shader sprite and deactivates the shader.
+        """
+        self.map_view_shader.use()
+        self.map_view_shader.uniforms.screen_resolution = self.screen_resolution
+        self.map_view_shader.uniforms.map_opacity = self.map_opacity
+        self.map_view_shader.uniforms.is_button_activated \
+            = [int(self.zoom_in_button.is_activated or self.zoom_out_button.is_activated), ]
+        self.map_view_shader.uniforms.button_x \
+            = [self.zoom_in_button.position[0], ]
+        self.map_view_shader.uniforms.button_y \
+            = [self.zoom_in_button.position[1], ]
+        self.map_view_shader.uniforms.button_w \
+            = [self.zoom_in_button.button_size[0], ]
+        self.map_view_shader.uniforms.button_h \
+            = [self.zoom_in_button.button_size[1], ]
+        self.map_view_shader.uniforms.number_of_buttons = 1
+        self.map_view_shader_sprite.draw(GL_QUADS)
+        self.map_view_shader.clear()
