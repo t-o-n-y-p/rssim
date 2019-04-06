@@ -51,7 +51,7 @@ class RSSim:
             copyfile('db/default.db', 'db/user.db')
 
         # add resources: special font, images and textures
-        resource.path = ['font', 'img', 'img/textures.zip']
+        resource.path = ['font', 'img', 'img/textures_pack_1.zip', 'img/textures_pack_2.zip']
         resource.reindex()
         # create database connections and cursors
         self.user_db_connection = connect('db/user.db')
