@@ -185,6 +185,8 @@ class EnumValueControl:
         :param new_locale:                      selected locale
         """
         self.current_locale = new_locale
-        self.on_update_temp_value_label()
         if self.description_label is not None:
             self.description_label.text = I18N_RESOURCES[self.description_key][self.current_locale]
+
+        if self.temp_value_label is not None:
+            self.on_update_temp_value_label()
