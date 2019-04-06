@@ -1,6 +1,5 @@
 /*
-    Fragment shader for "main frame" rectangle. "Main frame" is responsible for UI button borders, UI background,
-    and general app red border. It calculates normalized RGBA color for each pixel inside the game window.
+    Fragment shader for map view.
     Input value:
         vec4 gl_FragCoord - pixel position in 3D homogeneous coordinates (from left bottom point)
     Output value:
@@ -11,6 +10,11 @@
         int button_y[] - Y position of button with given index
         int button_w[] - width of button with given index
         int button_h[] - height of button with given index
+        int number_of_buttons - number of buttons on the screen
+        int mini_map_opacity - opacity of mini-map
+        ivec4 mini_map_position_size - x, y, width and height of mini-map border
+        ivec4 mini_map_frame_position_size - x, y, width and height of mini-map frame border
+                which indicates current position on map
 */
 #version 330 core
 layout(pixel_center_integer) in vec4 gl_FragCoord;
@@ -27,6 +31,9 @@ uniform ivec4 mini_map_position_size = ivec4(0, 0, 0, 0);
 uniform ivec4 mini_map_frame_position_size = ivec4(0, 0, 0, 0);
 
 bool is_button_border()
+/*
+    Returns "true" if pixel belongs to any button border and "false" if it does not.
+*/
 {
     int margin_x, margin_y;
     for(int i = 0; i < number_of_buttons; i++)
@@ -50,6 +57,9 @@ bool is_button_border()
 }
 
 bool is_mini_map_border()
+/*
+    Returns "true" if pixel belongs to mini-map border and "false" if it does not.
+*/
 {
     int margin_x = int(gl_FragCoord[0]) - mini_map_position_size.x;
     int margin_y = int(gl_FragCoord[1]) - mini_map_position_size.y;
@@ -62,6 +72,9 @@ bool is_mini_map_border()
 }
 
 bool is_mini_map_frame_border()
+/*
+    Returns "true" if pixel belongs to mini-map frame border and "false" if it does not.
+*/
 {
     int margin_x = int(gl_FragCoord[0]) - mini_map_frame_position_size.x;
     int margin_y = int(gl_FragCoord[1]) - mini_map_frame_position_size.y;
@@ -79,12 +92,16 @@ void main()
     Calculates intermediate color for all possible cases and mixes it
 */
 {
+    // mini-map frame has top priority here, should not be overlaid
     if (is_mini_map_frame_border())
         color_frag = vec4(1.0, 0.5, 0.0, float(mini_map_opacity) / 255.0);
+    // then mini-map border
     else if (is_mini_map_border())
         color_frag = vec4(vec3(0.0), float(mini_map_opacity) / 255.0);
+    // last but not least - button borers
     else if (is_button_border())
         color_frag = vec4(1.0, 0.0, 0.0, float(map_opacity) / 255.0);
+    // all other pixels are transparent
     else
         color_frag = vec4(0.0);
 }

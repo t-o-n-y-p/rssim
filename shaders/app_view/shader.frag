@@ -1,6 +1,5 @@
 /*
-    Fragment shader for "main frame" rectangle. "Main frame" is responsible for UI button borders, UI background,
-    and general app red border. It calculates normalized RGBA color for each pixel inside the game window.
+    Fragment shader for app view.
     Input value:
         vec4 gl_FragCoord - pixel position in 3D homogeneous coordinates (from left bottom point)
     Output value:
@@ -57,20 +56,20 @@ bool is_inside_top_bar()
 void main()
 /*
     MAIN SHADER FUNCTION
-    Calculates intermediate color for all possible cases and mixes it
+    Calculates color for all possible cases
 */
 {
     float top_bar_opacity = 0.97;
     // draw app window border and top bar border
     if (is_general_border())
         color_frag = vec4(1.0, 0.0, 0.0, 1.0);
-
     // fill top bar with color and draw top bar buttons borders
     else if (is_inside_top_bar())
         if (is_top_bar_button_border())
             color_frag = vec4(1.0, 0.0, 0.0, 1.0);
         else
             color_frag = vec4(vec3(0.0), top_bar_opacity);
+    // all other pixels are transparent here
     else
         color_frag = vec4(0.0);
 }
