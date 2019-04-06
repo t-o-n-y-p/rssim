@@ -550,17 +550,24 @@ class MapView(View):
         """
         self.map_view_shader.use()
         self.map_view_shader.uniforms.map_opacity = self.map_opacity
-        self.map_view_shader.uniforms.is_button_activated \
-            = [int(self.zoom_in_button.is_activated or self.zoom_out_button.is_activated), ]
-        self.map_view_shader.uniforms.button_x \
-            = [self.zoom_in_button.position[0], ]
-        self.map_view_shader.uniforms.button_y \
-            = [self.zoom_in_button.position[1], ]
-        self.map_view_shader.uniforms.button_w \
-            = [self.zoom_in_button.button_size[0], ]
-        self.map_view_shader.uniforms.button_h \
-            = [self.zoom_in_button.button_size[1], ]
-        self.map_view_shader.uniforms.number_of_buttons = 1
+        is_button_activated = []
+        button_x = []
+        button_y = []
+        button_w = []
+        button_h = []
+        for b in self.buttons:
+            is_button_activated.append(int(b.is_activated))
+            button_x.append(b.position[0])
+            button_y.append(b.position[1])
+            button_w.append(b.button_size[0])
+            button_h.append(b.button_size[1])
+
+        self.map_view_shader.uniforms.is_button_activated = is_button_activated
+        self.map_view_shader.uniforms.button_x = button_x
+        self.map_view_shader.uniforms.button_y = button_y
+        self.map_view_shader.uniforms.button_w = button_w
+        self.map_view_shader.uniforms.button_h = button_h
+        self.map_view_shader.uniforms.number_of_buttons = len(self.buttons)
         self.map_view_shader.uniforms.mini_map_opacity = self.mini_map_opacity
         self.map_view_shader.uniforms.mini_map_position_size = (self.mini_map_position[0], self.mini_map_position[1],
                                                                 self.mini_map_width, self.mini_map_height)

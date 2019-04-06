@@ -20,12 +20,12 @@
 layout(pixel_center_integer) in vec4 gl_FragCoord;
 out vec4 color_frag;
 uniform int map_opacity = 0;
-uniform int is_button_activated[1];
-uniform int button_x[1];
-uniform int button_y[1];
-uniform int button_w[1];
-uniform int button_h[1];
-uniform int number_of_buttons = 1;
+uniform int is_button_activated[4];
+uniform int button_x[4];
+uniform int button_y[4];
+uniform int button_w[4];
+uniform int button_h[4];
+uniform int number_of_buttons = 4;
 uniform int mini_map_opacity = 0;
 uniform ivec4 mini_map_position_size = ivec4(0, 0, 0, 0);
 uniform ivec4 mini_map_frame_position_size = ivec4(0, 0, 0, 0);
