@@ -62,8 +62,8 @@ class MapView(View):
             on_mouse_drag_handlers              list of on_mouse_drag event handlers
             map_view_shader                     shader for map area and its buttons
             map_view_shader_sprite              sprite for map view shader
-            map_view_shader_upper_limit         upper edge for game_view_shader_sprite
-            map_view_shader_bottom_limit        lower edge for game_view_shader_sprite
+            map_view_shader_upper_limit         upper edge for map_view_shader_sprite
+            map_view_shader_bottom_limit        bottom edge for map_view_shader_sprite
 
         :param user_db_cursor:                  user DB cursor (is used to execute user DB queries)
         :param config_db_cursor:                configuration DB cursor (is used to execute configuration DB queries)
@@ -191,6 +191,10 @@ class MapView(View):
 
         if not self.is_activated and self.map_opacity > 0:
             self.map_opacity -= 15
+            if self.map_opacity <= 0:
+                self.map_view_shader_sprite.delete()
+                self.map_view_shader_sprite = None
+
             self.main_map_sprite.opacity -= 15
             if self.main_map_sprite.opacity <= 0:
                 self.main_map_sprite.delete()
@@ -251,12 +255,13 @@ class MapView(View):
         Activates the view and creates all sprites and labels.
         """
         self.is_activated = True
-        self.map_view_shader_sprite \
-            = self.batches['main_frame'].add(4, GL_QUADS, self.groups['main_frame'],
-                                             ('v2f/static', (-1.0, self.map_view_shader_bottom_limit,
-                                                             -1.0, self.map_view_shader_upper_limit,
-                                                             1.0, self.map_view_shader_upper_limit,
-                                                             1.0, self.map_view_shader_bottom_limit)))
+        if self.map_view_shader_sprite is None:
+            self.map_view_shader_sprite \
+                = self.batches['main_frame'].add(4, GL_QUADS, self.groups['main_frame'],
+                                                 ('v2f/static', (-1.0, self.map_view_shader_bottom_limit,
+                                                                 -1.0, self.map_view_shader_upper_limit,
+                                                                 1.0, self.map_view_shader_upper_limit,
+                                                                 1.0, self.map_view_shader_bottom_limit)))
         self.on_change_map_offset()
         if self.main_map_sprite is None:
             self.main_map_sprite = Sprite(self.main_map, x=self.base_offset[0] + self.map_offset[0],

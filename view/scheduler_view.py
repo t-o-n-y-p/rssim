@@ -1,6 +1,8 @@
 from logging import getLogger
 
 from pyglet.text import Label
+from pyglet.gl import GL_QUADS
+from pyshaders import from_files_names
 
 from view import *
 from ui.schedule import ScheduleRow
@@ -16,20 +18,24 @@ class SchedulerView(View):
     def __init__(self, user_db_cursor, config_db_cursor, surface, batches, groups):
         """
         Button click handlers:
-            on_close_schedule                   on_click handler for close schedule button
+            on_close_schedule                       on_click handler for close schedule button
 
         Properties:
-            schedule_opacity                    general opacity of the schedule screen
-            schedule_left_caption_position      position for schedule table caption, left side
-            schedule_right_caption_position     position for schedule table caption, right side
-            schedule_caption_font_size          font size for schedule table caption
-            base_schedule                       generated train queue sorted by arrival time within an hour
-            game_time                           current in-game time
-            left_schedule_caption_label         label from caption for left schedule column
-            right_schedule_caption_label        label from caption for right schedule column
-            close_schedule_button               CloseScheduleButton object
-            buttons                             list of all buttons
-            schedule_rows                       list of content rows on schedule screen
+            schedule_opacity                        general opacity of the schedule screen
+            schedule_left_caption_position          position for schedule table caption, left side
+            schedule_right_caption_position         position for schedule table caption, right side
+            schedule_caption_font_size              font size for schedule table caption
+            base_schedule                           generated train queue sorted by arrival time within an hour
+            game_time                               current in-game time
+            left_schedule_caption_label             label from caption for left schedule column
+            right_schedule_caption_label            label from caption for right schedule column
+            close_schedule_button                   CloseScheduleButton object
+            buttons                                 list of all buttons
+            schedule_rows                           list of content rows on schedule screen
+            scheduler_view_shader_sprite            sprite for scheduler view shader
+            scheduler_view_shader                   shader for schedule screen area
+            scheduler_view_shader_bottom_limit      bottom edge for scheduler_view_shader_sprite
+            scheduler_view_shader_upper_limit       upper edge for scheduler_view_shader_sprite
 
         :param user_db_cursor:                  user DB cursor (is used to execute user DB queries)
         :param config_db_cursor:                configuration DB cursor (is used to execute configuration DB queries)
@@ -67,12 +73,25 @@ class SchedulerView(View):
 
             self.schedule_rows.append(column)
 
+        self.scheduler_view_shader_sprite = None
+        self.scheduler_view_shader = from_files_names('shaders/shader.vert', 'shaders/scheduler_view/shader.frag')
+        self.scheduler_view_shader_bottom_limit = 0.0
+        self.scheduler_view_shader_upper_limit = 0.0
+
     @view_is_not_active
     def on_activate(self):
         """
         Activates the view and creates sprites and labels.
         """
         self.is_activated = True
+        if self.scheduler_view_shader_sprite is None:
+            self.scheduler_view_shader_sprite \
+                = self.batches['main_frame'].add(4, GL_QUADS, self.groups['main_frame'],
+                                                 ('v2f/static', (-1.0, self.scheduler_view_shader_bottom_limit,
+                                                                 -1.0, self.scheduler_view_shader_upper_limit,
+                                                                 1.0, self.scheduler_view_shader_upper_limit,
+                                                                 1.0, self.scheduler_view_shader_bottom_limit)))
+
         self.left_schedule_caption_label \
             = Label(I18N_RESOURCES['schedule_caption_string'][self.current_locale],
                     font_name='Perfo', bold=True, font_size=self.schedule_caption_font_size, color=ORANGE,
@@ -123,6 +142,9 @@ class SchedulerView(View):
 
         if not self.is_activated and self.schedule_opacity > 0:
             self.schedule_opacity -= 15
+            if self.schedule_opacity <= 0:
+                self.scheduler_view_shader_sprite.delete()
+                self.scheduler_view_shader_sprite = None
 
     def on_change_screen_resolution(self, screen_resolution):
         """
@@ -131,6 +153,13 @@ class SchedulerView(View):
         :param screen_resolution:       new screen resolution
         """
         self.on_recalculate_ui_properties(screen_resolution)
+        self.scheduler_view_shader_bottom_limit = self.bottom_bar_height / self.screen_resolution[1] * 2 - 1
+        self.scheduler_view_shader_upper_limit = 1 - self.top_bar_height / self.screen_resolution[1] * 2
+        if self.is_activated:
+            self.scheduler_view_shader_sprite.vertices = (-1.0, self.scheduler_view_shader_bottom_limit,
+                                                          -1.0, self.scheduler_view_shader_upper_limit,
+                                                          1.0, self.scheduler_view_shader_upper_limit,
+                                                          1.0, self.scheduler_view_shader_bottom_limit)
         self.on_read_ui_info()
         if self.is_activated:
             self.left_schedule_caption_label.x = self.schedule_left_caption_position[0]
@@ -209,3 +238,14 @@ class SchedulerView(View):
         for i in range(SCHEDULE_COLUMNS):
             for j in range(SCHEDULE_ROWS):
                 self.schedule_rows[i][j].on_update_current_locale(new_locale)
+
+    @schedule_opacity_exists
+    def on_apply_shaders_and_draw_vertices(self):
+        """
+        Activates the shader, initializes all shader uniforms, draws shader sprite and deactivates the shader.
+        """
+        self.scheduler_view_shader.use()
+        self.scheduler_view_shader.uniforms.screen_resolution = self.screen_resolution
+        self.scheduler_view_shader.uniforms.schedule_opacity = self.schedule_opacity
+        self.scheduler_view_shader_sprite.draw(GL_QUADS)
+        self.scheduler_view_shader.clear()

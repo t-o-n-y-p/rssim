@@ -253,6 +253,14 @@ def map_opacity_exists(fn):
     return _handle_if_map_opacity_is_positive
 
 
+def schedule_opacity_exists(fn):
+    def _handle_if_schedule_opacity_is_positive(*args, **kwargs):
+        if args[0].schedule_opacity > 0:
+            fn(*args, **kwargs)
+
+    return _handle_if_schedule_opacity_is_positive
+
+
 # --------------------- CONSTANTS ---------------------
 MAP_WIDTH = 8192                                # full-size map width
 MAP_HEIGHT = 4096                               # full-size map height
