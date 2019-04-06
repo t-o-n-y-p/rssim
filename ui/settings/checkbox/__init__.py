@@ -8,15 +8,60 @@ from ui.button.unchecked_checkbox_button import UncheckedCheckboxButton
 
 class Checkbox:
     """
-    Implements base class fo all checkboxes in the app.
+    Implements base class for all checkboxes in the app.
     """
     def __init__(self, column, row, on_update_state_action, surface, batches, groups, current_locale, logger):
+        """
+        Button click handlers:
+            on_check                            on_click handler for unchecked checkbox button
+            on_uncheck                          on_click handler for checked checkbox button
+
+        Properties:
+            logger                              telemetry instance
+            column                              number of settings column
+            row                                 number of settings row
+            on_update_state_action              method to call when checkbox state is being updated
+            surface                             surface to draw all UI objects on
+            batches                             batches to group all labels and sprites
+            groups                              defines drawing layers (some labels and sprites behind others)
+            current_locale                      current locale selected by player
+            checked_checkbox_button             CheckedCheckboxButton object
+            unchecked_checkbox_button           UncheckedCheckboxButton object
+            buttons                             list of all buttons
+            screen_resolution                   current game window resolution
+            anchor_left_center_point            left center point of settings screen cell
+            height                              settings cell height
+            description_key                     resource key for checkbox description
+            description_label                   text label for checkbox description
+            is_activated                        indicates if checkbox is activated or not
+
+        :param column:                          number of settings column
+        :param row:                             number of settings row
+        :param on_update_state_action:          method to call when checkbox state is being updated
+        :param surface:                         surface to draw all UI objects on
+        :param batches:                         batches to group all labels and sprites
+        :param groups:                          defines drawing layers (some labels and sprites behind others)
+        :param current_locale:                  current locale selected by player
+        :param logger:                          telemetry instance
+        """
         def on_check(button):
+            """
+            Swaps the buttons.
+            Calls on_update_state_action when player checks checkbox.
+
+            :param button:                      button that was clicked
+            """
             button.on_deactivate()
             button.paired_button.on_activate()
             self.on_update_state_action(True)
 
         def on_uncheck(button):
+            """
+            Swaps the buttons.
+            Calls on_update_state_action when player unchecks checkbox.
+
+            :param button:                      button that was clicked
+            """
             button.on_deactivate()
             button.paired_button.on_activate()
             self.on_update_state_action(False)

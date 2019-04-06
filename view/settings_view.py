@@ -15,6 +15,57 @@ class SettingsView(View):
     Settings object is responsible for user-defined settings.
     """
     def __init__(self, user_db_cursor, config_db_cursor, surface, batches, groups):
+        """
+        Settings are located within the grid.
+        Columns indexes are -1 (left part of the screen), 0 (middle) and 1 (right part of the screen).
+        Row indexes start from middle line, distance between rows is top_bar_height * 5/8.
+        All settings inside the same column must use only odd or only even row numbers.
+
+        Button click handlers:
+            on_accept_changes                   on_click handler for accept changes button
+            on_reject_changes                   on_click handler for reject changes button
+
+        Action handlers for controls:
+            on_update_windowed_resolution_state     is activated when player changes screen resolution inside control
+            on_update_display_fps_state             is activated when player turns FPS on/off
+            on_update_level_up_notifications_state
+                                            is activated when player turns level up notifications on/off
+            on_update_feature_unlocked_notifications_state
+                                            is activated when player turns feature unlocked notifications on/off
+            on_update_construction_completed_notifications_state
+                                            is activated when player turns construction completed notifications on/off
+            on_update_enough_money_notifications_state
+                                            is activated when player turns enough money notifications on/off
+
+        Properties:
+            temp_windowed_resolution            windowed resolution selected by player
+            temp_display_fps                    display_fps flag value selected by player
+            display_fps_checkbox                DisplayFPSCheckbox object
+            temp_level_up_notification_enabled
+                                            level_up_notification_enabled flag value selected by player
+            temp_feature_unlocked_notification_enabled
+                                            feature_unlocked_notification_enabled flag value selected by player
+            temp_construction_completed_notification_enabled
+                                            construction_completed_notification_enabled flag value selected by player
+            temp_enough_money_notification_enabled
+                                            enough_money_notification_enabled flag value selected by player
+            notifications_checkbox_group        NotificationsCheckboxGroup object
+            temp_log_level                      log level selected by player
+            settings_opacity                    general opacity for settings screen
+            available_windowed_resolutions      list of screen resolutions available for windowed mode
+            available_windowed_resolutions_position
+                                            index of screen resolution selected by player
+            screen_resolution_control           ScreenResolutionControl object
+            accept_settings_button              AcceptSettingsButton object
+            reject_settings_button              RejectSettingsButton object
+            buttons                             list of all buttons
+
+        :param user_db_cursor:                  user DB cursor (is used to execute user DB queries)
+        :param config_db_cursor:                configuration DB cursor (is used to execute configuration DB queries)
+        :param surface:                         surface to draw all UI objects on
+        :param batches:                         batches to group all labels and sprites
+        :param groups:                          defines drawing layers (some labels and sprites behind others)
+        """
         def on_accept_changes(button):
             """
             Notifies controller that player accepts changes.
@@ -33,21 +84,55 @@ class SettingsView(View):
             self.controller.on_deactivate()
 
         def on_update_windowed_resolution_state(index):
+            """
+            Updates temp windowed resolution value when player uses value control.
+
+            :param index:                       index from available resolutions list
+            """
             self.on_change_temp_windowed_resolution(self.available_windowed_resolutions[index])
 
         def on_update_display_fps_state(new_state):
+            """
+            Updates temp_display_fps flag value when player uses corresponding checkbox.
+
+            :param new_state:                   new flag value
+            """
             self.temp_display_fps = new_state
 
         def on_update_level_up_notifications_state(new_state):
+            """
+            Updates temp_level_up_notification_enabled flag value
+            when player uses corresponding checkbox.
+
+            :param new_state:                   new flag value
+            """
             self.temp_level_up_notification_enabled = new_state
 
         def on_update_feature_unlocked_notifications_state(new_state):
+            """
+            Updates temp_feature_unlocked_notification_enabled flag value
+            when player uses corresponding checkbox.
+
+            :param new_state:                   new flag value
+            """
             self.temp_feature_unlocked_notification_enabled = new_state
 
         def on_update_construction_completed_notifications_state(new_state):
+            """
+            Updates temp_construction_completed_notification_enabled flag value
+            when player uses corresponding checkbox.
+
+            :param new_state:                   new flag value
+            """
             self.temp_construction_completed_notification_enabled = new_state
 
         def on_update_enough_money_notifications_state(new_state):
+            """
+            Updates temp_enough_money_notification_enabled flag value
+            when player uses corresponding checkbox.
+
+            :param new_state:                   new flag value
+            """
             self.temp_enough_money_notification_enabled = new_state
 
         super().__init__(user_db_cursor, config_db_cursor, surface, batches, groups,

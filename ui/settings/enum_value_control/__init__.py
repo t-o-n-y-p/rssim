@@ -7,9 +7,55 @@ from ui.button.decrement_button import DecrementButton
 
 
 class EnumValueControl:
+    """
+    Implements base class for all enum value controls on settings screen
+    """
     def __init__(self, column, row, surface, batches, groups, current_locale, possible_values_list,
                  on_update_state_action, logger):
+        """
+        Button click handlers:
+            on_increment                        on_click handler for increment button
+            on_decrement                        on_click handler for decrement button
+
+        Properties:
+            logger                              telemetry instance
+            column                              number of settings column
+            row                                 number of settings row
+            surface                             surface to draw all UI objects on
+            batches                             batches to group all labels and sprites
+            groups                              defines drawing layers (some labels and sprites behind others)
+            current_locale                      current locale selected by player
+            on_update_state_action              method to call when control state is being updated
+            possible_values_list                list of values for enum property
+            choice_state                        index of currently selected value
+            screen_resolution                   current game window resolution
+            anchor_center_point                 center point of settings screen cell
+            height                              settings cell height
+            description_key                     resource key for checkbox description
+            description_label                   text label for checkbox description
+            temp_value_label                    text label for currently selected value
+            is_activated                        indicates if checkbox is activated or not
+            increment_button                    IncrementButton object
+            decrement_button                    DecrementButton object
+            buttons                             list of all buttons
+
+        :param column:                          number of settings column
+        :param row:                             number of settings row
+        :param surface:                         surface to draw all UI objects on
+        :param batches:                         batches to group all labels and sprites
+        :param groups:                          defines drawing layers (some labels and sprites behind others)
+        :param current_locale:                  current locale selected by player
+        :param possible_values_list:            list of values for enum property
+        :param on_update_state_action:          method to call when checkbox state is being updated
+        :param logger:                          telemetry instance
+        """
         def on_increment(button):
+            """
+            Calls on_update_state_action when value index is being incremented.
+            Updates temp value label. Checks buttons state based on index.
+
+            :param button:                      button that was clicked
+            """
             self.choice_state += 1
             self.on_update_temp_value_label()
             self.on_update_state_action(self.choice_state)
@@ -20,6 +66,12 @@ class EnumValueControl:
                 button.paired_button.on_activate()
 
         def on_decrement(button):
+            """
+            Calls on_update_state_action when value index is being decremented.
+            Updates temp value label. Checks buttons state based on index.
+
+            :param button:                      button that was clicked
+            """
             self.choice_state -= 1
             self.on_update_temp_value_label()
             self.on_update_state_action(self.choice_state)
@@ -52,6 +104,9 @@ class EnumValueControl:
         self.is_activated = False
 
     def on_activate(self):
+        """
+        Activates the control, creates description label.
+        """
         self.is_activated = True
         self.description_label = Label(I18N_RESOURCES[self.description_key][self.current_locale],
                                        font_name='Arial', font_size=self.height // 5 * 2,
@@ -60,6 +115,9 @@ class EnumValueControl:
                                        batch=self.batches['ui_batch'], group=self.groups['button_text'])
 
     def on_deactivate(self):
+        """
+        Deactivates the control, deletes all labels, deactivates all buttons.
+        """
         self.is_activated = False
         self.description_label.delete()
         self.description_label = None
@@ -69,10 +127,18 @@ class EnumValueControl:
             b.on_deactivate()
 
     def on_update_temp_value_label(self):
+        """
+        Updates temp value label based on individual rule set for each control.
+        """
         pass
 
-    def on_init_state(self, choice_state):
-        self.choice_state = choice_state
+    def on_init_state(self, initial_state):
+        """
+        Activates button depending on initial state of the control.
+
+        :param initial_state:                   index of initial value
+        """
+        self.choice_state = initial_state
         self.on_update_temp_value_label()
         if self.choice_state > 0:
             self.decrement_button.on_activate()

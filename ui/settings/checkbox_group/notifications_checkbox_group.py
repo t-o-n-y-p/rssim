@@ -8,6 +8,10 @@ from ui.settings.checkbox.enough_money_notification_checkbox import EnoughMoneyN
 
 
 class NotificationsCheckboxGroup(CheckboxGroup):
+    """
+    Implements checkbox group for notifications state.
+    For properties definition see base CheckboxGroup class.
+    """
     def __init__(self, column, row, surface, batches, groups, current_locale, on_update_state_actions):
         super().__init__(column, row, surface, batches, groups, current_locale,
                          logger=getLogger('root.app.settings.view.checkbox_group.notifications_checkbox_group'))

@@ -4,6 +4,10 @@ from ui.settings.enum_value_control import *
 
 
 class ScreenResolutionControl(EnumValueControl):
+    """
+    Implements control for windowed screen resolution value.
+    For properties definition see base EnumValueControl class.
+    """
     def __init__(self, column, row, surface, batches, groups, current_locale,
                  possible_values_list, on_update_state_action):
         super().__init__(column, row, surface, batches, groups, current_locale,
@@ -12,6 +16,9 @@ class ScreenResolutionControl(EnumValueControl):
         self.description_key = 'windowed_resolution_description_string'
 
     def on_update_temp_value_label(self):
+        """
+        Updates temp value label for screen resolution: {width}X{height}.
+        """
         text = '{}x{}'.format(self.possible_values_list[self.choice_state][0],
                               self.possible_values_list[self.choice_state][1])
         if self.temp_value_label is None:
