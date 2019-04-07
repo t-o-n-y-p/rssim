@@ -71,9 +71,9 @@ class MapModel(Model):
         """
         super().__init__(user_db_connection, user_db_cursor, config_db_cursor,
                          logger=getLogger('root.app.game.map.model'))
-        self.user_db_cursor.execute('SELECT unlocked_tracks, unlocked_environment FROM game_progress')
+        self.user_db_cursor.execute('SELECT unlocked_tracks, unlocked_environment FROM map_progress')
         self.unlocked_tracks, self.unlocked_environment = self.user_db_cursor.fetchone()
-        self.user_db_cursor.execute('SELECT unlocked_car_collections FROM game_progress')
+        self.user_db_cursor.execute('SELECT unlocked_car_collections FROM map_progress')
         self.unlocked_car_collections = list(map(int, self.user_db_cursor.fetchone()[0].split(',')))
 
     @model_is_not_active
@@ -124,7 +124,7 @@ class MapModel(Model):
         """
         Saves map state to user progress database.
         """
-        self.user_db_cursor.execute('''UPDATE game_progress SET unlocked_tracks = ?, unlocked_environment = ?, 
+        self.user_db_cursor.execute('''UPDATE map_progress SET unlocked_tracks = ?, unlocked_environment = ?, 
                                        unlocked_car_collections = ?''',
                                     (self.unlocked_tracks, self.unlocked_environment,
                                      ','.join(list(map(str, self.unlocked_car_collections)))))

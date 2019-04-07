@@ -35,8 +35,10 @@ class SchedulerModel(Model):
         """
         super().__init__(user_db_connection, user_db_cursor, config_db_cursor,
                          logger=getLogger('root.app.game.map.scheduler.model'))
-        self.user_db_cursor.execute('SELECT level, unlocked_tracks, supported_cars_min FROM game_progress')
-        self.level, self.unlocked_tracks, self.supported_cars_min = self.user_db_cursor.fetchone()
+        self.user_db_cursor.execute('SELECT level FROM game_progress')
+        self.level = self.user_db_cursor.fetchone()[0]
+        self.user_db_cursor.execute('SELECT unlocked_tracks, supported_cars_min FROM map_progress')
+        self.unlocked_tracks, self.supported_cars_min = self.user_db_cursor.fetchone()
         self.config_db_cursor.execute('''SELECT arrival_time_min, arrival_time_max, direction, new_direction, 
                                       cars_min, cars_max FROM schedule_options 
                                       WHERE min_level <= ? AND max_level >= ?''', (self.level, self.level))
@@ -153,7 +155,7 @@ class SchedulerModel(Model):
                                      ','.join(list(map(str, list(map(int, self.entry_busy_state)))))))
         self.user_db_cursor.execute('DELETE FROM base_schedule')
         self.user_db_cursor.executemany('INSERT INTO base_schedule VALUES (?, ?, ?, ?, ?, ?, ?, ?)', self.base_schedule)
-        self.user_db_cursor.execute('UPDATE game_progress SET supported_cars_min = ?', (self.supported_cars_min, ))
+        self.user_db_cursor.execute('UPDATE map_progress SET supported_cars_min = ?', (self.supported_cars_min, ))
 
     def on_level_up(self, level):
         """

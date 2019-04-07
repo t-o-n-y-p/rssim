@@ -127,7 +127,7 @@ class MapView(View):
 
         super().__init__(user_db_cursor, config_db_cursor, surface, batches, groups,
                          logger=getLogger('root.app.game.map.view'))
-        self.user_db_cursor.execute('SELECT unlocked_tracks, unlocked_environment FROM game_progress')
+        self.user_db_cursor.execute('SELECT unlocked_tracks, unlocked_environment FROM map_progress')
         self.unlocked_tracks, self.unlocked_environment = self.user_db_cursor.fetchone()
         self.main_map = resource.image(f'full_map_{self.unlocked_tracks}.dds')
         self.environment = resource.image(f'full_map_e_{self.unlocked_environment}.dds')
