@@ -14,7 +14,7 @@ class SettingsView(View):
     Implements Settings view.
     Settings object is responsible for user-defined settings.
     """
-    def __init__(self, user_db_cursor, config_db_cursor, surface, batches, groups):
+    def __init__(self, user_db_cursor, config_db_cursor):
         """
         Settings are located within the grid.
         Columns indexes are -1 (left part of the screen), 0 (middle) and 1 (right part of the screen).
@@ -62,9 +62,6 @@ class SettingsView(View):
 
         :param user_db_cursor:                  user DB cursor (is used to execute user DB queries)
         :param config_db_cursor:                configuration DB cursor (is used to execute configuration DB queries)
-        :param surface:                         surface to draw all UI objects on
-        :param batches:                         batches to group all labels and sprites
-        :param groups:                          defines drawing layers (some labels and sprites behind others)
         """
         def on_accept_changes(button):
             """
@@ -135,19 +132,19 @@ class SettingsView(View):
             """
             self.temp_enough_money_notification_enabled = new_state
 
-        super().__init__(user_db_cursor, config_db_cursor, surface, batches, groups,
+        super().__init__(user_db_cursor, config_db_cursor,
                          logger=getLogger('root.app.settings.view'))
         self.temp_windowed_resolution = (0, 0)
         self.temp_display_fps = False
         self.display_fps_checkbox \
-            = DisplayFPSCheckbox(-1, -3, self.surface, self.batches, self.groups, self.current_locale,
+            = DisplayFPSCheckbox(-1, -3, self.current_locale,
                                  on_update_state_action=on_update_display_fps_state)
         self.temp_level_up_notification_enabled = False
         self.temp_feature_unlocked_notification_enabled = False
         self.temp_construction_completed_notification_enabled = False
         self.temp_enough_money_notification_enabled = False
         self.notifications_checkbox_group \
-            = NotificationsCheckboxGroup(1, 4, self.surface, self.batches, self.groups, self.current_locale,
+            = NotificationsCheckboxGroup(1, 4, self.current_locale,
                                          on_update_state_actions=[on_update_level_up_notifications_state,
                                                                   on_update_feature_unlocked_notifications_state,
                                                                   on_update_construction_completed_notifications_state,
@@ -160,14 +157,12 @@ class SettingsView(View):
         self.available_windowed_resolutions = self.config_db_cursor.fetchall()
         self.available_windowed_resolutions_position = 0
         self.screen_resolution_control \
-            = ScreenResolutionControl(-1, 3, self.surface, self.batches, self.groups, self.current_locale,
+            = ScreenResolutionControl(-1, 3, self.current_locale,
                                       possible_values_list=self.available_windowed_resolutions,
                                       on_update_state_action=on_update_windowed_resolution_state)
-        self.accept_settings_button = AcceptSettingsButton(surface=self.surface, batch=self.batches['ui_batch'],
-                                                           groups=self.groups, on_click_action=on_accept_changes)
+        self.accept_settings_button = AcceptSettingsButton(on_click_action=on_accept_changes)
         self.buttons.append(self.accept_settings_button)
-        self.reject_settings_button = RejectSettingsButton(surface=self.surface, batch=self.batches['ui_batch'],
-                                                           groups=self.groups, on_click_action=on_reject_changes)
+        self.reject_settings_button = RejectSettingsButton(on_click_action=on_reject_changes)
         self.buttons.append(self.reject_settings_button)
         self.buttons.extend(self.screen_resolution_control.buttons)
         self.buttons.extend(self.display_fps_checkbox.buttons)

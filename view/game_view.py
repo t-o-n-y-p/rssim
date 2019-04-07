@@ -22,7 +22,7 @@ class GameView(View):
     Implements Game view.
     Game object is responsible for properties, UI and events related to the game process.
     """
-    def __init__(self, user_db_cursor, config_db_cursor, surface, batches, groups):
+    def __init__(self, user_db_cursor, config_db_cursor):
         """
         Button click handlers:
             on_pause_game                           on_click handler for pause game button
@@ -58,9 +58,6 @@ class GameView(View):
 
         :param user_db_cursor:                  user DB cursor (is used to execute user DB queries)
         :param config_db_cursor:                configuration DB cursor (is used to execute configuration DB queries)
-        :param surface:                         surface to draw all UI objects on
-        :param batches:                         batches to group all labels and sprites
-        :param groups:                          defines drawing layers (some labels and sprites behind others)
         """
         def on_pause_game(button):
             """
@@ -84,7 +81,7 @@ class GameView(View):
             button.paired_button.on_activate()
             self.controller.on_resume_game()
 
-        super().__init__(user_db_cursor, config_db_cursor, surface, batches, groups,
+        super().__init__(user_db_cursor, config_db_cursor,
                          logger=getLogger('root.app.game.view'))
         self.game_frame_opacity = 0
         self.progress_bar_inactive_image = load('img/game_progress_bars/progress_bar_inactive.png')
@@ -98,10 +95,8 @@ class GameView(View):
         self.money_offset = self.exp_offset + self.bottom_bar_height // 8 \
                           + int(self.progress_bar_inactive_image.width * self.bottom_bar_height / 80)
         self.pause_game_button, self.resume_game_button \
-            = create_two_state_button(PauseGameButton(surface=self.surface, batch=self.batches['ui_batch'],
-                                                      groups=self.groups, on_click_action=on_pause_game),
-                                      ResumeGameButton(surface=self.surface, batch=self.batches['ui_batch'],
-                                                       groups=self.groups, on_click_action=on_resume_game))
+            = create_two_state_button(PauseGameButton(on_click_action=on_pause_game),
+                                      ResumeGameButton(on_click_action=on_resume_game))
         self.buttons.append(self.pause_game_button)
         self.buttons.append(self.resume_game_button)
         add_font('perfo-bold.ttf')

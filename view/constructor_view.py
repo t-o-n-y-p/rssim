@@ -15,7 +15,7 @@ class ConstructorView(View):
     Implements Constructor view.
     Constructor object is responsible for building new tracks and station environment.
     """
-    def __init__(self, user_db_cursor, config_db_cursor, surface, batches, groups):
+    def __init__(self, user_db_cursor, config_db_cursor):
         """
         Button click handlers:
             on_close_constructor                on_click handler for close constructor button
@@ -43,9 +43,6 @@ class ConstructorView(View):
 
         :param user_db_cursor:                  user DB cursor (is used to execute user DB queries)
         :param config_db_cursor:                configuration DB cursor (is used to execute configuration DB queries)
-        :param surface:                         surface to draw all UI objects on
-        :param batches:                         batches to group all labels and sprites
-        :param groups:                          defines drawing layers (some labels and sprites behind others)
         """
         def on_close_constructor(button):
             """
@@ -90,28 +87,24 @@ class ConstructorView(View):
 
         self.map_id = None
         self.on_update_map_id()
-        super().__init__(user_db_cursor, config_db_cursor, surface, batches, groups,
-                         logger=getLogger('root.app.game.map.constructor.view'))
+        super().__init__(user_db_cursor, config_db_cursor, logger=getLogger('root.app.game.map.constructor.view'))
         self.constructor_opacity = 0
         self.construction_state_matrix = None
         self.money = 0
-        self.close_constructor_button = CloseConstructorButton(surface=self.surface, batch=self.batches['ui_batch'],
-                                                               groups=self.groups, on_click_action=on_close_constructor)
+        self.close_constructor_button = CloseConstructorButton(on_click_action=on_close_constructor)
         self.buttons = [self.close_constructor_button, ]
         track_cells = []
         environment_cells = []
         for j in range(CONSTRUCTOR_VIEW_TRACK_CELLS):
             track_cells.append(
-                TrackCell(TRACKS, j, self.surface, self.batches, self.groups,
-                          self.current_locale, on_buy_construction_action,
+                TrackCell(TRACKS, j, self.current_locale, on_buy_construction_action,
                           on_set_money_target_action, on_reset_money_target_action)
             )
             self.buttons.extend(track_cells[j].buttons)
 
         for j in range(CONSTRUCTOR_VIEW_ENVIRONMENT_CELLS):
             environment_cells.append(
-                EnvironmentCell(ENVIRONMENT, j, self.surface, self.batches, self.groups,
-                                self.current_locale, on_buy_construction_action,
+                EnvironmentCell(ENVIRONMENT, j, self.current_locale, on_buy_construction_action,
                                 on_set_money_target_action, on_reset_money_target_action)
             )
             self.buttons.extend(environment_cells[j].buttons)

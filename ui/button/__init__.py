@@ -3,6 +3,8 @@ from pyglet.text import Label
 from pyglet.window import mouse
 from pyglet.resource import add_font
 
+from ui import SURFACE, BATCHES, GROUPS
+
 
 def button_is_not_activated(fn):
     """
@@ -92,7 +94,7 @@ class Button:
     """
     Base class for all buttons in the app.
     """
-    def __init__(self, surface, batch, groups, logger):
+    def __init__(self, logger):
         """
         Properties:
             is_activated                        indicates if the button is active
@@ -123,18 +125,15 @@ class Button:
             default_cursor                      system default cursor icon (arrow)
             logger                              telemetry instance
 
-        :param surface:                         surface to draw all UI objects on
-        :param batch:                           UI batch for the button
-        :param groups:                          defines drawing layers (some labels and sprites behind others)
         :param logger:                          telemetry instance
         """
         self.logger = logger
         self.is_activated = False
         self.to_activate_on_controller_init = False
         self.state = 'normal'
-        self.surface = surface
-        self.batch = batch
-        self.groups = groups
+        self.surface = SURFACE
+        self.batch = BATCHES['ui_batch']
+        self.groups = GROUPS
         self.transparent = True
         self.paired_button = None
         self.vertex_list = None
@@ -152,8 +151,8 @@ class Button:
         self.on_click_action = None
         self.on_hover_action = None
         self.on_leave_action = None
-        self.hand_cursor = self.surface.get_system_mouse_cursor(surface.CURSOR_HAND)
-        self.default_cursor = self.surface.get_system_mouse_cursor(surface.CURSOR_DEFAULT)
+        self.hand_cursor = self.surface.get_system_mouse_cursor(SURFACE.CURSOR_HAND)
+        self.default_cursor = self.surface.get_system_mouse_cursor(SURFACE.CURSOR_DEFAULT)
 
     @button_is_not_activated
     def on_activate(self):

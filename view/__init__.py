@@ -276,16 +276,16 @@ class View:
     """
     Base class for all views in the app.
     """
-    def __init__(self, user_db_cursor, config_db_cursor, surface, batches, groups, logger):
+    def __init__(self, user_db_cursor, config_db_cursor, logger):
         """
         Properties:
             logger                              telemetry instance
             user_db_cursor:                     user DB cursor (is used to execute user DB queries)
             config_db_cursor:                   configuration DB cursor (is used to execute configuration DB queries)
             controller                          object controller
-            surface:                            surface to draw all UI objects on
-            batches:                            batches to group all labels and sprites
-            groups:                             defines drawing layers (some labels and sprites behind others)
+            surface                             surface to draw all UI objects on
+            batches                             batches to group all labels and sprites
+            groups                              defines drawing layers (some labels and sprites behind others)
             is_activated                        indicates if view is active
             buttons                             list of all buttons on the view
             on_mouse_motion_handlers            list of on_mouse_motion event handlers to be appended
@@ -304,18 +304,15 @@ class View:
 
         :param user_db_cursor:                  user DB cursor (is used to execute user DB queries)
         :param config_db_cursor:                configuration DB cursor (is used to execute configuration DB queries)
-        :param surface:                         surface to draw all UI objects on
-        :param batches:                         batches to group all labels and sprites
-        :param groups:                          defines drawing layers (some labels and sprites behind others)
         :param logger:                          telemetry instance
         """
         self.logger = logger
         self.user_db_cursor = user_db_cursor
         self.config_db_cursor = config_db_cursor
         self.controller = None
-        self.surface = surface
-        self.batches = batches
-        self.groups = groups
+        self.surface = SURFACE
+        self.batches = BATCHES
+        self.groups = GROUPS
         self.is_activated = False
         self.buttons = []
         self.on_mouse_press_handlers = []

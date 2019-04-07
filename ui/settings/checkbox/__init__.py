@@ -1,6 +1,7 @@
 from pyglet.text import Label
 
 from i18n import I18N_RESOURCES
+from ui import SURFACE, BATCHES, GROUPS
 from ui.button import create_two_state_button
 from ui.button.checked_checkbox_button import CheckedCheckboxButton
 from ui.button.unchecked_checkbox_button import UncheckedCheckboxButton
@@ -10,7 +11,7 @@ class Checkbox:
     """
     Implements base class for all checkboxes in the app.
     """
-    def __init__(self, column, row, on_update_state_action, surface, batches, groups, current_locale, logger):
+    def __init__(self, column, row, on_update_state_action, current_locale, logger):
         """
         Button click handlers:
             on_check                            on_click handler for unchecked checkbox button
@@ -38,9 +39,6 @@ class Checkbox:
         :param column:                          number of settings column
         :param row:                             number of settings row
         :param on_update_state_action:          method to call when checkbox state is being updated
-        :param surface:                         surface to draw all UI objects on
-        :param batches:                         batches to group all labels and sprites
-        :param groups:                          defines drawing layers (some labels and sprites behind others)
         :param current_locale:                  current locale selected by player
         :param logger:                          telemetry instance
         """
@@ -68,15 +66,11 @@ class Checkbox:
 
         self.logger = logger
         self.column, self.row = column, row
-        self.surface, self.batches, self.groups, self.current_locale = surface, batches, groups, current_locale
+        self.surface, self.batches, self.groups, self.current_locale = SURFACE, BATCHES, GROUPS, current_locale
         self.on_update_state_action = on_update_state_action
         self.checked_checkbox_button, self.unchecked_checkbox_button \
-            = create_two_state_button(CheckedCheckboxButton(surface=self.surface,
-                                                            batch=self.batches['ui_batch'], groups=self.groups,
-                                                            on_click_action=on_uncheck),
-                                      UncheckedCheckboxButton(surface=self.surface,
-                                                              batch=self.batches['ui_batch'], groups=self.groups,
-                                                              on_click_action=on_check))
+            = create_two_state_button(CheckedCheckboxButton(on_click_action=on_uncheck),
+                                      UncheckedCheckboxButton(on_click_action=on_check))
         self.buttons = [self.checked_checkbox_button, self.unchecked_checkbox_button]
         self.screen_resolution = (1280, 720)
         self.anchor_left_center_point = (0, 0)

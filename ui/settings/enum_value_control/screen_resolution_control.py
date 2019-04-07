@@ -8,9 +8,9 @@ class ScreenResolutionControl(EnumValueControl):
     Implements control for windowed screen resolution value.
     For properties definition see base EnumValueControl class.
     """
-    def __init__(self, column, row, surface, batches, groups, current_locale,
+    def __init__(self, column, row, current_locale,
                  possible_values_list, on_update_state_action):
-        super().__init__(column, row, surface, batches, groups, current_locale,
+        super().__init__(column, row, current_locale,
                          possible_values_list, on_update_state_action,
                          logger=getLogger('root.app.settings.view.enum_value_control.screen_resolution_control'))
         self.description_key = 'windowed_resolution_description_string'

@@ -1,6 +1,7 @@
 from pyglet.text import Label
 
 from i18n import I18N_RESOURCES
+from ui import SURFACE, BATCHES, GROUPS
 from ui.button import create_two_state_button
 from ui.button.increment_button import IncrementButton
 from ui.button.decrement_button import DecrementButton
@@ -10,7 +11,7 @@ class EnumValueControl:
     """
     Implements base class for all enum value controls on settings screen
     """
-    def __init__(self, column, row, surface, batches, groups, current_locale, possible_values_list,
+    def __init__(self, column, row, current_locale, possible_values_list,
                  on_update_state_action, logger):
         """
         Button click handlers:
@@ -41,9 +42,6 @@ class EnumValueControl:
 
         :param column:                          number of settings column
         :param row:                             number of settings row
-        :param surface:                         surface to draw all UI objects on
-        :param batches:                         batches to group all labels and sprites
-        :param groups:                          defines drawing layers (some labels and sprites behind others)
         :param current_locale:                  current locale selected by player
         :param possible_values_list:            list of values for enum property
         :param on_update_state_action:          method to call when checkbox state is being updated
@@ -83,7 +81,7 @@ class EnumValueControl:
 
         self.logger = logger
         self.column, self.row = column, row
-        self.surface, self.batches, self.groups, self.current_locale = surface, batches, groups, current_locale
+        self.surface, self.batches, self.groups, self.current_locale = SURFACE, BATCHES, GROUPS, current_locale
         self.on_update_state_action = on_update_state_action
         self.screen_resolution = (1280, 720)
         self.anchor_center_point = (0, 0)
@@ -94,12 +92,8 @@ class EnumValueControl:
         self.choice_state = None
         self.possible_values_list = possible_values_list
         self.increment_button, self.decrement_button \
-            = create_two_state_button(IncrementButton(surface=self.surface,
-                                                      batch=self.batches['ui_batch'], groups=self.groups,
-                                                      on_click_action=on_increment),
-                                      DecrementButton(surface=self.surface,
-                                                      batch=self.batches['ui_batch'], groups=self.groups,
-                                                      on_click_action=on_decrement))
+            = create_two_state_button(IncrementButton(on_click_action=on_increment),
+                                      DecrementButton(on_click_action=on_decrement))
         self.buttons = [self.increment_button, self.decrement_button]
         self.is_activated = False
 

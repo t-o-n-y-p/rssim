@@ -6,7 +6,7 @@ from pyglet import resource as _resource
 
 
 CAR_COLLECTIONS = 12
-_resource.path = ['img', 'img/textures_pack_1.zip', 'img/textures_pack_2.zip']
+_resource.path = ['font', 'img', 'img/textures_pack_1.zip', 'img/textures_pack_2.zip']
 _resource.reindex()
 _cars_texture = _resource.texture('cars_in_one.dds')
 
@@ -78,3 +78,11 @@ FLAG_RU.anchor_y = 128
 
 SWITCHES_STRAIGHT = _resource.texture('switches_straight.dds')
 SWITCHES_DIVERGING = _resource.texture('switches_diverging.dds')
+
+
+def get_full_map(map_id, tracks):
+    return _resource.texture(f'full_map_{tracks}_{map_id}.dds')
+
+
+def get_full_map_e(map_id, tiers):
+    return _resource.texture(f'full_map_e_{tiers}_{map_id}.dds')

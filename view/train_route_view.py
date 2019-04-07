@@ -8,22 +8,19 @@ class TrainRouteView(View):
     Implements Train route view.
     Train route object is responsible for properties, UI and events related to the train route.
     """
-    def __init__(self, user_db_cursor, config_db_cursor, surface, batches, groups, track, train_route):
+    def __init__(self, user_db_cursor, config_db_cursor, track, train_route):
         """
         Properties:
             none
 
         :param user_db_cursor:                  user DB cursor (is used to execute user DB queries)
         :param config_db_cursor:                configuration DB cursor (is used to execute configuration DB queries)
-        :param surface:                         surface to draw all UI objects on
-        :param batches:                         batches to group all labels and sprites
-        :param groups:                          defines drawing layers (some labels and sprites behind others)
         :param track:                           route track number
         :param train_route:                     route type (e.g. left/right entry/exit)
         """
         self.map_id = None
         self.on_update_map_id()
-        super().__init__(user_db_cursor, config_db_cursor, surface, batches, groups,
+        super().__init__(user_db_cursor, config_db_cursor,
                          logger=getLogger(f'root.app.game.map.train_route.{track}.{train_route}.view'))
 
     @view_is_not_active

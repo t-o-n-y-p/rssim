@@ -38,7 +38,7 @@ class ScheduleRow:
     """
     Implements base class for schedule row.
     """
-    def __init__(self, column, row, surface, batches, groups, current_locale):
+    def __init__(self, column, row, current_locale):
         """
         Properties:
             logger                              telemetry instance
@@ -58,14 +58,11 @@ class ScheduleRow:
 
         :param column:                          number of schedule column
         :param row:                             number of schedule row
-        :param surface:                         surface to draw all UI objects on
-        :param batches:                         batches to group all labels and sprites
-        :param groups:                          defines drawing layers (some labels and sprites behind others)
         :param current_locale:                  current locale selected by player
         """
         self.logger = getLogger(f'root.app.game.map.scheduler.view.row.{column}.{row}')
         self.column, self.row = column, row
-        self.surface, self.batches, self.groups, self.current_locale = surface, batches, groups, current_locale
+        self.surface, self.batches, self.groups, self.current_locale = SURFACE, BATCHES, GROUPS, current_locale
         self.data = None
         self.main_sprite = None
         self.arrival_sprite = None

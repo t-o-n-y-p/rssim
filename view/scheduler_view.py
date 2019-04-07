@@ -15,7 +15,7 @@ class SchedulerView(View):
     Implements Scheduler view.
     Scheduler object is responsible for properties, UI and events related to the train schedule.
     """
-    def __init__(self, user_db_cursor, config_db_cursor, surface, batches, groups):
+    def __init__(self, user_db_cursor, config_db_cursor):
         """
         Button click handlers:
             on_close_schedule                       on_click handler for close schedule button
@@ -39,9 +39,6 @@ class SchedulerView(View):
 
         :param user_db_cursor:                  user DB cursor (is used to execute user DB queries)
         :param config_db_cursor:                configuration DB cursor (is used to execute configuration DB queries)
-        :param surface:                         surface to draw all UI objects on
-        :param batches:                         batches to group all labels and sprites
-        :param groups:                          defines drawing layers (some labels and sprites behind others)
         """
         def on_close_schedule(button):
             """
@@ -53,7 +50,7 @@ class SchedulerView(View):
 
         self.map_id = None
         self.on_update_map_id()
-        super().__init__(user_db_cursor, config_db_cursor, surface, batches, groups,
+        super().__init__(user_db_cursor, config_db_cursor,
                          logger=getLogger('root.app.game.map.scheduler.view'))
         self.schedule_opacity = 0
         self.schedule_left_caption_position = (0, 0)
@@ -64,14 +61,13 @@ class SchedulerView(View):
         self.game_time = None
         self.left_schedule_caption_label = None
         self.right_schedule_caption_label = None
-        self.close_schedule_button = CloseScheduleButton(surface=self.surface, batch=self.batches['ui_batch'],
-                                                         groups=self.groups, on_click_action=on_close_schedule)
+        self.close_schedule_button = CloseScheduleButton(on_click_action=on_close_schedule)
         self.buttons.append(self.close_schedule_button)
         self.schedule_rows = []
         for i in range(SCHEDULE_COLUMNS):
             column = []
             for j in range(SCHEDULE_ROWS):
-                column.append(ScheduleRow(i, j, self.surface, self.batches, self.groups, self.current_locale))
+                column.append(ScheduleRow(i, j, self.current_locale))
 
             self.schedule_rows.append(column)
 

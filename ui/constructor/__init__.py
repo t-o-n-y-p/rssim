@@ -42,7 +42,7 @@ class ConstructorCell:
     """
     Implements base class for constructor cell.
     """
-    def __init__(self, construction_type, row, surface, batches, groups, current_locale,
+    def __init__(self, construction_type, row, current_locale,
                  on_buy_construction_action, on_set_money_target_action, on_reset_money_target_action):
         """
         Button click handlers:
@@ -83,9 +83,6 @@ class ConstructorCell:
 
         :param construction_type:               type of construction: track or environment
         :param row:                             number of cell on constructor screen
-        :param surface:                         surface to draw all UI objects on
-        :param batches:                         batches to group all labels and sprites
-        :param groups:                          defines drawing layers (some labels and sprites behind others)
         :param current_locale:                  current locale selected by player
         :param on_buy_construction_action:      is activated when player buys construction
         :param on_set_money_target_action:      is activated when money target is activated by player
@@ -127,7 +124,7 @@ class ConstructorCell:
         self.logger = getLogger(f'root.app.game.map.constructor.view.cell.{construction_type}.{row}')
         self.is_activated = False
         self.construction_type, self.row = construction_type, row
-        self.surface, self.batches, self.groups, self.current_locale = surface, batches, groups, current_locale
+        self.surface, self.batches, self.groups, self.current_locale = SURFACE, BATCHES, GROUPS, current_locale
         self.on_buy_construction_action = on_buy_construction_action
         self.on_set_money_target_action = on_set_money_target_action
         self.on_reset_money_target_action = on_reset_money_target_action
@@ -144,12 +141,9 @@ class ConstructorCell:
         self.placeholder_key = None
         self.placeholder_label = None
         self.enable_money_target_button, self.disable_money_target_button \
-            = create_two_state_button(SetMoneyTargetButton(surface=self.surface, batch=self.batches['ui_batch'],
-                                                           groups=self.groups, on_click_action=on_set_money_target),
-                                      ResetMoneyTargetButton(surface=self.surface, batch=self.batches['ui_batch'],
-                                                             groups=self.groups, on_click_action=on_reset_money_target))
-        self.build_button = BuildConstructionButton(surface=self.surface, batch=self.batches['ui_batch'],
-                                                    groups=self.groups, on_click_action=on_buy_construction)
+            = create_two_state_button(SetMoneyTargetButton(on_click_action=on_set_money_target),
+                                      ResetMoneyTargetButton(on_click_action=on_reset_money_target))
+        self.build_button = BuildConstructionButton(on_click_action=on_buy_construction)
         self.buttons = [self.enable_money_target_button, self.disable_money_target_button, self.build_button]
         self.money = 0
         self.money_target_activated = False

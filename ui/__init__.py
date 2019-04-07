@@ -1,4 +1,9 @@
+from pyglet.window import Window
+from pyglet.graphics import Batch, OrderedGroup
+
 # --------------------- CONSTANTS ---------------------
+MIN_RESOLUTION_WIDTH = 1280                     # minimum screen resolution width supported by the app UI
+MIN_RESOLUTION_HEIGHT = 720                     # minimum screen resolution height supported by the app UI
 SCHEDULE_ROWS = 12                              # number of schedule rows on schedule screen
 SCHEDULE_COLUMNS = 2                            # number of schedule columns on schedule screen
 # track and environment state matrix properties
@@ -35,4 +40,24 @@ CARS = 4                                        # property #4 indicates number o
 STOP_TIME = 5                                   # property #5 indicates how much stop time left
 EXP = 6                                         # property #6 indicates how much exp the train gives
 MONEY = 7                                       # property #7 indicates how much money the train gives
+SURFACE = Window(width=MIN_RESOLUTION_WIDTH, height=MIN_RESOLUTION_HEIGHT,
+                 caption='Railway Station Simulator', style='borderless', fullscreen=False, vsync=False)
+BATCHES = {'main_batch': Batch(),
+           'mini_map_batch': Batch(),
+           'main_frame': Batch(),
+           'ui_batch': Batch()}
+GROUPS = {'environment': OrderedGroup(0),
+          'main_map': OrderedGroup(1),
+          'signal': OrderedGroup(2),
+          'train': OrderedGroup(2),
+          'boarding_light': OrderedGroup(3),
+          'environment_2': OrderedGroup(4),
+          'twilight': OrderedGroup(5),
+          'mini_environment': OrderedGroup(6),
+          'mini_map': OrderedGroup(7),
+          'mini_environment_2': OrderedGroup(8),
+          'main_frame': OrderedGroup(9),
+          'button_background': OrderedGroup(10),
+          'exp_money_time': OrderedGroup(10),
+          'button_text': OrderedGroup(11)}
 # ------------------- END CONSTANTS -------------------

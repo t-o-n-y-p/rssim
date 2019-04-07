@@ -25,7 +25,7 @@ class AppView(View):
     Implements App view.
     App object is responsible for high-level properties, UI and events.
     """
-    def __init__(self, user_db_cursor, config_db_cursor, surface, batches, groups):
+    def __init__(self, user_db_cursor, config_db_cursor):
         """
         Button click handlers:
             on_close_game                       on_click handler for close game button
@@ -61,9 +61,6 @@ class AppView(View):
 
         :param user_db_cursor:                  user DB cursor (is used to execute user DB queries)
         :param config_db_cursor:                configuration DB cursor (is used to execute configuration DB queries)
-        :param surface:                         surface to draw all UI objects on
-        :param batches:                         batches to group all labels and sprites
-        :param groups:                          defines drawing layers (some labels and sprites behind others)
         """
         def on_close_game(button):
             """
@@ -129,27 +126,19 @@ class AppView(View):
             """
             self.controller.on_update_current_locale('ru')
 
-        super().__init__(user_db_cursor, config_db_cursor, surface, batches, groups,
-                         logger=getLogger('root.app.view'))
+        super().__init__(user_db_cursor, config_db_cursor, logger=getLogger('root.app.view'))
         self.title_label = None
         self.app_view_shader_sprite = None
         self.flag_us_sprite = None
         self.flag_ru_sprite = None
-        self.close_game_button = CloseGameButton(surface=self.surface, batch=self.batches['ui_batch'],
-                                                 groups=self.groups, on_click_action=on_close_game)
-        self.iconify_button = IconifyButton(surface=self.surface, batch=self.batches['ui_batch'],
-                                            groups=self.groups, on_click_action=on_iconify_game)
+        self.close_game_button = CloseGameButton(on_click_action=on_close_game)
+        self.iconify_button = IconifyButton(on_click_action=on_iconify_game)
         self.fullscreen_button, self.restore_button \
-            = create_two_state_button(FullscreenButton(surface=self.surface, batch=self.batches['ui_batch'],
-                                                       groups=self.groups, on_click_action=on_app_window_fullscreen),
-                                      RestoreButton(surface=self.surface, batch=self.batches['ui_batch'],
-                                                    groups=self.groups, on_click_action=on_app_window_restore))
-        self.open_settings_button = OpenSettingsButton(surface=self.surface, batch=self.batches['ui_batch'],
-                                                       groups=self.groups, on_click_action=on_open_settings)
-        self.en_locale_button = ENLocaleButton(surface=self.surface, batch=self.batches['ui_batch'],
-                                               groups=self.groups, on_click_action=on_set_en_locale)
-        self.ru_locale_button = RULocaleButton(surface=self.surface, batch=self.batches['ui_batch'],
-                                               groups=self.groups, on_click_action=on_set_ru_locale)
+            = create_two_state_button(FullscreenButton(on_click_action=on_app_window_fullscreen),
+                                      RestoreButton(on_click_action=on_app_window_restore))
+        self.open_settings_button = OpenSettingsButton(on_click_action=on_open_settings)
+        self.en_locale_button = ENLocaleButton(on_click_action=on_set_en_locale)
+        self.ru_locale_button = RULocaleButton(on_click_action=on_set_ru_locale)
         self.buttons.append(self.close_game_button)
         self.buttons.append(self.iconify_button)
         self.buttons.append(self.fullscreen_button)

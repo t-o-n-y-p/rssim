@@ -3,7 +3,6 @@ from time import perf_counter
 from math import ceil
 
 from pyglet.sprite import Sprite
-from pyglet import resource
 from pyglet.gl import GL_QUADS
 from pyshaders import from_files_names
 
@@ -13,6 +12,7 @@ from ui.button.zoom_in_button import ZoomInButton
 from ui.button.zoom_out_button import ZoomOutButton
 from ui.button.open_schedule_button import OpenScheduleButton
 from ui.button.open_constructor_button import OpenConstructorButton
+from textures import get_full_map, get_full_map_e
 
 
 class MapView(View):
@@ -20,7 +20,7 @@ class MapView(View):
     Implements Map view.
     Map object is responsible for properties, UI and events related to the map.
     """
-    def __init__(self, user_db_cursor, config_db_cursor, surface, batches, groups):
+    def __init__(self, user_db_cursor, config_db_cursor):
         """
         Button click handlers:
             on_click_zoom_in_button             on_click handler for zoom in button
@@ -67,9 +67,6 @@ class MapView(View):
 
         :param user_db_cursor:                  user DB cursor (is used to execute user DB queries)
         :param config_db_cursor:                configuration DB cursor (is used to execute configuration DB queries)
-        :param surface:                         surface to draw all UI objects on
-        :param batches:                         batches to group all labels and sprites
-        :param groups:                          defines drawing layers (some labels and sprites behind others)
         """
         def on_click_zoom_in_button(button):
             """
@@ -126,14 +123,14 @@ class MapView(View):
             self.controller.on_open_constructor()
         self.map_id = None
         self.on_update_map_id()
-        super().__init__(user_db_cursor, config_db_cursor, surface, batches, groups,
+        super().__init__(user_db_cursor, config_db_cursor,
                          logger=getLogger('root.app.game.map.view'))
         self.user_db_cursor.execute('''SELECT unlocked_tracks, unlocked_environment 
                                        FROM map_progress WHERE map_id = ?''',
                                     (self.map_id, ))
         self.unlocked_tracks, self.unlocked_environment = self.user_db_cursor.fetchone()
-        self.main_map = resource.image(f'full_map_{self.unlocked_tracks}_{self.map_id}.dds')
-        self.environment = resource.image(f'full_map_e_{self.unlocked_environment}_{self.map_id}.dds')
+        self.main_map = get_full_map(map_id=self.map_id, tracks=self.unlocked_tracks)
+        self.environment = get_full_map_e(map_id=self.map_id, tiers=self.unlocked_environment)
         self.map_offset = (0, 0)
         self.mini_map_offset = (0, 0)
         self.on_change_map_offset()
@@ -155,20 +152,14 @@ class MapView(View):
         self.base_offset_upper_right_limit = (self.screen_resolution[0] - MAP_WIDTH,
                                               self.screen_resolution[1] - MAP_HEIGHT)
         self.zoom_in_button, self.zoom_out_button \
-            = create_two_state_button(ZoomInButton(surface=self.surface,
-                                                   batch=self.batches['ui_batch'], groups=self.groups,
-                                                   on_click_action=on_click_zoom_in_button,
+            = create_two_state_button(ZoomInButton(on_click_action=on_click_zoom_in_button,
                                                    on_hover_action=on_hover_action,
                                                    on_leave_action=on_leave_action),
-                                      ZoomOutButton(surface=self.surface,
-                                                    batch=self.batches['ui_batch'], groups=self.groups,
-                                                    on_click_action=on_click_zoom_out_button,
+                                      ZoomOutButton(on_click_action=on_click_zoom_out_button,
                                                     on_hover_action=on_hover_action,
                                                     on_leave_action=on_leave_action))
-        self.open_schedule_button = OpenScheduleButton(surface=self.surface, batch=self.batches['ui_batch'],
-                                                       groups=self.groups, on_click_action=on_open_schedule)
-        self.open_constructor_button = OpenConstructorButton(surface=self.surface, batch=self.batches['ui_batch'],
-                                                             groups=self.groups, on_click_action=on_open_constructor)
+        self.open_schedule_button = OpenScheduleButton(on_click_action=on_open_schedule)
+        self.open_constructor_button = OpenConstructorButton(on_click_action=on_open_constructor)
         self.buttons.append(self.zoom_in_button)
         self.buttons.append(self.zoom_out_button)
         self.buttons.append(self.open_schedule_button)
@@ -317,7 +308,7 @@ class MapView(View):
         :param track:                   track number
         """
         self.unlocked_tracks = track
-        self.main_map = resource.image(f'full_map_{track}_{self.map_id}.dds')
+        self.main_map = get_full_map(map_id=self.map_id, tracks=self.unlocked_tracks)
         self.on_change_map_offset()
         if self.is_activated:
             self.main_map_sprite.image = self.main_map
@@ -337,7 +328,7 @@ class MapView(View):
         :param tier:                    environment tier number
         """
         self.unlocked_environment = tier
-        self.environment = resource.image(f'full_map_e_{tier}_{self.map_id}.dds')
+        self.environment = get_full_map_e(map_id=self.map_id, tiers=self.unlocked_environment)
         if self.is_activated:
             self.environment_sprite.image = self.environment
 

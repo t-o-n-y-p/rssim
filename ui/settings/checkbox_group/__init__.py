@@ -1,13 +1,14 @@
 from pyglet.text import Label
 
 from i18n import I18N_RESOURCES
+from ui import SURFACE, BATCHES, GROUPS
 
 
 class CheckboxGroup:
     """
     Implements base class for all checkbox groups in the app.
     """
-    def __init__(self, column, row, surface, batches, groups, current_locale, logger):
+    def __init__(self, column, row, current_locale, logger):
         """
         Properties:
             logger                              telemetry instance
@@ -28,15 +29,12 @@ class CheckboxGroup:
 
         :param column:                          number of settings column
         :param row:                             number of settings row
-        :param surface:                         surface to draw all UI objects on
-        :param batches:                         batches to group all labels and sprites
-        :param groups:                          defines drawing layers (some labels and sprites behind others)
         :param current_locale:                  current locale selected by player
         :param logger:                          telemetry instance
         """
         self.logger = logger
         self.column, self.row = column, row
-        self.surface, self.batches, self.groups, self.current_locale = surface, batches, groups, current_locale
+        self.surface, self.batches, self.groups, self.current_locale = SURFACE, BATCHES, GROUPS, current_locale
         self.description_key = None
         self.description_label = None
         self.checkboxes = []

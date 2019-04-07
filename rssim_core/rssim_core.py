@@ -6,13 +6,11 @@ from shutil import copyfile
 from logging import FileHandler, Formatter, getLogger
 from datetime import datetime
 
-from pyglet import gl, resource
-from pyglet.window import Window
-from pyglet.graphics import Batch, OrderedGroup
-from pyshaders import from_files_names
+from pyglet import gl
 
 from exceptions import VideoAdapterNotSupportedException, MonitorNotSupportedException, UpdateIncompatibleException
 from rssim_core import *
+from ui import SURFACE, BATCHES, MIN_RESOLUTION_WIDTH, MIN_RESOLUTION_HEIGHT
 
 
 class RSSim:
@@ -50,9 +48,6 @@ class RSSim:
         if not path.exists('db/user.db'):
             copyfile('db/default.db', 'db/user.db')
 
-        # add resources: special font, images and textures
-        resource.path = ['font', 'img', 'img/textures_pack_1.zip', 'img/textures_pack_2.zip']
-        resource.reindex()
         # create database connections and cursors
         self.user_db_connection = connect('db/user.db')
         self.user_db_cursor = self.user_db_connection.cursor()
@@ -81,45 +76,11 @@ class RSSim:
         # set blending mode; this is required to correctly draw transparent textures
         gl.glEnable(gl.GL_BLEND)
         gl.glBlendFunc(gl.GL_SRC_ALPHA, gl.GL_ONE_MINUS_SRC_ALPHA)
-        # create batches and groups for text labels, sprites and textures
-        self.batches = {}
-        numbered_batches = []
-        for i in range(5):
-            numbered_batches.append(Batch())
-
-        self.batches['main_batch'] = numbered_batches[0]
-        self.batches['mini_map_batch'] = numbered_batches[2]
-        self.batches['main_frame'] = numbered_batches[3]
-        self.batches['ui_batch'] = numbered_batches[4]
-        self.groups = {}
-        numbered_groups = []
-        for i in range(12):
-            numbered_groups.append(OrderedGroup(i))
-
-        self.groups['environment'] = numbered_groups[0]
-        self.groups['main_map'] = numbered_groups[1]
-        self.groups['signal'] = numbered_groups[2]
-        self.groups['train'] = numbered_groups[2]
-        self.groups['boarding_light'] = numbered_groups[3]
-        self.groups['environment_2'] = numbered_groups[4]
-        self.groups['twilight'] = numbered_groups[5]
-        self.groups['mini_environment'] = numbered_groups[6]
-        self.groups['mini_map'] = numbered_groups[7]
-        self.groups['mini_environment_2'] = numbered_groups[8]
-        self.groups['main_frame'] = numbered_groups[9]
-        self.groups['button_background'] = numbered_groups[10]
-        self.groups['exp_money_time'] = numbered_groups[10]
-        self.groups['button_text'] = numbered_groups[11]
-        # create surface
-        surface = Window(width=MIN_RESOLUTION_WIDTH, height=MIN_RESOLUTION_HEIGHT,
-                         caption='Railway Station Simulator', style='borderless', fullscreen=False, vsync=False)
-        self.surface = surface
         # flip the surface so user knows game has launched and is loading now
-        self.surface.flip()
+        SURFACE.flip()
         # create App object
         self.app = create_app(user_db_connection=self.user_db_connection, user_db_cursor=self.user_db_cursor,
-                              config_db_cursor=self.config_db_cursor,
-                              surface=self.surface, batches=self.batches, groups=self.groups, loader=self)
+                              config_db_cursor=self.config_db_cursor, loader=self)
         # initially app is created using default minimal screen resolution; now we change it to user resolution
         self.app.on_change_screen_resolution(self.app.settings.model.screen_resolution)
         # activate app after it is created
@@ -130,24 +91,24 @@ class RSSim:
 
         self.notifications = []
 
-        @surface.event
+        @SURFACE.event
         def on_draw():
             """
             Implements on_draw event handler for surface. Handler is attached using @surface.event decoration.
             This handler clears surface and calls draw() function for all batches (inserts shaders if required)
             """
             # clear surface
-            self.surface.clear()
+            SURFACE.clear()
             # draw main batch: environment, main map, signals, trains
-            self.batches['main_batch'].draw()
+            BATCHES['main_batch'].draw()
             # draw mini map batch: mini map
-            self.batches['mini_map_batch'].draw()
+            BATCHES['mini_map_batch'].draw()
             # draw all vertices with shaders
             self.app.on_apply_shaders_and_draw_vertices()
             # draw ui batch: text labels, buttons
-            self.batches['ui_batch'].draw()
+            BATCHES['ui_batch'].draw()
 
-        @surface.event
+        @SURFACE.event
         def on_activate():
             """
             Implements on_activate event handler for surface. Handler is attached using @surface.event decoration.
@@ -160,7 +121,7 @@ class RSSim:
 
             self.notifications.clear()
 
-        @surface.event
+        @SURFACE.event
         def on_show():
             """
             Implements on_show event handler for surface. Handler is attached using @surface.event decoration.
@@ -173,7 +134,7 @@ class RSSim:
 
             self.notifications.clear()
 
-        @surface.event
+        @SURFACE.event
         def on_deactivate():
             """
             Implements on_deactivate event handler for surface. Handler is attached using @surface.event decoration.
@@ -181,7 +142,7 @@ class RSSim:
             """
             self.app.on_enable_notifications()
 
-        @surface.event
+        @SURFACE.event
         def on_hide():
             """
             Implements on_hide event handler for surface. Handler is attached using @surface.event decoration.
@@ -189,7 +150,7 @@ class RSSim:
             """
             self.app.on_enable_notifications()
 
-        @surface.event
+        @SURFACE.event
         def on_mouse_press(x, y, button, modifiers):
             """
             Implements on_mouse_press event handler for surface. Handler is attached using @surface.event decoration.
@@ -205,7 +166,7 @@ class RSSim:
             for h in self.app.on_mouse_press_handlers:
                 h(x, y, button, modifiers)
 
-        @surface.event
+        @SURFACE.event
         def on_mouse_release(x, y, button, modifiers):
             """
             Implements on_mouse_release event handler for surface. Handler is attached using @surface.event decoration.
@@ -221,7 +182,7 @@ class RSSim:
             for h in self.app.on_mouse_release_handlers:
                 h(x, y, button, modifiers)
 
-        @surface.event
+        @SURFACE.event
         def on_mouse_motion(x, y, dx, dy):
             """
             Implements on_mouse_motion event handler for surface. Handler is attached using @surface.event decoration.
@@ -237,7 +198,7 @@ class RSSim:
             for h in self.app.on_mouse_motion_handlers:
                 h(x, y, dx, dy)
 
-        @surface.event
+        @SURFACE.event
         def on_mouse_drag(x, y, dx, dy, buttons, modifiers):
             """
             Implements on_mouse_drag event handler for surface. Handler is attached using @surface.event decoration.
@@ -254,7 +215,7 @@ class RSSim:
             for h in self.app.on_mouse_drag_handlers:
                 h(x, y, dx, dy, buttons, modifiers)
 
-        @surface.event
+        @SURFACE.event
         def on_mouse_leave(x, y):
             """
             Implements on_mouse_leave event handler for surface. Handler is attached using @surface.event decoration.
@@ -276,15 +237,15 @@ class RSSim:
         while True:
             time_1 = perf_counter()
             # dispatch_events() launches keyboard and mouse handlers implemented above
-            self.surface.dispatch_events()
+            SURFACE.dispatch_events()
             # increment in-game time
             self.app.game.on_update_time()
             # on_update_view() checks if all views content is up-to-date and opacity is correct
             self.app.on_update_view()
             # call on_draw() handler implemented above
-            self.surface.dispatch_event('on_draw')
+            SURFACE.dispatch_event('on_draw')
             # flip the surface so user can see all the game content
-            self.surface.flip()
+            SURFACE.flip()
             time_4 = perf_counter()
             # FPS is recalculated every FPS_INTERVAL seconds
             if perf_counter() - fps_timer > FPS_INTERVAL:

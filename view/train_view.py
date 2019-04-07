@@ -10,7 +10,7 @@ class TrainView(View):
     Implements Train view.
     Train object is responsible for properties, UI and events related to the train.
     """
-    def __init__(self, user_db_cursor, config_db_cursor, surface, batches, groups, train_id,
+    def __init__(self, user_db_cursor, config_db_cursor, train_id,
                  car_head_image, car_mid_image, car_tail_image, boarding_light_image):
         """
         Properties:
@@ -27,9 +27,6 @@ class TrainView(View):
 
         :param user_db_cursor:                  user DB cursor (is used to execute user DB queries)
         :param config_db_cursor:                configuration DB cursor (is used to execute configuration DB queries)
-        :param surface:                         surface to draw all UI objects on
-        :param batches:                         batches to group all labels and sprites
-        :param groups:                          defines drawing layers (some labels and sprites behind others)
         :param train_id                         train identification number
         :param car_head_image:                  texture for leading carriage
         :param car_mid_image:                   texture for middle carriage
@@ -38,7 +35,7 @@ class TrainView(View):
         """
         self.map_id = None
         self.on_update_map_id()
-        super().__init__(user_db_cursor, config_db_cursor, surface, batches, groups,
+        super().__init__(user_db_cursor, config_db_cursor,
                          logger=getLogger(f'root.app.game.map.train.{train_id}.view'))
         self.car_position = []
         self.car_head_image = car_head_image
