@@ -51,9 +51,9 @@ class ConstructorModel(Model):
 
         self.user_db_cursor.execute('SELECT money FROM game_progress')
         self.money = self.user_db_cursor.fetchone()[0]
-        self.user_db_cursor.execute('SELECT money_target_activated FROM graphics')
+        self.user_db_cursor.execute('SELECT money_target_activated FROM constructor')
         self.money_target_activated = bool(self.user_db_cursor.fetchone()[0])
-        self.user_db_cursor.execute('SELECT money_target_cell_position FROM graphics')
+        self.user_db_cursor.execute('SELECT money_target_cell_position FROM constructor')
         self.money_target_cell_position = list(map(int, self.user_db_cursor.fetchone()[0].split(',')))
 
     @model_is_not_active
@@ -163,7 +163,7 @@ class ConstructorModel(Model):
         """
         Saves track state matrix and money target flags to user progress database.
         """
-        self.user_db_cursor.execute('UPDATE graphics SET money_target_activated = ?, money_target_cell_position = ?',
+        self.user_db_cursor.execute('UPDATE constructor SET money_target_activated = ?, money_target_cell_position = ?',
                                     (int(self.money_target_activated),
                                      ','.join(list(map(str, self.money_target_cell_position)))))
         # if some tracks were unlocked since last time the game progress was saved,

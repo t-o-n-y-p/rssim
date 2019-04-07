@@ -121,9 +121,9 @@ class ConstructorView(View):
             = self.user_db_cursor.fetchone()
         self.feature_unlocked_notification_enabled = bool(self.feature_unlocked_notification_enabled)
         self.construction_completed_notification_enabled = bool(self.construction_completed_notification_enabled)
-        self.user_db_cursor.execute('SELECT money_target_activated FROM graphics')
+        self.user_db_cursor.execute('SELECT money_target_activated FROM constructor')
         self.money_target_activated = bool(self.user_db_cursor.fetchone()[0])
-        self.user_db_cursor.execute('SELECT money_target_cell_position FROM graphics')
+        self.user_db_cursor.execute('SELECT money_target_cell_position FROM constructor')
         self.money_target_cell_position = list(map(int, self.user_db_cursor.fetchone()[0].split(',')))
 
     @view_is_not_active
