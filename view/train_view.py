@@ -36,6 +36,8 @@ class TrainView(View):
         :param car_tail_image:                  texture for trailing carriage
         :param boarding_light_image:            texture for middle carriage door status lights
         """
+        self.map_id = None
+        self.on_update_map_id()
         super().__init__(user_db_cursor, config_db_cursor, surface, batches, groups,
                          logger=getLogger(f'root.app.game.map.train.{train_id}.view'))
         self.car_position = []
@@ -203,3 +205,6 @@ class TrainView(View):
         :param car_positions:                   new car positions
         """
         self.car_position = car_positions
+
+    def on_update_map_id(self):
+        self.map_id = 0

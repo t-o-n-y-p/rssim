@@ -27,6 +27,8 @@ class CrossoverModel(Model):
         :param track_param_2:                   number of the second track of two being connected by the crossover
         :param crossover_type:                  crossover location: left/right side of the map
         """
+        self.map_id = None
+        self.on_update_map_id()
         super().__init__(
             user_db_connection, user_db_cursor, config_db_cursor,
             logger=getLogger(
@@ -39,8 +41,9 @@ class CrossoverModel(Model):
         self.state_change_listeners = {track_param_1: {}, track_param_2: {}}
         self.user_db_cursor.execute('''SELECT busy_1_1, busy_1_2, busy_2_1, busy_2_2, force_busy_1_1, force_busy_1_2, 
                                        force_busy_2_1, force_busy_2_2 FROM crossovers 
-                                       WHERE track_param_1 = ? AND track_param_2 = ? AND crossover_type = ?''',
-                                    (track_param_1, track_param_2, crossover_type))
+                                       WHERE track_param_1 = ? AND track_param_2 = ? AND crossover_type = ? 
+                                       AND map_id = ?''',
+                                    (track_param_1, track_param_2, crossover_type, self.map_id))
         self.busy[track_param_1][track_param_1], self.busy[track_param_1][track_param_2], \
             self.busy[track_param_2][track_param_1], self.busy[track_param_2][track_param_2], \
             self.force_busy[track_param_1][track_param_1], self.force_busy[track_param_1][track_param_2], \
@@ -49,34 +52,40 @@ class CrossoverModel(Model):
         self.user_db_cursor.execute('''SELECT last_entered_by_1_1, last_entered_by_1_2, 
                                        last_entered_by_2_1, last_entered_by_2_2, 
                                        current_position_1, current_position_2 FROM crossovers 
-                                       WHERE track_param_1 = ? AND track_param_2 = ? AND crossover_type = ?''',
-                                    (track_param_1, track_param_2, crossover_type))
+                                       WHERE track_param_1 = ? AND track_param_2 = ? AND crossover_type = ? 
+                                       AND map_id = ?''',
+                                    (track_param_1, track_param_2, crossover_type, self.map_id))
         self.last_entered_by[track_param_1][track_param_1], self.last_entered_by[track_param_1][track_param_2], \
             self.last_entered_by[track_param_2][track_param_1], self.last_entered_by[track_param_2][track_param_2], \
             self.current_position_1, self.current_position_2 = self.user_db_cursor.fetchone()
         self.config_db_cursor.execute('''SELECT track, train_route, section_number FROM train_route_sections
                                          WHERE track_param_1 = ? AND track_param_2 = ? AND section_type = ?
-                                         AND position_1 = ? AND position_2 = ?''',
-                                      (track_param_1, track_param_2, crossover_type, track_param_1, track_param_1))
+                                         AND position_1 = ? AND position_2 = ? AND map_id = ?''',
+                                      (track_param_1, track_param_2, crossover_type,
+                                       track_param_1, track_param_1, self.map_id))
         self.state_change_listeners[track_param_1][track_param_1] = self.config_db_cursor.fetchall()
         self.config_db_cursor.execute('''SELECT track, train_route, section_number FROM train_route_sections
                                          WHERE track_param_1 = ? AND track_param_2 = ? AND section_type = ?
-                                         AND position_1 = ? AND position_2 = ?''',
-                                      (track_param_1, track_param_2, crossover_type, track_param_1, track_param_2))
+                                         AND position_1 = ? AND position_2 = ? AND map_id = ?''',
+                                      (track_param_1, track_param_2, crossover_type,
+                                       track_param_1, track_param_2, self.map_id))
         self.state_change_listeners[track_param_1][track_param_2] = self.config_db_cursor.fetchall()
         self.config_db_cursor.execute('''SELECT track, train_route, section_number FROM train_route_sections
                                          WHERE track_param_1 = ? AND track_param_2 = ? AND section_type = ?
-                                         AND position_1 = ? AND position_2 = ?''',
-                                      (track_param_1, track_param_2, crossover_type, track_param_2, track_param_1))
+                                         AND position_1 = ? AND position_2 = ? AND map_id = ?''',
+                                      (track_param_1, track_param_2, crossover_type,
+                                       track_param_2, track_param_1, self.map_id))
         self.state_change_listeners[track_param_2][track_param_1] = self.config_db_cursor.fetchall()
         self.config_db_cursor.execute('''SELECT track, train_route, section_number FROM train_route_sections
                                          WHERE track_param_1 = ? AND track_param_2 = ? AND section_type = ?
-                                         AND position_1 = ? AND position_2 = ?''',
-                                      (track_param_1, track_param_2, crossover_type, track_param_2, track_param_2))
+                                         AND position_1 = ? AND position_2 = ? AND map_id = ?''',
+                                      (track_param_1, track_param_2, crossover_type,
+                                       track_param_2, track_param_2, self.map_id))
         self.state_change_listeners[track_param_2][track_param_2] = self.config_db_cursor.fetchall()
         self.user_db_cursor.execute('''SELECT locked FROM crossovers 
-                                       WHERE track_param_1 = ? AND track_param_2 = ? AND crossover_type = ?''',
-                                    (track_param_1, track_param_2, crossover_type))
+                                       WHERE track_param_1 = ? AND track_param_2 = ? AND crossover_type = ? 
+                                       AND map_id = ?''',
+                                    (track_param_1, track_param_2, crossover_type, self.map_id))
         self.locked = bool(self.user_db_cursor.fetchone()[0])
 
     @model_is_not_active
@@ -112,7 +121,8 @@ class CrossoverModel(Model):
                                        last_entered_by_1_1 = ?, last_entered_by_1_2 = ?, last_entered_by_2_1 = ?, 
                                        last_entered_by_2_2 = ?, current_position_1 = ?, current_position_2 = ?,
                                        locked = ?
-                                       WHERE track_param_1 = ? AND track_param_2 = ? AND crossover_type = ?''',
+                                       WHERE track_param_1 = ? AND track_param_2 = ? AND crossover_type = ? 
+                                       AND map_id = ?''',
                                     (int(self.busy[track_param_1][track_param_1]),
                                      int(self.busy[track_param_1][track_param_2]),
                                      int(self.busy[track_param_2][track_param_1]),
@@ -126,7 +136,7 @@ class CrossoverModel(Model):
                                      self.last_entered_by[track_param_2][track_param_1],
                                      self.last_entered_by[track_param_2][track_param_2],
                                      self.current_position_1, self.current_position_2, int(self.locked),
-                                     track_param_1, track_param_2, crossover_type))
+                                     track_param_1, track_param_2, crossover_type, self.map_id))
 
     def on_force_busy_on(self, positions, train_id):
         """
@@ -219,3 +229,6 @@ class CrossoverModel(Model):
         """
         self.locked = False
         self.view.on_unlock()
+
+    def on_update_map_id(self):
+        self.map_id = 0

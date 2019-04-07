@@ -25,6 +25,8 @@ class RailroadSwitchModel(Model):
         :param track_param_2:                   number of the diverging track
         :param switch_type:                     railroad switch location: left/right side of the map
         """
+        self.map_id = None
+        self.on_update_map_id()
         super().__init__(
             user_db_connection, user_db_cursor, config_db_cursor,
             logger=getLogger(
@@ -32,20 +34,24 @@ class RailroadSwitchModel(Model):
             )
         )
         self.user_db_cursor.execute('''SELECT busy, force_busy FROM switches 
-                                       WHERE track_param_1 = ? AND track_param_2 = ? AND switch_type = ?''',
-                                    (track_param_1, track_param_2, switch_type))
+                                       WHERE track_param_1 = ? AND track_param_2 = ? AND switch_type = ? 
+                                       AND map_id = ?''',
+                                    (track_param_1, track_param_2, switch_type, self.map_id))
         self.busy, self.force_busy = list(map(bool, self.user_db_cursor.fetchone()))
         self.user_db_cursor.execute('''SELECT last_entered_by, current_position FROM switches 
-                                       WHERE track_param_1 = ? AND track_param_2 = ? AND switch_type = ?''',
-                                    (track_param_1, track_param_2, switch_type))
+                                       WHERE track_param_1 = ? AND track_param_2 = ? AND switch_type = ?
+                                       AND map_id = ?''',
+                                    (track_param_1, track_param_2, switch_type, self.map_id))
         self.last_entered_by, self.current_position = self.user_db_cursor.fetchone()
         self.config_db_cursor.execute('''SELECT track, train_route, section_number FROM train_route_sections
-                                         WHERE track_param_1 = ? AND track_param_2 = ? AND section_type = ?''',
-                                      (track_param_1, track_param_2, switch_type))
+                                         WHERE track_param_1 = ? AND track_param_2 = ? AND section_type = ? 
+                                         AND map_id = ?''',
+                                      (track_param_1, track_param_2, switch_type, self.map_id))
         self.state_change_listeners = self.config_db_cursor.fetchall()
         self.user_db_cursor.execute('''SELECT locked FROM switches 
-                                       WHERE track_param_1 = ? AND track_param_2 = ? AND switch_type = ?''',
-                                    (track_param_1, track_param_2, switch_type))
+                                       WHERE track_param_1 = ? AND track_param_2 = ? AND switch_type = ? 
+                                       AND map_id = ?''',
+                                    (track_param_1, track_param_2, switch_type, self.map_id))
         self.locked = bool(self.user_db_cursor.fetchone()[0])
 
     @model_is_not_active
@@ -78,9 +84,10 @@ class RailroadSwitchModel(Model):
         switch_type = self.controller.switch_type
         self.user_db_cursor.execute('''UPDATE switches SET busy = ?, force_busy = ?, 
                                        last_entered_by = ?, current_position = ?, locked = ? 
-                                       WHERE track_param_1 = ? AND track_param_2 = ? AND switch_type = ?''',
+                                       WHERE track_param_1 = ? AND track_param_2 = ? AND switch_type = ? 
+                                       AND map_id = ?''',
                                     (int(self.busy), int(self.force_busy), self.last_entered_by, self.current_position,
-                                     int(self.locked), track_param_1, track_param_2, switch_type))
+                                     int(self.locked), track_param_1, track_param_2, switch_type, self.map_id))
 
     def on_force_busy_on(self, positions, train_id):
         """
@@ -112,3 +119,6 @@ class RailroadSwitchModel(Model):
         """
         self.locked = False
         self.view.on_unlock()
+
+    def on_update_map_id(self):
+        self.map_id = 0

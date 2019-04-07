@@ -32,7 +32,7 @@ class FPSView(View):
         """
         self.is_activated = True
         self.fps_label = Label(text='0 FPS', font_name='Courier New', font_size=int(16 / 40 * self.top_bar_height),
-                               x=self.screen_resolution[0] - self.top_bar_height * 3 - 10,
+                               x=self.screen_resolution[0] - self.top_bar_height * 3 - self.top_bar_height // 4,
                                y=self.screen_resolution[1] - self.top_bar_height // 2,
                                anchor_x='right', anchor_y='center', batch=self.batches['ui_batch'],
                                group=self.groups['button_text'])
@@ -63,6 +63,6 @@ class FPSView(View):
         """
         self.on_recalculate_ui_properties(screen_resolution)
         if self.is_activated:
-            self.fps_label.x = self.screen_resolution[0] - self.top_bar_height * 3 - 10
+            self.fps_label.x = self.screen_resolution[0] - self.top_bar_height * 3 - self.top_bar_height // 4
             self.fps_label.y = self.screen_resolution[1] - self.top_bar_height // 2
             self.fps_label.font_size = int(16 / 40 * self.top_bar_height)

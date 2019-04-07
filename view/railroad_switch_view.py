@@ -31,6 +31,8 @@ class RailroadSwitchView(View):
         :param track_param_2:                   number of the diverging track
         :param switch_type:                     railroad switch location: left/right side of the map
         """
+        self.map_id = None
+        self.on_update_map_id()
         super().__init__(
             user_db_cursor, config_db_cursor, surface, batches, groups,
             logger=getLogger(
@@ -38,24 +40,28 @@ class RailroadSwitchView(View):
             )
         )
         self.config_db_cursor.execute('''SELECT offset_x, offset_y FROM switches_config
-                                         WHERE track_param_1 = ? AND track_param_2 = ? AND switch_type = ?''',
-                                      (track_param_1, track_param_2, switch_type))
+                                         WHERE track_param_1 = ? AND track_param_2 = ? AND switch_type = ? 
+                                         AND map_id = ?''',
+                                      (track_param_1, track_param_2, switch_type, self.map_id))
         self.position = self.config_db_cursor.fetchone()
         self.config_db_cursor.execute('''SELECT region_x, region_y, region_w, region_h FROM switches_config
-                                         WHERE track_param_1 = ? AND track_param_2 = ? AND switch_type = ?''',
-                                      (track_param_1, track_param_2, switch_type))
+                                         WHERE track_param_1 = ? AND track_param_2 = ? AND switch_type = ? 
+                                         AND map_id = ?''',
+                                      (track_param_1, track_param_2, switch_type, self.map_id))
         self.switch_region = self.config_db_cursor.fetchone()
         self.user_db_cursor.execute('''SELECT current_position FROM switches 
-                                       WHERE track_param_1 = ? AND track_param_2 = ? AND switch_type = ?''',
-                                    (track_param_1, track_param_2, switch_type))
+                                       WHERE track_param_1 = ? AND track_param_2 = ? AND switch_type = ? 
+                                       AND map_id = ?''',
+                                    (track_param_1, track_param_2, switch_type, self.map_id))
         self.current_position = self.user_db_cursor.fetchone()[0]
         self.images = {track_param_1: SWITCHES_STRAIGHT.get_region(self.switch_region[0], self.switch_region[1],
                                                                    self.switch_region[2], self.switch_region[3]),
                        track_param_2: SWITCHES_DIVERGING.get_region(self.switch_region[0], self.switch_region[1],
                                                                     self.switch_region[2], self.switch_region[3])}
         self.user_db_cursor.execute('''SELECT locked FROM switches 
-                                       WHERE track_param_1 = ? AND track_param_2 = ? AND switch_type = ?''',
-                                    (track_param_1, track_param_2, switch_type))
+                                       WHERE track_param_1 = ? AND track_param_2 = ? AND switch_type = ? 
+                                       AND map_id = ?''',
+                                    (track_param_1, track_param_2, switch_type, self.map_id))
         self.locked = bool(self.user_db_cursor.fetchone()[0])
         self.sprite = None
 
@@ -167,3 +173,6 @@ class RailroadSwitchView(View):
         self.locked = False
         # this workaround is needed for switch to be displayed immediately on the map
         self.on_change_base_offset(self.base_offset)
+
+    def on_update_map_id(self):
+        self.map_id = 0

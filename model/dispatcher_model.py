@@ -21,21 +21,24 @@ class DispatcherModel(Model):
         :param user_db_cursor:                  user DB cursor (is used to execute user DB queries)
         :param config_db_cursor:                configuration DB cursor (is used to execute configuration DB queries)
         """
+        self.map_id = None
+        self.on_update_map_id()
         super().__init__(user_db_connection, user_db_cursor, config_db_cursor,
                          logger=getLogger('root.app.game.map.dispatcher.model'))
         self.trains = []
         self.supported_cars = [0, 0]
         self.user_db_cursor.execute('''SELECT unlocked_tracks, supported_cars_min, supported_cars_max 
-                                       FROM map_progress''')
+                                       FROM map_progress WHERE map_id = ?''', (self.map_id, ))
         self.unlocked_tracks, self.supported_cars[0], self.supported_cars[1] = self.user_db_cursor.fetchone()
-        self.user_db_cursor.execute('SELECT busy FROM tracks')
+        self.user_db_cursor.execute('SELECT busy FROM tracks WHERE map_id = ?', (self.map_id, ))
         self.track_busy_status = [True, ]
         busy_status_parsed = self.user_db_cursor.fetchall()
         for i in busy_status_parsed:
             self.track_busy_status.append(bool(i[0]))
 
         self.supported_cars_by_track = [(0, 20), ]
-        self.config_db_cursor.execute('SELECT supported_cars_min, supported_cars_max FROM track_config')
+        self.config_db_cursor.execute('''SELECT supported_cars_min, supported_cars_max 
+                                         FROM track_config WHERE map_id = ?''', (self.map_id, ))
         self.supported_cars_by_track.extend(self.config_db_cursor.fetchall())
 
     @model_is_not_active
@@ -86,8 +89,8 @@ class DispatcherModel(Model):
         Saves dispatcher state to user progress database.
         """
         for i in range(1, len(self.track_busy_status)):
-            self.user_db_cursor.execute('''UPDATE tracks SET busy = ? WHERE track_number = ?''',
-                                        (int(self.track_busy_status[i]), i))
+            self.user_db_cursor.execute('''UPDATE tracks SET busy = ? WHERE track_number = ? AND map_id = ?''',
+                                        (int(self.track_busy_status[i]), i, self.map_id))
 
     def on_unlock_track(self, track):
         """
@@ -113,3 +116,6 @@ class DispatcherModel(Model):
         :param track:                   track number
         """
         self.track_busy_status[track] = False
+
+    def on_update_map_id(self):
+        self.map_id = 0

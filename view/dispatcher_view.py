@@ -19,6 +19,8 @@ class DispatcherView(View):
         :param batches:                         batches to group all labels and sprites
         :param groups:                          defines drawing layers (some labels and sprites behind others)
         """
+        self.map_id = None
+        self.on_update_map_id()
         super().__init__(user_db_cursor, config_db_cursor, surface, batches, groups,
                          logger=getLogger('root.app.game.map.dispatcher.view'))
 
@@ -63,3 +65,6 @@ class DispatcherView(View):
         """
         self.zoom_factor = zoom_factor
         self.zoom_out_activated = zoom_out_activated
+
+    def on_update_map_id(self):
+        self.map_id = 0

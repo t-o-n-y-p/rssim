@@ -69,11 +69,15 @@ class MapModel(Model):
         :param user_db_cursor:                  user DB cursor (is used to execute user DB queries)
         :param config_db_cursor:                configuration DB cursor (is used to execute configuration DB queries)
         """
+        self.map_id = None
+        self.on_update_map_id()
         super().__init__(user_db_connection, user_db_cursor, config_db_cursor,
                          logger=getLogger('root.app.game.map.model'))
-        self.user_db_cursor.execute('SELECT unlocked_tracks, unlocked_environment FROM map_progress')
+        self.user_db_cursor.execute('''SELECT unlocked_tracks, unlocked_environment 
+                                       FROM map_progress WHERE map_id = ?''', (self.map_id, ))
         self.unlocked_tracks, self.unlocked_environment = self.user_db_cursor.fetchone()
-        self.user_db_cursor.execute('SELECT unlocked_car_collections FROM map_progress')
+        self.user_db_cursor.execute('''SELECT unlocked_car_collections FROM map_progress WHERE map_id = ?''',
+                                    (self.map_id, ))
         self.unlocked_car_collections = list(map(int, self.user_db_cursor.fetchone()[0].split(',')))
 
     @model_is_not_active
@@ -125,15 +129,15 @@ class MapModel(Model):
         Saves map state to user progress database.
         """
         self.user_db_cursor.execute('''UPDATE map_progress SET unlocked_tracks = ?, unlocked_environment = ?, 
-                                       unlocked_car_collections = ?''',
+                                       unlocked_car_collections = ? WHERE map_id = ?''',
                                     (self.unlocked_tracks, self.unlocked_environment,
-                                     ','.join(list(map(str, self.unlocked_car_collections)))))
+                                     ','.join(list(map(str, self.unlocked_car_collections))), self.map_id))
 
     def on_clear_trains_info(self):
         """
         Clears currently stores trains info from the database.
         """
-        self.user_db_cursor.execute('DELETE FROM trains')
+        self.user_db_cursor.execute('DELETE FROM trains WHERE map_id = ?', (self.map_id, ))
 
     def on_create_train(self, train_id, cars, track, train_route, state, direction, new_direction,
                         current_direction, priority, boarding_time, exp, money):
@@ -177,8 +181,9 @@ class MapModel(Model):
         :param track:                           track which is unlocked
         :return:                                list of (track_param, base_route) pairs
         """
-        self.config_db_cursor.execute('SELECT track, base_route FROM signal_config WHERE track_unlocked_with = ?',
-                                      (track, ))
+        self.config_db_cursor.execute('''SELECT track, base_route FROM signal_config 
+                                         WHERE track_unlocked_with = ? AND map_id = ?''',
+                                      (track, self.map_id))
         return self.config_db_cursor.fetchall()
 
     def get_switches_to_unlock_with_track(self, track):
@@ -189,7 +194,8 @@ class MapModel(Model):
         :return:                                list of (track_param_1, track_param_2, switch_type) groups of three
         """
         self.config_db_cursor.execute('''SELECT track_param_1, track_param_2, switch_type 
-                                         FROM switches_config WHERE track_unlocked_with = ?''', (track, ))
+                                         FROM switches_config WHERE track_unlocked_with = ? AND map_id = ?''',
+                                      (track, self.map_id))
         return self.config_db_cursor.fetchall()
 
     def get_crossovers_to_unlock_with_track(self, track):
@@ -200,5 +206,9 @@ class MapModel(Model):
         :return:                                list of (track_param_1, track_param_2, crossover_type) groups of three
         """
         self.config_db_cursor.execute('''SELECT track_param_1, track_param_2, crossover_type 
-                                         FROM crossovers_config WHERE track_unlocked_with = ?''', (track, ))
+                                         FROM crossovers_config WHERE track_unlocked_with = ? AND map_id = ?''',
+                                      (track, self.map_id))
         return self.config_db_cursor.fetchall()
+
+    def on_update_map_id(self):
+        self.map_id = 0

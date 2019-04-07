@@ -22,6 +22,8 @@ class ConstructorModel(Model):
         :param user_db_cursor:                  user DB cursor (is used to execute user DB queries)
         :param config_db_cursor:                configuration DB cursor (is used to execute configuration DB queries)
         """
+        self.map_id = None
+        self.on_update_map_id()
         super().__init__(user_db_connection, user_db_cursor, config_db_cursor,
                          logger=getLogger('root.app.game.map.constructor.model'))
         self.construction_state_matrix = [{}, {}]
@@ -30,30 +32,33 @@ class ConstructorModel(Model):
         self.user_db_cursor.execute('''SELECT track_number, locked, under_construction, construction_time, 
                                        unlock_condition_from_level, unlock_condition_from_previous_track, 
                                        unlock_condition_from_environment, unlock_available FROM tracks 
-                                       WHERE locked = 1''')
+                                       WHERE locked = 1 AND map_id = ?''', (self.map_id, ))
         track_info_fetched = self.user_db_cursor.fetchall()
         for info in track_info_fetched:
             self.construction_state_matrix[TRACKS][info[0]] = [bool(info[1]), bool(info[2]), info[3], bool(info[4]),
                                                                bool(info[5]), bool(info[6]), bool(info[7])]
             self.config_db_cursor.execute('''SELECT price, level, environment_tier FROM track_config 
-                                             WHERE track_number = ?''', (info[0], ))
+                                             WHERE track_number = ? AND map_id = ?''', (info[0], self.map_id))
             self.construction_state_matrix[TRACKS][info[0]].extend(self.config_db_cursor.fetchone())
 
         self.user_db_cursor.execute('''SELECT tier, locked, under_construction, construction_time, 
                                        unlock_condition_from_level, unlock_condition_from_previous_environment,
-                                       unlock_available FROM environment WHERE locked = 1''')
+                                       unlock_available FROM environment WHERE locked = 1 AND map_id = ?''',
+                                    (self.map_id, ))
         environment_info_fetched = self.user_db_cursor.fetchall()
         for info in environment_info_fetched:
             self.construction_state_matrix[ENVIRONMENT][info[0]] = [bool(info[1]), bool(info[2]), info[3],
                                                                     bool(info[4]), bool(info[5]), 1, bool(info[6])]
-            self.config_db_cursor.execute('SELECT price, level FROM environment_config WHERE tier = ?', (info[0], ))
+            self.config_db_cursor.execute('SELECT price, level FROM environment_config WHERE tier = ? AND map_id = ?',
+                                          (info[0], self.map_id))
             self.construction_state_matrix[ENVIRONMENT][info[0]].extend(self.config_db_cursor.fetchone())
 
         self.user_db_cursor.execute('SELECT money FROM game_progress')
         self.money = self.user_db_cursor.fetchone()[0]
-        self.user_db_cursor.execute('SELECT money_target_activated FROM constructor')
+        self.user_db_cursor.execute('SELECT money_target_activated FROM constructor WHERE map_id = ?', (self.map_id, ))
         self.money_target_activated = bool(self.user_db_cursor.fetchone()[0])
-        self.user_db_cursor.execute('SELECT money_target_cell_position FROM constructor')
+        self.user_db_cursor.execute('SELECT money_target_cell_position FROM constructor WHERE map_id = ?',
+                                    (self.map_id, ))
         self.money_target_cell_position = list(map(int, self.user_db_cursor.fetchone()[0].split(',')))
 
     @model_is_not_active
@@ -163,9 +168,10 @@ class ConstructorModel(Model):
         """
         Saves track state matrix and money target flags to user progress database.
         """
-        self.user_db_cursor.execute('UPDATE constructor SET money_target_activated = ?, money_target_cell_position = ?',
+        self.user_db_cursor.execute('''UPDATE constructor SET money_target_activated = ?, money_target_cell_position = ? 
+                                       WHERE map_id = ?''',
                                     (int(self.money_target_activated),
-                                     ','.join(list(map(str, self.money_target_cell_position)))))
+                                     ','.join(list(map(str, self.money_target_cell_position))), self.map_id))
         # if some tracks were unlocked since last time the game progress was saved,
         # they are not listed in track state matrix anymore, so their state is updated separately
         for track in self.cached_unlocked_tracks:
@@ -173,7 +179,7 @@ class ConstructorModel(Model):
                                            construction_time = 0, unlock_condition_from_level = 0, 
                                            unlock_condition_from_previous_track = 0, 
                                            unlock_condition_from_environment = 0, unlock_available = 0 
-                                           WHERE track_number = ?''', (track, ))
+                                           WHERE track_number = ? AND map_id = ?''', (track, self.map_id))
 
         self.cached_unlocked_tracks = []
         # locked tracks state is saved from track_state_matrix the same way it was read
@@ -181,7 +187,7 @@ class ConstructorModel(Model):
             self.user_db_cursor.execute('''UPDATE tracks SET locked = ?, under_construction = ?, construction_time = ?, 
                                            unlock_condition_from_level = ?, unlock_condition_from_previous_track = ?, 
                                            unlock_condition_from_environment = ?, unlock_available = ? 
-                                           WHERE track_number = ?''',
+                                           WHERE track_number = ? AND map_id = ?''',
                                         tuple(
                                             map(int,
                                                 (self.construction_state_matrix[TRACKS][track][LOCKED],
@@ -194,7 +200,7 @@ class ConstructorModel(Model):
                                                  self.construction_state_matrix[TRACKS][track][
                                                      UNLOCK_CONDITION_FROM_ENVIRONMENT],
                                                  self.construction_state_matrix[TRACKS][track][UNLOCK_AVAILABLE],
-                                                 track)
+                                                 track, self.map_id)
                                                 )
                                             )
                                         )
@@ -204,14 +210,14 @@ class ConstructorModel(Model):
             self.user_db_cursor.execute('''UPDATE environment SET locked = 0, under_construction = 0, 
                                            construction_time = 0, unlock_condition_from_level = 0, 
                                            unlock_condition_from_previous_environment = 0, 
-                                           unlock_available = 0 WHERE tier = ?''', (tier, ))
+                                           unlock_available = 0 WHERE tier = ? AND map_id = ?''', (tier, self.map_id))
 
         self.cached_unlocked_tiers = []
         for tier in self.construction_state_matrix[ENVIRONMENT]:
             self.user_db_cursor.execute('''UPDATE environment SET locked = ?, under_construction = ?, 
                                            construction_time = ?, unlock_condition_from_level = ?, 
                                            unlock_condition_from_previous_environment = ?, 
-                                           unlock_available = ? WHERE tier = ?''',
+                                           unlock_available = ? WHERE tier = ? AND map_id = ?''',
                                         tuple(
                                             map(int,
                                                 (self.construction_state_matrix[ENVIRONMENT][tier][LOCKED],
@@ -222,7 +228,7 @@ class ConstructorModel(Model):
                                                  self.construction_state_matrix[ENVIRONMENT][tier][
                                                      UNLOCK_CONDITION_FROM_PREVIOUS_ENVIRONMENT],
                                                  self.construction_state_matrix[ENVIRONMENT][tier][UNLOCK_AVAILABLE],
-                                                 tier)
+                                                 tier, self.map_id)
                                                 )
                                             )
                                         )
@@ -235,7 +241,8 @@ class ConstructorModel(Model):
         :param level:                   new level value
         """
         # determines if some tracks require level which was just hit
-        self.config_db_cursor.execute('SELECT track_number FROM track_config WHERE level = ?', (level, ))
+        self.config_db_cursor.execute('SELECT track_number FROM track_config WHERE level = ? AND map_id = ?',
+                                      (level, self.map_id))
         raw_tracks = self.config_db_cursor.fetchall()
         tracks_parsed = []
         for i in raw_tracks:
@@ -249,7 +256,8 @@ class ConstructorModel(Model):
             self.view.on_update_construction_state(self.construction_state_matrix, TRACKS, track)
 
         # same for environment
-        self.config_db_cursor.execute('SELECT tier FROM environment_config WHERE level = ?', (level, ))
+        self.config_db_cursor.execute('SELECT tier FROM environment_config WHERE level = ? AND map_id = ?',
+                                      (level, self.map_id))
         raw_tiers = self.config_db_cursor.fetchall()
         tiers_parsed = []
         for i in raw_tiers:
@@ -346,3 +354,6 @@ class ConstructorModel(Model):
         """
         self.money_target_activated = False
         self.view.on_deactivate_money_target()
+
+    def on_update_map_id(self):
+        self.map_id = 0

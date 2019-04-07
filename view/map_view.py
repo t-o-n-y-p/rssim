@@ -124,13 +124,16 @@ class MapView(View):
             """
             button.on_deactivate()
             self.controller.on_open_constructor()
-
+        self.map_id = None
+        self.on_update_map_id()
         super().__init__(user_db_cursor, config_db_cursor, surface, batches, groups,
                          logger=getLogger('root.app.game.map.view'))
-        self.user_db_cursor.execute('SELECT unlocked_tracks, unlocked_environment FROM map_progress')
+        self.user_db_cursor.execute('''SELECT unlocked_tracks, unlocked_environment 
+                                       FROM map_progress WHERE map_id = ?''',
+                                    (self.map_id, ))
         self.unlocked_tracks, self.unlocked_environment = self.user_db_cursor.fetchone()
-        self.main_map = resource.image(f'full_map_{self.unlocked_tracks}.dds')
-        self.environment = resource.image(f'full_map_e_{self.unlocked_environment}.dds')
+        self.main_map = resource.image(f'full_map_{self.unlocked_tracks}_{self.map_id}.dds')
+        self.environment = resource.image(f'full_map_e_{self.unlocked_environment}_{self.map_id}.dds')
         self.map_offset = (0, 0)
         self.mini_map_offset = (0, 0)
         self.on_change_map_offset()
@@ -314,7 +317,7 @@ class MapView(View):
         :param track:                   track number
         """
         self.unlocked_tracks = track
-        self.main_map = resource.image(f'full_map_{track}.dds')
+        self.main_map = resource.image(f'full_map_{track}_{self.map_id}.dds')
         self.on_change_map_offset()
         if self.is_activated:
             self.main_map_sprite.image = self.main_map
@@ -334,7 +337,7 @@ class MapView(View):
         :param tier:                    environment tier number
         """
         self.unlocked_environment = tier
-        self.environment = resource.image(f'full_map_e_{tier}.dds')
+        self.environment = resource.image(f'full_map_e_{tier}_{self.map_id}.dds')
         if self.is_activated:
             self.environment_sprite.image = self.environment
 
@@ -574,3 +577,6 @@ class MapView(View):
                self.mini_map_frame_width, self.mini_map_frame_height)
         self.map_view_shader_sprite.draw(GL_QUADS)
         self.map_view_shader.clear()
+
+    def on_update_map_id(self):
+        self.map_id = 0

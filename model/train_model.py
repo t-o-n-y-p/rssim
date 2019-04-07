@@ -41,6 +41,8 @@ class TrainModel(Model):
         :param config_db_cursor:                configuration DB cursor (is used to execute configuration DB queries)
         :param train_id:                        train identification number
         """
+        self.map_id = None
+        self.on_update_map_id()
         super().__init__(user_db_connection, user_db_cursor, config_db_cursor,
                          logger=getLogger(f'root.app.game.map.train.{train_id}.model'))
         self.train_maximum_speed = TRAIN_ACCELERATION_FACTOR[-1] - TRAIN_ACCELERATION_FACTOR[-2]
@@ -72,7 +74,12 @@ class TrainModel(Model):
 
         :param train_id:                        train identification number
         """
-        self.user_db_cursor.execute('''SELECT * FROM trains WHERE train_id = ?''', (train_id, ))
+        self.user_db_cursor.execute('''SELECT train_id, cars, train_route_track_number, train_route_type, 
+                                       state, direction, new_direction, current_direction, speed, speed_state, 
+                                       speed_factor_position, priority, boarding_time, exp, money, 
+                                       cars_position, cars_position_abs, stop_point, destination_point, 
+                                       car_image_collection FROM trains WHERE train_id = ? AND map_id = ?''',
+                                    (train_id, self.map_id))
         train_id, self.cars, self.track, self.train_route, self.state, self.direction, self.new_direction, \
             self.current_direction, self.speed, self.speed_state, self.speed_factor_position, self.priority, \
             self.boarding_time, self.exp, self.money, cars_position_parsed, cars_position_abs_parsed, \
@@ -200,9 +207,9 @@ class TrainModel(Model):
             cars_position_abs_string = '|'.join(list(map(str, cars_position_abs_strings_list)))
 
         self.user_db_cursor.execute('''INSERT INTO trains VALUES 
-                                       (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)''',
-                                    (self.controller.train_id, self.cars, self.track, self.train_route, self.state,
-                                     self.direction, self.new_direction, self.current_direction, self.speed,
+                                       (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)''',
+                                    (self.map_id, self.controller.train_id, self.cars, self.track, self.train_route,
+                                     self.state, self.direction, self.new_direction, self.current_direction, self.speed,
                                      self.speed_state, self.speed_factor_position, self.priority, self.boarding_time,
                                      self.exp, self.money, cars_position_string, cars_position_abs_string,
                                      self.stop_point, self.destination_point, self.car_image_collection))
@@ -344,3 +351,6 @@ class TrainModel(Model):
         Reverts cars order.
         """
         self.cars_position_abs = list(reversed(self.cars_position_abs))
+
+    def on_update_map_id(self):
+        self.map_id = 0

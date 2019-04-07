@@ -20,10 +20,13 @@ class SignalModel(Model):
         :param track:                           signal track number
         :param base_route:                      base route (train route part) which signal belongs to
         """
+        self.map_id = None
+        self.on_update_map_id()
         super().__init__(user_db_connection, user_db_cursor, config_db_cursor,
                          logger=getLogger(f'root.app.game.map.signal.{track}.{base_route}.model'))
-        self.user_db_cursor.execute('SELECT state, locked FROM signals WHERE track = ? AND base_route = ?',
-                                    (track, base_route))
+        self.user_db_cursor.execute('''SELECT state, locked FROM signals 
+                                       WHERE track = ? AND base_route = ? AND map_id = ?''',
+                                    (track, base_route, self.map_id))
         self.state, self.locked = self.user_db_cursor.fetchone()
         self.locked = bool(self.locked)
 
@@ -54,8 +57,10 @@ class SignalModel(Model):
         """
         Saves railroad switch state to user progress database.
         """
-        self.user_db_cursor.execute('UPDATE signals SET state = ?, locked = ? WHERE track = ? AND base_route = ?',
-                                    (self.state, int(self.locked), self.controller.track, self.controller.base_route))
+        self.user_db_cursor.execute('''UPDATE signals SET state = ?, locked = ? 
+                                       WHERE track = ? AND base_route = ? AND map_id = ?''',
+                                    (self.state, int(self.locked), self.controller.track, self.controller.base_route,
+                                     self.map_id))
 
     def on_unlock(self):
         """
@@ -77,3 +82,6 @@ class SignalModel(Model):
         """
         self.state = 'red_signal'
         self.view.on_change_state(self.state)
+
+    def on_update_map_id(self):
+        self.map_id = 0

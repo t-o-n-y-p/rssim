@@ -33,25 +33,31 @@ class SchedulerModel(Model):
         :param user_db_cursor:                  user DB cursor (is used to execute user DB queries)
         :param config_db_cursor:                configuration DB cursor (is used to execute configuration DB queries)
         """
+        self.map_id = None
+        self.on_update_map_id()
         super().__init__(user_db_connection, user_db_cursor, config_db_cursor,
                          logger=getLogger('root.app.game.map.scheduler.model'))
         self.user_db_cursor.execute('SELECT level FROM game_progress')
         self.level = self.user_db_cursor.fetchone()[0]
-        self.user_db_cursor.execute('SELECT unlocked_tracks, supported_cars_min FROM map_progress')
+        self.user_db_cursor.execute('''SELECT unlocked_tracks, supported_cars_min FROM map_progress WHERE map_id = ?''',
+                                    (self.map_id, ))
         self.unlocked_tracks, self.supported_cars_min = self.user_db_cursor.fetchone()
         self.config_db_cursor.execute('''SELECT arrival_time_min, arrival_time_max, direction, new_direction, 
                                       cars_min, cars_max FROM schedule_options 
-                                      WHERE min_level <= ? AND max_level >= ?''', (self.level, self.level))
+                                      WHERE min_level <= ? AND max_level >= ? AND map_id = ?''',
+                                      (self.level, self.level, self.map_id))
         self.schedule_options = self.config_db_cursor.fetchall()
-        self.user_db_cursor.execute('SELECT * FROM base_schedule')
+        self.user_db_cursor.execute('''SELECT train_id, arrival, direction, new_direction, 
+                                       cars, boarding_time, exp, money FROM base_schedule WHERE map_id = ?''',
+                                    (self.map_id, ))
         self.base_schedule = self.user_db_cursor.fetchall()
-        self.user_db_cursor.execute('SELECT train_counter, next_cycle_start_time FROM scheduler')
+        self.user_db_cursor.execute('''SELECT train_counter, next_cycle_start_time FROM scheduler WHERE map_id = ?''',
+                                    (self.map_id, ))
         self.train_counter, self.next_cycle_start_time = self.user_db_cursor.fetchone()
-        self.user_db_cursor.execute('SELECT entry_busy_state FROM scheduler')
+        self.user_db_cursor.execute('''SELECT entry_busy_state FROM scheduler WHERE map_id = ?''', (self.map_id, ))
         self.entry_busy_state = list(map(bool, list(map(int, self.user_db_cursor.fetchone()[0].split(',')))))
         self.config_db_cursor.execute('''SELECT schedule_cycle_length, frame_per_car, exp_to_money 
-                                      FROM player_progress_config WHERE level = ?''',
-                                      (self.level, ))
+                                      FROM player_progress_config WHERE level = ?''', (self.level, ))
         self.schedule_cycle_length, self.frame_per_car, self.exp_to_money \
             = self.config_db_cursor.fetchone()
 
@@ -150,12 +156,16 @@ class SchedulerModel(Model):
         Saves schedule matrix to user progress database.
         """
         self.user_db_cursor.execute('''UPDATE scheduler SET train_counter = ?, next_cycle_start_time = ?, 
-                                       entry_busy_state = ?''',
+                                       entry_busy_state = ? WHERE map_id = ?''',
                                     (self.train_counter, self.next_cycle_start_time,
-                                     ','.join(list(map(str, list(map(int, self.entry_busy_state)))))))
-        self.user_db_cursor.execute('DELETE FROM base_schedule')
-        self.user_db_cursor.executemany('INSERT INTO base_schedule VALUES (?, ?, ?, ?, ?, ?, ?, ?)', self.base_schedule)
-        self.user_db_cursor.execute('UPDATE map_progress SET supported_cars_min = ?', (self.supported_cars_min, ))
+                                     ','.join(list(map(str, list(map(int, self.entry_busy_state))))), self.map_id))
+        self.user_db_cursor.execute('''DELETE FROM base_schedule WHERE map_id = ?''', (self.map_id, ))
+        for train in self.base_schedule:
+            self.user_db_cursor.execute('INSERT INTO base_schedule VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)',
+                                        (self.map_id, *train))
+
+        self.user_db_cursor.execute('''UPDATE map_progress SET supported_cars_min = ? WHERE map_id = ?''',
+                                    (self.supported_cars_min, self.map_id))
 
     def on_level_up(self, level):
         """
@@ -165,11 +175,12 @@ class SchedulerModel(Model):
         """
         self.level = level
         self.config_db_cursor.execute('''SELECT arrival_time_min, arrival_time_max, direction, new_direction, 
-                                      cars_min, cars_max FROM schedule_options 
-                                      WHERE min_level <= ? AND max_level >= ?''', (self.level, self.level))
+                                         cars_min, cars_max FROM schedule_options 
+                                         WHERE min_level <= ? AND max_level >= ? AND map_id = ?''',
+                                      (self.level, self.level, self.map_id))
         self.schedule_options = self.config_db_cursor.fetchall()
         self.config_db_cursor.execute('''SELECT schedule_cycle_length, frame_per_car, exp_to_money 
-                                      FROM player_progress_config WHERE level = ?''',
+                                         FROM player_progress_config WHERE level = ?''',
                                       (self.level, ))
         self.schedule_cycle_length, self.frame_per_car, self.exp_to_money \
             = self.config_db_cursor.fetchone()
@@ -181,7 +192,8 @@ class SchedulerModel(Model):
         :param track:                   track number
         """
         self.unlocked_tracks = track
-        self.config_db_cursor.execute('SELECT supported_cars_min FROM track_config WHERE track_number = ?',
+        self.config_db_cursor.execute('''SELECT supported_cars_min FROM track_config 
+                                         WHERE track_number = ? AND map_id = ?''',
                                       (track, ))
         self.supported_cars_min = self.config_db_cursor.fetchone()[0]
 
@@ -192,3 +204,6 @@ class SchedulerModel(Model):
         :param entry_id:                        entry identification number from 0 to 3
         """
         self.entry_busy_state[entry_id] = False
+
+    def on_update_map_id(self):
+        self.map_id = 0

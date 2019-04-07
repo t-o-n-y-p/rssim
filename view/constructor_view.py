@@ -88,6 +88,8 @@ class ConstructorView(View):
             self.controller.on_deactivate_money_target()
             self.controller.parent_controller.parent_controller.on_update_money_target(0)
 
+        self.map_id = None
+        self.on_update_map_id()
         super().__init__(user_db_cursor, config_db_cursor, surface, batches, groups,
                          logger=getLogger('root.app.game.map.constructor.view'))
         self.constructor_opacity = 0
@@ -121,9 +123,11 @@ class ConstructorView(View):
             = self.user_db_cursor.fetchone()
         self.feature_unlocked_notification_enabled = bool(self.feature_unlocked_notification_enabled)
         self.construction_completed_notification_enabled = bool(self.construction_completed_notification_enabled)
-        self.user_db_cursor.execute('SELECT money_target_activated FROM constructor')
+        self.user_db_cursor.execute('''SELECT money_target_activated FROM constructor WHERE map_id = ?''',
+                                    (self.map_id, ))
         self.money_target_activated = bool(self.user_db_cursor.fetchone()[0])
-        self.user_db_cursor.execute('SELECT money_target_cell_position FROM constructor')
+        self.user_db_cursor.execute('''SELECT money_target_cell_position FROM constructor WHERE map_id = ?''',
+                                    (self.map_id, ))
         self.money_target_cell_position = list(map(int, self.user_db_cursor.fetchone()[0].split(',')))
 
     @view_is_not_active
@@ -401,3 +405,6 @@ class ConstructorView(View):
         :param notification_state:              new notification state defined by player
         """
         self.construction_completed_notification_enabled = notification_state
+
+    def on_update_map_id(self):
+        self.map_id = 0

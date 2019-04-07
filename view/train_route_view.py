@@ -21,6 +21,8 @@ class TrainRouteView(View):
         :param track:                           route track number
         :param train_route:                     route type (e.g. left/right entry/exit)
         """
+        self.map_id = None
+        self.on_update_map_id()
         super().__init__(user_db_cursor, config_db_cursor, surface, batches, groups,
                          logger=getLogger(f'root.app.game.map.train_route.{track}.{train_route}.view'))
 
@@ -65,3 +67,6 @@ class TrainRouteView(View):
         """
         self.zoom_factor = zoom_factor
         self.zoom_out_activated = zoom_out_activated
+
+    def on_update_map_id(self):
+        self.map_id = 0

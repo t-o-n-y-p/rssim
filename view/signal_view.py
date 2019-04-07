@@ -32,6 +32,8 @@ class SignalView(View):
         :param red_signal_image                 texture for red signal state
         :param green_signal_image               texture for green signal state
         """
+        self.map_id = None
+        self.on_update_map_id()
         super().__init__(user_db_cursor, config_db_cursor, surface, batches, groups,
                          logger=getLogger(f'root.app.game.map.signal.{track}.{base_route}.view'))
         self.red_signal_image = red_signal_image
@@ -39,8 +41,9 @@ class SignalView(View):
         self.signal_sprite = None
         self.state = None
         self.locked = None
-        self.config_db_cursor.execute('SELECT x, y, flip_needed FROM signal_config WHERE track = ? AND base_route = ?',
-                                      (track, base_route))
+        self.config_db_cursor.execute('''SELECT x, y, flip_needed FROM signal_config 
+                                         WHERE track = ? AND base_route = ? AND map_id = ?''',
+                                      (track, base_route, self.map_id))
         x, y, self.flip_needed = self.config_db_cursor.fetchone()
         self.position = (x, y)
         self.flip_needed = bool(self.flip_needed)
@@ -167,3 +170,6 @@ class SignalView(View):
                 self.signal_sprite.image = self.red_signal_image
             else:
                 self.signal_sprite.image = self.green_signal_image
+
+    def on_update_map_id(self):
+        self.map_id = 0

@@ -51,6 +51,8 @@ class SchedulerView(View):
             """
             self.controller.on_deactivate_view()
 
+        self.map_id = None
+        self.on_update_map_id()
         super().__init__(user_db_cursor, config_db_cursor, surface, batches, groups,
                          logger=getLogger('root.app.game.map.scheduler.view'))
         self.schedule_opacity = 0
@@ -249,3 +251,6 @@ class SchedulerView(View):
         self.scheduler_view_shader.uniforms.schedule_opacity = self.schedule_opacity
         self.scheduler_view_shader_sprite.draw(GL_QUADS)
         self.scheduler_view_shader.clear()
+
+    def on_update_map_id(self):
+        self.map_id = 0

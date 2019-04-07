@@ -50,23 +50,28 @@ class TrainRouteModel(Model):
             else:
                 return -1
 
+        self.map_id = None
+        self.on_update_map_id()
         super().__init__(user_db_connection, user_db_cursor, config_db_cursor,
                          logger=getLogger(f'root.app.game.map.train_route.{track}.{train_route}.model'))
         self.user_db_cursor.execute('''SELECT opened, last_opened_by, current_checkpoint, priority, cars 
-                                       FROM train_routes WHERE track = ? and train_route = ?''', (track, train_route))
+                                       FROM train_routes WHERE track = ? AND train_route = ? AND map_id = ?''',
+                                    (track, train_route, self.map_id))
         self.opened, self.last_opened_by, self.current_checkpoint, self.priority, self.cars \
             = self.user_db_cursor.fetchone()
         self.opened = bool(self.opened)
         self.user_db_cursor.execute('''SELECT train_route_section_busy_state FROM train_routes
-                                       WHERE track = ? and train_route = ?''', (track, train_route))
+                                       WHERE track = ? AND train_route = ? AND map_id = ?''',
+                                    (track, train_route, self.map_id))
         self.train_route_section_busy_state \
             = list(map(bool, list(map(int, self.user_db_cursor.fetchone()[0].split(',')))))
         self.config_db_cursor.execute('''SELECT signal_track, signal_base_route FROM train_route_config
-                                         WHERE track = ? and train_route = ?''', (track, train_route))
+                                         WHERE track = ? AND train_route = ? AND map_id = ?''',
+                                      (track, train_route, self.map_id))
         self.signal_track, self.signal_base_route = self.config_db_cursor.fetchone()
         self.config_db_cursor.execute('''SELECT start_point_v2, stop_point_v2, destination_point_v2, checkpoints_v2 
-                                         FROM train_route_config WHERE track = ? and train_route = ?''',
-                                      (track, train_route))
+                                         FROM train_route_config WHERE track = ? AND train_route = ? AND map_id = ?''',
+                                      (track, train_route, self.map_id))
         fetched_data = list(self.config_db_cursor.fetchone())
         for i in range(len(fetched_data)):
             if fetched_data[i] is not None:
@@ -81,7 +86,8 @@ class TrainRouteModel(Model):
         self.config_db_cursor.execute('''SELECT trail_points_v2_part_1_start, trail_points_v2_part_1_end, 
                                          trail_points_v2_part_2, trail_points_v2_part_3_start, 
                                          trail_points_v2_part_3_end FROM train_route_config 
-                                         WHERE track = ? and train_route = ?''', (track, train_route))
+                                         WHERE track = ? AND train_route = ? AND map_id = ?''',
+                                      (track, train_route, self.map_id))
         trail_points_v2_part_1_start, trail_points_v2_part_1_end, trail_points_v2_part_2, \
             trail_points_v2_part_3_start, trail_points_v2_part_3_end = self.config_db_cursor.fetchone()
         # parse start and end points for first part, append all points in between
@@ -125,12 +131,14 @@ class TrainRouteModel(Model):
                                              trail_points_v2_part_3_start_parsed[2]))
 
         self.config_db_cursor.execute('''SELECT section_type, track_param_1, track_param_2 
-                                         FROM train_route_sections WHERE track = ? and train_route = ?''',
-                                      (track, train_route))
+                                         FROM train_route_sections WHERE track = ? and train_route = ? 
+                                         AND map_id = ?''',
+                                      (track, train_route, self.map_id))
         self.train_route_sections = self.config_db_cursor.fetchall()
         self.config_db_cursor.execute('''SELECT position_1, position_2 
-                                         FROM train_route_sections WHERE track = ? and train_route = ?''',
-                                      (track, train_route))
+                                         FROM train_route_sections WHERE track = ? and train_route = ? 
+                                         AND map_id = ?''',
+                                      (track, train_route, self.map_id))
         self.train_route_section_positions = self.config_db_cursor.fetchall()
 
     @model_is_not_active
@@ -159,13 +167,14 @@ class TrainRouteModel(Model):
         Saves train route state to user progress database.
         """
         self.user_db_cursor.execute('''UPDATE train_routes SET opened = ?, last_opened_by = ?, current_checkpoint = ?,
-                                       priority = ?, cars = ? WHERE track = ? and train_route = ?''',
+                                       priority = ?, cars = ? WHERE track = ? AND train_route = ? AND map_id = ?''',
                                     (int(self.opened), self.last_opened_by, self.current_checkpoint, self.priority,
-                                     self.cars, self.controller.track, self.controller.train_route))
+                                     self.cars, self.controller.track, self.controller.train_route, self.map_id))
         busy_state_string = ','.join(list(map(str, list(map(int, self.train_route_section_busy_state)))))
         self.user_db_cursor.execute('''UPDATE train_routes SET train_route_section_busy_state = ? 
-                                       WHERE track = ? and train_route = ?''',
-                                    (busy_state_string, self.controller.track, self.controller.train_route))
+                                       WHERE track = ? AND train_route = ? AND map_id = ?''',
+                                    (busy_state_string, self.controller.track, self.controller.train_route,
+                                     self.map_id))
 
     def on_open_train_route(self, train_id, cars):
         """
@@ -266,3 +275,6 @@ class TrainRouteModel(Model):
         :param status:                          new status
         """
         self.train_route_section_busy_state[section] = status
+
+    def on_update_map_id(self):
+        self.map_id = 0
