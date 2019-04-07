@@ -10,8 +10,7 @@ class SignalView(View):
     Implements Signal view.
     Signal object is responsible for properties, UI and events related to the signal state.
     """
-    def __init__(self, user_db_cursor, config_db_cursor, track, base_route,
-                 red_signal_image, green_signal_image):
+    def __init__(self, track, base_route, red_signal_image, green_signal_image):
         """
         Properties:
             red_signal_image                    texture for red signal state
@@ -22,8 +21,6 @@ class SignalView(View):
             flip_needed                         indicates if signal image should be rotated
             position                            signal position on the map
 
-        :param user_db_cursor:                  user DB cursor (is used to execute user DB queries)
-        :param config_db_cursor:                configuration DB cursor (is used to execute configuration DB queries)
         :param track:                           signal track number
         :param base_route:                      base route (train route part) which signal belongs to
         :param red_signal_image                 texture for red signal state
@@ -31,8 +28,7 @@ class SignalView(View):
         """
         self.map_id = None
         self.on_update_map_id()
-        super().__init__(user_db_cursor, config_db_cursor,
-                         logger=getLogger(f'root.app.game.map.signal.{track}.{base_route}.view'))
+        super().__init__(logger=getLogger(f'root.app.game.map.{self.map_id}.signal.{track}.{base_route}.view'))
         self.red_signal_image = red_signal_image
         self.green_signal_image = green_signal_image
         self.signal_sprite = None

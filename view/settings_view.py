@@ -14,7 +14,7 @@ class SettingsView(View):
     Implements Settings view.
     Settings object is responsible for user-defined settings.
     """
-    def __init__(self, user_db_cursor, config_db_cursor):
+    def __init__(self):
         """
         Settings are located within the grid.
         Columns indexes are -1 (left part of the screen), 0 (middle) and 1 (right part of the screen).
@@ -60,8 +60,6 @@ class SettingsView(View):
             reject_settings_button              RejectSettingsButton object
             buttons                             list of all buttons
 
-        :param user_db_cursor:                  user DB cursor (is used to execute user DB queries)
-        :param config_db_cursor:                configuration DB cursor (is used to execute configuration DB queries)
         """
         def on_accept_changes(button):
             """
@@ -132,8 +130,7 @@ class SettingsView(View):
             """
             self.temp_enough_money_notification_enabled = new_state
 
-        super().__init__(user_db_cursor, config_db_cursor,
-                         logger=getLogger('root.app.settings.view'))
+        super().__init__(logger=getLogger('root.app.settings.view'))
         self.temp_windowed_resolution = (0, 0)
         self.temp_display_fps = False
         self.display_fps_checkbox \

@@ -20,7 +20,7 @@ class MapView(View):
     Implements Map view.
     Map object is responsible for properties, UI and events related to the map.
     """
-    def __init__(self, user_db_cursor, config_db_cursor):
+    def __init__(self):
         """
         Button click handlers:
             on_click_zoom_in_button             on_click handler for zoom in button
@@ -65,8 +65,6 @@ class MapView(View):
             map_view_shader_upper_limit         upper edge for map_view_shader_sprite
             map_view_shader_bottom_limit        bottom edge for map_view_shader_sprite
 
-        :param user_db_cursor:                  user DB cursor (is used to execute user DB queries)
-        :param config_db_cursor:                configuration DB cursor (is used to execute configuration DB queries)
         """
         def on_click_zoom_in_button(button):
             """
@@ -121,10 +119,10 @@ class MapView(View):
             """
             button.on_deactivate()
             self.controller.on_open_constructor()
+
         self.map_id = None
         self.on_update_map_id()
-        super().__init__(user_db_cursor, config_db_cursor,
-                         logger=getLogger('root.app.game.map.view'))
+        super().__init__(logger=getLogger(f'root.app.game.map.{self.map_id}.view'))
         self.user_db_cursor.execute('''SELECT unlocked_tracks, unlocked_environment 
                                        FROM map_progress WHERE map_id = ?''',
                                     (self.map_id, ))

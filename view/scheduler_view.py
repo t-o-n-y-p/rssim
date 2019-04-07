@@ -15,7 +15,7 @@ class SchedulerView(View):
     Implements Scheduler view.
     Scheduler object is responsible for properties, UI and events related to the train schedule.
     """
-    def __init__(self, user_db_cursor, config_db_cursor):
+    def __init__(self):
         """
         Button click handlers:
             on_close_schedule                       on_click handler for close schedule button
@@ -37,8 +37,6 @@ class SchedulerView(View):
             scheduler_view_shader_bottom_limit      bottom edge for scheduler_view_shader_sprite
             scheduler_view_shader_upper_limit       upper edge for scheduler_view_shader_sprite
 
-        :param user_db_cursor:                  user DB cursor (is used to execute user DB queries)
-        :param config_db_cursor:                configuration DB cursor (is used to execute configuration DB queries)
         """
         def on_close_schedule(button):
             """
@@ -50,8 +48,7 @@ class SchedulerView(View):
 
         self.map_id = None
         self.on_update_map_id()
-        super().__init__(user_db_cursor, config_db_cursor,
-                         logger=getLogger('root.app.game.map.scheduler.view'))
+        super().__init__(logger=getLogger(f'root.app.game.map.{self.map_id}.scheduler.view'))
         self.schedule_opacity = 0
         self.schedule_left_caption_position = (0, 0)
         self.schedule_right_caption_position = (0, 0)

@@ -8,18 +8,15 @@ class DispatcherView(View):
     Implements Dispatcher view.
     Dispatcher object is responsible for assigning routes to approaching trains.
     """
-    def __init__(self, user_db_cursor, config_db_cursor):
+    def __init__(self):
         """
         Properties:
             none
 
-        :param user_db_cursor:                  user DB cursor (is used to execute user DB queries)
-        :param config_db_cursor:                configuration DB cursor (is used to execute configuration DB queries)
         """
         self.map_id = None
         self.on_update_map_id()
-        super().__init__(user_db_cursor, config_db_cursor,
-                         logger=getLogger('root.app.game.map.dispatcher.view'))
+        super().__init__(logger=getLogger(f'root.app.game.map.{self.map_id}.dispatcher.view'))
 
     @view_is_not_active
     def on_activate(self):

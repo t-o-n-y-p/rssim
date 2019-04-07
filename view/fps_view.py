@@ -10,16 +10,13 @@ class FPSView(View):
     Implements FPS view.
     FPS object is responsible for real-time FPS calculation.
     """
-    def __init__(self, user_db_cursor, config_db_cursor):
+    def __init__(self):
         """
         Properties:
             fps_label                           text label for current FPS value
 
-        :param user_db_cursor:                  user DB cursor (is used to execute user DB queries)
-        :param config_db_cursor:                configuration DB cursor (is used to execute configuration DB queries)
         """
-        super().__init__(user_db_cursor, config_db_cursor,
-                         logger=getLogger('root.app.fps.view'))
+        super().__init__(logger=getLogger('root.app.fps.view'))
         self.fps_label = None
 
     @view_is_not_active

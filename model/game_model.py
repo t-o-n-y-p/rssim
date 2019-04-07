@@ -8,7 +8,7 @@ class GameModel(Model):
     Implements Game model.
     Game object is responsible for properties, UI and events related to the game process.
     """
-    def __init__(self, user_db_connection, user_db_cursor, config_db_cursor):
+    def __init__(self):
         """
         Properties:
             game_paused                         indicates if game is paused or not
@@ -19,12 +19,8 @@ class GameModel(Model):
             money_target                        reserved for future use
             player_progress                     exp needed to hit next level
 
-        :param user_db_connection:              connection to the user DB (stores game state and user-defined settings)
-        :param user_db_cursor:                  user DB cursor (is used to execute user DB queries)
-        :param config_db_cursor:                configuration DB cursor (is used to execute configuration DB queries)
         """
-        super().__init__(user_db_connection, user_db_cursor, config_db_cursor,
-                         logger=getLogger('root.app.game.model'))
+        super().__init__(logger=getLogger('root.app.game.model'))
         self.game_paused = False
         self.user_db_cursor.execute('SELECT game_time FROM epoch_timestamp')
         self.game_time = self.user_db_cursor.fetchone()[0]

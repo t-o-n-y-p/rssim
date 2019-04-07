@@ -38,6 +38,7 @@ from view.train_view import TrainView
 from view.dispatcher_view import DispatcherView
 from view.constructor_view import ConstructorView
 from textures import *
+from database import CONFIG_DB_CURSOR, USER_DB_CURSOR
 
 
 # --------------------- CONSTANTS ---------------------
@@ -50,7 +51,7 @@ LOG_LEVEL_DEBUG = 10                # integer log level which includes all possi
 # ------------------- END CONSTANTS -------------------
 
 
-def create_app(user_db_connection, user_db_cursor, config_db_cursor, loader):
+def create_app(loader):
     """
     Creates controller, model and view for App object.
     It is responsible for high-level properties, UI and events.
@@ -59,53 +60,47 @@ def create_app(user_db_connection, user_db_cursor, config_db_cursor, loader):
         settings                    Settings object
         fps                         FPS object
 
-    :param user_db_connection:      connection to the user DB (stores game state and user-defined settings)
-    :param user_db_cursor:          user DB cursor (is used to execute user DB queries)
-    :param config_db_cursor:        configuration DB cursor (is used to execute configuration DB queries)
     :param loader:                  RSSim class pointer
     :return:                        App object controller
     """
     controller = AppController(loader)
-    model = AppModel(user_db_connection, user_db_cursor, config_db_cursor)
-    view = AppView(user_db_cursor, config_db_cursor)
+    model = AppModel()
+    view = AppView()
     controller.model = model
     model.controller = controller
     controller.view = view
     view.on_assign_controller(controller)
     model.view = view
-    controller.game = _create_game(user_db_connection, user_db_cursor, config_db_cursor, controller)
-    controller.settings = _create_settings(user_db_connection, user_db_cursor, config_db_cursor, controller)
-    controller.fps = _create_fps(user_db_connection, user_db_cursor, config_db_cursor, controller)
+    controller.game = _create_game(controller)
+    controller.settings = _create_settings(controller)
+    controller.fps = _create_fps(controller)
     return controller
 
 
-def _create_game(user_db_connection, user_db_cursor, config_db_cursor, app):
+def _create_game(app):
     """
     Creates controller, model and view for Game object.
     It is responsible for properties, UI and events related to the game process.
     Child objects:
         map                         Map object
 
-    :param user_db_connection:      connection to the user DB (stores game state and user-defined settings)
-    :param user_db_cursor:          user DB cursor (is used to execute user DB queries)
-    :param config_db_cursor:        configuration DB cursor (is used to execute configuration DB queries)
     :param app:                     App controller pointer
     :return:                        Game object controller
     """
     controller = GameController(app)
     app.game = controller
-    model = GameModel(user_db_connection, user_db_cursor, config_db_cursor)
-    view = GameView(user_db_cursor, config_db_cursor)
+    model = GameModel()
+    view = GameView()
     controller.model = model
     model.controller = controller
     controller.view = view
     view.on_assign_controller(controller)
     model.view = view
-    controller.map = _create_map(user_db_connection, user_db_cursor, config_db_cursor, controller)
+    controller.map = _create_map(controller)
     return controller
 
 
-def _create_map(user_db_connection, user_db_cursor, config_db_cursor, game):
+def _create_map(game):
     """
     Creates controller, model and view for Map object.
     It is responsible for properties, UI and events related to the map.
@@ -119,90 +114,82 @@ def _create_map(user_db_connection, user_db_cursor, config_db_cursor, game):
         switches                    RailroadSwitch objects
         crossovers                  Crossover objects
 
-    :param user_db_connection:      connection to the user DB (stores game state and user-defined settings)
-    :param user_db_cursor:          user DB cursor (is used to execute user DB queries)
-    :param config_db_cursor:        configuration DB cursor (is used to execute configuration DB queries)
     :param game:                    Game controller pointer
     :return:                        Map object controller
     """
     controller = MapController(game)
     game.map = controller
-    controller.scheduler = _create_scheduler(user_db_connection, user_db_cursor, config_db_cursor, controller)
-    controller.dispatcher = _create_dispatcher(user_db_connection, user_db_cursor, config_db_cursor, controller)
-    controller.constructor = _create_constructor(user_db_connection, user_db_cursor, config_db_cursor, controller)
+    controller.scheduler = _create_scheduler(controller)
+    controller.dispatcher = _create_dispatcher(controller)
+    controller.constructor = _create_constructor(controller)
     # read train IDs from database, create trains and append them to both dictionary and list
-    user_db_cursor.execute('SELECT train_id FROM trains')
-    train_ids = user_db_cursor.fetchall()
+    USER_DB_CURSOR.execute('SELECT train_id FROM trains')
+    train_ids = USER_DB_CURSOR.fetchall()
     if train_ids is not None:
         for i in train_ids:
-            controller.trains[i[0]] = _create_train(user_db_connection, user_db_cursor, config_db_cursor,
-                                                    controller, i[0])
+            controller.trains[i[0]] = _create_train(controller, i[0])
             controller.trains_list.append(controller.trains[i[0]])
     # read signal tracks and base routes from database, create signals and append them to both dictionary and list
-    config_db_cursor.execute('''SELECT DISTINCT track FROM signal_config''')
-    signal_index = config_db_cursor.fetchall()
+    CONFIG_DB_CURSOR.execute('''SELECT DISTINCT track FROM signal_config''')
+    signal_index = CONFIG_DB_CURSOR.fetchall()
     for i in signal_index:
         controller.signals[i[0]] = {}
 
-    config_db_cursor.execute('''SELECT track, base_route FROM signal_config''')
-    signal_ids = config_db_cursor.fetchall()
+    CONFIG_DB_CURSOR.execute('''SELECT track, base_route FROM signal_config''')
+    signal_ids = CONFIG_DB_CURSOR.fetchall()
     for i in signal_ids:
         controller.signals[i[0]][i[1]] \
-            = _create_signal(user_db_connection, user_db_cursor, config_db_cursor,
-                             controller, i[0], i[1])
+            = _create_signal(controller, i[0], i[1])
         controller.signals_list.append(controller.signals[i[0]][i[1]])
     # read train route tracks and types from database, create train routes and append them to both dictionary and list
-    config_db_cursor.execute('''SELECT DISTINCT track FROM train_route_config''')
-    train_route_index = config_db_cursor.fetchall()
+    CONFIG_DB_CURSOR.execute('''SELECT DISTINCT track FROM train_route_config''')
+    train_route_index = CONFIG_DB_CURSOR.fetchall()
     for i in train_route_index:
         controller.train_routes[i[0]] = {}
 
-    config_db_cursor.execute('''SELECT track, train_route FROM train_route_config''')
-    train_route_ids = config_db_cursor.fetchall()
+    CONFIG_DB_CURSOR.execute('''SELECT track, train_route FROM train_route_config''')
+    train_route_ids = CONFIG_DB_CURSOR.fetchall()
     for i in train_route_ids:
         controller.train_routes[i[0]][i[1]] \
-            = _create_train_route(user_db_connection, user_db_cursor, config_db_cursor,
-                                  controller, i[0], i[1])
+            = _create_train_route(controller, i[0], i[1])
         controller.train_routes_sorted_list.append(controller.train_routes[i[0]][i[1]])
     # read switches tracks from database, create switches and append them to both dictionary and list
-    user_db_cursor.execute('''SELECT DISTINCT track_param_1 FROM switches''')
-    switch_track_param_1 = user_db_cursor.fetchall()
+    USER_DB_CURSOR.execute('''SELECT DISTINCT track_param_1 FROM switches''')
+    switch_track_param_1 = USER_DB_CURSOR.fetchall()
     for i in switch_track_param_1:
         controller.switches[i[0]] = {}
 
-    user_db_cursor.execute('''SELECT DISTINCT track_param_1, track_param_2 FROM switches''')
-    switch_track_param_2 = user_db_cursor.fetchall()
+    USER_DB_CURSOR.execute('''SELECT DISTINCT track_param_1, track_param_2 FROM switches''')
+    switch_track_param_2 = USER_DB_CURSOR.fetchall()
     for i in switch_track_param_2:
         controller.switches[i[0]][i[1]] = {}
 
-    user_db_cursor.execute('''SELECT track_param_1, track_param_2, switch_type FROM switches''')
-    switch_types = user_db_cursor.fetchall()
+    USER_DB_CURSOR.execute('''SELECT track_param_1, track_param_2, switch_type FROM switches''')
+    switch_types = USER_DB_CURSOR.fetchall()
     for i in switch_types:
         controller.switches[i[0]][i[1]][i[2]] \
-            = _create_railroad_switch(user_db_connection, user_db_cursor, config_db_cursor,
-                                      controller, i[0], i[1], i[2])
+            = _create_railroad_switch(controller, i[0], i[1], i[2])
         controller.switches_list.append(controller.switches[i[0]][i[1]][i[2]])
     # read crossovers tracks from database, create crossovers and append them to both dictionary and list
-    user_db_cursor.execute('''SELECT DISTINCT track_param_1 FROM crossovers''')
-    crossovers_track_param_1 = user_db_cursor.fetchall()
+    USER_DB_CURSOR.execute('''SELECT DISTINCT track_param_1 FROM crossovers''')
+    crossovers_track_param_1 = USER_DB_CURSOR.fetchall()
     for i in crossovers_track_param_1:
         controller.crossovers[i[0]] = {}
 
-    user_db_cursor.execute('''SELECT DISTINCT track_param_1, track_param_2 FROM crossovers''')
-    crossovers_track_param_2 = user_db_cursor.fetchall()
+    USER_DB_CURSOR.execute('''SELECT DISTINCT track_param_1, track_param_2 FROM crossovers''')
+    crossovers_track_param_2 = USER_DB_CURSOR.fetchall()
     for i in crossovers_track_param_2:
         controller.crossovers[i[0]][i[1]] = {}
 
-    user_db_cursor.execute('''SELECT track_param_1, track_param_2, crossover_type FROM crossovers''')
-    crossovers_types = user_db_cursor.fetchall()
+    USER_DB_CURSOR.execute('''SELECT track_param_1, track_param_2, crossover_type FROM crossovers''')
+    crossovers_types = USER_DB_CURSOR.fetchall()
     for i in crossovers_types:
         controller.crossovers[i[0]][i[1]][i[2]] \
-            = _create_crossover(user_db_connection, user_db_cursor, config_db_cursor,
-                                controller, i[0], i[1], i[2])
+            = _create_crossover(controller, i[0], i[1], i[2])
         controller.crossovers_list.append(controller.crossovers[i[0]][i[1]][i[2]])
 
-    model = MapModel(user_db_connection, user_db_cursor, config_db_cursor)
-    view = MapView(user_db_cursor, config_db_cursor)
+    model = MapModel()
+    view = MapView()
     controller.model = model
     model.controller = controller
     controller.view = view
@@ -211,21 +198,18 @@ def _create_map(user_db_connection, user_db_cursor, config_db_cursor, game):
     return controller
 
 
-def _create_settings(user_db_connection, user_db_cursor, config_db_cursor, app):
+def _create_settings(app):
     """
     Creates controller, model and view for Settings object.
     It is responsible for user-defined settings.
 
-    :param user_db_connection:      connection to the user DB (stores game state and user-defined settings)
-    :param user_db_cursor:          user DB cursor (is used to execute user DB queries)
-    :param config_db_cursor:        configuration DB cursor (is used to execute configuration DB queries)
     :param app:                     App controller pointer
     :return:                        Settings object controller
     """
     controller = SettingsController(app)
     app.settings = controller
-    model = SettingsModel(user_db_connection, user_db_cursor, config_db_cursor)
-    view = SettingsView(user_db_cursor, config_db_cursor)
+    model = SettingsModel()
+    view = SettingsView()
     controller.model = model
     model.controller = controller
     controller.view = view
@@ -234,21 +218,18 @@ def _create_settings(user_db_connection, user_db_cursor, config_db_cursor, app):
     return controller
 
 
-def _create_fps(user_db_connection, user_db_cursor, config_db_cursor, app):
+def _create_fps(app):
     """
     Creates controller, model and view for FPS object.
     It is responsible for real-time FPS calculation.
 
-    :param user_db_connection:      connection to the user DB (stores game state and user-defined settings)
-    :param user_db_cursor:          user DB cursor (is used to execute user DB queries)
-    :param config_db_cursor:        configuration DB cursor (is used to execute configuration DB queries)
     :param app:                     App controller pointer
     :return:                        FPS object controller
     """
     controller = FPSController(app)
     app.fps = controller
-    model = FPSModel(user_db_connection, user_db_cursor, config_db_cursor)
-    view = FPSView(user_db_cursor, config_db_cursor)
+    model = FPSModel()
+    view = FPSView()
     controller.model = model
     model.controller = controller
     controller.view = view
@@ -257,20 +238,17 @@ def _create_fps(user_db_connection, user_db_cursor, config_db_cursor, app):
     return controller
 
 
-def _create_scheduler(user_db_connection, user_db_cursor, config_db_cursor, map_controller):
+def _create_scheduler(map_controller):
     """
     Creates controller, model and view for Scheduler object.
     It is responsible for properties, UI and events related to the train schedule.
 
-    :param user_db_connection:      connection to the user DB (stores game state and user-defined settings)
-    :param user_db_cursor:          user DB cursor (is used to execute user DB queries)
-    :param config_db_cursor:        configuration DB cursor (is used to execute configuration DB queries)
     :param map_controller:          Map controller pointer
     :return:                        Scheduler object controller
     """
     controller = SchedulerController(map_controller)
-    model = SchedulerModel(user_db_connection, user_db_cursor, config_db_cursor)
-    view = SchedulerView(user_db_cursor, config_db_cursor)
+    model = SchedulerModel()
+    view = SchedulerView()
     controller.model = model
     model.controller = controller
     controller.view = view
@@ -279,23 +257,19 @@ def _create_scheduler(user_db_connection, user_db_cursor, config_db_cursor, map_
     return controller
 
 
-def _create_signal(user_db_connection, user_db_cursor, config_db_cursor, map_controller, track, base_route):
+def _create_signal(map_controller, track, base_route):
     """
     Creates controller, model and view for Signal object.
     It is responsible for properties, UI and events related to the signal state.
 
-    :param user_db_connection:      connection to the user DB (stores game state and user-defined settings)
-    :param user_db_cursor:          user DB cursor (is used to execute user DB queries)
-    :param config_db_cursor:        configuration DB cursor (is used to execute configuration DB queries)
     :param map_controller:          Map controller pointer
     :param track:                   signal track number
     :param base_route:              base route (train route part) which signal belongs to
     :return:                        Signal object controller
     """
     controller = SignalController(map_controller, track, base_route)
-    model = SignalModel(user_db_connection, user_db_cursor, config_db_cursor, track, base_route)
-    view = SignalView(user_db_cursor, config_db_cursor, track, base_route,
-                      RED_SIGNAL_IMAGE, GREEN_SIGNAL_IMAGE)
+    model = SignalModel(track, base_route)
+    view = SignalView(track, base_route, RED_SIGNAL_IMAGE, GREEN_SIGNAL_IMAGE)
     controller.model = model
     model.controller = controller
     controller.view = view
@@ -304,25 +278,22 @@ def _create_signal(user_db_connection, user_db_cursor, config_db_cursor, map_con
     return controller
 
 
-def _create_train_route(user_db_connection, user_db_cursor, config_db_cursor, map_controller, track, train_route):
+def _create_train_route(map_controller, track, train_route):
     """
     Creates controller, model and view for TrainRoute object.
     It is responsible for properties, UI and events related to the train route.
 
-    :param user_db_connection:      connection to the user DB (stores game state and user-defined settings)
-    :param user_db_cursor:          user DB cursor (is used to execute user DB queries)
-    :param config_db_cursor:        configuration DB cursor (is used to execute configuration DB queries)
     :param map_controller:          Map controller pointer
     :param track:                   train route track number
     :param train_route:             train route type
     :return:                        TrainRoute object controller
     """
     controller = TrainRouteController(map_controller, track, train_route)
-    model = TrainRouteModel(user_db_connection, user_db_cursor, config_db_cursor, track, train_route)
+    model = TrainRouteModel(track, train_route)
     if model.opened:
         controller.parent_controller.on_set_trail_points(model.last_opened_by, model.trail_points_v2)
 
-    view = TrainRouteView(user_db_cursor, config_db_cursor, track, train_route)
+    view = TrainRouteView(track, train_route)
     controller.model = model
     model.controller = controller
     controller.view = view
@@ -331,15 +302,11 @@ def _create_train_route(user_db_connection, user_db_cursor, config_db_cursor, ma
     return controller
 
 
-def _create_railroad_switch(user_db_connection, user_db_cursor, config_db_cursor,
-                            map_controller, track_param_1, track_param_2, switch_type):
+def _create_railroad_switch(map_controller, track_param_1, track_param_2, switch_type):
     """
     Creates controller, model and view for RailroadSwitch object.
     It is responsible for properties, UI and events related to the railroad switch.
 
-    :param user_db_connection:      connection to the user DB (stores game state and user-defined settings)
-    :param user_db_cursor:          user DB cursor (is used to execute user DB queries)
-    :param config_db_cursor:        configuration DB cursor (is used to execute configuration DB queries)
     :param map_controller:          Map controller pointer
     :param track_param_1:           straight track number
     :param track_param_2:           diverging track number
@@ -347,9 +314,8 @@ def _create_railroad_switch(user_db_connection, user_db_cursor, config_db_cursor
     :return:                        RailroadSwitch object controller
     """
     controller = RailroadSwitchController(map_controller, track_param_1, track_param_2, switch_type)
-    model = RailroadSwitchModel(user_db_connection, user_db_cursor, config_db_cursor,
-                                track_param_1, track_param_2, switch_type)
-    view = RailroadSwitchView(user_db_cursor, config_db_cursor, track_param_1, track_param_2, switch_type)
+    model = RailroadSwitchModel(track_param_1, track_param_2, switch_type)
+    view = RailroadSwitchView(track_param_1, track_param_2, switch_type)
     controller.model = model
     model.controller = controller
     controller.view = view
@@ -358,15 +324,11 @@ def _create_railroad_switch(user_db_connection, user_db_cursor, config_db_cursor
     return controller
 
 
-def _create_crossover(user_db_connection, user_db_cursor, config_db_cursor,
-                      map_controller, track_param_1, track_param_2, crossover_type):
+def _create_crossover(map_controller, track_param_1, track_param_2, crossover_type):
     """
     Creates controller, model and view for Crossover object.
     It is responsible for properties, UI and events related to the crossover.
 
-    :param user_db_connection:      connection to the user DB (stores game state and user-defined settings)
-    :param user_db_cursor:          user DB cursor (is used to execute user DB queries)
-    :param config_db_cursor:        configuration DB cursor (is used to execute configuration DB queries)
     :param map_controller:          Map controller pointer
     :param track_param_1:           first straight track number
     :param track_param_2:           second straight track number
@@ -374,9 +336,8 @@ def _create_crossover(user_db_connection, user_db_cursor, config_db_cursor,
     :return:                        Crossover object controller
     """
     controller = CrossoverController(map_controller, track_param_1, track_param_2, crossover_type)
-    model = CrossoverModel(user_db_connection, user_db_cursor, config_db_cursor,
-                           track_param_1, track_param_2, crossover_type)
-    view = CrossoverView(user_db_cursor, config_db_cursor, track_param_1, track_param_2, crossover_type)
+    model = CrossoverModel(track_param_1, track_param_2, crossover_type)
+    view = CrossoverView(track_param_1, track_param_2, crossover_type)
     controller.model = model
     model.controller = controller
     controller.view = view
@@ -385,23 +346,19 @@ def _create_crossover(user_db_connection, user_db_cursor, config_db_cursor,
     return controller
 
 
-def _create_train(user_db_connection, user_db_cursor, config_db_cursor, map_controller, train_id):
+def _create_train(map_controller, train_id):
     """
     Creates controller, model and view for Train object from the database.
     It is responsible for properties, UI and events related to the train.
 
-    :param user_db_connection:      connection to the user DB (stores game state and user-defined settings)
-    :param user_db_cursor:          user DB cursor (is used to execute user DB queries)
-    :param config_db_cursor:        configuration DB cursor (is used to execute configuration DB queries)
     :param map_controller:          Map controller pointer
     :param train_id:                train identification number
     :return:                        Train object controller
     """
     controller = TrainController(map_controller, train_id)
-    model = TrainModel(user_db_connection, user_db_cursor, config_db_cursor, train_id)
+    model = TrainModel(train_id)
     model.on_train_setup(train_id)
-    view = TrainView(user_db_cursor, config_db_cursor, train_id,
-                     CAR_HEAD_IMAGE, CAR_MID_IMAGE, CAR_TAIL_IMAGE, BOARDING_LIGHT_IMAGE)
+    view = TrainView(train_id, CAR_HEAD_IMAGE, CAR_MID_IMAGE, CAR_TAIL_IMAGE, BOARDING_LIGHT_IMAGE)
     controller.model = model
     model.controller = controller
     controller.view = view
@@ -410,20 +367,17 @@ def _create_train(user_db_connection, user_db_cursor, config_db_cursor, map_cont
     return controller
 
 
-def _create_dispatcher(user_db_connection, user_db_cursor, config_db_cursor, map_controller):
+def _create_dispatcher(map_controller):
     """
     Creates controller, model and view for Dispatcher object.
     It is responsible for assigning routes to approaching trains.
 
-    :param user_db_connection:      connection to the user DB (stores game state and user-defined settings)
-    :param user_db_cursor:          user DB cursor (is used to execute user DB queries)
-    :param config_db_cursor:        configuration DB cursor (is used to execute configuration DB queries)
     :param map_controller:          Map controller pointer
     :return:                        Dispatcher object controller
     """
     controller = DispatcherController(map_controller)
-    model = DispatcherModel(user_db_connection, user_db_cursor, config_db_cursor)
-    view = DispatcherView(user_db_cursor, config_db_cursor)
+    model = DispatcherModel()
+    view = DispatcherView()
     controller.model = model
     model.controller = controller
     controller.view = view
@@ -432,20 +386,17 @@ def _create_dispatcher(user_db_connection, user_db_cursor, config_db_cursor, map
     return controller
 
 
-def _create_constructor(user_db_connection, user_db_cursor, config_db_cursor, map_controller):
+def _create_constructor(map_controller):
     """
     Creates controller, model and view for Constructor object.
     It is responsible for building new tracks and station environment.
 
-    :param user_db_connection:      connection to the user DB (stores game state and user-defined settings)
-    :param user_db_cursor:          user DB cursor (is used to execute user DB queries)
-    :param config_db_cursor:        configuration DB cursor (is used to execute configuration DB queries)
     :param map_controller:          Map controller pointer
     :return:                        Constructor object controller
     """
     controller = ConstructorController(map_controller)
-    model = ConstructorModel(user_db_connection, user_db_cursor, config_db_cursor)
-    view = ConstructorView(user_db_cursor, config_db_cursor)
+    model = ConstructorModel()
+    view = ConstructorView()
     controller.model = model
     model.controller = controller
     controller.view = view

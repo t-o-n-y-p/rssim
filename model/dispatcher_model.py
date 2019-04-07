@@ -8,7 +8,7 @@ class DispatcherModel(Model):
     Implements Dispatcher model.
     Dispatcher object is responsible for assigning routes to approaching trains.
     """
-    def __init__(self, user_db_connection, user_db_cursor, config_db_cursor):
+    def __init__(self):
         """
         Properties:
             trains                              list of trains still to be dispatched
@@ -17,14 +17,10 @@ class DispatcherModel(Model):
             track_busy_status                   indicates which tracks are busy and which are not
             supported_cars_by_track             indicates number of cars each track can handle
 
-        :param user_db_connection:              connection to the user DB (stores game state and user-defined settings)
-        :param user_db_cursor:                  user DB cursor (is used to execute user DB queries)
-        :param config_db_cursor:                configuration DB cursor (is used to execute configuration DB queries)
         """
         self.map_id = None
         self.on_update_map_id()
-        super().__init__(user_db_connection, user_db_cursor, config_db_cursor,
-                         logger=getLogger('root.app.game.map.dispatcher.model'))
+        super().__init__(logger=getLogger(f'root.app.game.map.{self.map_id}.dispatcher.model'))
         self.trains = []
         self.supported_cars = [0, 0]
         self.user_db_cursor.execute('''SELECT unlocked_tracks, supported_cars_min, supported_cars_max 

@@ -8,22 +8,18 @@ class SignalModel(Model):
     Implements Signal model.
     Signal object is responsible for properties, UI and events related to the signal state.
     """
-    def __init__(self, user_db_connection, user_db_cursor, config_db_cursor, track, base_route):
+    def __init__(self, track, base_route):
         """
         Properties:
             state                               indicates if signal is red or green
             locked                              indicates if signal is locked
 
-        :param user_db_connection:              connection to the user DB (stores game state and user-defined settings)
-        :param user_db_cursor:                  user DB cursor (is used to execute user DB queries)
-        :param config_db_cursor:                configuration DB cursor (is used to execute configuration DB queries)
         :param track:                           signal track number
         :param base_route:                      base route (train route part) which signal belongs to
         """
         self.map_id = None
         self.on_update_map_id()
-        super().__init__(user_db_connection, user_db_cursor, config_db_cursor,
-                         logger=getLogger(f'root.app.game.map.signal.{track}.{base_route}.model'))
+        super().__init__(logger=getLogger(f'root.app.game.map.{self.map_id}.signal.{track}.{base_route}.model'))
         self.user_db_cursor.execute('''SELECT state, locked FROM signals 
                                        WHERE track = ? AND base_route = ? AND map_id = ?''',
                                     (track, base_route, self.map_id))

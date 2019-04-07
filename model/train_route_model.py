@@ -8,7 +8,7 @@ class TrainRouteModel(Model):
     Implements Train route model.
     Train route object is responsible for properties, UI and events related to the train route.
     """
-    def __init__(self, user_db_connection, user_db_cursor, config_db_cursor, track, train_route):
+    def __init__(self, track, train_route):
         """
         Properties:
             opened                              indicates if train route is opened
@@ -28,9 +28,6 @@ class TrainRouteModel(Model):
             trail_points_v2                     list of train route points in 2D Cartesian coordinates
                                                 plus rotation angle
 
-        :param user_db_connection:              connection to the user DB (stores game state and user-defined settings)
-        :param user_db_cursor:                  user DB cursor (is used to execute user DB queries)
-        :param config_db_cursor:                configuration DB cursor (is used to execute configuration DB queries)
         :param track:                           route track number
         :param train_route:                     route type (e.g. left/right entry/exit)
         """
@@ -52,8 +49,7 @@ class TrainRouteModel(Model):
 
         self.map_id = None
         self.on_update_map_id()
-        super().__init__(user_db_connection, user_db_cursor, config_db_cursor,
-                         logger=getLogger(f'root.app.game.map.train_route.{track}.{train_route}.model'))
+        super().__init__(logger=getLogger(f'root.app.game.map.{self.map_id}.train_route.{track}.{train_route}.model'))
         self.user_db_cursor.execute('''SELECT opened, last_opened_by, current_checkpoint, priority, cars 
                                        FROM train_routes WHERE track = ? AND train_route = ? AND map_id = ?''',
                                     (track, train_route, self.map_id))

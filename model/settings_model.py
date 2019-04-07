@@ -9,7 +9,7 @@ class SettingsModel(Model):
     Implements Settings model.
     Settings object is responsible for user-defined settings.
     """
-    def __init__(self, user_db_connection, user_db_cursor, config_db_cursor):
+    def __init__(self):
         """
         Properties:
             display_fps                         indicates if FPS value is displayed in game
@@ -29,12 +29,8 @@ class SettingsModel(Model):
             enough_money_notification_enabled
                                 indicates if enough money notifications are enabled by user in game settings
 
-        :param user_db_connection:              connection to the user DB (stores game state and user-defined settings)
-        :param user_db_cursor:                  user DB cursor (is used to execute user DB queries)
-        :param config_db_cursor:                configuration DB cursor (is used to execute configuration DB queries)
         """
-        super().__init__(user_db_connection, user_db_cursor, config_db_cursor,
-                         logger=getLogger('root.app.settings.model'))
+        super().__init__(logger=getLogger('root.app.settings.model'))
         self.user_db_cursor.execute('SELECT app_width, app_height FROM graphics')
         self.windowed_resolution = self.user_db_cursor.fetchone()
         self.user_db_cursor.execute('SELECT fullscreen, display_fps FROM graphics')

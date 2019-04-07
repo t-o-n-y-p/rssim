@@ -8,16 +8,12 @@ from view.train_view import TrainView
 from textures import CAR_COLLECTIONS, CAR_HEAD_IMAGE, CAR_MID_IMAGE, CAR_TAIL_IMAGE, BOARDING_LIGHT_IMAGE
 
 
-def _create_train(user_db_connection, user_db_cursor, config_db_cursor, map_controller,
-                  train_id, cars, track, train_route, state, direction, new_direction,
+def _create_train(map_controller, train_id, cars, track, train_route, state, direction, new_direction,
                   current_direction, priority, boarding_time, exp, money, unlocked_car_collections):
     """
     Creates controller, model and view for Train object from the dispatcher.
     It is responsible for properties, UI and events related to the train.
 
-    :param user_db_connection:              connection to the user DB (stores game state and user-defined settings)
-    :param user_db_cursor:                  user DB cursor (is used to execute user DB queries)
-    :param config_db_cursor:                configuration DB cursor (is used to execute configuration DB queries)
     :param map_controller:                  Map controller pointer
     :param train_id:                        train identification number
     :param cars:                            number of cars in the train
@@ -35,13 +31,12 @@ def _create_train(user_db_connection, user_db_cursor, config_db_cursor, map_cont
     :return:                                Train object controller
     """
     controller = TrainController(map_controller, train_id)
-    model = TrainModel(user_db_connection, user_db_cursor, config_db_cursor, train_id)
+    model = TrainModel(train_id)
     # car collection is chosen randomly from available options, seed() initializes PRNG
     seed()
     model.on_train_init(cars, track, train_route, state, direction, new_direction, current_direction,
                         priority, boarding_time, exp, money, choice(unlocked_car_collections))
-    view = TrainView(user_db_cursor, config_db_cursor, train_id,
-                     CAR_HEAD_IMAGE, CAR_MID_IMAGE, CAR_TAIL_IMAGE, BOARDING_LIGHT_IMAGE)
+    view = TrainView(train_id, CAR_HEAD_IMAGE, CAR_MID_IMAGE, CAR_TAIL_IMAGE, BOARDING_LIGHT_IMAGE)
     controller.model = model
     model.controller = controller
     controller.view = view
@@ -55,21 +50,17 @@ class MapModel(Model):
     Implements Map model.
     Map object is responsible for properties, UI and events related to the map.
     """
-    def __init__(self, user_db_connection, user_db_cursor, config_db_cursor):
+    def __init__(self):
         """
         Properties:
             unlocked_tracks                     number of tracks available for player and trains
             unlocked_environment                environment tier available for player
             unlocked_car_collections            list of car collections which can be used for new trains
 
-        :param user_db_connection:              connection to the user DB (stores game state and user-defined settings)
-        :param user_db_cursor:                  user DB cursor (is used to execute user DB queries)
-        :param config_db_cursor:                configuration DB cursor (is used to execute configuration DB queries)
         """
         self.map_id = None
         self.on_update_map_id()
-        super().__init__(user_db_connection, user_db_cursor, config_db_cursor,
-                         logger=getLogger('root.app.game.map.model'))
+        super().__init__(logger=getLogger(f'root.app.game.map.{self.map_id}.model'))
         self.user_db_cursor.execute('''SELECT unlocked_tracks, unlocked_environment 
                                        FROM map_progress WHERE map_id = ?''', (self.map_id, ))
         self.unlocked_tracks, self.unlocked_environment = self.user_db_cursor.fetchone()
@@ -155,9 +146,8 @@ class MapModel(Model):
         :param money:                           money gained when boarding finishes
         :return:                                Train object controller
         """
-        return _create_train(self.user_db_connection, self.user_db_cursor, self.config_db_cursor, self.controller,
-                             train_id, cars, track, train_route, state, direction, new_direction, current_direction,
-                             priority, boarding_time, exp, money, self.unlocked_car_collections)
+        return _create_train(self.controller, train_id, cars, track, train_route, state, direction, new_direction,
+                             current_direction, priority, boarding_time, exp, money, self.unlocked_car_collections)
 
     def on_add_new_car_collection(self):
         """

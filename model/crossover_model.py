@@ -8,8 +8,7 @@ class CrossoverModel(Model):
     Implements Crossover model.
     Crossover object is responsible for properties, UI and events related to the crossover.
     """
-    def __init__(self, user_db_connection, user_db_cursor, config_db_cursor,
-                 track_param_1, track_param_2, crossover_type):
+    def __init__(self, track_param_1, track_param_2, crossover_type):
         """
         Properties:
             busy                                indicates which crossover direction is busy
@@ -20,9 +19,6 @@ class CrossoverModel(Model):
             current_position_2                  current position crossover is switched to: track 2
             locked                              indicates if crossover is available for player
 
-        :param user_db_connection:              connection to the user DB (stores game state and user-defined settings)
-        :param user_db_cursor:                  user DB cursor (is used to execute user DB queries)
-        :param config_db_cursor:                configuration DB cursor (is used to execute configuration DB queries)
         :param track_param_1:                   number of the first track of two being connected by the crossover
         :param track_param_2:                   number of the second track of two being connected by the crossover
         :param crossover_type:                  crossover location: left/right side of the map
@@ -30,9 +26,8 @@ class CrossoverModel(Model):
         self.map_id = None
         self.on_update_map_id()
         super().__init__(
-            user_db_connection, user_db_cursor, config_db_cursor,
             logger=getLogger(
-                f'root.app.game.map.crossover.{track_param_1}.{track_param_2}.{crossover_type}.model'
+                f'root.app.game.map.{self.map_id}.crossover.{track_param_1}.{track_param_2}.{crossover_type}.model'
             )
         )
         self.busy = {track_param_1: {}, track_param_2: {}}

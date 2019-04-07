@@ -11,8 +11,7 @@ class RailroadSwitchView(View):
     Implements Railroad switch view.
     Railroad switch object is responsible for properties, UI and events related to the railroad switch.
     """
-    def __init__(self, user_db_cursor, config_db_cursor,
-                 track_param_1, track_param_2, switch_type):
+    def __init__(self, track_param_1, track_param_2, switch_type):
         """
         Properties:
             position                            position of the switch on the map
@@ -22,8 +21,6 @@ class RailroadSwitchView(View):
             sprite                              sprite from straight or diverging image for the switch
             locked                              indicates if switch is available for player
 
-        :param user_db_cursor:                  user DB cursor (is used to execute user DB queries)
-        :param config_db_cursor:                configuration DB cursor (is used to execute configuration DB queries)
         :param track_param_1:                   number of the straight track
         :param track_param_2:                   number of the diverging track
         :param switch_type:                     railroad switch location: left/right side of the map
@@ -31,9 +28,8 @@ class RailroadSwitchView(View):
         self.map_id = None
         self.on_update_map_id()
         super().__init__(
-            user_db_cursor, config_db_cursor,
             logger=getLogger(
-                f'root.app.game.map.railroad_switch.{track_param_1}.{track_param_2}.{switch_type}.view'
+                f'root.app.game.map.{self.map_id}.railroad_switch.{track_param_1}.{track_param_2}.{switch_type}.view'
             )
         )
         self.config_db_cursor.execute('''SELECT offset_x, offset_y FROM switches_config

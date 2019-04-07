@@ -9,19 +9,15 @@ class AppModel(Model):
     Implements App model.
     App object is responsible for high-level properties, UI and events.
     """
-    def __init__(self, user_db_connection, user_db_cursor, config_db_cursor):
+    def __init__(self):
         """
         Properties:
             screen_resolution_config            app window width and height from user progress database
             monitor_resolution_config           current monitor resolution
             fullscreen_mode_available           determines if app supports current monitor resolution
 
-        :param user_db_connection:              connection to the user DB (stores game state and user-defined settings)
-        :param user_db_cursor:                  user DB cursor (is used to execute user DB queries)
-        :param config_db_cursor:                configuration DB cursor (is used to execute configuration DB queries)
         """
-        super().__init__(user_db_connection, user_db_cursor, config_db_cursor,
-                         logger=getLogger('root.app.model'))
+        super().__init__(logger=getLogger('root.app.model'))
         self.config_db_cursor.execute('SELECT app_width, app_height FROM screen_resolution_config')
         self.screen_resolution_config = self.config_db_cursor.fetchall()
         monitor_resolution_config = (windll.user32.GetSystemMetrics(0), windll.user32.GetSystemMetrics(1))

@@ -1,8 +1,6 @@
 from ctypes import c_long, windll
-from sqlite3 import connect
 from time import perf_counter
 from os import path, mkdir
-from shutil import copyfile
 from logging import FileHandler, Formatter, getLogger
 from datetime import datetime
 
@@ -11,6 +9,7 @@ from pyglet import gl
 from exceptions import VideoAdapterNotSupportedException, MonitorNotSupportedException, UpdateIncompatibleException
 from rssim_core import *
 from ui import SURFACE, BATCHES, MIN_RESOLUTION_WIDTH, MIN_RESOLUTION_HEIGHT
+from database import USER_DB_CURSOR, USER_DB_CONNECTION
 
 
 class RSSim:
@@ -44,20 +43,11 @@ class RSSim:
                 or windll.user32.GetSystemMetrics(1) < MIN_RESOLUTION_HEIGHT:
             raise MonitorNotSupportedException
 
-        # determine if user launches app for the first time, if yes - create game save
-        if not path.exists('db/user.db'):
-            copyfile('db/default.db', 'db/user.db')
-
-        # create database connections and cursors
-        self.user_db_connection = connect('db/user.db')
-        self.user_db_cursor = self.user_db_connection.cursor()
-        self.config_db_connection = connect('db/config.db')
-        self.config_db_cursor = self.config_db_connection.cursor()
         # check if game was updated from previous version (0.9.0 and higher are supported)
         self.on_check_for_updates()
         # set up the main logger; if logs are turned on, create log file
-        self.user_db_cursor.execute('SELECT log_level FROM log_options')
-        self.log_level = self.user_db_cursor.fetchone()[0]
+        USER_DB_CURSOR.execute('SELECT log_level FROM log_options')
+        self.log_level = USER_DB_CURSOR.fetchone()[0]
         self.logger = getLogger('root')
         current_datetime = datetime.now()
         if self.log_level < LOG_LEVEL_OFF:
@@ -79,8 +69,7 @@ class RSSim:
         # flip the surface so user knows game has launched and is loading now
         SURFACE.flip()
         # create App object
-        self.app = create_app(user_db_connection=self.user_db_connection, user_db_cursor=self.user_db_cursor,
-                              config_db_cursor=self.config_db_cursor, loader=self)
+        self.app = create_app(loader=self)
         # initially app is created using default minimal screen resolution; now we change it to user resolution
         self.app.on_change_screen_resolution(self.app.settings.model.screen_resolution)
         # activate app after it is created
@@ -276,20 +265,20 @@ class RSSim:
         logger.info('START CHECK_FOR_UPDATES')
         # If version does not exist, DB version is 0.9.0.
         # Just increment version here, no other DB changes.
-        self.user_db_cursor.execute('SELECT * FROM sqlite_master WHERE type = "table" AND tbl_name = "version"')
-        if len(self.user_db_cursor.fetchall()) == 0:
+        USER_DB_CURSOR.execute('SELECT * FROM sqlite_master WHERE type = "table" AND tbl_name = "version"')
+        if len(USER_DB_CURSOR.fetchall()) == 0:
             logger.debug('version info not found')
-            self.user_db_cursor.execute('CREATE TABLE version (major integer, minor integer, patch integer)')
+            USER_DB_CURSOR.execute('CREATE TABLE version (major integer, minor integer, patch integer)')
             logger.debug('version table created')
-            self.user_db_cursor.execute('INSERT INTO version VALUES (0, 9, 1)')
+            USER_DB_CURSOR.execute('INSERT INTO version VALUES (0, 9, 1)')
             logger.debug('version 0.9.1 set')
-            self.user_db_connection.commit()
+            USER_DB_CONNECTION.commit()
 
         # If version exists, read it from user DB.
         # If current game version is higher, use migration scripts one by one.
         # Migration script file is named "<version>.sql"
-        self.user_db_cursor.execute('SELECT * FROM version')
-        user_db_version = self.user_db_cursor.fetchone()
+        USER_DB_CURSOR.execute('SELECT * FROM version')
+        user_db_version = USER_DB_CURSOR.fetchone()
         logger.debug(f'user DB version: {user_db_version}')
         logger.debug(f'current game version: {CURRENT_VERSION}')
         if user_db_version < CURRENT_VERSION:
@@ -300,10 +289,10 @@ class RSSim:
                     with open(f'db/patch/09{patch}.sql', 'r') as migration:
                         # simply execute each line in the migration script
                         for line in migration.readlines():
-                            self.user_db_cursor.execute(line)
+                            USER_DB_CURSOR.execute(line)
                             logger.debug(f'executed request: {line}')
 
-                    self.user_db_connection.commit()
+                    USER_DB_CONNECTION.commit()
                     logger.debug(f'0.9.{patch} migration complete')
             # update from versions < 0.9.5 is not supported
             else:

@@ -25,7 +25,7 @@ class AppView(View):
     Implements App view.
     App object is responsible for high-level properties, UI and events.
     """
-    def __init__(self, user_db_cursor, config_db_cursor):
+    def __init__(self):
         """
         Button click handlers:
             on_close_game                       on_click handler for close game button
@@ -59,8 +59,6 @@ class AppView(View):
             on_mouse_drag_handlers              list of on_mouse_drag event handlers
             app_view_shader                     shader for main app window border, top bar and its buttons
 
-        :param user_db_cursor:                  user DB cursor (is used to execute user DB queries)
-        :param config_db_cursor:                configuration DB cursor (is used to execute configuration DB queries)
         """
         def on_close_game(button):
             """
@@ -126,7 +124,7 @@ class AppView(View):
             """
             self.controller.on_update_current_locale('ru')
 
-        super().__init__(user_db_cursor, config_db_cursor, logger=getLogger('root.app.view'))
+        super().__init__(logger=getLogger('root.app.view'))
         self.title_label = None
         self.app_view_shader_sprite = None
         self.flag_us_sprite = None

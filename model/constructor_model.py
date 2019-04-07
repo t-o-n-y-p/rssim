@@ -8,7 +8,7 @@ class ConstructorModel(Model):
     Implements Constructor model.
     Constructor object is responsible for building new tracks and station environment.
     """
-    def __init__(self, user_db_connection, user_db_cursor, config_db_cursor):
+    def __init__(self):
         """
         Properties:
             construction_state_matrix           tracks and environment state storage
@@ -18,14 +18,10 @@ class ConstructorModel(Model):
             money_target_activated              indicates if money target for any construction is activated
             money_target_cell_position          column and row of constructor view cell the target was last activated
 
-        :param user_db_connection:              connection to the user DB (stores game state and user-defined settings)
-        :param user_db_cursor:                  user DB cursor (is used to execute user DB queries)
-        :param config_db_cursor:                configuration DB cursor (is used to execute configuration DB queries)
         """
         self.map_id = None
         self.on_update_map_id()
-        super().__init__(user_db_connection, user_db_cursor, config_db_cursor,
-                         logger=getLogger('root.app.game.map.constructor.model'))
+        super().__init__(logger=getLogger(f'root.app.game.map.{self.map_id}.constructor.model'))
         self.construction_state_matrix = [{}, {}]
         self.cached_unlocked_tracks = []
         self.cached_unlocked_tiers = []

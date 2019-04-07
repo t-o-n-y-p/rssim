@@ -1,6 +1,7 @@
 from pyglet.window import mouse
 
 from ui import *
+from database import USER_DB_CURSOR, CONFIG_DB_CURSOR
 
 
 def view_is_active(fn):
@@ -276,7 +277,7 @@ class View:
     """
     Base class for all views in the app.
     """
-    def __init__(self, user_db_cursor, config_db_cursor, logger):
+    def __init__(self, logger):
         """
         Properties:
             logger                              telemetry instance
@@ -302,13 +303,11 @@ class View:
             current_locale                      current locale selected by player
             all_notifications_enabled           indicates if app can send system notifications
 
-        :param user_db_cursor:                  user DB cursor (is used to execute user DB queries)
-        :param config_db_cursor:                configuration DB cursor (is used to execute configuration DB queries)
         :param logger:                          telemetry instance
         """
         self.logger = logger
-        self.user_db_cursor = user_db_cursor
-        self.config_db_cursor = config_db_cursor
+        self.user_db_cursor = USER_DB_CURSOR
+        self.config_db_cursor = CONFIG_DB_CURSOR
         self.controller = None
         self.surface = SURFACE
         self.batches = BATCHES

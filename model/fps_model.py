@@ -8,18 +8,14 @@ class FPSModel(Model):
     Implements FPS model.
     FPS object is responsible for real-time FPS calculation.
     """
-    def __init__(self, user_db_connection, user_db_cursor, config_db_cursor):
+    def __init__(self):
         """
         Properties:
             fps                                 current live FPS value
             display_fps                         indicates if FPS should be displayed
 
-        :param user_db_connection:              connection to the user DB (stores game state and user-defined settings)
-        :param user_db_cursor:                  user DB cursor (is used to execute user DB queries)
-        :param config_db_cursor:                configuration DB cursor (is used to execute configuration DB queries)
         """
-        super().__init__(user_db_connection, user_db_cursor, config_db_cursor,
-                         logger=getLogger('root.app.fps.model'))
+        super().__init__(logger=getLogger('root.app.fps.model'))
         self.user_db_cursor.execute('SELECT display_fps FROM graphics')
         self.display_fps = self.user_db_cursor.fetchone()[0]
         self.fps = 0

@@ -22,7 +22,7 @@ class GameView(View):
     Implements Game view.
     Game object is responsible for properties, UI and events related to the game process.
     """
-    def __init__(self, user_db_cursor, config_db_cursor):
+    def __init__(self):
         """
         Button click handlers:
             on_pause_game                           on_click handler for pause game button
@@ -56,8 +56,6 @@ class GameView(View):
             game_view_shader_sprite                 sprite for game view shader
             game_view_shader_upper_limit            upper edge for game_view_shader_sprite
 
-        :param user_db_cursor:                  user DB cursor (is used to execute user DB queries)
-        :param config_db_cursor:                configuration DB cursor (is used to execute configuration DB queries)
         """
         def on_pause_game(button):
             """
@@ -81,8 +79,7 @@ class GameView(View):
             button.paired_button.on_activate()
             self.controller.on_resume_game()
 
-        super().__init__(user_db_cursor, config_db_cursor,
-                         logger=getLogger('root.app.game.view'))
+        super().__init__(logger=getLogger('root.app.game.view'))
         self.game_frame_opacity = 0
         self.progress_bar_inactive_image = load('img/game_progress_bars/progress_bar_inactive.png')
         self.progress_bar_exp_inactive = None

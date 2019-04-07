@@ -8,7 +8,7 @@ class TrainModel(Model):
     Implements Train model.
     Train object is responsible for properties, UI and events related to the train.
     """
-    def __init__(self, user_db_connection, user_db_cursor, config_db_cursor, train_id):
+    def __init__(self, train_id):
         """
         Properties:
             train_maximum_speed                 maximum speed the train can achieve
@@ -36,15 +36,11 @@ class TrainModel(Model):
                                                 plus rotation angle
             car_image_collection                number of car collection used for this train
 
-        :param user_db_connection:              connection to the user DB (stores game state and user-defined settings)
-        :param user_db_cursor:                  user DB cursor (is used to execute user DB queries)
-        :param config_db_cursor:                configuration DB cursor (is used to execute configuration DB queries)
         :param train_id:                        train identification number
         """
         self.map_id = None
         self.on_update_map_id()
-        super().__init__(user_db_connection, user_db_cursor, config_db_cursor,
-                         logger=getLogger(f'root.app.game.map.train.{train_id}.model'))
+        super().__init__(logger=getLogger(f'root.app.game.map.{self.map_id}.train.{train_id}.model'))
         self.train_maximum_speed = TRAIN_ACCELERATION_FACTOR[-1] - TRAIN_ACCELERATION_FACTOR[-2]
         self.speed_factor_position_limit = len(TRAIN_ACCELERATION_FACTOR) - 1
         self.cars = 0

@@ -11,7 +11,7 @@ class SchedulerModel(Model):
     Implements Scheduler model.
     Scheduler object is responsible for properties, UI and events related to the train schedule.
     """
-    def __init__(self, user_db_connection, user_db_cursor, config_db_cursor):
+    def __init__(self):
         """
         Properties:
             level                               current player level
@@ -29,14 +29,10 @@ class SchedulerModel(Model):
             exp_to_money                        coefficient to calculate gained money
                                                 based on gained exp and current level
 
-        :param user_db_connection:              connection to the user DB (stores game state and user-defined settings)
-        :param user_db_cursor:                  user DB cursor (is used to execute user DB queries)
-        :param config_db_cursor:                configuration DB cursor (is used to execute configuration DB queries)
         """
         self.map_id = None
         self.on_update_map_id()
-        super().__init__(user_db_connection, user_db_cursor, config_db_cursor,
-                         logger=getLogger('root.app.game.map.scheduler.model'))
+        super().__init__(logger=getLogger(f'root.app.game.map.{self.map_id}.scheduler.model'))
         self.user_db_cursor.execute('SELECT level FROM game_progress')
         self.level = self.user_db_cursor.fetchone()[0]
         self.user_db_cursor.execute('''SELECT unlocked_tracks, supported_cars_min FROM map_progress WHERE map_id = ?''',

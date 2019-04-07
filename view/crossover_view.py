@@ -11,8 +11,7 @@ class CrossoverView(View):
     Implements Crossover view.
     Crossover object is responsible for properties, UI and events related to the crossover.
     """
-    def __init__(self, user_db_cursor, config_db_cursor,
-                 track_param_1, track_param_2, crossover_type):
+    def __init__(self, track_param_1, track_param_2, crossover_type):
         """
         Properties:
             position                            position of the crossover on the map
@@ -23,8 +22,6 @@ class CrossoverView(View):
             sprite                              sprite from straight or diverging image for the crossover
             locked                              indicates if crossover is available for player
 
-        :param user_db_cursor:                  user DB cursor (is used to execute user DB queries)
-        :param config_db_cursor:                configuration DB cursor (is used to execute configuration DB queries)
         :param track_param_1:                   number of the first track of two being connected by the crossover
         :param track_param_2:                   number of the second track of two being connected by the crossover
         :param crossover_type:                  crossover location: left/right side of the map
@@ -32,9 +29,8 @@ class CrossoverView(View):
         self.map_id = None
         self.on_update_map_id()
         super().__init__(
-            user_db_cursor, config_db_cursor,
             logger=getLogger(
-                f'root.app.game.map.crossover.{track_param_1}.{track_param_2}.{crossover_type}.view'
+                f'root.app.game.map.{self.map_id}.crossover.{track_param_1}.{track_param_2}.{crossover_type}.view'
             )
         )
         self.config_db_cursor.execute('''SELECT offset_x, offset_y FROM crossovers_config

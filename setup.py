@@ -35,7 +35,7 @@ includes = ['pyglet',
             'pyglet.window', 'pyglet.window.carbon', 'pyglet.window.cocoa', 'pyglet.window.win32', 'pyglet.window.xlib',
             'controller', 'model', 'view', 'textures', 'rssim_core', 'exceptions', 'i18n', 'notifications',
             'ui', 'ui.button', 'ui.constructor', 'ui.schedule', 'ui.settings', 'ui.settings.checkbox',
-            'ui.settings.checkbox_group', 'ui.settings.enum_value_control']
+            'ui.settings.checkbox_group', 'ui.settings.enum_value_control', 'database']
 
 options = {
     'build_exe': {

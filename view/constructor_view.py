@@ -15,7 +15,7 @@ class ConstructorView(View):
     Implements Constructor view.
     Constructor object is responsible for building new tracks and station environment.
     """
-    def __init__(self, user_db_cursor, config_db_cursor):
+    def __init__(self):
         """
         Button click handlers:
             on_close_constructor                on_click handler for close constructor button
@@ -41,8 +41,6 @@ class ConstructorView(View):
             money_target_cell_position                          column and row of constructor view cell
                                                                 the target was last activated
 
-        :param user_db_cursor:                  user DB cursor (is used to execute user DB queries)
-        :param config_db_cursor:                configuration DB cursor (is used to execute configuration DB queries)
         """
         def on_close_constructor(button):
             """
@@ -87,7 +85,7 @@ class ConstructorView(View):
 
         self.map_id = None
         self.on_update_map_id()
-        super().__init__(user_db_cursor, config_db_cursor, logger=getLogger('root.app.game.map.constructor.view'))
+        super().__init__(logger=getLogger(f'root.app.game.map.{self.map_id}.constructor.view'))
         self.constructor_opacity = 0
         self.construction_state_matrix = None
         self.money = 0

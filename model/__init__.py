@@ -1,3 +1,6 @@
+from database import USER_DB_CONNECTION, USER_DB_CURSOR, CONFIG_DB_CURSOR
+
+
 def model_is_active(fn):
     """
     Use this decorator to execute function only if model is active.
@@ -255,7 +258,7 @@ class Model:
     """
     Base class for all models in the app.
     """
-    def __init__(self, user_db_connection, user_db_cursor, config_db_cursor, logger):
+    def __init__(self, logger):
         """
         Properties:
             logger                              telemetry instance
@@ -266,18 +269,15 @@ class Model:
             user_db_cursor                      user DB cursor (is used to execute user DB queries)
             config_db_cursor                    configuration DB cursor (is used to execute configuration DB queries)
 
-        :param user_db_connection:              connection to the user DB (stores game state and user-defined settings)
-        :param user_db_cursor:                  user DB cursor (is used to execute user DB queries)
-        :param config_db_cursor:                configuration DB cursor (is used to execute configuration DB queries)
         :param logger:                          telemetry instance
         """
         self.logger = logger
         self.view = None
         self.controller = None
         self.is_activated = False
-        self.user_db_connection = user_db_connection
-        self.user_db_cursor = user_db_cursor
-        self.config_db_cursor = config_db_cursor
+        self.user_db_connection = USER_DB_CONNECTION
+        self.user_db_cursor = USER_DB_CURSOR
+        self.config_db_cursor = CONFIG_DB_CURSOR
 
     def on_activate(self):
         """
