@@ -50,8 +50,8 @@ bool is_cell_button_border()
             margin_y = int(gl_FragCoord[1]) - cell_y[i];
             if (margin_y >= 0 && margin_y <= cell_h[i] - 1
                 && (margin_x == cell_w[i] - cell_h[i] || margin_x == cell_w[i] - cell_h[i] + 1
-                    || margin_x == cell_w[i] - - cell_h[i] * 2 + 2
-                    || margin_x == cell_w[i] - - cell_h[i] * 2 + 3)
+                    || margin_x == cell_w[i] - cell_h[i] * 2 + 2
+                    || margin_x == cell_w[i] - cell_h[i] * 2 + 3)
             )
                 return true;
         }
