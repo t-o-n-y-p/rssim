@@ -159,9 +159,9 @@ class EnumValueControl:
             self.description_label.font_size = self.height // 5 * 2
 
         if self.temp_value_label is not None:
-            self.description_label.x = self.anchor_center_point[0]
-            self.description_label.y = self.anchor_center_point[1] - row_step * 2
-            self.description_label.font_size = self.height // 5 * 2
+            self.temp_value_label.x = self.anchor_center_point[0]
+            self.temp_value_label.y = self.anchor_center_point[1] - row_step * 2
+            self.temp_value_label.font_size = self.height // 5 * 2
 
         self.increment_button.on_size_changed((self.height, self.height))
         self.decrement_button.on_size_changed((self.height, self.height))
