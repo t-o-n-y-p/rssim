@@ -56,6 +56,8 @@ class SchedulerModel(Model):
                                       FROM player_progress_config WHERE level = ?''', (self.level, ))
         self.schedule_cycle_length, self.frame_per_car, self.exp_to_money \
             = self.config_db_cursor.fetchone()
+        self.user_db_cursor.execute('''SELECT entry_locked_state FROM map_progress WHERE map_id = ?''', (self.map_id, ))
+        self.entry_locked_state = list(map(bool, list(map(int, self.user_db_cursor.fetchone()[0].split(',')))))
 
     @model_is_not_active
     def on_activate(self):
@@ -90,14 +92,7 @@ class SchedulerModel(Model):
             # trains are added one by one if both direction and new direction are unlocked by user,
             # otherwise train is skipped
             for i in self.schedule_options:
-                if (i[DIRECTION] in (DIRECTION_FROM_LEFT_TO_RIGHT, DIRECTION_FROM_RIGHT_TO_LEFT)
-                        and i[NEW_DIRECTION] in (DIRECTION_FROM_LEFT_TO_RIGHT, DIRECTION_FROM_RIGHT_TO_LEFT)) \
-                        or ((i[DIRECTION] == DIRECTION_FROM_LEFT_TO_RIGHT_SIDE
-                             or i[NEW_DIRECTION] == DIRECTION_FROM_RIGHT_TO_LEFT_SIDE)
-                            and self.unlocked_tracks >= LEFT_SIDE_ENTRY_FIRST_TRACK)\
-                        or ((i[DIRECTION] == DIRECTION_FROM_RIGHT_TO_LEFT_SIDE
-                             or i[NEW_DIRECTION] == DIRECTION_FROM_LEFT_TO_RIGHT_SIDE)
-                            and self.unlocked_tracks >= RIGHT_SIDE_ENTRY_FIRST_TRACK):
+                if not self.entry_locked_state[i[DIRECTION]] and not self.entry_locked_state[i[NEW_DIRECTION]]:
                     cars = choice([i[CARS_MIN], i[CARS_MAX]])
                     train_options = (self.train_counter, self.next_cycle_start_time
                                      + choice(list(range(i[ARRIVAL_TIME_MIN], i[ARRIVAL_TIME_MAX]))),
@@ -155,6 +150,8 @@ class SchedulerModel(Model):
                                        entry_busy_state = ? WHERE map_id = ?''',
                                     (self.train_counter, self.next_cycle_start_time,
                                      ','.join(list(map(str, list(map(int, self.entry_busy_state))))), self.map_id))
+        self.user_db_cursor.execute('''UPDATE map_progress SET entry_locked_state = ? WHERE map_id = ?''',
+                                    (','.join(list(map(str, list(map(int, self.entry_locked_state))))), self.map_id))
         self.user_db_cursor.execute('''DELETE FROM base_schedule WHERE map_id = ?''', (self.map_id, ))
         for train in self.base_schedule:
             self.user_db_cursor.execute('INSERT INTO base_schedule VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)',
@@ -188,6 +185,7 @@ class SchedulerModel(Model):
         :param track:                   track number
         """
         self.unlocked_tracks = track
+        self.on_unlock_entry()
         self.config_db_cursor.execute('''SELECT supported_cars_min FROM track_config 
                                          WHERE track_number = ? AND map_id = ?''',
                                       (track, self.map_id))
@@ -203,3 +201,10 @@ class SchedulerModel(Model):
 
     def on_update_map_id(self):
         self.map_id = 0
+
+    def on_unlock_entry(self):
+        if self.unlocked_tracks == LEFT_SIDE_ENTRY_FIRST_TRACK:
+            self.entry_locked_state[DIRECTION_FROM_LEFT_TO_RIGHT_SIDE] = False
+
+        if self.unlocked_tracks == RIGHT_SIDE_ENTRY_FIRST_TRACK:
+            self.entry_locked_state[DIRECTION_FROM_RIGHT_TO_LEFT_SIDE] = False
