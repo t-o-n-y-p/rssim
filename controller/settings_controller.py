@@ -88,3 +88,9 @@ class SettingsController(Controller):
         Enables system notifications for the view and all child controllers.
         """
         self.view.on_enable_notifications()
+
+    def on_apply_shaders_and_draw_vertices(self):
+        """
+        Notifies the view and child controllers to draw all sprites with shaders.
+        """
+        self.view.on_apply_shaders_and_draw_vertices()

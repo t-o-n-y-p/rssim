@@ -1,6 +1,9 @@
 from logging import getLogger
 from ctypes import windll
 
+from pyglet.gl import GL_QUADS
+from pyshaders import from_files_names
+
 from view import *
 from ui.button.accept_settings_button import AcceptSettingsButton
 from ui.button.reject_settings_button import RejectSettingsButton
@@ -164,6 +167,8 @@ class SettingsView(View):
         self.buttons.extend(self.screen_resolution_control.buttons)
         self.buttons.extend(self.display_fps_checkbox.buttons)
         self.buttons.extend(self.notifications_checkbox_group.buttons)
+        self.settings_view_shader = from_files_names('shaders/shader.vert', 'shaders/settings_view/shader.frag')
+        self.settings_view_shader_sprite = None
 
     def on_update(self):
         """
@@ -174,6 +179,9 @@ class SettingsView(View):
 
         if not self.is_activated and self.settings_opacity > 0:
             self.settings_opacity -= 15
+            if self.settings_opacity <= 0:
+                self.settings_view_shader_sprite.delete()
+                self.settings_view_shader_sprite = None
 
     @view_is_not_active
     def on_activate(self):
@@ -190,6 +198,11 @@ class SettingsView(View):
                                                          self.temp_feature_unlocked_notification_enabled,
                                                          self.temp_construction_completed_notification_enabled,
                                                          self.temp_enough_money_notification_enabled])
+        if self.settings_view_shader_sprite is None:
+            self.settings_view_shader_sprite\
+                = self.batches['main_frame'].add(4, GL_QUADS, self.groups['main_frame'],
+                                                 ('v2f/static', (-1.0, -1.0, -1.0, 1.0, 1.0, 1.0, 1.0, -1.0)))
+
         for b in self.buttons:
             if b.to_activate_on_controller_init:
                 b.on_activate()
@@ -246,3 +259,31 @@ class SettingsView(View):
         self.screen_resolution_control.on_update_current_locale(new_locale)
         self.display_fps_checkbox.on_update_current_locale(new_locale)
         self.notifications_checkbox_group.on_update_current_locale(new_locale)
+
+    @settings_opacity_exists
+    def on_apply_shaders_and_draw_vertices(self):
+        """
+        Activates the shader, initializes all shader uniforms, draws shader sprite and deactivates the shader.
+        """
+        self.settings_view_shader.use()
+        self.settings_view_shader.uniforms.settings_opacity = self.settings_opacity
+        is_button_activated = []
+        button_x = []
+        button_y = []
+        button_w = []
+        button_h = []
+        for b in self.buttons:
+            is_button_activated.append(int(b.is_activated))
+            button_x.append(b.position[0])
+            button_y.append(b.position[1])
+            button_w.append(b.button_size[0])
+            button_h.append(b.button_size[1])
+
+        self.settings_view_shader.uniforms.is_button_activated = is_button_activated
+        self.settings_view_shader.uniforms.button_x = button_x
+        self.settings_view_shader.uniforms.button_y = button_y
+        self.settings_view_shader.uniforms.button_w = button_w
+        self.settings_view_shader.uniforms.button_h = button_h
+        self.settings_view_shader.uniforms.number_of_buttons = len(self.buttons)
+        self.settings_view_shader_sprite.draw(GL_QUADS)
+        self.settings_view_shader.clear()
