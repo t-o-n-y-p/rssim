@@ -160,3 +160,9 @@ class ConstructorController(Controller):
         :param notification_state:              new notification state defined by player
         """
         self.view.on_change_construction_completed_notification_state(notification_state)
+
+    def on_apply_shaders_and_draw_vertices(self):
+        """
+        Notifies the view and child controllers to draw all sprites with shaders.
+        """
+        self.view.on_apply_shaders_and_draw_vertices()
