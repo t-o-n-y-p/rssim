@@ -190,7 +190,7 @@ class SchedulerModel(Model):
         self.unlocked_tracks = track
         self.config_db_cursor.execute('''SELECT supported_cars_min FROM track_config 
                                          WHERE track_number = ? AND map_id = ?''',
-                                      (track, ))
+                                      (track, self.map_id))
         self.supported_cars_min = self.config_db_cursor.fetchone()[0]
 
     def on_leave_entry(self, entry_id):
