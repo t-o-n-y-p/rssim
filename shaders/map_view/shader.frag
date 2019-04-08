@@ -98,7 +98,7 @@ void main()
     // then mini-map border
     else if (is_mini_map_border())
         color_frag = vec4(vec3(0.0), float(mini_map_opacity) / 255.0);
-    // last but not least - button borers
+    // last but not least - button borders
     else if (is_button_border())
         color_frag = vec4(1.0, 0.0, 0.0, float(map_opacity) / 255.0);
     // all other pixels are transparent

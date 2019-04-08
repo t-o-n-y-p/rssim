@@ -1,3 +1,18 @@
+/*
+    Fragment shader for settings view.
+    Input value:
+        vec4 gl_FragCoord - pixel position in 3D homogeneous coordinates (from left bottom point)
+    Output value:
+        color_frag - calculated normalized RGBA color for the pixel
+    Uniforms (all positions are in 2D Cartesian coordinates from the left bottom point):
+        int settings_opacity - opacity of settings screen
+        int is_button_activated[] - indicates if button with given index is activated
+        int button_x[] - X position of button with given index
+        int button_y[] - Y position of button with given index
+        int button_w[] - width of button with given index
+        int button_h[] - height of button with given index
+        int number_of_buttons - number of buttons on the screen
+*/
 #version 330 core
 layout(pixel_center_integer) in vec4 gl_FragCoord;
 out vec4 color_frag;
@@ -41,6 +56,7 @@ void main()
     Calculates intermediate color for all possible cases and mixes it
 */
 {
+    // button borders are filled with red
     if (is_button_border())
         color_frag = vec4(1.0, 0.0, 0.0, float(settings_opacity) / 255.0);
     // all other pixels are transparent

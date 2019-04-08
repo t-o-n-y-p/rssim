@@ -11,7 +11,6 @@
 #version 330 core
 layout(pixel_center_integer) in vec4 gl_FragCoord;
 out vec4 color_frag;
-
 uniform ivec2 screen_resolution = ivec2(1280, 720);
 uniform int schedule_opacity = 0;
 
