@@ -163,3 +163,7 @@ class GameModel(Model):
         """
         self.money_target = money_target
         self.view.on_update_money(self.money, self.money_target)
+
+    def get_active_map(self):
+        self.user_db_cursor.execute('SELECT map_id FROM graphics')
+        return self.user_db_cursor.fetchone()[0]

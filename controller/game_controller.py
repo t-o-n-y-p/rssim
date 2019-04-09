@@ -11,19 +11,20 @@ class GameController(Controller):
     def __init__(self, app):
         """
         Properties:
-            map                         Map object controller
+            maps                        Map object controllers list
 
         :param app:                     App controller (parent controller)
         """
         super().__init__(parent_controller=app, logger=getLogger('root.app.game.controller'))
-        self.map = None
+        self.maps = []
 
     def on_update_view(self):
         """
         Notifies the view and Map view to update fade-in/fade-out animations.
         """
         self.view.on_update()
-        self.map.on_update_view()
+        for map_ in self.maps:
+            map_.on_update_view()
 
     @controller_is_not_active
     def on_activate(self):
@@ -33,7 +34,8 @@ class GameController(Controller):
         """
         self.is_activated = True
         self.model.on_activate()
-        self.map.on_activate()
+        for map_ in self.maps:
+            map_.on_activate()
 
     @controller_is_active
     def on_deactivate(self):
@@ -43,7 +45,8 @@ class GameController(Controller):
         self.is_activated = False
         self.model.on_deactivate()
         self.view.on_deactivate()
-        self.map.on_deactivate()
+        for map_ in self.maps:
+            map_.on_deactivate()
 
     def on_change_screen_resolution(self, screen_resolution):
         """
@@ -52,7 +55,8 @@ class GameController(Controller):
         :param screen_resolution:       new screen resolution
         """
         self.view.on_change_screen_resolution(screen_resolution)
-        self.map.on_change_screen_resolution(screen_resolution)
+        for map_ in self.maps:
+            map_.on_change_screen_resolution(screen_resolution)
 
     def on_pause_game(self):
         """
@@ -71,14 +75,15 @@ class GameController(Controller):
         Activates the view and Map controller if user opened game screen in the app.
         """
         self.model.on_activate_view()
-        self.map.on_activate_view()
+        self.maps[self.model.get_active_map()].on_activate_view()
 
     def on_deactivate_view(self):
         """
         Deactivates the view and all child views if user either closed game screen or opened settings screen.
         """
         self.view.on_deactivate()
-        self.map.on_deactivate_view()
+        for map_ in self.maps:
+            map_.on_deactivate_view()
 
     @controller_is_active
     @game_is_not_paused
@@ -88,7 +93,9 @@ class GameController(Controller):
         Notifies the model to update in-game time.
         Calls on_save_and_commit_state handler every 2 in-game hours.
         """
-        self.map.on_update_time(self.model.game_time)
+        for map_ in self.maps:
+            map_.on_update_time(self.model.game_time)
+
         self.model.on_update_time()
         if self.model.game_time % (FRAMES_IN_ONE_HOUR * 2) == 0:
             self.on_save_and_commit_state()
@@ -98,7 +105,9 @@ class GameController(Controller):
         Notifies the model and Map controller to save state to user progress database and commit.
         """
         self.model.on_save_state()
-        self.map.on_save_state()
+        for map_ in self.maps:
+            map_.on_save_state()
+
         self.model.user_db_connection.commit()
 
     def on_level_up(self):
@@ -106,7 +115,8 @@ class GameController(Controller):
         Notifies the model and Map controller about level update.
         """
         self.model.on_level_up()
-        self.map.on_level_up(self.model.level)
+        for map_ in self.maps:
+            map_.on_level_up(self.model.level)
 
     def on_update_money_target(self, money_target):
         """
@@ -131,7 +141,8 @@ class GameController(Controller):
         :param money:                   amount of money gained
         """
         self.model.on_add_money(money)
-        self.map.on_add_money(money)
+        for map_ in self.maps:
+            map_.on_add_money(money)
 
     def on_pay_money(self, money):
         """
@@ -140,7 +151,8 @@ class GameController(Controller):
         :param money:                   amount of money spent
         """
         self.model.on_pay_money(money)
-        self.map.on_pay_money(money)
+        for map_ in self.maps:
+            map_.on_pay_money(money)
 
     def on_update_current_locale(self, new_locale):
         """
@@ -149,21 +161,24 @@ class GameController(Controller):
         :param new_locale:                      selected locale
         """
         self.view.on_update_current_locale(new_locale)
-        self.map.on_update_current_locale(new_locale)
+        for map_ in self.maps:
+            map_.on_update_current_locale(new_locale)
 
     def on_disable_notifications(self):
         """
         Disables system notifications for the view and all child controllers.
         """
         self.view.on_disable_notifications()
-        self.map.on_disable_notifications()
+        for map_ in self.maps:
+            map_.on_disable_notifications()
 
     def on_enable_notifications(self):
         """
         Enables system notifications for the view and all child controllers.
         """
         self.view.on_enable_notifications()
-        self.map.on_enable_notifications()
+        for map_ in self.maps:
+            map_.on_enable_notifications()
 
     def on_change_level_up_notification_state(self, notification_state):
         """
@@ -179,7 +194,8 @@ class GameController(Controller):
 
         :param notification_state:              new notification state defined by player
         """
-        self.map.on_change_feature_unlocked_notification_state(notification_state)
+        for map_ in self.maps:
+            map_.on_change_feature_unlocked_notification_state(notification_state)
 
     def on_change_construction_completed_notification_state(self, notification_state):
         """
@@ -187,7 +203,8 @@ class GameController(Controller):
 
         :param notification_state:              new notification state defined by player
         """
-        self.map.on_change_construction_completed_notification_state(notification_state)
+        for map_ in self.maps:
+            map_.on_change_construction_completed_notification_state(notification_state)
 
     def on_change_enough_money_notification_state(self, notification_state):
         """
@@ -202,4 +219,5 @@ class GameController(Controller):
         Notifies the view and child controllers to draw all sprites with shaders.
         """
         self.view.on_apply_shaders_and_draw_vertices()
-        self.map.on_apply_shaders_and_draw_vertices()
+        for map_ in self.maps:
+            map_.on_apply_shaders_and_draw_vertices()

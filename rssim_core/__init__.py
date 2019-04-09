@@ -96,7 +96,7 @@ def _create_game(app):
     controller.view = view
     view.on_assign_controller(controller)
     model.view = view
-    controller.map = _create_map(controller)
+    controller.maps.append(_create_map(controller))
     return controller
 
 
