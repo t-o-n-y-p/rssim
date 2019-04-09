@@ -86,6 +86,8 @@ class CrossoverView(View):
         Activates the view and creates all sprites and labels (nothing at the moment).
         """
         self.is_activated = True
+        self.user_db_cursor.execute('SELECT last_known_base_offset FROM graphics WHERE map_id = ?', (self.map_id, ))
+        self.base_offset = list(map(int, self.user_db_cursor.fetchone()[0].split(',')))
         if self.sprite is None and not self.locked:
             self.sprite = Sprite(self.images[self.current_position_1][self.current_position_2],
                                  x=self.base_offset[0] + self.position[0],

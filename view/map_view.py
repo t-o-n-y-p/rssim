@@ -247,6 +247,8 @@ class MapView(View):
         Activates the view and creates all sprites and labels.
         """
         self.is_activated = True
+        self.user_db_cursor.execute('SELECT last_known_base_offset FROM graphics WHERE map_id = ?', (self.map_id, ))
+        self.base_offset = list(map(int, self.user_db_cursor.fetchone()[0].split(',')))
         if self.map_view_shader_sprite is None:
             self.map_view_shader_sprite \
                 = self.batches['main_frame'].add(4, GL_QUADS, self.groups['main_frame'],
@@ -512,6 +514,7 @@ class MapView(View):
         """
         self.map_move_mode = False
         self.mini_map_timer = perf_counter()
+        self.controller.on_save_and_commit_last_known_base_offset(self.base_offset)
 
     def check_base_offset_limits(self):
         """

@@ -107,6 +107,8 @@ class TrainView(View):
         Activates the view and creates lists for car sprites.
         """
         self.is_activated = True
+        self.user_db_cursor.execute('SELECT last_known_base_offset FROM graphics WHERE map_id = ?', (self.map_id, ))
+        self.base_offset = list(map(int, self.user_db_cursor.fetchone()[0].split(',')))
         for i in range(len(self.car_position)):
             self.car_sprites.append(None)
             self.boarding_light_sprites.append(None)

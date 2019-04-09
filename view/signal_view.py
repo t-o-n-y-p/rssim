@@ -61,6 +61,8 @@ class SignalView(View):
         Activates the view and creates sprites and labels.
         """
         self.is_activated = True
+        self.user_db_cursor.execute('SELECT last_known_base_offset FROM graphics WHERE map_id = ?', (self.map_id, ))
+        self.base_offset = list(map(int, self.user_db_cursor.fetchone()[0].split(',')))
         if self.signal_sprite is None and not self.locked:
             if self.state == 'red_signal':
                 self.signal_sprite = Sprite(self.red_signal_image, x=self.base_offset[0] + self.position[0],

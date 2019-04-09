@@ -720,3 +720,6 @@ class MapController(Controller):
         self.view.on_apply_shaders_and_draw_vertices()
         self.constructor.on_apply_shaders_and_draw_vertices()
         self.scheduler.on_apply_shaders_and_draw_vertices()
+
+    def on_save_and_commit_last_known_base_offset(self, base_offset):
+        self.model.on_save_and_commit_last_known_base_offset(base_offset)

@@ -67,6 +67,8 @@ class MapModel(Model):
         self.user_db_cursor.execute('''SELECT unlocked_car_collections FROM map_progress WHERE map_id = ?''',
                                     (self.map_id, ))
         self.unlocked_car_collections = list(map(int, self.user_db_cursor.fetchone()[0].split(',')))
+        self.user_db_cursor.execute('SELECT last_known_base_offset FROM graphics WHERE map_id = ?', (self.map_id, ))
+        self.last_known_base_offset = list(map(int, self.user_db_cursor.fetchone()[0].split(',')))
 
     @model_is_not_active
     def on_activate(self):
@@ -120,6 +122,12 @@ class MapModel(Model):
                                        unlocked_car_collections = ? WHERE map_id = ?''',
                                     (self.unlocked_tracks, self.unlocked_environment,
                                      ','.join(list(map(str, self.unlocked_car_collections))), self.map_id))
+
+    def on_save_and_commit_last_known_base_offset(self, base_offset):
+        self.last_known_base_offset = base_offset
+        self.user_db_cursor.execute('UPDATE graphics SET last_known_base_offset = ? WHERE map_id = ?',
+                                    (','.join(list(map(str, self.last_known_base_offset))), self.map_id))
+        self.user_db_connection.commit()
 
     def on_clear_trains_info(self):
         """
