@@ -72,8 +72,8 @@
 		"ru": "# поезда   Прибытие        Откуда   Длина  Стоянка"
 	},
 	"departed_from_string": {
-		"en": ["West City", "East City", "North-West City", "South-East City"],
-		"ru": ["г. Западный", "г. Восточный", "г. Северо-Западный", "г. Юго-Восточный"]
+		"en": ["West City", "East City", "N.-West City", "S.-East City"],
+		"ru": ["г. Западный", "г. Восточный", "г. С.-Западный", "г. Ю.-Восточный"]
 	},
 	"windowed_resolution_description_string": {
 		"en": "Game resolution in window mode:",
