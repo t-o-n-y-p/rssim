@@ -6,7 +6,8 @@ from controller.fps_controller import FPSController
 from controller.scheduler_controller import SchedulerController
 from controller.signal_controller import SignalController
 from controller.train_route_controller import TrainRouteController
-from controller.railroad_switch_controller import RailroadSwitchController
+from controller.railroad_switch_controller.passenger_map_railroad_switch_controller \
+    import PassengerMapRailroadSwitchController
 from controller.crossover_controller.passenger_map_crossover_controller import PassengerMapCrossoverController
 from controller.train_controller import TrainController
 from controller.dispatcher_controller.passenger_map_dispatcher_controller import PassengerMapDispatcherController
@@ -166,7 +167,7 @@ def _create_passenger_map(game):
     switch_types = USER_DB_CURSOR.fetchall()
     for i in switch_types:
         controller.switches[i[0]][i[1]][i[2]] \
-            = _create_railroad_switch(controller, i[0], i[1], i[2])
+            = _create_passenger_map_railroad_switch(controller, i[0], i[1], i[2])
         controller.switches_list.append(controller.switches[i[0]][i[1]][i[2]])
     # read crossovers tracks from database, create crossovers and append them to both dictionary and list
     USER_DB_CURSOR.execute('''SELECT DISTINCT track_param_1 FROM crossovers WHERE map_id = 0''')
@@ -298,7 +299,7 @@ def _create_train_route(map_controller, track, train_route):
     return controller
 
 
-def _create_railroad_switch(map_controller, track_param_1, track_param_2, switch_type):
+def _create_passenger_map_railroad_switch(map_controller, track_param_1, track_param_2, switch_type):
     """
     Creates controller, model and view for RailroadSwitch object.
     It is responsible for properties, UI and events related to the railroad switch.
@@ -309,7 +310,7 @@ def _create_railroad_switch(map_controller, track_param_1, track_param_2, switch
     :param switch_type:             switch location: left/right side of the map
     :return:                        RailroadSwitch object controller
     """
-    controller = RailroadSwitchController(map_controller, track_param_1, track_param_2, switch_type)
+    controller = PassengerMapRailroadSwitchController(map_controller, track_param_1, track_param_2, switch_type)
     model = RailroadSwitchModel(track_param_1, track_param_2, switch_type)
     view = RailroadSwitchView(track_param_1, track_param_2, switch_type)
     controller.model = model
