@@ -3,7 +3,7 @@ from controller.game_controller import GameController
 from controller.map_controller.passenger_map_controller import PassengerMapController
 from controller.settings_controller import SettingsController
 from controller.fps_controller import FPSController
-from controller.scheduler_controller import SchedulerController
+from controller.scheduler_controller.passenger_map_scheduler_controller import PassengerMapSchedulerController
 from controller.signal_controller import SignalController
 from controller.train_route_controller import TrainRouteController
 from controller.railroad_switch_controller.passenger_map_railroad_switch_controller \
@@ -118,7 +118,7 @@ def _create_passenger_map(game):
     :return:                        Map object controller
     """
     controller = PassengerMapController(game)
-    controller.scheduler = _create_scheduler(controller)
+    controller.scheduler = _create_passenger_map_scheduler(controller)
     controller.dispatcher = _create_passenger_map_dispatcher(controller)
     controller.constructor = _create_passenger_map_constructor(controller)
     # read train IDs from database, create trains and append them to both dictionary and list
@@ -235,7 +235,7 @@ def _create_fps(app):
     return controller
 
 
-def _create_scheduler(map_controller):
+def _create_passenger_map_scheduler(map_controller):
     """
     Creates controller, model and view for Scheduler object.
     It is responsible for properties, UI and events related to the train schedule.
@@ -243,7 +243,7 @@ def _create_scheduler(map_controller):
     :param map_controller:          Map controller pointer
     :return:                        Scheduler object controller
     """
-    controller = SchedulerController(map_controller)
+    controller = PassengerMapSchedulerController(map_controller)
     model = SchedulerModel()
     view = SchedulerView()
     controller.model = model
