@@ -10,7 +10,7 @@ from controller.railroad_switch_controller import RailroadSwitchController
 from controller.crossover_controller import CrossoverController
 from controller.train_controller import TrainController
 from controller.dispatcher_controller import DispatcherController
-from controller.constructor_controller import ConstructorController
+from controller.constructor_controller.passenger_map_constructor_controller import PassengerMapConstructorController
 from model.app_model import AppModel
 from model.game_model import GameModel
 from model.map_model import MapModel
@@ -119,7 +119,7 @@ def _create_passenger_map(game):
     controller = PassengerMapController(game)
     controller.scheduler = _create_scheduler(controller)
     controller.dispatcher = _create_dispatcher(controller)
-    controller.constructor = _create_constructor(controller)
+    controller.constructor = _create_passenger_map_constructor(controller)
     # read train IDs from database, create trains and append them to both dictionary and list
     USER_DB_CURSOR.execute('SELECT train_id FROM trains')
     train_ids = USER_DB_CURSOR.fetchall()
@@ -382,7 +382,7 @@ def _create_dispatcher(map_controller):
     return controller
 
 
-def _create_constructor(map_controller):
+def _create_passenger_map_constructor(map_controller):
     """
     Creates controller, model and view for Constructor object.
     It is responsible for building new tracks and station environment.
@@ -390,7 +390,7 @@ def _create_constructor(map_controller):
     :param map_controller:          Map controller pointer
     :return:                        Constructor object controller
     """
-    controller = ConstructorController(map_controller)
+    controller = PassengerMapConstructorController(map_controller)
     model = ConstructorModel()
     view = ConstructorView()
     controller.model = model

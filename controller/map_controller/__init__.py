@@ -25,7 +25,6 @@ class MapController(Controller):
             trains                              dictionary of Train object controllers
             trains_list                         list of Train object controllers
 
-        :param game_controller:                 Game controller (parent controller)
         """
         super().__init__(parent_controller=parent_controller, logger=logger)
         self.scheduler = None
