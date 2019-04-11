@@ -121,65 +121,65 @@ def _create_passenger_map(game):
     controller.dispatcher = _create_dispatcher(controller)
     controller.constructor = _create_passenger_map_constructor(controller)
     # read train IDs from database, create trains and append them to both dictionary and list
-    USER_DB_CURSOR.execute('SELECT train_id FROM trains')
+    USER_DB_CURSOR.execute('SELECT train_id FROM trains WHERE map_id = 0')
     train_ids = USER_DB_CURSOR.fetchall()
     if train_ids is not None:
         for i in train_ids:
             controller.trains[i[0]] = _create_train(controller, i[0])
             controller.trains_list.append(controller.trains[i[0]])
     # read signal tracks and base routes from database, create signals and append them to both dictionary and list
-    CONFIG_DB_CURSOR.execute('''SELECT DISTINCT track FROM signal_config''')
+    CONFIG_DB_CURSOR.execute('''SELECT DISTINCT track FROM signal_config WHERE map_id = 0''')
     signal_index = CONFIG_DB_CURSOR.fetchall()
     for i in signal_index:
         controller.signals[i[0]] = {}
 
-    CONFIG_DB_CURSOR.execute('''SELECT track, base_route FROM signal_config''')
+    CONFIG_DB_CURSOR.execute('''SELECT track, base_route FROM signal_config WHERE map_id = 0''')
     signal_ids = CONFIG_DB_CURSOR.fetchall()
     for i in signal_ids:
         controller.signals[i[0]][i[1]] \
             = _create_signal(controller, i[0], i[1])
         controller.signals_list.append(controller.signals[i[0]][i[1]])
     # read train route tracks and types from database, create train routes and append them to both dictionary and list
-    CONFIG_DB_CURSOR.execute('''SELECT DISTINCT track FROM train_route_config''')
+    CONFIG_DB_CURSOR.execute('''SELECT DISTINCT track FROM train_route_config WHERE map_id = 0''')
     train_route_index = CONFIG_DB_CURSOR.fetchall()
     for i in train_route_index:
         controller.train_routes[i[0]] = {}
 
-    CONFIG_DB_CURSOR.execute('''SELECT track, train_route FROM train_route_config''')
+    CONFIG_DB_CURSOR.execute('''SELECT track, train_route FROM train_route_config WHERE map_id = 0''')
     train_route_ids = CONFIG_DB_CURSOR.fetchall()
     for i in train_route_ids:
         controller.train_routes[i[0]][i[1]] \
             = _create_train_route(controller, i[0], i[1])
         controller.train_routes_sorted_list.append(controller.train_routes[i[0]][i[1]])
     # read switches tracks from database, create switches and append them to both dictionary and list
-    USER_DB_CURSOR.execute('''SELECT DISTINCT track_param_1 FROM switches''')
+    USER_DB_CURSOR.execute('''SELECT DISTINCT track_param_1 FROM switches WHERE map_id = 0''')
     switch_track_param_1 = USER_DB_CURSOR.fetchall()
     for i in switch_track_param_1:
         controller.switches[i[0]] = {}
 
-    USER_DB_CURSOR.execute('''SELECT DISTINCT track_param_1, track_param_2 FROM switches''')
+    USER_DB_CURSOR.execute('''SELECT DISTINCT track_param_1, track_param_2 FROM switches WHERE map_id = 0''')
     switch_track_param_2 = USER_DB_CURSOR.fetchall()
     for i in switch_track_param_2:
         controller.switches[i[0]][i[1]] = {}
 
-    USER_DB_CURSOR.execute('''SELECT track_param_1, track_param_2, switch_type FROM switches''')
+    USER_DB_CURSOR.execute('''SELECT track_param_1, track_param_2, switch_type FROM switches WHERE map_id = 0''')
     switch_types = USER_DB_CURSOR.fetchall()
     for i in switch_types:
         controller.switches[i[0]][i[1]][i[2]] \
             = _create_railroad_switch(controller, i[0], i[1], i[2])
         controller.switches_list.append(controller.switches[i[0]][i[1]][i[2]])
     # read crossovers tracks from database, create crossovers and append them to both dictionary and list
-    USER_DB_CURSOR.execute('''SELECT DISTINCT track_param_1 FROM crossovers''')
+    USER_DB_CURSOR.execute('''SELECT DISTINCT track_param_1 FROM crossovers WHERE map_id = 0''')
     crossovers_track_param_1 = USER_DB_CURSOR.fetchall()
     for i in crossovers_track_param_1:
         controller.crossovers[i[0]] = {}
 
-    USER_DB_CURSOR.execute('''SELECT DISTINCT track_param_1, track_param_2 FROM crossovers''')
+    USER_DB_CURSOR.execute('''SELECT DISTINCT track_param_1, track_param_2 FROM crossovers WHERE map_id = 0''')
     crossovers_track_param_2 = USER_DB_CURSOR.fetchall()
     for i in crossovers_track_param_2:
         controller.crossovers[i[0]][i[1]] = {}
 
-    USER_DB_CURSOR.execute('''SELECT track_param_1, track_param_2, crossover_type FROM crossovers''')
+    USER_DB_CURSOR.execute('''SELECT track_param_1, track_param_2, crossover_type FROM crossovers WHERE map_id = 0''')
     crossovers_types = USER_DB_CURSOR.fetchall()
     for i in crossovers_types:
         controller.crossovers[i[0]][i[1]][i[2]] \
