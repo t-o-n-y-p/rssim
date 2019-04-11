@@ -1,6 +1,6 @@
 from controller.app_controller import AppController
 from controller.game_controller import GameController
-from controller.map_controller import MapController
+from controller.map_controller.passenger_map_controller import PassengerMapController
 from controller.settings_controller import SettingsController
 from controller.fps_controller import FPSController
 from controller.scheduler_controller import SchedulerController
@@ -88,7 +88,6 @@ def _create_game(app):
     :return:                        Game object controller
     """
     controller = GameController(app)
-    app.game = controller
     model = GameModel()
     view = GameView()
     controller.model = model
@@ -96,11 +95,11 @@ def _create_game(app):
     controller.view = view
     view.on_assign_controller(controller)
     model.view = view
-    controller.maps.append(_create_map(controller))
+    controller.maps.append(_create_passenger_map(controller))
     return controller
 
 
-def _create_map(game):
+def _create_passenger_map(game):
     """
     Creates controller, model and view for Map object.
     It is responsible for properties, UI and events related to the map.
@@ -117,8 +116,7 @@ def _create_map(game):
     :param game:                    Game controller pointer
     :return:                        Map object controller
     """
-    controller = MapController(game)
-    game.map = controller
+    controller = PassengerMapController(game)
     controller.scheduler = _create_scheduler(controller)
     controller.dispatcher = _create_dispatcher(controller)
     controller.constructor = _create_constructor(controller)
@@ -207,7 +205,6 @@ def _create_settings(app):
     :return:                        Settings object controller
     """
     controller = SettingsController(app)
-    app.settings = controller
     model = SettingsModel()
     view = SettingsView()
     controller.model = model
@@ -227,7 +224,6 @@ def _create_fps(app):
     :return:                        FPS object controller
     """
     controller = FPSController(app)
-    app.fps = controller
     model = FPSModel()
     view = FPSView()
     controller.model = model

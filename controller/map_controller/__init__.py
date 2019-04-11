@@ -1,5 +1,4 @@
 from operator import attrgetter
-from logging import getLogger
 
 from controller import *
 
@@ -9,7 +8,7 @@ class MapController(Controller):
     Implements Map controller.
     Map object is responsible for properties, UI and events related to the map.
     """
-    def __init__(self, game_controller):
+    def __init__(self, parent_controller, logger):
         """
         Properties:
             scheduler                           Scheduler object controller
@@ -28,7 +27,7 @@ class MapController(Controller):
 
         :param game_controller:                 Game controller (parent controller)
         """
-        super().__init__(parent_controller=game_controller, logger=getLogger('root.app.game.map.controller'))
+        super().__init__(parent_controller=parent_controller, logger=logger)
         self.scheduler = None
         self.constructor = None
         self.dispatcher = None
