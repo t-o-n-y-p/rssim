@@ -378,6 +378,8 @@ class MapView(View):
             self.mini_map_frame_width = int(self.screen_resolution[0] / MAP_WIDTH * self.mini_map_width)
             self.mini_map_frame_height = int(self.screen_resolution[1] / MAP_HEIGHT * self.mini_map_height)
 
+        self.controller.on_save_and_commit_last_known_base_offset(self.base_offset)
+
     def on_change_screen_resolution(self, screen_resolution):
         """
         Updates screen resolution and moves all labels and sprites to its new positions.
@@ -394,6 +396,7 @@ class MapView(View):
         self.base_offset = (self.base_offset[0] + (screen_resolution[0] - self.screen_resolution[0]) // 2,
                             self.base_offset[1] + (screen_resolution[1] - self.screen_resolution[1]) // 2)
         self.check_base_offset_limits()
+        self.controller.on_save_and_commit_last_known_base_offset(self.base_offset)
         self.on_recalculate_ui_properties(screen_resolution)
         self.map_view_shader_bottom_limit = self.bottom_bar_height / self.screen_resolution[1] * 2 - 1
         self.map_view_shader_upper_limit = 1 - self.top_bar_height / self.screen_resolution[1] * 2
