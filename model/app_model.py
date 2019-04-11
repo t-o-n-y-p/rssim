@@ -18,11 +18,14 @@ class AppModel(Model):
 
         """
         super().__init__(logger=getLogger('root.app.model'))
+        self.user_db_cursor.execute('SELECT fullscreen FROM graphics')
+        self.fullscreen_mode = bool(self.user_db_cursor.fetchone()[0])
         self.config_db_cursor.execute('SELECT app_width, app_height FROM screen_resolution_config')
         self.screen_resolution_config = self.config_db_cursor.fetchall()
         monitor_resolution_config = (windll.user32.GetSystemMetrics(0), windll.user32.GetSystemMetrics(1))
         if monitor_resolution_config in self.screen_resolution_config:
             self.fullscreen_mode_available = True
+            self.fullscreen_resolution = (windll.user32.GetSystemMetrics(0), windll.user32.GetSystemMetrics(1))
         else:
             self.fullscreen_mode_available = False
 
@@ -46,7 +49,7 @@ class AppModel(Model):
         Activates the App view and appropriate button depending on app window mode.
         """
         self.view.on_activate()
-        if self.controller.settings.model.fullscreen_mode:
+        if self.fullscreen_mode:
             self.view.restore_button.on_activate()
         else:
             self.view.fullscreen_button.on_activate()
@@ -76,6 +79,7 @@ class AppModel(Model):
 
         :param fullscreen_mode:                 fullscreen mode flag value to be saved
         """
+        self.fullscreen_mode = bool(fullscreen_mode)
         self.user_db_cursor.execute('UPDATE graphics SET fullscreen = ?', (fullscreen_mode, ))
         self.user_db_connection.commit()
 

@@ -33,22 +33,8 @@ class SettingsModel(Model):
         super().__init__(logger=getLogger('root.app.settings.model'))
         self.user_db_cursor.execute('SELECT app_width, app_height FROM graphics')
         self.windowed_resolution = self.user_db_cursor.fetchone()
-        self.user_db_cursor.execute('SELECT fullscreen, display_fps FROM graphics')
-        self.fullscreen_mode, self.display_fps = tuple(map(bool, self.user_db_cursor.fetchone()))
-        self.config_db_cursor.execute('SELECT app_width, app_height FROM screen_resolution_config')
-        self.screen_resolution_config = self.config_db_cursor.fetchall()
-        self.fullscreen_mode_available = False
-        self.fullscreen_resolution = (0, 0)
-        self.screen_resolution = (0, 0)
-        if (windll.user32.GetSystemMetrics(0), windll.user32.GetSystemMetrics(1)) in self.screen_resolution_config:
-            self.fullscreen_mode_available = True
-            self.fullscreen_resolution = (windll.user32.GetSystemMetrics(0), windll.user32.GetSystemMetrics(1))
-
-        if self.fullscreen_mode and self.fullscreen_mode_available:
-            self.screen_resolution = self.fullscreen_resolution
-        else:
-            self.screen_resolution = self.windowed_resolution
-
+        self.user_db_cursor.execute('SELECT display_fps FROM graphics')
+        self.display_fps = bool(self.user_db_cursor.fetchone()[0])
         self.user_db_cursor.execute('SELECT * FROM notification_settings')
         self.level_up_notification_enabled, self.feature_unlocked_notification_enabled, \
             self.construction_completed_notification_enabled, self.enough_money_notification_enabled \

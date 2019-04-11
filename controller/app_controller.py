@@ -65,7 +65,7 @@ class AppController(Controller):
         We need to apply new screen resolution and switch app window mode to fullscreen
         (if fullscreen mode is available for user display).
         """
-        self.on_change_screen_resolution(self.settings.model.fullscreen_resolution)
+        self.on_change_screen_resolution(self.model.fullscreen_resolution)
         if self.model.fullscreen_mode_available:
             self.on_fullscreen_mode_turned_on()
 
