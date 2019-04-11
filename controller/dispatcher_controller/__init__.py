@@ -1,5 +1,3 @@
-from logging import getLogger
-
 from controller import *
 
 
@@ -8,12 +6,12 @@ class DispatcherController(Controller):
     Implements Dispatcher controller.
     Dispatcher object is responsible for assigning routes to approaching trains.
     """
-    def __init__(self, map_controller):
+    def __init__(self, parent_controller, logger):
         """
-        :param map_controller:          Map controller (parent controller)
+        :param parent_controller:               Map controller subclass
+        :param logger:                          telemetry instance
         """
-        super().__init__(parent_controller=map_controller,
-                         logger=getLogger('root.app.game.map.dispatcher.controller'))
+        super().__init__(parent_controller=parent_controller, logger=logger)
 
     def on_update_view(self):
         """

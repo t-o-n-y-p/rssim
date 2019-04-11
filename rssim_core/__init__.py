@@ -9,7 +9,7 @@ from controller.train_route_controller import TrainRouteController
 from controller.railroad_switch_controller import RailroadSwitchController
 from controller.crossover_controller.passenger_map_crossover_controller import PassengerMapCrossoverController
 from controller.train_controller import TrainController
-from controller.dispatcher_controller import DispatcherController
+from controller.dispatcher_controller.passenger_map_dispatcher_controller import PassengerMapDispatcherController
 from controller.constructor_controller.passenger_map_constructor_controller import PassengerMapConstructorController
 from model.app_model import AppModel
 from model.game_model import GameModel
@@ -118,7 +118,7 @@ def _create_passenger_map(game):
     """
     controller = PassengerMapController(game)
     controller.scheduler = _create_scheduler(controller)
-    controller.dispatcher = _create_dispatcher(controller)
+    controller.dispatcher = _create_passenger_map_dispatcher(controller)
     controller.constructor = _create_passenger_map_constructor(controller)
     # read train IDs from database, create trains and append them to both dictionary and list
     USER_DB_CURSOR.execute('SELECT train_id FROM trains WHERE map_id = 0')
@@ -363,7 +363,7 @@ def _create_train(map_controller, train_id):
     return controller
 
 
-def _create_dispatcher(map_controller):
+def _create_passenger_map_dispatcher(map_controller):
     """
     Creates controller, model and view for Dispatcher object.
     It is responsible for assigning routes to approaching trains.
@@ -371,7 +371,7 @@ def _create_dispatcher(map_controller):
     :param map_controller:          Map controller pointer
     :return:                        Dispatcher object controller
     """
-    controller = DispatcherController(map_controller)
+    controller = PassengerMapDispatcherController(map_controller)
     model = DispatcherModel()
     view = DispatcherView()
     controller.model = model
