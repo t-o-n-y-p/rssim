@@ -247,6 +247,7 @@ class MapController(Controller):
         Note that adjusting base offset is made by on_change_base_offset handler
         which is called after scale factor is updated.
         """
+        self.model.on_save_and_commit_zoom_out_activated(False)
         self.view.on_change_zoom_factor(ZOOM_IN_SCALE_FACTOR, zoom_out_activated=False)
         for signal in self.signals_list:
             signal.on_zoom_in()
@@ -271,6 +272,7 @@ class MapController(Controller):
         Note that adjusting base offset is made by on_change_base_offset handler
         which is called after scale factor is updated.
         """
+        self.model.on_save_and_commit_zoom_out_activated(True)
         self.view.on_change_zoom_factor(ZOOM_OUT_SCALE_FACTOR, zoom_out_activated=True)
         for signal in self.signals_list:
             signal.on_zoom_out()

@@ -69,6 +69,8 @@ class MapModel(Model):
         self.unlocked_car_collections = list(map(int, self.user_db_cursor.fetchone()[0].split(',')))
         self.user_db_cursor.execute('SELECT last_known_base_offset FROM graphics WHERE map_id = ?', (self.map_id, ))
         self.last_known_base_offset = list(map(int, self.user_db_cursor.fetchone()[0].split(',')))
+        self.user_db_cursor.execute('SELECT zoom_out_activated FROM graphics WHERE map_id = ?', (self.map_id, ))
+        self.zoom_out_activated = bool(self.user_db_cursor.fetchone()[0])
 
     @model_is_not_active
     def on_activate(self):
@@ -129,6 +131,12 @@ class MapModel(Model):
         self.last_known_base_offset = base_offset
         self.user_db_cursor.execute('UPDATE graphics SET last_known_base_offset = ? WHERE map_id = ?',
                                     (','.join(list(map(str, self.last_known_base_offset))), self.map_id))
+        self.user_db_connection.commit()
+
+    def on_save_and_commit_zoom_out_activated(self, zoom_out_activated):
+        self.zoom_out_activated = zoom_out_activated
+        self.user_db_cursor.execute('UPDATE graphics SET zoom_out_activated = ? WHERE map_id = ?',
+                                    (int(zoom_out_activated), self.map_id))
         self.user_db_connection.commit()
 
     def on_clear_trains_info(self):
