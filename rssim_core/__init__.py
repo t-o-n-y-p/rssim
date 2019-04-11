@@ -7,7 +7,7 @@ from controller.scheduler_controller import SchedulerController
 from controller.signal_controller import SignalController
 from controller.train_route_controller import TrainRouteController
 from controller.railroad_switch_controller import RailroadSwitchController
-from controller.crossover_controller import CrossoverController
+from controller.crossover_controller.passenger_map_crossover_controller import PassengerMapCrossoverController
 from controller.train_controller import TrainController
 from controller.dispatcher_controller import DispatcherController
 from controller.constructor_controller.passenger_map_constructor_controller import PassengerMapConstructorController
@@ -183,7 +183,7 @@ def _create_passenger_map(game):
     crossovers_types = USER_DB_CURSOR.fetchall()
     for i in crossovers_types:
         controller.crossovers[i[0]][i[1]][i[2]] \
-            = _create_crossover(controller, i[0], i[1], i[2])
+            = _create_passenger_map_crossover(controller, i[0], i[1], i[2])
         controller.crossovers_list.append(controller.crossovers[i[0]][i[1]][i[2]])
 
     model = MapModel()
@@ -320,7 +320,7 @@ def _create_railroad_switch(map_controller, track_param_1, track_param_2, switch
     return controller
 
 
-def _create_crossover(map_controller, track_param_1, track_param_2, crossover_type):
+def _create_passenger_map_crossover(map_controller, track_param_1, track_param_2, crossover_type):
     """
     Creates controller, model and view for Crossover object.
     It is responsible for properties, UI and events related to the crossover.
@@ -331,7 +331,7 @@ def _create_crossover(map_controller, track_param_1, track_param_2, crossover_ty
     :param crossover_type:          crossover location: left/right side of the map
     :return:                        Crossover object controller
     """
-    controller = CrossoverController(map_controller, track_param_1, track_param_2, crossover_type)
+    controller = PassengerMapCrossoverController(map_controller, track_param_1, track_param_2, crossover_type)
     model = CrossoverModel(track_param_1, track_param_2, crossover_type)
     view = CrossoverView(track_param_1, track_param_2, crossover_type)
     controller.model = model

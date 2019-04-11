@@ -7,6 +7,10 @@ class ConstructorController(Controller):
     Constructor object is responsible for building new tracks and station environment.
     """
     def __init__(self, parent_controller, logger):
+        """
+        :param parent_controller:               Map controller subclass
+        :param logger:                          telemetry instance
+        """
         super().__init__(parent_controller=parent_controller, logger=logger)
 
     def on_update_view(self):

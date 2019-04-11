@@ -1,5 +1,3 @@
-from logging import getLogger
-
 from controller import *
 
 
@@ -8,23 +6,22 @@ class CrossoverController(Controller):
     Implements Crossover controller.
     Crossover object is responsible for properties, UI and events related to the crossover.
     """
-    def __init__(self, map_controller, track_param_1, track_param_2, crossover_type):
+    def __init__(self, parent_controller, track_param_1, track_param_2, crossover_type, logger):
         """
         Properties:
             track_param_1               number of the first track of two being connected by the crossover
             track_param_2               number of the second track of two being connected by the crossover
             crossover_type              crossover location: left/right side of the map
 
-        :param map_controller:          Map controller (parent controller)
+        :param parent_controller:       Map controller subclass
         :param track_param_1:           number of the first track of two being connected by the crossover
         :param track_param_2:           number of the second track of two being connected by the crossover
         :param crossover_type:          crossover location: left/right side of the map
+        :param logger:                  telemetry instance
         """
         super().__init__(
-            parent_controller=map_controller,
-            logger=getLogger(
-                f'root.app.game.map.crossover.{track_param_1}.{track_param_2}.{crossover_type}.controller'
-            )
+            parent_controller=parent_controller,
+            logger=logger
         )
         self.track_param_1 = track_param_1
         self.track_param_2 = track_param_2
