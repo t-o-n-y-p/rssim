@@ -40,6 +40,7 @@ class SignalView(View):
         x, y, self.flip_needed = self.config_db_cursor.fetchone()
         self.position = (x, y)
         self.flip_needed = bool(self.flip_needed)
+        self.on_init_graphics()
 
     @signal_is_displayed_on_map
     def on_update(self):
@@ -60,9 +61,8 @@ class SignalView(View):
         """
         Activates the view and creates sprites and labels.
         """
+        self.on_init_graphics()
         self.is_activated = True
-        self.user_db_cursor.execute('SELECT last_known_base_offset FROM graphics WHERE map_id = ?', (self.map_id, ))
-        self.base_offset = list(map(int, self.user_db_cursor.fetchone()[0].split(',')))
         if self.signal_sprite is None and not self.locked:
             if self.state == 'red_signal':
                 self.signal_sprite = Sprite(self.red_signal_image, x=self.base_offset[0] + self.position[0],
@@ -168,3 +168,17 @@ class SignalView(View):
 
     def on_update_map_id(self):
         self.map_id = 0
+
+    def on_init_graphics(self):
+        self.user_db_cursor.execute('SELECT app_width, app_height FROM graphics')
+        self.screen_resolution = self.user_db_cursor.fetchone()
+        self.user_db_cursor.execute('SELECT zoom_out_activated FROM graphics WHERE map_id = ?', (self.map_id,))
+        self.zoom_out_activated = bool(self.user_db_cursor.fetchone()[0])
+        if self.zoom_out_activated:
+            self.zoom_factor = 0.5
+        else:
+            self.zoom_factor = 1.0
+
+        self.user_db_cursor.execute('SELECT last_known_base_offset FROM graphics WHERE map_id = ?', (self.map_id,))
+        self.base_offset = tuple(map(int, self.user_db_cursor.fetchone()[0].split(',')))
+        self.on_recalculate_ui_properties(self.screen_resolution)

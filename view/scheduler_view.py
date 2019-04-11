@@ -72,6 +72,7 @@ class SchedulerView(View):
         self.scheduler_view_shader = from_files_names('shaders/shader.vert', 'shaders/scheduler_view/shader.frag')
         self.scheduler_view_shader_bottom_limit = 0.0
         self.scheduler_view_shader_upper_limit = 0.0
+        self.on_init_graphics()
 
     @view_is_not_active
     def on_activate(self):
@@ -247,3 +248,8 @@ class SchedulerView(View):
 
     def on_update_map_id(self):
         self.map_id = 0
+
+    def on_init_graphics(self):
+        self.user_db_cursor.execute('SELECT app_width, app_height FROM graphics')
+        self.screen_resolution = self.user_db_cursor.fetchone()
+        self.on_change_screen_resolution(self.screen_resolution)

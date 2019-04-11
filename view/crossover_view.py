@@ -64,6 +64,7 @@ class CrossoverView(View):
                                     (track_param_1, track_param_2, crossover_type, self.map_id))
         self.locked = bool(self.user_db_cursor.fetchone()[0])
         self.sprite = None
+        self.on_init_graphics()
 
     def on_update(self):
         """
@@ -85,9 +86,8 @@ class CrossoverView(View):
         """
         Activates the view and creates all sprites and labels (nothing at the moment).
         """
+        self.on_init_graphics()
         self.is_activated = True
-        self.user_db_cursor.execute('SELECT last_known_base_offset FROM graphics WHERE map_id = ?', (self.map_id, ))
-        self.base_offset = list(map(int, self.user_db_cursor.fetchone()[0].split(',')))
         if self.sprite is None and not self.locked:
             self.sprite = Sprite(self.images[self.current_position_1][self.current_position_2],
                                  x=self.base_offset[0] + self.position[0],
@@ -183,3 +183,17 @@ class CrossoverView(View):
 
     def on_update_map_id(self):
         self.map_id = 0
+
+    def on_init_graphics(self):
+        self.user_db_cursor.execute('SELECT app_width, app_height FROM graphics')
+        self.screen_resolution = self.user_db_cursor.fetchone()
+        self.user_db_cursor.execute('SELECT zoom_out_activated FROM graphics WHERE map_id = ?', (self.map_id,))
+        self.zoom_out_activated = bool(self.user_db_cursor.fetchone()[0])
+        if self.zoom_out_activated:
+            self.zoom_factor = 0.5
+        else:
+            self.zoom_factor = 1.0
+
+        self.user_db_cursor.execute('SELECT last_known_base_offset FROM graphics WHERE map_id = ?', (self.map_id,))
+        self.base_offset = tuple(map(int, self.user_db_cursor.fetchone()[0].split(',')))
+        self.on_recalculate_ui_properties(self.screen_resolution)

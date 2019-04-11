@@ -171,6 +171,7 @@ class MapView(View):
         self.map_view_shader = from_files_names('shaders/shader.vert', 'shaders/map_view/shader.frag')
         self.map_view_shader_bottom_limit = 0.0
         self.map_view_shader_upper_limit = 0.0
+        self.on_init_graphics()
 
     def on_update(self):
         """
@@ -246,9 +247,8 @@ class MapView(View):
         """
         Activates the view and creates all sprites and labels.
         """
+        self.on_init_graphics()
         self.is_activated = True
-        self.user_db_cursor.execute('SELECT last_known_base_offset FROM graphics WHERE map_id = ?', (self.map_id, ))
-        self.base_offset = list(map(int, self.user_db_cursor.fetchone()[0].split(',')))
         if self.map_view_shader_sprite is None:
             self.map_view_shader_sprite \
                 = self.batches['main_frame'].add(4, GL_QUADS, self.groups['main_frame'],
@@ -575,3 +575,54 @@ class MapView(View):
 
     def on_update_map_id(self):
         self.map_id = 0
+
+    def on_init_graphics(self):
+        self.user_db_cursor.execute('SELECT app_width, app_height FROM graphics')
+        self.screen_resolution = self.user_db_cursor.fetchone()
+        self.user_db_cursor.execute('SELECT zoom_out_activated FROM graphics WHERE map_id = ?', (self.map_id, ))
+        self.zoom_out_activated = bool(self.user_db_cursor.fetchone()[0])
+        if self.zoom_out_activated:
+            self.zoom_factor = 0.5
+        else:
+            self.zoom_factor = 1.0
+
+        self.user_db_cursor.execute('SELECT last_known_base_offset FROM graphics WHERE map_id = ?', (self.map_id, ))
+        self.base_offset = tuple(map(int, self.user_db_cursor.fetchone()[0].split(',')))
+        self.on_recalculate_ui_properties(self.screen_resolution)
+        self.map_view_shader_bottom_limit = self.bottom_bar_height / self.screen_resolution[1] * 2 - 1
+        self.map_view_shader_upper_limit = 1 - self.top_bar_height / self.screen_resolution[1] * 2
+        self.mini_map_width = self.screen_resolution[0] // 4
+        self.mini_map_height = round(self.mini_map_width / 2)
+        self.mini_map_position = (self.screen_resolution[0] - self.mini_map_width - 8,
+                                  self.screen_resolution[1] - self.top_bar_height - 6 - self.mini_map_height)
+        if self.zoom_out_activated:
+            self.base_offset_upper_right_limit = (self.screen_resolution[0] - MAP_WIDTH // 2,
+                                                  self.screen_resolution[1] - MAP_HEIGHT // 2)
+            self.mini_map_frame_width = int(self.screen_resolution[0] / (MAP_WIDTH // 2) * self.mini_map_width)
+            self.mini_map_frame_height = int(self.screen_resolution[1] / (MAP_HEIGHT // 2) * self.mini_map_height)
+            self.mini_map_frame_position = (ceil(-self.base_offset[0] / (MAP_WIDTH // 2) * self.mini_map_width)
+                                            + self.mini_map_position[0],
+                                            ceil(-self.base_offset[1] / (MAP_HEIGHT // 2) * self.mini_map_height)
+                                            + self.mini_map_position[1])
+        else:
+            self.base_offset_upper_right_limit = (self.screen_resolution[0] - MAP_WIDTH,
+                                                  self.screen_resolution[1] - MAP_HEIGHT)
+            self.mini_map_frame_width = int(self.screen_resolution[0] / MAP_WIDTH * self.mini_map_width)
+            self.mini_map_frame_height = int(self.screen_resolution[1] / MAP_HEIGHT * self.mini_map_height)
+            self.mini_map_frame_position = (ceil(-self.base_offset[0] / MAP_WIDTH * self.mini_map_width)
+                                            + self.mini_map_position[0],
+                                            ceil(-self.base_offset[1] / MAP_HEIGHT * self.mini_map_height)
+                                            + self.mini_map_position[1])
+
+        self.zoom_in_button.x_margin = 0
+        self.zoom_in_button.y_margin = self.screen_resolution[1] - self.top_bar_height - self.top_bar_height * 2 + 4
+        self.zoom_in_button.on_size_changed((self.top_bar_height * 2 - 2, self.top_bar_height * 2 - 2))
+        self.zoom_out_button.x_margin = 0
+        self.zoom_out_button.y_margin = self.screen_resolution[1] - self.top_bar_height - self.top_bar_height * 2 + 4
+        self.zoom_out_button.on_size_changed((self.top_bar_height * 2 - 2, self.top_bar_height * 2 - 2))
+        self.open_schedule_button.x_margin = self.screen_resolution[0] - 11 * self.bottom_bar_height // 2 + 2
+        self.open_schedule_button.y_margin = 0
+        self.open_schedule_button.on_size_changed((self.bottom_bar_height, self.bottom_bar_height))
+        self.open_constructor_button.on_size_changed((self.bottom_bar_height, self.bottom_bar_height))
+        for b in self.buttons:
+            b.on_position_changed((b.x_margin, b.y_margin))

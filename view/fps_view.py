@@ -18,6 +18,7 @@ class FPSView(View):
         """
         super().__init__(logger=getLogger('root.app.fps.view'))
         self.fps_label = None
+        self.on_init_graphics()
 
     @view_is_not_active
     def on_activate(self):
@@ -60,3 +61,8 @@ class FPSView(View):
             self.fps_label.x = self.screen_resolution[0] - self.top_bar_height * 3 - self.top_bar_height // 4
             self.fps_label.y = self.screen_resolution[1] - self.top_bar_height // 2
             self.fps_label.font_size = int(16 / 40 * self.top_bar_height)
+
+    def on_init_graphics(self):
+        self.user_db_cursor.execute('SELECT app_width, app_height FROM graphics')
+        self.screen_resolution = self.user_db_cursor.fetchone()
+        self.on_change_screen_resolution(self.screen_resolution)

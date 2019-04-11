@@ -169,6 +169,7 @@ class SettingsView(View):
         self.buttons.extend(self.notifications_checkbox_group.buttons)
         self.settings_view_shader = from_files_names('shaders/shader.vert', 'shaders/settings_view/shader.frag')
         self.settings_view_shader_sprite = None
+        self.on_init_graphics()
 
     def on_update(self):
         """
@@ -287,3 +288,8 @@ class SettingsView(View):
         self.settings_view_shader.uniforms.number_of_buttons = len(self.buttons)
         self.settings_view_shader_sprite.draw(GL_QUADS)
         self.settings_view_shader.clear()
+
+    def on_init_graphics(self):
+        self.user_db_cursor.execute('SELECT app_width, app_height FROM graphics')
+        self.screen_resolution = self.user_db_cursor.fetchone()
+        self.on_change_screen_resolution(self.screen_resolution)

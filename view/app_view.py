@@ -153,6 +153,7 @@ class AppView(View):
         self.on_mouse_release_handlers.append(self.handle_mouse_release)
         self.on_mouse_drag_handlers.append(self.handle_mouse_drag)
         self.app_view_shader = from_files_names('shaders/shader.vert', 'shaders/app_view/shader.frag')
+        self.on_init_graphics()
 
     @view_is_not_active
     def on_activate(self):
@@ -323,3 +324,8 @@ class AppView(View):
         self.app_view_shader.uniforms.top_bar_height = self.top_bar_height
         self.app_view_shader_sprite.draw(GL_QUADS)
         self.app_view_shader.clear()
+
+    def on_init_graphics(self):
+        self.user_db_cursor.execute('SELECT app_width, app_height FROM graphics')
+        self.screen_resolution = self.user_db_cursor.fetchone()
+        self.on_change_screen_resolution(self.screen_resolution)

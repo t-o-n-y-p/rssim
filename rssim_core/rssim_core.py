@@ -73,10 +73,7 @@ class RSSim:
         # initially app is created using default minimal screen resolution; now we change it to user resolution
         # and same about fullscreen mode
         if self.app.model.fullscreen_mode and self.app.model.fullscreen_mode_available:
-            self.app.on_change_screen_resolution(self.app.model.fullscreen_resolution)
             self.app.on_fullscreen_mode_turned_on()
-        else:
-            self.app.on_change_screen_resolution(self.app.settings.model.windowed_resolution)
 
         # activate app after it is created
         self.app.on_activate()

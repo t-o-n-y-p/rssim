@@ -19,6 +19,7 @@ class TrainRouteView(View):
         self.map_id = None
         self.on_update_map_id()
         super().__init__(logger=getLogger(f'root.app.game.map.{self.map_id}.train_route.{track}.{train_route}.view'))
+        self.on_init_graphics()
 
     @view_is_not_active
     def on_activate(self):
@@ -64,3 +65,8 @@ class TrainRouteView(View):
 
     def on_update_map_id(self):
         self.map_id = 0
+
+    def on_init_graphics(self):
+        self.user_db_cursor.execute('SELECT app_width, app_height FROM graphics')
+        self.screen_resolution = self.user_db_cursor.fetchone()
+        self.on_change_screen_resolution(self.screen_resolution)

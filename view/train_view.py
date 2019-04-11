@@ -43,6 +43,7 @@ class TrainView(View):
         self.direction = None
         self.car_image_collection = None
         self.state = None
+        self.on_init_graphics()
 
     @view_is_active
     def on_update(self):
@@ -106,9 +107,8 @@ class TrainView(View):
         """
         Activates the view and creates lists for car sprites.
         """
+        self.on_init_graphics()
         self.is_activated = True
-        self.user_db_cursor.execute('SELECT last_known_base_offset FROM graphics WHERE map_id = ?', (self.map_id, ))
-        self.base_offset = list(map(int, self.user_db_cursor.fetchone()[0].split(',')))
         for i in range(len(self.car_position)):
             self.car_sprites.append(None)
             self.boarding_light_sprites.append(None)
@@ -203,3 +203,17 @@ class TrainView(View):
 
     def on_update_map_id(self):
         self.map_id = 0
+
+    def on_init_graphics(self):
+        self.user_db_cursor.execute('SELECT app_width, app_height FROM graphics')
+        self.screen_resolution = self.user_db_cursor.fetchone()
+        self.user_db_cursor.execute('SELECT zoom_out_activated FROM graphics WHERE map_id = ?', (self.map_id,))
+        self.zoom_out_activated = bool(self.user_db_cursor.fetchone()[0])
+        if self.zoom_out_activated:
+            self.zoom_factor = 0.5
+        else:
+            self.zoom_factor = 1.0
+
+        self.user_db_cursor.execute('SELECT last_known_base_offset FROM graphics WHERE map_id = ?', (self.map_id,))
+        self.base_offset = tuple(map(int, self.user_db_cursor.fetchone()[0].split(',')))
+        self.on_recalculate_ui_properties(self.screen_resolution)
