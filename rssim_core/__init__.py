@@ -18,7 +18,7 @@ from model.map_model.passenger_map_model import PassengerMapModel
 from model.settings_model import SettingsModel
 from model.fps_model import FPSModel
 from model.scheduler_model.passenger_map_scheduler_model import PassengerMapSchedulerModel
-from model.signal_model import SignalModel
+from model.signal_model.passenger_map_signal_model import PassengerMapSignalModel
 from model.train_route_model import TrainRouteModel
 from model.railroad_switch_model.passenger_map_railroad_switch_model import PassengerMapRailroadSwitchModel
 from model.crossover_model.passenger_map_crossover_model import PassengerMapCrossoverModel
@@ -265,7 +265,7 @@ def _create_passenger_map_signal(map_controller, track, base_route):
     :return:                        Signal object controller
     """
     controller = PassengerMapSignalController(map_controller, track, base_route)
-    model = SignalModel(track, base_route)
+    model = PassengerMapSignalModel(track, base_route)
     view = SignalView(track, base_route, RED_SIGNAL_IMAGE, GREEN_SIGNAL_IMAGE)
     controller.model = model
     model.controller = controller

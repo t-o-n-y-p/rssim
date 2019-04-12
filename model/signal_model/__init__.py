@@ -80,4 +80,4 @@ class SignalModel(Model):
         self.view.on_change_state(self.state)
 
     def on_update_map_id(self):
-        self.map_id = 0
+        pass
