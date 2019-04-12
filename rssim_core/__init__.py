@@ -20,7 +20,7 @@ from model.fps_model import FPSModel
 from model.scheduler_model import SchedulerModel
 from model.signal_model import SignalModel
 from model.train_route_model import TrainRouteModel
-from model.railroad_switch_model import RailroadSwitchModel
+from model.railroad_switch_model.passenger_map_railroad_switch_model import PassengerMapRailroadSwitchModel
 from model.crossover_model.passenger_map_crossover_model import PassengerMapCrossoverModel
 from model.train_model import TrainModel
 from model.dispatcher_model.passenger_map_dispatcher_model import PassengerMapDispatcherModel
@@ -311,7 +311,7 @@ def _create_passenger_map_railroad_switch(map_controller, track_param_1, track_p
     :return:                        RailroadSwitch object controller
     """
     controller = PassengerMapRailroadSwitchController(map_controller, track_param_1, track_param_2, switch_type)
-    model = RailroadSwitchModel(track_param_1, track_param_2, switch_type)
+    model = PassengerMapRailroadSwitchModel(track_param_1, track_param_2, switch_type)
     view = RailroadSwitchView(track_param_1, track_param_2, switch_type)
     controller.model = model
     model.controller = controller
