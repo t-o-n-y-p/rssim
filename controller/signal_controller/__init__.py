@@ -8,18 +8,18 @@ class SignalController(Controller):
     Implements Signal controller.
     Signal object is responsible for properties, UI and events related to the signal state.
     """
-    def __init__(self, map_controller, track, base_route):
+    def __init__(self, parent_controller, track, base_route, logger):
         """
         Properties:
             track                               signal track number
             base_route                          base route (train route part) which signal belongs to
 
-        :param map_controller:                  Map controller (parent controller)
+        :param parent_controller:               Map controller subclass
         :param track:                           signal track number
         :param base_route:                      base route (train route part) which signal belongs to
+        :param logger:                          telemetry instance
         """
-        super().__init__(parent_controller=map_controller,
-                         logger=getLogger(f'root.app.game.map.signal.{track}.{base_route}.controller'))
+        super().__init__(parent_controller=parent_controller, logger=logger)
         self.track = track
         self.base_route = base_route
 

@@ -4,7 +4,7 @@ from controller.map_controller.passenger_map_controller import PassengerMapContr
 from controller.settings_controller import SettingsController
 from controller.fps_controller import FPSController
 from controller.scheduler_controller.passenger_map_scheduler_controller import PassengerMapSchedulerController
-from controller.signal_controller import SignalController
+from controller.signal_controller.passenger_map_signal_controller import PassengerMapSignalController
 from controller.train_route_controller import TrainRouteController
 from controller.railroad_switch_controller.passenger_map_railroad_switch_controller \
     import PassengerMapRailroadSwitchController
@@ -138,7 +138,7 @@ def _create_passenger_map(game):
     signal_ids = CONFIG_DB_CURSOR.fetchall()
     for i in signal_ids:
         controller.signals[i[0]][i[1]] \
-            = _create_signal(controller, i[0], i[1])
+            = _create_passenger_map_signal(controller, i[0], i[1])
         controller.signals_list.append(controller.signals[i[0]][i[1]])
     # read train route tracks and types from database, create train routes and append them to both dictionary and list
     CONFIG_DB_CURSOR.execute('''SELECT DISTINCT track FROM train_route_config WHERE map_id = 0''')
@@ -254,7 +254,7 @@ def _create_passenger_map_scheduler(map_controller):
     return controller
 
 
-def _create_signal(map_controller, track, base_route):
+def _create_passenger_map_signal(map_controller, track, base_route):
     """
     Creates controller, model and view for Signal object.
     It is responsible for properties, UI and events related to the signal state.
@@ -264,7 +264,7 @@ def _create_signal(map_controller, track, base_route):
     :param base_route:              base route (train route part) which signal belongs to
     :return:                        Signal object controller
     """
-    controller = SignalController(map_controller, track, base_route)
+    controller = PassengerMapSignalController(map_controller, track, base_route)
     model = SignalModel(track, base_route)
     view = SignalView(track, base_route, RED_SIGNAL_IMAGE, GREEN_SIGNAL_IMAGE)
     controller.model = model
