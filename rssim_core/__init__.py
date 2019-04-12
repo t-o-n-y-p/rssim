@@ -24,7 +24,7 @@ from model.railroad_switch_model import RailroadSwitchModel
 from model.crossover_model import CrossoverModel
 from model.train_model import TrainModel
 from model.dispatcher_model import DispatcherModel
-from model.constructor_model import ConstructorModel
+from model.constructor_model.passenger_map_constructor_model import PassengerMapConstructorModel
 from view.app_view import AppView
 from view.game_view import GameView
 from view.map_view import MapView
@@ -392,7 +392,7 @@ def _create_passenger_map_constructor(map_controller):
     :return:                        Constructor object controller
     """
     controller = PassengerMapConstructorController(map_controller)
-    model = ConstructorModel()
+    model = PassengerMapConstructorModel()
     view = ConstructorView()
     controller.model = model
     model.controller = controller
