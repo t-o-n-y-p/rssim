@@ -8,43 +8,6 @@ from view.train_view import TrainView
 from textures import CAR_COLLECTIONS, CAR_HEAD_IMAGE, CAR_MID_IMAGE, CAR_TAIL_IMAGE, BOARDING_LIGHT_IMAGE
 
 
-def _create_train(map_controller, train_id, cars, track, train_route, state, direction, new_direction,
-                  current_direction, priority, boarding_time, exp, money, unlocked_car_collections):
-    """
-    Creates controller, model and view for Train object from the dispatcher.
-    It is responsible for properties, UI and events related to the train.
-
-    :param map_controller:                  Map controller pointer
-    :param train_id:                        train identification number
-    :param cars:                            number of cars in the train
-    :param track:                           track number (0 for regular entry and 100 for side entry)
-    :param train_route:                     train route type (left/right approaching or side_approaching)
-    :param state:                           train state: approaching or approaching_pass_through
-    :param direction:                       train arrival direction
-    :param new_direction:                   train departure direction
-    :param current_direction:               train current direction
-    :param priority:                        train priority in the queue
-    :param boarding_time:                   amount of boarding time left for this train
-    :param exp:                             exp gained when boarding finishes
-    :param money:                           money gained when boarding finishes
-    :param unlocked_car_collections:        list of car collections which can be used for this train
-    :return:                                Train object controller
-    """
-    controller = PassengerTrainController(map_controller, train_id)
-    model = TrainModel(train_id)
-    # car collection is chosen randomly from available options, seed() initializes PRNG
-    seed()
-    model.on_train_init(cars, track, train_route, state, direction, new_direction, current_direction,
-                        priority, boarding_time, exp, money, choice(unlocked_car_collections))
-    view = TrainView(train_id, CAR_HEAD_IMAGE, CAR_MID_IMAGE, CAR_TAIL_IMAGE, BOARDING_LIGHT_IMAGE)
-    controller.model = model
-    model.controller = controller
-    controller.view = view
-    view.on_assign_controller(controller)
-    model.view = view
-    return controller
-
-
 class MapModel(Model):
     """
     Implements Map model.
@@ -148,7 +111,7 @@ class MapModel(Model):
     def on_create_train(self, train_id, cars, track, train_route, state, direction, new_direction,
                         current_direction, priority, boarding_time, exp, money):
         """
-        Creates new train via _create_train function.
+        Creates new train similar to _create_train function.
 
         :param train_id:                        train identification number
         :param cars:                            number of cars in the train
@@ -164,8 +127,19 @@ class MapModel(Model):
         :param money:                           money gained when boarding finishes
         :return:                                Train object controller
         """
-        return _create_train(self.controller, train_id, cars, track, train_route, state, direction, new_direction,
-                             current_direction, priority, boarding_time, exp, money, self.unlocked_car_collections)
+        controller = PassengerTrainController(self.controller, train_id)
+        model = TrainModel(train_id)
+        # car collection is chosen randomly from available options, seed() initializes PRNG
+        seed()
+        model.on_train_init(cars, track, train_route, state, direction, new_direction, current_direction,
+                            priority, boarding_time, exp, money, choice(self.unlocked_car_collections))
+        view = TrainView(train_id, CAR_HEAD_IMAGE, CAR_MID_IMAGE, CAR_TAIL_IMAGE, BOARDING_LIGHT_IMAGE)
+        controller.model = model
+        model.controller = controller
+        controller.view = view
+        view.on_assign_controller(controller)
+        model.view = view
+        return controller
 
     def on_add_new_car_collection(self):
         """
