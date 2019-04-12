@@ -9,7 +9,7 @@ from controller.train_route_controller import TrainRouteController
 from controller.railroad_switch_controller.passenger_map_railroad_switch_controller \
     import PassengerMapRailroadSwitchController
 from controller.crossover_controller.passenger_map_crossover_controller import PassengerMapCrossoverController
-from controller.train_controller import TrainController
+from controller.train_controller.passenger_train_controller import PassengerTrainController
 from controller.dispatcher_controller.passenger_map_dispatcher_controller import PassengerMapDispatcherController
 from controller.constructor_controller.passenger_map_constructor_controller import PassengerMapConstructorController
 from model.app_model import AppModel
@@ -126,7 +126,7 @@ def _create_passenger_map(game):
     train_ids = USER_DB_CURSOR.fetchall()
     if train_ids is not None:
         for i in train_ids:
-            controller.trains[i[0]] = _create_train(controller, i[0])
+            controller.trains[i[0]] = _create_passenger_train(controller, i[0])
             controller.trains_list.append(controller.trains[i[0]])
     # read signal tracks and base routes from database, create signals and append them to both dictionary and list
     CONFIG_DB_CURSOR.execute('''SELECT DISTINCT track FROM signal_config WHERE map_id = 0''')
@@ -343,7 +343,7 @@ def _create_passenger_map_crossover(map_controller, track_param_1, track_param_2
     return controller
 
 
-def _create_train(map_controller, train_id):
+def _create_passenger_train(map_controller, train_id):
     """
     Creates controller, model and view for Train object from the database.
     It is responsible for properties, UI and events related to the train.
@@ -352,7 +352,7 @@ def _create_train(map_controller, train_id):
     :param train_id:                train identification number
     :return:                        Train object controller
     """
-    controller = TrainController(map_controller, train_id)
+    controller = PassengerTrainController(map_controller, train_id)
     model = TrainModel(train_id)
     model.on_train_setup(train_id)
     view = TrainView(train_id, CAR_HEAD_IMAGE, CAR_MID_IMAGE, CAR_TAIL_IMAGE, BOARDING_LIGHT_IMAGE)

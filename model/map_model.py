@@ -2,7 +2,7 @@ from random import choice, seed
 from logging import getLogger
 
 from model import *
-from controller.train_controller import TrainController
+from controller.train_controller.passenger_train_controller import PassengerTrainController
 from model.train_model import TrainModel
 from view.train_view import TrainView
 from textures import CAR_COLLECTIONS, CAR_HEAD_IMAGE, CAR_MID_IMAGE, CAR_TAIL_IMAGE, BOARDING_LIGHT_IMAGE
@@ -30,7 +30,7 @@ def _create_train(map_controller, train_id, cars, track, train_route, state, dir
     :param unlocked_car_collections:        list of car collections which can be used for this train
     :return:                                Train object controller
     """
-    controller = TrainController(map_controller, train_id)
+    controller = PassengerTrainController(map_controller, train_id)
     model = TrainModel(train_id)
     # car collection is chosen randomly from available options, seed() initializes PRNG
     seed()
