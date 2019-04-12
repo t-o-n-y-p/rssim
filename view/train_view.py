@@ -3,6 +3,7 @@ from logging import getLogger
 from pyglet.sprite import Sprite
 
 from view import *
+from textures import CAR_HEAD_IMAGE, CAR_MID_IMAGE, CAR_TAIL_IMAGE, BOARDING_LIGHT_IMAGE
 
 
 class TrainView(View):
@@ -10,7 +11,7 @@ class TrainView(View):
     Implements Train view.
     Train object is responsible for properties, UI and events related to the train.
     """
-    def __init__(self, train_id, car_head_image, car_mid_image, car_tail_image, boarding_light_image):
+    def __init__(self, train_id):
         """
         Properties:
             car_position                        2D Cartesian positions for all cars plus rotation angle
@@ -25,19 +26,15 @@ class TrainView(View):
             state                               current train state
 
         :param train_id                         train identification number
-        :param car_head_image:                  texture for leading carriage
-        :param car_mid_image:                   texture for middle carriage
-        :param car_tail_image:                  texture for trailing carriage
-        :param boarding_light_image:            texture for middle carriage door status lights
         """
         self.map_id = None
         self.on_update_map_id()
         super().__init__(logger=getLogger(f'root.app.game.map.{self.map_id}.train.{train_id}.view'))
         self.car_position = []
-        self.car_head_image = car_head_image
-        self.car_mid_image = car_mid_image
-        self.car_tail_image = car_tail_image
-        self.boarding_light_image = boarding_light_image
+        self.car_head_image = CAR_HEAD_IMAGE
+        self.car_mid_image = CAR_MID_IMAGE
+        self.car_tail_image = CAR_TAIL_IMAGE
+        self.boarding_light_image = BOARDING_LIGHT_IMAGE
         self.car_sprites = []
         self.boarding_light_sprites = []
         self.direction = None

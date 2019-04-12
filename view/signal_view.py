@@ -3,6 +3,7 @@ from logging import getLogger
 from pyglet.sprite import Sprite
 
 from view import *
+from textures import RED_SIGNAL_IMAGE, GREEN_SIGNAL_IMAGE
 
 
 class SignalView(View):
@@ -10,7 +11,7 @@ class SignalView(View):
     Implements Signal view.
     Signal object is responsible for properties, UI and events related to the signal state.
     """
-    def __init__(self, track, base_route, red_signal_image, green_signal_image):
+    def __init__(self, track, base_route):
         """
         Properties:
             red_signal_image                    texture for red signal state
@@ -29,8 +30,8 @@ class SignalView(View):
         self.map_id = None
         self.on_update_map_id()
         super().__init__(logger=getLogger(f'root.app.game.map.{self.map_id}.signal.{track}.{base_route}.view'))
-        self.red_signal_image = red_signal_image
-        self.green_signal_image = green_signal_image
+        self.red_signal_image = RED_SIGNAL_IMAGE
+        self.green_signal_image = GREEN_SIGNAL_IMAGE
         self.signal_sprite = None
         self.state = None
         self.locked = None

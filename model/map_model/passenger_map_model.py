@@ -1,6 +1,5 @@
 from random import choice, seed
 
-from textures import CAR_HEAD_IMAGE, CAR_MID_IMAGE, CAR_TAIL_IMAGE, BOARDING_LIGHT_IMAGE
 from model.map_model import MapModel
 from controller.train_controller.passenger_train_controller import PassengerTrainController
 from model.train_model.passenger_train_model import PassengerTrainModel
@@ -39,7 +38,7 @@ class PassengerMapModel(MapModel):
         seed()
         model.on_train_init(cars, track, train_route, state, direction, new_direction, current_direction,
                             priority, boarding_time, exp, money, choice(self.unlocked_car_collections))
-        view = TrainView(train_id, CAR_HEAD_IMAGE, CAR_MID_IMAGE, CAR_TAIL_IMAGE, BOARDING_LIGHT_IMAGE)
+        view = TrainView(train_id)
         controller.model = model
         model.controller = controller
         controller.view = view

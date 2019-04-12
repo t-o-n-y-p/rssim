@@ -38,7 +38,6 @@ from view.crossover_view import CrossoverView
 from view.train_view import TrainView
 from view.dispatcher_view import DispatcherView
 from view.constructor_view import ConstructorView
-from textures import *
 from database import CONFIG_DB_CURSOR, USER_DB_CURSOR
 
 
@@ -266,7 +265,7 @@ def _create_passenger_map_signal(map_controller, track, base_route):
     """
     controller = PassengerMapSignalController(map_controller, track, base_route)
     model = PassengerMapSignalModel(track, base_route)
-    view = SignalView(track, base_route, RED_SIGNAL_IMAGE, GREEN_SIGNAL_IMAGE)
+    view = SignalView(track, base_route)
     controller.model = model
     model.controller = controller
     controller.view = view
@@ -355,7 +354,7 @@ def _create_passenger_train(map_controller, train_id):
     controller = PassengerTrainController(map_controller, train_id)
     model = PassengerTrainModel(train_id)
     model.on_train_setup(train_id)
-    view = TrainView(train_id, CAR_HEAD_IMAGE, CAR_MID_IMAGE, CAR_TAIL_IMAGE, BOARDING_LIGHT_IMAGE)
+    view = TrainView(train_id)
     controller.model = model
     model.controller = controller
     controller.view = view
