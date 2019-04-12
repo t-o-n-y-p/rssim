@@ -226,4 +226,4 @@ class CrossoverModel(Model):
         self.view.on_unlock()
 
     def on_update_map_id(self):
-        self.map_id = 0
+        pass

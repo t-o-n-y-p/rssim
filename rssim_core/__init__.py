@@ -21,7 +21,7 @@ from model.scheduler_model import SchedulerModel
 from model.signal_model import SignalModel
 from model.train_route_model import TrainRouteModel
 from model.railroad_switch_model import RailroadSwitchModel
-from model.crossover_model import CrossoverModel
+from model.crossover_model.passenger_map_crossover_model import PassengerMapCrossoverModel
 from model.train_model import TrainModel
 from model.dispatcher_model import DispatcherModel
 from model.constructor_model.passenger_map_constructor_model import PassengerMapConstructorModel
@@ -333,7 +333,7 @@ def _create_passenger_map_crossover(map_controller, track_param_1, track_param_2
     :return:                        Crossover object controller
     """
     controller = PassengerMapCrossoverController(map_controller, track_param_1, track_param_2, crossover_type)
-    model = CrossoverModel(track_param_1, track_param_2, crossover_type)
+    model = PassengerMapCrossoverModel(track_param_1, track_param_2, crossover_type)
     view = CrossoverView(track_param_1, track_param_2, crossover_type)
     controller.model = model
     model.controller = controller
