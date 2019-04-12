@@ -17,7 +17,7 @@ from model.game_model import GameModel
 from model.map_model.passenger_map_model import PassengerMapModel
 from model.settings_model import SettingsModel
 from model.fps_model import FPSModel
-from model.scheduler_model import SchedulerModel
+from model.scheduler_model.passenger_map_scheduler_model import PassengerMapSchedulerModel
 from model.signal_model import SignalModel
 from model.train_route_model import TrainRouteModel
 from model.railroad_switch_model.passenger_map_railroad_switch_model import PassengerMapRailroadSwitchModel
@@ -244,7 +244,7 @@ def _create_passenger_map_scheduler(map_controller):
     :return:                        Scheduler object controller
     """
     controller = PassengerMapSchedulerController(map_controller)
-    model = SchedulerModel()
+    model = PassengerMapSchedulerModel()
     view = SchedulerView()
     controller.model = model
     model.controller = controller

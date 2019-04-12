@@ -200,7 +200,7 @@ class SchedulerModel(Model):
         self.entry_busy_state[entry_id] = False
 
     def on_update_map_id(self):
-        self.map_id = 0
+        pass
 
     def on_unlock_entry(self):
         if self.unlocked_tracks == LEFT_SIDE_ENTRY_FIRST_TRACK:
