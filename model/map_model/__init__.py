@@ -63,7 +63,7 @@ class MapModel(Model):
         :param track:                   track number
         """
         self.unlocked_tracks = track
-        if self.unlocked_tracks in CAR_COLLECTION_UNLOCK_TRACK_LIST:
+        if self.unlocked_tracks in PASSENGER_CAR_COLLECTION_UNLOCK_TRACK_LIST:
             self.on_add_new_car_collection()
 
         self.view.on_unlock_track(track)

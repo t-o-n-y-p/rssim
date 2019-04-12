@@ -3,7 +3,7 @@ from random import choice, seed
 from textures import CAR_HEAD_IMAGE, CAR_MID_IMAGE, CAR_TAIL_IMAGE, BOARDING_LIGHT_IMAGE
 from model.map_model import MapModel
 from controller.train_controller.passenger_train_controller import PassengerTrainController
-from model.train_model import TrainModel
+from model.train_model.passenger_train_model import PassengerTrainModel
 from view.train_view import TrainView
 
 
@@ -34,7 +34,7 @@ class PassengerMapModel(MapModel):
         :return:                                Train object controller
         """
         controller = PassengerTrainController(self.controller, train_id)
-        model = TrainModel(train_id)
+        model = PassengerTrainModel(train_id)
         # car collection is chosen randomly from available options, seed() initializes PRNG
         seed()
         model.on_train_init(cars, track, train_route, state, direction, new_direction, current_direction,

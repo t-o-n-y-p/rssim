@@ -244,9 +244,9 @@ FRAMES_IN_ONE_MINUTE = 240              # indicates how many frames fit in 1 in-
 FRAMES_IN_ONE_HOUR = 14400              # indicates how many frames fit in one in-game hour
 DEFAULT_PRIORITY = 10000000             # default priority for any new train created
 PASS_THROUGH_BOARDING_TIME = 480        # default boarding time for pass-through trains
-CAR_LENGTH = 251                        # length of the car in pixels
+PASSENGER_CAR_LENGTH = 251              # length of the passenger car in pixels
 # when any track from this list is unlocked, new car collection is added
-CAR_COLLECTION_UNLOCK_TRACK_LIST = (6, 10, 14, 18, 21, 22, 26, 30)
+PASSENGER_CAR_COLLECTION_UNLOCK_TRACK_LIST = (6, 10, 14, 18, 21, 22, 26, 30)
 TRACKS = 0                                      # matrix #0 stores tracks state
 ENVIRONMENT = 1                                 # matrix #1 stores environment tiers state
 CONSTRUCTOR_VIEW_TRACK_CELLS = 4                # number of cells for tracks on constructor screen

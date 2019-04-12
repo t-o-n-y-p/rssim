@@ -22,7 +22,7 @@ from model.signal_model.passenger_map_signal_model import PassengerMapSignalMode
 from model.train_route_model import TrainRouteModel
 from model.railroad_switch_model.passenger_map_railroad_switch_model import PassengerMapRailroadSwitchModel
 from model.crossover_model.passenger_map_crossover_model import PassengerMapCrossoverModel
-from model.train_model import TrainModel
+from model.train_model.passenger_train_model import PassengerTrainModel
 from model.dispatcher_model.passenger_map_dispatcher_model import PassengerMapDispatcherModel
 from model.constructor_model.passenger_map_constructor_model import PassengerMapConstructorModel
 from view.app_view import AppView
@@ -353,7 +353,7 @@ def _create_passenger_train(map_controller, train_id):
     :return:                        Train object controller
     """
     controller = PassengerTrainController(map_controller, train_id)
-    model = TrainModel(train_id)
+    model = PassengerTrainModel(train_id)
     model.on_train_setup(train_id)
     view = TrainView(train_id, CAR_HEAD_IMAGE, CAR_MID_IMAGE, CAR_TAIL_IMAGE, BOARDING_LIGHT_IMAGE)
     controller.model = model
