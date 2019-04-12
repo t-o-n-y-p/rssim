@@ -1,3 +1,5 @@
+from ctypes import windll
+
 from pyglet.window import mouse
 
 from ui import *
@@ -335,12 +337,27 @@ class View:
         self.on_mouse_motion_handlers = []
         self.on_mouse_drag_handlers = []
         self.on_mouse_leave_handlers = []
-        self.screen_resolution = (1280, 720)
-        self.bottom_bar_height = 72
-        self.top_bar_height = 36
-        self.base_offset = (-3456, -1688)
-        self.zoom_out_activated = False
-        self.zoom_factor = 1.0
+        self.config_db_cursor.execute('SELECT app_width, app_height FROM screen_resolution_config')
+        screen_resolution_config = self.config_db_cursor.fetchall()
+        monitor_resolution_config = (windll.user32.GetSystemMetrics(0), windll.user32.GetSystemMetrics(1))
+        self.user_db_cursor.execute('SELECT fullscreen FROM graphics')
+        if bool(self.user_db_cursor.fetchone()[0]) and monitor_resolution_config in screen_resolution_config:
+            self.screen_resolution = monitor_resolution_config
+        else:
+            self.user_db_cursor.execute('SELECT app_width, app_height FROM graphics')
+            self.screen_resolution = self.user_db_cursor.fetchone()
+
+        self.bottom_bar_height, self.top_bar_height = 0, 0
+        self.on_recalculate_ui_properties(self.screen_resolution)
+        self.user_db_cursor.execute('SELECT last_known_base_offset FROM graphics')
+        self.base_offset = tuple(map(int, self.user_db_cursor.fetchone()[0].split(',')))
+        self.user_db_cursor.execute('SELECT zoom_out_activated FROM graphics')
+        self.zoom_out_activated = bool(self.user_db_cursor.fetchone()[0])
+        if self.zoom_out_activated:
+            self.zoom_factor = 0.5
+        else:
+            self.zoom_factor = 1.0
+
         self.user_db_cursor.execute('SELECT current_locale FROM i18n')
         self.current_locale = self.user_db_cursor.fetchone()[0]
         self.all_notifications_enabled = False

@@ -63,6 +63,4 @@ class FPSView(View):
             self.fps_label.font_size = int(16 / 40 * self.top_bar_height)
 
     def on_init_graphics(self):
-        self.user_db_cursor.execute('SELECT app_width, app_height FROM graphics')
-        self.screen_resolution = self.user_db_cursor.fetchone()
         self.on_change_screen_resolution(self.screen_resolution)

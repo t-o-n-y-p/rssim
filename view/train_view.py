@@ -205,15 +205,4 @@ class TrainView(View):
         self.map_id = 0
 
     def on_init_graphics(self):
-        self.user_db_cursor.execute('SELECT app_width, app_height FROM graphics')
-        self.screen_resolution = self.user_db_cursor.fetchone()
-        self.user_db_cursor.execute('SELECT zoom_out_activated FROM graphics WHERE map_id = ?', (self.map_id,))
-        self.zoom_out_activated = bool(self.user_db_cursor.fetchone()[0])
-        if self.zoom_out_activated:
-            self.zoom_factor = 0.5
-        else:
-            self.zoom_factor = 1.0
-
-        self.user_db_cursor.execute('SELECT last_known_base_offset FROM graphics WHERE map_id = ?', (self.map_id,))
-        self.base_offset = tuple(map(int, self.user_db_cursor.fetchone()[0].split(',')))
-        self.on_recalculate_ui_properties(self.screen_resolution)
+        self.on_change_screen_resolution(self.screen_resolution)

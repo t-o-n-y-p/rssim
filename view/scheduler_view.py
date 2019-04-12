@@ -250,6 +250,4 @@ class SchedulerView(View):
         self.map_id = 0
 
     def on_init_graphics(self):
-        self.user_db_cursor.execute('SELECT app_width, app_height FROM graphics')
-        self.screen_resolution = self.user_db_cursor.fetchone()
         self.on_change_screen_resolution(self.screen_resolution)
