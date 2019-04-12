@@ -14,7 +14,7 @@ from controller.dispatcher_controller.passenger_map_dispatcher_controller import
 from controller.constructor_controller.passenger_map_constructor_controller import PassengerMapConstructorController
 from model.app_model import AppModel
 from model.game_model import GameModel
-from model.map_model import MapModel
+from model.map_model.passenger_map_model import PassengerMapModel
 from model.settings_model import SettingsModel
 from model.fps_model import FPSModel
 from model.scheduler_model import SchedulerModel
@@ -23,7 +23,7 @@ from model.train_route_model import TrainRouteModel
 from model.railroad_switch_model import RailroadSwitchModel
 from model.crossover_model.passenger_map_crossover_model import PassengerMapCrossoverModel
 from model.train_model import TrainModel
-from model.dispatcher_model import DispatcherModel
+from model.dispatcher_model.passenger_map_dispatcher_model import PassengerMapDispatcherModel
 from model.constructor_model.passenger_map_constructor_model import PassengerMapConstructorModel
 from view.app_view import AppView
 from view.game_view import GameView
@@ -187,7 +187,7 @@ def _create_passenger_map(game):
             = _create_passenger_map_crossover(controller, i[0], i[1], i[2])
         controller.crossovers_list.append(controller.crossovers[i[0]][i[1]][i[2]])
 
-    model = MapModel()
+    model = PassengerMapModel()
     view = MapView()
     controller.model = model
     model.controller = controller
@@ -373,7 +373,7 @@ def _create_passenger_map_dispatcher(map_controller):
     :return:                        Dispatcher object controller
     """
     controller = PassengerMapDispatcherController(map_controller)
-    model = DispatcherModel()
+    model = PassengerMapDispatcherModel()
     view = DispatcherView()
     controller.model = model
     model.controller = controller

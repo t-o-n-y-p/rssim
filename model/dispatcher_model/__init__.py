@@ -114,4 +114,4 @@ class DispatcherModel(Model):
         self.track_busy_status[track] = False
 
     def on_update_map_id(self):
-        self.map_id = 0
+        pass

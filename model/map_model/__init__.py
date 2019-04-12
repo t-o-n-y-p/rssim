@@ -2,10 +2,7 @@ from random import choice, seed
 from logging import getLogger
 
 from model import *
-from controller.train_controller.passenger_train_controller import PassengerTrainController
-from model.train_model import TrainModel
-from view.train_view import TrainView
-from textures import CAR_COLLECTIONS, CAR_HEAD_IMAGE, CAR_MID_IMAGE, CAR_TAIL_IMAGE, BOARDING_LIGHT_IMAGE
+from textures import CAR_COLLECTIONS
 
 
 class MapModel(Model):
@@ -127,19 +124,7 @@ class MapModel(Model):
         :param money:                           money gained when boarding finishes
         :return:                                Train object controller
         """
-        controller = PassengerTrainController(self.controller, train_id)
-        model = TrainModel(train_id)
-        # car collection is chosen randomly from available options, seed() initializes PRNG
-        seed()
-        model.on_train_init(cars, track, train_route, state, direction, new_direction, current_direction,
-                            priority, boarding_time, exp, money, choice(self.unlocked_car_collections))
-        view = TrainView(train_id, CAR_HEAD_IMAGE, CAR_MID_IMAGE, CAR_TAIL_IMAGE, BOARDING_LIGHT_IMAGE)
-        controller.model = model
-        model.controller = controller
-        controller.view = view
-        view.on_assign_controller(controller)
-        model.view = view
-        return controller
+        pass
 
     def on_add_new_car_collection(self):
         """
@@ -189,4 +174,4 @@ class MapModel(Model):
         return self.config_db_cursor.fetchall()
 
     def on_update_map_id(self):
-        self.map_id = 0
+        pass
