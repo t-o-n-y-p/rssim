@@ -1,5 +1,3 @@
-from logging import getLogger
-
 from controller import *
 
 
@@ -8,18 +6,18 @@ class TrainRouteController(Controller):
     Implements Train route controller.
     Train route object is responsible for properties, UI and events related to the train route.
     """
-    def __init__(self, map_controller, track, train_route):
+    def __init__(self, parent_controller, track, train_route, logger):
         """
         Properties:
             track                               route track number
             train_route                         route type (e.g. left/right entry/exit)
 
-        :param map_controller:                  Map controller (parent controller)
+        :param parent_controller:               Map controller subclass
         :param track:                           route track number
         :param train_route:                     route type (e.g. left/right entry/exit)
+        :param logger:                          telemetry instance
         """
-        super().__init__(parent_controller=map_controller,
-                         logger=getLogger(f'root.app.game.map.train_route.{track}.{train_route}.controller'))
+        super().__init__(parent_controller=parent_controller, logger=logger)
         self.track = track
         self.train_route = train_route
 

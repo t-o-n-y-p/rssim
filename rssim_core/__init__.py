@@ -5,7 +5,7 @@ from controller.settings_controller import SettingsController
 from controller.fps_controller import FPSController
 from controller.scheduler_controller.passenger_map_scheduler_controller import PassengerMapSchedulerController
 from controller.signal_controller.passenger_map_signal_controller import PassengerMapSignalController
-from controller.train_route_controller import TrainRouteController
+from controller.train_route_controller.passenger_train_route_controller import PassengerTrainRouteController
 from controller.railroad_switch_controller.passenger_map_railroad_switch_controller \
     import PassengerMapRailroadSwitchController
 from controller.crossover_controller.passenger_map_crossover_controller import PassengerMapCrossoverController
@@ -150,7 +150,7 @@ def _create_passenger_map(game):
     train_route_ids = CONFIG_DB_CURSOR.fetchall()
     for i in train_route_ids:
         controller.train_routes[i[0]][i[1]] \
-            = _create_train_route(controller, i[0], i[1])
+            = _create_passenger_train_route(controller, i[0], i[1])
         controller.train_routes_sorted_list.append(controller.train_routes[i[0]][i[1]])
     # read switches tracks from database, create switches and append them to both dictionary and list
     USER_DB_CURSOR.execute('''SELECT DISTINCT track_param_1 FROM switches WHERE map_id = 0''')
@@ -275,7 +275,7 @@ def _create_passenger_map_signal(map_controller, track, base_route):
     return controller
 
 
-def _create_train_route(map_controller, track, train_route):
+def _create_passenger_train_route(map_controller, track, train_route):
     """
     Creates controller, model and view for TrainRoute object.
     It is responsible for properties, UI and events related to the train route.
@@ -285,7 +285,7 @@ def _create_train_route(map_controller, track, train_route):
     :param train_route:             train route type
     :return:                        TrainRoute object controller
     """
-    controller = TrainRouteController(map_controller, track, train_route)
+    controller = PassengerTrainRouteController(map_controller, track, train_route)
     model = TrainRouteModel(track, train_route)
     if model.opened:
         controller.parent_controller.on_set_trail_points(model.last_opened_by, model.trail_points_v2)
