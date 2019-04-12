@@ -3,7 +3,7 @@ from logging import getLogger
 from pyglet.sprite import Sprite
 
 from view import *
-from textures import CAR_HEAD_IMAGE, CAR_MID_IMAGE, CAR_TAIL_IMAGE, BOARDING_LIGHT_IMAGE
+from textures import PASSENGER_CAR_HEAD_IMAGE, PASSENGER_CAR_MID_IMAGE, PASSENGER_CAR_TAIL_IMAGE, BOARDING_LIGHT_IMAGE
 
 
 class TrainView(View):
@@ -31,9 +31,9 @@ class TrainView(View):
         self.on_update_map_id()
         super().__init__(logger=getLogger(f'root.app.game.map.{self.map_id}.train.{train_id}.view'))
         self.car_position = []
-        self.car_head_image = CAR_HEAD_IMAGE
-        self.car_mid_image = CAR_MID_IMAGE
-        self.car_tail_image = CAR_TAIL_IMAGE
+        self.car_head_image = PASSENGER_CAR_HEAD_IMAGE
+        self.car_mid_image = PASSENGER_CAR_MID_IMAGE
+        self.car_tail_image = PASSENGER_CAR_TAIL_IMAGE
         self.boarding_light_image = BOARDING_LIGHT_IMAGE
         self.car_sprites = []
         self.boarding_light_sprites = []

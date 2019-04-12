@@ -24,8 +24,6 @@ class SignalView(View):
 
         :param track:                           signal track number
         :param base_route:                      base route (train route part) which signal belongs to
-        :param red_signal_image                 texture for red signal state
-        :param green_signal_image               texture for green signal state
         """
         self.map_id = None
         self.on_update_map_id()
