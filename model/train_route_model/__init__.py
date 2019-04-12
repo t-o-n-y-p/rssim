@@ -273,4 +273,4 @@ class TrainRouteModel(Model):
         self.train_route_section_busy_state[section] = status
 
     def on_update_map_id(self):
-        self.map_id = 0
+        pass

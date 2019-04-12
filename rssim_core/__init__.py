@@ -19,7 +19,7 @@ from model.settings_model import SettingsModel
 from model.fps_model import FPSModel
 from model.scheduler_model.passenger_map_scheduler_model import PassengerMapSchedulerModel
 from model.signal_model.passenger_map_signal_model import PassengerMapSignalModel
-from model.train_route_model import TrainRouteModel
+from model.train_route_model.passenger_train_route_model import PassengerTrainRouteModel
 from model.railroad_switch_model.passenger_map_railroad_switch_model import PassengerMapRailroadSwitchModel
 from model.crossover_model.passenger_map_crossover_model import PassengerMapCrossoverModel
 from model.train_model.passenger_train_model import PassengerTrainModel
@@ -286,7 +286,7 @@ def _create_passenger_train_route(map_controller, track, train_route):
     :return:                        TrainRoute object controller
     """
     controller = PassengerTrainRouteController(map_controller, track, train_route)
-    model = TrainRouteModel(track, train_route)
+    model = PassengerTrainRouteModel(track, train_route)
     if model.opened:
         controller.parent_controller.on_set_trail_points(model.last_opened_by, model.trail_points_v2)
 
