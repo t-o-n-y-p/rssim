@@ -166,7 +166,7 @@ class SignalView(View):
                 self.signal_sprite.image = self.green_signal_image
 
     def on_update_map_id(self):
-        self.map_id = 0
+        pass
 
     def on_init_graphics(self):
         self.on_change_screen_resolution(self.screen_resolution)

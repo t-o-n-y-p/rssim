@@ -31,7 +31,7 @@ from view.map_view.passenger_map_view import PassengerMapView
 from view.settings_view import SettingsView
 from view.fps_view import FPSView
 from view.scheduler_view.passenger_map_scheduler_view import PassengerMapSchedulerView
-from view.signal_view import SignalView
+from view.signal_view.passenger_map_signal_view import PassengerMapSignalView
 from view.train_route_view import TrainRouteView
 from view.railroad_switch_view.passenger_map_railroad_switch_view import PassengerMapRailroadSwitchView
 from view.crossover_view.passenger_map_crossover_view import PassengerMapCrossoverView
@@ -265,7 +265,7 @@ def _create_passenger_map_signal(map_controller, track, base_route):
     """
     controller = PassengerMapSignalController(map_controller, track, base_route)
     model = PassengerMapSignalModel(track, base_route)
-    view = SignalView(track, base_route)
+    view = PassengerMapSignalView(track, base_route)
     controller.model = model
     model.controller = controller
     controller.view = view
