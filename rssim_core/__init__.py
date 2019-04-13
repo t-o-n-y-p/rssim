@@ -35,7 +35,7 @@ from view.signal_view.passenger_map_signal_view import PassengerMapSignalView
 from view.train_route_view.passenger_train_route_view import PassengerTrainRouteView
 from view.railroad_switch_view.passenger_map_railroad_switch_view import PassengerMapRailroadSwitchView
 from view.crossover_view.passenger_map_crossover_view import PassengerMapCrossoverView
-from view.train_view import TrainView
+from view.train_view.passenger_train_view import PassengerTrainView
 from view.dispatcher_view.passenger_map_dispatcher_view import PassengerMapDispatcherView
 from view.constructor_view.passenger_map_constructor_view import PassengerMapConstructorView
 from database import CONFIG_DB_CURSOR, USER_DB_CURSOR
@@ -354,7 +354,7 @@ def _create_passenger_train(map_controller, train_id):
     controller = PassengerTrainController(map_controller, train_id)
     model = PassengerTrainModel(train_id)
     model.on_train_setup(train_id)
-    view = TrainView(train_id)
+    view = PassengerTrainView(train_id)
     controller.model = model
     model.controller = controller
     controller.view = view

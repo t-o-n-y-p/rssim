@@ -1,5 +1,4 @@
 from logging import getLogger
-from ctypes import windll
 
 from model import *
 
@@ -67,15 +66,6 @@ class SettingsModel(Model):
         Deactivates the model.
         """
         self.is_activated = False
-
-    def on_change_screen_resolution(self, screen_resolution):
-        """
-        Updates screen resolution value. Notifies the view about screen resolution update.
-
-        :param screen_resolution:       new screen resolution
-        """
-        self.screen_resolution = screen_resolution
-        self.view.on_change_screen_resolution(self.screen_resolution)
 
     def on_save_and_commit_state(self):
         """

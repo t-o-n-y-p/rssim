@@ -61,7 +61,7 @@ class SettingsController(Controller):
 
         :param screen_resolution:       new screen resolution
         """
-        self.model.on_change_screen_resolution(screen_resolution)
+        self.view.on_change_screen_resolution(screen_resolution)
 
     def on_save_and_commit_state(self):
         """
