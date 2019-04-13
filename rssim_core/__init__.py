@@ -30,7 +30,7 @@ from view.game_view import GameView
 from view.map_view.passenger_map_view import PassengerMapView
 from view.settings_view import SettingsView
 from view.fps_view import FPSView
-from view.scheduler_view import SchedulerView
+from view.scheduler_view.passenger_map_scheduler_view import PassengerMapSchedulerView
 from view.signal_view import SignalView
 from view.train_route_view import TrainRouteView
 from view.railroad_switch_view.passenger_map_railroad_switch_view import PassengerMapRailroadSwitchView
@@ -244,7 +244,7 @@ def _create_passenger_map_scheduler(map_controller):
     """
     controller = PassengerMapSchedulerController(map_controller)
     model = PassengerMapSchedulerModel()
-    view = SchedulerView()
+    view = PassengerMapSchedulerView()
     controller.model = model
     model.controller = controller
     controller.view = view
