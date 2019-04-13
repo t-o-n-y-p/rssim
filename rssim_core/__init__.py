@@ -34,7 +34,7 @@ from view.scheduler_view import SchedulerView
 from view.signal_view import SignalView
 from view.train_route_view import TrainRouteView
 from view.railroad_switch_view import RailroadSwitchView
-from view.crossover_view import CrossoverView
+from view.crossover_view.passenger_map_crossover_view import PassengerMapCrossoverView
 from view.train_view import TrainView
 from view.dispatcher_view import DispatcherView
 from view.constructor_view.passenger_map_constructor_view import PassengerMapConstructorView
@@ -333,7 +333,7 @@ def _create_passenger_map_crossover(map_controller, track_param_1, track_param_2
     """
     controller = PassengerMapCrossoverController(map_controller, track_param_1, track_param_2, crossover_type)
     model = PassengerMapCrossoverModel(track_param_1, track_param_2, crossover_type)
-    view = CrossoverView(track_param_1, track_param_2, crossover_type)
+    view = PassengerMapCrossoverView(track_param_1, track_param_2, crossover_type)
     controller.model = model
     model.controller = controller
     controller.view = view
