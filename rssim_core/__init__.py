@@ -27,7 +27,7 @@ from model.dispatcher_model.passenger_map_dispatcher_model import PassengerMapDi
 from model.constructor_model.passenger_map_constructor_model import PassengerMapConstructorModel
 from view.app_view import AppView
 from view.game_view import GameView
-from view.map_view import MapView
+from view.map_view.passenger_map_view import PassengerMapView
 from view.settings_view import SettingsView
 from view.fps_view import FPSView
 from view.scheduler_view import SchedulerView
@@ -187,7 +187,7 @@ def _create_passenger_map(game):
         controller.crossovers_list.append(controller.crossovers[i[0]][i[1]][i[2]])
 
     model = PassengerMapModel()
-    view = MapView()
+    view = PassengerMapView()
     controller.model = model
     model.controller = controller
     controller.view = view

@@ -574,7 +574,7 @@ class MapView(View):
         self.map_view_shader.clear()
 
     def on_update_map_id(self):
-        self.map_id = 0
+        pass
 
     def on_init_graphics(self):
         self.on_recalculate_ui_properties(self.screen_resolution)
