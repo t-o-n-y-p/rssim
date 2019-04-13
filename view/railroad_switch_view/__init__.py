@@ -170,7 +170,7 @@ class RailroadSwitchView(View):
         self.on_change_base_offset(self.base_offset)
 
     def on_update_map_id(self):
-        self.map_id = 0
+        pass
 
     def on_init_graphics(self):
         self.on_change_screen_resolution(self.screen_resolution)
