@@ -102,33 +102,35 @@ class SignalView(View):
         :param new_base_offset:         new base offset
         """
         self.base_offset = new_base_offset
-        if self.zoom_out_activated:
-            x = self.base_offset[0] + self.position[0] // 2
-            y = self.base_offset[1] + self.position[1] // 2
-        else:
-            x = self.base_offset[0] + self.position[0]
-            y = self.base_offset[1] + self.position[1]
-
-        if x not in range(-10, self.screen_resolution[0] + 10) or y not in range(-10, self.screen_resolution[1] + 10):
-            if self.signal_sprite is not None:
-                self.signal_sprite.delete()
-                self.signal_sprite = None
-        else:
-            if self.signal_sprite is None:
-                if not self.locked:
-                    if self.state == 'red_signal':
-                        self.signal_sprite = Sprite(self.red_signal_image, x=x, y=y,
-                                                    batch=self.batches['main_batch'], group=self.groups['signal'])
-                    else:
-                        self.signal_sprite = Sprite(self.green_signal_image, x=x, y=y,
-                                                    batch=self.batches['main_batch'], group=self.groups['signal'])
-
-                    self.signal_sprite.scale = self.zoom_factor
-                    if self.flip_needed:
-                        self.signal_sprite.rotation = 180.0
-
+        if self.is_activated:
+            if self.zoom_out_activated:
+                x = self.base_offset[0] + self.position[0] // 2
+                y = self.base_offset[1] + self.position[1] // 2
             else:
-                self.signal_sprite.position = (x, y)
+                x = self.base_offset[0] + self.position[0]
+                y = self.base_offset[1] + self.position[1]
+
+            if x not in range(-10, self.screen_resolution[0] + 10) \
+                    or y not in range(-10, self.screen_resolution[1] + 10):
+                if self.signal_sprite is not None:
+                    self.signal_sprite.delete()
+                    self.signal_sprite = None
+            else:
+                if self.signal_sprite is None:
+                    if not self.locked:
+                        if self.state == 'red_signal':
+                            self.signal_sprite = Sprite(self.red_signal_image, x=x, y=y,
+                                                        batch=self.batches['main_batch'], group=self.groups['signal'])
+                        else:
+                            self.signal_sprite = Sprite(self.green_signal_image, x=x, y=y,
+                                                        batch=self.batches['main_batch'], group=self.groups['signal'])
+
+                        self.signal_sprite.scale = self.zoom_factor
+                        if self.flip_needed:
+                            self.signal_sprite.rotation = 180.0
+
+                else:
+                    self.signal_sprite.position = (x, y)
 
     def on_change_zoom_factor(self, zoom_factor, zoom_out_activated):
         """

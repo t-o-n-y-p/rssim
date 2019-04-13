@@ -106,27 +106,28 @@ class RailroadSwitchView(View):
         :param new_base_offset:         new base offset
         """
         self.base_offset = new_base_offset
-        if self.zoom_out_activated:
-            x = self.base_offset[0] + self.position[0] // 2
-            y = self.base_offset[1] + self.position[1] // 2
-        else:
-            x = self.base_offset[0] + self.position[0]
-            y = self.base_offset[1] + self.position[1]
-
-        if x not in range(-10 - self.images[self.current_position].width, self.screen_resolution[0] + 10) \
-                or y not in range(-10 - self.images[self.current_position].height, self.screen_resolution[1] + 10):
-            if self.sprite is not None:
-                self.sprite.delete()
-                self.sprite = None
-        else:
-            if self.sprite is None:
-                if not self.locked:
-                    self.sprite = Sprite(self.images[self.current_position], x=x, y=y, batch=self.batches['main_batch'],
-                                         group=self.groups['main_map'])
-                    self.sprite.scale = self.zoom_factor
-
+        if self.is_activated:
+            if self.zoom_out_activated:
+                x = self.base_offset[0] + self.position[0] // 2
+                y = self.base_offset[1] + self.position[1] // 2
             else:
-                self.sprite.position = (x, y)
+                x = self.base_offset[0] + self.position[0]
+                y = self.base_offset[1] + self.position[1]
+
+            if x not in range(-10 - self.images[self.current_position].width, self.screen_resolution[0] + 10) \
+                    or y not in range(-10 - self.images[self.current_position].height, self.screen_resolution[1] + 10):
+                if self.sprite is not None:
+                    self.sprite.delete()
+                    self.sprite = None
+            else:
+                if self.sprite is None:
+                    if not self.locked:
+                        self.sprite = Sprite(self.images[self.current_position], x=x, y=y, batch=self.batches['main_batch'],
+                                             group=self.groups['main_map'])
+                        self.sprite.scale = self.zoom_factor
+
+                else:
+                    self.sprite.position = (x, y)
 
     def on_change_screen_resolution(self, screen_resolution):
         """
