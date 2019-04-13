@@ -32,7 +32,7 @@ from view.settings_view import SettingsView
 from view.fps_view import FPSView
 from view.scheduler_view.passenger_map_scheduler_view import PassengerMapSchedulerView
 from view.signal_view.passenger_map_signal_view import PassengerMapSignalView
-from view.train_route_view import TrainRouteView
+from view.train_route_view.passenger_train_route_view import PassengerTrainRouteView
 from view.railroad_switch_view.passenger_map_railroad_switch_view import PassengerMapRailroadSwitchView
 from view.crossover_view.passenger_map_crossover_view import PassengerMapCrossoverView
 from view.train_view import TrainView
@@ -289,7 +289,7 @@ def _create_passenger_train_route(map_controller, track, train_route):
     if model.opened:
         controller.parent_controller.on_set_trail_points(model.last_opened_by, model.trail_points_v2)
 
-    view = TrainRouteView(track, train_route)
+    view = PassengerTrainRouteView(track, train_route)
     controller.model = model
     model.controller = controller
     controller.view = view
