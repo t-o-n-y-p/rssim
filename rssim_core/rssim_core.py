@@ -241,7 +241,8 @@ class RSSim:
                 self.app.on_update_fps(round(float(1/(time_4 - time_1))))
                 fps_timer = perf_counter()
 
-    def on_check_for_updates(self):
+    @staticmethod
+    def on_check_for_updates():
         """
         Checks user database version. If it is lower than current game version, it means user has just updated the app.
         All migration DB scripts need to be executed in chain, from earliest to latest, step by step.

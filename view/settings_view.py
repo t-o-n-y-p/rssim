@@ -1,5 +1,4 @@
 from logging import getLogger
-from ctypes import windll
 
 from pyglet.gl import GL_QUADS
 from pyshaders import from_files_names
