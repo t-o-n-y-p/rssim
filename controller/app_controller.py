@@ -229,3 +229,6 @@ class AppController(Controller):
         :param notification_state:              new notification state defined by player
         """
         self.game.on_change_enough_money_notification_state(notification_state)
+
+    def on_resume_game(self):
+        self.game.on_resume_game()

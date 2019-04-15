@@ -158,5 +158,9 @@
 	"enough_money_environment_notification_message_string": {
 		"en": "Return to the game and buy new environment for your station.",
 		"ru": "Вернись в игру и купи новое окружение для твоего вокзала."
+	},
+	"create_station_label_string": {
+		"en": "Create new station",
+		"ru": "Создать новую станцию"
 	}
 }
