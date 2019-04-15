@@ -36,7 +36,6 @@ class GameModel(Model):
         Activates the model and the view.
         """
         self.is_activated = True
-        self.on_activate_view()
 
     @model_is_active
     def on_deactivate(self):

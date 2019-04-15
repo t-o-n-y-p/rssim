@@ -12,8 +12,8 @@ class MainMenuView(View):
         def on_create_station(button):
             button.on_deactivate()
             self.controller.on_deactivate()
-            self.controller.parent_controller.on_activate_game_view()
             self.controller.parent_controller.on_resume_game()
+            self.controller.parent_controller.on_activate_game_view()
 
         super().__init__(logger=getLogger('root.app.main_menu.view'))
         self.create_station_button = CreateStationButton(on_click_action=on_create_station)
@@ -31,6 +31,7 @@ class MainMenuView(View):
         """
         self.is_activated = True
         self.create_station_button_label = Label(I18N_RESOURCES['create_station_label_string'][self.current_locale],
+                                                 font_name='Perfo', bold=True,
                                                  font_size=3 * self.bottom_bar_height // 8,
                                                  x=self.screen_resolution[0] // 2,
                                                  y=self.screen_resolution[1] // 2
@@ -65,8 +66,8 @@ class MainMenuView(View):
             self.create_station_button_label.y = medium_line
             self.create_station_button_label.font_size = 3 * self.bottom_bar_height // 8
 
-        self.create_station_button.on_size_changed((self.bottom_bar_height * 5, self.bottom_bar_height))
-        self.create_station_button.x_margin = self.screen_resolution[0] // 2 - self.bottom_bar_height * 5 // 2
+        self.create_station_button.on_size_changed((self.bottom_bar_height * 7, self.bottom_bar_height))
+        self.create_station_button.x_margin = self.screen_resolution[0] // 2 - self.bottom_bar_height * 7 // 2
         self.create_station_button.y_margin = medium_line - self.bottom_bar_height // 2
         for b in self.buttons:
             b.on_position_changed((b.x_margin, b.y_margin))

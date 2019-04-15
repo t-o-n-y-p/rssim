@@ -13,7 +13,7 @@ class MainMenuController(Controller):
         Notifies the view and Map view to update fade-in/fade-out animations.
         """
         self.view.on_update()
-        self.licenses.on_update_view()
+        # self.licenses.on_update_view()
 
     @controller_is_not_active
     def on_activate(self):
@@ -31,7 +31,7 @@ class MainMenuController(Controller):
         self.is_activated = False
         self.model.on_deactivate()
         self.view.on_deactivate()
-        self.licenses.on_deactivate()
+        # self.licenses.on_deactivate()
 
     def on_change_screen_resolution(self, screen_resolution):
         """
@@ -40,7 +40,7 @@ class MainMenuController(Controller):
         :param screen_resolution:       new screen resolution
         """
         self.view.on_change_screen_resolution(screen_resolution)
-        self.licenses.on_change_screen_resolution(screen_resolution)
+        # self.licenses.on_change_screen_resolution(screen_resolution)
 
     def on_activate_view(self):
         """
@@ -53,11 +53,11 @@ class MainMenuController(Controller):
         Deactivates the view and all child views if user either closed main menu screen or opened settings screen.
         """
         self.view.on_deactivate()
-        self.licenses.on_deactivate_view()
+        # self.licenses.on_deactivate_view()
 
     def on_apply_shaders_and_draw_vertices(self):
         """
         Notifies the view and child controllers to draw all sprites with shaders.
         """
         self.view.on_apply_shaders_and_draw_vertices()
-        self.licenses.on_apply_shaders_and_draw_vertices()
+        # self.licenses.on_apply_shaders_and_draw_vertices()

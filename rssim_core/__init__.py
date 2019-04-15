@@ -1,4 +1,5 @@
 from controller.app_controller import AppController
+from controller.main_menu_controller import MainMenuController
 from controller.game_controller import GameController
 from controller.map_controller.passenger_map_controller import PassengerMapController
 from controller.settings_controller import SettingsController
@@ -13,6 +14,7 @@ from controller.train_controller.passenger_train_controller import PassengerTrai
 from controller.dispatcher_controller.passenger_map_dispatcher_controller import PassengerMapDispatcherController
 from controller.constructor_controller.passenger_map_constructor_controller import PassengerMapConstructorController
 from model.app_model import AppModel
+from model.main_menu_model import MainMenuModel
 from model.game_model import GameModel
 from model.map_model.passenger_map_model import PassengerMapModel
 from model.settings_model import SettingsModel
@@ -26,6 +28,7 @@ from model.train_model.passenger_train_model import PassengerTrainModel
 from model.dispatcher_model.passenger_map_dispatcher_model import PassengerMapDispatcherModel
 from model.constructor_model.passenger_map_constructor_model import PassengerMapConstructorModel
 from view.app_view import AppView
+from view.main_menu_view import MainMenuView
 from view.game_view import GameView
 from view.map_view.passenger_map_view import PassengerMapView
 from view.settings_view import SettingsView
@@ -71,6 +74,7 @@ def create_app(loader):
     controller.view = view
     view.on_assign_controller(controller)
     model.view = view
+    controller.main_menu = _create_main_menu(controller)
     controller.game = _create_game(controller)
     controller.settings = _create_settings(controller)
     controller.fps = _create_fps(controller)
@@ -393,6 +397,18 @@ def _create_passenger_map_constructor(map_controller):
     controller = PassengerMapConstructorController(map_controller)
     model = PassengerMapConstructorModel()
     view = PassengerMapConstructorView()
+    controller.model = model
+    model.controller = controller
+    controller.view = view
+    view.on_assign_controller(controller)
+    model.view = view
+    return controller
+
+
+def _create_main_menu(app):
+    controller = MainMenuController(app)
+    model = MainMenuModel()
+    view = MainMenuView()
     controller.model = model
     model.controller = controller
     controller.view = view

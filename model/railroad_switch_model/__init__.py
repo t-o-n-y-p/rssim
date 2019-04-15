@@ -56,7 +56,6 @@ class RailroadSwitchModel(Model):
         Activates the model and the view.
         """
         self.is_activated = True
-        self.on_activate_view()
 
     def on_activate_view(self):
         """

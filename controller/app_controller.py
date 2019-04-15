@@ -20,6 +20,7 @@ class AppController(Controller):
         :param loader:                  RSSim class instance
         """
         super().__init__(logger=getLogger('root.app.controller'))
+        self.main_menu = None
         self.game = None
         self.settings = None
         self.fps = None
@@ -30,6 +31,7 @@ class AppController(Controller):
         Notifies the view, Game view and Settings view to update fade-in/fade-out animations.
         """
         self.view.on_update()
+        self.main_menu.on_update_view()
         self.game.on_update_view()
         self.settings.on_update_view()
 
@@ -39,11 +41,10 @@ class AppController(Controller):
         Activates App object: controller and model. Model activates the view if necessary.
         When App object is activated, we also activate Game object
         (because game process is started right away) and FPS object (to display FPS counter).
-        TODO adjust this behavior when main menu will be implemented:
-            Game object will not be activated by default anymore, Main menu object will be activated instead
         """
         self.is_activated = True
         self.model.on_activate()
+        self.main_menu.on_activate()
         self.game.on_activate()
         self.fps.on_activate()
 
@@ -55,6 +56,7 @@ class AppController(Controller):
         self.is_activated = False
         self.model.on_deactivate()
         self.view.on_deactivate()
+        self.main_menu.on_deactivate()
         self.game.on_deactivate()
         self.settings.on_deactivate()
         self.fps.on_deactivate()
@@ -100,6 +102,7 @@ class AppController(Controller):
         :param screen_resolution:       new screen resolution
         """
         self.view.on_change_screen_resolution(screen_resolution)
+        self.main_menu.on_change_screen_resolution(screen_resolution)
         self.game.on_change_screen_resolution(screen_resolution)
         self.settings.on_change_screen_resolution(screen_resolution)
         self.fps.on_change_screen_resolution(screen_resolution)
@@ -118,7 +121,7 @@ class AppController(Controller):
         Notifies Game controller to activate the main menu screen
         in case the settings screen was opened from main menu screen and then user closes settings screen.
         """
-        pass
+        self.main_menu.on_activate_view()
 
     def on_activate_game_view(self):
         """
@@ -136,6 +139,9 @@ class AppController(Controller):
         if self.game.view.is_activated:
             self.game.on_deactivate_view()
             self.settings.navigated_from_game = True
+        elif self.main_menu.view.is_activated:
+            self.main_menu.on_deactivate_view()
+            self.settings.navigated_from_main_menu = True
 
     def on_activate_open_settings_button(self):
         """
@@ -167,6 +173,7 @@ class AppController(Controller):
         """
         self.model.on_save_and_commit_locale(new_locale)
         self.view.on_update_current_locale(new_locale)
+        self.main_menu.on_update_current_locale(new_locale)
         self.game.on_update_current_locale(new_locale)
         self.settings.on_update_current_locale(new_locale)
         self.fps.on_update_current_locale(new_locale)

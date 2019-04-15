@@ -38,15 +38,14 @@ class MapModel(Model):
         Activates the model and the view.
         """
         self.is_activated = True
-        self.user_db_cursor.execute('SELECT map_id FROM graphics')
-        if self.map_id == self.user_db_cursor.fetchone()[0]:
-            self.on_activate_view()
 
     def on_activate_view(self):
         """
         Activates the view.
         """
-        self.view.on_activate()
+        self.user_db_cursor.execute('SELECT map_id FROM graphics')
+        if self.map_id == self.user_db_cursor.fetchone()[0]:
+            self.view.on_activate()
 
     @model_is_active
     def on_deactivate(self):
