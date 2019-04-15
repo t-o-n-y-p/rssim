@@ -281,12 +281,14 @@ class GameView(View):
         for b in self.buttons:
             b.on_position_changed((b.x_margin, b.y_margin))
 
+    @view_is_active
     def on_pause_game(self):
         """
         Reserved for future use.
         """
         pass
 
+    @view_is_active
     def on_resume_game(self):
         """
         Reserved for future use.

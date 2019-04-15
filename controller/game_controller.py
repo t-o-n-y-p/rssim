@@ -40,7 +40,7 @@ class GameController(Controller):
     @controller_is_active
     def on_deactivate(self):
         """
-        Deactivates App object: controller, view and model. Also deactivates all child objects.
+        Deactivates Game object: controller, view and model. Also deactivates all child objects.
         """
         self.is_activated = False
         self.model.on_deactivate()

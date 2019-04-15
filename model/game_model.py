@@ -21,7 +21,7 @@ class GameModel(Model):
 
         """
         super().__init__(logger=getLogger('root.app.game.model'))
-        self.game_paused = False
+        self.game_paused = True
         self.user_db_cursor.execute('SELECT game_time FROM epoch_timestamp')
         self.game_time = self.user_db_cursor.fetchone()[0]
         self.user_db_cursor.execute('SELECT level, exp, money, money_target FROM game_progress')
