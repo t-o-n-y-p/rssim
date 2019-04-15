@@ -69,4 +69,4 @@ class MainMenuController(Controller):
         :param new_locale:                      selected locale
         """
         self.view.on_update_current_locale(new_locale)
-        # self.licenses..on_update_current_locale(new_locale)
+        # self.licenses.on_update_current_locale(new_locale)

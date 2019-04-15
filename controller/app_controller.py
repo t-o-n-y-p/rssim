@@ -162,6 +162,7 @@ class AppController(Controller):
         Notifies the view and child controllers to draw all sprites with shaders.
         """
         self.view.on_apply_shaders_and_draw_vertices()
+        self.main_menu.on_apply_shaders_and_draw_vertices()
         self.settings.on_apply_shaders_and_draw_vertices()
         self.game.on_apply_shaders_and_draw_vertices()
 
