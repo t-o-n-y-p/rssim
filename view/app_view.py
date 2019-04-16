@@ -14,7 +14,6 @@ from ui.button.close_game_button import CloseGameButton
 from ui.button.iconify_button import IconifyButton
 from ui.button.fullscreen_button import FullscreenButton
 from ui.button.restore_button import RestoreButton
-from ui.button.open_settings_button import OpenSettingsButton
 from ui.button.en_locale_button import ENLocaleButton
 from ui.button.ru_locale_button import RULocaleButton
 from textures import FLAG_RU, FLAG_GB
@@ -98,16 +97,6 @@ class AppView(View):
             button.paired_button.on_activate()
             self.controller.on_restore_button_click()
 
-        def on_open_settings(button):
-            """
-            Deactivates settings button.
-            Notifies controller that player has opened settings screen.
-
-            :param button:                      button that was clicked
-            """
-            button.on_deactivate()
-            self.controller.settings.on_activate()
-
         def on_set_en_locale(button):
             """
             Turns on EN locale and notifies controller to update and save current locale.
@@ -134,14 +123,12 @@ class AppView(View):
         self.fullscreen_button, self.restore_button \
             = create_two_state_button(FullscreenButton(on_click_action=on_app_window_fullscreen),
                                       RestoreButton(on_click_action=on_app_window_restore))
-        self.open_settings_button = OpenSettingsButton(on_click_action=on_open_settings)
         self.en_locale_button = ENLocaleButton(on_click_action=on_set_en_locale)
         self.ru_locale_button = RULocaleButton(on_click_action=on_set_ru_locale)
         self.buttons.append(self.close_game_button)
         self.buttons.append(self.iconify_button)
         self.buttons.append(self.fullscreen_button)
         self.buttons.append(self.restore_button)
-        self.buttons.append(self.open_settings_button)
         self.buttons.append(self.en_locale_button)
         self.buttons.append(self.ru_locale_button)
         self.app_window_move_mode = False
@@ -236,9 +223,6 @@ class AppView(View):
         self.iconify_button.x_margin = self.screen_resolution[0] - self.top_bar_height * 3 + 4
         self.iconify_button.y_margin = self.screen_resolution[1] - self.top_bar_height
         self.iconify_button.on_size_changed((self.top_bar_height, self.top_bar_height))
-        self.open_settings_button.x_margin = self.screen_resolution[0] - self.bottom_bar_height
-        self.open_settings_button.y_margin = 0
-        self.open_settings_button.on_size_changed((self.bottom_bar_height, self.bottom_bar_height))
         self.en_locale_button.x_margin = 0
         self.en_locale_button.y_margin = self.screen_resolution[1] - self.top_bar_height
         self.en_locale_button.on_size_changed((self.top_bar_height, self.top_bar_height))

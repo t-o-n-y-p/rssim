@@ -143,11 +143,11 @@ class AppController(Controller):
             self.main_menu.on_deactivate_view()
             self.settings.navigated_from_main_menu = True
 
-    def on_activate_open_settings_button(self):
-        """
-        Activates Open settings button back when user closes settings screen.
-        """
-        self.view.open_settings_button.on_activate()
+    # def on_activate_open_settings_button(self):
+    #     """
+    #     Activates Open settings button back when user closes settings screen.
+    #     """
+    #     self.view.open_settings_button.on_activate()
 
     def on_update_fps(self, fps):
         """

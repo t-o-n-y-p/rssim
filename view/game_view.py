@@ -9,6 +9,7 @@ from pyshaders import from_files_names
 
 from view import *
 from ui.button import create_two_state_button
+from ui.button.open_settings_button import OpenSettingsButton
 from ui.button.pause_game_button import PauseGameButton
 from ui.button.resume_game_button import ResumeGameButton
 from notifications.level_up_notification import LevelUpNotification
@@ -79,6 +80,16 @@ class GameView(View):
             button.paired_button.on_activate()
             self.controller.on_resume_game()
 
+        def on_open_settings(button):
+            """
+            Deactivates settings button.
+            Notifies controller that player has opened settings screen.
+
+            :param button:                      button that was clicked
+            """
+            button.on_deactivate()
+            self.controller.parent_controller.settings.on_activate()
+
         super().__init__(logger=getLogger('root.app.game.view'))
         self.game_frame_opacity = 0
         self.progress_bar_inactive_image = load('img/game_progress_bars/progress_bar_inactive.png')
@@ -94,8 +105,10 @@ class GameView(View):
         self.pause_game_button, self.resume_game_button \
             = create_two_state_button(PauseGameButton(on_click_action=on_pause_game),
                                       ResumeGameButton(on_click_action=on_resume_game))
+        self.open_settings_button = OpenSettingsButton(on_click_action=on_open_settings)
         self.buttons.append(self.pause_game_button)
         self.buttons.append(self.resume_game_button)
+        self.buttons.append(self.open_settings_button)
         add_font('perfo-bold.ttf')
         self.time_label = None
         self.level_label = None
@@ -272,6 +285,9 @@ class GameView(View):
             self.game_view_shader_sprite.vertices = (-1.0, -1.0, -1.0, self.game_view_shader_upper_limit,
                                                      1.0, self.game_view_shader_upper_limit, 1.0, -1.0)
 
+        self.open_settings_button.x_margin = self.screen_resolution[0] - self.bottom_bar_height
+        self.open_settings_button.y_margin = 0
+        self.open_settings_button.on_size_changed((self.bottom_bar_height, self.bottom_bar_height))
         self.pause_game_button.x_margin = self.screen_resolution[0] - 9 * self.bottom_bar_height // 2
         self.pause_game_button.y_margin = 0
         self.resume_game_button.x_margin = self.screen_resolution[0] - 9 * self.bottom_bar_height // 2
