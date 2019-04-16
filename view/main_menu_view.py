@@ -6,6 +6,7 @@ from pyshaders import from_files_names
 
 from view import *
 from ui.button.create_station_button import CreateStationButton
+from ui.button.open_license_button import OpenLicenseButton
 from i18n import I18N_RESOURCES
 
 
@@ -17,10 +18,15 @@ class MainMenuView(View):
             self.controller.parent_controller.on_resume_game()
             self.controller.parent_controller.on_activate_game_view()
 
+        def on_open_license(button):
+            button.on_deactivate()
+            # self.controller.on_open_license()
+
         super().__init__(logger=getLogger('root.app.main_menu.view'))
         self.main_menu_opacity = 0
         self.create_station_button = CreateStationButton(on_click_action=on_create_station)
-        self.buttons = [self.create_station_button, ]
+        self.open_license_button = OpenLicenseButton(on_click_action=on_open_license)
+        self.buttons = [self.create_station_button, self.open_license_button]
         self.create_station_button_label = None
         self.main_menu_view_shader = from_files_names('shaders/shader.vert', 'shaders/main_menu_view/shader.frag')
         self.main_menu_view_shader_sprite = None
@@ -86,6 +92,7 @@ class MainMenuView(View):
             self.create_station_button_label.y = medium_line
             self.create_station_button_label.font_size = 3 * self.bottom_bar_height // 8
 
+        self.open_license_button.on_size_changed((self.bottom_bar_height, self.bottom_bar_height))
         self.create_station_button.on_size_changed((self.bottom_bar_height * 7, self.bottom_bar_height))
         self.create_station_button.x_margin = self.screen_resolution[0] // 2 - self.bottom_bar_height * 7 // 2
         self.create_station_button.y_margin = medium_line - self.bottom_bar_height // 2

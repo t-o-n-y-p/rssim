@@ -9,7 +9,7 @@ from pyshaders import from_files_names
 
 from view import *
 from ui.button import create_two_state_button
-from ui.button.open_settings_button import OpenSettingsButton
+from ui.button.open_settings_game_view_button import OpenSettingsGameViewButton
 from ui.button.pause_game_button import PauseGameButton
 from ui.button.resume_game_button import ResumeGameButton
 from notifications.level_up_notification import LevelUpNotification
@@ -105,7 +105,7 @@ class GameView(View):
         self.pause_game_button, self.resume_game_button \
             = create_two_state_button(PauseGameButton(on_click_action=on_pause_game),
                                       ResumeGameButton(on_click_action=on_resume_game))
-        self.open_settings_button = OpenSettingsButton(on_click_action=on_open_settings)
+        self.open_settings_button = OpenSettingsGameViewButton(on_click_action=on_open_settings)
         self.buttons.append(self.pause_game_button)
         self.buttons.append(self.resume_game_button)
         self.buttons.append(self.open_settings_button)
