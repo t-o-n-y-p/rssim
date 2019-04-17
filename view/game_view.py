@@ -91,7 +91,6 @@ class GameView(View):
             self.controller.parent_controller.settings.on_activate()
 
         super().__init__(logger=getLogger('root.app.game.view'))
-        self.game_frame_opacity = 0
         self.progress_bar_inactive_image = load('img/game_progress_bars/progress_bar_inactive.png')
         self.progress_bar_exp_inactive = None
         self.progress_bar_money_inactive = None
@@ -131,16 +130,16 @@ class GameView(View):
         """
         Updates fade-in/fade-out animations.
         """
-        if self.is_activated and self.game_frame_opacity < 255:
-            self.game_frame_opacity += 15
+        if self.is_activated and self.opacity < 255:
+            self.opacity += 15
             self.progress_bar_exp_inactive.opacity += 15
             self.progress_bar_exp_active.opacity += 15
             self.progress_bar_money_inactive.opacity += 15
             self.progress_bar_money_active.opacity += 15
 
-        if not self.is_activated and self.game_frame_opacity > 0:
-            self.game_frame_opacity -= 15
-            if self.game_frame_opacity <= 0:
+        if not self.is_activated and self.opacity > 0:
+            self.opacity -= 15
+            if self.opacity <= 0:
                 self.game_view_shader_sprite.delete()
                 self.game_view_shader_sprite = None
 
@@ -445,7 +444,7 @@ class GameView(View):
         """
         self.enough_money_notification_enabled = notification_state
 
-    @game_frame_opacity_exists
+    @non_zero_opacity
     def on_apply_shaders_and_draw_vertices(self):
         """
         Activates the shader, initializes all shader uniforms, draws shader sprite and deactivates the shader.
@@ -453,7 +452,7 @@ class GameView(View):
         self.game_view_shader.use()
         self.game_view_shader.uniforms.screen_resolution = self.screen_resolution
         self.game_view_shader.uniforms.bottom_bar_height = self.bottom_bar_height
-        self.game_view_shader.uniforms.game_frame_opacity = self.game_frame_opacity
+        self.game_view_shader.uniforms.game_frame_opacity = self.opacity
         self.game_view_shader_sprite.draw(GL_QUADS)
         self.game_view_shader.clear()
 

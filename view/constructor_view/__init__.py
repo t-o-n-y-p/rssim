@@ -89,7 +89,6 @@ class ConstructorView(View):
         self.map_id = None
         self.on_update_map_id()
         super().__init__(logger=getLogger(f'root.app.game.map.{self.map_id}.constructor.view'))
-        self.constructor_opacity = 0
         self.construction_state_matrix = None
         self.money = 0
         self.close_constructor_button = CloseConstructorButton(on_click_action=on_close_constructor)
@@ -167,8 +166,8 @@ class ConstructorView(View):
         Not all sprites are created at once, they are created one by one to avoid massive FPS drop.
         """
         if self.is_activated:
-            if self.constructor_opacity < 255:
-                self.constructor_opacity += 15
+            if self.opacity < 255:
+                self.opacity += 15
 
             remaining_tracks = sorted(list(self.construction_state_matrix[TRACKS].keys()))
             for j in range(min(len(remaining_tracks), CONSTRUCTOR_VIEW_TRACK_CELLS)):
@@ -211,9 +210,9 @@ class ConstructorView(View):
                     return
 
         if not self.is_activated:
-            if self.constructor_opacity > 0:
-                self.constructor_opacity -= 15
-                if self.constructor_opacity <= 0:
+            if self.opacity > 0:
+                self.opacity -= 15
+                if self.opacity <= 0:
                     self.constructor_view_shader_sprite.delete()
                     self.constructor_view_shader_sprite = None
 
@@ -423,14 +422,14 @@ class ConstructorView(View):
         """
         self.construction_completed_notification_enabled = notification_state
 
-    @constructor_opacity_exists
+    @non_zero_opacity
     def on_apply_shaders_and_draw_vertices(self):
         """
         Activates the shader, initializes all shader uniforms, draws shader sprite and deactivates the shader.
         """
         self.constructor_view_shader.use()
         self.constructor_view_shader.uniforms.screen_resolution = self.screen_resolution
-        self.constructor_view_shader.uniforms.constructor_opacity = self.constructor_opacity
+        self.constructor_view_shader.uniforms.constructor_opacity = self.opacity
         cell_x = []
         cell_y = []
         cell_w = []

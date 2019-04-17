@@ -23,7 +23,6 @@ class MainMenuView(View):
             # self.controller.on_open_license()
 
         super().__init__(logger=getLogger('root.app.main_menu.view'))
-        self.main_menu_opacity = 0
         self.create_station_button = CreateStationButton(on_click_action=on_create_station)
         self.open_license_button = OpenLicenseButton(on_click_action=on_open_license)
         self.buttons = [self.create_station_button, self.open_license_button]
@@ -39,11 +38,11 @@ class MainMenuView(View):
         """
         Updates fade-in/fade-out animations.
         """
-        if self.is_activated and self.main_menu_opacity < 255:
-            self.main_menu_opacity += 15
+        if self.is_activated and self.opacity < 255:
+            self.opacity += 15
 
-        if not self.is_activated and self.main_menu_opacity > 0:
-            self.main_menu_opacity -= 15
+        if not self.is_activated and self.opacity > 0:
+            self.opacity -= 15
 
     @view_is_not_active
     def on_activate(self):
@@ -109,13 +108,13 @@ class MainMenuView(View):
         if self.is_activated:
             self.create_station_button_label.text = I18N_RESOURCES['create_station_label_string'][self.current_locale]
 
-    @main_menu_opacity_exists
+    @non_zero_opacity
     def on_apply_shaders_and_draw_vertices(self):
         """
         Activates the shader, initializes all shader uniforms, draws shader sprite and deactivates the shader.
         """
         self.main_menu_view_shader.use()
-        self.main_menu_view_shader.uniforms.main_menu_opacity = self.main_menu_opacity
+        self.main_menu_view_shader.uniforms.main_menu_opacity = self.opacity
         is_button_activated = []
         button_x = []
         button_y = []

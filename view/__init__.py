@@ -240,52 +240,12 @@ def construction_completed_notification_enabled(fn):
     return _send_notification_if_construction_completed_notification_enabled
 
 
-def game_frame_opacity_exists(fn):
-    def _handle_if_game_frame_opacity_is_positive(*args, **kwargs):
-        if args[0].game_frame_opacity > 0:
+def non_zero_opacity(fn):
+    def _handle_if_opacity_is_positive(*args, **kwargs):
+        if args[0].opacity > 0:
             fn(*args, **kwargs)
 
-    return _handle_if_game_frame_opacity_is_positive
-
-
-def map_opacity_exists(fn):
-    def _handle_if_map_opacity_is_positive(*args, **kwargs):
-        if args[0].map_opacity > 0:
-            fn(*args, **kwargs)
-
-    return _handle_if_map_opacity_is_positive
-
-
-def schedule_opacity_exists(fn):
-    def _handle_if_schedule_opacity_is_positive(*args, **kwargs):
-        if args[0].schedule_opacity > 0:
-            fn(*args, **kwargs)
-
-    return _handle_if_schedule_opacity_is_positive
-
-
-def constructor_opacity_exists(fn):
-    def _handle_if_constructor_opacity_is_positive(*args, **kwargs):
-        if args[0].constructor_opacity > 0:
-            fn(*args, **kwargs)
-
-    return _handle_if_constructor_opacity_is_positive
-
-
-def settings_opacity_exists(fn):
-    def _handle_if_settings_opacity_is_positive(*args, **kwargs):
-        if args[0].settings_opacity > 0:
-            fn(*args, **kwargs)
-
-    return _handle_if_settings_opacity_is_positive
-
-
-def main_menu_opacity_exists(fn):
-    def _handle_if_main_menu_opacity_is_positive(*args, **kwargs):
-        if args[0].main_menu_opacity > 0:
-            fn(*args, **kwargs)
-
-    return _handle_if_main_menu_opacity_is_positive
+    return _handle_if_opacity_is_positive
 
 
 # --------------------- CONSTANTS ---------------------
@@ -339,6 +299,7 @@ class View:
         self.batches = BATCHES
         self.groups = GROUPS
         self.is_activated = False
+        self.opacity = 0
         self.buttons = []
         self.on_mouse_press_handlers = []
         self.on_mouse_release_handlers = []

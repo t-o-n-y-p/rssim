@@ -138,7 +138,6 @@ class MapView(View):
         self.mini_environment_sprite = None
         self.is_mini_map_activated = False
         self.mini_map_timer = 0.0
-        self.map_opacity = 0
         self.mini_map_opacity = 0
         self.mini_map_width = 0
         self.mini_map_height = 0
@@ -177,14 +176,14 @@ class MapView(View):
         """
         Updates fade-in/fade-out animations.
         """
-        if self.is_activated and self.map_opacity < 255:
-            self.map_opacity += 15
+        if self.is_activated and self.opacity < 255:
+            self.opacity += 15
             self.main_map_sprite.opacity += 15
             self.environment_sprite.opacity += 15
 
-        if not self.is_activated and self.map_opacity > 0:
-            self.map_opacity -= 15
-            if self.map_opacity <= 0:
+        if not self.is_activated and self.opacity > 0:
+            self.opacity -= 15
+            if self.opacity <= 0:
                 self.map_view_shader_sprite.delete()
                 self.map_view_shader_sprite = None
 
@@ -546,13 +545,13 @@ class MapView(View):
 
         self.mini_map_offset = (0, (MAP_HEIGHT - self.main_map.height) // 2)
 
-    @map_opacity_exists
+    @non_zero_opacity
     def on_apply_shaders_and_draw_vertices(self):
         """
         Activates the shader, initializes all shader uniforms, draws shader sprite and deactivates the shader.
         """
         self.map_view_shader.use()
-        self.map_view_shader.uniforms.map_opacity = self.map_opacity
+        self.map_view_shader.uniforms.map_opacity = self.opacity
         self.map_view_shader.uniforms.is_button_activated \
             = [int(self.zoom_in_button.is_activated or self.zoom_out_button.is_activated), ]
         self.map_view_shader.uniforms.button_x \

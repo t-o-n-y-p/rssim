@@ -49,7 +49,6 @@ class SchedulerView(View):
         self.map_id = None
         self.on_update_map_id()
         super().__init__(logger=getLogger(f'root.app.game.map.{self.map_id}.scheduler.view'))
-        self.schedule_opacity = 0
         self.schedule_left_caption_position = (0, 0)
         self.schedule_right_caption_position = (0, 0)
         self.schedule_caption_font_size = 0
@@ -127,8 +126,8 @@ class SchedulerView(View):
         Not all sprites are created at once, they are created one by one to avoid massive FPS drop.
         """
         if self.is_activated:
-            if self.schedule_opacity < 255:
-                self.schedule_opacity += 15
+            if self.opacity < 255:
+                self.opacity += 15
 
             for i in range(min(len(self.base_schedule), SCHEDULE_ROWS * SCHEDULE_COLUMNS)):
                 if not self.schedule_rows[i // SCHEDULE_ROWS][i % SCHEDULE_ROWS].is_activated:
@@ -136,9 +135,9 @@ class SchedulerView(View):
                     self.schedule_rows[i // SCHEDULE_ROWS][i % SCHEDULE_ROWS].on_assign_data(self.base_schedule[i])
                     break
 
-        if not self.is_activated and self.schedule_opacity > 0:
-            self.schedule_opacity -= 15
-            if self.schedule_opacity <= 0:
+        if not self.is_activated and self.opacity > 0:
+            self.opacity -= 15
+            if self.opacity <= 0:
                 self.scheduler_view_shader_sprite.delete()
                 self.scheduler_view_shader_sprite = None
 
@@ -235,14 +234,14 @@ class SchedulerView(View):
             for j in range(SCHEDULE_ROWS):
                 self.schedule_rows[i][j].on_update_current_locale(new_locale)
 
-    @schedule_opacity_exists
+    @non_zero_opacity
     def on_apply_shaders_and_draw_vertices(self):
         """
         Activates the shader, initializes all shader uniforms, draws shader sprite and deactivates the shader.
         """
         self.scheduler_view_shader.use()
         self.scheduler_view_shader.uniforms.screen_resolution = self.screen_resolution
-        self.scheduler_view_shader.uniforms.schedule_opacity = self.schedule_opacity
+        self.scheduler_view_shader.uniforms.schedule_opacity = self.opacity
         self.scheduler_view_shader_sprite.draw(GL_QUADS)
         self.scheduler_view_shader.clear()
 

@@ -149,7 +149,6 @@ class SettingsView(View):
                                                                   on_update_construction_completed_notifications_state,
                                                                   on_update_enough_money_notifications_state])
         self.temp_log_level = 0
-        self.settings_opacity = 0
         self.config_db_cursor.execute('''SELECT app_width, app_height FROM screen_resolution_config 
                                          WHERE manual_setup = 1 AND app_width <= ?''',
                                       (windll.user32.GetSystemMetrics(0),))
@@ -174,12 +173,12 @@ class SettingsView(View):
         """
         Updates fade-in/fade-out animations.
         """
-        if self.is_activated and self.settings_opacity < 255:
-            self.settings_opacity += 15
+        if self.is_activated and self.opacity < 255:
+            self.opacity += 15
 
-        if not self.is_activated and self.settings_opacity > 0:
-            self.settings_opacity -= 15
-            if self.settings_opacity <= 0:
+        if not self.is_activated and self.opacity > 0:
+            self.opacity -= 15
+            if self.opacity <= 0:
                 self.settings_view_shader_sprite.delete()
                 self.settings_view_shader_sprite = None
 
@@ -260,13 +259,13 @@ class SettingsView(View):
         self.display_fps_checkbox.on_update_current_locale(new_locale)
         self.notifications_checkbox_group.on_update_current_locale(new_locale)
 
-    @settings_opacity_exists
+    @non_zero_opacity
     def on_apply_shaders_and_draw_vertices(self):
         """
         Activates the shader, initializes all shader uniforms, draws shader sprite and deactivates the shader.
         """
         self.settings_view_shader.use()
-        self.settings_view_shader.uniforms.settings_opacity = self.settings_opacity
+        self.settings_view_shader.uniforms.settings_opacity = self.opacity
         is_button_activated = []
         button_x = []
         button_y = []
