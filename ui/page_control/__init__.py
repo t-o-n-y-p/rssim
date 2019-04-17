@@ -74,7 +74,7 @@ class PageControl:
 
         if self.is_activated:
             self.current_page_label.x = self.screen_resolution[0] // 2
-            self.current_page_label.y = self.position[0] + bottom_bar_height // 4
+            self.current_page_label.y = self.position[1] + bottom_bar_height // 4
             self.current_page_label.font_size \
                 = int(self.previous_page_button.base_font_size_property * bottom_bar_height // 2)
 

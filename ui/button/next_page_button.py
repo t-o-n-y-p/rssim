@@ -5,7 +5,7 @@ from ui.button import Button
 
 class NextPageButton(Button):
     """
-    Implements "next" button for page controls.
+    Implements "next" button for license_page controls.
     For properties definition see base Button class.
     """
     def __init__(self, on_click_action):

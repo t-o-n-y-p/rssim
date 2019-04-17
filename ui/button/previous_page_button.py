@@ -5,7 +5,7 @@ from ui.button import Button
 
 class PreviousPageButton(Button):
     """
-    Implements "previous" button for page controls.
+    Implements "previous" button for license_page controls.
     For properties definition see base Button class.
     """
     def __init__(self, on_click_action):
