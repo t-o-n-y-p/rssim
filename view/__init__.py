@@ -306,6 +306,7 @@ class View:
         self.on_mouse_motion_handlers = []
         self.on_mouse_drag_handlers = []
         self.on_mouse_leave_handlers = []
+        self.on_mouse_scroll_handlers = []
         self.config_db_cursor.execute('SELECT app_width, app_height FROM screen_resolution_config')
         screen_resolution_config = self.config_db_cursor.fetchall()
         monitor_resolution_config = (windll.user32.GetSystemMetrics(0), windll.user32.GetSystemMetrics(1))
@@ -375,7 +376,8 @@ class View:
                                            on_mouse_press_handlers=self.on_mouse_press_handlers,
                                            on_mouse_release_handlers=self.on_mouse_release_handlers,
                                            on_mouse_drag_handlers=self.on_mouse_drag_handlers,
-                                           on_mouse_leave_handlers=self.on_mouse_leave_handlers)
+                                           on_mouse_leave_handlers=self.on_mouse_leave_handlers,
+                                           on_mouse_scroll_handlers=self.on_mouse_scroll_handlers)
         # appends button handlers
         self.controller.on_append_handlers(on_mouse_motion_handlers=on_mouse_motion_handlers,
                                            on_mouse_press_handlers=on_mouse_press_handlers,

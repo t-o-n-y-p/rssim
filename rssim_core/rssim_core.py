@@ -217,6 +217,21 @@ class RSSim:
             for h in self.app.on_mouse_leave_handlers:
                 h(x, y)
 
+        @SURFACE.event
+        def on_mouse_scroll(x, y, scroll_x, scroll_y):
+            """
+            Implements on_mouse_scroll event handler for surface. Handler is attached using @surface.event decoration.
+            Event is fired when user scrolls the mouse wheel.
+            This handler simply triggers all existing on_mouse_scroll handlers.
+
+            :param x:               mouse cursor X position
+            :param y:               mouse cursor Y position
+            :param scroll_x:        number of “clicks” the horizontal wheel moved
+            :param scroll_y:        number of “clicks” the vertical wheel moved
+            """
+            for h in self.app.on_mouse_scroll_handlers:
+                h(x, y, scroll_x, scroll_y)
+
     def run(self):
         """
         Implements main game loop.

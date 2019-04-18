@@ -103,6 +103,7 @@ class Controller:
         self.on_mouse_motion_handlers = []
         self.on_mouse_drag_handlers = []
         self.on_mouse_leave_handlers = []
+        self.on_mouse_scroll_handlers = []
 
     def on_update_view(self):
         """
@@ -129,7 +130,7 @@ class Controller:
 
     def on_append_handlers(self, on_mouse_motion_handlers=None, on_mouse_press_handlers=None,
                            on_mouse_release_handlers=None, on_mouse_drag_handlers=None,
-                           on_mouse_leave_handlers=None):
+                           on_mouse_leave_handlers=None, on_mouse_scroll_handlers=None):
         """
         When view is created, we need to append handlers from its buttons and view itself
         to controller and all parent controllers up to App object controller
@@ -156,6 +157,9 @@ class Controller:
         if on_mouse_leave_handlers is not None:
             self.on_mouse_leave_handlers.extend(on_mouse_leave_handlers)
 
+        if on_mouse_scroll_handlers is not None:
+            self.on_mouse_scroll_handlers.extend(on_mouse_scroll_handlers)
+
         # little recursive pattern there: it stops as soon as reaches
         # App object controller (App object does not have parent objects)
         if self.parent_controller is not None:
@@ -163,11 +167,12 @@ class Controller:
                                                       on_mouse_press_handlers=on_mouse_press_handlers,
                                                       on_mouse_release_handlers=on_mouse_release_handlers,
                                                       on_mouse_drag_handlers=on_mouse_drag_handlers,
-                                                      on_mouse_leave_handlers=on_mouse_leave_handlers)
+                                                      on_mouse_leave_handlers=on_mouse_leave_handlers,
+                                                      on_mouse_scroll_handlers=on_mouse_scroll_handlers)
 
     def on_detach_handlers(self, on_mouse_motion_handlers=None, on_mouse_press_handlers=None,
                            on_mouse_release_handlers=None, on_mouse_drag_handlers=None,
-                           on_mouse_leave_handlers=None):
+                           on_mouse_leave_handlers=None, on_mouse_scroll_handlers=None):
         """
         When handlers should no longer be executed (e.g. button was removed permanently),
         we need to detach handlers from controller and all parent controllers up to App object controller
@@ -199,6 +204,10 @@ class Controller:
             for handler in on_mouse_leave_handlers:
                 self.on_mouse_leave_handlers.remove(handler)
 
+        if on_mouse_scroll_handlers is not None:
+            for handler in on_mouse_scroll_handlers:
+                self.on_mouse_scroll_handlers.remove(handler)
+
         # little recursive pattern there: it stops as soon as reaches
         # App object controller (App object does not have parent objects)
         if self.parent_controller is not None:
@@ -206,7 +215,8 @@ class Controller:
                                                       on_mouse_press_handlers=on_mouse_press_handlers,
                                                       on_mouse_release_handlers=on_mouse_release_handlers,
                                                       on_mouse_drag_handlers=on_mouse_drag_handlers,
-                                                      on_mouse_leave_handlers=on_mouse_leave_handlers)
+                                                      on_mouse_leave_handlers=on_mouse_leave_handlers,
+                                                      on_mouse_scroll_handlers=on_mouse_scroll_handlers)
 
     def on_update_current_locale(self, new_locale):
         """
