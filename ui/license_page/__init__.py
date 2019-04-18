@@ -21,7 +21,7 @@ class LicensePage:
         self.document = FormattedDocument(text=self.license_text)
         self.document.set_style(0, len(self.document.text), {
             'font_name': 'Arial',
-            'font_size': 20,
+            'font_size': 16,
             'bold': False,
             'italic': False,
             'color': (255, 255, 255, 255),
@@ -40,19 +40,22 @@ class LicensePage:
     def on_change_screen_resolution(self, screen_resolution):
         self.screen_resolution = screen_resolution
         bottom_bar_height = int(72 / 1280 * self.screen_resolution[0])
-        self.size = (int(6.875 * bottom_bar_height) * 2 + bottom_bar_height // 4, 17 * bottom_bar_height // 4)
+        self.size = (int(6.875 * bottom_bar_height) * 2 + bottom_bar_height // 4, 15 * bottom_bar_height // 4)
         self.position = ((self.screen_resolution[0] - self.size[0]) // 2,
                          (self.screen_resolution[1] - self.size[1]
-                          - bottom_bar_height // 2 - 3 * bottom_bar_height // 2) // 2
-                         + bottom_bar_height + bottom_bar_height // 2)
+                          - bottom_bar_height - 3 * bottom_bar_height // 2) // 2
+                         + bottom_bar_height + bottom_bar_height)
         if self.is_activated:
             self.license_layout.x, self.license_layout.y = self.position
             self.license_layout.width, self.license_layout.height = self.size
             self.document.set_style(0, len(self.document.text), {
                 'font_name': 'Arial',
-                'font_size': 20,
+                'font_size': 16,
                 'bold': False,
                 'italic': False,
                 'color': (255, 255, 255, 255),
                 'align': 'center'
             })
+
+    def on_update_current_locale(self, new_locale):
+        pass

@@ -48,7 +48,7 @@ class PageControl:
                     font_size=int(self.previous_page_button.base_font_size_property
                                   * int(72 / 1280 * self.screen_resolution[0]) // 2),
                     x=self.screen_resolution[0] // 2,
-                    y=self.position[0] + int(72 / 1280 * self.screen_resolution[0]) // 4,
+                    y=self.position[1] + int(72 / 1280 * self.screen_resolution[0]) // 4,
                     anchor_x='center', anchor_y='center', batch=self.batches['ui_batch'],
                     group=self.groups['button_text'])
         self.pages[self.current_page].on_activate()
