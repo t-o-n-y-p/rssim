@@ -60,8 +60,8 @@ class LicenseController(Controller):
         self.view.on_deactivate()
         self.parent_controller.on_close_license()
 
-    # def on_apply_shaders_and_draw_vertices(self):
-    #     """
-    #     Notifies the view and child controllers to draw all sprites with shaders.
-    #     """
-    #     self.view.on_apply_shaders_and_draw_vertices()
+    def on_apply_shaders_and_draw_vertices(self):
+        """
+        Notifies the view and child controllers to draw all sprites with shaders.
+        """
+        self.view.on_apply_shaders_and_draw_vertices()

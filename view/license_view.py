@@ -17,6 +17,8 @@ class LicenseView(View):
         self.license_page_control = LicensePageControl(current_locale=self.current_locale)
         self.close_license_button = CloseLicenseButton(on_click_action=on_close_license)
         self.buttons = [*self.license_page_control.buttons, self.close_license_button]
+        self.license_view_shader = from_files_names('shaders/shader.vert', 'shaders/license_view/shader.frag')
+        self.license_view_shader_sprite = None
         self.on_init_graphics()
 
     def on_init_graphics(self):
@@ -31,6 +33,9 @@ class LicenseView(View):
 
         if not self.is_activated and self.opacity > 0:
             self.opacity -= 15
+            if self.opacity <= 0:
+                self.license_view_shader_sprite.delete()
+                self.license_view_shader_sprite = None
 
     @view_is_not_active
     def on_activate(self):
@@ -38,6 +43,11 @@ class LicenseView(View):
         Activates the view and creates sprites and labels.
         """
         self.is_activated = True
+        if self.license_view_shader_sprite is None:
+            self.license_view_shader_sprite\
+                = self.batches['main_frame'].add(4, GL_QUADS, self.groups['main_frame'],
+                                                 ('v2f/static', (-1.0, -1.0, -1.0, 1.0, 1.0, 1.0, 1.0, -1.0)))
+
         self.license_page_control.on_activate()
         for b in self.buttons:
             if b.to_activate_on_controller_init:
@@ -73,3 +83,31 @@ class LicenseView(View):
         """
         self.current_locale = new_locale
         self.license_page_control.on_update_current_locale(new_locale)
+
+    @non_zero_opacity
+    def on_apply_shaders_and_draw_vertices(self):
+        """
+        Activates the shader, initializes all shader uniforms, draws shader sprite and deactivates the shader.
+        """
+        self.license_view_shader.use()
+        self.license_view_shader.uniforms.license_opacity = self.opacity
+        is_button_activated = []
+        button_x = []
+        button_y = []
+        button_w = []
+        button_h = []
+        for b in self.buttons:
+            is_button_activated.append(int(b.is_activated))
+            button_x.append(b.position[0])
+            button_y.append(b.position[1])
+            button_w.append(b.button_size[0])
+            button_h.append(b.button_size[1])
+
+        self.license_view_shader.uniforms.is_button_activated = is_button_activated
+        self.license_view_shader.uniforms.button_x = button_x
+        self.license_view_shader.uniforms.button_y = button_y
+        self.license_view_shader.uniforms.button_w = button_w
+        self.license_view_shader.uniforms.button_h = button_h
+        self.license_view_shader.uniforms.number_of_buttons = len(self.buttons)
+        self.license_view_shader_sprite.draw(GL_QUADS)
+        self.license_view_shader.clear()

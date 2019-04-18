@@ -21,7 +21,7 @@ class LicensePage:
         self.document = FormattedDocument(text=self.license_text)
         self.document.set_style(0, len(self.document.text), {
             'font_name': 'Arial',
-            'font_size': 16,
+            'font_size': int(72 / 1280 * self.screen_resolution[0]) // 5,
             'bold': False,
             'italic': False,
             'color': (255, 255, 255, 255),
@@ -50,7 +50,7 @@ class LicensePage:
             self.license_layout.width, self.license_layout.height = self.size
             self.document.set_style(0, len(self.document.text), {
                 'font_name': 'Arial',
-                'font_size': 16,
+                'font_size': int(72 / 1280 * self.screen_resolution[0]) // 5,
                 'bold': False,
                 'italic': False,
                 'color': (255, 255, 255, 255),
