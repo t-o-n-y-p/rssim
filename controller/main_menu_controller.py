@@ -73,3 +73,6 @@ class MainMenuController(Controller):
 
     def on_open_license(self):
         self.license.on_activate_view()
+
+    def on_close_license(self):
+        self.view.open_license_button.on_activate()
