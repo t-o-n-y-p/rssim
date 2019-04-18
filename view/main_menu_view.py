@@ -20,7 +20,7 @@ class MainMenuView(View):
 
         def on_open_license(button):
             button.on_deactivate()
-            self.controller.on_open_license()
+            self.controller.parent_controller.on_open_license()
 
         super().__init__(logger=getLogger('root.app.main_menu.view'))
         self.create_station_button = CreateStationButton(on_click_action=on_create_station)

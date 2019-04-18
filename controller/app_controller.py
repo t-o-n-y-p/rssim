@@ -21,6 +21,7 @@ class AppController(Controller):
         """
         super().__init__(logger=getLogger('root.app.controller'))
         self.main_menu = None
+        self.license = None
         self.game = None
         self.settings = None
         self.fps = None
@@ -31,6 +32,7 @@ class AppController(Controller):
         Notifies the view, Game view and Settings view to update fade-in/fade-out animations.
         """
         self.view.on_update()
+        self.license.on_update_view()
         self.main_menu.on_update_view()
         self.game.on_update_view()
         self.settings.on_update_view()
@@ -57,6 +59,7 @@ class AppController(Controller):
         self.model.on_deactivate()
         self.view.on_deactivate()
         self.main_menu.on_deactivate()
+        self.license.on_deactivate()
         self.game.on_deactivate()
         self.settings.on_deactivate()
         self.fps.on_deactivate()
@@ -103,6 +106,7 @@ class AppController(Controller):
         """
         self.view.on_change_screen_resolution(screen_resolution)
         self.main_menu.on_change_screen_resolution(screen_resolution)
+        self.license.on_change_screen_resolution(screen_resolution)
         self.game.on_change_screen_resolution(screen_resolution)
         self.settings.on_change_screen_resolution(screen_resolution)
         self.fps.on_change_screen_resolution(screen_resolution)
@@ -163,6 +167,7 @@ class AppController(Controller):
         """
         self.view.on_apply_shaders_and_draw_vertices()
         self.main_menu.on_apply_shaders_and_draw_vertices()
+        self.license.on_apply_shaders_and_draw_vertices()
         self.settings.on_apply_shaders_and_draw_vertices()
         self.game.on_apply_shaders_and_draw_vertices()
 
@@ -175,6 +180,7 @@ class AppController(Controller):
         self.model.on_save_and_commit_locale(new_locale)
         self.view.on_update_current_locale(new_locale)
         self.main_menu.on_update_current_locale(new_locale)
+        self.license.on_update_current_locale(new_locale)
         self.game.on_update_current_locale(new_locale)
         self.settings.on_update_current_locale(new_locale)
         self.fps.on_update_current_locale(new_locale)
@@ -240,3 +246,10 @@ class AppController(Controller):
 
     def on_resume_game(self):
         self.game.on_resume_game()
+
+    def on_open_license(self):
+        self.main_menu.on_deactivate_view()
+        self.license.on_activate_view()
+
+    def on_close_license(self):
+        self.main_menu.on_activate_view()

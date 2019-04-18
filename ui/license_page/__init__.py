@@ -4,6 +4,29 @@ from pyglet.text.layout import ScrollableTextLayout
 from ui import SURFACE, BATCHES, GROUPS
 
 
+def page_is_active(fn):
+    """
+    Use this decorator to execute function only if page is active.
+
+    :param fn:                      function to decorate
+    :return:                        decorator function
+    """
+    def _handle_if_page_is_activated(*args, **kwargs):
+        if args[0].is_activated:
+            fn(*args, **kwargs)
+
+    return _handle_if_page_is_activated
+
+
+def cursor_is_inside_the_text_box(fn):
+    def _handle_scroll_if_cursor_is_inside_the_text_box(*args, **kwargs):
+        if args[0].position[0] < args[1] < args[0].position[0] + args[0].size[0] \
+                and args[0].position[1] < args[2] < args[0].position[1] + args[0].size[1]:
+            fn(*args, **kwargs)
+
+    return _handle_scroll_if_cursor_is_inside_the_text_box
+
+
 class LicensePage:
     def __init__(self, current_locale, logger):
         self.is_activated = False
@@ -59,3 +82,8 @@ class LicensePage:
 
     def on_update_current_locale(self, new_locale):
         pass
+
+    @page_is_active
+    @cursor_is_inside_the_text_box
+    def handle_mouse_scroll(self, x, y, scroll_x, scroll_y):
+        self.license_layout.view_y += scroll_y * self.document.get_style('font_size')

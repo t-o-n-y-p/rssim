@@ -19,6 +19,7 @@ class LicenseView(View):
         self.buttons = [*self.license_page_control.buttons, self.close_license_button]
         self.license_view_shader = from_files_names('shaders/shader.vert', 'shaders/license_view/shader.frag')
         self.license_view_shader_sprite = None
+        self.on_mouse_scroll_handlers = self.license_page_control.on_mouse_scroll_handlers
         self.on_init_graphics()
 
     def on_init_graphics(self):

@@ -78,6 +78,7 @@ def create_app(loader):
     view.on_assign_controller(controller)
     model.view = view
     controller.main_menu = _create_main_menu(controller)
+    controller.license = _create_license(controller)
     controller.game = _create_game(controller)
     controller.settings = _create_settings(controller)
     controller.fps = _create_fps(controller)
@@ -417,12 +418,11 @@ def _create_main_menu(app):
     controller.view = view
     view.on_assign_controller(controller)
     model.view = view
-    controller.license = _create_license(controller)
     return controller
 
 
-def _create_license(main_menu_controller):
-    controller = LicenseController(main_menu_controller)
+def _create_license(app):
+    controller = LicenseController(app)
     model = LicenseModel()
     view = LicenseView()
     controller.model = model

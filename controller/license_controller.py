@@ -4,8 +4,8 @@ from controller import *
 
 
 class LicenseController(Controller):
-    def __init__(self, main_menu_controller):
-        super().__init__(parent_controller=main_menu_controller,
+    def __init__(self, app):
+        super().__init__(parent_controller=app,
                          logger=getLogger('root.app.main_menu.license.controller'))
 
     def on_update_view(self):
