@@ -25,7 +25,7 @@ class LicensePage:
             'bold': False,
             'italic': False,
             'color': (255, 255, 255, 255),
-            'align': 'left'
+            'align': 'center'
         })
         self.license_layout = ScrollableTextLayout(document=self.document, width=self.size[0], height=self.size[1],
                                                    multiline=True, batch=self.batches['ui_batch'],
@@ -54,5 +54,5 @@ class LicensePage:
                 'bold': False,
                 'italic': False,
                 'color': (255, 255, 255, 255),
-                'align': 'left'
+                'align': 'center'
             })

@@ -95,3 +95,17 @@ class PageControl:
             self.next_page_button.on_deactivate()
         else:
             self.next_page_button.on_activate()
+
+    def on_update_current_locale(self, new_locale):
+        """
+        Updates current locale selected by user and all text labels.
+
+        :param new_locale:                      selected locale
+        """
+        self.current_locale = new_locale
+        for p in self.pages:
+            p.on_update_current_locale(new_locale)
+
+        if self.current_page_label is not None:
+            self.current_page_label.text = I18N_RESOURCES[self.current_page_label_key][self.current_locale]\
+                .format(self.current_page + 1, len(self.pages))
