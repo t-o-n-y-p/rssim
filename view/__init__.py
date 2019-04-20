@@ -433,8 +433,5 @@ class View:
             self.opacity -= 15
             self.on_update_sprite_opacity()
 
-        for b in self.buttons:
-            b.on_update_opacity()
-
     def on_update_sprite_opacity(self):
         pass

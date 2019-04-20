@@ -36,6 +36,8 @@ class MainMenuView(View):
 
     def on_update(self):
         self.on_update_opacity()
+        for b in self.buttons:
+            b.on_update_opacity()
 
     def on_update_sprite_opacity(self):
         if self.opacity <= 0:

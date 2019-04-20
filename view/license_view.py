@@ -26,17 +26,15 @@ class LicenseView(View):
         self.on_change_screen_resolution(self.screen_resolution)
 
     def on_update(self):
-        """
-        Updates fade-in/fade-out animations.
-        """
         self.on_update_opacity()
+        self.license_page_control.on_update_opacity()
+        for b in self.buttons:
+            b.on_update_opacity()
 
     def on_update_sprite_opacity(self):
         if self.opacity <= 0:
             self.shader_sprite.delete()
             self.shader_sprite = None
-
-        self.license_page_control.on_update_opacity()
 
     @view_is_not_active
     def on_activate(self):

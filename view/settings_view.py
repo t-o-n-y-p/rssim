@@ -171,15 +171,16 @@ class SettingsView(View):
 
     def on_update(self):
         self.on_update_opacity()
+        self.screen_resolution_control.on_update_opacity()
+        self.display_fps_checkbox.on_update_opacity()
+        self.notifications_checkbox_group.on_update_opacity()
+        for b in self.buttons:
+            b.on_update_opacity()
 
     def on_update_sprite_opacity(self):
         if self.opacity <= 0:
             self.shader_sprite.delete()
             self.shader_sprite = None
-
-        self.screen_resolution_control.on_update_opacity()
-        self.display_fps_checkbox.on_update_opacity()
-        self.notifications_checkbox_group.on_update_opacity()
 
     @view_is_not_active
     def on_activate(self):

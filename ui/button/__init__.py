@@ -199,27 +199,15 @@ class Button:
                                                        * float(self.opacity) / 255.0)
                                                )
                                               )
-        else:
-            self.vertex_list.colors = (*BUTTON_BACKGROUND_RGB[self.state][self.transparent],
-                                       BUTTON_BACKGROUND_ALPHA[self.state][self.transparent]
-                                       * float(self.opacity) / 255.0,
-                                       *BUTTON_BACKGROUND_RGB[self.state][self.transparent],
-                                       BUTTON_BACKGROUND_ALPHA[self.state][self.transparent]
-                                       * float(self.opacity) / 255.0,
-                                       *BUTTON_BACKGROUND_RGB[self.state][self.transparent],
-                                       BUTTON_BACKGROUND_ALPHA[self.state][self.transparent]
-                                       * float(self.opacity) / 255.0,
-                                       *BUTTON_BACKGROUND_RGB[self.state][self.transparent],
-                                       BUTTON_BACKGROUND_ALPHA[self.state][self.transparent]
-                                       * float(self.opacity) / 255.0)
 
-        if self.text not in (None, ''):
-            self.text_label = Label(self.text, font_name=self.font_name, bold=self.is_bold, font_size=self.font_size,
-                                    color=(*WHITE_RGB, self.opacity),
-                                    x=self.position[0] + self.button_size[0] // 2,
-                                    y=self.position[1] + self.button_size[1] // 2,
-                                    anchor_x='center', anchor_y='center', batch=self.batch,
-                                    group=self.groups['button_text'])
+        if self.text_label is None:
+            if self.text not in (None, ''):
+                self.text_label = Label(self.text, font_name=self.font_name, bold=self.is_bold,
+                                        font_size=self.font_size, color=(*WHITE_RGB, self.opacity),
+                                        x=self.position[0] + self.button_size[0] // 2,
+                                        y=self.position[1] + self.button_size[1] // 2,
+                                        anchor_x='center', anchor_y='center', batch=self.batch,
+                                        group=self.groups['button_text'])
 
     @button_is_activated
     def on_deactivate(self, instant=False):
@@ -227,7 +215,6 @@ class Button:
         Deactivates the button. Removes background and text label from the graphics memory.
         """
         self.is_activated = False
-        self.state = 'normal'
         if instant:
             self.opacity = 0
             self.vertex_list.delete()
@@ -361,7 +348,7 @@ class Button:
         :param button:          determines which mouse button was pressed
         :param modifiers:       determines if some modifier key is held down (at the moment we don't use it)
         """
-        self.state = 'hover'
+        self.state = 'normal'
         self.vertex_list.colors = (*BUTTON_BACKGROUND_RGB[self.state][self.transparent],
                                    BUTTON_BACKGROUND_ALPHA[self.state][self.transparent]
                                    * float(self.opacity) / 255.0,

@@ -54,15 +54,15 @@ class CheckboxGroup:
             self.opacity -= 15
             self.on_update_sprite_opacity()
 
+        for checkbox in self.checkboxes:
+            checkbox.on_update_opacity()
+
     def on_update_sprite_opacity(self):
         if self.opacity <= 0:
             self.description_label.delete()
             self.description_label = None
         else:
             self.description_label.color = (*WHITE_RGB, self.opacity)
-
-        for checkbox in self.checkboxes:
-            checkbox.on_update_opacity()
 
     def on_activate(self):
         """
