@@ -23,6 +23,10 @@ GREY = (112, 112, 112, 255)                     # grey UI color
 ORANGE = (255, 127, 0, 255)                     # orange UI color
 GREEN = (0, 192, 0, 255)                        # green UI color
 RED = (255, 0, 0, 255)                          # red UI color
+GREY_RGB = (112, 112, 112)                      # grey UI color
+ORANGE_RGB = (255, 127, 0)                      # orange UI color
+GREEN_RGB = (0, 192, 0)                         # green UI color
+RED_RGB = (255, 0, 0)                           # red UI color
 WHITE_RGB = (255, 255, 255)                     # white UI color
 # time
 FRAMES_IN_ONE_DAY = 345600                      # indicates how many frames fit in one in-game day

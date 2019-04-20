@@ -145,29 +145,22 @@ class AppView(View):
         self.on_init_graphics()
 
     def on_update(self):
-        if self.is_activated and self.opacity < 255:
-            self.opacity += 15
+        self.on_update_opacity()
+
+    def on_update_sprite_opacity(self):
+        if self.opacity <= 0:
+            self.title_label.delete()
+            self.title_label = None
+            self.flag_gb_sprite.delete()
+            self.flag_gb_sprite = None
+            self.flag_ru_sprite.delete()
+            self.flag_ru_sprite = None
+            self.shader_sprite.delete()
+            self.shader_sprite = None
+        else:
             self.title_label.color = (*WHITE_RGB, self.opacity)
             self.flag_gb_sprite.opacity = self.opacity
             self.flag_ru_sprite.opacity = self.opacity
-
-        if not self.is_activated and self.opacity > 0:
-            self.opacity -= 15
-            self.title_label.color = (*WHITE_RGB, self.opacity)
-            self.flag_gb_sprite.opacity = self.opacity
-            self.flag_ru_sprite.opacity = self.opacity
-            if self.opacity <= 0:
-                self.title_label.delete()
-                self.title_label = None
-                self.flag_gb_sprite.delete()
-                self.flag_gb_sprite = None
-                self.flag_ru_sprite.delete()
-                self.flag_ru_sprite = None
-                self.shader_sprite.delete()
-                self.shader_sprite = None
-
-        for b in self.buttons:
-            b.on_update()
 
     @view_is_not_active
     def on_activate(self):
@@ -175,16 +168,18 @@ class AppView(View):
         Activates the view and creates all sprites and labels.
         """
         self.is_activated = True
-        self.title_label = Label('Railway Station Simulator', font_name='Arial',
-                                 font_size=int(16 / 40 * self.top_bar_height), color=(*WHITE_RGB, self.opacity),
-                                 x=self.top_bar_height * 2 + self.top_bar_height // 4,
-                                 y=self.screen_resolution[1] - self.top_bar_height // 2,
-                                 anchor_x='left', anchor_y='center', batch=self.batches['ui_batch'],
-                                 group=self.groups['button_text'])
         if self.shader_sprite is None:
             self.shader_sprite\
                 = self.batches['main_frame'].add(4, GL_QUADS, self.groups['main_frame'],
                                                  ('v2f/static', (-1.0, -1.0, -1.0, 1.0, 1.0, 1.0, 1.0, -1.0)))
+
+        if self.title_label is None:
+            self.title_label = Label('Railway Station Simulator', font_name='Arial',
+                                     font_size=int(16 / 40 * self.top_bar_height), color=(*WHITE_RGB, self.opacity),
+                                     x=self.top_bar_height * 2 + self.top_bar_height // 4,
+                                     y=self.screen_resolution[1] - self.top_bar_height // 2,
+                                     anchor_x='left', anchor_y='center', batch=self.batches['ui_batch'],
+                                     group=self.groups['button_text'])
 
         if self.flag_gb_sprite is None:
             self.flag_gb_sprite = Sprite(FLAG_GB, x=self.top_bar_height // 2,

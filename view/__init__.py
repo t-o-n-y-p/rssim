@@ -423,3 +423,18 @@ class View:
         Enables sending notifications from this view.
         """
         self.all_notifications_enabled = True
+
+    def on_update_opacity(self):
+        if self.is_activated and self.opacity < 255:
+            self.opacity += 15
+            self.on_update_sprite_opacity()
+
+        if not self.is_activated and self.opacity > 0:
+            self.opacity -= 15
+            self.on_update_sprite_opacity()
+
+        for b in self.buttons:
+            b.on_update_opacity()
+
+    def on_update_sprite_opacity(self):
+        pass
