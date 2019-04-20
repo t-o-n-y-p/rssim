@@ -70,6 +70,7 @@ class ScheduleRow:
         self.position = (0, 0)
         self.size = (0, 0)
         self.is_activated = False
+        self.opacity = 0
 
     def on_activate(self):
         """
@@ -84,10 +85,6 @@ class ScheduleRow:
         """
         self.is_activated = False
         self.data = []
-        self.main_sprite.delete()
-        self.main_sprite = None
-        self.arrival_sprite.delete()
-        self.arrival_sprite = None
 
     def on_assign_data(self, data):
         """
@@ -104,7 +101,7 @@ class ScheduleRow:
                                 (self.data[ARRIVAL_TIME] // FRAMES_IN_ONE_MINUTE) % MINUTES_IN_ONE_HOUR,
                                 self.data[CARS], self.data[STOP_TIME] // FRAMES_IN_ONE_MINUTE,
                                 (self.data[STOP_TIME] // FRAMES_IN_ONE_SECOND) % SECONDS_IN_ONE_MINUTE),
-                        font_name='Perfo', bold=True, font_size=self.size[1] // 5 * 3,
+                        font_name='Perfo', bold=True, font_size=self.size[1] // 5 * 3, color=(*WHITE_RGB, self.opacity),
                         x=self.position[0], y=self.position[1], anchor_x='center', anchor_y='center',
                         batch=self.batches['ui_batch'], group=self.groups['button_text'])
         else:
@@ -119,7 +116,7 @@ class ScheduleRow:
         if self.arrival_sprite is None:
             self.arrival_sprite \
                 = Label(I18N_RESOURCES['departed_from_string'][self.current_locale][self.data[DIRECTION]],
-                        font_name='Perfo', bold=True, font_size=self.size[1] // 5 * 3,
+                        font_name='Perfo', bold=True, font_size=self.size[1] // 5 * 3, color=(*WHITE_RGB, self.opacity),
                         x=self.position[0] + self.size[0] // 16, y=self.position[1],
                         anchor_x='center', anchor_y='center', batch=self.batches['ui_batch'],
                         group=self.groups['button_text'])
@@ -167,3 +164,22 @@ class ScheduleRow:
         self.current_locale = new_locale
         if self.arrival_sprite is not None:
             self.arrival_sprite.text = I18N_RESOURCES['departed_from_string'][self.current_locale][self.data[DIRECTION]]
+
+    def on_update_opacity(self):
+        if self.is_activated and self.opacity < 255:
+            self.opacity += 15
+            self.on_update_sprite_opacity()
+
+        if not self.is_activated and self.opacity > 0:
+            self.opacity -= 15
+            self.on_update_sprite_opacity()
+
+    def on_update_sprite_opacity(self):
+        if self.opacity <= 0:
+            self.main_sprite.delete()
+            self.main_sprite = None
+            self.arrival_sprite.delete()
+            self.arrival_sprite = None
+        else:
+            self.main_sprite.color = (*WHITE_RGB, self.opacity)
+            self.arrival_sprite.color = (*WHITE_RGB, self.opacity)

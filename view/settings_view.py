@@ -259,7 +259,7 @@ class SettingsView(View):
         self.display_fps_checkbox.on_update_current_locale(new_locale)
         self.notifications_checkbox_group.on_update_current_locale(new_locale)
 
-    @non_zero_opacity
+    @shader_sprite_exists
     def on_apply_shaders_and_draw_vertices(self):
         """
         Activates the shader, initializes all shader uniforms, draws shader sprite and deactivates the shader.

@@ -67,8 +67,8 @@ class SchedulerView(View):
 
             self.schedule_rows.append(column)
 
-        self.scheduler_view_shader_sprite = None
-        self.scheduler_view_shader = from_files_names('shaders/shader.vert', 'shaders/scheduler_view/shader.frag')
+        self.shader_sprite = None
+        self.shader = from_files_names('shaders/shader.vert', 'shaders/scheduler_view/shader.frag')
         self.scheduler_view_shader_bottom_limit = 0.0
         self.scheduler_view_shader_upper_limit = 0.0
         self.on_init_graphics()
@@ -79,26 +79,32 @@ class SchedulerView(View):
         Activates the view and creates sprites and labels.
         """
         self.is_activated = True
-        if self.scheduler_view_shader_sprite is None:
-            self.scheduler_view_shader_sprite \
+        if self.shader_sprite is None:
+            self.shader_sprite \
                 = self.batches['main_frame'].add(4, GL_QUADS, self.groups['main_frame'],
                                                  ('v2f/static', (-1.0, self.scheduler_view_shader_bottom_limit,
                                                                  -1.0, self.scheduler_view_shader_upper_limit,
                                                                  1.0, self.scheduler_view_shader_upper_limit,
                                                                  1.0, self.scheduler_view_shader_bottom_limit)))
 
-        self.left_schedule_caption_label \
-            = Label(I18N_RESOURCES['schedule_caption_string'][self.current_locale],
-                    font_name='Perfo', bold=True, font_size=self.schedule_caption_font_size, color=ORANGE,
-                    x=self.schedule_left_caption_position[0], y=self.schedule_left_caption_position[1],
-                    anchor_x='center', anchor_y='center', batch=self.batches['ui_batch'],
-                    group=self.groups['button_text'])
-        self.right_schedule_caption_label \
-            = Label(I18N_RESOURCES['schedule_caption_string'][self.current_locale],
-                    font_name='Perfo', bold=True, font_size=self.schedule_caption_font_size, color=ORANGE,
-                    x=self.schedule_right_caption_position[0], y=self.schedule_right_caption_position[1],
-                    anchor_x='center', anchor_y='center', batch=self.batches['ui_batch'],
-                    group=self.groups['button_text'])
+        if self.left_schedule_caption_label is None:
+            self.left_schedule_caption_label \
+                = Label(I18N_RESOURCES['schedule_caption_string'][self.current_locale],
+                        font_name='Perfo', bold=True, font_size=self.schedule_caption_font_size,
+                        color=(*ORANGE_RGB, self.opacity),
+                        x=self.schedule_left_caption_position[0], y=self.schedule_left_caption_position[1],
+                        anchor_x='center', anchor_y='center', batch=self.batches['ui_batch'],
+                        group=self.groups['button_text'])
+
+        if self.right_schedule_caption_label is None:
+            self.right_schedule_caption_label \
+                = Label(I18N_RESOURCES['schedule_caption_string'][self.current_locale],
+                        font_name='Perfo', bold=True, font_size=self.schedule_caption_font_size,
+                        color=(*ORANGE_RGB, self.opacity),
+                        x=self.schedule_right_caption_position[0], y=self.schedule_right_caption_position[1],
+                        anchor_x='center', anchor_y='center', batch=self.batches['ui_batch'],
+                        group=self.groups['button_text'])
+
         for b in self.buttons:
             if b.to_activate_on_controller_init:
                 b.on_activate()
@@ -109,10 +115,6 @@ class SchedulerView(View):
         Deactivates the view and destroys all labels and buttons.
         """
         self.is_activated = False
-        self.left_schedule_caption_label.delete()
-        self.left_schedule_caption_label = None
-        self.right_schedule_caption_label.delete()
-        self.right_schedule_caption_label = None
         for i in range(SCHEDULE_COLUMNS):
             for j in range(SCHEDULE_ROWS):
                 self.schedule_rows[i][j].on_deactivate()
@@ -121,25 +123,32 @@ class SchedulerView(View):
             b.on_deactivate()
 
     def on_update(self):
-        """
-        Updates fade-in/fade-out animations and create sprites if some are missing.
-        Not all sprites are created at once, they are created one by one to avoid massive FPS drop.
-        """
-        if self.is_activated:
-            if self.opacity < 255:
-                self.opacity += 15
+        self.on_update_opacity()
+        for b in self.buttons:
+            b.on_update_opacity()
 
+        for i in range(SCHEDULE_COLUMNS):
+            for j in range(SCHEDULE_ROWS):
+                self.schedule_rows[i][j].on_update_opacity()
+
+        if self.is_activated:
             for i in range(min(len(self.base_schedule), SCHEDULE_ROWS * SCHEDULE_COLUMNS)):
                 if not self.schedule_rows[i // SCHEDULE_ROWS][i % SCHEDULE_ROWS].is_activated:
                     self.schedule_rows[i // SCHEDULE_ROWS][i % SCHEDULE_ROWS].on_activate()
                     self.schedule_rows[i // SCHEDULE_ROWS][i % SCHEDULE_ROWS].on_assign_data(self.base_schedule[i])
-                    break
+                    return
 
-        if not self.is_activated and self.opacity > 0:
-            self.opacity -= 15
-            if self.opacity <= 0:
-                self.scheduler_view_shader_sprite.delete()
-                self.scheduler_view_shader_sprite = None
+    def on_update_sprite_opacity(self):
+        if self.opacity <= 0:
+            self.shader_sprite.delete()
+            self.shader_sprite = None
+            self.left_schedule_caption_label.delete()
+            self.left_schedule_caption_label = None
+            self.right_schedule_caption_label.delete()
+            self.right_schedule_caption_label = None
+        else:
+            self.left_schedule_caption_label.color = (*ORANGE_RGB, self.opacity)
+            self.right_schedule_caption_label.color = (*ORANGE_RGB, self.opacity)
 
     def on_change_screen_resolution(self, screen_resolution):
         """
@@ -151,10 +160,10 @@ class SchedulerView(View):
         self.scheduler_view_shader_bottom_limit = self.bottom_bar_height / self.screen_resolution[1] * 2 - 1
         self.scheduler_view_shader_upper_limit = 1 - self.top_bar_height / self.screen_resolution[1] * 2
         if self.is_activated:
-            self.scheduler_view_shader_sprite.vertices = (-1.0, self.scheduler_view_shader_bottom_limit,
-                                                          -1.0, self.scheduler_view_shader_upper_limit,
-                                                          1.0, self.scheduler_view_shader_upper_limit,
-                                                          1.0, self.scheduler_view_shader_bottom_limit)
+            self.shader_sprite.vertices = (-1.0, self.scheduler_view_shader_bottom_limit,
+                                           -1.0, self.scheduler_view_shader_upper_limit,
+                                           1.0, self.scheduler_view_shader_upper_limit,
+                                           1.0, self.scheduler_view_shader_bottom_limit)
         self.on_read_ui_info()
         if self.is_activated:
             self.left_schedule_caption_label.x = self.schedule_left_caption_position[0]
@@ -234,16 +243,16 @@ class SchedulerView(View):
             for j in range(SCHEDULE_ROWS):
                 self.schedule_rows[i][j].on_update_current_locale(new_locale)
 
-    @non_zero_opacity
+    @shader_sprite_exists
     def on_apply_shaders_and_draw_vertices(self):
         """
         Activates the shader, initializes all shader uniforms, draws shader sprite and deactivates the shader.
         """
-        self.scheduler_view_shader.use()
-        self.scheduler_view_shader.uniforms.screen_resolution = self.screen_resolution
-        self.scheduler_view_shader.uniforms.schedule_opacity = self.opacity
-        self.scheduler_view_shader_sprite.draw(GL_QUADS)
-        self.scheduler_view_shader.clear()
+        self.shader.use()
+        self.shader.uniforms.screen_resolution = self.screen_resolution
+        self.shader.uniforms.schedule_opacity = self.opacity
+        self.shader_sprite.draw(GL_QUADS)
+        self.shader.clear()
 
     def on_update_map_id(self):
         pass

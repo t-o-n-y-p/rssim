@@ -542,7 +542,7 @@ class MapView(View):
 
         self.mini_map_offset = (0, (MAP_HEIGHT - self.main_map.height) // 2)
 
-    @non_zero_opacity
+    @shader_sprite_exists
     def on_apply_shaders_and_draw_vertices(self):
         """
         Activates the shader, initializes all shader uniforms, draws shader sprite and deactivates the shader.

@@ -240,14 +240,6 @@ def construction_completed_notification_enabled(fn):
     return _send_notification_if_construction_completed_notification_enabled
 
 
-def non_zero_opacity(fn):
-    def _handle_if_opacity_is_positive(*args, **kwargs):
-        if args[0].opacity > 0:
-            fn(*args, **kwargs)
-
-    return _handle_if_opacity_is_positive
-
-
 def shader_sprite_exists(fn):
     def _handle_if_shader_sprite_exists(*args, **kwargs):
         if args[0].shader_sprite is not None:
