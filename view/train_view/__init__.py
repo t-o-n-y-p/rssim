@@ -52,7 +52,7 @@ class TrainView(View):
                 y = self.base_offset[1] + self.car_position[i][1]
 
             if x in range(-150, self.screen_resolution[0] + 150) \
-                    and y in range(-100, self.screen_resolution[1] + 100) and i < len(self.car_sprites):
+                    and y in range(-100, self.screen_resolution[1] + 100) and len(self.car_sprites) > 0:
                 if self.car_sprites[i] is None:
                     if i == 0:
                         self.car_sprites[i] = Sprite(self.car_head_image[self.car_image_collection][self.direction],
@@ -88,7 +88,7 @@ class TrainView(View):
                         self.boarding_light_sprites[i] = None
 
             else:
-                if i < len(self.car_sprites):
+                if len(self.car_sprites) > 0:
                     if self.car_sprites[i] is not None:
                         self.car_sprites[i].delete()
                         self.car_sprites[i] = None
