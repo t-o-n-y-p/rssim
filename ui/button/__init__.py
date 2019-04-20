@@ -6,6 +6,14 @@ from pyglet.resource import add_font
 from ui import SURFACE, BATCHES, GROUPS
 
 
+TRANSPARENT_NORMAL_STATE_RGBA = (0.0, 0.0, 0.0, 0.0)
+OPAQUE_NORMAL_STATE_RGBA = (0.0, 0.0, 0.0, 0.97)
+TRANSPARENT_HOVER_STATE_RGBA = (0.5, 0.0, 0.0, 0.75)
+OPAQUE_HOVER_STATE_RGBA = (0.375, 0.0, 0.0, 1.0)
+TRANSPARENT_PRESSED_STATE_RGBA = (0.75, 0.0, 0.0, 0.75)
+OPAQUE_PRESSED_STATE_RGBA = (0.5625, 0.0, 0.0, 1.0)
+
+
 def button_is_not_activated(fn):
     """
     Use this decorator to execute function only if button is not active.
@@ -171,10 +179,12 @@ class Button:
                                                    self.position[1] + self.button_size[1] - 2,
                                                    self.position[0] + 2, self.position[1] + self.button_size[1] - 2)
                                            ),
-                                          ('c4B', (0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0))
+                                          ('c4f', (*TRANSPARENT_NORMAL_STATE_RGBA, *TRANSPARENT_NORMAL_STATE_RGBA,
+                                                   *TRANSPARENT_NORMAL_STATE_RGBA, *TRANSPARENT_NORMAL_STATE_RGBA))
                                           )
         if not self.transparent:
-            self.vertex_list.colors = (0, 0, 0, 248, 0, 0, 0, 248, 0, 0, 0, 248, 0, 0, 0, 248)
+            self.vertex_list.colors = (*OPAQUE_NORMAL_STATE_RGBA, *OPAQUE_NORMAL_STATE_RGBA,
+                                       *OPAQUE_NORMAL_STATE_RGBA, *OPAQUE_NORMAL_STATE_RGBA)
 
         if self.text not in (None, ''):
             self.text_object = Label(self.text, font_name=self.font_name, bold=self.is_bold, font_size=self.font_size,
@@ -244,7 +254,13 @@ class Button:
                 and y in range(self.position[1] + 2, self.position[1] + self.button_size[1] - 2):
             if self.state != 'pressed':
                 self.state = 'hover'
-                self.vertex_list.colors = (127, 0, 0, 191, 127, 0, 0, 191, 127, 0, 0, 191, 127, 0, 0, 191)
+                if self.transparent:
+                    self.vertex_list.colors = (*TRANSPARENT_HOVER_STATE_RGBA, *TRANSPARENT_HOVER_STATE_RGBA,
+                                               *TRANSPARENT_HOVER_STATE_RGBA, *TRANSPARENT_HOVER_STATE_RGBA)
+                else:
+                    self.vertex_list.colors = (*OPAQUE_HOVER_STATE_RGBA, *OPAQUE_HOVER_STATE_RGBA,
+                                               *OPAQUE_HOVER_STATE_RGBA, *OPAQUE_HOVER_STATE_RGBA)
+
                 self.surface.set_mouse_cursor(self.hand_cursor)
                 if self.on_hover_action is not None:
                     self.on_hover_action()
@@ -254,9 +270,11 @@ class Button:
             if self.state != 'normal':
                 self.state = 'normal'
                 if not self.transparent:
-                    self.vertex_list.colors = (0, 0, 0, 248, 0, 0, 0, 248, 0, 0, 0, 248, 0, 0, 0, 248)
+                    self.vertex_list.colors = (*OPAQUE_NORMAL_STATE_RGBA, *OPAQUE_NORMAL_STATE_RGBA,
+                                               *OPAQUE_NORMAL_STATE_RGBA, *OPAQUE_NORMAL_STATE_RGBA)
                 else:
-                    self.vertex_list.colors = (0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0)
+                    self.vertex_list.colors = (*TRANSPARENT_NORMAL_STATE_RGBA, *TRANSPARENT_NORMAL_STATE_RGBA,
+                                               *TRANSPARENT_NORMAL_STATE_RGBA, *TRANSPARENT_NORMAL_STATE_RGBA)
 
                 self.surface.set_mouse_cursor(self.default_cursor)
                 if self.on_leave_action is not None:
@@ -275,7 +293,12 @@ class Button:
         :param modifiers:       determines if some modifier key is held down (at the moment we don't use it)
         """
         self.state = 'pressed'
-        self.vertex_list.colors = (191, 0, 0, 191, 191, 0, 0, 191, 191, 0, 0, 191, 191, 0, 0, 191)
+        if self.transparent:
+            self.vertex_list.colors = (*TRANSPARENT_PRESSED_STATE_RGBA, *TRANSPARENT_PRESSED_STATE_RGBA,
+                                       *TRANSPARENT_PRESSED_STATE_RGBA, *TRANSPARENT_PRESSED_STATE_RGBA)
+        else:
+            self.vertex_list.colors = (*OPAQUE_PRESSED_STATE_RGBA, *OPAQUE_PRESSED_STATE_RGBA,
+                                       *OPAQUE_PRESSED_STATE_RGBA, *OPAQUE_PRESSED_STATE_RGBA)
 
     @button_is_activated
     @cursor_is_over_the_button
@@ -292,7 +315,13 @@ class Button:
         :param modifiers:       determines if some modifier key is held down (at the moment we don't use it)
         """
         self.state = 'hover'
-        self.vertex_list.colors = (127, 0, 0, 191, 127, 0, 0, 191, 127, 0, 0, 191, 127, 0, 0, 191)
+        if self.transparent:
+            self.vertex_list.colors = (*TRANSPARENT_HOVER_STATE_RGBA, *TRANSPARENT_HOVER_STATE_RGBA,
+                                       *TRANSPARENT_HOVER_STATE_RGBA, *TRANSPARENT_HOVER_STATE_RGBA)
+        else:
+            self.vertex_list.colors = (*OPAQUE_HOVER_STATE_RGBA, *OPAQUE_HOVER_STATE_RGBA,
+                                       *OPAQUE_HOVER_STATE_RGBA, *OPAQUE_HOVER_STATE_RGBA)
+
         self.surface.set_mouse_cursor(self.default_cursor)
         self.on_click_action(self)
 
@@ -308,9 +337,11 @@ class Button:
         """
         self.state = 'normal'
         if not self.transparent:
-            self.vertex_list.colors = (0, 0, 0, 248, 0, 0, 0, 248, 0, 0, 0, 248, 0, 0, 0, 248)
+            self.vertex_list.colors = (*OPAQUE_NORMAL_STATE_RGBA, *OPAQUE_NORMAL_STATE_RGBA,
+                                       *OPAQUE_NORMAL_STATE_RGBA, *OPAQUE_NORMAL_STATE_RGBA)
         else:
-            self.vertex_list.colors = (0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0)
+            self.vertex_list.colors = (*TRANSPARENT_NORMAL_STATE_RGBA, *TRANSPARENT_NORMAL_STATE_RGBA,
+                                       *TRANSPARENT_NORMAL_STATE_RGBA, *TRANSPARENT_NORMAL_STATE_RGBA)
 
         self.surface.set_mouse_cursor(self.default_cursor)
         if self.on_leave_action is not None:
