@@ -1,7 +1,7 @@
 from pyglet.text import Label
 
 from i18n import I18N_RESOURCES
-from ui import SURFACE, BATCHES, GROUPS
+from ui import *
 from ui.button import create_two_state_button
 from ui.button.checked_checkbox_button import CheckedCheckboxButton
 from ui.button.unchecked_checkbox_button import UncheckedCheckboxButton
@@ -80,18 +80,37 @@ class Checkbox:
         self.description_key = None
         self.description_label = None
         self.is_activated = False
+        self.opacity = 0
+
+    def on_update_opacity(self):
+        if self.is_activated and self.opacity < 255:
+            self.opacity += 15
+            self.on_update_sprite_opacity()
+
+        if not self.is_activated and self.opacity > 0:
+            self.opacity -= 15
+            self.on_update_sprite_opacity()
+
+    def on_update_sprite_opacity(self):
+        if self.opacity <= 0:
+            self.description_label.delete()
+            self.description_label = None
+        else:
+            self.description_label.color = (*WHITE_RGB, self.opacity)
 
     def on_activate(self):
         """
         Activates the checkbox, creates description label.
         """
         self.is_activated = True
-        self.description_label = Label(I18N_RESOURCES[self.description_key][self.current_locale],
-                                       font_name='Arial', font_size=self.height // 5 * 2,
-                                       x=self.anchor_left_center_point[0]
-                                         + int(72 / 1280 * self.screen_resolution[0]) * 2,
-                                       y=self.anchor_left_center_point[1], anchor_x='left', anchor_y='center',
-                                       batch=self.batches['ui_batch'], group=self.groups['button_text'])
+        if self.description_label is None:
+            self.description_label = Label(I18N_RESOURCES[self.description_key][self.current_locale],
+                                           font_name='Arial', font_size=self.height // 5 * 2,
+                                           color=(*WHITE_RGB, self.opacity),
+                                           x=self.anchor_left_center_point[0]
+                                             + int(72 / 1280 * self.screen_resolution[0]) * 2,
+                                           y=self.anchor_left_center_point[1], anchor_x='left', anchor_y='center',
+                                           batch=self.batches['ui_batch'], group=self.groups['button_text'])
 
     def on_init_state(self, initial_state):
         """
@@ -109,8 +128,6 @@ class Checkbox:
         Deactivates the checkbox, deletes all labels, deactivates all buttons.
         """
         self.is_activated = False
-        self.description_label.delete()
-        self.description_label = None
         for b in self.buttons:
             b.on_deactivate()
 

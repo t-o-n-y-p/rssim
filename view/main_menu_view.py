@@ -27,22 +27,24 @@ class MainMenuView(View):
         self.open_license_button = OpenLicenseButton(on_click_action=on_open_license)
         self.buttons = [self.create_station_button, self.open_license_button]
         self.create_station_button_label = None
-        self.main_menu_view_shader = from_files_names('shaders/shader.vert', 'shaders/main_menu_view/shader.frag')
-        self.main_menu_view_shader_sprite = None
+        self.shader = from_files_names('shaders/shader.vert', 'shaders/main_menu_view/shader.frag')
+        self.shader_sprite = None
         self.on_init_graphics()
 
     def on_init_graphics(self):
         self.on_change_screen_resolution(self.screen_resolution)
 
     def on_update(self):
-        """
-        Updates fade-in/fade-out animations.
-        """
-        if self.is_activated and self.opacity < 255:
-            self.opacity += 15
+        self.on_update_opacity()
 
-        if not self.is_activated and self.opacity > 0:
-            self.opacity -= 15
+    def on_update_sprite_opacity(self):
+        if self.opacity <= 0:
+            self.shader_sprite.delete()
+            self.shader_sprite = None
+            self.create_station_button_label.delete()
+            self.create_station_button_label = None
+        else:
+            self.create_station_button_label.color = (*WHITE_RGB, self.opacity)
 
     @view_is_not_active
     def on_activate(self):
@@ -50,19 +52,20 @@ class MainMenuView(View):
         Activates the view and creates sprites and labels.
         """
         self.is_activated = True
-        if self.main_menu_view_shader_sprite is None:
-            self.main_menu_view_shader_sprite\
+        if self.shader_sprite is None:
+            self.shader_sprite\
                 = self.batches['main_frame'].add(4, GL_QUADS, self.groups['main_frame'],
                                                  ('v2f/static', (-1.0, -1.0, -1.0, 1.0, 1.0, 1.0, 1.0, -1.0)))
 
-        self.create_station_button_label = Label(I18N_RESOURCES['create_station_label_string'][self.current_locale],
-                                                 font_name='Perfo', bold=True,
-                                                 font_size=3 * self.bottom_bar_height // 8,
-                                                 x=self.screen_resolution[0] // 2,
-                                                 y=self.screen_resolution[1] // 2
-                                                   + int(72 / 1280 * self.screen_resolution[0]) // 4,
-                                                 anchor_x='center', anchor_y='center', batch=self.batches['ui_batch'],
-                                                 group=self.groups['button_text'])
+        if self.create_station_button_label is None:
+            self.create_station_button_label \
+                = Label(I18N_RESOURCES['create_station_label_string'][self.current_locale],
+                        font_name='Perfo', bold=True, font_size=3 * self.bottom_bar_height // 8,
+                        color=(*WHITE_RGB, self.opacity), x=self.screen_resolution[0] // 2,
+                        y=self.screen_resolution[1] // 2 + int(72 / 1280 * self.screen_resolution[0]) // 4,
+                        anchor_x='center', anchor_y='center',
+                        batch=self.batches['ui_batch'], group=self.groups['button_text'])
+
         for b in self.buttons:
             if b.to_activate_on_controller_init:
                 b.on_activate()
@@ -73,8 +76,6 @@ class MainMenuView(View):
         Deactivates the view and destroys all labels and buttons.
         """
         self.is_activated = False
-        self.create_station_button_label.delete()
-        self.create_station_button_label = None
         for b in self.buttons:
             b.on_deactivate()
 
@@ -108,13 +109,13 @@ class MainMenuView(View):
         if self.is_activated:
             self.create_station_button_label.text = I18N_RESOURCES['create_station_label_string'][self.current_locale]
 
-    @non_zero_opacity
+    @shader_sprite_exists
     def on_apply_shaders_and_draw_vertices(self):
         """
         Activates the shader, initializes all shader uniforms, draws shader sprite and deactivates the shader.
         """
-        self.main_menu_view_shader.use()
-        self.main_menu_view_shader.uniforms.main_menu_opacity = self.opacity
+        self.shader.use()
+        self.shader.uniforms.main_menu_opacity = self.opacity
         is_button_activated = []
         button_x = []
         button_y = []
@@ -127,11 +128,11 @@ class MainMenuView(View):
             button_w.append(b.button_size[0])
             button_h.append(b.button_size[1])
 
-        self.main_menu_view_shader.uniforms.is_button_activated = is_button_activated
-        self.main_menu_view_shader.uniforms.button_x = button_x
-        self.main_menu_view_shader.uniforms.button_y = button_y
-        self.main_menu_view_shader.uniforms.button_w = button_w
-        self.main_menu_view_shader.uniforms.button_h = button_h
-        self.main_menu_view_shader.uniforms.number_of_buttons = len(self.buttons)
-        self.main_menu_view_shader_sprite.draw(GL_QUADS)
-        self.main_menu_view_shader.clear()
+        self.shader.uniforms.is_button_activated = is_button_activated
+        self.shader.uniforms.button_x = button_x
+        self.shader.uniforms.button_y = button_y
+        self.shader.uniforms.button_w = button_w
+        self.shader.uniforms.button_h = button_h
+        self.shader.uniforms.number_of_buttons = len(self.buttons)
+        self.shader_sprite.draw(GL_QUADS)
+        self.shader.clear()

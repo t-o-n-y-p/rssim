@@ -123,8 +123,8 @@ class GameView(View):
         self.level_up_notification_enabled, self.enough_money_notification_enabled = self.user_db_cursor.fetchone()
         self.level_up_notification_enabled = bool(self.level_up_notification_enabled)
         self.enough_money_notification_enabled = bool(self.enough_money_notification_enabled)
-        self.game_view_shader_sprite = None
-        self.game_view_shader = from_files_names('shaders/shader.vert', 'shaders/game_view/shader.frag')
+        self.shader_sprite = None
+        self.shader = from_files_names('shaders/shader.vert', 'shaders/game_view/shader.frag')
         self.game_view_shader_upper_limit = 0.0
         self.on_init_graphics()
 
@@ -188,8 +188,8 @@ class GameView(View):
 
     def on_update_sprite_opacity(self):
         if self.opacity <= 0:
-            self.game_view_shader_sprite.delete()
-            self.game_view_shader_sprite = None
+            self.shader_sprite.delete()
+            self.shader_sprite = None
             self.time_label.delete()
             self.time_label = None
             if self.progress_bar_exp_inactive is not None:
@@ -242,8 +242,8 @@ class GameView(View):
         Activates the view and creates all sprites and labels.
         """
         self.is_activated = True
-        if self.game_view_shader_sprite is None:
-            self.game_view_shader_sprite\
+        if self.shader_sprite is None:
+            self.shader_sprite\
                 = self.batches['main_frame'].add(4, GL_QUADS, self.groups['main_frame'],
                                                  ('v2f/static', (-1.0, -1.0, -1.0, self.game_view_shader_upper_limit,
                                                                  1.0, self.game_view_shader_upper_limit, 1.0, -1.0)))
@@ -302,8 +302,8 @@ class GameView(View):
                                                 scale=self.bottom_bar_height / 80)
             self.progress_bar_money_active.update(x=self.money_offset, y=self.bottom_bar_height // 8,
                                                   scale=self.bottom_bar_height / 80)
-            self.game_view_shader_sprite.vertices = (-1.0, -1.0, -1.0, self.game_view_shader_upper_limit,
-                                                     1.0, self.game_view_shader_upper_limit, 1.0, -1.0)
+            self.shader_sprite.vertices = (-1.0, -1.0, -1.0, self.game_view_shader_upper_limit,
+                                           1.0, self.game_view_shader_upper_limit, 1.0, -1.0)
 
         self.open_settings_button.x_margin = self.screen_resolution[0] - self.bottom_bar_height
         self.open_settings_button.y_margin = 0
@@ -465,17 +465,17 @@ class GameView(View):
         """
         self.enough_money_notification_enabled = notification_state
 
-    @non_zero_opacity
+    @shader_sprite_exists
     def on_apply_shaders_and_draw_vertices(self):
         """
         Activates the shader, initializes all shader uniforms, draws shader sprite and deactivates the shader.
         """
-        self.game_view_shader.use()
-        self.game_view_shader.uniforms.screen_resolution = self.screen_resolution
-        self.game_view_shader.uniforms.bottom_bar_height = self.bottom_bar_height
-        self.game_view_shader.uniforms.game_frame_opacity = self.opacity
-        self.game_view_shader_sprite.draw(GL_QUADS)
-        self.game_view_shader.clear()
+        self.shader.use()
+        self.shader.uniforms.screen_resolution = self.screen_resolution
+        self.shader.uniforms.bottom_bar_height = self.bottom_bar_height
+        self.shader.uniforms.game_frame_opacity = self.opacity
+        self.shader_sprite.draw(GL_QUADS)
+        self.shader.clear()
 
     def on_init_graphics(self):
         self.on_change_screen_resolution(self.screen_resolution)

@@ -1,7 +1,7 @@
 from pyglet.text import Label
 
 from i18n import I18N_RESOURCES
-from ui import SURFACE, BATCHES, GROUPS
+from ui import *
 from ui.button import create_two_state_button
 from ui.button.increment_button import IncrementButton
 from ui.button.decrement_button import DecrementButton
@@ -96,27 +96,26 @@ class EnumValueControl:
                                       DecrementButton(on_click_action=on_decrement))
         self.buttons = [self.increment_button, self.decrement_button]
         self.is_activated = False
+        self.opacity = 0
 
     def on_activate(self):
         """
         Activates the control, creates description label.
         """
         self.is_activated = True
-        self.description_label = Label(I18N_RESOURCES[self.description_key][self.current_locale],
-                                       font_name='Arial', font_size=self.height // 5 * 2,
-                                       x=self.anchor_center_point[0], y=self.anchor_center_point[1],
-                                       anchor_x='center', anchor_y='center',
-                                       batch=self.batches['ui_batch'], group=self.groups['button_text'])
+        if self.description_label is None:
+            self.description_label = Label(I18N_RESOURCES[self.description_key][self.current_locale],
+                                           font_name='Arial', font_size=self.height // 5 * 2,
+                                           color=(*WHITE_RGB, self.opacity),
+                                           x=self.anchor_center_point[0], y=self.anchor_center_point[1],
+                                           anchor_x='center', anchor_y='center',
+                                           batch=self.batches['ui_batch'], group=self.groups['button_text'])
 
     def on_deactivate(self):
         """
         Deactivates the control, deletes all labels, deactivates all buttons.
         """
         self.is_activated = False
-        self.description_label.delete()
-        self.description_label = None
-        self.temp_value_label.delete()
-        self.temp_value_label = None
         for b in self.buttons:
             b.on_deactivate()
 
@@ -184,3 +183,22 @@ class EnumValueControl:
 
         if self.temp_value_label is not None:
             self.on_update_temp_value_label()
+
+    def on_update_opacity(self):
+        if self.is_activated and self.opacity < 255:
+            self.opacity += 15
+            self.on_update_sprite_opacity()
+
+        if not self.is_activated and self.opacity > 0:
+            self.opacity -= 15
+            self.on_update_sprite_opacity()
+
+    def on_update_sprite_opacity(self):
+        if self.opacity <= 0:
+            self.description_label.delete()
+            self.description_label = None
+            self.temp_value_label.delete()
+            self.temp_value_label = None
+        else:
+            self.description_label.color = (*WHITE_RGB, self.opacity)
+            self.temp_value_label.color = (*WHITE_RGB, self.opacity)

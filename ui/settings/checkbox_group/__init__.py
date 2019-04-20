@@ -1,7 +1,7 @@
 from pyglet.text import Label
 
 from i18n import I18N_RESOURCES
-from ui import SURFACE, BATCHES, GROUPS
+from ui import *
 
 
 class CheckboxGroup:
@@ -43,17 +43,40 @@ class CheckboxGroup:
         self.screen_resolution = (1280, 720)
         self.anchor_left_center_point = (0, 0)
         self.height = 0
+        self.opacity = 0
+
+    def on_update_opacity(self):
+        if self.is_activated and self.opacity < 255:
+            self.opacity += 15
+            self.on_update_sprite_opacity()
+
+        if not self.is_activated and self.opacity > 0:
+            self.opacity -= 15
+            self.on_update_sprite_opacity()
+
+    def on_update_sprite_opacity(self):
+        if self.opacity <= 0:
+            self.description_label.delete()
+            self.description_label = None
+        else:
+            self.description_label.color = (*WHITE_RGB, self.opacity)
+
+        for checkbox in self.checkboxes:
+            checkbox.on_update_opacity()
 
     def on_activate(self):
         """
         Activates the checkbox group, creates description label and activates checkboxes.
         """
         self.is_activated = True
-        self.description_label = Label(I18N_RESOURCES[self.description_key][self.current_locale],
-                                       font_name='Arial', font_size=self.height // 5 * 2,
-                                       x=self.anchor_left_center_point[0] + self.screen_resolution[0] // 4,
-                                       y=self.anchor_left_center_point[1], anchor_x='center', anchor_y='center',
-                                       batch=self.batches['ui_batch'], group=self.groups['button_text'])
+        if self.description_label is None:
+            self.description_label = Label(I18N_RESOURCES[self.description_key][self.current_locale],
+                                           font_name='Arial', font_size=self.height // 5 * 2,
+                                           color=(*WHITE_RGB, self.opacity),
+                                           x=self.anchor_left_center_point[0] + self.screen_resolution[0] // 4,
+                                           y=self.anchor_left_center_point[1], anchor_x='center', anchor_y='center',
+                                           batch=self.batches['ui_batch'], group=self.groups['button_text'])
+
         for checkbox in self.checkboxes:
             checkbox.on_activate()
 
@@ -71,8 +94,6 @@ class CheckboxGroup:
         Deactivates the checkbox group, deletes all labels, deactivates all buttons and checkboxes.
         """
         self.is_activated = False
-        self.description_label.delete()
-        self.description_label = None
         for checkbox in self.checkboxes:
             checkbox.on_deactivate()
 

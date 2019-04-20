@@ -23,6 +23,7 @@ class ScreenResolutionControl(EnumValueControl):
                               self.possible_values_list[self.choice_state][1])
         if self.temp_value_label is None:
             self.temp_value_label = Label(text, font_name='Arial', font_size=self.height // 5 * 2,
+                                          color=(*WHITE_RGB, self.opacity),
                                           x=self.anchor_center_point[0],
                                           y=self.anchor_center_point[1] - 10 * self.height // 8,
                                           anchor_x='center', anchor_y='center',
