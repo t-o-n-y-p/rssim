@@ -73,7 +73,8 @@ class MapView(View):
 
             :param button:                      button that was clicked
             """
-            button.on_deactivate()
+            button.paired_button.opacity = button.opacity
+            button.on_deactivate(instant=True)
             button.paired_button.on_activate()
             self.controller.on_zoom_in()
 
@@ -84,7 +85,8 @@ class MapView(View):
 
             :param button:                      button that was clicked
             """
-            button.on_deactivate()
+            button.paired_button.opacity = button.opacity
+            button.on_deactivate(instant=True)
             button.paired_button.on_activate()
             self.controller.on_zoom_out()
 

@@ -49,7 +49,8 @@ class Checkbox:
 
             :param button:                      button that was clicked
             """
-            button.on_deactivate()
+            button.paired_button.opacity = button.opacity
+            button.on_deactivate(instant=True)
             button.paired_button.on_activate()
             self.on_update_state_action(True)
 
@@ -60,7 +61,8 @@ class Checkbox:
 
             :param button:                      button that was clicked
             """
-            button.on_deactivate()
+            button.paired_button.opacity = button.opacity
+            button.on_deactivate(instant=True)
             button.paired_button.on_activate()
             self.on_update_state_action(False)
 

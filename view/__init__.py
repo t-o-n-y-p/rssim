@@ -248,6 +248,14 @@ def non_zero_opacity(fn):
     return _handle_if_opacity_is_positive
 
 
+def shader_sprite_exists(fn):
+    def _handle_if_shader_sprite_exists(*args, **kwargs):
+        if args[0].shader_sprite is not None:
+            fn(*args, **kwargs)
+
+    return _handle_if_shader_sprite_exists
+
+
 # --------------------- CONSTANTS ---------------------
 MAP_WIDTH = 8192                                # full-size map width
 MAP_HEIGHT = 4096                               # full-size map height
@@ -331,6 +339,8 @@ class View:
         self.user_db_cursor.execute('SELECT current_locale FROM i18n')
         self.current_locale = self.user_db_cursor.fetchone()[0]
         self.all_notifications_enabled = False
+        self.shader = None
+        self.shader_sprite = None
 
     def on_update(self):
         """

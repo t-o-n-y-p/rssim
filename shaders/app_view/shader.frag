@@ -13,6 +13,7 @@ layout(pixel_center_integer) in vec4 gl_FragCoord;
 out vec4 color_frag;
 uniform ivec2 screen_resolution = ivec2(1280, 720);
 uniform int top_bar_height = 36;
+uniform int opacity = 0;
 
 bool is_general_border()
 /*
@@ -62,13 +63,13 @@ void main()
     float top_bar_opacity = 0.97;
     // draw app window border and top bar border
     if (is_general_border())
-        color_frag = vec4(1.0, 0.0, 0.0, 1.0);
+        color_frag = vec4(1.0, 0.0, 0.0, float(opacity) / 255.0);
     // fill top bar with color and draw top bar buttons borders
     else if (is_inside_top_bar())
         if (is_top_bar_button_border())
-            color_frag = vec4(1.0, 0.0, 0.0, 1.0);
+            color_frag = vec4(1.0, 0.0, 0.0, float(opacity) / 255.0);
         else
-            color_frag = vec4(vec3(0.0), top_bar_opacity);
+            color_frag = vec4(vec3(0.0), top_bar_opacity * float(opacity) / 255.0);
     // all other pixels are transparent here
     else
         color_frag = vec4(0.0);

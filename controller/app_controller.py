@@ -36,6 +36,7 @@ class AppController(Controller):
         self.main_menu.on_update_view()
         self.game.on_update_view()
         self.settings.on_update_view()
+        self.fps.on_update_view()
 
     @controller_is_not_active
     def on_activate(self):

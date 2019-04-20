@@ -95,7 +95,8 @@ class ConstructorCell:
 
             :param button:                      button that was clicked
             """
-            button.on_deactivate()
+            button.paired_button.opacity = button.opacity
+            button.on_deactivate(instant=True)
             button.paired_button.on_activate()
             self.on_set_money_target_action(self.construction_type, self.row, self.entity_number)
 
@@ -106,7 +107,8 @@ class ConstructorCell:
 
             :param button:                      button that was clicked
             """
-            button.on_deactivate()
+            button.paired_button.opacity = button.opacity
+            button.on_deactivate(instant=True)
             button.paired_button.on_activate()
             self.on_reset_money_target_action()
 

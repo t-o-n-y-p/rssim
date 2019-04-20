@@ -82,7 +82,8 @@ class AppView(View):
 
             :param button:                      button that was clicked
             """
-            button.on_deactivate()
+            button.paired_button.opacity = button.opacity
+            button.on_deactivate(instant=True)
             button.paired_button.on_activate()
             self.controller.on_fullscreen_button_click()
 
@@ -93,7 +94,8 @@ class AppView(View):
 
             :param button:                      button that was clicked
             """
-            button.on_deactivate()
+            button.paired_button.opacity = button.opacity
+            button.on_deactivate(instant=True)
             button.paired_button.on_activate()
             self.controller.on_restore_button_click()
 
@@ -115,8 +117,7 @@ class AppView(View):
 
         super().__init__(logger=getLogger('root.app.view'))
         self.title_label = None
-        self.app_view_shader_sprite = None
-        self.flag_us_sprite = None
+        self.flag_gb_sprite = None
         self.flag_ru_sprite = None
         self.close_game_button = CloseGameButton(on_click_action=on_close_game)
         self.iconify_button = IconifyButton(on_click_action=on_iconify_game)
@@ -139,8 +140,34 @@ class AppView(View):
         self.on_mouse_press_handlers.append(self.handle_mouse_press)
         self.on_mouse_release_handlers.append(self.handle_mouse_release)
         self.on_mouse_drag_handlers.append(self.handle_mouse_drag)
-        self.app_view_shader = from_files_names('shaders/shader.vert', 'shaders/app_view/shader.frag')
+        self.shader = from_files_names('shaders/shader.vert', 'shaders/app_view/shader.frag')
+        self.shader_sprite = None
         self.on_init_graphics()
+
+    def on_update(self):
+        if self.is_activated and self.opacity < 255:
+            self.opacity += 15
+            self.title_label.color = (*WHITE_RGB, self.opacity)
+            self.flag_gb_sprite.opacity = self.opacity
+            self.flag_ru_sprite.opacity = self.opacity
+
+        if not self.is_activated and self.opacity > 0:
+            self.opacity -= 15
+            self.title_label.color = (*WHITE_RGB, self.opacity)
+            self.flag_gb_sprite.opacity = self.opacity
+            self.flag_ru_sprite.opacity = self.opacity
+            if self.opacity <= 0:
+                self.title_label.delete()
+                self.title_label = None
+                self.flag_gb_sprite.delete()
+                self.flag_gb_sprite = None
+                self.flag_ru_sprite.delete()
+                self.flag_ru_sprite = None
+                self.shader_sprite.delete()
+                self.shader_sprite = None
+
+        for b in self.buttons:
+            b.on_update()
 
     @view_is_not_active
     def on_activate(self):
@@ -149,27 +176,29 @@ class AppView(View):
         """
         self.is_activated = True
         self.title_label = Label('Railway Station Simulator', font_name='Arial',
-                                 font_size=int(16 / 40 * self.top_bar_height),
+                                 font_size=int(16 / 40 * self.top_bar_height), color=(*WHITE_RGB, self.opacity),
                                  x=self.top_bar_height * 2 + self.top_bar_height // 4,
                                  y=self.screen_resolution[1] - self.top_bar_height // 2,
                                  anchor_x='left', anchor_y='center', batch=self.batches['ui_batch'],
                                  group=self.groups['button_text'])
-        if self.app_view_shader_sprite is None:
-            self.app_view_shader_sprite\
+        if self.shader_sprite is None:
+            self.shader_sprite\
                 = self.batches['main_frame'].add(4, GL_QUADS, self.groups['main_frame'],
                                                  ('v2f/static', (-1.0, -1.0, -1.0, 1.0, 1.0, 1.0, 1.0, -1.0)))
 
-        if self.flag_us_sprite is None:
-            self.flag_us_sprite = Sprite(FLAG_GB, x=self.top_bar_height // 2,
+        if self.flag_gb_sprite is None:
+            self.flag_gb_sprite = Sprite(FLAG_GB, x=self.top_bar_height // 2,
                                          y=self.screen_resolution[1] - self.top_bar_height // 2,
                                          batch=self.batches['ui_batch'], group=self.groups['button_text'])
-            self.flag_us_sprite.scale = 0.6 * self.top_bar_height / 256
+            self.flag_gb_sprite.opacity = self.opacity
+            self.flag_gb_sprite.scale = 0.6 * self.top_bar_height / 256.0
 
         if self.flag_ru_sprite is None:
             self.flag_ru_sprite = Sprite(FLAG_RU, x=self.top_bar_height - 2 + self.top_bar_height // 2,
                                          y=self.screen_resolution[1] - self.top_bar_height // 2,
                                          batch=self.batches['ui_batch'], group=self.groups['button_text'])
-            self.flag_ru_sprite.scale = 0.6 * self.top_bar_height / 256
+            self.flag_ru_sprite.opacity = self.opacity
+            self.flag_ru_sprite.scale = 0.6 * self.top_bar_height / 256.0
 
         for b in self.buttons:
             if b.to_activate_on_controller_init:
@@ -181,14 +210,6 @@ class AppView(View):
         Deactivates the view and destroys all labels and buttons.
         """
         self.is_activated = False
-        self.app_view_shader_sprite.delete()
-        self.app_view_shader_sprite = None
-        self.title_label.delete()
-        self.title_label = None
-        self.flag_us_sprite.delete()
-        self.flag_us_sprite = None
-        self.flag_ru_sprite.delete()
-        self.flag_ru_sprite = None
         for b in self.buttons:
             b.on_deactivate()
 
@@ -204,9 +225,9 @@ class AppView(View):
             self.title_label.x = self.top_bar_height * 2 + self.top_bar_height // 4
             self.title_label.y = self.screen_resolution[1] - self.top_bar_height // 2
             self.title_label.font_size = int(16 / 40 * self.top_bar_height)
-            self.flag_us_sprite.position = (self.top_bar_height // 2,
+            self.flag_gb_sprite.position = (self.top_bar_height // 2,
                                             self.screen_resolution[1] - self.top_bar_height // 2)
-            self.flag_us_sprite.scale = 0.6 * self.top_bar_height / 256
+            self.flag_gb_sprite.scale = 0.6 * self.top_bar_height / 256
             self.flag_ru_sprite.position = (self.top_bar_height // 2 + self.top_bar_height - 2,
                                             self.screen_resolution[1] - self.top_bar_height // 2)
             self.flag_ru_sprite.scale = 0.6 * self.top_bar_height / 256
@@ -298,16 +319,17 @@ class AppView(View):
                      self.game_window_position[2] - self.game_window_position[0],
                      self.game_window_position[3] - self.game_window_position[1], SWP_NOREDRAW)
 
-    @view_is_active
+    @shader_sprite_exists
     def on_apply_shaders_and_draw_vertices(self):
         """
         Activates the shader, initializes all shader uniforms, draws shader sprite and deactivates the shader.
         """
-        self.app_view_shader.use()
-        self.app_view_shader.uniforms.screen_resolution = self.screen_resolution
-        self.app_view_shader.uniforms.top_bar_height = self.top_bar_height
-        self.app_view_shader_sprite.draw(GL_QUADS)
-        self.app_view_shader.clear()
+        self.shader.use()
+        self.shader.uniforms.screen_resolution = self.screen_resolution
+        self.shader.uniforms.top_bar_height = self.top_bar_height
+        self.shader.uniforms.opacity = self.opacity
+        self.shader_sprite.draw(GL_QUADS)
+        self.shader.clear()
 
     def on_init_graphics(self):
         self.on_change_screen_resolution(self.screen_resolution)

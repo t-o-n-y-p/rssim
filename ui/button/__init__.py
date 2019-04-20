@@ -222,11 +222,18 @@ class Button:
                                     group=self.groups['button_text'])
 
     @button_is_activated
-    def on_deactivate(self):
+    def on_deactivate(self, instant=False):
         """
         Deactivates the button. Removes background and text label from the graphics memory.
         """
         self.is_activated = False
+        if instant:
+            self.opacity = 0
+            self.vertex_list.delete()
+            self.vertex_list = None
+            if self.text_label is not None:
+                self.text_label.delete()
+                self.text_label = None
 
     def on_position_changed(self, position):
         """
@@ -400,14 +407,20 @@ class Button:
         if self.is_activated and self.opacity < 255:
             self.opacity += 15
             self.vertex_list.colors[3::4] \
-                = BUTTON_BACKGROUND_ALPHA[self.state][self.transparent] * float(self.opacity) / 255.0
+                = (BUTTON_BACKGROUND_ALPHA[self.state][self.transparent] * float(self.opacity) / 255.0,
+                   BUTTON_BACKGROUND_ALPHA[self.state][self.transparent] * float(self.opacity) / 255.0,
+                   BUTTON_BACKGROUND_ALPHA[self.state][self.transparent] * float(self.opacity) / 255.0,
+                   BUTTON_BACKGROUND_ALPHA[self.state][self.transparent] * float(self.opacity) / 255.0)
             if self.text_label is not None:
                 self.text_label.color = (*WHITE_RGB, self.opacity)
 
-        if not self.is_activated and self.opacity < 0:
+        if not self.is_activated and self.opacity > 0:
             self.opacity -= 15
             self.vertex_list.colors[3::4] \
-                = BUTTON_BACKGROUND_ALPHA[self.state][self.transparent] * float(self.opacity) / 255.0
+                = (BUTTON_BACKGROUND_ALPHA[self.state][self.transparent] * float(self.opacity) / 255.0,
+                   BUTTON_BACKGROUND_ALPHA[self.state][self.transparent] * float(self.opacity) / 255.0,
+                   BUTTON_BACKGROUND_ALPHA[self.state][self.transparent] * float(self.opacity) / 255.0,
+                   BUTTON_BACKGROUND_ALPHA[self.state][self.transparent] * float(self.opacity) / 255.0)
             if self.text_label is not None:
                 self.text_label.color = (*WHITE_RGB, self.opacity)
 

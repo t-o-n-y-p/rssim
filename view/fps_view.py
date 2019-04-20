@@ -20,17 +20,31 @@ class FPSView(View):
         self.fps_label = None
         self.on_init_graphics()
 
+    def on_update(self):
+        if self.is_activated and self.opacity < 255:
+            self.opacity += 15
+            self.fps_label.color = (*WHITE_RGB, self.opacity)
+
+        if not self.is_activated and self.opacity > 0:
+            self.opacity -= 15
+            self.fps_label.color = (*WHITE_RGB, self.opacity)
+            if self.opacity <= 0:
+                self.fps_label.delete()
+                self.fps_label = None
+
     @view_is_not_active
     def on_activate(self):
         """
         Activates the view and creates sprites and labels.
         """
         self.is_activated = True
-        self.fps_label = Label(text='0 FPS', font_name='Courier New', font_size=int(16 / 40 * self.top_bar_height),
-                               x=self.screen_resolution[0] - self.top_bar_height * 3 - self.top_bar_height // 4,
-                               y=self.screen_resolution[1] - self.top_bar_height // 2,
-                               anchor_x='right', anchor_y='center', batch=self.batches['ui_batch'],
-                               group=self.groups['button_text'])
+        if self.fps_label is None:
+            self.fps_label = Label(text='0 FPS', font_name='Courier New', font_size=int(16 / 40 * self.top_bar_height),
+                                   color=(*WHITE_RGB, self.opacity),
+                                   x=self.screen_resolution[0] - self.top_bar_height * 3 - self.top_bar_height // 4,
+                                   y=self.screen_resolution[1] - self.top_bar_height // 2,
+                                   anchor_x='right', anchor_y='center', batch=self.batches['ui_batch'],
+                                   group=self.groups['button_text'])
 
     @view_is_active
     def on_deactivate(self):
@@ -38,8 +52,6 @@ class FPSView(View):
         Deactivates the view and destroys all labels and buttons.
         """
         self.is_activated = False
-        self.fps_label.delete()
-        self.fps_label = None
 
     @view_is_active
     def on_update_fps(self, fps):

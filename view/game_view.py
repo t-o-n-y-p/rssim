@@ -65,7 +65,8 @@ class GameView(View):
 
             :param button:                      button that was clicked
             """
-            button.on_deactivate()
+            button.paired_button.opacity = button.opacity
+            button.on_deactivate(instant=True)
             button.paired_button.on_activate()
             self.controller.on_pause_game()
 
@@ -76,7 +77,8 @@ class GameView(View):
 
             :param button:                      button that was clicked
             """
-            button.on_deactivate()
+            button.paired_button.opacity = button.opacity
+            button.on_deactivate(instant=True)
             button.paired_button.on_activate()
             self.controller.on_resume_game()
 
