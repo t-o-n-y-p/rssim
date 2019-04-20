@@ -41,19 +41,17 @@ class SignalView(View):
         self.flip_needed = bool(self.flip_needed)
         self.on_init_graphics()
 
-    @signal_is_displayed_on_map
     def on_update(self):
-        """
-        Updates fade-in/fade-out animations.
-        """
-        if self.is_activated and self.signal_sprite.opacity < 255:
-            self.signal_sprite.opacity += 15
+        self.on_update_opacity()
 
-        if not self.is_activated and self.signal_sprite.opacity > 0:
-            self.signal_sprite.opacity -= 15
-            if self.signal_sprite.opacity <= 0:
+    def on_update_sprite_opacity(self):
+        if self.opacity <= 0:
+            if self.signal_sprite is not None:
                 self.signal_sprite.delete()
                 self.signal_sprite = None
+        else:
+            if self.signal_sprite is not None:
+                self.signal_sprite.opacity = self.opacity
 
     @view_is_not_active
     def on_activate(self):

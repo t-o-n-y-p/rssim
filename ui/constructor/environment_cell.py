@@ -40,21 +40,21 @@ class EnvironmentCell(ConstructorCell):
 
             if self.description_label.text != text:
                 self.description_label.text = text
-                self.description_label.color = ORANGE
+                self.description_label.color = (*ORANGE_RGB, self.opacity)
 
         elif self.data[UNLOCK_AVAILABLE]:
             text = I18N_RESOURCES[self.description_keys['UNLOCK_AVAILABLE']][self.current_locale]\
                 .format(self.data[PRICE]).replace(',', ' ')
             if self.description_label.text != text:
                 self.description_label.text = text
-                self.description_label.color = GREEN
+                self.description_label.color = (*GREEN_RGB, self.opacity)
 
         elif not self.data[UNLOCK_CONDITION_FROM_LEVEL]:
             text = I18N_RESOURCES[self.description_keys['UNLOCK_CONDITION_FROM_LEVEL']][self.current_locale]\
                 .format(self.data[LEVEL_REQUIRED])
             if self.description_label.text != text:
                 self.description_label.text = text
-                self.description_label.color = GREY
+                self.description_label.color = (*GREY_RGB, self.opacity)
 
         elif not self.data[UNLOCK_CONDITION_FROM_PREVIOUS_ENVIRONMENT]:
             text = I18N_RESOURCES[
@@ -62,4 +62,4 @@ class EnvironmentCell(ConstructorCell):
                 ][self.current_locale].format(self.entity_number - 1)
             if self.description_label.text != text:
                 self.description_label.text = text
-                self.description_label.color = GREY
+                self.description_label.color = (*GREY_RGB, self.opacity)

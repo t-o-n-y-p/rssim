@@ -21,16 +21,14 @@ class FPSView(View):
         self.on_init_graphics()
 
     def on_update(self):
-        if self.is_activated and self.opacity < 255:
-            self.opacity += 15
-            self.fps_label.color = (*WHITE_RGB, self.opacity)
+        self.on_update_opacity()
 
-        if not self.is_activated and self.opacity > 0:
-            self.opacity -= 15
+    def on_update_sprite_opacity(self):
+        if self.opacity <= 0:
+            self.fps_label.delete()
+            self.fps_label = None
+        else:
             self.fps_label.color = (*WHITE_RGB, self.opacity)
-            if self.opacity <= 0:
-                self.fps_label.delete()
-                self.fps_label = None
 
     @view_is_not_active
     def on_activate(self):

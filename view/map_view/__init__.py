@@ -168,58 +168,53 @@ class MapView(View):
         self.on_mouse_press_handlers.append(self.handle_mouse_press)
         self.on_mouse_release_handlers.append(self.handle_mouse_release)
         self.on_mouse_drag_handlers.append(self.handle_mouse_drag)
-        self.map_view_shader_sprite = None
-        self.map_view_shader = from_files_names('shaders/shader.vert', 'shaders/map_view/shader.frag')
+        self.shader_sprite = None
+        self.shader = from_files_names('shaders/shader.vert', 'shaders/map_view/shader.frag')
         self.map_view_shader_bottom_limit = 0.0
         self.map_view_shader_upper_limit = 0.0
         self.on_init_graphics()
 
     def on_update(self):
-        """
-        Updates fade-in/fade-out animations.
-        """
-        if self.is_activated and self.opacity < 255:
-            self.opacity += 15
-            self.main_map_sprite.opacity += 15
-            self.environment_sprite.opacity += 15
-
-        if not self.is_activated and self.opacity > 0:
-            self.opacity -= 15
-            if self.opacity <= 0:
-                self.map_view_shader_sprite.delete()
-                self.map_view_shader_sprite = None
-
-            self.main_map_sprite.opacity -= 15
-            if self.main_map_sprite.opacity <= 0:
-                self.main_map_sprite.delete()
-                self.main_map_sprite = None
-
-            self.environment_sprite.opacity -= 15
-            if self.environment_sprite.opacity <= 0:
-                self.environment_sprite.delete()
-                self.environment_sprite = None
-
-        if self.is_mini_map_activated and self.mini_map_opacity < 255:
-            self.mini_map_opacity += 15
-            self.mini_map_sprite.opacity += 15
-            self.mini_environment_sprite.opacity += 15
-
-        if not self.is_mini_map_activated and self.mini_map_opacity > 0:
-            self.mini_map_opacity -= 15
-            self.mini_map_sprite.opacity -= 15
-            if self.mini_map_sprite.opacity <= 0:
-                self.mini_map_sprite.delete()
-                self.mini_map_sprite = None
-
-            self.mini_environment_sprite.opacity -= 15
-            if self.mini_environment_sprite.opacity <= 0:
-                self.mini_environment_sprite.delete()
-                self.mini_environment_sprite = None
-
         cpu_time = perf_counter()
         if self.is_mini_map_activated and not self.map_move_mode \
                 and cpu_time - self.mini_map_timer > MINI_MAP_FADE_OUT_TIMER:
             self.is_mini_map_activated = False
+
+        self.on_update_opacity()
+        self.on_update_mini_map_opacity()
+        for b in self.buttons:
+            b.on_update_opacity()
+
+    def on_update_mini_map_opacity(self):
+        if self.is_mini_map_activated and self.mini_map_opacity < 255:
+            self.mini_map_opacity += 15
+            self.on_update_mini_map_sprite_opacity()
+
+        if not self.is_mini_map_activated and self.mini_map_opacity > 0:
+            self.mini_map_opacity -= 15
+            self.on_update_mini_map_sprite_opacity()
+
+    def on_update_sprite_opacity(self):
+        if self.opacity <= 0:
+            self.shader_sprite.delete()
+            self.shader_sprite = None
+            self.main_map_sprite.delete()
+            self.main_map_sprite = None
+            self.environment_sprite.delete()
+            self.environment_sprite = None
+        else:
+            self.main_map_sprite.opacity = self.opacity
+            self.environment_sprite.opacity = self.opacity
+
+    def on_update_mini_map_sprite_opacity(self):
+        if self.mini_map_opacity <= 0:
+            self.mini_map_sprite.delete()
+            self.mini_map_sprite = None
+            self.mini_environment_sprite.delete()
+            self.mini_environment_sprite = None
+        else:
+            self.mini_map_sprite.opacity = self.mini_map_opacity
+            self.mini_environment_sprite.opacity = self.mini_map_opacity
 
     @mini_map_is_not_active
     def on_activate_mini_map(self):
@@ -231,7 +226,7 @@ class MapView(View):
             self.mini_environment_sprite = Sprite(self.environment, x=self.mini_map_position[0],
                                                   y=self.mini_map_position[1], batch=self.batches['mini_map_batch'],
                                                   group=self.groups['mini_environment'])
-            self.mini_environment_sprite.opacity = 0
+            self.mini_environment_sprite.opacity = self.mini_map_opacity
 
         self.mini_environment_sprite.scale = self.mini_map_width / MAP_WIDTH
         if self.mini_map_sprite is None:
@@ -239,7 +234,7 @@ class MapView(View):
                                           y=self.mini_map_position[1]
                                           + int(self.mini_map_offset[1] * self.mini_map_width / MAP_WIDTH),
                                           batch=self.batches['mini_map_batch'], group=self.groups['mini_map'])
-            self.mini_map_sprite.opacity = 0
+            self.mini_map_sprite.opacity = self.mini_map_opacity
 
         self.mini_map_sprite.scale = self.mini_map_width / MAP_WIDTH
 
@@ -250,8 +245,8 @@ class MapView(View):
         """
         self.on_init_graphics()
         self.is_activated = True
-        if self.map_view_shader_sprite is None:
-            self.map_view_shader_sprite \
+        if self.shader_sprite is None:
+            self.shader_sprite \
                 = self.batches['main_frame'].add(4, GL_QUADS, self.groups['main_frame'],
                                                  ('v2f/static', (-1.0, self.map_view_shader_bottom_limit,
                                                                  -1.0, self.map_view_shader_upper_limit,
@@ -262,13 +257,13 @@ class MapView(View):
             self.main_map_sprite = Sprite(self.main_map, x=self.base_offset[0] + self.map_offset[0],
                                           y=self.base_offset[1] + self.map_offset[1],
                                           batch=self.batches['main_batch'], group=self.groups['main_map'])
-            self.main_map_sprite.opacity = 0
+            self.main_map_sprite.opacity = self.opacity
 
         self.main_map_sprite.scale = self.zoom_factor
         if self.environment_sprite is None:
             self.environment_sprite = Sprite(self.environment, x=self.base_offset[0], y=self.base_offset[1],
                                              batch=self.batches['main_batch'], group=self.groups['environment'])
-            self.environment_sprite.opacity = 0
+            self.environment_sprite.opacity = self.opacity
 
         self.environment_sprite.scale = self.zoom_factor
         for b in self.buttons:
@@ -402,10 +397,10 @@ class MapView(View):
         self.map_view_shader_bottom_limit = self.bottom_bar_height / self.screen_resolution[1] * 2 - 1
         self.map_view_shader_upper_limit = 1 - self.top_bar_height / self.screen_resolution[1] * 2
         if self.is_activated:
-            self.map_view_shader_sprite.vertices = (-1.0, self.map_view_shader_bottom_limit,
-                                                    -1.0, self.map_view_shader_upper_limit,
-                                                    1.0, self.map_view_shader_upper_limit,
-                                                    1.0, self.map_view_shader_bottom_limit)
+            self.shader_sprite.vertices = (-1.0, self.map_view_shader_bottom_limit,
+                                           -1.0, self.map_view_shader_upper_limit,
+                                           1.0, self.map_view_shader_upper_limit,
+                                           1.0, self.map_view_shader_bottom_limit)
 
         self.mini_map_width = self.screen_resolution[0] // 4
         self.mini_map_height = round(self.mini_map_width / 2)
@@ -552,27 +547,27 @@ class MapView(View):
         """
         Activates the shader, initializes all shader uniforms, draws shader sprite and deactivates the shader.
         """
-        self.map_view_shader.use()
-        self.map_view_shader.uniforms.map_opacity = self.opacity
-        self.map_view_shader.uniforms.is_button_activated \
+        self.shader.use()
+        self.shader.uniforms.map_opacity = self.opacity
+        self.shader.uniforms.is_button_activated \
             = [int(self.zoom_in_button.is_activated or self.zoom_out_button.is_activated), ]
-        self.map_view_shader.uniforms.button_x \
+        self.shader.uniforms.button_x \
             = [self.zoom_in_button.position[0], ]
-        self.map_view_shader.uniforms.button_y \
+        self.shader.uniforms.button_y \
             = [self.zoom_in_button.position[1], ]
-        self.map_view_shader.uniforms.button_w \
+        self.shader.uniforms.button_w \
             = [self.zoom_in_button.button_size[0], ]
-        self.map_view_shader.uniforms.button_h \
+        self.shader.uniforms.button_h \
             = [self.zoom_in_button.button_size[1], ]
-        self.map_view_shader.uniforms.number_of_buttons = 1
-        self.map_view_shader.uniforms.mini_map_opacity = self.mini_map_opacity
-        self.map_view_shader.uniforms.mini_map_position_size = (self.mini_map_position[0], self.mini_map_position[1],
-                                                                self.mini_map_width, self.mini_map_height)
-        self.map_view_shader.uniforms.mini_map_frame_position_size \
+        self.shader.uniforms.number_of_buttons = 1
+        self.shader.uniforms.mini_map_opacity = self.mini_map_opacity
+        self.shader.uniforms.mini_map_position_size = (self.mini_map_position[0], self.mini_map_position[1],
+                                                       self.mini_map_width, self.mini_map_height)
+        self.shader.uniforms.mini_map_frame_position_size \
             = (self.mini_map_frame_position[0], self.mini_map_frame_position[1],
                self.mini_map_frame_width, self.mini_map_frame_height)
-        self.map_view_shader_sprite.draw(GL_QUADS)
-        self.map_view_shader.clear()
+        self.shader_sprite.draw(GL_QUADS)
+        self.shader.clear()
 
     def on_update_map_id(self):
         pass

@@ -67,19 +67,16 @@ class CrossoverView(View):
         self.on_init_graphics()
 
     def on_update(self):
-        """
-        Updates fade-in/fade-out animations.
-        """
-        if self.is_activated and self.sprite is not None:
-            if self.sprite.opacity < 255:
-                self.sprite.opacity += 15
+        self.on_update_opacity()
 
-        if not self.is_activated and self.sprite is not None:
-            if self.sprite.opacity > 0:
-                self.sprite.opacity -= 15
-                if self.sprite.opacity <= 0:
-                    self.sprite.delete()
-                    self.sprite = None
+    def on_update_sprite_opacity(self):
+        if self.opacity <= 0:
+            if self.sprite is not None:
+                self.sprite.delete()
+                self.sprite = None
+        else:
+            if self.sprite is not None:
+                self.sprite.opacity = self.opacity
 
     @view_is_not_active
     def on_activate(self):

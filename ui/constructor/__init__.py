@@ -149,6 +149,7 @@ class ConstructorCell:
         self.buttons = [self.enable_money_target_button, self.disable_money_target_button, self.build_button]
         self.money = 0
         self.money_target_activated = False
+        self.opacity = 0
 
     @cell_is_active
     def on_assign_new_data(self, entity_number, data):
@@ -164,7 +165,8 @@ class ConstructorCell:
         if len(self.data) == 0 or self.entity_number == 0:
             if self.placeholder_label is None:
                 self.placeholder_label = Label(I18N_RESOURCES[self.placeholder_key][self.current_locale],
-                                               font_name='Arial', font_size=int(11 * self.size[1] / 40), color=GREY,
+                                               font_name='Arial', font_size=int(11 * self.size[1] / 40),
+                                               color=(*GREY_RGB, self.opacity),
                                                x=self.position[0] + self.size[0] // 2,
                                                y=self.position[1] + self.size[1] // 2,
                                                anchor_x='center', anchor_y='center',
@@ -196,7 +198,8 @@ class ConstructorCell:
                 if self.locked_label is None:
                     self.locked_label = Label('', font_name='Webdings',
                                               font_size=int(self.build_button.base_font_size_property * self.size[1]),
-                                              color=GREY, x=self.position[0] + self.size[0] - self.size[1] // 2,
+                                              color=(*GREY_RGB, self.opacity),
+                                              x=self.position[0] + self.size[0] - self.size[1] // 2,
                                               y=self.position[1] + self.size[1] // 2,
                                               anchor_x='center', anchor_y='center',
                                               batch=self.batches['ui_batch'], group=self.groups['button_text'])
@@ -206,6 +209,7 @@ class ConstructorCell:
             if self.title_label is None:
                 self.title_label = Label(I18N_RESOURCES[self.title_key][self.current_locale].format(self.entity_number),
                                          font_name='Arial', font_size=int(0.3 * self.size[1]),
+                                         color=(*WHITE_RGB, self.opacity),
                                          x=self.position[0] + self.size[1] // 8,
                                          y=self.position[1] + int(0.7 * self.size[1]),
                                          anchor_x='left', anchor_y='center',
@@ -214,7 +218,8 @@ class ConstructorCell:
                 self.title_label.text = I18N_RESOURCES[self.title_key][self.current_locale].format(self.entity_number)
 
             if self.description_label is None:
-                self.description_label = Label(' ', font_name='Arial', font_size=self.size[1] // 5, color=GREY,
+                self.description_label = Label(' ', font_name='Arial', font_size=self.size[1] // 5,
+                                               color=(*GREY_RGB, self.opacity),
                                                x=self.position[0] + self.size[1] // 8,
                                                y=self.position[1] + int(22 * self.size[1] / 80),
                                                anchor_x='left', anchor_y='center',
@@ -275,7 +280,8 @@ class ConstructorCell:
                 if self.locked_label is None:
                     self.locked_label = Label('', font_name='Webdings',
                                               font_size=int(self.build_button.base_font_size_property * self.size[1]),
-                                              color=GREY, x=self.position[0] + self.size[0] - self.size[1] // 2,
+                                              color=(*GREY_RGB, self.opacity),
+                                              x=self.position[0] + self.size[0] - self.size[1] // 2,
                                               y=self.position[1] + self.size[1] // 2,
                                               anchor_x='center', anchor_y='center',
                                               batch=self.batches['ui_batch'], group=self.groups['button_text'])
@@ -296,22 +302,6 @@ class ConstructorCell:
         """
         self.is_activated = False
         self.data = []
-        if self.locked_label is not None:
-            self.locked_label.delete()
-            self.locked_label = None
-
-        if self.title_label is not None:
-            self.title_label.delete()
-            self.title_label = None
-
-        if self.description_label is not None:
-            self.description_label.delete()
-            self.description_label = None
-
-        if self.placeholder_label is not None:
-            self.placeholder_label.delete()
-            self.placeholder_label = None
-
         for b in self.buttons:
             b.on_deactivate()
 
@@ -397,3 +387,43 @@ class ConstructorCell:
                 self.enable_money_target_button.on_activate()
             else:
                 self.enable_money_target_button.on_deactivate()
+
+    def on_update_opacity(self):
+        if self.is_activated and self.opacity < 255:
+            self.opacity += 15
+            self.on_update_sprite_opacity()
+
+        if not self.is_activated and self.opacity > 0:
+            self.opacity -= 15
+            self.on_update_sprite_opacity()
+
+    def on_update_sprite_opacity(self):
+        if self.opacity <= 0:
+            if self.locked_label is not None:
+                self.locked_label.delete()
+                self.locked_label = None
+
+            if self.title_label is not None:
+                self.title_label.delete()
+                self.title_label = None
+
+            if self.description_label is not None:
+                self.description_label.delete()
+                self.description_label = None
+
+            if self.placeholder_label is not None:
+                self.placeholder_label.delete()
+                self.placeholder_label = None
+
+        else:
+            if self.locked_label is not None:
+                self.locked_label.color = (*GREY_RGB, self.opacity)
+
+            if self.title_label is not None:
+                self.title_label.color = (*WHITE_RGB, self.opacity)
+
+            if self.description_label is not None:
+                self.description_label.color = (*GREY_RGB, self.opacity)
+
+            if self.placeholder_label is not None:
+                self.placeholder_label.color = (*GREY_RGB, self.opacity)
