@@ -1,7 +1,7 @@
 from pyglet.text.document import FormattedDocument
 from pyglet.text.layout import ScrollableTextLayout
 
-from ui import SURFACE, BATCHES, GROUPS
+from ui import *
 
 
 def page_is_active(fn):
@@ -38,6 +38,7 @@ class LicensePage:
         self.license_text = ''
         self.document = None
         self.license_layout = None
+        self.opacity = 0
 
     def on_activate(self):
         self.is_activated = True
@@ -47,7 +48,7 @@ class LicensePage:
             'font_size': int(72 / 1280 * self.screen_resolution[0]) // 5,
             'bold': False,
             'italic': False,
-            'color': (255, 255, 255, 255),
+            'color': (*WHITE_RGB, self.opacity),
             'align': 'center'
         })
         self.license_layout = ScrollableTextLayout(document=self.document, width=self.size[0], height=self.size[1],
@@ -55,10 +56,12 @@ class LicensePage:
                                                    group=self.groups['button_text'])
         self.license_layout.x, self.license_layout.y = self.position
 
-    def on_deactivate(self):
+    def on_deactivate(self, instant=False):
         self.is_activated = False
-        self.license_layout.delete()
-        self.license_layout = None
+        if instant:
+            self.opacity = 0
+            self.license_layout.delete()
+            self.license_layout = None
 
     def on_change_screen_resolution(self, screen_resolution):
         self.screen_resolution = screen_resolution
@@ -72,12 +75,7 @@ class LicensePage:
             self.license_layout.x, self.license_layout.y = self.position
             self.license_layout.width, self.license_layout.height = self.size
             self.document.set_style(0, len(self.document.text), {
-                'font_name': 'Arial',
-                'font_size': int(72 / 1280 * self.screen_resolution[0]) // 5,
-                'bold': False,
-                'italic': False,
-                'color': (255, 255, 255, 255),
-                'align': 'center'
+                'font_size': int(72 / 1280 * self.screen_resolution[0]) // 5
             })
 
     def on_update_current_locale(self, new_locale):
@@ -87,3 +85,21 @@ class LicensePage:
     @cursor_is_inside_the_text_box
     def handle_mouse_scroll(self, x, y, scroll_x, scroll_y):
         self.license_layout.view_y += scroll_y * self.document.get_style('font_size')
+
+    def on_update_opacity(self):
+        if self.is_activated and self.opacity < 255:
+            self.opacity += 15
+            self.on_update_sprite_opacity()
+
+        if not self.is_activated and self.opacity > 0:
+            self.opacity -= 15
+            self.on_update_sprite_opacity()
+
+    def on_update_sprite_opacity(self):
+        if self.opacity <= 0:
+            self.license_layout.delete()
+            self.license_layout = None
+        else:
+            self.document.set_style(0, len(self.document.text), {
+                'color': (*WHITE_RGB, self.opacity)
+            })

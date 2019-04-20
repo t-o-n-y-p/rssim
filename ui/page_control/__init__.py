@@ -1,7 +1,7 @@
 from pyglet.text import Label
 
 from i18n import I18N_RESOURCES
-from ui import SURFACE, BATCHES, GROUPS
+from ui import *
 from ui.button.previous_page_button import PreviousPageButton
 from ui.button.next_page_button import NextPageButton
 
@@ -9,7 +9,8 @@ from ui.button.next_page_button import NextPageButton
 class PageControl:
     def __init__(self, current_locale, logger):
         def on_navigate_to_previous_page(button):
-            self.pages[self.current_page].on_deactivate()
+            self.pages[self.current_page - 1].opacity = self.pages[self.current_page].opacity
+            self.pages[self.current_page].on_deactivate(instant=True)
             self.current_page -= 1
             self.pages[self.current_page].on_activate()
             self.current_page_label.text = I18N_RESOURCES[self.current_page_label_key][self.current_locale] \
@@ -17,7 +18,8 @@ class PageControl:
             self.on_update_page_control_buttons()
 
         def on_navigate_to_next_page(button):
-            self.pages[self.current_page].on_deactivate()
+            self.pages[self.current_page + 1].opacity = self.pages[self.current_page].opacity
+            self.pages[self.current_page].on_deactivate(instant=True)
             self.current_page += 1
             self.pages[self.current_page].on_activate()
             self.current_page_label.text = I18N_RESOURCES[self.current_page_label_key][self.current_locale] \
@@ -37,27 +39,29 @@ class PageControl:
         self.previous_page_button = PreviousPageButton(on_click_action=on_navigate_to_previous_page)
         self.next_page_button = NextPageButton(on_click_action=on_navigate_to_next_page)
         self.buttons = [self.previous_page_button, self.next_page_button]
+        self.opacity = 0
 
     def on_activate(self):
         self.is_activated = True
         self.current_page = 0
-        text = I18N_RESOURCES[self.current_page_label_key][self.current_locale]\
-            .format(self.current_page + 1, len(self.pages))
-        self.current_page_label \
-            = Label(text, font_name='Arial',
-                    font_size=int(self.previous_page_button.base_font_size_property
-                                  * int(72 / 1280 * self.screen_resolution[0]) // 2),
-                    x=self.screen_resolution[0] // 2,
-                    y=self.position[1] + int(72 / 1280 * self.screen_resolution[0]) // 4,
-                    anchor_x='center', anchor_y='center', batch=self.batches['ui_batch'],
-                    group=self.groups['button_text'])
+        if self.current_page_label is None:
+            text = I18N_RESOURCES[self.current_page_label_key][self.current_locale]\
+                .format(self.current_page + 1, len(self.pages))
+            self.current_page_label \
+                = Label(text, font_name='Arial',
+                        font_size=int(self.previous_page_button.base_font_size_property
+                                      * int(72 / 1280 * self.screen_resolution[0]) // 2),
+                        color=(*WHITE_RGB, self.opacity),
+                        x=self.screen_resolution[0] // 2,
+                        y=self.position[1] + int(72 / 1280 * self.screen_resolution[0]) // 4,
+                        anchor_x='center', anchor_y='center', batch=self.batches['ui_batch'],
+                        group=self.groups['button_text'])
+
         self.pages[self.current_page].on_activate()
         self.next_page_button.on_activate()
 
     def on_deactivate(self):
         self.is_activated = False
-        self.current_page_label.delete()
-        self.current_page_label = None
         self.pages[self.current_page].on_deactivate()
         for b in self.buttons:
             b.on_deactivate()
@@ -109,3 +113,22 @@ class PageControl:
         if self.current_page_label is not None:
             self.current_page_label.text = I18N_RESOURCES[self.current_page_label_key][self.current_locale]\
                 .format(self.current_page + 1, len(self.pages))
+
+    def on_update_opacity(self):
+        if self.is_activated and self.opacity < 255:
+            self.opacity += 15
+            self.on_update_sprite_opacity()
+
+        if not self.is_activated and self.opacity > 0:
+            self.opacity -= 15
+            self.on_update_sprite_opacity()
+
+    def on_update_sprite_opacity(self):
+        if self.opacity <= 0:
+            self.current_page_label.delete()
+            self.current_page_label = None
+        else:
+            self.current_page_label.color = (*WHITE_RGB, self.opacity)
+
+        for p in self.pages:
+            p.on_update_opacity()

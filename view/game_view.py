@@ -129,34 +129,112 @@ class GameView(View):
         self.on_init_graphics()
 
     def on_update(self):
+        if self.progress_bar_exp_inactive is None:
+            self.progress_bar_exp_inactive = Sprite(self.progress_bar_inactive_image,
+                                                    x=self.exp_offset,
+                                                    y=self.bottom_bar_height // 8,
+                                                    batch=self.batches['ui_batch'],
+                                                    group=self.groups['button_background'])
+            self.progress_bar_exp_inactive.scale = self.bottom_bar_height / 80
+            self.progress_bar_exp_inactive.opacity = self.opacity
+
+        if self.progress_bar_exp_active is None:
+            self.progress_bar_exp_active = Sprite(self.progress_bar_exp_active_image, x=self.exp_offset,
+                                                  y=self.bottom_bar_height // 8,
+                                                  batch=self.batches['ui_batch'],
+                                                  group=self.groups['button_text'])
+            self.progress_bar_exp_active.scale = self.bottom_bar_height / 80
+            self.progress_bar_exp_active.opacity = self.opacity
+
+        if self.level_label is None:
+            self.level_label = Label(I18N_RESOURCES['level_string'][self.current_locale].format(0),
+                                     font_name='Perfo', bold=True, color=(*WHITE_RGB, self.opacity),
+                                     font_size=int(22 / 80 * self.bottom_bar_height),
+                                     x=self.exp_offset + int(self.progress_bar_inactive_image.width / 2 / 80
+                                                             * self.bottom_bar_height),
+                                     y=self.bottom_bar_height // 2,
+                                     anchor_x='center', anchor_y='center', batch=self.batches['ui_batch'],
+                                     group=self.groups['button_text'])
+            return
+
+        if self.progress_bar_money_inactive is None:
+            self.progress_bar_money_inactive = Sprite(self.progress_bar_inactive_image,
+                                                      x=self.money_offset,
+                                                      y=self.bottom_bar_height // 8,
+                                                      batch=self.batches['ui_batch'],
+                                                      group=self.groups['button_background'])
+            self.progress_bar_money_inactive.scale = self.bottom_bar_height / 80
+            self.progress_bar_money_inactive.opacity = self.opacity
+
+        if self.progress_bar_money_active is None:
+            self.progress_bar_money_active = Sprite(self.progress_bar_money_active_image, x=self.money_offset,
+                                                    y=self.bottom_bar_height // 8,
+                                                    batch=self.batches['ui_batch'],
+                                                    group=self.groups['button_text'])
+            self.progress_bar_money_active.scale = self.bottom_bar_height / 80
+            self.progress_bar_money_active.opacity = self.opacity
+
+        if self.money_label is None:
+            self.money_label = Label('0', font_name='Perfo', bold=True, color=(*GREEN_RGB, self.opacity),
+                                     font_size=int(22 / 80 * self.bottom_bar_height),
+                                     x=self.money_offset + int(self.progress_bar_inactive_image.width / 2 / 80
+                                                               * self.bottom_bar_height),
+                                     y=self.bottom_bar_height // 2,
+                                     anchor_x='center', anchor_y='center',
+                                     batch=self.batches['ui_batch'], group=self.groups['button_text'])
+            return
+
         self.on_update_opacity()
 
     def on_update_sprite_opacity(self):
         if self.opacity <= 0:
             self.game_view_shader_sprite.delete()
             self.game_view_shader_sprite = None
-            self.progress_bar_exp_inactive.delete()
-            self.progress_bar_exp_inactive = None
-            self.progress_bar_exp_active.delete()
-            self.progress_bar_exp_active = None
-            self.progress_bar_money_inactive.delete()
-            self.progress_bar_money_inactive = None
-            self.progress_bar_money_active.delete()
-            self.progress_bar_money_active = None
             self.time_label.delete()
             self.time_label = None
-            self.money_label.delete()
-            self.money_label = None
-            self.level_label.delete()
-            self.level_label = None
+            if self.progress_bar_exp_inactive is not None:
+                self.progress_bar_exp_inactive.delete()
+                self.progress_bar_exp_inactive = None
+
+            if self.progress_bar_exp_active is not None:
+                self.progress_bar_exp_active.delete()
+                self.progress_bar_exp_active = None
+
+            if self.progress_bar_money_inactive is not None:
+                self.progress_bar_money_inactive.delete()
+                self.progress_bar_money_inactive = None
+
+            if self.progress_bar_money_active is not None:
+                self.progress_bar_money_active.delete()
+                self.progress_bar_money_active = None
+
+            if self.money_label is not None:
+                self.money_label.delete()
+                self.money_label = None
+
+            if self.level_label is not None:
+                self.level_label.delete()
+                self.level_label = None
+
         else:
-            self.progress_bar_exp_inactive.opacity -= 15
-            self.progress_bar_exp_active.opacity -= 15
-            self.progress_bar_money_inactive.opacity -= 15
-            self.progress_bar_money_active.opacity -= 15
             self.time_label.color = (*WHITE_RGB, self.opacity)
-            self.level_label.color = (*WHITE_RGB, self.opacity)
-            self.money_label.color = (*GREEN_RGB, self.opacity)
+            if self.progress_bar_exp_inactive is not None:
+                self.progress_bar_exp_inactive.opacity = self.opacity
+
+            if self.progress_bar_exp_active is not None:
+                self.progress_bar_exp_active.opacity = self.opacity
+
+            if self.progress_bar_money_inactive is not None:
+                self.progress_bar_money_inactive.opacity = self.opacity
+
+            if self.progress_bar_money_active is not None:
+                self.progress_bar_money_active.opacity = self.opacity
+
+            if self.level_label is not None:
+                self.level_label.color = (*WHITE_RGB, self.opacity)
+
+            if self.money_label is not None:
+                self.money_label.color = (*GREEN_RGB, self.opacity)
 
     @view_is_not_active
     def on_activate(self):
@@ -170,63 +248,16 @@ class GameView(View):
                                                  ('v2f/static', (-1.0, -1.0, -1.0, self.game_view_shader_upper_limit,
                                                                  1.0, self.game_view_shader_upper_limit, 1.0, -1.0)))
 
-        if self.progress_bar_exp_inactive is None:
-            self.progress_bar_exp_inactive = Sprite(self.progress_bar_inactive_image,
-                                                    x=self.exp_offset,
-                                                    y=self.bottom_bar_height // 8,
-                                                    batch=self.batches['ui_batch'],
-                                                    group=self.groups['button_background'])
-            self.progress_bar_exp_inactive.scale = self.bottom_bar_height / 80
-            self.progress_bar_exp_inactive.opacity = self.opacity
+        if self.time_label is None:
+            self.time_label = Label('{0:0>2} : {1:0>2}'
+                                    .format((self.game_time // FRAMES_IN_ONE_HOUR + 12) % HOURS_IN_ONE_DAY,
+                                            (self.game_time // FRAMES_IN_ONE_MINUTE) % MINUTES_IN_ONE_HOUR),
+                                    font_name='Perfo', bold=True, font_size=int(32 / 80 * self.bottom_bar_height),
+                                    color=(*WHITE_RGB, self.opacity),
+                                    x=self.screen_resolution[0] - int(181 / 80 * self.bottom_bar_height),
+                                    y=self.bottom_bar_height // 2, anchor_x='center', anchor_y='center',
+                                    batch=self.batches['ui_batch'], group=self.groups['button_text'])
 
-        if self.progress_bar_money_inactive is None:
-            self.progress_bar_money_inactive = Sprite(self.progress_bar_inactive_image,
-                                                      x=self.money_offset,
-                                                      y=self.bottom_bar_height // 8,
-                                                      batch=self.batches['ui_batch'],
-                                                      group=self.groups['button_background'])
-            self.progress_bar_money_inactive.scale = self.bottom_bar_height / 80
-            self.progress_bar_money_inactive.opacity = self.opacity
-
-        if self.progress_bar_exp_active is None:
-            self.progress_bar_exp_active = Sprite(self.progress_bar_exp_active_image, x=self.exp_offset,
-                                                  y=self.bottom_bar_height // 8,
-                                                  batch=self.batches['ui_batch'],
-                                                  group=self.groups['button_text'])
-            self.progress_bar_exp_active.scale = self.bottom_bar_height / 80
-            self.progress_bar_exp_active.opacity = self.opacity
-
-        if self.progress_bar_money_active is None:
-            self.progress_bar_money_active = Sprite(self.progress_bar_money_active_image, x=self.money_offset,
-                                                    y=self.bottom_bar_height // 8,
-                                                    batch=self.batches['ui_batch'],
-                                                    group=self.groups['button_text'])
-            self.progress_bar_money_active.scale = self.bottom_bar_height / 80
-            self.progress_bar_money_active.opacity = self.opacity
-
-        self.level_label = Label(I18N_RESOURCES['level_string'][self.current_locale].format(0),
-                                 font_name='Perfo', bold=True, color=(*WHITE_RGB, self.opacity),
-                                 font_size=int(22 / 80 * self.bottom_bar_height),
-                                 x=self.exp_offset + int(self.progress_bar_inactive_image.width / 2 / 80
-                                                         * self.bottom_bar_height),
-                                 y=self.bottom_bar_height // 2,
-                                 anchor_x='center', anchor_y='center', batch=self.batches['ui_batch'],
-                                 group=self.groups['button_text'])
-        self.money_label = Label('0', font_name='Perfo', bold=True, color=(*GREEN_RGB, self.opacity),
-                                 font_size=int(22 / 80 * self.bottom_bar_height),
-                                 x=self.money_offset + int(self.progress_bar_inactive_image.width / 2 / 80
-                                                           * self.bottom_bar_height),
-                                 y=self.bottom_bar_height // 2,
-                                 anchor_x='center', anchor_y='center',
-                                 batch=self.batches['ui_batch'], group=self.groups['button_text'])
-        self.time_label = Label('{0:0>2} : {1:0>2}'
-                                .format((self.game_time // FRAMES_IN_ONE_HOUR + 12) % HOURS_IN_ONE_DAY,
-                                        (self.game_time // FRAMES_IN_ONE_MINUTE) % MINUTES_IN_ONE_HOUR),
-                                font_name='Perfo', bold=True, font_size=int(32 / 80 * self.bottom_bar_height),
-                                color=(*WHITE_RGB, self.opacity),
-                                x=self.screen_resolution[0] - int(181 / 80 * self.bottom_bar_height),
-                                y=self.bottom_bar_height // 2, anchor_x='center', anchor_y='center',
-                                batch=self.batches['ui_batch'], group=self.groups['button_text'])
         for b in self.buttons:
             if b.to_activate_on_controller_init:
                 b.on_activate()

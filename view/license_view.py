@@ -29,14 +29,10 @@ class LicenseView(View):
         """
         Updates fade-in/fade-out animations.
         """
-        if self.is_activated and self.opacity < 255:
-            self.opacity += 15
+        self.on_update_opacity()
 
-        if not self.is_activated and self.opacity > 0:
-            self.opacity -= 15
-            if self.opacity <= 0:
-                self.license_view_shader_sprite.delete()
-                self.license_view_shader_sprite = None
+    def on_update_sprite_opacity(self):
+        self.license_page_control.on_update_opacity()
 
     @view_is_not_active
     def on_activate(self):
