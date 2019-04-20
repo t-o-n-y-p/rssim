@@ -1,5 +1,5 @@
 from pyglet.text.document import FormattedDocument
-from pyglet.text.layout import ScrollableTextLayout
+from pyglet.text.layout import IncrementalTextLayout
 
 from ui import *
 
@@ -42,7 +42,9 @@ class LicensePage:
 
     def on_activate(self):
         self.is_activated = True
-        self.document = FormattedDocument(text=self.license_text)
+        if self.document is None:
+            self.document = FormattedDocument(text=self.license_text)
+
         self.document.set_style(0, len(self.document.text), {
             'font_name': 'Arial',
             'font_size': int(72 / 1280 * self.screen_resolution[0]) // 5,
@@ -51,9 +53,9 @@ class LicensePage:
             'color': (*WHITE_RGB, self.opacity),
             'align': 'center'
         })
-        self.license_layout = ScrollableTextLayout(document=self.document, width=self.size[0], height=self.size[1],
-                                                   multiline=True, batch=self.batches['ui_batch'],
-                                                   group=self.groups['button_text'])
+        self.license_layout = IncrementalTextLayout(document=self.document, width=self.size[0], height=self.size[1],
+                                                    multiline=True, batch=self.batches['ui_batch'],
+                                                    group=self.groups['button_text'])
         self.license_layout.x, self.license_layout.y = self.position
 
     def on_deactivate(self, instant=False):
