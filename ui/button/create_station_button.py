@@ -6,7 +6,7 @@ from ui.button import Button
 class CreateStationButton(Button):
     def __init__(self, on_click_action):
         super().__init__(logger=getLogger('root.button.create_station_button'))
-        self.transparent = False
+        self.transparent = True
         self.to_activate_on_controller_init = True
         self.text = ' '
         self.font_name = 'Perfo'

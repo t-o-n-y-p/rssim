@@ -41,12 +41,8 @@ class TrainView(View):
         self.state = None
         self.on_init_graphics()
 
-    @view_is_active
     def on_update(self):
-        """
-        Updates fade-in/fade-out animations and creates or deletes car sprites
-        depending on car position and train state.
-        """
+        self.on_update_opacity()
         for i in range(len(self.car_position)):
             if self.zoom_out_activated:
                 x = self.base_offset[0] + self.car_position[i][0] // 2
@@ -56,7 +52,7 @@ class TrainView(View):
                 y = self.base_offset[1] + self.car_position[i][1]
 
             if x in range(-150, self.screen_resolution[0] + 150) \
-                    and y in range(-100, self.screen_resolution[1] + 100):
+                    and y in range(-100, self.screen_resolution[1] + 100) and i < len(self.car_sprites):
                 if self.car_sprites[i] is None:
                     if i == 0:
                         self.car_sprites[i] = Sprite(self.car_head_image[self.car_image_collection][self.direction],
@@ -72,6 +68,7 @@ class TrainView(View):
                                                      group=self.groups['train'])
 
                     self.car_sprites[i].update(scale=self.zoom_factor, rotation=self.car_position[i][2])
+                    self.car_sprites[i].opacity = self.opacity
                 else:
                     self.car_sprites[i].update(x=x, y=y, rotation=self.car_position[i][2], scale=self.zoom_factor)
 
@@ -81,6 +78,7 @@ class TrainView(View):
                             = Sprite(self.boarding_light_image[self.car_image_collection], x=x, y=y,
                                      batch=self.batches['main_batch'], group=self.groups['boarding_light'])
                         self.boarding_light_sprites[i].scale = self.zoom_factor
+                        self.boarding_light_sprites[i].opacity = self.opacity
                     else:
                         self.boarding_light_sprites[i].update(x=x, y=y, scale=self.zoom_factor)
 
@@ -90,6 +88,18 @@ class TrainView(View):
                         self.boarding_light_sprites[i] = None
 
             else:
+                if i < len(self.car_sprites):
+                    if self.car_sprites[i] is not None:
+                        self.car_sprites[i].delete()
+                        self.car_sprites[i] = None
+
+                    if self.boarding_light_sprites[i] is not None:
+                        self.boarding_light_sprites[i].delete()
+                        self.boarding_light_sprites[i] = None
+
+    def on_update_sprite_opacity(self):
+        if self.opacity <= 0:
+            for i in range(len(self.car_sprites)):
                 if self.car_sprites[i] is not None:
                     self.car_sprites[i].delete()
                     self.car_sprites[i] = None
@@ -97,6 +107,16 @@ class TrainView(View):
                 if self.boarding_light_sprites[i] is not None:
                     self.boarding_light_sprites[i].delete()
                     self.boarding_light_sprites[i] = None
+
+            self.car_sprites.clear()
+            self.boarding_light_sprites.clear()
+        else:
+            for i in range(len(self.car_sprites)):
+                if self.car_sprites[i] is not None:
+                    self.car_sprites[i].opacity = self.opacity
+
+                if self.boarding_light_sprites[i] is not None:
+                    self.boarding_light_sprites[i].opacity = self.opacity
 
     @view_is_not_active
     def on_activate(self):
@@ -115,17 +135,6 @@ class TrainView(View):
         Deactivates the view and destroys all sprites and labels.
         """
         self.is_activated = False
-        for i in range(len(self.car_sprites)):
-            if self.car_sprites[i] is not None:
-                self.car_sprites[i].delete()
-                self.car_sprites[i] = None
-
-            if self.boarding_light_sprites[i] is not None:
-                self.boarding_light_sprites[i].delete()
-                self.boarding_light_sprites[i] = None
-
-        self.car_sprites.clear()
-        self.boarding_light_sprites.clear()
 
     def on_change_base_offset(self, new_base_offset):
         """
