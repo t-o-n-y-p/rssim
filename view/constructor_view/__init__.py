@@ -161,20 +161,6 @@ class ConstructorView(View):
             b.on_deactivate()
 
     def on_update(self):
-        """
-        Updates fade-in/fade-out animations and create sprites if some are missing.
-        Not all sprites are created at once, they are created one by one to avoid massive FPS drop.
-        """
-        self.on_update_opacity()
-        for b in self.buttons:
-            b.on_update_opacity()
-
-        for j in range(CONSTRUCTOR_VIEW_TRACK_CELLS):
-            self.constructor_cells[TRACKS][j].on_update_opacity()
-
-        for j in range(CONSTRUCTOR_VIEW_ENVIRONMENT_CELLS):
-            self.constructor_cells[ENVIRONMENT][j].on_update_opacity()
-
         if self.is_activated:
             remaining_tracks = sorted(list(self.construction_state_matrix[TRACKS].keys()))
             for j in range(min(len(remaining_tracks), CONSTRUCTOR_VIEW_TRACK_CELLS)):
@@ -215,6 +201,18 @@ class ConstructorView(View):
                     self.constructor_cells[ENVIRONMENT][j].on_activate()
                     self.constructor_cells[ENVIRONMENT][j].on_assign_new_data(0, [])
                     return
+
+    def on_update_opacity(self, new_opacity):
+        self.opacity = new_opacity
+        self.on_update_sprite_opacity()
+        for b in self.buttons:
+            b.on_update_opacity(new_opacity)
+
+        for j in range(CONSTRUCTOR_VIEW_TRACK_CELLS):
+            self.constructor_cells[TRACKS][j].on_update_opacity(new_opacity)
+
+        for j in range(CONSTRUCTOR_VIEW_ENVIRONMENT_CELLS):
+            self.constructor_cells[ENVIRONMENT][j].on_update_opacity(new_opacity)
 
     def on_update_sprite_opacity(self):
         if self.opacity <= 0:

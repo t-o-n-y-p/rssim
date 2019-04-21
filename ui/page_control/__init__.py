@@ -114,14 +114,10 @@ class PageControl:
             self.current_page_label.text = I18N_RESOURCES[self.current_page_label_key][self.current_locale]\
                 .format(self.current_page + 1, len(self.pages))
 
-    def on_update_opacity(self):
-        if self.is_activated and self.opacity < 255:
-            self.opacity += 15
-            self.on_update_sprite_opacity()
-
-        if not self.is_activated and self.opacity > 0:
-            self.opacity -= 15
-            self.on_update_sprite_opacity()
+    def on_update_opacity(self, new_opacity):
+        self.opacity = new_opacity
+        self.on_update_sprite_opacity()
+        self.pages[self.current_page].on_update_opacity(new_opacity)
 
     def on_update_sprite_opacity(self):
         if self.opacity <= 0:
@@ -129,6 +125,3 @@ class PageControl:
             self.current_page_label = None
         else:
             self.current_page_label.color = (*WHITE_RGB, self.opacity)
-
-        for p in self.pages:
-            p.on_update_opacity()

@@ -15,8 +15,8 @@ def fade_animation_is_not_active(fn):
 
 
 class FadeAnimation:
-    def __init__(self, view, logger):
-        self.view = view
+    def __init__(self, animation_object, logger):
+        self.animation_object = animation_object
         self.logger = logger
         self.opacity_chart = []
         self.current_opacity_chart_index = 0
@@ -27,7 +27,7 @@ class FadeAnimation:
     @fade_animation_is_not_active
     def on_activate(self):
         self.is_activated = True
-        self.current_opacity_chart_index = self.opacity_chart.index(self.view.opacity)
+        self.current_opacity_chart_index = self.opacity_chart.index(self.animation_object.opacity)
 
     @fade_animation_is_active
     def on_update(self):
@@ -36,9 +36,12 @@ class FadeAnimation:
         else:
             self.current_opacity_chart_index = len(self.opacity_chart) - 1
 
-        self.view.on_update_opacity(self.opacity_chart[self.current_opacity_chart_index])
+        self.animation_object.on_update_opacity(self.opacity_chart[self.current_opacity_chart_index])
         if self.current_opacity_chart_index == len(self.opacity_chart) - 1:
             self.on_deactivate()
+
+    def on_deactivate(self):
+        pass
 
     def on_update_fade_animation_state(self, new_state):
         self.fade_animations_enabled = new_state

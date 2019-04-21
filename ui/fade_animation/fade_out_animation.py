@@ -4,8 +4,9 @@ from ui.fade_animation import *
 
 
 class FadeOutAnimation(FadeAnimation):
-    def __init__(self, view):
-        super().__init__(view=view, logger=getLogger(f'{view.__class__.__name__}.fade_out_animation'))
+    def __init__(self, animation_object):
+        super().__init__(animation_object=animation_object,
+                         logger=getLogger(f'{animation_object.__class__.__name__}.fade_out_animation'))
         self.opacity_chart = [255, 238, 221, 204, 187, 170, 153, 136, 119, 102, 85, 68, 51, 34, 17, 0]
 
     @fade_animation_is_active

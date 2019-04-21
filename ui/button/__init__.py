@@ -168,11 +168,14 @@ class Button:
         self.opacity = 0
 
     @button_is_not_activated
-    def on_activate(self):
+    def on_activate(self, instant=False):
         """
         Activates the button. Creates background and text label for the button.
         """
         self.is_activated = True
+        if instant:
+            self.opacity = 255
+
         gl.glEnable(gl.GL_BLEND)
         gl.glBlendFunc(gl.GL_SRC_ALPHA, gl.GL_ONE_MINUS_SRC_ALPHA)
         # 2 pixels are left for red button border,
@@ -391,14 +394,9 @@ class Button:
         if self.on_leave_action is not None:
             self.on_leave_action()
 
-    def on_update_opacity(self):
-        if self.is_activated and self.opacity < 255:
-            self.opacity += 15
-            self.on_update_sprite_opacity()
-
-        if not self.is_activated and self.opacity > 0:
-            self.opacity -= 15
-            self.on_update_sprite_opacity()
+    def on_update_opacity(self, new_opacity):
+        self.opacity = new_opacity
+        self.on_update_sprite_opacity()
 
     def on_update_sprite_opacity(self):
         if self.opacity <= 0:

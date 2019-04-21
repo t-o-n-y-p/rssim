@@ -88,14 +88,9 @@ class LicensePage:
     def handle_mouse_scroll(self, x, y, scroll_x, scroll_y):
         self.license_layout.view_y += scroll_y * self.document.get_style('font_size')
 
-    def on_update_opacity(self):
-        if self.is_activated and self.opacity < 255:
-            self.opacity += 15
-            self.on_update_sprite_opacity()
-
-        if not self.is_activated and self.opacity > 0:
-            self.opacity -= 15
-            self.on_update_sprite_opacity()
+    def on_update_opacity(self, new_opacity):
+        self.opacity = new_opacity
+        self.on_update_sprite_opacity()
 
     def on_update_sprite_opacity(self):
         if self.opacity <= 0:

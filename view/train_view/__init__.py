@@ -42,7 +42,6 @@ class TrainView(View):
         self.on_init_graphics()
 
     def on_update(self):
-        self.on_update_opacity()
         for i in range(len(self.car_position)):
             if self.zoom_out_activated:
                 x = self.base_offset[0] + self.car_position[i][0] // 2
@@ -96,6 +95,10 @@ class TrainView(View):
                     if self.boarding_light_sprites[i] is not None:
                         self.boarding_light_sprites[i].delete()
                         self.boarding_light_sprites[i] = None
+
+    def on_update_opacity(self, new_opacity):
+        self.opacity = new_opacity
+        self.on_update_sprite_opacity()
 
     def on_update_sprite_opacity(self):
         if self.opacity <= 0:

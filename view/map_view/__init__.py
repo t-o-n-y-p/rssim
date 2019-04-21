@@ -180,10 +180,13 @@ class MapView(View):
                 and cpu_time - self.mini_map_timer > MINI_MAP_FADE_OUT_TIMER:
             self.is_mini_map_activated = False
 
-        self.on_update_opacity()
         self.on_update_mini_map_opacity()
+
+    def on_update_opacity(self, new_opacity):
+        self.opacity = new_opacity
+        self.on_update_sprite_opacity()
         for b in self.buttons:
-            b.on_update_opacity()
+            b.on_update_opacity(new_opacity)
 
     def on_update_mini_map_opacity(self):
         if self.is_mini_map_activated and self.mini_map_opacity < 255:

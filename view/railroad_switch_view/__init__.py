@@ -60,7 +60,11 @@ class RailroadSwitchView(View):
         self.on_init_graphics()
 
     def on_update(self):
-        self.on_update_opacity()
+        pass
+
+    def on_update_opacity(self, new_opacity):
+        self.opacity = new_opacity
+        self.on_update_sprite_opacity()
 
     def on_update_sprite_opacity(self):
         if self.opacity <= 0:

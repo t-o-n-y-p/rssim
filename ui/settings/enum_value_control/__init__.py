@@ -184,14 +184,9 @@ class EnumValueControl:
         if self.temp_value_label is not None:
             self.on_update_temp_value_label()
 
-    def on_update_opacity(self):
-        if self.is_activated and self.opacity < 255:
-            self.opacity += 15
-            self.on_update_sprite_opacity()
-
-        if not self.is_activated and self.opacity > 0:
-            self.opacity -= 15
-            self.on_update_sprite_opacity()
+    def on_update_opacity(self, new_opacity):
+        self.opacity = new_opacity
+        self.on_update_sprite_opacity()
 
     def on_update_sprite_opacity(self):
         if self.opacity <= 0:

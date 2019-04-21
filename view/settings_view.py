@@ -170,10 +170,14 @@ class SettingsView(View):
         self.on_init_graphics()
 
     def on_update(self):
-        self.on_update_opacity()
-        self.screen_resolution_control.on_update_opacity()
-        self.display_fps_checkbox.on_update_opacity()
-        self.notifications_checkbox_group.on_update_opacity()
+        pass
+
+    def on_update_opacity(self, new_opacity):
+        self.opacity = new_opacity
+        self.on_update_sprite_opacity()
+        self.screen_resolution_control.on_update_opacity(new_opacity)
+        self.display_fps_checkbox.on_update_opacity(new_opacity)
+        self.notifications_checkbox_group.on_update_opacity(new_opacity)
         for b in self.buttons:
             b.on_update_opacity()
 
