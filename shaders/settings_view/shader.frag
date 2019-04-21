@@ -6,7 +6,7 @@
         color_frag - calculated normalized RGBA color for the pixel
     Uniforms (all positions are in 2D Cartesian coordinates from the left bottom point):
         int settings_opacity - opacity of settings screen
-        int is_button_activated[] - indicates if button with given index is activated
+        int button_opacity[] - opacity of button with given index
         int button_x[] - X position of button with given index
         int button_y[] - Y position of button with given index
         int button_w[] - width of button with given index
@@ -17,7 +17,7 @@
 layout(pixel_center_integer) in vec4 gl_FragCoord;
 out vec4 color_frag;
 uniform int settings_opacity = 0;
-uniform int is_button_activated[14];
+uniform int button_opacity[14];
 uniform int button_x[14];
 uniform int button_y[14];
 uniform int button_w[14];
@@ -32,7 +32,7 @@ bool is_button_border()
     int margin_x, margin_y;
     for(int i = 0; i < number_of_buttons; i++)
     {
-        if (is_button_activated[i] == 1)
+        if (button_opacity[i] > 0)
         {
             margin_x = int(gl_FragCoord[0]) - button_x[i];
             margin_y = int(gl_FragCoord[1]) - button_y[i];

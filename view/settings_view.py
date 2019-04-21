@@ -266,19 +266,19 @@ class SettingsView(View):
         """
         self.shader.use()
         self.shader.uniforms.settings_opacity = self.opacity
-        is_button_activated = []
+        button_opacity = []
         button_x = []
         button_y = []
         button_w = []
         button_h = []
         for b in self.buttons:
-            is_button_activated.append(int(b.is_activated))
+            button_opacity.append(b.opacity)
             button_x.append(b.position[0])
             button_y.append(b.position[1])
             button_w.append(b.button_size[0])
             button_h.append(b.button_size[1])
 
-        self.shader.uniforms.is_button_activated = is_button_activated
+        self.shader.uniforms.button_opacity = button_opacity
         self.shader.uniforms.button_x = button_x
         self.shader.uniforms.button_y = button_y
         self.shader.uniforms.button_w = button_w
