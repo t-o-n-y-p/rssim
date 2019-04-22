@@ -44,6 +44,33 @@ from view.crossover_view.passenger_map_crossover_view import PassengerMapCrossov
 from view.train_view.passenger_train_view import PassengerTrainView
 from view.dispatcher_view.passenger_map_dispatcher_view import PassengerMapDispatcherView
 from view.constructor_view.passenger_map_constructor_view import PassengerMapConstructorView
+from ui.transition_animation import TransitionAnimation
+from ui.fade_animation.fade_in_animation.app_fade_in_animation import AppFadeInAnimation
+from ui.fade_animation.fade_in_animation.constructor_fade_in_animation import ConstructorFadeInAnimation
+from ui.fade_animation.fade_in_animation.crossover_fade_in_animation import CrossoverFadeInAnimation
+from ui.fade_animation.fade_in_animation.fps_fade_in_animation import FPSFadeInAnimation
+from ui.fade_animation.fade_in_animation.game_fade_in_animation import GameFadeInAnimation
+from ui.fade_animation.fade_in_animation.license_fade_in_animation import LicenseFadeInAnimation
+from ui.fade_animation.fade_in_animation.main_menu_fade_in_animation import MainMenuFadeInAnimation
+from ui.fade_animation.fade_in_animation.map_fade_in_animation import MapFadeInAnimation
+from ui.fade_animation.fade_in_animation.railroad_switch_fade_in_animation import RailroadSwitchFadeInAnimation
+from ui.fade_animation.fade_in_animation.scheduler_fade_in_animation import SchedulerFadeInAnimation
+from ui.fade_animation.fade_in_animation.settings_fade_in_animation import SettingsFadeInAnimation
+from ui.fade_animation.fade_in_animation.signal_fade_in_animation import SignalFadeInAnimation
+from ui.fade_animation.fade_in_animation.train_fade_in_animation import TrainFadeInAnimation
+from ui.fade_animation.fade_out_animation.app_fade_out_animation import AppFadeOutAnimation
+from ui.fade_animation.fade_out_animation.constructor_fade_out_animation import ConstructorFadeOutAnimation
+from ui.fade_animation.fade_out_animation.crossover_fade_out_animation import CrossoverFadeOutAnimation
+from ui.fade_animation.fade_out_animation.fps_fade_out_animation import FPSFadeOutAnimation
+from ui.fade_animation.fade_out_animation.game_fade_out_animation import GameFadeOutAnimation
+from ui.fade_animation.fade_out_animation.license_fade_out_animation import LicenseFadeOutAnimation
+from ui.fade_animation.fade_out_animation.main_menu_fade_out_animation import MainMenuFadeOutAnimation
+from ui.fade_animation.fade_out_animation.map_fade_out_animation import MapFadeOutAnimation
+from ui.fade_animation.fade_out_animation.railroad_switch_fade_out_animation import RailroadSwitchFadeOutAnimation
+from ui.fade_animation.fade_out_animation.scheduler_fade_out_animation import SchedulerFadeOutAnimation
+from ui.fade_animation.fade_out_animation.settings_fade_out_animation import SettingsFadeOutAnimation
+from ui.fade_animation.fade_out_animation.signal_fade_out_animation import SignalFadeOutAnimation
+from ui.fade_animation.fade_out_animation.train_fade_out_animation import TrainFadeOutAnimation
 from database import CONFIG_DB_CURSOR, USER_DB_CURSOR
 
 
@@ -70,6 +97,8 @@ def create_app(loader):
     :return:                        App object controller
     """
     controller = AppController(loader)
+    controller.fade_in_animation = AppFadeInAnimation(controller)
+    controller.fade_out_animation = AppFadeOutAnimation(controller)
     model = AppModel()
     view = AppView()
     controller.model = model
@@ -96,6 +125,8 @@ def _create_game(app):
     :return:                        Game object controller
     """
     controller = GameController(app)
+    controller.fade_in_animation = GameFadeInAnimation(controller)
+    controller.fade_out_animation = GameFadeOutAnimation(controller)
     model = GameModel()
     view = GameView()
     controller.model = model
@@ -125,6 +156,8 @@ def _create_passenger_map(game):
     :return:                        Map object controller
     """
     controller = PassengerMapController(game)
+    controller.fade_in_animation = MapFadeInAnimation(controller)
+    controller.fade_out_animation = MapFadeOutAnimation(controller)
     controller.scheduler = _create_passenger_map_scheduler(controller)
     controller.dispatcher = _create_passenger_map_dispatcher(controller)
     controller.constructor = _create_passenger_map_constructor(controller)
@@ -213,6 +246,8 @@ def _create_settings(app):
     :return:                        Settings object controller
     """
     controller = SettingsController(app)
+    controller.fade_in_animation = SettingsFadeInAnimation(controller)
+    controller.fade_out_animation = SettingsFadeOutAnimation(controller)
     model = SettingsModel()
     view = SettingsView()
     controller.model = model
@@ -232,6 +267,8 @@ def _create_fps(app):
     :return:                        FPS object controller
     """
     controller = FPSController(app)
+    controller.fade_in_animation = FPSFadeInAnimation(controller)
+    controller.fade_out_animation = FPSFadeOutAnimation(controller)
     model = FPSModel()
     view = FPSView()
     controller.model = model
@@ -251,6 +288,8 @@ def _create_passenger_map_scheduler(map_controller):
     :return:                        Scheduler object controller
     """
     controller = PassengerMapSchedulerController(map_controller)
+    controller.fade_in_animation = SchedulerFadeInAnimation(controller)
+    controller.fade_out_animation = SchedulerFadeOutAnimation(controller)
     model = PassengerMapSchedulerModel()
     view = PassengerMapSchedulerView()
     controller.model = model
@@ -272,6 +311,8 @@ def _create_passenger_map_signal(map_controller, track, base_route):
     :return:                        Signal object controller
     """
     controller = PassengerMapSignalController(map_controller, track, base_route)
+    controller.fade_in_animation = SignalFadeInAnimation(controller)
+    controller.fade_out_animation = SignalFadeOutAnimation(controller)
     model = PassengerMapSignalModel(track, base_route)
     view = PassengerMapSignalView(track, base_route)
     controller.model = model
@@ -318,6 +359,8 @@ def _create_passenger_map_railroad_switch(map_controller, track_param_1, track_p
     :return:                        RailroadSwitch object controller
     """
     controller = PassengerMapRailroadSwitchController(map_controller, track_param_1, track_param_2, switch_type)
+    controller.fade_in_animation = RailroadSwitchFadeInAnimation(controller)
+    controller.fade_out_animation = RailroadSwitchFadeOutAnimation(controller)
     model = PassengerMapRailroadSwitchModel(track_param_1, track_param_2, switch_type)
     view = PassengerMapRailroadSwitchView(track_param_1, track_param_2, switch_type)
     controller.model = model
@@ -340,6 +383,8 @@ def _create_passenger_map_crossover(map_controller, track_param_1, track_param_2
     :return:                        Crossover object controller
     """
     controller = PassengerMapCrossoverController(map_controller, track_param_1, track_param_2, crossover_type)
+    controller.fade_in_animation = CrossoverFadeInAnimation(controller)
+    controller.fade_out_animation = CrossoverFadeOutAnimation(controller)
     model = PassengerMapCrossoverModel(track_param_1, track_param_2, crossover_type)
     view = PassengerMapCrossoverView(track_param_1, track_param_2, crossover_type)
     controller.model = model
@@ -360,6 +405,8 @@ def _create_passenger_train(map_controller, train_id):
     :return:                        Train object controller
     """
     controller = PassengerTrainController(map_controller, train_id)
+    controller.fade_in_animation = TrainFadeInAnimation(controller)
+    controller.fade_out_animation = TrainFadeOutAnimation(controller)
     model = PassengerTrainModel(train_id)
     model.on_train_setup(train_id)
     view = PassengerTrainView(train_id)
@@ -399,6 +446,8 @@ def _create_passenger_map_constructor(map_controller):
     :return:                        Constructor object controller
     """
     controller = PassengerMapConstructorController(map_controller)
+    controller.fade_in_animation = ConstructorFadeInAnimation(controller)
+    controller.fade_out_animation = ConstructorFadeOutAnimation(controller)
     model = PassengerMapConstructorModel()
     view = PassengerMapConstructorView()
     controller.model = model
@@ -411,6 +460,8 @@ def _create_passenger_map_constructor(map_controller):
 
 def _create_main_menu(app):
     controller = MainMenuController(app)
+    controller.fade_in_animation = MainMenuFadeInAnimation(controller)
+    controller.fade_out_animation = MainMenuFadeOutAnimation(controller)
     model = MainMenuModel()
     view = MainMenuView()
     controller.model = model
@@ -423,6 +474,8 @@ def _create_main_menu(app):
 
 def _create_license(app):
     controller = LicenseController(app)
+    controller.fade_in_animation = LicenseFadeInAnimation(controller)
+    controller.fade_out_animation = LicenseFadeOutAnimation(controller)
     model = LicenseModel()
     view = LicenseView()
     controller.model = model

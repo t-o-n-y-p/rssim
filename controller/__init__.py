@@ -104,6 +104,8 @@ class Controller:
         self.on_mouse_drag_handlers = []
         self.on_mouse_leave_handlers = []
         self.on_mouse_scroll_handlers = []
+        self.fade_in_animation = None
+        self.fade_out_animation = None
 
     def on_update_view(self):
         """
