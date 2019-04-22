@@ -4,8 +4,8 @@ from ui.fade_animation.fade_in_animation import *
 
 
 class MapFadeInAnimation(FadeInAnimation):
-    def __init__(self, game_controller):
-        super().__init__(animation_object=game_controller, logger=getLogger('root.app.game.map.fade_in_animation'))
+    def __init__(self, map_controller):
+        super().__init__(animation_object=map_controller, logger=getLogger('root.app.game.map.fade_in_animation'))
         self.signal_fade_in_animations = []
         self.railroad_switch_fade_in_animations = []
         self.crossover_fade_in_animations = []

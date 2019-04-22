@@ -1,12 +1,12 @@
 from logging import getLogger
 
-from ui.fade_animation.fade_in_animation import *
+from ui.fade_animation.fade_out_animation import *
 
 
-class SignalFadeInAnimation(FadeInAnimation):
+class SignalFadeOutAnimation(FadeOutAnimation):
     def __init__(self, signal_controller):
         super().__init__(animation_object=signal_controller,
-                         logger=getLogger('root.app.game.map.signal.fade_in_animation'))
+                         logger=getLogger('root.app.game.map.signal.fade_out_animation'))
 
     @fade_animation_needed
     @fade_animation_is_not_active
