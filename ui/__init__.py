@@ -19,10 +19,6 @@ PRICE = 7                                       # property #7 indicates track/en
 LEVEL_REQUIRED = 8                              # property #8 indicates required level for this track/env.
 ENVIRONMENT_REQUIRED = 9                        # property #9 indicates required environment tier for this track
 # colors
-GREY = (112, 112, 112, 255)                     # grey UI color
-ORANGE = (255, 127, 0, 255)                     # orange UI color
-GREEN = (0, 192, 0, 255)                        # green UI color
-RED = (255, 0, 0, 255)                          # red UI color
 GREY_RGB = (112, 112, 112)                      # grey UI color
 ORANGE_RGB = (255, 127, 0)                      # orange UI color
 GREEN_RGB = (0, 192, 0)                         # green UI color

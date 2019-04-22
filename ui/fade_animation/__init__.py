@@ -14,6 +14,14 @@ def fade_animation_is_not_active(fn):
     return _handle_if_fade_animation_is_not_active
 
 
+def fade_animation_needed(fn):
+    def _handle_if_object_view_is_visible(*args, **kwargs):
+        if args[0].animation_object.view.opacity != args[0].opacity_chart[-1]:
+            fn(*args, **kwargs)
+
+    return _handle_if_object_view_is_visible
+
+
 class FadeAnimation:
     def __init__(self, animation_object, logger):
         self.animation_object = animation_object

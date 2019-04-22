@@ -11,6 +11,7 @@ class MapFadeInAnimation(FadeInAnimation):
         self.crossover_fade_in_animations = []
         self.train_fade_in_animations = []
 
+    @fade_animation_needed
     @fade_animation_is_not_active
     def on_activate(self):
         self.is_activated = True

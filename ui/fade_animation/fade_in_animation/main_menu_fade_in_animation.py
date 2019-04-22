@@ -8,6 +8,7 @@ class MainMenuFadeInAnimation(FadeInAnimation):
         super().__init__(animation_object=main_menu_controller,
                          logger=getLogger('root.app.main_menu.fade_in_animation'))
 
+    @fade_animation_needed
     @fade_animation_is_not_active
     def on_activate(self):
         self.is_activated = True

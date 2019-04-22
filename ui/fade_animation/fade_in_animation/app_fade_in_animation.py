@@ -10,6 +10,7 @@ class AppFadeInAnimation(FadeInAnimation):
         self.main_menu_fade_in_animation = None
         self.fps_fade_in_animation = None
 
+    @fade_animation_needed
     @fade_animation_is_not_active
     def on_activate(self):
         self.is_activated = True

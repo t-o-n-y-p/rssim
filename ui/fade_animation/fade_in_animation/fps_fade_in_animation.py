@@ -8,6 +8,7 @@ class FPSFadeInAnimation(FadeInAnimation):
         super().__init__(animation_object=fps_controller,
                          logger=getLogger('root.app.fps.fade_in_animation'))
 
+    @fade_animation_needed
     @fade_animation_is_not_active
     def on_activate(self):
         self.is_activated = True
