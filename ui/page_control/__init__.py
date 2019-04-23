@@ -91,14 +91,14 @@ class PageControl:
 
     def on_update_page_control_buttons(self):
         if self.current_page == 0:
-            self.previous_page_button.on_deactivate()
+            self.previous_page_button.on_deactivate(instant=True)
         else:
-            self.previous_page_button.on_activate()
+            self.previous_page_button.on_activate(instant=True)
 
         if self.current_page == len(self.pages) - 1:
-            self.next_page_button.on_deactivate()
+            self.next_page_button.on_deactivate(instant=True)
         else:
-            self.next_page_button.on_activate()
+            self.next_page_button.on_activate(instant=True)
 
     def on_update_current_locale(self, new_locale):
         """
