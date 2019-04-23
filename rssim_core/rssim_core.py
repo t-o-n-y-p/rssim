@@ -46,23 +46,21 @@ class RSSim:
         # check if game was updated from previous version (0.9.0 and higher are supported)
         self.on_check_for_updates()
         # set up the main logger; if logs are turned on, create log file
-        USER_DB_CURSOR.execute('SELECT log_level FROM log_options')
-        self.log_level = USER_DB_CURSOR.fetchone()[0]
+        # USER_DB_CURSOR.execute('SELECT log_level FROM log_options')
+        # self.log_level = USER_DB_CURSOR.fetchone()[0]
         self.logger = getLogger('root')
         current_datetime = datetime.now()
-        if self.log_level < LOG_LEVEL_OFF:
-            if not path.exists('logs'):
-                mkdir('logs')
+        if not path.exists('logs'):
+            mkdir('logs')
 
-            logs_handler = FileHandler('logs/logs_{0}_{1:0>2}-{2:0>2}-{3:0>2}-{4:0>6}.log'
-                                       .format(str(current_datetime.date()), current_datetime.time().hour,
-                                               current_datetime.time().minute, current_datetime.time().second,
-                                               current_datetime.time().microsecond),
-                                       encoding='utf8')
-            logs_handler.setFormatter(Formatter('%(asctime)s - %(name)s - %(levelname)s - %(message)s'))
-            self.logger.addHandler(logs_handler)
-
-        self.logger.setLevel(self.log_level)
+        logs_handler = FileHandler('logs/logs_{0}_{1:0>2}-{2:0>2}-{3:0>2}-{4:0>6}.log'
+                                   .format(str(current_datetime.date()), current_datetime.time().hour,
+                                           current_datetime.time().minute, current_datetime.time().second,
+                                           current_datetime.time().microsecond),
+                                   encoding='utf8')
+        logs_handler.setFormatter(Formatter('%(asctime)s - %(name)s - %(levelname)s - %(message)s'))
+        self.logger.addHandler(logs_handler)
+        self.logger.setLevel(LOG_LEVEL_DEBUG)
         # set blending mode; this is required to correctly draw transparent textures
         gl.glEnable(gl.GL_BLEND)
         gl.glBlendFunc(gl.GL_SRC_ALPHA, gl.GL_ONE_MINUS_SRC_ALPHA)

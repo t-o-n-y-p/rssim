@@ -17,12 +17,15 @@ class GameController(Controller):
         """
         super().__init__(parent_controller=app, logger=getLogger('root.app.game.controller'))
         self.maps = []
+        self.map_transition_animations = []
 
     def on_update_view(self):
         """
         Notifies the view and Map view to update fade-in/fade-out animations.
         """
         self.view.on_update()
+        self.fade_in_animation.on_update()
+        self.fade_out_animation.on_update()
         for map_ in self.maps:
             map_.on_update_view()
 

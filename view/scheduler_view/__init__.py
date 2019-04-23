@@ -123,20 +123,21 @@ class SchedulerView(View):
             b.on_deactivate()
 
     def on_update(self):
-        self.on_update_opacity()
-        for b in self.buttons:
-            b.on_update_opacity()
-
-        for i in range(SCHEDULE_COLUMNS):
-            for j in range(SCHEDULE_ROWS):
-                self.schedule_rows[i][j].on_update_opacity()
-
         if self.is_activated:
             for i in range(min(len(self.base_schedule), SCHEDULE_ROWS * SCHEDULE_COLUMNS)):
                 if not self.schedule_rows[i // SCHEDULE_ROWS][i % SCHEDULE_ROWS].is_activated:
                     self.schedule_rows[i // SCHEDULE_ROWS][i % SCHEDULE_ROWS].on_activate()
                     self.schedule_rows[i // SCHEDULE_ROWS][i % SCHEDULE_ROWS].on_assign_data(self.base_schedule[i])
                     return
+
+    def on_update_opacity(self, new_opacity):
+        self.on_update_opacity(new_opacity)
+        for b in self.buttons:
+            b.on_update_opacity(new_opacity)
+
+        for i in range(SCHEDULE_COLUMNS):
+            for j in range(SCHEDULE_ROWS):
+                self.schedule_rows[i][j].on_update_opacity(new_opacity)
 
     def on_update_sprite_opacity(self):
         if self.opacity <= 0:

@@ -19,6 +19,8 @@ class ConstructorController(Controller):
         Not all sprites are created at once, they are created one by one to avoid massive FPS drop.
         """
         self.view.on_update()
+        self.fade_in_animation.on_update()
+        self.fade_out_animation.on_update()
 
     @controller_is_not_active
     def on_activate(self):

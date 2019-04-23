@@ -19,6 +19,8 @@ class FPSController(Controller):
         Notifies the view to update fade-in/fade-out animations.
         """
         self.view.on_update()
+        self.fade_in_animation.on_update()
+        self.fade_out_animation.on_update()
 
     @controller_is_not_active
     def on_activate(self):

@@ -400,17 +400,21 @@ class Button:
 
     def on_update_sprite_opacity(self):
         if self.opacity <= 0:
-            self.vertex_list.delete()
-            self.vertex_list = None
+            if self.vertex_list is not None:
+                self.vertex_list.delete()
+                self.vertex_list = None
+
             if self.text_label is not None:
                 self.text_label.delete()
                 self.text_label = None
 
         else:
-            self.vertex_list.colors[3::4] \
-                = (BUTTON_BACKGROUND_ALPHA[self.state][self.transparent] * float(self.opacity) / 255.0,
-                   BUTTON_BACKGROUND_ALPHA[self.state][self.transparent] * float(self.opacity) / 255.0,
-                   BUTTON_BACKGROUND_ALPHA[self.state][self.transparent] * float(self.opacity) / 255.0,
-                   BUTTON_BACKGROUND_ALPHA[self.state][self.transparent] * float(self.opacity) / 255.0)
+            if self.vertex_list is not None:
+                self.vertex_list.colors[3::4] \
+                    = (BUTTON_BACKGROUND_ALPHA[self.state][self.transparent] * float(self.opacity) / 255.0,
+                       BUTTON_BACKGROUND_ALPHA[self.state][self.transparent] * float(self.opacity) / 255.0,
+                       BUTTON_BACKGROUND_ALPHA[self.state][self.transparent] * float(self.opacity) / 255.0,
+                       BUTTON_BACKGROUND_ALPHA[self.state][self.transparent] * float(self.opacity) / 255.0)
+
             if self.text_label is not None:
                 self.text_label.color = (*WHITE_RGB, self.opacity)

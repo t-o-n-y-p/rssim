@@ -111,6 +111,31 @@ def create_app(loader):
     controller.game = _create_game(controller)
     controller.settings = _create_settings(controller)
     controller.fps = _create_fps(controller)
+    controller.main_menu_to_game_transition_animation \
+        = TransitionAnimation(fade_out_animation=controller.main_menu.fade_out_animation,
+                              fade_in_animation=controller.game.fade_in_animation)
+    controller.game_to_main_menu_transition_animation \
+        = TransitionAnimation(fade_out_animation=controller.game.fade_out_animation,
+                              fade_in_animation=controller.main_menu.fade_in_animation)
+    controller.main_menu_to_license_transition_animation \
+        = TransitionAnimation(fade_out_animation=controller.main_menu.fade_out_animation,
+                              fade_in_animation=controller.license.fade_in_animation)
+    controller.license_to_main_menu_transition_animation \
+        = TransitionAnimation(fade_out_animation=controller.license.fade_out_animation,
+                              fade_in_animation=controller.main_menu.fade_in_animation)
+    controller.game_to_settings_transition_animation \
+        = TransitionAnimation(fade_out_animation=controller.game.fade_out_animation,
+                              fade_in_animation=controller.settings.fade_in_animation)
+    controller.settings_to_game_transition_animation \
+        = TransitionAnimation(fade_out_animation=controller.settings.fade_out_animation,
+                              fade_in_animation=controller.game.fade_in_animation)
+    controller.fade_in_animation.main_menu_fade_in_animation = controller.main_menu.fade_in_animation
+    controller.fade_in_animation.fps_fade_in_animation = controller.fps.fade_in_animation
+    controller.fade_out_animation.main_menu_fade_out_animation = controller.main_menu.fade_out_animation
+    controller.fade_out_animation.license_fade_out_animation = controller.license.fade_out_animation
+    controller.fade_out_animation.game_fade_out_animation = controller.game.fade_out_animation
+    controller.fade_out_animation.settings_fade_out_animation = controller.settings.fade_out_animation
+    controller.fade_out_animation.fps_fade_out_animation = controller.fps.fade_out_animation
     return controller
 
 
@@ -135,6 +160,10 @@ def _create_game(app):
     view.on_assign_controller(controller)
     model.view = view
     controller.maps.append(_create_passenger_map(controller))
+    for map_ in controller.maps:
+        controller.fade_in_animation.map_fade_in_animations.append(map_.fade_in_animation)
+        controller.fade_out_animation.map_fade_out_animations.append(map_.fade_out_animation)
+
     return controller
 
 
@@ -161,6 +190,12 @@ def _create_passenger_map(game):
     controller.scheduler = _create_passenger_map_scheduler(controller)
     controller.dispatcher = _create_passenger_map_dispatcher(controller)
     controller.constructor = _create_passenger_map_constructor(controller)
+    controller.constructor_to_scheduler_transition_animation \
+        = TransitionAnimation(fade_out_animation=controller.constructor.fade_out_animation,
+                              fade_in_animation=controller.scheduler.fade_in_animation)
+    controller.scheduler_to_constructor_transition_animation \
+        = TransitionAnimation(fade_out_animation=controller.scheduler.fade_out_animation,
+                              fade_in_animation=controller.constructor.fade_in_animation)
     # read train IDs from database, create trains and append them to both dictionary and list
     USER_DB_CURSOR.execute('SELECT train_id FROM trains WHERE map_id = 0')
     train_ids = USER_DB_CURSOR.fetchall()
@@ -234,6 +269,24 @@ def _create_passenger_map(game):
     controller.view = view
     view.on_assign_controller(controller)
     model.view = view
+    controller.fade_out_animation.constructor_fade_out_animation = controller.constructor.fade_out_animation
+    controller.fade_out_animation.scheduler_fade_out_animation = controller.scheduler.fade_out_animation
+    for signal in controller.signals_list:
+        controller.fade_in_animation.signal_fade_in_animations.append(signal.fade_in_animation)
+        controller.fade_out_animation.signal_fade_out_animations.append(signal.fade_out_animation)
+
+    for switch in controller.switches_list:
+        controller.fade_in_animation.railroad_switch_fade_in_animations.append(switch.fade_in_animation)
+        controller.fade_out_animation.railroad_switch_fade_out_animations.append(switch.fade_out_animation)
+
+    for crossover in controller.crossovers_list:
+        controller.fade_in_animation.crossover_fade_in_animations.append(crossover.fade_in_animation)
+        controller.fade_out_animation.crossover_fade_out_animations.append(crossover.fade_out_animation)
+
+    for train in controller.trains_list:
+        controller.fade_in_animation.train_fade_in_animations.append(train.fade_in_animation)
+        controller.fade_out_animation.train_fade_out_animations.append(train.fade_out_animation)
+
     return controller
 
 

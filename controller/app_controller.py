@@ -20,18 +20,32 @@ class AppController(Controller):
         :param loader:                  RSSim class instance
         """
         super().__init__(logger=getLogger('root.app.controller'))
+        self.loader = loader
         self.main_menu = None
         self.license = None
         self.game = None
         self.settings = None
         self.fps = None
-        self.loader = loader
+        self.main_menu_to_game_transition_animation = None
+        self.game_to_main_menu_transition_animation = None
+        self.main_menu_to_license_transition_animation = None
+        self.license_to_main_menu_transition_animation = None
+        self.game_to_settings_transition_animation = None
+        self.settings_to_game_transition_animation = None
 
     def on_update_view(self):
         """
         Notifies the view, Game view and Settings view to update fade-in/fade-out animations.
         """
         self.view.on_update()
+        self.fade_in_animation.on_update()
+        self.fade_out_animation.on_update()
+        self.main_menu_to_game_transition_animation.on_update()
+        self.game_to_main_menu_transition_animation.on_update()
+        self.main_menu_to_license_transition_animation.on_update()
+        self.license_to_main_menu_transition_animation.on_update()
+        self.game_to_settings_transition_animation.on_update()
+        self.settings_to_game_transition_animation.on_update()
         self.license.on_update_view()
         self.main_menu.on_update_view()
         self.game.on_update_view()
@@ -50,6 +64,7 @@ class AppController(Controller):
         self.main_menu.on_activate()
         self.game.on_activate()
         self.fps.on_activate()
+        self.fade_in_animation.on_activate()
 
     @controller_is_active
     def on_deactivate(self):
@@ -148,12 +163,6 @@ class AppController(Controller):
             self.main_menu.on_deactivate_view()
             self.settings.navigated_from_main_menu = True
 
-    # def on_activate_open_settings_button(self):
-    #     """
-    #     Activates Open settings button back when user closes settings screen.
-    #     """
-    #     self.view.open_settings_button.on_activate()
-
     def on_update_fps(self, fps):
         """
         Notifies FPS controller about FPS value update.
@@ -251,6 +260,11 @@ class AppController(Controller):
     def on_open_license(self):
         self.main_menu.on_deactivate_view()
         self.license.on_activate_view()
+        self.game_to_main_menu_transition_animation.on_deactivate()
+        self.license_to_main_menu_transition_animation.on_deactivate()
+        self.main_menu_to_license_transition_animation.on_activate()
 
     def on_close_license(self):
         self.main_menu.on_activate_view()
+        self.main_menu_to_license_transition_animation.on_deactivate()
+        self.license_to_main_menu_transition_animation.on_activate()

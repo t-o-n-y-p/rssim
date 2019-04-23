@@ -42,6 +42,8 @@ class MapController(Controller):
         self.crossovers_list = []
         self.trains = {}
         self.trains_list = []
+        self.constructor_to_scheduler_transition_animation = None
+        self.scheduler_to_constructor_transition_animation = None
 
     def on_update_view(self):
         """
@@ -50,6 +52,10 @@ class MapController(Controller):
         Not all sprites are created at once, they are created one by one to avoid massive FPS drop.
         """
         self.view.on_update()
+        self.fade_in_animation.on_update()
+        self.fade_out_animation.on_update()
+        self.constructor_to_scheduler_transition_animation.on_update()
+        self.scheduler_to_constructor_transition_animation.on_update()
         self.scheduler.on_update_view()
         self.dispatcher.on_update_view()
         self.constructor.on_update_view()
