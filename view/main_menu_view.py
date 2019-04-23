@@ -15,6 +15,8 @@ class MainMenuView(View):
         def on_create_station(button):
             button.on_deactivate()
             self.controller.on_deactivate_view()
+            self.controller.parent_controller.license_to_main_menu_transition_animation.on_deactivate()
+            self.controller.parent_controller.game_to_main_menu_transition_animation.on_deactivate()
             self.controller.parent_controller.main_menu_to_game_transition_animation.on_activate()
             self.controller.parent_controller.on_resume_game()
             self.controller.parent_controller.on_activate_game_view()

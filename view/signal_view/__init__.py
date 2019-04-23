@@ -74,6 +74,7 @@ class SignalView(View):
                                             y=self.base_offset[1] + self.position[1], batch=self.batches['main_batch'],
                                             group=self.groups['signal'])
 
+            self.signal_sprite.opacity = self.opacity
             if self.zoom_out_activated:
                 self.signal_sprite.position = (self.base_offset[0] + self.position[0] // 2,
                                                self.base_offset[1] + self.position[1] // 2)

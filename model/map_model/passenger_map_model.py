@@ -4,6 +4,8 @@ from model.map_model import MapModel
 from controller.train_controller.passenger_train_controller import PassengerTrainController
 from model.train_model.passenger_train_model import PassengerTrainModel
 from view.train_view.passenger_train_view import PassengerTrainView
+from ui.fade_animation.fade_in_animation.train_fade_in_animation import TrainFadeInAnimation
+from ui.fade_animation.fade_out_animation.train_fade_out_animation import TrainFadeOutAnimation
 
 
 class PassengerMapModel(MapModel):
@@ -33,6 +35,10 @@ class PassengerMapModel(MapModel):
         :return:                                Train object controller
         """
         controller = PassengerTrainController(self.controller, train_id)
+        controller.fade_in_animation = TrainFadeInAnimation(controller)
+        controller.fade_out_animation = TrainFadeOutAnimation(controller)
+        self.controller.fade_in_animation.train_fade_in_animations.append(controller.fade_in_animation)
+        self.controller.fade_out_animation.train_fade_out_animations.append(controller.fade_out_animation)
         model = PassengerTrainModel(train_id)
         # car collection is chosen randomly from available options, seed() initializes PRNG
         seed()
@@ -44,4 +50,5 @@ class PassengerMapModel(MapModel):
         controller.view = view
         view.on_assign_controller(controller)
         model.view = view
+        controller.fade_in_animation.on_activate()
         return controller
