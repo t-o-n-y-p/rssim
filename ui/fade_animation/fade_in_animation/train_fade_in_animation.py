@@ -6,7 +6,7 @@ from ui.fade_animation.fade_in_animation import *
 class TrainFadeInAnimation(FadeInAnimation):
     def __init__(self, train_controller):
         super().__init__(animation_object=train_controller,
-                         logger=getLogger('root.app.game.map.train.fade_in_animation'))
+                         logger=getLogger(f'root.app.game.map.train.{train_controller.train_id}.fade_in_animation'))
 
     @fade_animation_needed
     @fade_animation_is_not_active
