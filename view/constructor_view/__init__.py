@@ -52,6 +52,7 @@ class ConstructorView(View):
             :param button:                      button that was clicked
             """
             self.controller.on_deactivate_view()
+            self.controller.fade_out_animation.on_activate()
 
         def on_buy_construction_action(construction_type, row, entity_number):
             """

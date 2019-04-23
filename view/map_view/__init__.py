@@ -75,7 +75,7 @@ class MapView(View):
             """
             button.paired_button.opacity = button.opacity
             button.on_deactivate(instant=True)
-            button.paired_button.on_activate()
+            button.paired_button.on_activate(instant=True)
             self.controller.on_zoom_in()
 
         def on_click_zoom_out_button(button):
@@ -87,7 +87,7 @@ class MapView(View):
             """
             button.paired_button.opacity = button.opacity
             button.on_deactivate(instant=True)
-            button.paired_button.on_activate()
+            button.paired_button.on_activate(instant=True)
             self.controller.on_zoom_out()
 
         def on_leave_action():
@@ -109,7 +109,7 @@ class MapView(View):
 
             :param button:                      button that was clicked
             """
-            button.on_deactivate()
+            button.on_deactivate(instant=True)
             self.controller.on_open_schedule()
 
         def on_open_constructor(button):
@@ -119,7 +119,7 @@ class MapView(View):
 
             :param button:                      button that was clicked
             """
-            button.on_deactivate()
+            button.on_deactivate(instant=True)
             self.controller.on_open_constructor()
 
         self.map_id = None
@@ -449,17 +449,17 @@ class MapView(View):
         """
         Deactivates zoom buttons when user opens schedule or constructor screen.
         """
-        self.zoom_in_button.on_deactivate()
-        self.zoom_out_button.on_deactivate()
+        self.zoom_in_button.on_deactivate(instant=True)
+        self.zoom_out_button.on_deactivate(instant=True)
 
     def on_activate_zoom_buttons(self):
         """
         Activates appropriate zoom button when user closes schedule or constructor screen.
         """
         if self.zoom_out_activated:
-            self.zoom_in_button.on_activate()
+            self.zoom_in_button.on_activate(instant=True)
         else:
-            self.zoom_out_button.on_activate()
+            self.zoom_out_button.on_activate(instant=True)
 
     @view_is_active
     @cursor_is_on_the_map

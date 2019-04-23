@@ -370,9 +370,13 @@ class MapController(Controller):
         # Constructor and Scheduler views cannot be activated at the same time;
         # when user opens schedule screen it means constructor screen has to be closed
         # before schedule screen is opened
-        self.constructor.on_deactivate_view()
-        self.on_close_constructor()
         self.scheduler.on_activate_view()
+        if self.constructor.view.is_activated:
+            self.constructor.on_deactivate_view()
+            self.on_close_constructor()
+            self.constructor_to_scheduler_transition_animation.on_activate()
+        else:
+            self.scheduler.fade_in_animation.on_activate()
         # if schedule screen is opened, zoom in/zoom out buttons should also be hidden
         self.view.on_deactivate_zoom_buttons()
         # if mini map is active when user opens schedule screen, it should also be hidden
@@ -385,9 +389,13 @@ class MapController(Controller):
         # Constructor and Scheduler views cannot be activated at the same time;
         # when user opens constructor screen it means schedule screen has to be closed
         # before constructor screen is opened
-        self.scheduler.on_deactivate_view()
-        self.on_close_schedule()
         self.constructor.on_activate_view()
+        if self.scheduler.view.is_activated:
+            self.scheduler.on_deactivate_view()
+            self.on_close_schedule()
+            self.scheduler_to_constructor_transition_animation.on_activate()
+        else:
+            self.constructor.fade_in_animation.on_activate()
         # if constructor screen is opened, zoom in/zoom out buttons should also be hidden
         self.view.on_deactivate_zoom_buttons()
         # if mini map is active when user opens constructor screen, it should also be hidden
@@ -400,7 +408,7 @@ class MapController(Controller):
         zoom in/out buttons and open schedule button.
         """
         self.view.on_activate_zoom_buttons()
-        self.view.open_schedule_button.on_activate()
+        self.view.open_schedule_button.on_activate(instant=True)
 
     @map_view_is_active
     def on_close_constructor(self):
@@ -409,7 +417,7 @@ class MapController(Controller):
         zoom in/out buttons and open constructor button.
         """
         self.view.on_activate_zoom_buttons()
-        self.view.open_constructor_button.on_activate()
+        self.view.open_constructor_button.on_activate(instant=True)
 
     def on_switch_signal_to_green(self, signal_track, signal_base_route):
         """

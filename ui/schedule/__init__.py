@@ -165,21 +165,22 @@ class ScheduleRow:
         if self.arrival_sprite is not None:
             self.arrival_sprite.text = I18N_RESOURCES['departed_from_string'][self.current_locale][self.data[DIRECTION]]
 
-    def on_update_opacity(self):
-        if self.is_activated and self.opacity < 255:
-            self.opacity += 15
-            self.on_update_sprite_opacity()
-
-        if not self.is_activated and self.opacity > 0:
-            self.opacity -= 15
-            self.on_update_sprite_opacity()
+    def on_update_opacity(self, new_opacity):
+        self.opacity = new_opacity
+        self.on_update_sprite_opacity()
 
     def on_update_sprite_opacity(self):
         if self.opacity <= 0:
-            self.main_sprite.delete()
-            self.main_sprite = None
-            self.arrival_sprite.delete()
-            self.arrival_sprite = None
+            if self.main_sprite is not None:
+                self.main_sprite.delete()
+                self.main_sprite = None
+
+            if self.arrival_sprite is not None:
+                self.arrival_sprite.delete()
+                self.arrival_sprite = None
         else:
-            self.main_sprite.color = (*WHITE_RGB, self.opacity)
-            self.arrival_sprite.color = (*WHITE_RGB, self.opacity)
+            if self.main_sprite is not None:
+                self.main_sprite.color = (*WHITE_RGB, self.opacity)
+
+            if self.arrival_sprite is not None:
+                self.arrival_sprite.color = (*WHITE_RGB, self.opacity)

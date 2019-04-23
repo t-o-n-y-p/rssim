@@ -45,6 +45,7 @@ class SchedulerView(View):
             :param button:                      button that was clicked
             """
             self.controller.on_deactivate_view()
+            self.controller.fade_out_animation.on_activate()
 
         self.map_id = None
         self.on_update_map_id()
@@ -131,7 +132,8 @@ class SchedulerView(View):
                     return
 
     def on_update_opacity(self, new_opacity):
-        self.on_update_opacity(new_opacity)
+        self.opacity = new_opacity
+        self.on_update_sprite_opacity()
         for b in self.buttons:
             b.on_update_opacity(new_opacity)
 
