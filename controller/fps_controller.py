@@ -83,3 +83,9 @@ class FPSController(Controller):
         :param display_fps:                     new flag value
         """
         self.model.on_update_display_fps(display_fps)
+        if display_fps:
+            self.fade_out_animation.on_deactivate()
+            self.fade_in_animation.on_activate()
+        else:
+            self.fade_in_animation.on_deactivate()
+            self.fade_out_animation.on_activate()
