@@ -54,8 +54,8 @@ class SettingsController(Controller):
         if self.navigated_from_game:
             self.navigated_from_game = False
             self.parent_controller.on_activate_game_view()
-
-        # self.parent_controller.on_activate_open_settings_button()
+            self.parent_controller.game_to_settings_transition_animation.on_deactivate()
+            self.parent_controller.settings_to_game_transition_animation.on_activate()
 
     def on_change_screen_resolution(self, screen_resolution):
         """

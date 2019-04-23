@@ -67,7 +67,7 @@ class GameView(View):
             """
             button.paired_button.opacity = button.opacity
             button.on_deactivate(instant=True)
-            button.paired_button.on_activate()
+            button.paired_button.on_activate(instant=True)
             self.controller.on_pause_game()
 
         def on_resume_game(button):
@@ -79,7 +79,7 @@ class GameView(View):
             """
             button.paired_button.opacity = button.opacity
             button.on_deactivate(instant=True)
-            button.paired_button.on_activate()
+            button.paired_button.on_activate(instant=True)
             self.controller.on_resume_game()
 
         def on_open_settings(button):
@@ -90,6 +90,8 @@ class GameView(View):
             :param button:                      button that was clicked
             """
             button.on_deactivate()
+            self.controller.parent_controller.settings_to_game_transition_animation.on_deactivate()
+            self.controller.parent_controller.game_to_settings_transition_animation.on_activate()
             self.controller.parent_controller.settings.on_activate()
 
         super().__init__(logger=getLogger('root.app.game.view'))

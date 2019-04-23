@@ -179,7 +179,7 @@ class SettingsView(View):
         self.display_fps_checkbox.on_update_opacity(new_opacity)
         self.notifications_checkbox_group.on_update_opacity(new_opacity)
         for b in self.buttons:
-            b.on_update_opacity()
+            b.on_update_opacity(new_opacity)
 
     def on_update_sprite_opacity(self):
         if self.opacity <= 0:

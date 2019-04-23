@@ -58,10 +58,10 @@ class EnumValueControl:
             self.on_update_temp_value_label()
             self.on_update_state_action(self.choice_state)
             if self.choice_state >= len(self.possible_values_list) - 1:
-                button.on_deactivate()
+                button.on_deactivate(instant=True)
 
             if self.choice_state > 0:
-                button.paired_button.on_activate()
+                button.paired_button.on_activate(instant=True)
 
         def on_decrement(button):
             """
@@ -74,10 +74,10 @@ class EnumValueControl:
             self.on_update_temp_value_label()
             self.on_update_state_action(self.choice_state)
             if self.choice_state <= 0:
-                button.on_deactivate()
+                button.on_deactivate(instant=True)
 
             if self.choice_state < len(self.possible_values_list) - 1:
-                button.paired_button.on_activate()
+                button.paired_button.on_activate(instant=True)
 
         self.logger = logger
         self.column, self.row = column, row
@@ -135,9 +135,13 @@ class EnumValueControl:
         self.on_update_temp_value_label()
         if self.choice_state > 0:
             self.decrement_button.on_activate()
+        else:
+            self.decrement_button.on_deactivate(instant=True)
 
         if self.choice_state < len(self.possible_values_list) - 1:
             self.increment_button.on_activate()
+        else:
+            self.increment_button.on_deactivate(instant=True)
 
     def on_change_screen_resolution(self, screen_resolution):
         """

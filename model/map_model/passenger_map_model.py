@@ -50,5 +50,7 @@ class PassengerMapModel(MapModel):
         controller.view = view
         view.on_assign_controller(controller)
         model.view = view
-        controller.fade_in_animation.on_activate()
+        if self.view.is_activated:
+            controller.fade_in_animation.on_activate()
+
         return controller
