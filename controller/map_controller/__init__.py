@@ -370,12 +370,12 @@ class MapController(Controller):
         # Constructor and Scheduler views cannot be activated at the same time;
         # when user opens schedule screen it means constructor screen has to be closed
         # before schedule screen is opened
-        self.scheduler.on_activate_view()
         if self.constructor.view.is_activated:
             self.constructor.on_deactivate_view()
             self.on_close_constructor()
             self.constructor_to_scheduler_transition_animation.on_activate()
         else:
+            self.scheduler.on_activate_view()
             self.scheduler.fade_in_animation.on_activate()
         # if schedule screen is opened, zoom in/zoom out buttons should also be hidden
         self.view.on_deactivate_zoom_buttons()
@@ -389,12 +389,12 @@ class MapController(Controller):
         # Constructor and Scheduler views cannot be activated at the same time;
         # when user opens constructor screen it means schedule screen has to be closed
         # before constructor screen is opened
-        self.constructor.on_activate_view()
         if self.scheduler.view.is_activated:
             self.scheduler.on_deactivate_view()
             self.on_close_schedule()
             self.scheduler_to_constructor_transition_animation.on_activate()
         else:
+            self.constructor.on_activate_view()
             self.constructor.fade_in_animation.on_activate()
         # if constructor screen is opened, zoom in/zoom out buttons should also be hidden
         self.view.on_deactivate_zoom_buttons()

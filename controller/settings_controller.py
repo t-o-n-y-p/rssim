@@ -49,11 +49,9 @@ class SettingsController(Controller):
         self.view.on_deactivate()
         if self.navigated_from_main_menu:
             self.navigated_from_main_menu = False
-            self.parent_controller.on_activate_main_menu_view()
 
         if self.navigated_from_game:
             self.navigated_from_game = False
-            self.parent_controller.on_activate_game_view()
             self.parent_controller.game_to_settings_transition_animation.on_deactivate()
             self.parent_controller.settings_to_game_transition_animation.on_activate()
 
@@ -96,3 +94,9 @@ class SettingsController(Controller):
         Notifies the view and child controllers to draw all sprites with shaders.
         """
         self.view.on_apply_shaders_and_draw_vertices()
+
+    def on_activate_view(self):
+        """
+        Activates the view and Map controller if user opened game screen in the app.
+        """
+        self.model.on_activate_view()

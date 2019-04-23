@@ -37,8 +37,11 @@ class TransitionAnimation:
         self.is_activated = False
         self.fade_out_animation.on_deactivate()
         self.fade_in_animation.on_deactivate()
+        self.fade_out_animation.on_deactivate_listener = None
+        self.fade_in_animation.on_deactivate_listener = None
 
     def on_fade_out_animation_deactivate(self):
+        self.fade_in_animation.animation_object.on_activate_view()
         self.fade_in_animation.on_activate()
 
     def on_fade_in_animation_deactivate(self):

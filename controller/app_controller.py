@@ -259,12 +259,10 @@ class AppController(Controller):
 
     def on_open_license(self):
         self.main_menu.on_deactivate_view()
-        self.license.on_activate_view()
         self.game_to_main_menu_transition_animation.on_deactivate()
         self.license_to_main_menu_transition_animation.on_deactivate()
         self.main_menu_to_license_transition_animation.on_activate()
 
     def on_close_license(self):
-        self.main_menu.on_activate_view()
         self.main_menu_to_license_transition_animation.on_deactivate()
         self.license_to_main_menu_transition_animation.on_activate()
