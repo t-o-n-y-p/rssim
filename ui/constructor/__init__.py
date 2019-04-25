@@ -276,7 +276,7 @@ class ConstructorCell:
                     self.locked_label = None
 
             else:
-                self.build_button.on_deactivate()
+                self.build_button.on_deactivate(instant=True)
                 if self.locked_label is None:
                     self.locked_label = Label('', font_name='Webdings',
                                               font_size=int(self.build_button.base_font_size_property * self.size[1]),
@@ -382,11 +382,11 @@ class ConstructorCell:
         """
         self.money_target_activated = False
         if self.is_activated and len(self.data) > 0:
-            self.disable_money_target_button.on_deactivate()
+            self.disable_money_target_button.on_deactivate(instant=True)
             if self.data[UNLOCK_AVAILABLE]:
                 self.enable_money_target_button.on_activate()
             else:
-                self.enable_money_target_button.on_deactivate()
+                self.enable_money_target_button.on_deactivate(instant=True)
 
     def on_update_opacity(self, new_opacity):
         self.opacity = new_opacity
