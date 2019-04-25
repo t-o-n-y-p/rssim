@@ -118,7 +118,7 @@ class ConstructorCell:
 
             :param button:                      button that was clicked
             """
-            button.on_deactivate()
+            button.on_deactivate(instant=True)
             self.enable_money_target_button.on_deactivate(instant=True)
             self.disable_money_target_button.on_deactivate(instant=True)
             self.on_buy_construction_action(self.construction_type, self.row, self.entity_number)
