@@ -119,8 +119,8 @@ class ConstructorCell:
             :param button:                      button that was clicked
             """
             button.on_deactivate()
-            self.enable_money_target_button.on_deactivate()
-            self.disable_money_target_button.on_deactivate()
+            self.enable_money_target_button.on_deactivate(instant=True)
+            self.disable_money_target_button.on_deactivate(instant=True)
             self.on_buy_construction_action(self.construction_type, self.row, self.entity_number)
 
         self.logger = getLogger(f'root.app.game.map.constructor.view.cell.{construction_type}.{row}')
@@ -218,7 +218,7 @@ class ConstructorCell:
                 self.title_label.text = I18N_RESOURCES[self.title_key][self.current_locale].format(self.entity_number)
 
             if self.description_label is None:
-                self.description_label = Label(' ', font_name='Arial', font_size=self.size[1] // 5,
+                self.description_label = Label('0', font_name='Arial', font_size=self.size[1] // 5,
                                                color=(*GREY_RGB, self.opacity),
                                                x=self.position[0] + self.size[1] // 8,
                                                y=self.position[1] + int(22 * self.size[1] / 80),
@@ -418,7 +418,7 @@ class ConstructorCell:
                 self.title_label.color = (*WHITE_RGB, self.opacity)
 
             if self.description_label is not None:
-                self.description_label.color = (*GREY_RGB, self.opacity)
+                self.description_label.color = (*self.description_label.color[0:3], self.opacity)
 
             if self.placeholder_label is not None:
                 self.placeholder_label.color = (*GREY_RGB, self.opacity)
