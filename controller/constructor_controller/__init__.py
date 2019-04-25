@@ -138,6 +138,7 @@ class ConstructorController(Controller):
         :param row:                             number of cell in a given column
         """
         self.model.on_activate_money_target(construction_type, row)
+        self.parent_controller.parent_controller.on_deactivate_money_target_for_inactive_maps(self.model.map_id)
 
     def on_deactivate_money_target(self):
         """

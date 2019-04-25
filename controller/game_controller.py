@@ -230,3 +230,8 @@ class GameController(Controller):
         self.fade_out_animation.on_update_fade_animation_state(new_state)
         for map_ in self.maps:
             map_.on_update_fade_animation_state(new_state)
+
+    def on_deactivate_money_target_for_inactive_maps(self, active_map_id):
+        for i in range(len(self.maps)):
+            if i != active_map_id:
+                self.maps[i].constructor.on_deactivate_money_target()
