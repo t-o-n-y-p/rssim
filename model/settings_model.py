@@ -32,8 +32,8 @@ class SettingsModel(Model):
         super().__init__(logger=getLogger('root.app.settings.model'))
         self.user_db_cursor.execute('SELECT app_width, app_height FROM graphics')
         self.windowed_resolution = self.user_db_cursor.fetchone()
-        self.user_db_cursor.execute('SELECT display_fps FROM graphics')
-        self.display_fps = bool(self.user_db_cursor.fetchone()[0])
+        self.user_db_cursor.execute('SELECT display_fps, fade_animations_enabled FROM graphics')
+        self.display_fps, self.fade_animations_enabled = tuple(map(bool, self.user_db_cursor.fetchone()))
         self.user_db_cursor.execute('SELECT * FROM notification_settings')
         self.level_up_notification_enabled, self.feature_unlocked_notification_enabled, \
             self.construction_completed_notification_enabled, self.enough_money_notification_enabled \
@@ -52,6 +52,7 @@ class SettingsModel(Model):
         and updates available windowed resolutions.
         """
         self.view.temp_display_fps = self.display_fps
+        self.view.temp_fade_animations_enabled = self.fade_animations_enabled
         self.view.on_change_temp_windowed_resolution(self.windowed_resolution)
         self.view.temp_level_up_notification_enabled = self.level_up_notification_enabled
         self.view.temp_feature_unlocked_notification_enabled = self.feature_unlocked_notification_enabled
@@ -73,6 +74,8 @@ class SettingsModel(Model):
         """
         self.display_fps = self.view.temp_display_fps
         self.controller.parent_controller.fps.on_update_display_fps(self.display_fps)
+        self.fade_animations_enabled = self.view.temp_fade_animations_enabled
+        self.controller.parent_controller.on_update_fade_animation_state(self.fade_animations_enabled)
         self.windowed_resolution = self.view.temp_windowed_resolution
         if not self.view.surface.fullscreen:
             self.controller.parent_controller.on_change_screen_resolution(self.windowed_resolution)
@@ -89,8 +92,10 @@ class SettingsModel(Model):
         self.controller.parent_controller\
             .on_change_enough_money_notification_state(self.enough_money_notification_enabled)
 
-        self.user_db_cursor.execute('UPDATE graphics SET app_width = ?, app_height = ?, display_fps = ?',
-                                    (self.windowed_resolution[0], self.windowed_resolution[1], int(self.display_fps)))
+        self.user_db_cursor.execute('''UPDATE graphics SET app_width = ?, app_height = ?, display_fps = ?, 
+                                       fade_animations_enabled = ?''',
+                                    (self.windowed_resolution[0], self.windowed_resolution[1], int(self.display_fps),
+                                     int(self.fade_animations_enabled)))
         self.user_db_cursor.execute('''UPDATE notification_settings SET level_up_notification_enabled = ?, 
                                        feature_unlocked_notification_enabled = ?, 
                                        construction_completed_notification_enabled = ?, 

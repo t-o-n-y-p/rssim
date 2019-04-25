@@ -100,8 +100,12 @@
 		"ru": "накопились деньги на новое строительство"
 	},
 	"display_fps_description_string": {
-		"en": "Display FPS",
-		"ru": "Отображать FPS"
+		"en": "FPS monitor",
+		"ru": "Счетчик FPS"
+	},
+	"fade_animations_enabled_description_string": {
+		"en": "Navigation animations",
+		"ru": "Анимированная навигация"
 	},
 	"level_up_notification_caption_string": {
 		"en": "Level up",

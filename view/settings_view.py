@@ -8,6 +8,7 @@ from ui.button.accept_settings_button import AcceptSettingsButton
 from ui.button.reject_settings_button import RejectSettingsButton
 from ui.settings.enum_value_control.screen_resolution_control import ScreenResolutionControl
 from ui.settings.checkbox.display_fps_checkbox import DisplayFPSCheckbox
+from ui.settings.checkbox.fade_animations_enabled_checkbox import FadeAnimationsEnabledCheckbox
 from ui.settings.checkbox_group.notifications_checkbox_group import NotificationsCheckboxGroup
 
 
@@ -96,6 +97,14 @@ class SettingsView(View):
             """
             self.temp_display_fps = new_state
 
+        def on_update_fade_animations_state(new_state):
+            """
+            Updates temp_fade_animations_enabled flag value when player uses corresponding checkbox.
+
+            :param new_state:                   new flag value
+            """
+            self.temp_fade_animations_enabled = new_state
+
         def on_update_level_up_notifications_state(new_state):
             """
             Updates temp_level_up_notification_enabled flag value
@@ -135,9 +144,12 @@ class SettingsView(View):
         super().__init__(logger=getLogger('root.app.settings.view'))
         self.temp_windowed_resolution = (0, 0)
         self.temp_display_fps = False
+        self.temp_fade_animations_enabled = False
         self.display_fps_checkbox \
-            = DisplayFPSCheckbox(-1, -3, self.current_locale,
-                                 on_update_state_action=on_update_display_fps_state)
+            = DisplayFPSCheckbox(-1, -2, self.current_locale, on_update_state_action=on_update_display_fps_state)
+        self.fade_animations_checkbox \
+            = FadeAnimationsEnabledCheckbox(-1, -4, self.current_locale,
+                                            on_update_state_action=on_update_fade_animations_state)
         self.temp_level_up_notification_enabled = False
         self.temp_feature_unlocked_notification_enabled = False
         self.temp_construction_completed_notification_enabled = False
@@ -155,7 +167,7 @@ class SettingsView(View):
         self.available_windowed_resolutions = self.config_db_cursor.fetchall()
         self.available_windowed_resolutions_position = 0
         self.screen_resolution_control \
-            = ScreenResolutionControl(-1, 3, self.current_locale,
+            = ScreenResolutionControl(-1, 4, self.current_locale,
                                       possible_values_list=self.available_windowed_resolutions,
                                       on_update_state_action=on_update_windowed_resolution_state)
         self.accept_settings_button = AcceptSettingsButton(on_click_action=on_accept_changes)
@@ -164,6 +176,7 @@ class SettingsView(View):
         self.buttons.append(self.reject_settings_button)
         self.buttons.extend(self.screen_resolution_control.buttons)
         self.buttons.extend(self.display_fps_checkbox.buttons)
+        self.buttons.extend(self.fade_animations_checkbox.buttons)
         self.buttons.extend(self.notifications_checkbox_group.buttons)
         self.shader = from_files_names('shaders/shader.vert', 'shaders/settings_view/shader.frag')
         self.shader_sprite = None
@@ -177,6 +190,7 @@ class SettingsView(View):
         self.on_update_sprite_opacity()
         self.screen_resolution_control.on_update_opacity(new_opacity)
         self.display_fps_checkbox.on_update_opacity(new_opacity)
+        self.fade_animations_checkbox.on_update_opacity(new_opacity)
         self.notifications_checkbox_group.on_update_opacity(new_opacity)
         for b in self.buttons:
             b.on_update_opacity(new_opacity)
@@ -196,6 +210,8 @@ class SettingsView(View):
         self.screen_resolution_control.on_init_state(self.available_windowed_resolutions_position)
         self.display_fps_checkbox.on_activate()
         self.display_fps_checkbox.on_init_state(self.temp_display_fps)
+        self.fade_animations_checkbox.on_activate()
+        self.fade_animations_checkbox.on_init_state(self.temp_fade_animations_enabled)
         self.notifications_checkbox_group.on_activate()
         self.notifications_checkbox_group.on_init_state([self.temp_level_up_notification_enabled,
                                                          self.temp_feature_unlocked_notification_enabled,
@@ -218,6 +234,7 @@ class SettingsView(View):
         self.is_activated = False
         self.screen_resolution_control.on_deactivate()
         self.display_fps_checkbox.on_deactivate()
+        self.fade_animations_checkbox.on_deactivate()
         self.notifications_checkbox_group.on_deactivate()
         for b in self.buttons:
             b.on_deactivate()
@@ -231,6 +248,7 @@ class SettingsView(View):
         self.on_recalculate_ui_properties(screen_resolution)
         self.screen_resolution_control.on_change_screen_resolution(screen_resolution)
         self.display_fps_checkbox.on_change_screen_resolution(screen_resolution)
+        self.fade_animations_checkbox.on_change_screen_resolution(screen_resolution)
         self.notifications_checkbox_group.on_change_screen_resolution(screen_resolution)
         self.accept_settings_button.x_margin = self.screen_resolution[0] - self.bottom_bar_height * 2 + 2
         self.accept_settings_button.y_margin = 0
@@ -261,6 +279,7 @@ class SettingsView(View):
         self.current_locale = new_locale
         self.screen_resolution_control.on_update_current_locale(new_locale)
         self.display_fps_checkbox.on_update_current_locale(new_locale)
+        self.fade_animations_checkbox.on_update_current_locale(new_locale)
         self.notifications_checkbox_group.on_update_current_locale(new_locale)
 
     @shader_sprite_exists
