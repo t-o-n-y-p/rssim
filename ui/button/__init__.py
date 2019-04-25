@@ -188,18 +188,9 @@ class Button:
                                                        self.position[1] + self.button_size[1] - 2,
                                                        self.position[0] + 2, self.position[1] + self.button_size[1] - 2)
                                                ),
-                                              ('c4f', (*BUTTON_BACKGROUND_RGB[self.state][self.transparent],
+                                              ('c4f', ((*BUTTON_BACKGROUND_RGB[self.state][self.transparent],
                                                        BUTTON_BACKGROUND_ALPHA[self.state][self.transparent]
-                                                       * float(self.opacity) / 255.0,
-                                                       *BUTTON_BACKGROUND_RGB[self.state][self.transparent],
-                                                       BUTTON_BACKGROUND_ALPHA[self.state][self.transparent]
-                                                       * float(self.opacity) / 255.0,
-                                                       *BUTTON_BACKGROUND_RGB[self.state][self.transparent],
-                                                       BUTTON_BACKGROUND_ALPHA[self.state][self.transparent]
-                                                       * float(self.opacity) / 255.0,
-                                                       *BUTTON_BACKGROUND_RGB[self.state][self.transparent],
-                                                       BUTTON_BACKGROUND_ALPHA[self.state][self.transparent]
-                                                       * float(self.opacity) / 255.0)
+                                                       * float(self.opacity) / 255.0) * 4)
                                                )
                                               )
 
@@ -275,18 +266,9 @@ class Button:
                 and y in range(self.position[1] + 2, self.position[1] + self.button_size[1] - 2):
             if self.state != 'pressed':
                 self.state = 'hover'
-                self.vertex_list.colors = (*BUTTON_BACKGROUND_RGB[self.state][self.transparent],
+                self.vertex_list.colors = ((*BUTTON_BACKGROUND_RGB[self.state][self.transparent],
                                            BUTTON_BACKGROUND_ALPHA[self.state][self.transparent]
-                                           * float(self.opacity) / 255.0,
-                                           *BUTTON_BACKGROUND_RGB[self.state][self.transparent],
-                                           BUTTON_BACKGROUND_ALPHA[self.state][self.transparent]
-                                           * float(self.opacity) / 255.0,
-                                           *BUTTON_BACKGROUND_RGB[self.state][self.transparent],
-                                           BUTTON_BACKGROUND_ALPHA[self.state][self.transparent]
-                                           * float(self.opacity) / 255.0,
-                                           *BUTTON_BACKGROUND_RGB[self.state][self.transparent],
-                                           BUTTON_BACKGROUND_ALPHA[self.state][self.transparent]
-                                           * float(self.opacity) / 255.0)
+                                           * float(self.opacity) / 255.0) * 4)
                 self.surface.set_mouse_cursor(self.hand_cursor)
                 if self.on_hover_action is not None:
                     self.on_hover_action()
@@ -295,18 +277,9 @@ class Button:
         else:
             if self.state != 'normal':
                 self.state = 'normal'
-                self.vertex_list.colors = (*BUTTON_BACKGROUND_RGB[self.state][self.transparent],
+                self.vertex_list.colors = ((*BUTTON_BACKGROUND_RGB[self.state][self.transparent],
                                            BUTTON_BACKGROUND_ALPHA[self.state][self.transparent]
-                                           * float(self.opacity) / 255.0,
-                                           *BUTTON_BACKGROUND_RGB[self.state][self.transparent],
-                                           BUTTON_BACKGROUND_ALPHA[self.state][self.transparent]
-                                           * float(self.opacity) / 255.0,
-                                           *BUTTON_BACKGROUND_RGB[self.state][self.transparent],
-                                           BUTTON_BACKGROUND_ALPHA[self.state][self.transparent]
-                                           * float(self.opacity) / 255.0,
-                                           *BUTTON_BACKGROUND_RGB[self.state][self.transparent],
-                                           BUTTON_BACKGROUND_ALPHA[self.state][self.transparent]
-                                           * float(self.opacity) / 255.0)
+                                           * float(self.opacity) / 255.0) * 4)
                 self.surface.set_mouse_cursor(self.default_cursor)
                 if self.on_leave_action is not None:
                     self.on_leave_action()
@@ -324,18 +297,9 @@ class Button:
         :param modifiers:       determines if some modifier key is held down (at the moment we don't use it)
         """
         self.state = 'pressed'
-        self.vertex_list.colors = (*BUTTON_BACKGROUND_RGB[self.state][self.transparent],
+        self.vertex_list.colors = ((*BUTTON_BACKGROUND_RGB[self.state][self.transparent],
                                    BUTTON_BACKGROUND_ALPHA[self.state][self.transparent]
-                                   * float(self.opacity) / 255.0,
-                                   *BUTTON_BACKGROUND_RGB[self.state][self.transparent],
-                                   BUTTON_BACKGROUND_ALPHA[self.state][self.transparent]
-                                   * float(self.opacity) / 255.0,
-                                   *BUTTON_BACKGROUND_RGB[self.state][self.transparent],
-                                   BUTTON_BACKGROUND_ALPHA[self.state][self.transparent]
-                                   * float(self.opacity) / 255.0,
-                                   *BUTTON_BACKGROUND_RGB[self.state][self.transparent],
-                                   BUTTON_BACKGROUND_ALPHA[self.state][self.transparent]
-                                   * float(self.opacity) / 255.0)
+                                   * float(self.opacity) / 255.0) * 4)
 
     @button_is_activated
     @cursor_is_over_the_button
@@ -352,18 +316,9 @@ class Button:
         :param modifiers:       determines if some modifier key is held down (at the moment we don't use it)
         """
         self.state = 'normal'
-        self.vertex_list.colors = (*BUTTON_BACKGROUND_RGB[self.state][self.transparent],
+        self.vertex_list.colors = ((*BUTTON_BACKGROUND_RGB[self.state][self.transparent],
                                    BUTTON_BACKGROUND_ALPHA[self.state][self.transparent]
-                                   * float(self.opacity) / 255.0,
-                                   *BUTTON_BACKGROUND_RGB[self.state][self.transparent],
-                                   BUTTON_BACKGROUND_ALPHA[self.state][self.transparent]
-                                   * float(self.opacity) / 255.0,
-                                   *BUTTON_BACKGROUND_RGB[self.state][self.transparent],
-                                   BUTTON_BACKGROUND_ALPHA[self.state][self.transparent]
-                                   * float(self.opacity) / 255.0,
-                                   *BUTTON_BACKGROUND_RGB[self.state][self.transparent],
-                                   BUTTON_BACKGROUND_ALPHA[self.state][self.transparent]
-                                   * float(self.opacity) / 255.0)
+                                   * float(self.opacity) / 255.0) * 4)
         self.surface.set_mouse_cursor(self.default_cursor)
         self.on_click_action(self)
 
@@ -378,18 +333,9 @@ class Button:
         :param y:               mouse cursor Y position
         """
         self.state = 'normal'
-        self.vertex_list.colors = (*BUTTON_BACKGROUND_RGB[self.state][self.transparent],
+        self.vertex_list.colors = ((*BUTTON_BACKGROUND_RGB[self.state][self.transparent],
                                    BUTTON_BACKGROUND_ALPHA[self.state][self.transparent]
-                                   * float(self.opacity) / 255.0,
-                                   *BUTTON_BACKGROUND_RGB[self.state][self.transparent],
-                                   BUTTON_BACKGROUND_ALPHA[self.state][self.transparent]
-                                   * float(self.opacity) / 255.0,
-                                   *BUTTON_BACKGROUND_RGB[self.state][self.transparent],
-                                   BUTTON_BACKGROUND_ALPHA[self.state][self.transparent]
-                                   * float(self.opacity) / 255.0,
-                                   *BUTTON_BACKGROUND_RGB[self.state][self.transparent],
-                                   BUTTON_BACKGROUND_ALPHA[self.state][self.transparent]
-                                   * float(self.opacity) / 255.0)
+                                   * float(self.opacity) / 255.0) * 4)
         self.surface.set_mouse_cursor(self.default_cursor)
         if self.on_leave_action is not None:
             self.on_leave_action()
@@ -411,10 +357,7 @@ class Button:
         else:
             if self.vertex_list is not None:
                 self.vertex_list.colors[3::4] \
-                    = (BUTTON_BACKGROUND_ALPHA[self.state][self.transparent] * float(self.opacity) / 255.0,
-                       BUTTON_BACKGROUND_ALPHA[self.state][self.transparent] * float(self.opacity) / 255.0,
-                       BUTTON_BACKGROUND_ALPHA[self.state][self.transparent] * float(self.opacity) / 255.0,
-                       BUTTON_BACKGROUND_ALPHA[self.state][self.transparent] * float(self.opacity) / 255.0)
+                    = ((BUTTON_BACKGROUND_ALPHA[self.state][self.transparent] * float(self.opacity) / 255.0, ) * 4)
 
             if self.text_label is not None:
                 self.text_label.color = (*WHITE_RGB, self.opacity)
