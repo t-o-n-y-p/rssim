@@ -166,3 +166,7 @@ class ConstructorController(Controller):
         Notifies the view and child controllers to draw all sprites with shaders.
         """
         self.view.on_apply_shaders_and_draw_vertices()
+
+    def on_update_fade_animation_state(self, new_state):
+        self.fade_in_animation.on_update_fade_animation_state(new_state)
+        self.fade_out_animation.on_update_fade_animation_state(new_state)

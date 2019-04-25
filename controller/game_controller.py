@@ -224,3 +224,9 @@ class GameController(Controller):
         self.view.on_apply_shaders_and_draw_vertices()
         for map_ in self.maps:
             map_.on_apply_shaders_and_draw_vertices()
+
+    def on_update_fade_animation_state(self, new_state):
+        self.fade_in_animation.on_update_fade_animation_state(new_state)
+        self.fade_out_animation.on_update_fade_animation_state(new_state)
+        for map_ in self.maps:
+            map_.on_update_fade_animation_state(new_state)

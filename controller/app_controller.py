@@ -266,3 +266,12 @@ class AppController(Controller):
     def on_close_license(self):
         self.main_menu_to_license_transition_animation.on_deactivate()
         self.license_to_main_menu_transition_animation.on_activate()
+
+    def on_update_fade_animation_state(self, new_state):
+        self.fade_in_animation.on_update_fade_animation_state(new_state)
+        self.fade_out_animation.on_update_fade_animation_state(new_state)
+        self.main_menu.on_update_fade_animation_state(new_state)
+        self.license.on_update_fade_animation_state(new_state)
+        self.game.on_update_fade_animation_state(new_state)
+        self.settings.on_update_fade_animation_state(new_state)
+        self.fps.on_update_fade_animation_state(new_state)

@@ -144,3 +144,7 @@ class CrossoverController(Controller):
         Notifies model the crossover was unlocked.
         """
         self.model.on_unlock()
+
+    def on_update_fade_animation_state(self, new_state):
+        self.fade_in_animation.on_update_fade_animation_state(new_state)
+        self.fade_out_animation.on_update_fade_animation_state(new_state)

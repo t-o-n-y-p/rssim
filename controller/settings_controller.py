@@ -100,3 +100,7 @@ class SettingsController(Controller):
         Activates the view and Map controller if user opened game screen in the app.
         """
         self.model.on_activate_view()
+
+    def on_update_fade_animation_state(self, new_state):
+        self.fade_in_animation.on_update_fade_animation_state(new_state)
+        self.fade_out_animation.on_update_fade_animation_state(new_state)

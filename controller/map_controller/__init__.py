@@ -746,3 +746,20 @@ class MapController(Controller):
 
     def on_save_and_commit_last_known_base_offset(self, base_offset):
         self.model.on_save_and_commit_last_known_base_offset(base_offset)
+
+    def on_update_fade_animation_state(self, new_state):
+        self.fade_in_animation.on_update_fade_animation_state(new_state)
+        self.fade_out_animation.on_update_fade_animation_state(new_state)
+        self.scheduler.on_update_fade_animation_state(new_state)
+        self.constructor.on_update_fade_animation_state(new_state)
+        for signal in self.signals_list:
+            signal.on_update_fade_animation_state(new_state)
+
+        for switch in self.switches_list:
+            switch.on_update_fade_animation_state(new_state)
+
+        for crossover in self.crossovers_list:
+            crossover.on_update_fade_animation_state(new_state)
+
+        for train in self.trains_list:
+            train.on_update_fade_animation_state(new_state)

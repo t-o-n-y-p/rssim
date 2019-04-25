@@ -65,3 +65,7 @@ class MainMenuController(Controller):
         :param new_locale:                      selected locale
         """
         self.view.on_update_current_locale(new_locale)
+
+    def on_update_fade_animation_state(self, new_state):
+        self.fade_in_animation.on_update_fade_animation_state(new_state)
+        self.fade_out_animation.on_update_fade_animation_state(new_state)
