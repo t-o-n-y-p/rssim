@@ -1,3 +1,6 @@
+from database import USER_DB_CURSOR
+
+
 def fade_animation_is_active(fn):
     def _handle_if_fade_animation_is_active(*args, **kwargs):
         if args[0].is_activated:
@@ -30,7 +33,8 @@ class FadeAnimation:
         self.current_opacity_chart_index = 0
         self.is_activated = False
         self.on_deactivate_listener = None
-        self.fade_animations_enabled = True
+        USER_DB_CURSOR.execute('SELECT fade_animations_enabled FROM graphics')
+        self.fade_animations_enabled = bool(USER_DB_CURSOR.fetchone()[0])
 
     def on_activate(self):
         pass
