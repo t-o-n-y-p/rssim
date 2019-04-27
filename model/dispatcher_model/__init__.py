@@ -52,6 +52,9 @@ class DispatcherModel(Model):
         """
         self.is_activated = False
 
+    def on_activate_view(self):
+        self.view.on_activate()
+
     def on_update_time(self, game_time):
         """
         Tries to dispatch all trains in queue.

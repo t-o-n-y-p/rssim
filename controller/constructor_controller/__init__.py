@@ -1,3 +1,5 @@
+from logging import getLogger
+
 from controller import *
 
 
@@ -6,16 +8,21 @@ class ConstructorController(Controller):
     Implements Constructor controller.
     Constructor object is responsible for building new tracks and station environment.
     """
-    def __init__(self, parent_controller, logger):
+    def __init__(self, map_id, parent_controller):
         """
+        Properties:
+            map_id                              ID of the map which this constructor belongs to
+
+        :param map_id:                          ID of the map which this constructor belongs to
         :param parent_controller:               Map controller subclass
-        :param logger:                          telemetry instance
         """
-        super().__init__(parent_controller=parent_controller, logger=logger)
+        super().__init__(parent_controller=parent_controller,
+                         logger=getLogger(f'root.app.game.map.{map_id}.constructor.controller'))
+        self.map_id = map_id
 
     def on_update_view(self):
         """
-        Notifies the view to update fade-in/fade-out animations and create sprites if some are missing.
+        Notifies the view and fade-in/fade-out animations and create sprites if some are missing.
         Not all sprites are created at once, they are created one by one to avoid massive FPS drop.
         """
         self.view.on_update()
@@ -133,12 +140,13 @@ class ConstructorController(Controller):
     def on_activate_money_target(self, construction_type, row):
         """
         Notifies model that money target was activated at given cell.
+        Notifies the game controller to deactivate money target for other maps.
 
         :param construction_type:               column to activate money target: tracks or environment
         :param row:                             number of cell in a given column
         """
         self.model.on_activate_money_target(construction_type, row)
-        self.parent_controller.parent_controller.on_deactivate_money_target_for_inactive_maps(self.model.map_id)
+        self.parent_controller.parent_controller.on_deactivate_money_target_for_inactive_maps(self.map_id)
 
     def on_deactivate_money_target(self):
         """
@@ -169,5 +177,10 @@ class ConstructorController(Controller):
         self.view.on_apply_shaders_and_draw_vertices()
 
     def on_update_fade_animation_state(self, new_state):
+        """
+        Notifies fade-in/fade-out animations about state update.
+
+        :param new_state:                       indicates if fade animations were enabled or disabled
+        """
         self.fade_in_animation.on_update_fade_animation_state(new_state)
         self.fade_out_animation.on_update_fade_animation_state(new_state)

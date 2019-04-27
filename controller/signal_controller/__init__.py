@@ -1,3 +1,5 @@
+from logging import getLogger
+
 from controller import *
 
 
@@ -6,24 +8,27 @@ class SignalController(Controller):
     Implements Signal controller.
     Signal object is responsible for properties, UI and events related to the signal state.
     """
-    def __init__(self, parent_controller, track, base_route, logger):
+    def __init__(self, map_id, parent_controller, track, base_route):
         """
         Properties:
+            map_id                              ID of the map which this constructor belongs to
             track                               signal track number
             base_route                          base route (train route part) which signal belongs to
 
+        :param map_id:                          ID of the map which this constructor belongs to
         :param parent_controller:               Map controller subclass
         :param track:                           signal track number
         :param base_route:                      base route (train route part) which signal belongs to
-        :param logger:                          telemetry instance
         """
-        super().__init__(parent_controller=parent_controller, logger=logger)
+        super().__init__(parent_controller=parent_controller,
+                         logger=getLogger(f'root.app.game.map.{map_id}.signal.{track}.{base_route}.controller'))
         self.track = track
         self.base_route = base_route
+        self.map_id = map_id
 
     def on_update_view(self):
         """
-        Notifies the view to update fade-in/fade-out animations.
+        Notifies the view and fade-in/fade-out animations.
         """
         self.view.on_update()
         self.fade_in_animation.on_update()
@@ -135,5 +140,10 @@ class SignalController(Controller):
         self.view.on_enable_notifications()
 
     def on_update_fade_animation_state(self, new_state):
+        """
+        Notifies fade-in/fade-out animations about state update.
+
+        :param new_state:                       indicates if fade animations were enabled or disabled
+        """
         self.fade_in_animation.on_update_fade_animation_state(new_state)
         self.fade_out_animation.on_update_fade_animation_state(new_state)

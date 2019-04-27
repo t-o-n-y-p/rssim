@@ -1,3 +1,4 @@
+from logging import getLogger
 from operator import attrgetter
 
 from controller import *
@@ -8,9 +9,10 @@ class MapController(Controller):
     Implements Map controller.
     Map object is responsible for properties, UI and events related to the map.
     """
-    def __init__(self, parent_controller, logger):
+    def __init__(self, map_id, parent_controller):
         """
         Properties:
+            map_id                              ID of the map which this constructor belongs to
             scheduler                           Scheduler object controller
             constructor                         Constructor object controller
             dispatcher                          Dispatcher object controller
@@ -24,11 +26,16 @@ class MapController(Controller):
             crossovers_list                     list of Crossover object controllers
             trains                              dictionary of Train object controllers
             trains_list                         list of Train object controllers
+            constructor_to_scheduler_transition_animation
+                                                navigation animation from constructor screen to scheduler screen
+            scheduler_to_constructor_transition_animation
+                                                navigation animation from scheduler screen to constructor screen
 
+        :param map_id:                          ID of the map which this constructor belongs to
         :param parent_controller:               Map controller subclass
-        :param logger:                          telemetry instance
         """
-        super().__init__(parent_controller=parent_controller, logger=logger)
+        super().__init__(parent_controller=parent_controller,
+                         logger=getLogger(f'root.app.game.map.{map_id}.controller'))
         self.scheduler = None
         self.constructor = None
         self.dispatcher = None
@@ -44,10 +51,11 @@ class MapController(Controller):
         self.trains_list = []
         self.constructor_to_scheduler_transition_animation = None
         self.scheduler_to_constructor_transition_animation = None
+        self.map_id = map_id
 
     def on_update_view(self):
         """
-        Notifies the view and all child views to update fade-in/fade-out animations
+        Notifies the view, all child views, fade-in/fade-out animations, transition animations
         and create sprites if some are missing.
         Not all sprites are created at once, they are created one by one to avoid massive FPS drop.
         """
@@ -78,7 +86,7 @@ class MapController(Controller):
     def on_activate(self):
         """
         Activates Map object: controller and model. Model activates the view if necessary.
-        Also activates all child objects.
+        Also activates child objects.
         """
         self.is_activated = True
         self.model.on_activate()
@@ -157,7 +165,7 @@ class MapController(Controller):
 
     def on_change_base_offset(self, new_base_offset):
         """
-        Notifies the view and all child controllers about base offset update.
+        Notifies the view and child controllers about base offset update.
 
         :param new_base_offset:         new base offset
         """
@@ -187,18 +195,18 @@ class MapController(Controller):
         self.model.on_unlock_track(track)
         self.scheduler.on_unlock_track(track)
         self.dispatcher.on_unlock_track(track)
-        for (track_param, base_route) in self.model.get_signals_to_unlock_with_track(track):
+        for track_param, base_route in self.model.get_signals_to_unlock_with_track(track):
             self.signals[track_param][base_route].on_unlock()
 
-        for (track_param_1, track_param_2, switch_type) in self.model.get_switches_to_unlock_with_track(track):
+        for track_param_1, track_param_2, switch_type in self.model.get_switches_to_unlock_with_track(track):
             self.switches[track_param_1][track_param_2][switch_type].on_unlock()
 
-        for (track_param_1, track_param_2, crossover_type) in self.model.get_crossovers_to_unlock_with_track(track):
+        for track_param_1, track_param_2, crossover_type in self.model.get_crossovers_to_unlock_with_track(track):
             self.crossovers[track_param_1][track_param_2][crossover_type].on_unlock()
 
     def on_unlock_environment(self, tier):
         """
-        Notifies the model that given environment tier is unlocked,
+        Notifies the model that given environment tier is unlocked.
 
         :param tier:                    environment tier number
         """
@@ -232,6 +240,7 @@ class MapController(Controller):
         self.view.on_deactivate()
         self.scheduler.on_deactivate_view()
         self.constructor.on_deactivate_view()
+        self.dispatcher.on_deactivate_view()
         for signal in self.signals_list:
             signal.on_deactivate_view()
 
@@ -366,6 +375,7 @@ class MapController(Controller):
     def on_open_schedule(self):
         """
         Activates Scheduler view to open Scheduler screen for player.
+        Deactivates Constructor view if it is activated.
         """
         # Constructor and Scheduler views cannot be activated at the same time;
         # when user opens schedule screen it means constructor screen has to be closed
@@ -385,6 +395,7 @@ class MapController(Controller):
     def on_open_constructor(self):
         """
         Activates Constructor view to open Scheduler screen for player.
+        Deactivates Scheduler view if it is activated.
         """
         # Constructor and Scheduler views cannot be activated at the same time;
         # when user opens constructor screen it means schedule screen has to be closed
@@ -745,13 +756,24 @@ class MapController(Controller):
         self.scheduler.on_apply_shaders_and_draw_vertices()
 
     def on_save_and_commit_last_known_base_offset(self, base_offset):
+        """
+        Notifies the model to save last known base offset to the database.
+
+        :param base_offset:                     last known base offset
+        """
         self.model.on_save_and_commit_last_known_base_offset(base_offset)
 
     def on_update_fade_animation_state(self, new_state):
+        """
+        Notifies fade-in/fade-out animations about state update.
+
+        :param new_state:                       indicates if fade animations were enabled or disabled
+        """
         self.fade_in_animation.on_update_fade_animation_state(new_state)
         self.fade_out_animation.on_update_fade_animation_state(new_state)
         self.scheduler.on_update_fade_animation_state(new_state)
         self.constructor.on_update_fade_animation_state(new_state)
+        self.dispatcher.on_update_fade_animation_state(new_state)
         for signal in self.signals_list:
             signal.on_update_fade_animation_state(new_state)
 

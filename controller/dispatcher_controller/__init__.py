@@ -1,3 +1,5 @@
+from logging import getLogger
+
 from controller import *
 
 
@@ -6,18 +8,37 @@ class DispatcherController(Controller):
     Implements Dispatcher controller.
     Dispatcher object is responsible for assigning routes to approaching trains.
     """
-    def __init__(self, parent_controller, logger):
+    def __init__(self, map_id, parent_controller):
         """
+        Properties:
+            map_id                              ID of the map which this constructor belongs to
+
+        :param map_id:                          ID of the map which this constructor belongs to
         :param parent_controller:               Map controller subclass
-        :param logger:                          telemetry instance
         """
-        super().__init__(parent_controller=parent_controller, logger=logger)
+        super().__init__(parent_controller=parent_controller,
+                         logger=getLogger(f'root.app.game.map.{map_id}.dispatcher.controller'))
+        self.map_id = map_id
 
     def on_update_view(self):
         """
-        Notifies the view to update fade-in/fade-out animations.
+        Notifies the view and fade-in/fade-out animations.
         """
         self.view.on_update()
+        self.fade_in_animation.on_update()
+        self.fade_out_animation.on_update()
+
+    def on_activate_view(self):
+        """
+        Activates the view.
+        """
+        self.model.on_activate_view()
+
+    def on_deactivate_view(self):
+        """
+        Deactivates the view.
+        """
+        self.view.on_deactivate()
 
     @controller_is_not_active
     def on_activate(self):
@@ -126,3 +147,12 @@ class DispatcherController(Controller):
         Enables system notifications for the view and all child controllers.
         """
         self.view.on_enable_notifications()
+
+    def on_update_fade_animation_state(self, new_state):
+        """
+        Notifies fade-in/fade-out animations about state update.
+
+        :param new_state:                       indicates if fade animations were enabled or disabled
+        """
+        self.fade_in_animation.on_update_fade_animation_state(new_state)
+        self.fade_out_animation.on_update_fade_animation_state(new_state)

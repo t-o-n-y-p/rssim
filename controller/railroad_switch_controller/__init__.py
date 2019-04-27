@@ -1,3 +1,5 @@
+from logging import getLogger
+
 from controller import *
 
 
@@ -6,27 +8,31 @@ class RailroadSwitchController(Controller):
     Implements Railroad switch controller.
     Railroad switch object is responsible for properties, UI and events related to the railroad switch.
     """
-    def __init__(self, parent_controller, track_param_1, track_param_2, switch_type, logger):
+    def __init__(self, map_id, parent_controller, track_param_1, track_param_2, switch_type):
         """
         Properties:
-            track_param_1               number of the straight track
-            track_param_2               number of the diverging track
-            switch_type                 railroad switch location: left/right side of the map
+            map_id                              ID of the map which this constructor belongs to
+            track_param_1                       number of the straight track
+            track_param_2                       number of the diverging track
+            switch_type                         railroad switch location: left/right side of the map
 
+        :param map_id:                          ID of the map which this constructor belongs to
         :param parent_controller:               Map controller subclass
         :param track_param_1:                   number of the straight track
         :param track_param_2:                   number of the diverging track
         :param switch_type:                     railroad switch location: left/right side of the map
-                :param logger:                          telemetry instance
         """
-        super().__init__(parent_controller=parent_controller, logger=logger)
+        logger_name \
+            = f'root.app.game.map.{map_id}.railroad_switch.{track_param_1}.{track_param_2}.{switch_type}.controller'
+        super().__init__(parent_controller=parent_controller, logger=getLogger(logger_name))
         self.track_param_1 = track_param_1
         self.track_param_2 = track_param_2
         self.switch_type = switch_type
+        self.map_id = map_id
 
     def on_update_view(self):
         """
-        Notifies the view to update fade-in/fade-out animations.
+        Notifies the view and  fade-in/fade-out animations.
         """
         self.view.on_update()
         self.fade_in_animation.on_update()
@@ -141,5 +147,10 @@ class RailroadSwitchController(Controller):
         self.model.on_unlock()
 
     def on_update_fade_animation_state(self, new_state):
+        """
+        Notifies fade-in/fade-out animations about state update.
+
+        :param new_state:                       indicates if fade animations were enabled or disabled
+        """
         self.fade_in_animation.on_update_fade_animation_state(new_state)
         self.fade_out_animation.on_update_fade_animation_state(new_state)

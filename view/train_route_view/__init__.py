@@ -21,6 +21,16 @@ class TrainRouteView(View):
         super().__init__(logger=getLogger(f'root.app.game.map.{self.map_id}.train_route.{track}.{train_route}.view'))
         self.on_init_graphics()
 
+    def on_update(self):
+        pass
+
+    def on_update_opacity(self, new_opacity):
+        self.opacity = new_opacity
+        self.on_update_sprite_opacity()
+
+    def on_update_sprite_opacity(self):
+        pass
+
     @view_is_not_active
     def on_activate(self):
         """

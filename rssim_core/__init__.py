@@ -48,6 +48,7 @@ from ui.transition_animation import TransitionAnimation
 from ui.fade_animation.fade_in_animation.app_fade_in_animation import AppFadeInAnimation
 from ui.fade_animation.fade_in_animation.constructor_fade_in_animation import ConstructorFadeInAnimation
 from ui.fade_animation.fade_in_animation.crossover_fade_in_animation import CrossoverFadeInAnimation
+from ui.fade_animation.fade_in_animation.dispatcher_fade_in_animation import DispatcherFadeInAnimation
 from ui.fade_animation.fade_in_animation.fps_fade_in_animation import FPSFadeInAnimation
 from ui.fade_animation.fade_in_animation.game_fade_in_animation import GameFadeInAnimation
 from ui.fade_animation.fade_in_animation.license_fade_in_animation import LicenseFadeInAnimation
@@ -58,9 +59,11 @@ from ui.fade_animation.fade_in_animation.scheduler_fade_in_animation import Sche
 from ui.fade_animation.fade_in_animation.settings_fade_in_animation import SettingsFadeInAnimation
 from ui.fade_animation.fade_in_animation.signal_fade_in_animation import SignalFadeInAnimation
 from ui.fade_animation.fade_in_animation.train_fade_in_animation import TrainFadeInAnimation
+from ui.fade_animation.fade_in_animation.train_route_fade_in_animation import TrainRouteFadeInAnimation
 from ui.fade_animation.fade_out_animation.app_fade_out_animation import AppFadeOutAnimation
 from ui.fade_animation.fade_out_animation.constructor_fade_out_animation import ConstructorFadeOutAnimation
 from ui.fade_animation.fade_out_animation.crossover_fade_out_animation import CrossoverFadeOutAnimation
+from ui.fade_animation.fade_out_animation.dispatcher_fade_out_animation import DispatcherFadeOutAnimation
 from ui.fade_animation.fade_out_animation.fps_fade_out_animation import FPSFadeOutAnimation
 from ui.fade_animation.fade_out_animation.game_fade_out_animation import GameFadeOutAnimation
 from ui.fade_animation.fade_out_animation.license_fade_out_animation import LicenseFadeOutAnimation
@@ -71,6 +74,7 @@ from ui.fade_animation.fade_out_animation.scheduler_fade_out_animation import Sc
 from ui.fade_animation.fade_out_animation.settings_fade_out_animation import SettingsFadeOutAnimation
 from ui.fade_animation.fade_out_animation.signal_fade_out_animation import SignalFadeOutAnimation
 from ui.fade_animation.fade_out_animation.train_fade_out_animation import TrainFadeOutAnimation
+from ui.fade_animation.fade_out_animation.train_route_fade_out_animation import TrainRouteFadeOutAnimation
 from database import CONFIG_DB_CURSOR, USER_DB_CURSOR
 
 
@@ -271,6 +275,7 @@ def _create_passenger_map(game):
     model.view = view
     controller.fade_out_animation.constructor_fade_out_animation = controller.constructor.fade_out_animation
     controller.fade_out_animation.scheduler_fade_out_animation = controller.scheduler.fade_out_animation
+    controller.fade_out_animation.dispatcher_fade_out_animation = controller.dispatcher.fade_out_animation
     for signal in controller.signals_list:
         controller.fade_in_animation.signal_fade_in_animations.append(signal.fade_in_animation)
         controller.fade_out_animation.signal_fade_out_animations.append(signal.fade_out_animation)
@@ -286,6 +291,9 @@ def _create_passenger_map(game):
     for train in controller.trains_list:
         controller.fade_in_animation.train_fade_in_animations.append(train.fade_in_animation)
         controller.fade_out_animation.train_fade_out_animations.append(train.fade_out_animation)
+
+    for train_route in controller.train_routes_sorted_list:
+        controller.fade_out_animation.train_route_fade_out_animations.append(train_route.fade_out_animation)
 
     return controller
 
@@ -387,6 +395,8 @@ def _create_passenger_train_route(map_controller, track, train_route):
     :return:                        TrainRoute object controller
     """
     controller = PassengerTrainRouteController(map_controller, track, train_route)
+    controller.fade_in_animation = TrainRouteFadeInAnimation(controller)
+    controller.fade_out_animation = TrainRouteFadeOutAnimation(controller)
     model = PassengerTrainRouteModel(track, train_route)
     if model.opened:
         controller.parent_controller.on_set_trail_points(model.last_opened_by, model.trail_points_v2)
@@ -480,6 +490,8 @@ def _create_passenger_map_dispatcher(map_controller):
     :return:                        Dispatcher object controller
     """
     controller = PassengerMapDispatcherController(map_controller)
+    controller.fade_in_animation = DispatcherFadeInAnimation(controller)
+    controller.fade_out_animation = DispatcherFadeOutAnimation(controller)
     model = PassengerMapDispatcherModel()
     view = PassengerMapDispatcherView()
     controller.model = model
