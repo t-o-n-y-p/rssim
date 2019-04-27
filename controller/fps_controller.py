@@ -16,7 +16,7 @@ class FPSController(Controller):
 
     def on_update_view(self):
         """
-        Notifies the view to update fade-in/fade-out animations.
+        Notifies the view and fade-in/fade-out animations.
         """
         self.view.on_update()
         self.fade_in_animation.on_update()
@@ -79,6 +79,7 @@ class FPSController(Controller):
     def on_update_display_fps(self, display_fps):
         """
         Notifies the model about display_fps flag value update.
+        Activates corresponding fade-in/fade-out animations.
 
         :param display_fps:                     new flag value
         """
@@ -91,5 +92,10 @@ class FPSController(Controller):
             self.fade_out_animation.on_activate()
 
     def on_update_fade_animation_state(self, new_state):
+        """
+        Notifies fade-in/fade-out animations about state update.
+
+        :param new_state:                       indicates if fade animations were enabled or disabled
+        """
         self.fade_in_animation.on_update_fade_animation_state(new_state)
         self.fade_out_animation.on_update_fade_animation_state(new_state)

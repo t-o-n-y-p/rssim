@@ -12,10 +12,24 @@ class AppController(Controller):
     def __init__(self, loader):
         """
         Properties:
+            loader                      RSSim class instance
+            main_menu                   MainMenu object controller
+            license                     License object controller
             game                        Game object controller
             settings                    Settings object controller
             fps                         FPS object controller
-            loader                      RSSim class instance
+            main_menu_to_game_transition_animation
+                                        navigation animation from main menu screen to game screen
+            game_to_main_menu_transition_animation
+                                        navigation animation from game screen to main menu screen
+            main_menu_to_license_transition_animation
+                                        navigation animation from main menu screen to license screen
+            license_to_main_menu_transition_animation
+                                        navigation animation from license screen to main menu screen
+            game_to_settings_transition_animation
+                                        navigation animation from game screen to settings screen
+            settings_to_game_transition_animation
+                                        navigation animation from settings screen to game screen
 
         :param loader:                  RSSim class instance
         """
@@ -35,7 +49,7 @@ class AppController(Controller):
 
     def on_update_view(self):
         """
-        Notifies the view, Game view and Settings view to update fade-in/fade-out animations.
+        Notifies the view, Game view and Settings view, fade-in/fade-out animations, transition animations.
         """
         self.view.on_update()
         self.fade_in_animation.on_update()
@@ -255,19 +269,33 @@ class AppController(Controller):
         self.game.on_change_enough_money_notification_state(notification_state)
 
     def on_resume_game(self):
+        """
+        Notifies the Game controller to resume the game when player clicks on the main menu button.
+        """
         self.game.on_resume_game()
 
     def on_open_license(self):
+        """
+        Performs transition from main menu screen to license screen.
+        """
         self.main_menu.on_deactivate_view()
         self.game_to_main_menu_transition_animation.on_deactivate()
         self.license_to_main_menu_transition_animation.on_deactivate()
         self.main_menu_to_license_transition_animation.on_activate()
 
     def on_close_license(self):
+        """
+        Performs transition from license screen to main menu screen.
+        """
         self.main_menu_to_license_transition_animation.on_deactivate()
         self.license_to_main_menu_transition_animation.on_activate()
 
     def on_update_fade_animation_state(self, new_state):
+        """
+        Notifies fade-in/fade-out animations about state update.
+
+        :param new_state:                       indicates if fade animations were enabled or disabled
+        """
         self.fade_in_animation.on_update_fade_animation_state(new_state)
         self.fade_out_animation.on_update_fade_animation_state(new_state)
         self.main_menu.on_update_fade_animation_state(new_state)

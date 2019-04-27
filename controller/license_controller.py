@@ -4,13 +4,20 @@ from controller import *
 
 
 class LicenseController(Controller):
+    """
+    Implements License controller.
+    License object is responsible for properties, UI and events related to the license screen.
+    """
     def __init__(self, app):
+        """
+        :param app:                     App controller (parent controller)
+        """
         super().__init__(parent_controller=app,
                          logger=getLogger('root.app.main_menu.license.controller'))
 
     def on_update_view(self):
         """
-        Notifies the view to update fade-in/fade-out animations.
+        Notifies the view and fade-in/fade-out animations.
         """
         self.view.on_update()
         self.fade_in_animation.on_update()
@@ -19,7 +26,7 @@ class LicenseController(Controller):
     @controller_is_not_active
     def on_activate(self):
         """
-        Activates FPS object: controller and model. Model activates the view if necessary.
+        Activates License object: controller and model. Model activates the view if necessary.
         """
         self.is_activated = True
         self.model.on_activate()
@@ -27,7 +34,7 @@ class LicenseController(Controller):
     @controller_is_active
     def on_deactivate(self):
         """
-        Deactivates FPS object: controller, view and model.
+        Deactivates License object: controller, view and model.
         """
         self.is_activated = False
         self.model.on_deactivate()
@@ -69,5 +76,10 @@ class LicenseController(Controller):
         self.view.on_apply_shaders_and_draw_vertices()
 
     def on_update_fade_animation_state(self, new_state):
+        """
+        Notifies fade-in/fade-out animations about state update.
+
+        :param new_state:                       indicates if fade animations were enabled or disabled
+        """
         self.fade_in_animation.on_update_fade_animation_state(new_state)
         self.fade_out_animation.on_update_fade_animation_state(new_state)

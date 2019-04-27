@@ -12,6 +12,7 @@ class GameController(Controller):
         """
         Properties:
             maps                        Map object controllers list
+            map_transition_animations   navigation animations from maps (not used at the moment)
 
         :param app:                     App controller (parent controller)
         """
@@ -21,7 +22,7 @@ class GameController(Controller):
 
     def on_update_view(self):
         """
-        Notifies the view and Map view to update fade-in/fade-out animations.
+        Notifies the view, Map views, and fade-in/fade-out animations.
         """
         self.view.on_update()
         self.fade_in_animation.on_update()
@@ -32,7 +33,7 @@ class GameController(Controller):
     @controller_is_not_active
     def on_activate(self):
         """
-        Activates Game object: controller and model. Model activates the view if necessary.
+        Activates Game object: controller and model. Model activates the view if necessary. Activates maps.
         When App object is activated, we also activate Map object.
         """
         self.is_activated = True
@@ -92,7 +93,7 @@ class GameController(Controller):
     @game_is_not_paused
     def on_update_time(self):
         """
-        Notifies Map controller about time change.
+        Notifies Map controllers about time change.
         Notifies the model to update in-game time.
         Calls on_save_and_commit_state handler every 2 in-game hours.
         """
@@ -105,7 +106,7 @@ class GameController(Controller):
 
     def on_save_and_commit_state(self):
         """
-        Notifies the model and Map controller to save state to user progress database and commit.
+        Notifies the model and Map controllers to save state to user progress database and commit.
         """
         self.model.on_save_state()
         for map_ in self.maps:
@@ -115,7 +116,7 @@ class GameController(Controller):
 
     def on_level_up(self):
         """
-        Notifies the model and Map controller about level update.
+        Notifies the model and Map controllers about level update.
         """
         self.model.on_level_up()
         for map_ in self.maps:
@@ -139,7 +140,7 @@ class GameController(Controller):
 
     def on_add_money(self, money):
         """
-        Notifies the model and Map controller about bank account state update when user gains money.
+        Notifies the model and Map controllers about bank account state update when user gains money.
 
         :param money:                   amount of money gained
         """
@@ -149,7 +150,7 @@ class GameController(Controller):
 
     def on_pay_money(self, money):
         """
-        Notifies the model and Map controller about bank account state update when user pays money.
+        Notifies the model and Map controllers about bank account state update when user pays money.
 
         :param money:                   amount of money spent
         """
@@ -193,7 +194,7 @@ class GameController(Controller):
 
     def on_change_feature_unlocked_notification_state(self, notification_state):
         """
-        Notifies the Map controller about feature unlocked notification state update.
+        Notifies the Map controllers about feature unlocked notification state update.
 
         :param notification_state:              new notification state defined by player
         """
@@ -202,7 +203,7 @@ class GameController(Controller):
 
     def on_change_construction_completed_notification_state(self, notification_state):
         """
-        Notifies the Map controller about construction completed notification state update.
+        Notifies the Map controllers about construction completed notification state update.
 
         :param notification_state:              new notification state defined by player
         """
@@ -226,12 +227,22 @@ class GameController(Controller):
             map_.on_apply_shaders_and_draw_vertices()
 
     def on_update_fade_animation_state(self, new_state):
+        """
+        Notifies fade-in/fade-out animations about state update.
+
+        :param new_state:                       indicates if fade animations were enabled or disabled
+        """
         self.fade_in_animation.on_update_fade_animation_state(new_state)
         self.fade_out_animation.on_update_fade_animation_state(new_state)
         for map_ in self.maps:
             map_.on_update_fade_animation_state(new_state)
 
     def on_deactivate_money_target_for_inactive_maps(self, active_map_id):
+        """
+        Deactivates money target for all maps except the given one.
+
+        :param active_map_id:                   ID of the given map
+        """
         for i in range(len(self.maps)):
             if i != active_map_id:
                 self.maps[i].constructor.on_deactivate_money_target()

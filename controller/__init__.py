@@ -74,6 +74,7 @@ class Controller:
     def __init__(self, parent_controller=None, logger=None):
         """
         Properties:
+            logger                          telemetry instance
             model                           object model
             view                            object view
             is_activated                    indicates if controller (and object in general) is active
@@ -88,7 +89,10 @@ class Controller:
                                             from this controller and all child controllers
             on_mouse_leave_handlers         list of on_mouse_leave event handlers
                                             from this controller and all child controllers
-            logger                          telemetry instance
+            on_mouse_scroll_handlers        list of on_mouse_scroll event handlers
+                                            from this controller and all child controllers
+            fade_in_animation               animation which is triggered when view is activated
+            fade_out_animation              animation which is triggered when view is deactivated
 
         :param parent_controller:           controller which this controller is child for in the hierarchy
         :param logger:                      telemetry instance
@@ -109,9 +113,8 @@ class Controller:
 
     def on_update_view(self):
         """
-        Notifies object view and child objects views to update.
-        Usually it is needed for fade-in/fade-out animations
-        or for some views where all sprites are not created at once
+        Notifies object view, child objects views, fade-in/fade-out animations, transition animations to update.
+        For some views all sprites are not created at once
         and remaining sprites are created frame by frame to avoid massive FPS drop.
         """
         pass
@@ -143,6 +146,7 @@ class Controller:
         :param on_mouse_release_handlers:           list of on_mouse_release event handlers to be appended
         :param on_mouse_drag_handlers:              list of on_mouse_drag event handlers to be appended
         :param on_mouse_leave_handlers:             list of on_mouse_leave event handlers to be appended
+        :param on_mouse_scroll_handlers:            list of on_mouse_scroll event handlers to be appended
         """
         if on_mouse_motion_handlers is not None:
             self.on_mouse_motion_handlers.extend(on_mouse_motion_handlers)
@@ -185,6 +189,7 @@ class Controller:
         :param on_mouse_release_handlers:           list of on_mouse_release event handlers to be detached
         :param on_mouse_drag_handlers:              list of on_mouse_drag event handlers to be detached
         :param on_mouse_leave_handlers:             list of on_mouse_leave event handlers to be detached
+        :param on_mouse_scroll_handlers:            list of on_mouse_scroll event handlers to be appended
         """
         if on_mouse_motion_handlers is not None:
             for handler in on_mouse_motion_handlers:

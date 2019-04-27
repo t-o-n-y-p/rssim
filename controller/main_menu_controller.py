@@ -4,12 +4,19 @@ from controller import *
 
 
 class MainMenuController(Controller):
+    """
+    Implements Main menu controller.
+    Main menu object is responsible for properties, UI and events related to the main menu screen.
+    """
     def __init__(self, app):
+        """
+        :param app:                     App controller (parent controller)
+        """
         super().__init__(parent_controller=app, logger=getLogger('root.app.main_menu.controller'))
 
     def on_update_view(self):
         """
-        Notifies the view and Map view to update fade-in/fade-out animations.
+        Notifies the view and fade-in/fade-out animations.
         """
         self.view.on_update()
         self.fade_in_animation.on_update()
@@ -67,5 +74,10 @@ class MainMenuController(Controller):
         self.view.on_update_current_locale(new_locale)
 
     def on_update_fade_animation_state(self, new_state):
+        """
+        Notifies fade-in/fade-out animations about state update.
+
+        :param new_state:                       indicates if fade animations were enabled or disabled
+        """
         self.fade_in_animation.on_update_fade_animation_state(new_state)
         self.fade_out_animation.on_update_fade_animation_state(new_state)
