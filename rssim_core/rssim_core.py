@@ -19,16 +19,7 @@ class RSSim:
     def __init__(self):
         """
         Properties:
-              user_db_connection        connection to the user DB (stores game state and user-defined settings)
-              user_db_cursor            user DB cursor (is used to execute user DB queries)
-              config_db_connection      connection to the config DB (stores all configuration
-                                        that is not designed to be managed by user)
-              config_db_cursor          configuration DB cursor (is used to execute configuration DB queries)
               logger                    main game logger
-              log_level                 log level for base game logger
-              surface                   surface to draw all UI objects on
-              batches                   batches to group all labels and sprites
-              groups                    defines drawing layers (some labels and sprites behind others)
               app                       App object, is responsible for high-level properties, UI and events
               notifications             list of all active system notifications
         """
@@ -75,7 +66,6 @@ class RSSim:
 
         # activate app after it is created
         self.app.on_activate()
-
         self.notifications = []
 
         @SURFACE.event

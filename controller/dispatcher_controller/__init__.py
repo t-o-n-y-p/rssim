@@ -11,9 +11,9 @@ class DispatcherController(Controller):
     def __init__(self, map_id, parent_controller):
         """
         Properties:
-            map_id                              ID of the map which this constructor belongs to
+            map_id                              ID of the map which this dispatcher belongs to
 
-        :param map_id:                          ID of the map which this constructor belongs to
+        :param map_id:                          ID of the map which this dispatcher belongs to
         :param parent_controller:               Map controller subclass
         """
         super().__init__(parent_controller=parent_controller,

@@ -10,17 +10,20 @@ class MapModel(Model):
     Implements Map model.
     Map object is responsible for properties, UI and events related to the map.
     """
-    def __init__(self):
+    def __init__(self, map_id):
         """
         Properties:
+            map_id                              ID of the map which this map belongs to
             unlocked_tracks                     number of tracks available for player and trains
             unlocked_environment                environment tier available for player
             unlocked_car_collections            list of car collections which can be used for new trains
+            last_known_base_offset              base offset which is saved after each map drag gesture
+            zoom_out_activated                  indicates if map is zoomed out or not
 
+        :param map_id:                          ID of the map which this map belongs to
         """
-        self.map_id = None
-        self.on_update_map_id()
-        super().__init__(logger=getLogger(f'root.app.game.map.{self.map_id}.model'))
+        super().__init__(logger=getLogger(f'root.app.game.map.{map_id}.model'))
+        self.map_id = map_id
         self.user_db_cursor.execute('''SELECT unlocked_tracks, unlocked_environment 
                                        FROM map_progress WHERE map_id = ?''', (self.map_id, ))
         self.unlocked_tracks, self.unlocked_environment = self.user_db_cursor.fetchone()
@@ -41,7 +44,7 @@ class MapModel(Model):
 
     def on_activate_view(self):
         """
-        Activates the view.
+        Activates the view if this map matches the map which was opened last.
         """
         self.user_db_cursor.execute('SELECT map_id FROM graphics')
         if self.map_id == self.user_db_cursor.fetchone()[0]:
@@ -87,12 +90,22 @@ class MapModel(Model):
                                      ','.join(list(map(str, self.unlocked_car_collections))), self.map_id))
 
     def on_save_and_commit_last_known_base_offset(self, base_offset):
+        """
+        Saves and commits last known base offset to the database.
+
+        :param base_offset:             last known base offset
+        """
         self.last_known_base_offset = base_offset
         self.user_db_cursor.execute('UPDATE graphics SET last_known_base_offset = ? WHERE map_id = ?',
                                     (','.join(list(map(str, self.last_known_base_offset))), self.map_id))
         self.user_db_connection.commit()
 
     def on_save_and_commit_zoom_out_activated(self, zoom_out_activated):
+        """
+        Saves and commits zoom_out_activated flag value to the database.
+
+        :param zoom_out_activated:      indicates if map is zoomed out or not
+        """
         self.zoom_out_activated = zoom_out_activated
         self.user_db_cursor.execute('UPDATE graphics SET zoom_out_activated = ? WHERE map_id = ?',
                                     (int(zoom_out_activated), self.map_id))
@@ -171,6 +184,3 @@ class MapModel(Model):
                                          FROM crossovers_config WHERE track_unlocked_with = ? AND map_id = ?''',
                                       (track, self.map_id))
         return self.config_db_cursor.fetchall()
-
-    def on_update_map_id(self):
-        pass

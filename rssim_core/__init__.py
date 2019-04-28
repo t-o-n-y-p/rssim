@@ -93,6 +93,8 @@ def create_app(loader):
     Creates controller, model and view for App object.
     It is responsible for high-level properties, UI and events.
     Child objects:
+        main_menu                   MainMenu object
+        license                     License object
         game                        Game object
         settings                    Settings object
         fps                         FPS object
@@ -148,7 +150,7 @@ def _create_game(app):
     Creates controller, model and view for Game object.
     It is responsible for properties, UI and events related to the game process.
     Child objects:
-        map                         Map object
+        maps                        Map objects
 
     :param app:                     App controller pointer
     :return:                        Game object controller
@@ -524,6 +526,13 @@ def _create_passenger_map_constructor(map_controller):
 
 
 def _create_main_menu(app):
+    """
+    Creates controller, model and view for MainMenu object.
+    It is responsible for main menu screen.
+
+    :param app:                     App controller pointer
+    :return:                        MainMenu object controller
+    """
     controller = MainMenuController(app)
     controller.fade_in_animation = MainMenuFadeInAnimation(controller)
     controller.fade_out_animation = MainMenuFadeOutAnimation(controller)
@@ -538,6 +547,13 @@ def _create_main_menu(app):
 
 
 def _create_license(app):
+    """
+    Creates controller, model and view for License object.
+    It is responsible for license screen.
+
+    :param app:                     App controller pointer
+    :return:                        License object controller
+    """
     controller = LicenseController(app)
     controller.fade_in_animation = LicenseFadeInAnimation(controller)
     controller.fade_out_animation = LicenseFadeOutAnimation(controller)

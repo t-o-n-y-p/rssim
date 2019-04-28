@@ -166,5 +166,10 @@ class GameModel(Model):
         self.view.on_update_money(self.money, self.money_target)
 
     def get_active_map(self):
+        """
+        Returns ID of the currently opened map from the database.
+
+        :return:                        ID of the currently opened map
+        """
         self.user_db_cursor.execute('SELECT map_id FROM graphics')
         return self.user_db_cursor.fetchone()[0]

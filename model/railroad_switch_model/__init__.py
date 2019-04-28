@@ -8,9 +8,10 @@ class RailroadSwitchModel(Model):
     Implements Railroad switch model.
     Railroad switch object is responsible for properties, UI and events related to the railroad switch.
     """
-    def __init__(self, track_param_1, track_param_2, switch_type):
+    def __init__(self, map_id, track_param_1, track_param_2, switch_type):
         """
         Properties:
+            map_id                              ID of the map which this switch belongs to
             busy                                indicates if any switch direction is busy
             force_busy                          indicates if any switch direction is force_busy
             last_entered_by                     train ID which made the switch direction force_busy last time
@@ -18,17 +19,17 @@ class RailroadSwitchModel(Model):
             current_position                    current switch position
             locked                              indicates if switch is available for player
 
+        :param map_id:                          ID of the map which this switch belongs to
         :param track_param_1:                   number of the straight track
         :param track_param_2:                   number of the diverging track
         :param switch_type:                     railroad switch location: left/right side of the map
         """
-        self.map_id = None
-        self.on_update_map_id()
         super().__init__(
             logger=getLogger(
-                f'root.app.game.map.{self.map_id}.railroad_switch.{track_param_1}.{track_param_2}.{switch_type}.model'
+                f'root.app.game.map.{map_id}.railroad_switch.{track_param_1}.{track_param_2}.{switch_type}.model'
             )
         )
+        self.map_id = map_id
         self.user_db_cursor.execute('''SELECT busy, force_busy FROM switches 
                                        WHERE track_param_1 = ? AND track_param_2 = ? AND switch_type = ? 
                                        AND map_id = ?''',
@@ -114,6 +115,3 @@ class RailroadSwitchModel(Model):
         """
         self.locked = False
         self.view.on_unlock()
-
-    def on_update_map_id(self):
-        pass

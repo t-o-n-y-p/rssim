@@ -12,9 +12,10 @@ class AppModel(Model):
     def __init__(self):
         """
         Properties:
+            fullscreen_mode                     indicates if fullscreen mode is turned on
             screen_resolution_config            app window width and height from user progress database
-            monitor_resolution_config           current monitor resolution
             fullscreen_mode_available           determines if app supports current monitor resolution
+            fullscreen_resolution               app window resolution for fullscreen mode
 
         """
         super().__init__(logger=getLogger('root.app.model'))

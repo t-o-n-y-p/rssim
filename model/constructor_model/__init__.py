@@ -8,9 +8,10 @@ class ConstructorModel(Model):
     Implements Constructor model.
     Constructor object is responsible for building new tracks and station environment.
     """
-    def __init__(self):
+    def __init__(self, map_id):
         """
         Properties:
+            map_id                              ID of the map which this constructor belongs to
             construction_state_matrix           tracks and environment state storage
             cached_unlocked_tracks              list of tracks which were unlocked since last DB commit
             cached_unlocked_tiers               list of environment tiers which were unlocked since last DB commit
@@ -18,10 +19,10 @@ class ConstructorModel(Model):
             money_target_activated              indicates if money target for any construction is activated
             money_target_cell_position          column and row of constructor view cell the target was last activated
 
+        :param map_id:                          ID of the map which this constructor belongs to
         """
-        self.map_id = None
-        self.on_update_map_id()
-        super().__init__(logger=getLogger(f'root.app.game.map.{self.map_id}.constructor.model'))
+        super().__init__(logger=getLogger(f'root.app.game.map.{map_id}.constructor.model'))
+        self.map_id = map_id
         self.construction_state_matrix = [{}, {}]
         self.cached_unlocked_tracks = []
         self.cached_unlocked_tiers = []
@@ -350,6 +351,3 @@ class ConstructorModel(Model):
         """
         self.money_target_activated = False
         self.view.on_deactivate_money_target()
-
-    def on_update_map_id(self):
-        pass

@@ -12,7 +12,7 @@ class MapController(Controller):
     def __init__(self, map_id, parent_controller):
         """
         Properties:
-            map_id                              ID of the map which this constructor belongs to
+            map_id                              ID of the map which this map belongs to
             scheduler                           Scheduler object controller
             constructor                         Constructor object controller
             dispatcher                          Dispatcher object controller
@@ -31,7 +31,7 @@ class MapController(Controller):
             scheduler_to_constructor_transition_animation
                                                 navigation animation from scheduler screen to constructor screen
 
-        :param map_id:                          ID of the map which this constructor belongs to
+        :param map_id:                          ID of the map which this map belongs to
         :param parent_controller:               Map controller subclass
         """
         super().__init__(parent_controller=parent_controller,

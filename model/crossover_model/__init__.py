@@ -8,9 +8,10 @@ class CrossoverModel(Model):
     Implements Crossover model.
     Crossover object is responsible for properties, UI and events related to the crossover.
     """
-    def __init__(self, track_param_1, track_param_2, crossover_type):
+    def __init__(self, map_id, track_param_1, track_param_2, crossover_type):
         """
         Properties:
+            map_id                              ID of the map which this crossover belongs to
             busy                                indicates which crossover direction is busy
             force_busy                          indicates which crossover direction is force_busy
             last_entered_by                     train ID which made the crossover direction force_busy last time
@@ -19,17 +20,17 @@ class CrossoverModel(Model):
             current_position_2                  current position crossover is switched to: track 2
             locked                              indicates if crossover is available for player
 
+        :param map_id:                          ID of the map which this crossover belongs to
         :param track_param_1:                   number of the first track of two being connected by the crossover
         :param track_param_2:                   number of the second track of two being connected by the crossover
         :param crossover_type:                  crossover location: left/right side of the map
         """
-        self.map_id = None
-        self.on_update_map_id()
         super().__init__(
             logger=getLogger(
-                f'root.app.game.map.{self.map_id}.crossover.{track_param_1}.{track_param_2}.{crossover_type}.model'
+                f'root.app.game.map.{map_id}.crossover.{track_param_1}.{track_param_2}.{crossover_type}.model'
             )
         )
+        self.map_id = map_id
         self.busy = {track_param_1: {}, track_param_2: {}}
         self.force_busy = {track_param_1: {}, track_param_2: {}}
         self.last_entered_by = {track_param_1: {}, track_param_2: {}}
@@ -223,6 +224,3 @@ class CrossoverModel(Model):
         """
         self.locked = False
         self.view.on_unlock()
-
-    def on_update_map_id(self):
-        pass

@@ -8,19 +8,20 @@ class DispatcherModel(Model):
     Implements Dispatcher model.
     Dispatcher object is responsible for assigning routes to approaching trains.
     """
-    def __init__(self):
+    def __init__(self, map_id):
         """
         Properties:
+            map_id                              ID of the map which this dispatcher belongs to
             trains                              list of trains still to be dispatched
             supported_cars                      trains with this number of cars can stop, others must pass through
             unlocked_tracks                     indicates how much tracks are available at the moment
             track_busy_status                   indicates which tracks are busy and which are not
             supported_cars_by_track             indicates number of cars each track can handle
 
+        :param map_id:                          ID of the map which this dispatcher belongs to
         """
-        self.map_id = None
-        self.on_update_map_id()
-        super().__init__(logger=getLogger(f'root.app.game.map.{self.map_id}.dispatcher.model'))
+        super().__init__(logger=getLogger(f'root.app.game.map.{map_id}.dispatcher.model'))
+        self.map_id = map_id
         self.trains = []
         self.supported_cars = [0, 0]
         self.user_db_cursor.execute('''SELECT unlocked_tracks, supported_cars_min, supported_cars_max 
@@ -115,6 +116,3 @@ class DispatcherModel(Model):
         :param track:                   track number
         """
         self.track_busy_status[track] = False
-
-    def on_update_map_id(self):
-        pass

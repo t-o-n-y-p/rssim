@@ -11,10 +11,10 @@ class TrainController(Controller):
     def __init__(self, map_id, parent_controller, train_id):
         """
         Properties:
-            map_id                              ID of the map which this constructor belongs to
+            map_id                              ID of the map which this train belongs to
             train_id                            train identification number
 
-        :param map_id:                          ID of the map which this constructor belongs to
+        :param map_id:                          ID of the map which this train belongs to
         :param parent_controller:               Map controller subclass
         :param train_id:                        train identification number
         """

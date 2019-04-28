@@ -11,12 +11,12 @@ class CrossoverController(Controller):
     def __init__(self, map_id, parent_controller, track_param_1, track_param_2, crossover_type):
         """
         Properties:
-            map_id                      ID of the map which this constructor belongs to
+            map_id                      ID of the map which this crossover belongs to
             track_param_1               number of the first track of two being connected by the crossover
             track_param_2               number of the second track of two being connected by the crossover
             crossover_type              crossover location: left/right side of the map
 
-        :param map_id:                  ID of the map which this constructor belongs to
+        :param map_id:                  ID of the map which this crossover belongs to
         :param parent_controller:       Map controller subclass
         :param track_param_1:           number of the first track of two being connected by the crossover
         :param track_param_2:           number of the second track of two being connected by the crossover

@@ -9,11 +9,11 @@ from ui.fade_animation.fade_out_animation.train_fade_out_animation import TrainF
 
 
 class PassengerMapModel(MapModel):
+    """
+    Implements Map model for passenger map (map_id = 0).
+    """
     def __init__(self):
-        super().__init__()
-
-    def on_update_map_id(self):
-        self.map_id = 0
+        super().__init__(map_id=0)
 
     def on_create_train(self, train_id, cars, track, train_route, state, direction, new_direction,
                         current_direction, priority, boarding_time, exp, money):

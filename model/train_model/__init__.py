@@ -8,9 +8,10 @@ class TrainModel(Model):
     Implements Train model.
     Train object is responsible for properties, UI and events related to the train.
     """
-    def __init__(self, train_id):
+    def __init__(self, map_id, train_id):
         """
         Properties:
+            map_id                              ID of the map which this train belongs to
             train_maximum_speed                 maximum speed the train can achieve
             speed_factor_position_limit         maximum position on acceleration chart
             cars                                number of cars in the train
@@ -36,13 +37,13 @@ class TrainModel(Model):
                                                 plus rotation angle
             car_image_collection                number of car collection used for this train
 
+        :param map_id:                          ID of the map which this train belongs to
         :param train_id:                        train identification number
         """
-        self.map_id = None
-        self.on_update_map_id()
-        super().__init__(logger=getLogger(f'root.app.game.map.{self.map_id}.train.{train_id}.model'))
-        self.train_maximum_speed = TRAIN_ACCELERATION_FACTOR[-1] - TRAIN_ACCELERATION_FACTOR[-2]
-        self.speed_factor_position_limit = len(TRAIN_ACCELERATION_FACTOR) - 1
+        super().__init__(logger=getLogger(f'root.app.game.map.{map_id}.train.{train_id}.model'))
+        self.map_id = map_id
+        self.train_maximum_speed = None
+        self.speed_factor_position_limit = None
         self.cars = 0
         self.track = 0
         self.train_route = ''
@@ -237,7 +238,7 @@ class TrainModel(Model):
                 self.speed_factor_position = 0
             # when train needs to stop at stop point and distance is less than braking distance,
             # update state to 'decelerate'
-            elif self.stop_point - self.cars_position[0] <= TRAIN_ACCELERATION_FACTOR[self.speed_factor_position]:
+            elif self.stop_point - self.cars_position[0] <= PASSENGER_TRAIN_ACCELERATION_FACTOR[self.speed_factor_position]:
                 self.speed_state = 'decelerate'
             # when train needs to stop at stop point and distance is more than braking distance,
             # update state to 'accelerate' if train is not at maximum speed already
@@ -277,15 +278,15 @@ class TrainModel(Model):
                     self.speed = self.train_maximum_speed
                 # if not, continue acceleration
                 else:
-                    self.speed = TRAIN_ACCELERATION_FACTOR[self.speed_factor_position + 1] \
-                               - TRAIN_ACCELERATION_FACTOR[self.speed_factor_position]
+                    self.speed = PASSENGER_TRAIN_ACCELERATION_FACTOR[self.speed_factor_position + 1] \
+                                 - PASSENGER_TRAIN_ACCELERATION_FACTOR[self.speed_factor_position]
                     self.speed_factor_position += 1
 
             # if train decelerates, continue deceleration
             if self.speed_state == 'decelerate':
                 self.speed_factor_position -= 1
-                self.speed = TRAIN_ACCELERATION_FACTOR[self.speed_factor_position + 1] \
-                           - TRAIN_ACCELERATION_FACTOR[self.speed_factor_position]
+                self.speed = PASSENGER_TRAIN_ACCELERATION_FACTOR[self.speed_factor_position + 1] \
+                             - PASSENGER_TRAIN_ACCELERATION_FACTOR[self.speed_factor_position]
 
             # if train is not stopped, move all cars ahead
             if self.speed_state != 'stop':
@@ -344,6 +345,3 @@ class TrainModel(Model):
         Reverts cars order.
         """
         self.cars_position_abs = list(reversed(self.cars_position_abs))
-
-    def on_update_map_id(self):
-        pass

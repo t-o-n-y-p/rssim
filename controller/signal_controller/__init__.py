@@ -11,11 +11,11 @@ class SignalController(Controller):
     def __init__(self, map_id, parent_controller, track, base_route):
         """
         Properties:
-            map_id                              ID of the map which this constructor belongs to
+            map_id                              ID of the map which this signal belongs to
             track                               signal track number
             base_route                          base route (train route part) which signal belongs to
 
-        :param map_id:                          ID of the map which this constructor belongs to
+        :param map_id:                          ID of the map which this signal belongs to
         :param parent_controller:               Map controller subclass
         :param track:                           signal track number
         :param base_route:                      base route (train route part) which signal belongs to

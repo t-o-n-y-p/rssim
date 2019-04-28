@@ -13,12 +13,7 @@ class SettingsModel(Model):
         Properties:
             display_fps                         indicates if FPS value is displayed in game
             windowed_resolution                 screen resolution in windowed mode
-            fullscreen_mode                     indicates if fullscreen mode is enabled by user
-            screen_resolution_config            list of all supported app window resolutions
-            log_level                           telemetry level
-            fullscreen_mode_available           indicates if fullscreen mode is available
-            fullscreen_resolution               suggested fullscreen mode resolution base on monitor config
-            screen_resolution                   current app window resolution
+            fade_animations_enabled             indicates if fade animations are turned on
             level_up_notification_enabled
                                 indicates if level up notifications are enabled by user in game settings
             feature_unlocked_notification_enabled
@@ -48,7 +43,7 @@ class SettingsModel(Model):
 
     def on_activate_view(self):
         """
-        Activates the Settings view, updates temp values for log level, windowed resolution
+        Activates the Settings view, updates temp values for fade animations, windowed resolution
         and updates available windowed resolutions.
         """
         self.view.temp_display_fps = self.display_fps
