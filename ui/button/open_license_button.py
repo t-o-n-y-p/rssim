@@ -4,6 +4,10 @@ from ui.button import Button
 
 
 class OpenLicenseButton(Button):
+    """
+    Implements Open license button on the main menu screen.
+    For properties definition see base Button class.
+    """
     def __init__(self, on_click_action):
         super().__init__(logger=getLogger('root.button.open_license_button'))
         self.to_activate_on_controller_init = True

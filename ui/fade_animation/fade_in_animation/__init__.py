@@ -2,15 +2,28 @@ from ui.fade_animation import *
 
 
 class FadeInAnimation(FadeAnimation):
+    """
+    Base class for fade-in animations.
+    """
     def __init__(self, animation_object, logger):
+        """
+        :param animation_object:                target object controller
+        :param logger:                          telemetry instance
+        """
         super().__init__(animation_object=animation_object, logger=logger)
         self.opacity_chart = [0, 17, 34, 51, 68, 85, 102, 119, 136, 153, 170, 187, 204, 221, 238, 255]
 
     def on_activate(self):
+        """
+        Activates the animation and initializes opacity chart position.
+        """
         pass
 
     @fade_animation_is_active
     def on_deactivate(self):
+        """
+        Deactivates the animation and notifies the listener about it.
+        """
         self.is_activated = False
         if self.on_deactivate_listener is not None:
             self.on_deactivate_listener.on_fade_in_animation_deactivate()

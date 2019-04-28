@@ -15,8 +15,8 @@ class TrackCell(ConstructorCell):
         self.title_key = 'title_track_string'
         self.placeholder_key = 'no_more_tracks_available_placeholder_string'
         self.description_keys = {'UNDER_CONSTRUCTION':
-                                     {'hours': 'under_construction_hours_minutes_description_string',
-                                      'days': 'under_construction_days_description_string'},
+                                 {'hours': 'under_construction_hours_minutes_description_string',
+                                  'days': 'under_construction_days_description_string'},
                                  'UNLOCK_AVAILABLE': 'unlock_available_track_description_string',
                                  'UNLOCK_CONDITION_FROM_LEVEL': 'unlock_condition_from_level_track_description_string',
                                  'UNLOCK_CONDITION_FROM_PREVIOUS_TRACK':

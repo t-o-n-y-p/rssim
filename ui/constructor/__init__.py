@@ -80,6 +80,7 @@ class ConstructorCell:
             buttons                             list of all buttons
             money                               amount of money the player can operate
             money_target_activated              indicates if money target is activated for this cell
+            opacity                             current opacity for the whole cell
 
         :param construction_type:               type of construction: track or environment
         :param row:                             number of cell on constructor screen
@@ -298,7 +299,7 @@ class ConstructorCell:
     @cell_is_active
     def on_deactivate(self):
         """
-        Deactivates the cell, deletes all labels, deactivates all buttons.
+        Deactivates the cell and all buttons, clears the data.
         """
         self.is_activated = False
         self.data = []
@@ -389,10 +390,18 @@ class ConstructorCell:
                 self.enable_money_target_button.on_deactivate(instant=True)
 
     def on_update_opacity(self, new_opacity):
+        """
+        Updates button opacity with given value.
+
+        :param new_opacity:                     new opacity value
+        """
         self.opacity = new_opacity
         self.on_update_sprite_opacity()
 
     def on_update_sprite_opacity(self):
+        """
+        Applies new opacity value to all sprites and labels.
+        """
         if self.opacity <= 0:
             if self.locked_label is not None:
                 self.locked_label.delete()

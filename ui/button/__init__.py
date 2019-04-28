@@ -6,18 +6,6 @@ from pyglet.resource import add_font
 from ui import SURFACE, BATCHES, GROUPS, WHITE_RGB
 
 
-BUTTON_BACKGROUND_RGB = {
-    'normal': {False: (0.0, 0.0, 0.0), True: (0.0, 0.0, 0.0)},
-    'hover': {False: (0.375, 0.0, 0.0), True: (0.5, 0.0, 0.0)},
-    'pressed': {False: (0.5625, 0.0, 0.0), True: (0.75, 0.0, 0.0)}
-}
-BUTTON_BACKGROUND_ALPHA = {
-    'normal': {False: 0.97, True: 0.0},
-    'hover': {False: 1.0, True: 0.75},
-    'pressed': {False: 1.0, True: 0.75}
-}
-
-
 def button_is_not_activated(fn):
     """
     Use this decorator to execute function only if button is not active.
@@ -102,6 +90,20 @@ def create_two_state_button(first_button_object, second_button_object):
     return first_button_object, second_button_object
 
 
+# button background RGB color for non-transparent and transparent button
+BUTTON_BACKGROUND_RGB = {
+    'normal': {False: (0.0, 0.0, 0.0), True: (0.0, 0.0, 0.0)},
+    'hover': {False: (0.375, 0.0, 0.0), True: (0.5, 0.0, 0.0)},
+    'pressed': {False: (0.5625, 0.0, 0.0), True: (0.75, 0.0, 0.0)}
+}
+# button background alpha for non-transparent and transparent button
+BUTTON_BACKGROUND_ALPHA = {
+    'normal': {False: 0.97, True: 0.0},
+    'hover': {False: 1.0, True: 0.75},
+    'pressed': {False: 1.0, True: 0.75}
+}
+
+
 class Button:
     """
     Base class for all buttons in the app.
@@ -120,7 +122,7 @@ class Button:
             paired_button                       second button if action is back-and-forth
                                                 (e.g. pause/resume, fullscreen/restore)
             vertex_list                         button background primitive
-            text_object                         text label
+            text_label                          label from button text
             text                                string for text label
             font_name                           button label font
             is_bold                             indicates if button label is bold
@@ -135,6 +137,7 @@ class Button:
             on_leave_action                     function to execute if user removes cursor from the button
             hand_cursor                         system hand cursor icon
             default_cursor                      system default cursor icon (arrow)
+            opacity                             current opacity for the whole button
             logger                              telemetry instance
 
         :param logger:                          telemetry instance
@@ -171,6 +174,8 @@ class Button:
     def on_activate(self, instant=False):
         """
         Activates the button. Creates background and text label for the button.
+
+        :param instant:                 indicates if button should be activated with maximum opacity straight away
         """
         self.is_activated = True
         if instant:
@@ -207,6 +212,8 @@ class Button:
     def on_deactivate(self, instant=False):
         """
         Deactivates the button. Removes background and text label from the graphics memory.
+
+        :param instant:                 indicates if button should be deactivated with zero opacity straight away
         """
         self.is_activated = False
         if instant:
@@ -341,10 +348,18 @@ class Button:
             self.on_leave_action()
 
     def on_update_opacity(self, new_opacity):
+        """
+        Updates button opacity with given value.
+
+        :param new_opacity:                     new opacity value
+        """
         self.opacity = new_opacity
         self.on_update_sprite_opacity()
 
     def on_update_sprite_opacity(self):
+        """
+        Applies new opacity value to all sprites and labels.
+        """
         if self.opacity <= 0:
             if self.vertex_list is not None:
                 self.vertex_list.delete()

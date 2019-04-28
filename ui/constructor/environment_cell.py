@@ -15,8 +15,8 @@ class EnvironmentCell(ConstructorCell):
         self.title_key = 'title_environment_string'
         self.placeholder_key = 'no_more_tiers_available_placeholder_string'
         self.description_keys = {'UNDER_CONSTRUCTION':
-                                     {'hours': 'under_construction_hours_minutes_description_string',
-                                      'days': 'under_construction_days_description_string'},
+                                 {'hours': 'under_construction_hours_minutes_description_string',
+                                  'days': 'under_construction_days_description_string'},
                                  'UNLOCK_AVAILABLE': 'unlock_available_environment_description_string',
                                  'UNLOCK_CONDITION_FROM_LEVEL':
                                      'unlock_condition_from_level_environment_description_string',
