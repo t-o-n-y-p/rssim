@@ -7,8 +7,43 @@ from ui.button.next_page_button import NextPageButton
 
 
 class PageControl:
+    """
+    Implements base class for page controls.
+    """
     def __init__(self, current_locale, logger):
+        """
+        Button click handlers:
+            on_navigate_to_previous_page        on_click handler for previous page button
+            on_navigate_to_next_page            on_click handler for next page button
+
+        Properties:
+            logger                              telemetry instance
+            surface                             surface to draw all UI objects on
+            batches                             batches to group all labels and sprites
+            groups                              defines drawing layers (some labels and sprites behind others)
+            is_activated                        indicates if page is active
+            screen_resolution                   current screen resolution
+            current_locale                      current locale selected by player
+            position                            absolute position of the text box
+            size                                text box size
+            pages                               list of all pages inside the control
+            current_page                        number of currently selected page
+            current_page_label_key              resource key for current page label
+            current_page_label                  indicates number of the current page and number of pages for player
+            previous_page_button                PreviousPageButton object
+            next_page_button                    NextPageButton object
+            buttons                             list of all buttons
+            opacity                             current page opacity
+
+        :param current_locale:                  current locale selected by player
+        :param logger:                          telemetry instance
+        """
         def on_navigate_to_previous_page(button):
+            """
+            Closes the current page and opens the previous page.
+
+            :param button:                      button that was clicked
+            """
             self.pages[self.current_page - 1].opacity = self.pages[self.current_page].opacity
             self.pages[self.current_page].on_deactivate(instant=True)
             self.current_page -= 1
@@ -18,6 +53,11 @@ class PageControl:
             self.on_update_page_control_buttons()
 
         def on_navigate_to_next_page(button):
+            """
+            Closes the current page and opens the next page.
+
+            :param button:                      button that was clicked
+            """
             self.pages[self.current_page + 1].opacity = self.pages[self.current_page].opacity
             self.pages[self.current_page].on_deactivate(instant=True)
             self.current_page += 1
@@ -42,6 +82,9 @@ class PageControl:
         self.opacity = 0
 
     def on_activate(self):
+        """
+        Activates the control, creates pade indicator, activates start page.
+        """
         self.is_activated = True
         self.current_page = 0
         if self.current_page_label is None:
@@ -61,12 +104,20 @@ class PageControl:
         self.next_page_button.on_activate()
 
     def on_deactivate(self):
+        """
+        Deactivates the control and currently selected page..
+        """
         self.is_activated = False
         self.pages[self.current_page].on_deactivate()
         for b in self.buttons:
             b.on_deactivate()
 
     def on_change_screen_resolution(self, screen_resolution):
+        """
+        Updates screen resolution and moves all labels and sprites to its new positions.
+
+        :param screen_resolution:       new screen resolution
+        """
         self.screen_resolution = screen_resolution
         bottom_bar_height = int(72 / 1280 * self.screen_resolution[0])
         self.size = (int(6.875 * bottom_bar_height) * 2 + bottom_bar_height // 4, 19 * bottom_bar_height // 4)
@@ -90,6 +141,9 @@ class PageControl:
         self.next_page_button.y_margin = self.position[1]
 
     def on_update_page_control_buttons(self):
+        """
+        Activates and deactivates buttons for next and last pages based on current page number.
+        """
         if self.current_page == 0:
             self.previous_page_button.on_deactivate(instant=True)
         else:
@@ -115,11 +169,19 @@ class PageControl:
                 .format(self.current_page + 1, len(self.pages))
 
     def on_update_opacity(self, new_opacity):
+        """
+        Updates button opacity with given value.
+
+        :param new_opacity:                     new opacity value
+        """
         self.opacity = new_opacity
         self.on_update_sprite_opacity()
         self.pages[self.current_page].on_update_opacity(new_opacity)
 
     def on_update_sprite_opacity(self):
+        """
+        Applies new opacity value to all sprites and labels.
+        """
         if self.opacity <= 0:
             self.current_page_label.delete()
             self.current_page_label = None

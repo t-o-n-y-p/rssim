@@ -26,6 +26,7 @@ class CheckboxGroup:
             is_activated                        indicates if checkbox is activated or not
             checkboxes                          list of all checkboxes in the group
             buttons                             list of all checkbox buttons
+            opacity                             current checkbox group opacity
 
         :param column:                          number of settings column
         :param row:                             number of settings row
@@ -46,12 +47,20 @@ class CheckboxGroup:
         self.opacity = 0
 
     def on_update_opacity(self, new_opacity):
+        """
+        Updates button opacity with given value.
+
+        :param new_opacity:                     new opacity value
+        """
         self.opacity = new_opacity
         self.on_update_sprite_opacity()
         for checkbox in self.checkboxes:
             checkbox.on_update_opacity(new_opacity)
 
     def on_update_sprite_opacity(self):
+        """
+        Applies new opacity value to all sprites and labels.
+        """
         if self.opacity <= 0:
             self.description_label.delete()
             self.description_label = None

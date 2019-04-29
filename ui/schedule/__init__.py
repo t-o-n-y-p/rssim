@@ -8,7 +8,7 @@ from i18n import I18N_RESOURCES
 
 def row_is_active(fn):
     """
-    Use this decorator to execute function only if cell is active.
+    Use this decorator to execute function only if row is active.
 
     :param fn:                      function to decorate
     :return:                        decorator function
@@ -22,7 +22,7 @@ def row_is_active(fn):
 
 def row_is_not_active(fn):
     """
-    Use this decorator to execute function only if cell is not active.
+    Use this decorator to execute function only if row is not active.
 
     :param fn:                      function to decorate
     :return:                        decorator function
@@ -55,6 +55,7 @@ class ScheduleRow:
             screen_resolution                   current game window resolution
             position                            position of the middle point of schedule row
             size                                schedule row width and height
+            opacity                             current row opacity
 
         :param column:                          number of schedule column
         :param row:                             number of schedule row
@@ -166,10 +167,18 @@ class ScheduleRow:
             self.arrival_sprite.text = I18N_RESOURCES['departed_from_string'][self.current_locale][self.data[DIRECTION]]
 
     def on_update_opacity(self, new_opacity):
+        """
+        Updates button opacity with given value.
+
+        :param new_opacity:                     new opacity value
+        """
         self.opacity = new_opacity
         self.on_update_sprite_opacity()
 
     def on_update_sprite_opacity(self):
+        """
+        Applies new opacity value to all sprites and labels.
+        """
         if self.opacity <= 0:
             if self.main_sprite is not None:
                 self.main_sprite.delete()
