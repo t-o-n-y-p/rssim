@@ -4,6 +4,9 @@ from ui.license_page import LicensePage
 
 
 class PygletLicensePage(LicensePage):
+    """
+    Implements license page for pyglet license.
+    """
     def __init__(self, current_locale):
         super().__init__(current_locale, logger=getLogger('root.app.main_menu.license.view.pyglet_license_page'))
         self.license_text = '''pyglet

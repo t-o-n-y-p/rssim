@@ -41,12 +41,15 @@ CARS = 4                                        # property #4 indicates number o
 STOP_TIME = 5                                   # property #5 indicates how much stop time left
 EXP = 6                                         # property #6 indicates how much exp the train gives
 MONEY = 7                                       # property #7 indicates how much money the train gives
+# main surface which harbors all the app
 SURFACE = Window(width=MIN_RESOLUTION_WIDTH, height=MIN_RESOLUTION_HEIGHT,
                  caption='Railway Station Simulator', style='borderless', fullscreen=False, vsync=False)
+# large portions of sprites which can be drawn together
 BATCHES = {'main_batch': Batch(),
            'mini_map_batch': Batch(),
            'main_frame': Batch(),
            'ui_batch': Batch()}
+# groups are layers of OpenGL scene
 GROUPS = {'environment': OrderedGroup(0),
           'main_map': OrderedGroup(1),
           'signal': OrderedGroup(2),

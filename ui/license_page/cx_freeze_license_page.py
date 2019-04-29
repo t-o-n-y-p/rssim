@@ -4,6 +4,9 @@ from ui.license_page import LicensePage
 
 
 class CxFreezeLicensePage(LicensePage):
+    """
+    Implements license page for cx_Freeze license.
+    """
     def __init__(self, current_locale):
         super().__init__(current_locale, logger=getLogger('root.app.main_menu.license.view.cx_freeze_license_page'))
         self.license_text = '''cx_Freeze
