@@ -12,7 +12,9 @@ class TrainFadeOutAnimation(FadeOutAnimation):
         :param train_controller:                Train controller
         """
         super().__init__(animation_object=train_controller,
-                         logger=getLogger('root.app.game.map.train.fade_out_animation'))
+                         logger=getLogger(
+                             f'root.app.game.map.{train_controller.map_id}.train.{train_controller.train_id}.fade_out_animation'
+                         ))
 
     @fade_animation_needed
     @fade_animation_is_not_active

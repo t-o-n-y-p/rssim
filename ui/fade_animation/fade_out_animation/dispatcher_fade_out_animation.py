@@ -12,7 +12,9 @@ class DispatcherFadeOutAnimation(FadeOutAnimation):
         :param dispatcher_controller:           Dispatcher controller
         """
         super().__init__(animation_object=dispatcher_controller,
-                         logger=getLogger('root.app.game.map.dispatcher.fade_out_animation'))
+                         logger=getLogger(
+                             f'root.app.game.map.{dispatcher_controller.map_id}.dispatcher.fade_out_animation'
+                         ))
 
     @fade_animation_needed
     @fade_animation_is_not_active

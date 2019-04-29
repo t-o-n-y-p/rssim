@@ -12,7 +12,9 @@ class SchedulerFadeInAnimation(FadeInAnimation):
         :param scheduler_controller:            Scheduler controller
         """
         super().__init__(animation_object=scheduler_controller,
-                         logger=getLogger('root.app.game.map.scheduler.fade_in_animation'))
+                         logger=getLogger(
+                             f'root.app.game.map.{scheduler_controller.map_id}.scheduler.fade_in_animation'
+                         ))
 
     @fade_animation_needed
     @fade_animation_is_not_active

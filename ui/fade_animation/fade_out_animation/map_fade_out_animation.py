@@ -13,15 +13,16 @@ class MapFadeOutAnimation(FadeOutAnimation):
             constructor_fade_out_animation          fade-out animation for constructor view
             scheduler_fade_out_animation            fade-out animation for scheduler view
             dispatcher_fade_out_animation           fade-out animation for dispatcher view
-            signal_fade_out_animations              list of fade-out animations fo all signals on the map
-            railroad_switch_fade_out_animations     list of fade-out animations fo all switches on the map
-            crossover_fade_out_animations           list of fade-out animations fo all crossovers on the map
-            train_fade_out_animations               list of fade-out animations fo all trains on the map
-            train_route_fade_out_animations         list of fade-out animations fo all train routes on the map
+            signal_fade_out_animations              list of fade-out animations for all signals on the map
+            railroad_switch_fade_out_animations     list of fade-out animations for all switches on the map
+            crossover_fade_out_animations           list of fade-out animations for all crossovers on the map
+            train_fade_out_animations               list of fade-out animations for all trains on the map
+            train_route_fade_out_animations         list of fade-out animations for all train routes on the map
 
         :param map_controller:                      Map controller
         """
-        super().__init__(animation_object=map_controller, logger=getLogger('root.app.game.map.fade_out_animation'))
+        super().__init__(animation_object=map_controller,
+                         logger=getLogger(f'root.app.game.map.{map_controller.map_id}.fade_out_animation'))
         self.constructor_fade_out_animation = None
         self.scheduler_fade_out_animation = None
         self.dispatcher_fade_out_animation = None

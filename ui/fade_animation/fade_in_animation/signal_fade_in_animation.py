@@ -12,7 +12,9 @@ class SignalFadeInAnimation(FadeInAnimation):
         :param signal_controller:               Signal controller
         """
         super().__init__(animation_object=signal_controller,
-                         logger=getLogger('root.app.game.map.signal.fade_in_animation'))
+                         logger=getLogger(
+                             f'root.app.game.map.{signal_controller.map_id}.signal.{signal_controller.track}.{signal_controller.base_route}.fade_in_animation'
+                         ))
 
     @fade_animation_needed
     @fade_animation_is_not_active

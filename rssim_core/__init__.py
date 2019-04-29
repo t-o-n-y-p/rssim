@@ -136,6 +136,9 @@ def create_app(loader):
         = TransitionAnimation(fade_out_animation=controller.settings.fade_out_animation,
                               fade_in_animation=controller.game.fade_in_animation)
     controller.fade_in_animation.main_menu_fade_in_animation = controller.main_menu.fade_in_animation
+    controller.fade_in_animation.license_fade_in_animation = controller.license.fade_in_animation
+    controller.fade_in_animation.game_fade_in_animation = controller.game.fade_in_animation
+    controller.fade_in_animation.settings_fade_in_animation = controller.settings.fade_in_animation
     controller.fade_in_animation.fps_fade_in_animation = controller.fps.fade_in_animation
     controller.fade_out_animation.main_menu_fade_out_animation = controller.main_menu.fade_out_animation
     controller.fade_out_animation.license_fade_out_animation = controller.license.fade_out_animation
@@ -275,6 +278,9 @@ def _create_passenger_map(game):
     controller.view = view
     view.on_assign_controller(controller)
     model.view = view
+    controller.fade_in_animation.constructor_fade_in_animation = controller.constructor.fade_in_animation
+    controller.fade_in_animation.scheduler_fade_in_animation = controller.scheduler.fade_in_animation
+    controller.fade_in_animation.dispatcher_fade_in_animation = controller.dispatcher.fade_in_animation
     controller.fade_out_animation.constructor_fade_out_animation = controller.constructor.fade_out_animation
     controller.fade_out_animation.scheduler_fade_out_animation = controller.scheduler.fade_out_animation
     controller.fade_out_animation.dispatcher_fade_out_animation = controller.dispatcher.fade_out_animation
@@ -295,6 +301,7 @@ def _create_passenger_map(game):
         controller.fade_out_animation.train_fade_out_animations.append(train.fade_out_animation)
 
     for train_route in controller.train_routes_sorted_list:
+        controller.fade_in_animation.train_route_fade_in_animations.append(train_route.fade_in_animation)
         controller.fade_out_animation.train_route_fade_out_animations.append(train_route.fade_out_animation)
 
     return controller

@@ -12,7 +12,9 @@ class ConstructorFadeInAnimation(FadeInAnimation):
         :param constructor_controller:          Constructor controller
         """
         super().__init__(animation_object=constructor_controller,
-                         logger=getLogger('root.app.game.map.constructor.fade_in_animation'))
+                         logger=getLogger(
+                             f'root.app.game.map.{constructor_controller.map_id}.constructor.fade_in_animation'
+                         ))
 
     @fade_animation_needed
     @fade_animation_is_not_active

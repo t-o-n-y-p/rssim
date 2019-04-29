@@ -10,18 +10,27 @@ class MapFadeInAnimation(FadeInAnimation):
     def __init__(self, map_controller):
         """
         Properties:
-            signal_fade_in_animations           list of fade-in animations fo all signals on the map
-            railroad_switch_fade_in_animations  list of fade-in animations fo all switches on the map
-            crossover_fade_in_animations        list of fade-in animations fo all crossovers on the map
-            train_fade_in_animations            list of fade-in animations fo all trains on the map
+            constructor_fade_in_animation           fade-in animation for constructor view
+            scheduler_fade_in_animation             fade-in animation for scheduler view
+            dispatcher_fade_in_animation            fade-in animation for dispatcher view
+            signal_fade_in_animations               list of fade-in animations for all signals on the map
+            railroad_switch_fade_in_animations      list of fade-in animations for all switches on the map
+            crossover_fade_in_animations            list of fade-in animations for all crossovers on the map
+            train_fade_in_animations                list of fade-in animations for all trains on the map
+            train_route_fade_in_animations          list of fade-in animations for all train routes on the map
 
         :param map_controller:                  Map controller
         """
-        super().__init__(animation_object=map_controller, logger=getLogger('root.app.game.map.fade_in_animation'))
+        super().__init__(animation_object=map_controller,
+                         logger=getLogger(f'root.app.game.map.{map_controller.map_id}.fade_in_animation'))
+        self.constructor_fade_in_animation = None
+        self.scheduler_fade_in_animation = None
+        self.dispatcher_fade_in_animation = None
         self.signal_fade_in_animations = []
         self.railroad_switch_fade_in_animations = []
         self.crossover_fade_in_animations = []
         self.train_fade_in_animations = []
+        self.train_route_fade_in_animations = []
 
     @fade_animation_needed
     @fade_animation_is_not_active
