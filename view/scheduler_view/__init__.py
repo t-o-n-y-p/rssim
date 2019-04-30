@@ -127,6 +127,7 @@ class SchedulerView(View):
         if self.is_activated:
             for i in range(min(len(self.base_schedule), SCHEDULE_ROWS * SCHEDULE_COLUMNS)):
                 if not self.schedule_rows[i // SCHEDULE_ROWS][i % SCHEDULE_ROWS].is_activated:
+                    self.schedule_rows[i // SCHEDULE_ROWS][i % SCHEDULE_ROWS].opacity = self.opacity
                     self.schedule_rows[i // SCHEDULE_ROWS][i % SCHEDULE_ROWS].on_activate()
                     self.schedule_rows[i // SCHEDULE_ROWS][i % SCHEDULE_ROWS].on_assign_data(self.base_schedule[i])
                     return
@@ -206,7 +207,8 @@ class SchedulerView(View):
             self.schedule_rows[i // SCHEDULE_ROWS][i % SCHEDULE_ROWS]\
                 .on_assign_data(self.base_schedule[i + 1])
 
-        self.schedule_rows[last_row_number // SCHEDULE_ROWS][last_row_number % SCHEDULE_ROWS].on_deactivate()
+        self.schedule_rows[last_row_number // SCHEDULE_ROWS][last_row_number % SCHEDULE_ROWS]\
+            .on_deactivate(instant=True)
         self.base_schedule.pop(index)
 
     def on_read_ui_info(self):

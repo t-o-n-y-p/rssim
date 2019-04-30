@@ -80,12 +80,23 @@ class ScheduleRow:
         self.is_activated = True
 
     @row_is_active
-    def on_deactivate(self):
+    def on_deactivate(self, instant=True):
         """
         Deactivates the schedule row, deletes all labels, deactivates all buttons.
+
+        :param instant:                         indicates if row should be destroyed straight away
         """
         self.is_activated = False
         self.data = []
+        if instant:
+            self.opacity = 0
+            if self.main_sprite is not None:
+                self.main_sprite.delete()
+                self.main_sprite = None
+
+            if self.arrival_sprite is not None:
+                self.arrival_sprite.delete()
+                self.arrival_sprite = None
 
     def on_assign_data(self, data):
         """
@@ -96,29 +107,26 @@ class ScheduleRow:
         self.data = data
         if self.main_sprite is None:
             self.main_sprite \
-                = Label('{0:0>6}    {1:0>2} : {2:0>2}                             {3:0>2}   {4:0>2} : {5:0>2}'
+                = Label('{0:0>6}       {1:0>2} : {2:0>2}                                     {3:0>2}'
                         .format(self.data[TRAIN_ID],
                                 (self.data[ARRIVAL_TIME] // FRAMES_IN_ONE_HOUR + 12) % HOURS_IN_ONE_DAY,
                                 (self.data[ARRIVAL_TIME] // FRAMES_IN_ONE_MINUTE) % MINUTES_IN_ONE_HOUR,
-                                self.data[CARS], self.data[STOP_TIME] // FRAMES_IN_ONE_MINUTE,
-                                (self.data[STOP_TIME] // FRAMES_IN_ONE_SECOND) % SECONDS_IN_ONE_MINUTE),
+                                self.data[CARS]),
                         font_name='Perfo', bold=True, font_size=self.size[1] // 5 * 3, color=(*WHITE_RGB, self.opacity),
                         x=self.position[0], y=self.position[1], anchor_x='center', anchor_y='center',
                         batch=self.batches['ui_batch'], group=self.groups['button_text'])
         else:
             self.main_sprite.text \
-                = '{0:0>6}    {1:0>2} : {2:0>2}                             {3:0>2}   {4:0>2} : {5:0>2}'\
+                = '{0:0>6}       {1:0>2} : {2:0>2}                                     {3:0>2}'\
                 .format(self.data[TRAIN_ID],
                         (self.data[ARRIVAL_TIME] // FRAMES_IN_ONE_HOUR + 12) % HOURS_IN_ONE_DAY,
-                        (self.data[ARRIVAL_TIME] // FRAMES_IN_ONE_MINUTE) % MINUTES_IN_ONE_HOUR,
-                        self.data[CARS], self.data[STOP_TIME] // FRAMES_IN_ONE_MINUTE,
-                        (self.data[STOP_TIME] // FRAMES_IN_ONE_SECOND) % SECONDS_IN_ONE_MINUTE)
+                        (self.data[ARRIVAL_TIME] // FRAMES_IN_ONE_MINUTE) % MINUTES_IN_ONE_HOUR, self.data[CARS])
 
         if self.arrival_sprite is None:
             self.arrival_sprite \
                 = Label(I18N_RESOURCES['departed_from_string'][self.current_locale][self.data[DIRECTION]],
                         font_name='Perfo', bold=True, font_size=self.size[1] // 5 * 3, color=(*WHITE_RGB, self.opacity),
-                        x=self.position[0] + self.size[0] // 16, y=self.position[1],
+                        x=self.position[0] + 5 * self.size[0] // 32, y=self.position[1],
                         anchor_x='center', anchor_y='center', batch=self.batches['ui_batch'],
                         group=self.groups['button_text'])
         else:
@@ -152,7 +160,7 @@ class ScheduleRow:
             self.main_sprite.font_size = self.size[1] // 5 * 3
 
         if self.arrival_sprite is not None:
-            self.arrival_sprite.x = self.position[0] + self.size[0] // 16
+            self.arrival_sprite.x = self.position[0] + 5 * self.size[0] // 32
             self.arrival_sprite.y = self.position[1]
             self.arrival_sprite.font_size = self.size[1] // 5 * 3
 
