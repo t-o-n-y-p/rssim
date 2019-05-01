@@ -273,3 +273,13 @@ class SchedulerView(View):
         Initializes the view based on saved screen resolution and base offset.
         """
         self.on_change_screen_resolution(self.screen_resolution)
+
+    def on_update_clock_state(self, clock_24h_enabled):
+        """
+        Notifies the schedule rows about clock state update.
+
+        :param clock_24h_enabled:               indicates if 24h clock is enabled
+        """
+        for i in range(SCHEDULE_COLUMNS):
+            for j in range(SCHEDULE_ROWS):
+                self.schedule_rows[i][j].on_update_clock_state(clock_24h_enabled)

@@ -246,3 +246,13 @@ class GameController(Controller):
         for i in range(len(self.maps)):
             if i != active_map_id:
                 self.maps[i].constructor.on_deactivate_money_target()
+
+    def on_update_clock_state(self, clock_24h_enabled):
+        """
+        Notifies the view and child controllers (if any) about clock state update.
+
+        :param clock_24h_enabled:               indicates if 24h clock is enabled
+        """
+        self.view.on_update_clock_state(clock_24h_enabled)
+        for map_ in self.maps:
+            map_.on_update_clock_state(clock_24h_enabled)

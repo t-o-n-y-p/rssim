@@ -92,3 +92,12 @@ class AppModel(Model):
         """
         self.user_db_cursor.execute('UPDATE i18n SET current_locale = ?', (new_locale, ))
         self.user_db_connection.commit()
+
+    def on_save_and_commit_clock_state(self, clock_24h_enabled):
+        """
+        Saves and commits new clock state value to the user progress database.
+
+        :param clock_24h_enabled:               indicates if 24h clock is enabled
+        """
+        self.user_db_cursor.execute('UPDATE i18n SET clock_24h = ?', (int(clock_24h_enabled), ))
+        self.user_db_connection.commit()

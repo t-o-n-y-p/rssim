@@ -785,3 +785,11 @@ class MapController(Controller):
 
         for train in self.trains_list:
             train.on_update_fade_animation_state(new_state)
+
+    def on_update_clock_state(self, clock_24h_enabled):
+        """
+        Notifies child controllers (if any) about clock state update.
+
+        :param clock_24h_enabled:               indicates if 24h clock is enabled
+        """
+        self.scheduler.on_update_clock_state(clock_24h_enabled)

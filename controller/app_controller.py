@@ -209,6 +209,15 @@ class AppController(Controller):
         self.settings.on_update_current_locale(new_locale)
         self.fps.on_update_current_locale(new_locale)
 
+    def on_update_clock_state(self, clock_24h_enabled):
+        """
+        Notifies the view and child controllers (if any) about clock state update.
+
+        :param clock_24h_enabled:               indicates if 24h clock is enabled
+        """
+        self.model.on_save_and_commit_clock_state(clock_24h_enabled)
+        self.game.on_update_clock_state(clock_24h_enabled)
+
     def on_disable_notifications(self):
         """
         Disables system notifications for the view and all child controllers.
