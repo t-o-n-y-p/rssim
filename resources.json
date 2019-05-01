@@ -170,5 +170,9 @@
 	"page_control_label_string": {
 		"en": "{0} of {1}",
 		"ru": "{0} из {1}"
+	},
+	"am_pm_string": {
+		"en": ["AM", "PM"],
+		"ru": ["AM", "PM"]
 	}
 }

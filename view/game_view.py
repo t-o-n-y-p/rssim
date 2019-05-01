@@ -54,6 +54,7 @@ class GameView(View):
                                                     in game settings
             enough_money_notification_enabled       indicates if enough money notifications are enabled by user
                                                     in game settings
+            clock_24h_enabled                       indicates if 24h clock is enabled
             game_view_shader_upper_limit            upper edge for game_view_shader_sprite
 
         """
@@ -122,6 +123,9 @@ class GameView(View):
         self.level_up_notification_enabled, self.enough_money_notification_enabled = self.user_db_cursor.fetchone()
         self.level_up_notification_enabled = bool(self.level_up_notification_enabled)
         self.enough_money_notification_enabled = bool(self.enough_money_notification_enabled)
+        # self.user_db_cursor.execute('SELECT clock_24h FROM i18n')
+        # self.clock_24h_enabled = bool(self.user_db_cursor.fetchone()[0])
+        self.clock_24h_enabled = False
         self.shader_sprite = None
         self.shader = from_files_names('shaders/shader.vert', 'shaders/game_view/shader.frag')
         self.game_view_shader_upper_limit = 0.0
@@ -181,11 +185,8 @@ class GameView(View):
                                                                  1.0, self.game_view_shader_upper_limit, 1.0, -1.0)))
 
         if self.time_label is None:
-            self.time_label = Label('{0:0>2} : {1:0>2}'
-                                    .format((self.game_time // FRAMES_IN_ONE_HOUR + 12) % HOURS_IN_ONE_DAY,
-                                            (self.game_time // FRAMES_IN_ONE_MINUTE) % MINUTES_IN_ONE_HOUR),
-                                    font_name='Perfo', bold=True, font_size=int(32 / 80 * self.bottom_bar_height),
-                                    color=(*WHITE_RGB, self.opacity),
+            self.time_label = Label(self.get_time_text(), font_name='Perfo', bold=True,
+                                    font_size=int(32 / 80 * self.bottom_bar_height), color=(*WHITE_RGB, self.opacity),
                                     x=self.screen_resolution[0] - int(181 / 80 * self.bottom_bar_height),
                                     y=self.bottom_bar_height // 2, anchor_x='center', anchor_y='center',
                                     batch=self.batches['ui_batch'], group=self.groups['button_text'])
@@ -324,9 +325,7 @@ class GameView(View):
         """
         self.game_time = game_time
         if self.is_activated:
-            self.time_label.text = '{0:0>2} : {1:0>2}'\
-                .format((self.game_time // FRAMES_IN_ONE_HOUR + 12) % HOURS_IN_ONE_DAY,
-                        (self.game_time // FRAMES_IN_ONE_MINUTE) % MINUTES_IN_ONE_HOUR)
+            self.time_label.text = self.get_time_text()
 
     @view_is_active
     def on_update_exp(self, exp, player_progress):
@@ -401,6 +400,7 @@ class GameView(View):
         self.current_locale = new_locale
         if self.is_activated:
             self.level_label.text = I18N_RESOURCES['level_string'][self.current_locale].format(self.level)
+            self.time_label.text = self.get_time_text()
 
     @notifications_available
     @level_up_notification_enabled
@@ -467,3 +467,13 @@ class GameView(View):
         Initializes the view based on saved screen resolution and base offset.
         """
         self.on_change_screen_resolution(self.screen_resolution)
+
+    def get_time_text(self):
+        if self.clock_24h_enabled:
+            return '{0:0>2} : {1:0>2}'.format((self.game_time // FRAMES_IN_ONE_HOUR + 12) % HOURS_IN_ONE_DAY,
+                                              (self.game_time // FRAMES_IN_ONE_MINUTE) % MINUTES_IN_ONE_HOUR)
+        else:
+            am_pm_index = ((self.game_time // FRAMES_IN_ONE_HOUR + 12) // 12) % 2
+            return '{0} : {1:0>2} {2}'.format((self.game_time // FRAMES_IN_ONE_HOUR + 11) % 12 + 1,
+                                              (self.game_time // FRAMES_IN_ONE_MINUTE) % MINUTES_IN_ONE_HOUR,
+                                              I18N_RESOURCES['am_pm_string'][self.current_locale][am_pm_index])
