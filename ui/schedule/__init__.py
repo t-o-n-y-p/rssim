@@ -39,7 +39,7 @@ class ScheduleRow:
     """
     Implements base class for schedule row.
     """
-    def __init__(self, column, row, current_locale):
+    def __init__(self, column, row):
         """
         Properties:
             logger                              telemetry instance
@@ -61,11 +61,12 @@ class ScheduleRow:
 
         :param column:                          number of schedule column
         :param row:                             number of schedule row
-        :param current_locale:                  current locale selected by player
         """
         self.logger = getLogger(f'root.app.game.map.scheduler.view.row.{column}.{row}')
         self.column, self.row = column, row
-        self.surface, self.batches, self.groups, self.current_locale = SURFACE, BATCHES, GROUPS, current_locale
+        self.surface, self.batches, self.groups = SURFACE, BATCHES, GROUPS
+        USER_DB_CURSOR.execute('SELECT current_locale FROM i18n')
+        self.current_locale = USER_DB_CURSOR.fetchone()[0]
         self.data = None
         USER_DB_CURSOR.execute('SELECT clock_24h FROM i18n')
         self.clock_24h_enabled = bool(USER_DB_CURSOR.fetchone()[0])

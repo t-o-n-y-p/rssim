@@ -5,14 +5,14 @@ from ui import *
 from ui.button import create_two_state_button
 from ui.button.increment_button import IncrementButton
 from ui.button.decrement_button import DecrementButton
+from database import USER_DB_CURSOR
 
 
 class EnumValueControl:
     """
     Implements base class for all enum value controls on settings screen
     """
-    def __init__(self, column, row, current_locale, possible_values_list,
-                 on_update_state_action, logger):
+    def __init__(self, column, row, possible_values_list, on_update_state_action, logger):
         """
         Button click handlers:
             on_increment                        on_click handler for increment button
@@ -43,7 +43,6 @@ class EnumValueControl:
 
         :param column:                          number of settings column
         :param row:                             number of settings row
-        :param current_locale:                  current locale selected by player
         :param possible_values_list:            list of values for enum property
         :param on_update_state_action:          method to call when checkbox state is being updated
         :param logger:                          telemetry instance
@@ -82,7 +81,9 @@ class EnumValueControl:
 
         self.logger = logger
         self.column, self.row = column, row
-        self.surface, self.batches, self.groups, self.current_locale = SURFACE, BATCHES, GROUPS, current_locale
+        self.surface, self.batches, self.groups = SURFACE, BATCHES, GROUPS
+        USER_DB_CURSOR.execute('SELECT current_locale FROM i18n')
+        self.current_locale = USER_DB_CURSOR.fetchone()[0]
         self.on_update_state_action = on_update_state_action
         self.screen_resolution = (1280, 720)
         self.anchor_center_point = (0, 0)

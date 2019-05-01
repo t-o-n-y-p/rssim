@@ -11,16 +11,14 @@ class LicensePageControl(PageControl):
     """
     Implements page control for license screen.
     """
-    def __init__(self, current_locale):
+    def __init__(self):
         """
         Properties:
             on_mouse_scroll_handlers            list of on_mouse_scroll handlers from license pages
 
-        :param current_locale:                  current locale selected by player
         """
-        super().__init__(current_locale, logger=getLogger('root.app.main_menu.license.view.license_page_control'))
-        self.pages = [PygletLicensePage(current_locale), PyshadersLicensePage(current_locale),
-                      Pywin32LicensePage(current_locale), CxFreezeLicensePage(current_locale)]
+        super().__init__(logger=getLogger('root.app.main_menu.license.view.license_page_control'))
+        self.pages = [PygletLicensePage(), PyshadersLicensePage(), Pywin32LicensePage(), CxFreezeLicensePage()]
         self.on_mouse_scroll_handlers = []
         for p in self.pages:
             self.on_mouse_scroll_handlers.append(p.handle_mouse_scroll)

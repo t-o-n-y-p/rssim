@@ -4,13 +4,14 @@ from i18n import I18N_RESOURCES
 from ui import *
 from ui.button.previous_page_button import PreviousPageButton
 from ui.button.next_page_button import NextPageButton
+from database import USER_DB_CURSOR
 
 
 class PageControl:
     """
     Implements base class for page controls.
     """
-    def __init__(self, current_locale, logger):
+    def __init__(self, logger):
         """
         Button click handlers:
             on_navigate_to_previous_page        on_click handler for previous page button
@@ -35,7 +36,6 @@ class PageControl:
             buttons                             list of all buttons
             opacity                             current page opacity
 
-        :param current_locale:                  current locale selected by player
         :param logger:                          telemetry instance
         """
         def on_navigate_to_previous_page(button):
@@ -71,7 +71,9 @@ class PageControl:
         self.screen_resolution = (1280, 720)
         self.position = (0, 0)
         self.size = (0, 0)
-        self.surface, self.batches, self.groups, self.current_locale = SURFACE, BATCHES, GROUPS, current_locale
+        self.surface, self.batches, self.groups = SURFACE, BATCHES, GROUPS
+        USER_DB_CURSOR.execute('SELECT current_locale FROM i18n')
+        self.current_locale = USER_DB_CURSOR.fetchone()[0]
         self.pages = []
         self.current_page = 0
         self.current_page_label_key = 'page_control_label_string'

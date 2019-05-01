@@ -2,13 +2,14 @@ from pyglet.text import Label
 
 from i18n import I18N_RESOURCES
 from ui import *
+from database import USER_DB_CURSOR
 
 
 class CheckboxGroup:
     """
     Implements base class for all checkbox groups in the app.
     """
-    def __init__(self, column, row, current_locale, logger):
+    def __init__(self, column, row, logger):
         """
         Properties:
             logger                              telemetry instance
@@ -30,12 +31,13 @@ class CheckboxGroup:
 
         :param column:                          number of settings column
         :param row:                             number of settings row
-        :param current_locale:                  current locale selected by player
         :param logger:                          telemetry instance
         """
         self.logger = logger
         self.column, self.row = column, row
-        self.surface, self.batches, self.groups, self.current_locale = SURFACE, BATCHES, GROUPS, current_locale
+        self.surface, self.batches, self.groups = SURFACE, BATCHES, GROUPS
+        USER_DB_CURSOR.execute('SELECT current_locale FROM i18n')
+        self.current_locale = USER_DB_CURSOR.fetchone()[0]
         self.description_key = None
         self.description_label = None
         self.checkboxes = []

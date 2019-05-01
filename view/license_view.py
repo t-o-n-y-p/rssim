@@ -33,7 +33,7 @@ class LicenseView(View):
             self.controller.on_deactivate_view()
 
         super().__init__(logger=getLogger('root.app.main_menu.license.view'))
-        self.license_page_control = LicensePageControl(current_locale=self.current_locale)
+        self.license_page_control = LicensePageControl()
         self.close_license_button = CloseLicenseButton(on_click_action=on_close_license)
         self.buttons = [*self.license_page_control.buttons, self.close_license_button]
         self.shader = from_files_names('shaders/shader.vert', 'shaders/license_view/shader.frag')

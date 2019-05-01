@@ -100,15 +100,15 @@ class ConstructorView(View):
         environment_cells = []
         for j in range(CONSTRUCTOR_VIEW_TRACK_CELLS):
             track_cells.append(
-                TrackCell(TRACKS, j, self.current_locale, on_buy_construction_action,
-                          on_set_money_target_action, on_reset_money_target_action)
+                TrackCell(TRACKS, j, on_buy_construction_action, on_set_money_target_action,
+                          on_reset_money_target_action)
             )
             self.buttons.extend(track_cells[j].buttons)
 
         for j in range(CONSTRUCTOR_VIEW_ENVIRONMENT_CELLS):
             environment_cells.append(
-                EnvironmentCell(ENVIRONMENT, j, self.current_locale, on_buy_construction_action,
-                                on_set_money_target_action, on_reset_money_target_action)
+                EnvironmentCell(ENVIRONMENT, j, on_buy_construction_action, on_set_money_target_action,
+                                on_reset_money_target_action)
             )
             self.buttons.extend(environment_cells[j].buttons)
 

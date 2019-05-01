@@ -2,6 +2,7 @@ from pyglet.text.document import FormattedDocument
 from pyglet.text.layout import IncrementalTextLayout
 
 from ui import *
+from database import USER_DB_CURSOR
 
 
 def page_is_active(fn):
@@ -37,7 +38,7 @@ class LicensePage:
     """
     Base class for a single license page on license screen.
     """
-    def __init__(self, current_locale, logger):
+    def __init__(self, logger):
         """
         Properties:
             logger                              telemetry instance
@@ -54,7 +55,6 @@ class LicensePage:
             license_layout                      layout from the license text
             opacity                             current page opacity
 
-        :param current_locale:                  current language selected by player
         :param logger:                          telemetry instance
         """
         self.is_activated = False
@@ -62,7 +62,9 @@ class LicensePage:
         self.screen_resolution = (1280, 720)
         self.position = (0, 0)
         self.size = (0, 0)
-        self.surface, self.batches, self.groups, self.current_locale = SURFACE, BATCHES, GROUPS, current_locale
+        self.surface, self.batches, self.groups = SURFACE, BATCHES, GROUPS
+        USER_DB_CURSOR.execute('SELECT current_locale FROM i18n')
+        self.current_locale = USER_DB_CURSOR.fetchone()[0]
         self.license_text = ''
         self.document = None
         self.license_layout = None

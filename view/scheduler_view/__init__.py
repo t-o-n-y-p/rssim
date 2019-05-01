@@ -62,7 +62,7 @@ class SchedulerView(View):
         for i in range(SCHEDULE_COLUMNS):
             column = []
             for j in range(SCHEDULE_ROWS):
-                column.append(ScheduleRow(i, j, self.current_locale))
+                column.append(ScheduleRow(i, j))
 
             self.schedule_rows.append(column)
 

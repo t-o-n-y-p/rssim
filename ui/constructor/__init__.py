@@ -3,6 +3,7 @@ from logging import getLogger
 from pyglet.text import Label
 
 from i18n import I18N_RESOURCES
+from database import USER_DB_CURSOR
 from ui import *
 from ui.button import create_two_state_button
 from ui.button.build_construction_button import BuildConstructionButton
@@ -42,8 +43,8 @@ class ConstructorCell:
     """
     Implements base class for constructor cell.
     """
-    def __init__(self, construction_type, row, current_locale,
-                 on_buy_construction_action, on_set_money_target_action, on_reset_money_target_action):
+    def __init__(self, construction_type, row, on_buy_construction_action, on_set_money_target_action,
+                 on_reset_money_target_action):
         """
         Button click handlers:
             on_set_money_target                 on_click handler for set money target button
@@ -84,7 +85,6 @@ class ConstructorCell:
 
         :param construction_type:               type of construction: track or environment
         :param row:                             number of cell on constructor screen
-        :param current_locale:                  current locale selected by player
         :param on_buy_construction_action:      is activated when player buys construction
         :param on_set_money_target_action:      is activated when money target is activated by player
         :param on_reset_money_target_action:    is activated when money target is deactivated by player
@@ -127,7 +127,9 @@ class ConstructorCell:
         self.logger = getLogger(f'root.app.game.map.constructor.view.cell.{construction_type}.{row}')
         self.is_activated = False
         self.construction_type, self.row = construction_type, row
-        self.surface, self.batches, self.groups, self.current_locale = SURFACE, BATCHES, GROUPS, current_locale
+        self.surface, self.batches, self.groups = SURFACE, BATCHES, GROUPS
+        USER_DB_CURSOR.execute('SELECT current_locale FROM i18n')
+        self.current_locale = USER_DB_CURSOR.fetchone()[0]
         self.on_buy_construction_action = on_buy_construction_action
         self.on_set_money_target_action = on_set_money_target_action
         self.on_reset_money_target_action = on_reset_money_target_action

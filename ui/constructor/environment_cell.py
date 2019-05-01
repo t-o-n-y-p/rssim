@@ -8,10 +8,10 @@ class EnvironmentCell(ConstructorCell):
     Implements Environment cell class for constructor screen.
     For properties definition see base ConstructorCell class.
     """
-    def __init__(self, column, row, current_locale,
-                 on_buy_construction_action, on_set_money_target_action, on_reset_money_target_action):
-        super().__init__(column, row, current_locale,
-                         on_buy_construction_action, on_set_money_target_action, on_reset_money_target_action)
+    def __init__(self, column, row, on_buy_construction_action, on_set_money_target_action,
+                 on_reset_money_target_action):
+        super().__init__(column, row, on_buy_construction_action, on_set_money_target_action,
+                         on_reset_money_target_action)
         self.title_key = 'title_environment_string'
         self.placeholder_key = 'no_more_tiers_available_placeholder_string'
         self.description_keys = {'UNDER_CONSTRUCTION':

@@ -5,13 +5,14 @@ from ui import *
 from ui.button import create_two_state_button
 from ui.button.checked_checkbox_button import CheckedCheckboxButton
 from ui.button.unchecked_checkbox_button import UncheckedCheckboxButton
+from database import USER_DB_CURSOR
 
 
 class Checkbox:
     """
     Implements base class for all checkboxes in the app.
     """
-    def __init__(self, column, row, on_update_state_action, current_locale, logger):
+    def __init__(self, column, row, on_update_state_action, logger):
         """
         Button click handlers:
             on_check                            on_click handler for unchecked checkbox button
@@ -40,7 +41,6 @@ class Checkbox:
         :param column:                          number of settings column
         :param row:                             number of settings row
         :param on_update_state_action:          method to call when checkbox state is being updated
-        :param current_locale:                  current locale selected by player
         :param logger:                          telemetry instance
         """
         def on_check(button):
@@ -69,7 +69,9 @@ class Checkbox:
 
         self.logger = logger
         self.column, self.row = column, row
-        self.surface, self.batches, self.groups, self.current_locale = SURFACE, BATCHES, GROUPS, current_locale
+        self.surface, self.batches, self.groups = SURFACE, BATCHES, GROUPS
+        USER_DB_CURSOR.execute('SELECT current_locale FROM i18n')
+        self.current_locale = USER_DB_CURSOR.fetchone()[0]
         self.on_update_state_action = on_update_state_action
         self.checked_checkbox_button, self.unchecked_checkbox_button \
             = create_two_state_button(CheckedCheckboxButton(on_click_action=on_uncheck),

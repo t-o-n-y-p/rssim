@@ -149,16 +149,15 @@ class SettingsView(View):
         self.temp_display_fps = False
         self.temp_fade_animations_enabled = False
         self.display_fps_checkbox \
-            = DisplayFPSCheckbox(-1, -2, self.current_locale, on_update_state_action=on_update_display_fps_state)
+            = DisplayFPSCheckbox(-1, -2, on_update_state_action=on_update_display_fps_state)
         self.fade_animations_checkbox \
-            = FadeAnimationsEnabledCheckbox(-1, -4, self.current_locale,
-                                            on_update_state_action=on_update_fade_animations_state)
+            = FadeAnimationsEnabledCheckbox(-1, -4, on_update_state_action=on_update_fade_animations_state)
         self.temp_level_up_notification_enabled = False
         self.temp_feature_unlocked_notification_enabled = False
         self.temp_construction_completed_notification_enabled = False
         self.temp_enough_money_notification_enabled = False
         self.notifications_checkbox_group \
-            = NotificationsCheckboxGroup(1, 4, self.current_locale,
+            = NotificationsCheckboxGroup(1, 4,
                                          on_update_state_actions=[on_update_level_up_notifications_state,
                                                                   on_update_feature_unlocked_notifications_state,
                                                                   on_update_construction_completed_notifications_state,
@@ -170,8 +169,7 @@ class SettingsView(View):
         self.available_windowed_resolutions = self.config_db_cursor.fetchall()
         self.available_windowed_resolutions_position = 0
         self.screen_resolution_control \
-            = ScreenResolutionControl(-1, 4, self.current_locale,
-                                      possible_values_list=self.available_windowed_resolutions,
+            = ScreenResolutionControl(-1, 4, possible_values_list=self.available_windowed_resolutions,
                                       on_update_state_action=on_update_windowed_resolution_state)
         self.accept_settings_button = AcceptSettingsButton(on_click_action=on_accept_changes)
         self.reject_settings_button = RejectSettingsButton(on_click_action=on_reject_changes)
