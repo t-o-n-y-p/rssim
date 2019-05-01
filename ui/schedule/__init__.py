@@ -3,6 +3,7 @@ from logging import getLogger
 from pyglet.text import Label
 
 from ui import *
+from database import USER_DB_CURSOR
 from i18n import I18N_RESOURCES
 
 
@@ -50,6 +51,7 @@ class ScheduleRow:
             groups                              defines drawing layers (some labels and sprites behind others)
             current_locale                      current locale selected by player
             data                                one row of data from base schedule matrix
+            clock_24h_enabled                   indicates if 24h clock is enabled
             main_sprite                         label for all params except departure location
             arrival_sprite                      label for departure location
             screen_resolution                   current game window resolution
@@ -65,6 +67,9 @@ class ScheduleRow:
         self.column, self.row = column, row
         self.surface, self.batches, self.groups, self.current_locale = SURFACE, BATCHES, GROUPS, current_locale
         self.data = None
+        # USER_DB_CURSOR.execute('SELECT clock_24h FROM i18n')
+        # self.clock_24h_enabled = bool(USER_DB_CURSOR.fetchone()[0])
+        self.clock_24h_enabled = False
         self.main_sprite = None
         self.arrival_sprite = None
         self.screen_resolution = (1280, 720)
@@ -107,20 +112,12 @@ class ScheduleRow:
         self.data = data
         if self.main_sprite is None:
             self.main_sprite \
-                = Label('{0:0>6}       {1:0>2} : {2:0>2}                                     {3:0>2}'
-                        .format(self.data[TRAIN_ID],
-                                (self.data[ARRIVAL_TIME] // FRAMES_IN_ONE_HOUR + 12) % HOURS_IN_ONE_DAY,
-                                (self.data[ARRIVAL_TIME] // FRAMES_IN_ONE_MINUTE) % MINUTES_IN_ONE_HOUR,
-                                self.data[CARS]),
+                = Label(self.get_main_sprite_text(),
                         font_name='Perfo', bold=True, font_size=self.size[1] // 5 * 3, color=(*WHITE_RGB, self.opacity),
                         x=self.position[0], y=self.position[1], anchor_x='center', anchor_y='center',
                         batch=self.batches['ui_batch'], group=self.groups['button_text'])
         else:
-            self.main_sprite.text \
-                = '{0:0>6}       {1:0>2} : {2:0>2}                                     {3:0>2}'\
-                .format(self.data[TRAIN_ID],
-                        (self.data[ARRIVAL_TIME] // FRAMES_IN_ONE_HOUR + 12) % HOURS_IN_ONE_DAY,
-                        (self.data[ARRIVAL_TIME] // FRAMES_IN_ONE_MINUTE) % MINUTES_IN_ONE_HOUR, self.data[CARS])
+            self.main_sprite.text = self.get_main_sprite_text()
 
         if self.arrival_sprite is None:
             self.arrival_sprite \
@@ -174,6 +171,9 @@ class ScheduleRow:
         if self.arrival_sprite is not None:
             self.arrival_sprite.text = I18N_RESOURCES['departed_from_string'][self.current_locale][self.data[DIRECTION]]
 
+        if self.main_sprite is not None:
+            self.main_sprite.text = self.get_main_sprite_text()
+
     def on_update_opacity(self, new_opacity):
         """
         Updates button opacity with given value.
@@ -201,3 +201,26 @@ class ScheduleRow:
 
             if self.arrival_sprite is not None:
                 self.arrival_sprite.color = (*WHITE_RGB, self.opacity)
+
+    def get_main_sprite_text(self):
+        if self.clock_24h_enabled:
+            return '{0:0>6}       {1:0>2} : {2:0>2}                                     {3:0>2}'\
+                .format(self.data[TRAIN_ID], (self.data[ARRIVAL_TIME] // FRAMES_IN_ONE_HOUR + 12) % HOURS_IN_ONE_DAY,
+                        (self.data[ARRIVAL_TIME] // FRAMES_IN_ONE_MINUTE) % MINUTES_IN_ONE_HOUR, self.data[CARS])
+        else:
+            am_pm_index = ((self.data[ARRIVAL_TIME] // FRAMES_IN_ONE_HOUR) // 12) % 2 + 1
+            # !!! FIGURE SPACE is used for {1: >2}, not regular space
+            return '{0:0>6}    {1: >2} : {2:0>2} {3}                                  {4:0>2}'\
+                .format(self.data[TRAIN_ID], (self.data[ARRIVAL_TIME] // FRAMES_IN_ONE_HOUR + 11) % 12 + 1,
+                        (self.data[ARRIVAL_TIME] // FRAMES_IN_ONE_MINUTE) % MINUTES_IN_ONE_HOUR,
+                        I18N_RESOURCES['am_pm_string'][self.current_locale][am_pm_index], self.data[CARS])
+
+    def on_update_clock_state(self, clock_24h_enabled):
+        """
+        Updates main game clock when clock state is updated.
+
+        :param clock_24h_enabled:               indicates if 24h clock is enabled
+        """
+        self.clock_24h_enabled = clock_24h_enabled
+        if self.main_sprite is not None:
+            self.main_sprite.text = self.get_main_sprite_text()

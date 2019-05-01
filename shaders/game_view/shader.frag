@@ -41,7 +41,7 @@ bool is_bottom_bar_button_border()
 */
 {
     int margin = screen_resolution[0] - int(gl_FragCoord[0]);
-    int game_time_margin = int(3.5 * float(bottom_bar_height));
+    int game_time_margin = 4 * bottom_bar_height;
     return gl_FragCoord[0] == bottom_bar_height - 1                               // constructor button border
            || gl_FragCoord[0] == bottom_bar_height - 2
            || margin == bottom_bar_height || margin == bottom_bar_height - 1      // settings button border

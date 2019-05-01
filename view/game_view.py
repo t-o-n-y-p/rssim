@@ -187,7 +187,7 @@ class GameView(View):
         if self.time_label is None:
             self.time_label = Label(self.get_time_text(), font_name='Perfo', bold=True,
                                     font_size=int(32 / 80 * self.bottom_bar_height), color=(*WHITE_RGB, self.opacity),
-                                    x=self.screen_resolution[0] - int(181 / 80 * self.bottom_bar_height),
+                                    x=self.screen_resolution[0] - int(200 / 80 * self.bottom_bar_height),
                                     y=self.bottom_bar_height // 2, anchor_x='center', anchor_y='center',
                                     batch=self.batches['ui_batch'], group=self.groups['button_text'])
 
@@ -277,7 +277,7 @@ class GameView(View):
                                                          * self.bottom_bar_height)
             self.money_label.y = self.bottom_bar_height // 2
             self.money_label.font_size = int(22 / 80 * self.bottom_bar_height)
-            self.time_label.x = self.screen_resolution[0] - int(181 / 80 * self.bottom_bar_height)
+            self.time_label.x = self.screen_resolution[0] - int(200 / 80 * self.bottom_bar_height)
             self.time_label.y = self.bottom_bar_height // 2
             self.time_label.font_size = int(32 / 80 * self.bottom_bar_height)
             self.progress_bar_exp_inactive.scale = self.bottom_bar_height / 80
@@ -294,9 +294,9 @@ class GameView(View):
         self.open_settings_button.x_margin = self.screen_resolution[0] - self.bottom_bar_height
         self.open_settings_button.y_margin = 0
         self.open_settings_button.on_size_changed((self.bottom_bar_height, self.bottom_bar_height))
-        self.pause_game_button.x_margin = self.screen_resolution[0] - 9 * self.bottom_bar_height // 2
+        self.pause_game_button.x_margin = self.screen_resolution[0] - 5 * self.bottom_bar_height
         self.pause_game_button.y_margin = 0
-        self.resume_game_button.x_margin = self.screen_resolution[0] - 9 * self.bottom_bar_height // 2
+        self.resume_game_button.x_margin = self.screen_resolution[0] - 5 * self.bottom_bar_height
         self.resume_game_button.y_margin = 0
         self.pause_game_button.on_size_changed((self.bottom_bar_height, self.bottom_bar_height))
         self.resume_game_button.on_size_changed((self.bottom_bar_height, self.bottom_bar_height))
@@ -473,7 +473,17 @@ class GameView(View):
             return '{0:0>2} : {1:0>2}'.format((self.game_time // FRAMES_IN_ONE_HOUR + 12) % HOURS_IN_ONE_DAY,
                                               (self.game_time // FRAMES_IN_ONE_MINUTE) % MINUTES_IN_ONE_HOUR)
         else:
-            am_pm_index = ((self.game_time // FRAMES_IN_ONE_HOUR + 12) // 12) % 2
+            am_pm_index = ((self.game_time // FRAMES_IN_ONE_HOUR) // 12) % 2 + 1
             return '{0} : {1:0>2} {2}'.format((self.game_time // FRAMES_IN_ONE_HOUR + 11) % 12 + 1,
                                               (self.game_time // FRAMES_IN_ONE_MINUTE) % MINUTES_IN_ONE_HOUR,
                                               I18N_RESOURCES['am_pm_string'][self.current_locale][am_pm_index])
+
+    def on_update_clock_state(self, clock_24h_enabled):
+        """
+        Updates main game clock when clock state is updated.
+
+        :param clock_24h_enabled:               indicates if 24h clock is enabled
+        """
+        self.clock_24h_enabled = clock_24h_enabled
+        if self.is_activated:
+            self.time_label.text = self.get_time_text()

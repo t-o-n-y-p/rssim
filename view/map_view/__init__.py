@@ -626,7 +626,7 @@ class MapView(View):
         self.zoom_out_button.x_margin = 0
         self.zoom_out_button.y_margin = self.screen_resolution[1] - self.top_bar_height - self.top_bar_height * 2 + 4
         self.zoom_out_button.on_size_changed((self.top_bar_height * 2 - 2, self.top_bar_height * 2 - 2))
-        self.open_schedule_button.x_margin = self.screen_resolution[0] - 11 * self.bottom_bar_height // 2 + 2
+        self.open_schedule_button.x_margin = self.screen_resolution[0] - 6 * self.bottom_bar_height + 2
         self.open_schedule_button.y_margin = 0
         self.open_schedule_button.on_size_changed((self.bottom_bar_height, self.bottom_bar_height))
         self.open_constructor_button.on_size_changed((self.bottom_bar_height, self.bottom_bar_height))

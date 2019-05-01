@@ -190,7 +190,7 @@ class SchedulerView(View):
             for j in range(SCHEDULE_ROWS):
                 self.schedule_rows[i][j].on_change_screen_resolution(screen_resolution)
 
-        self.close_schedule_button.x_margin = self.screen_resolution[0] - 11 * self.bottom_bar_height // 2 + 2
+        self.close_schedule_button.x_margin = self.screen_resolution[0] - 6 * self.bottom_bar_height + 2
         self.close_schedule_button.y_margin = 0
         self.close_schedule_button.on_size_changed((self.bottom_bar_height, self.bottom_bar_height))
         for b in self.buttons:
