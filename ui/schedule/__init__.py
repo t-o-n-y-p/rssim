@@ -67,9 +67,8 @@ class ScheduleRow:
         self.column, self.row = column, row
         self.surface, self.batches, self.groups, self.current_locale = SURFACE, BATCHES, GROUPS, current_locale
         self.data = None
-        # USER_DB_CURSOR.execute('SELECT clock_24h FROM i18n')
-        # self.clock_24h_enabled = bool(USER_DB_CURSOR.fetchone()[0])
-        self.clock_24h_enabled = False
+        USER_DB_CURSOR.execute('SELECT clock_24h FROM i18n')
+        self.clock_24h_enabled = bool(USER_DB_CURSOR.fetchone()[0])
         self.main_sprite = None
         self.arrival_sprite = None
         self.screen_resolution = (1280, 720)
