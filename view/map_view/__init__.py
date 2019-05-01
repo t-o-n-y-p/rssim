@@ -20,7 +20,7 @@ class MapView(View):
     Implements Map view.
     Map object is responsible for properties, UI and events related to the map.
     """
-    def __init__(self):
+    def __init__(self, map_id):
         """
         Button click handlers:
             on_click_zoom_in_button             on_click handler for zoom in button
@@ -31,6 +31,7 @@ class MapView(View):
             on_open_constructor                 on_click handler for open constructor button
 
         Properties:
+            map_id                              ID of the map
             unlocked_tracks                     number of unlocked tracks in the game
             unlocked_environment                environment tier available for player
             main_map                            main map texture
@@ -43,13 +44,15 @@ class MapView(View):
             mini_environment_sprite             sprite for mini-map environment from environment texture
             is_mini_map_activated               indicates if mini map is displayed or not
             mini_map_timer                      indicates how much time passed since user released mouse button
-            map_opacity                         general map opacity
             mini_map_opacity                    mini-map opacity
             base_offset_lower_left_limit        maximum value for vertical and horizontal base offset
             base_offset_upper_right_limit       minimum value for vertical and horizontal base offset
             mini_map_position                   position of mini-map lower left corner
             mini_map_width                      width of the mini-map
             mini_map_height                     height of the mini-map
+            mini_map_frame_position             position of mini-map frame lower left corner
+            mini_map_frame_width                width of the mini-map frame
+            mini_map_frame_height               height of the mini-map frame
             zoom_in_button                      ZoomInButton object
             zoom_out_button                     ZoomOutButton object
             open_schedule_button                OpenScheduleButton object
@@ -65,6 +68,7 @@ class MapView(View):
             map_view_shader_upper_limit         upper edge for map_view_shader_sprite
             map_view_shader_bottom_limit        bottom edge for map_view_shader_sprite
 
+        :param map_id:                          ID of the map
         """
         def on_click_zoom_in_button(button):
             """
@@ -122,9 +126,8 @@ class MapView(View):
             button.on_deactivate(instant=True)
             self.controller.on_open_constructor()
 
-        self.map_id = None
-        self.on_update_map_id()
-        super().__init__(logger=getLogger(f'root.app.game.map.{self.map_id}.view'))
+        super().__init__(logger=getLogger(f'root.app.game.map.{map_id}.view'))
+        self.map_id = map_id
         self.user_db_cursor.execute('''SELECT unlocked_tracks, unlocked_environment 
                                        FROM map_progress WHERE map_id = ?''',
                                     (self.map_id, ))
@@ -159,10 +162,8 @@ class MapView(View):
                                                     on_leave_action=on_leave_action))
         self.open_schedule_button = OpenScheduleButton(on_click_action=on_open_schedule)
         self.open_constructor_button = OpenConstructorButton(on_click_action=on_open_constructor)
-        self.buttons.append(self.zoom_in_button)
-        self.buttons.append(self.zoom_out_button)
-        self.buttons.append(self.open_schedule_button)
-        self.buttons.append(self.open_constructor_button)
+        self.buttons = [self.zoom_in_button, self.zoom_out_button, self.open_schedule_button,
+                        self.open_constructor_button]
         self.map_move_mode_available = True
         self.map_move_mode = False
         self.on_mouse_press_handlers.append(self.handle_mouse_press)
@@ -175,6 +176,9 @@ class MapView(View):
         self.on_init_graphics()
 
     def on_update(self):
+        """
+        Updates mini-map: fade-in/fade-out animation and timer.
+        """
         cpu_time = perf_counter()
         if self.is_mini_map_activated and not self.map_move_mode \
                 and cpu_time - self.mini_map_timer > MINI_MAP_FADE_OUT_TIMER:
@@ -183,21 +187,32 @@ class MapView(View):
         self.on_update_mini_map_opacity()
 
     def on_update_opacity(self, new_opacity):
+        """
+        Updates view opacity with given value.
+
+        :param new_opacity:                     new opacity value
+        """
         self.opacity = new_opacity
         self.on_update_sprite_opacity()
         for b in self.buttons:
             b.on_update_opacity(new_opacity)
 
     def on_update_mini_map_opacity(self):
+        """
+        Updates fade-in/fade-out animation for mini-map.
+        """
         if self.is_mini_map_activated and self.mini_map_opacity < 255:
-            self.mini_map_opacity += 15
+            self.mini_map_opacity += 17
             self.on_update_mini_map_sprite_opacity()
 
         if not self.is_mini_map_activated and self.mini_map_opacity > 0:
-            self.mini_map_opacity -= 15
+            self.mini_map_opacity -= 17
             self.on_update_mini_map_sprite_opacity()
 
     def on_update_sprite_opacity(self):
+        """
+        Applies new opacity value to all sprites and labels.
+        """
         if self.opacity <= 0:
             self.shader_sprite.delete()
             self.shader_sprite = None
@@ -210,6 +225,9 @@ class MapView(View):
             self.environment_sprite.opacity = self.opacity
 
     def on_update_mini_map_sprite_opacity(self):
+        """
+        Applies new mini-map opacity value to mini-map sprites and labels.
+        """
         if self.mini_map_opacity <= 0:
             self.mini_map_sprite.delete()
             self.mini_map_sprite = None
@@ -572,10 +590,10 @@ class MapView(View):
         self.shader_sprite.draw(GL_QUADS)
         self.shader.clear()
 
-    def on_update_map_id(self):
-        pass
-
     def on_init_graphics(self):
+        """
+        Initializes the view based on saved screen resolution and base offset.
+        """
         self.on_recalculate_ui_properties(self.screen_resolution)
         self.map_view_shader_bottom_limit = self.bottom_bar_height / self.screen_resolution[1] * 2 - 1
         self.map_view_shader_upper_limit = 1 - self.top_bar_height / self.screen_resolution[1] * 2

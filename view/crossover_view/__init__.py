@@ -11,9 +11,10 @@ class CrossoverView(View):
     Implements Crossover view.
     Crossover object is responsible for properties, UI and events related to the crossover.
     """
-    def __init__(self, track_param_1, track_param_2, crossover_type):
+    def __init__(self, map_id, track_param_1, track_param_2, crossover_type):
         """
         Properties:
+            map_id                              ID of the map which this crossover belongs to
             position                            position of the crossover on the map
             crossover_region                    region to cut from crossovers texture
             current_position_1                  current position crossover is switched to: track 1
@@ -22,17 +23,17 @@ class CrossoverView(View):
             sprite                              sprite from straight or diverging image for the crossover
             locked                              indicates if crossover is available for player
 
+        :param map_id:                          ID of the map which this crossover belongs to
         :param track_param_1:                   number of the first track of two being connected by the crossover
         :param track_param_2:                   number of the second track of two being connected by the crossover
         :param crossover_type:                  crossover location: left/right side of the map
         """
-        self.map_id = None
-        self.on_update_map_id()
         super().__init__(
             logger=getLogger(
-                f'root.app.game.map.{self.map_id}.crossover.{track_param_1}.{track_param_2}.{crossover_type}.view'
+                f'root.app.game.map.{map_id}.crossover.{track_param_1}.{track_param_2}.{crossover_type}.view'
             )
         )
+        self.map_id = map_id
         self.config_db_cursor.execute('''SELECT offset_x, offset_y FROM crossovers_config
                                          WHERE track_param_1 = ? AND track_param_2 = ? AND crossover_type = ? 
                                          AND map_id = ?''',
@@ -42,22 +43,19 @@ class CrossoverView(View):
                                          WHERE track_param_1 = ? AND track_param_2 = ? AND crossover_type = ? 
                                          AND map_id = ?''',
                                       (track_param_1, track_param_2, crossover_type, self.map_id))
-        self.switch_region = self.config_db_cursor.fetchone()
+        self.crossover_region = self.config_db_cursor.fetchone()
         self.user_db_cursor.execute('''SELECT current_position_1, current_position_2 FROM crossovers 
                                        WHERE track_param_1 = ? AND track_param_2 = ? AND crossover_type = ? 
                                        AND map_id = ?''',
                                     (track_param_1, track_param_2, crossover_type, self.map_id))
         self.current_position_1, self.current_position_2 = self.user_db_cursor.fetchone()
         self.images = {track_param_1:
-                           {track_param_1: SWITCHES_STRAIGHT.get_region(self.switch_region[0], self.switch_region[1],
-                                                                        self.switch_region[2], self.switch_region[3]),
-                            track_param_2: SWITCHES_DIVERGING.get_region(self.switch_region[0], self.switch_region[1],
-                                                                         self.switch_region[2], self.switch_region[3])},
+                           {track_param_1: SWITCHES_STRAIGHT.get_region(*self.crossover_region),
+                            track_param_2: SWITCHES_DIVERGING.get_region(*self.crossover_region)},
                        track_param_2:
-                           {track_param_1: SWITCHES_DIVERGING.get_region(self.switch_region[0], self.switch_region[1],
-                                                                         self.switch_region[2], self.switch_region[3]),
-                            track_param_2: SWITCHES_STRAIGHT.get_region(self.switch_region[0], self.switch_region[1],
-                                                                        self.switch_region[2], self.switch_region[3])}}
+                           {track_param_1: SWITCHES_DIVERGING.get_region(*self.crossover_region),
+                            track_param_2: SWITCHES_STRAIGHT.get_region(*self.crossover_region)}
+                       }
         self.user_db_cursor.execute('''SELECT locked FROM crossovers 
                                        WHERE track_param_1 = ? AND track_param_2 = ? AND crossover_type = ? 
                                        AND map_id = ?''',
@@ -66,14 +64,19 @@ class CrossoverView(View):
         self.sprite = None
         self.on_init_graphics()
 
-    def on_update(self):
-        pass
-
     def on_update_opacity(self, new_opacity):
+        """
+        Updates view opacity with given value.
+
+        :param new_opacity:                     new opacity value
+        """
         self.opacity = new_opacity
         self.on_update_sprite_opacity()
 
     def on_update_sprite_opacity(self):
+        """
+        Applies new opacity value to all sprites and labels.
+        """
         if self.opacity <= 0:
             if self.sprite is not None:
                 self.sprite.delete()
@@ -183,8 +186,8 @@ class CrossoverView(View):
         # this workaround is needed for crossover to be displayed immediately on the map
         self.on_change_base_offset(self.base_offset)
 
-    def on_update_map_id(self):
-        pass
-
     def on_init_graphics(self):
+        """
+        Initializes the view based on saved screen resolution and base offset.
+        """
         self.on_change_screen_resolution(self.screen_resolution)

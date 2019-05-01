@@ -11,9 +11,10 @@ class RailroadSwitchView(View):
     Implements Railroad switch view.
     Railroad switch object is responsible for properties, UI and events related to the railroad switch.
     """
-    def __init__(self, track_param_1, track_param_2, switch_type):
+    def __init__(self, map_id, track_param_1, track_param_2, switch_type):
         """
         Properties:
+            map_id                              ID of the map which this switch belongs to
             position                            position of the switch on the map
             switch_region                       region to cut from switches texture
             current_position                    current switch position
@@ -21,17 +22,17 @@ class RailroadSwitchView(View):
             sprite                              sprite from straight or diverging image for the switch
             locked                              indicates if switch is available for player
 
+        :param map_id:                          ID of the map which this switch belongs to
         :param track_param_1:                   number of the straight track
         :param track_param_2:                   number of the diverging track
         :param switch_type:                     railroad switch location: left/right side of the map
         """
-        self.map_id = None
-        self.on_update_map_id()
         super().__init__(
             logger=getLogger(
-                f'root.app.game.map.{self.map_id}.railroad_switch.{track_param_1}.{track_param_2}.{switch_type}.view'
+                f'root.app.game.map.{map_id}.railroad_switch.{track_param_1}.{track_param_2}.{switch_type}.view'
             )
         )
+        self.map_id = map_id
         self.config_db_cursor.execute('''SELECT offset_x, offset_y FROM switches_config
                                          WHERE track_param_1 = ? AND track_param_2 = ? AND switch_type = ? 
                                          AND map_id = ?''',
@@ -47,10 +48,8 @@ class RailroadSwitchView(View):
                                        AND map_id = ?''',
                                     (track_param_1, track_param_2, switch_type, self.map_id))
         self.current_position = self.user_db_cursor.fetchone()[0]
-        self.images = {track_param_1: SWITCHES_STRAIGHT.get_region(self.switch_region[0], self.switch_region[1],
-                                                                   self.switch_region[2], self.switch_region[3]),
-                       track_param_2: SWITCHES_DIVERGING.get_region(self.switch_region[0], self.switch_region[1],
-                                                                    self.switch_region[2], self.switch_region[3])}
+        self.images = {track_param_1: SWITCHES_STRAIGHT.get_region(*self.switch_region),
+                       track_param_2: SWITCHES_DIVERGING.get_region(*self.switch_region)}
         self.user_db_cursor.execute('''SELECT locked FROM switches 
                                        WHERE track_param_1 = ? AND track_param_2 = ? AND switch_type = ? 
                                        AND map_id = ?''',
@@ -59,14 +58,19 @@ class RailroadSwitchView(View):
         self.sprite = None
         self.on_init_graphics()
 
-    def on_update(self):
-        pass
-
     def on_update_opacity(self, new_opacity):
+        """
+        Updates view opacity with given value.
+
+        :param new_opacity:                     new opacity value
+        """
         self.opacity = new_opacity
         self.on_update_sprite_opacity()
 
     def on_update_sprite_opacity(self):
+        """
+        Applies new opacity value to all sprites and labels.
+        """
         if self.opacity <= 0:
             if self.sprite is not None:
                 self.sprite.delete()
@@ -171,8 +175,8 @@ class RailroadSwitchView(View):
         # this workaround is needed for switch to be displayed immediately on the map
         self.on_change_base_offset(self.base_offset)
 
-    def on_update_map_id(self):
-        pass
-
     def on_init_graphics(self):
+        """
+        Initializes the view based on saved screen resolution and base offset.
+        """
         self.on_change_screen_resolution(self.screen_resolution)

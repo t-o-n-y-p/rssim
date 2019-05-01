@@ -11,9 +11,10 @@ class SignalView(View):
     Implements Signal view.
     Signal object is responsible for properties, UI and events related to the signal state.
     """
-    def __init__(self, track, base_route):
+    def __init__(self, map_id, track, base_route):
         """
         Properties:
+            map_id                              ID of the map which this signal belongs to
             red_signal_image                    texture for red signal state
             green_signal_image                  texture for green signal state
             signal_sprite                       sprite from the signal image
@@ -22,12 +23,12 @@ class SignalView(View):
             flip_needed                         indicates if signal image should be rotated
             position                            signal position on the map
 
+        :param map_id:                          ID of the map which this signal belongs to
         :param track:                           signal track number
         :param base_route:                      base route (train route part) which signal belongs to
         """
-        self.map_id = None
-        self.on_update_map_id()
-        super().__init__(logger=getLogger(f'root.app.game.map.{self.map_id}.signal.{track}.{base_route}.view'))
+        super().__init__(logger=getLogger(f'root.app.game.map.{map_id}.signal.{track}.{base_route}.view'))
+        self.map_id = map_id
         self.red_signal_image = RED_SIGNAL_IMAGE
         self.green_signal_image = GREEN_SIGNAL_IMAGE
         self.signal_sprite = None
@@ -41,14 +42,19 @@ class SignalView(View):
         self.flip_needed = bool(self.flip_needed)
         self.on_init_graphics()
 
-    def on_update(self):
-        pass
-
     def on_update_opacity(self, new_opacity):
+        """
+        Updates view opacity with given value.
+
+        :param new_opacity:                     new opacity value
+        """
         self.opacity = new_opacity
         self.on_update_sprite_opacity()
 
     def on_update_sprite_opacity(self):
+        """
+        Applies new opacity value to all sprites and labels.
+        """
         if self.opacity <= 0:
             if self.signal_sprite is not None:
                 self.signal_sprite.delete()
@@ -170,8 +176,8 @@ class SignalView(View):
             else:
                 self.signal_sprite.image = self.green_signal_image
 
-    def on_update_map_id(self):
-        pass
-
     def on_init_graphics(self):
+        """
+        Initializes the view based on saved screen resolution and base offset.
+        """
         self.on_change_screen_resolution(self.screen_resolution)

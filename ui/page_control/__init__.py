@@ -170,7 +170,7 @@ class PageControl:
 
     def on_update_opacity(self, new_opacity):
         """
-        Updates button opacity with given value.
+        Updates control opacity with given value.
 
         :param new_opacity:                     new opacity value
         """

@@ -20,14 +20,19 @@ class FPSView(View):
         self.fps_label = None
         self.on_init_graphics()
 
-    def on_update(self):
-        pass
-
     def on_update_opacity(self, new_opacity):
+        """
+        Updates view opacity with given value.
+
+        :param new_opacity:                     new opacity value
+        """
         self.opacity = new_opacity
         self.on_update_sprite_opacity()
 
     def on_update_sprite_opacity(self):
+        """
+        Applies new opacity value to all sprites and labels.
+        """
         if self.opacity <= 0:
             self.fps_label.delete()
             self.fps_label = None
@@ -77,4 +82,7 @@ class FPSView(View):
             self.fps_label.font_size = int(16 / 40 * self.top_bar_height)
 
     def on_init_graphics(self):
+        """
+        Initializes the view based on saved screen resolution and base offset.
+        """
         self.on_change_screen_resolution(self.screen_resolution)

@@ -10,9 +10,10 @@ class TrainView(View):
     Implements Train view.
     Train object is responsible for properties, UI and events related to the train.
     """
-    def __init__(self, train_id):
+    def __init__(self, map_id, train_id):
         """
         Properties:
+            map_id                              ID of the map which this train belongs to
             car_position                        2D Cartesian positions for all cars plus rotation angle
             car_head_image                      texture for leading carriage
             car_mid_image                       texture for middle carriage
@@ -24,11 +25,11 @@ class TrainView(View):
             car_image_collection                car image collection ID for this train
             state                               current train state
 
+        :param map_id:                          ID of the map which this train belongs to
         :param train_id                         train identification number
         """
-        self.map_id = None
-        self.on_update_map_id()
-        super().__init__(logger=getLogger(f'root.app.game.map.{self.map_id}.train.{train_id}.view'))
+        super().__init__(logger=getLogger(f'root.app.game.map.{map_id}.train.{train_id}.view'))
+        self.map_id = map_id
         self.car_position = []
         self.car_head_image = None
         self.car_mid_image = None
@@ -42,6 +43,9 @@ class TrainView(View):
         self.on_init_graphics()
 
     def on_update(self):
+        """
+        Creates car sprite if sprite position is located within app window and deletes car sprite if not.
+        """
         for i in range(len(self.car_position)):
             if self.zoom_out_activated:
                 x = self.base_offset[0] + self.car_position[i][0] // 2
@@ -97,10 +101,18 @@ class TrainView(View):
                         self.boarding_light_sprites[i] = None
 
     def on_update_opacity(self, new_opacity):
+        """
+        Updates view opacity with given value.
+
+        :param new_opacity:                     new opacity value
+        """
         self.opacity = new_opacity
         self.on_update_sprite_opacity()
 
     def on_update_sprite_opacity(self):
+        """
+        Applies new opacity value to all sprites and labels.
+        """
         if self.opacity <= 0:
             for i in range(len(self.car_sprites)):
                 if self.car_sprites[i] is not None:
@@ -209,8 +221,8 @@ class TrainView(View):
         """
         self.car_position = car_positions
 
-    def on_update_map_id(self):
-        pass
-
     def on_init_graphics(self):
+        """
+        Initializes the view based on saved screen resolution and base offset.
+        """
         self.on_change_screen_resolution(self.screen_resolution)

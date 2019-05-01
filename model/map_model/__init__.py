@@ -13,14 +13,14 @@ class MapModel(Model):
     def __init__(self, map_id):
         """
         Properties:
-            map_id                              ID of the map which this map belongs to
+            map_id                              ID of the map
             unlocked_tracks                     number of tracks available for player and trains
             unlocked_environment                environment tier available for player
             unlocked_car_collections            list of car collections which can be used for new trains
             last_known_base_offset              base offset which is saved after each map drag gesture
             zoom_out_activated                  indicates if map is zoomed out or not
 
-        :param map_id:                          ID of the map which this map belongs to
+        :param map_id:                          ID of the map
         """
         super().__init__(logger=getLogger(f'root.app.game.map.{map_id}.model'))
         self.map_id = map_id

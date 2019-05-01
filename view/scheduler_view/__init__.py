@@ -15,13 +15,13 @@ class SchedulerView(View):
     Implements Scheduler view.
     Scheduler object is responsible for properties, UI and events related to the train schedule.
     """
-    def __init__(self):
+    def __init__(self, map_id):
         """
         Button click handlers:
             on_close_schedule                       on_click handler for close schedule button
 
         Properties:
-            schedule_opacity                        general opacity of the schedule screen
+            map_id                                  ID of the map which this scheduler belongs to
             schedule_left_caption_position          position for schedule table caption, left side
             schedule_right_caption_position         position for schedule table caption, right side
             schedule_caption_font_size              font size for schedule table caption
@@ -32,11 +32,10 @@ class SchedulerView(View):
             close_schedule_button                   CloseScheduleButton object
             buttons                                 list of all buttons
             schedule_rows                           list of content rows on schedule screen
-            scheduler_view_shader_sprite            sprite for scheduler view shader
-            scheduler_view_shader                   shader for schedule screen area
             scheduler_view_shader_bottom_limit      bottom edge for scheduler_view_shader_sprite
             scheduler_view_shader_upper_limit       upper edge for scheduler_view_shader_sprite
 
+        :param map_id:                          ID of the map which this scheduler belongs to
         """
         def on_close_schedule(button):
             """
@@ -47,9 +46,8 @@ class SchedulerView(View):
             self.controller.on_deactivate_view()
             self.controller.fade_out_animation.on_activate()
 
-        self.map_id = None
-        self.on_update_map_id()
-        super().__init__(logger=getLogger(f'root.app.game.map.{self.map_id}.scheduler.view'))
+        super().__init__(logger=getLogger(f'root.app.game.map.{map_id}.scheduler.view'))
+        self.map_id = map_id
         self.schedule_left_caption_position = (0, 0)
         self.schedule_right_caption_position = (0, 0)
         self.schedule_caption_font_size = 0
@@ -123,16 +121,24 @@ class SchedulerView(View):
         for b in self.buttons:
             b.on_deactivate()
 
+    @view_is_active
     def on_update(self):
-        if self.is_activated:
-            for i in range(min(len(self.base_schedule), SCHEDULE_ROWS * SCHEDULE_COLUMNS)):
-                if not self.schedule_rows[i // SCHEDULE_ROWS][i % SCHEDULE_ROWS].is_activated:
-                    self.schedule_rows[i // SCHEDULE_ROWS][i % SCHEDULE_ROWS].opacity = self.opacity
-                    self.schedule_rows[i // SCHEDULE_ROWS][i % SCHEDULE_ROWS].on_activate()
-                    self.schedule_rows[i // SCHEDULE_ROWS][i % SCHEDULE_ROWS].on_assign_data(self.base_schedule[i])
-                    return
+        """
+        Activates schedule rows one by one if not all of them are activated.
+        """
+        for i in range(min(len(self.base_schedule), SCHEDULE_ROWS * SCHEDULE_COLUMNS)):
+            if not self.schedule_rows[i // SCHEDULE_ROWS][i % SCHEDULE_ROWS].is_activated:
+                self.schedule_rows[i // SCHEDULE_ROWS][i % SCHEDULE_ROWS].opacity = self.opacity
+                self.schedule_rows[i // SCHEDULE_ROWS][i % SCHEDULE_ROWS].on_activate()
+                self.schedule_rows[i // SCHEDULE_ROWS][i % SCHEDULE_ROWS].on_assign_data(self.base_schedule[i])
+                return
 
     def on_update_opacity(self, new_opacity):
+        """
+        Updates view opacity with given value.
+
+        :param new_opacity:                     new opacity value
+        """
         self.opacity = new_opacity
         self.on_update_sprite_opacity()
         for b in self.buttons:
@@ -143,6 +149,9 @@ class SchedulerView(View):
                 self.schedule_rows[i][j].on_update_opacity(new_opacity)
 
     def on_update_sprite_opacity(self):
+        """
+        Applies new opacity value to all sprites and labels.
+        """
         if self.opacity <= 0:
             self.shader_sprite.delete()
             self.shader_sprite = None
@@ -259,8 +268,8 @@ class SchedulerView(View):
         self.shader_sprite.draw(GL_QUADS)
         self.shader.clear()
 
-    def on_update_map_id(self):
-        pass
-
     def on_init_graphics(self):
+        """
+        Initializes the view based on saved screen resolution and base offset.
+        """
         self.on_change_screen_resolution(self.screen_resolution)

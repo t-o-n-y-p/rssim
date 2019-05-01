@@ -31,20 +31,17 @@ class AppView(View):
             on_iconify_game                     on_click handler for iconify button
             on_app_window_fullscreen            on_click handler for fullscreen button
             on_app_window_restore               on_click handler for restore button
-            on_open_settings                    on_click handler for settings button
             on_set_en_locale                    on_click handler for EN locale button
             on_set_ru_locale                    on_click handler for RU locale button
 
         Properties:
             title_label                         text label for game title
-            app_view_shader_sprite              sprite for app view shader
-            flag_us_sprite                      sprite from US flag for locale button
+            flag_gb_sprite                      sprite from US flag for locale button
             flag_ru_sprite                      sprite from RU flag for locale button
             close_game_button                   CloseGameButton object
             iconify_button                      IconifyButton object
             fullscreen_button                   FullscreenButton object
             restore_button                      RestoreButton object
-            open_settings_button                OpenSettingsButton object
             en_locale_button                    ENLocaleButton object
             ru_locale_button                    RULocaleButton object
             buttons                             list of all buttons
@@ -53,10 +50,6 @@ class AppView(View):
             game_window_handler                 Win32 app window handler
             game_window_position                Win32 app window position
             absolute_mouse_pos                  Win32 mouse cursor position
-            on_mouse_press_handlers             list of on_mouse_press event handlers
-            on_mouse_release_handlers           list of on_mouse_release event handlers
-            on_mouse_drag_handlers              list of on_mouse_drag event handlers
-            app_view_shader                     shader for main app window border, top bar and its buttons
 
         """
         def on_close_game(button):
@@ -126,12 +119,8 @@ class AppView(View):
                                       RestoreButton(on_click_action=on_app_window_restore))
         self.en_locale_button = ENLocaleButton(on_click_action=on_set_en_locale)
         self.ru_locale_button = RULocaleButton(on_click_action=on_set_ru_locale)
-        self.buttons.append(self.close_game_button)
-        self.buttons.append(self.iconify_button)
-        self.buttons.append(self.fullscreen_button)
-        self.buttons.append(self.restore_button)
-        self.buttons.append(self.en_locale_button)
-        self.buttons.append(self.ru_locale_button)
+        self.buttons = [self.close_game_button, self.iconify_button, self.fullscreen_button, self.restore_button,
+                        self.en_locale_button, self.ru_locale_button]
         self.app_window_move_mode = False
         self.app_window_move_offset = (0, 0)
         self.game_window_handler = GetActiveWindow()
@@ -144,16 +133,21 @@ class AppView(View):
         self.shader_sprite = None
         self.on_init_graphics()
 
-    def on_update(self):
-        pass
-
     def on_update_opacity(self, new_opacity):
+        """
+        Updates view opacity with given value.
+
+        :param new_opacity:                     new opacity value
+        """
         self.opacity = new_opacity
         self.on_update_sprite_opacity()
         for b in self.buttons:
             b.on_update_opacity(new_opacity)
 
     def on_update_sprite_opacity(self):
+        """
+        Applies new opacity value to all sprites and labels.
+        """
         if self.opacity <= 0:
             self.title_label.delete()
             self.title_label = None
@@ -333,4 +327,7 @@ class AppView(View):
         self.shader.clear()
 
     def on_init_graphics(self):
+        """
+        Initializes the view based on saved screen resolution and base offset.
+        """
         self.on_change_screen_resolution(self.screen_resolution)

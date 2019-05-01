@@ -28,9 +28,9 @@ class GameView(View):
         Button click handlers:
             on_pause_game                           on_click handler for pause game button
             on_resume_game                          on_click handler for resume game button
+            on_open_settings                        on_click handler for open settings button
 
         Properties:
-            game_frame_opacity                      overall opacity of all game sprites
             progress_bar_inactive_image             base image for exp amd money progress bar
             progress_bar_exp_inactive               sprite from base image for exp progress bar
             progress_bar_money_inactive             sprite from base image for money progress bar
@@ -42,6 +42,7 @@ class GameView(View):
             money_offset                            offset from the left edge for money progress bar
             pause_game_button                       PauseGameButton object
             resume_game_button                      ResumeGameButton object
+            open_settings_button                    OpenSettingsButton object
             buttons                                 list of all buttons
             time_label                              time label
             level_label                             "LEVEL X" label
@@ -53,8 +54,6 @@ class GameView(View):
                                                     in game settings
             enough_money_notification_enabled       indicates if enough money notifications are enabled by user
                                                     in game settings
-            game_view_shader                        shader for bottom bar and its buttons
-            game_view_shader_sprite                 sprite for game view shader
             game_view_shader_upper_limit            upper edge for game_view_shader_sprite
 
         """
@@ -109,9 +108,7 @@ class GameView(View):
             = create_two_state_button(PauseGameButton(on_click_action=on_pause_game),
                                       ResumeGameButton(on_click_action=on_resume_game))
         self.open_settings_button = OpenSettingsGameViewButton(on_click_action=on_open_settings)
-        self.buttons.append(self.pause_game_button)
-        self.buttons.append(self.resume_game_button)
-        self.buttons.append(self.open_settings_button)
+        self.buttons = [self.pause_game_button, self.resume_game_button, self.open_settings_button]
         add_font('perfo-bold.ttf')
         self.time_label = None
         self.level_label = None
@@ -130,16 +127,21 @@ class GameView(View):
         self.game_view_shader_upper_limit = 0.0
         self.on_init_graphics()
 
-    def on_update(self):
-        pass
-
     def on_update_opacity(self, new_opacity):
+        """
+        Updates view opacity with given value.
+
+        :param new_opacity:                     new opacity value
+        """
         self.opacity = new_opacity
         self.on_update_sprite_opacity()
         for b in self.buttons:
             b.on_update_opacity(new_opacity)
 
     def on_update_sprite_opacity(self):
+        """
+        Applies new opacity value to all sprites and labels.
+        """
         if self.opacity <= 0:
             self.shader_sprite.delete()
             self.shader_sprite = None
@@ -157,7 +159,6 @@ class GameView(View):
             self.money_label = None
             self.level_label.delete()
             self.level_label = None
-
         else:
             self.time_label.color = (*WHITE_RGB, self.opacity)
             self.progress_bar_exp_inactive.opacity = self.opacity
@@ -462,4 +463,7 @@ class GameView(View):
         self.shader.clear()
 
     def on_init_graphics(self):
+        """
+        Initializes the view based on saved screen resolution and base offset.
+        """
         self.on_change_screen_resolution(self.screen_resolution)

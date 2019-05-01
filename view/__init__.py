@@ -241,6 +241,12 @@ def construction_completed_notification_enabled(fn):
 
 
 def shader_sprite_exists(fn):
+    """
+    Use this decorator to execute function only if shader sprite property is not None.
+
+    :param fn:                      function to decorate
+    :return:                        decorator function
+    """
     def _handle_if_shader_sprite_exists(*args, **kwargs):
         if args[0].shader_sprite is not None:
             fn(*args, **kwargs)
@@ -267,19 +273,21 @@ class View:
         """
         Properties:
             logger                              telemetry instance
-            user_db_cursor:                     user DB cursor (is used to execute user DB queries)
-            config_db_cursor:                   configuration DB cursor (is used to execute configuration DB queries)
+            user_db_cursor                      user DB cursor (is used to execute user DB queries)
+            config_db_cursor                    configuration DB cursor (is used to execute configuration DB queries)
             controller                          object controller
             surface                             surface to draw all UI objects on
             batches                             batches to group all labels and sprites
             groups                              defines drawing layers (some labels and sprites behind others)
             is_activated                        indicates if view is active
+            opacity                             current view opacity value
             buttons                             list of all buttons on the view
             on_mouse_motion_handlers            list of on_mouse_motion event handlers to be appended
             on_mouse_press_handlers             list of on_mouse_press event handlers to be appended
             on_mouse_release_handlers           list of on_mouse_release event handlers to be appended
             on_mouse_drag_handlers              list of on_mouse_drag event handlers to be appended
             on_mouse_leave_handlers             list of on_mouse_leave event handlers to be appended
+            on_mouse_scroll_handlers            list of on_mouse_scroll event handlers to be appended
             screen_resolution                   current screen resolution
             bottom_bar_height                   height of the bottom bar with buttons
             top_bar_height                      height of the top bar
@@ -288,6 +296,8 @@ class View:
             zoom_factor                         sprite scale factor
             current_locale                      current locale selected by player
             all_notifications_enabled           indicates if app can send system notifications
+            shader                              shader for current view red borders
+            shader_sprite                       sprite from view shader
 
         :param logger:                          telemetry instance
         """
@@ -417,7 +427,15 @@ class View:
         self.all_notifications_enabled = True
 
     def on_update_opacity(self, new_opacity):
+        """
+        Updates view opacity with given value.
+
+        :param new_opacity:                     new opacity value
+        """
         pass
 
     def on_update_sprite_opacity(self):
+        """
+        Applies new opacity value to all sprites and labels.
+        """
         pass

@@ -18,7 +18,7 @@ class ConstructorView(View):
     Implements Constructor view.
     Constructor object is responsible for building new tracks and station environment.
     """
-    def __init__(self):
+    def __init__(self, map_id):
         """
         Button click handlers:
             on_close_constructor                on_click handler for close constructor button
@@ -29,7 +29,7 @@ class ConstructorView(View):
             on_reset_money_target_action        is activated when money target is deactivated by player
 
         Properties:
-            constructor_opacity                                 general opacity of constructor screen
+            map_id                                              ID of the map which this constructor belongs to
             construction_state_matrix                           tracks and environment state storage
             money                                               current amount of money
             close_constructor_button                            CloseConstructorButton object
@@ -43,7 +43,10 @@ class ConstructorView(View):
                                                                 is activated
             money_target_cell_position                          column and row of constructor view cell
                                                                 the target was last activated
+            constructor_view_shader_bottom_limit                bottom edge for shader sprite
+            constructor_view_shader_upper_limit                 upper edge for shader sprite
 
+        :param map_id:                          ID of the map which this constructor belongs to
         """
         def on_close_constructor(button):
             """
@@ -87,9 +90,8 @@ class ConstructorView(View):
             self.controller.on_deactivate_money_target()
             self.controller.parent_controller.parent_controller.on_update_money_target(0)
 
-        self.map_id = None
-        self.on_update_map_id()
-        super().__init__(logger=getLogger(f'root.app.game.map.{self.map_id}.constructor.view'))
+        super().__init__(logger=getLogger(f'root.app.game.map.{map_id}.constructor.view'))
+        self.map_id = map_id
         self.construction_state_matrix = None
         self.money = 0
         self.close_constructor_button = CloseConstructorButton(on_click_action=on_close_constructor)
@@ -161,49 +163,57 @@ class ConstructorView(View):
         for b in self.buttons:
             b.on_deactivate()
 
+    @view_is_active
     def on_update(self):
-        if self.is_activated:
-            remaining_tracks = sorted(list(self.construction_state_matrix[TRACKS].keys()))
-            for j in range(min(len(remaining_tracks), CONSTRUCTOR_VIEW_TRACK_CELLS)):
-                if not self.constructor_cells[TRACKS][j].is_activated:
-                    self.constructor_cells[TRACKS][j].on_activate()
-                    self.constructor_cells[TRACKS][j]\
-                        .on_assign_new_data(remaining_tracks[j],
-                                            self.construction_state_matrix[TRACKS][remaining_tracks[j]])
-                    if self.money_target_activated and self.money_target_cell_position == [TRACKS, j]:
-                        self.constructor_cells[TRACKS][j].on_activate_money_target()
-                    else:
-                        self.constructor_cells[TRACKS][j].on_deactivate_money_target()
+        """
+        Activates constructor cells one by one if not all of them are activated.
+        """
+        remaining_tracks = sorted(list(self.construction_state_matrix[TRACKS].keys()))
+        for j in range(min(len(remaining_tracks), CONSTRUCTOR_VIEW_TRACK_CELLS)):
+            if not self.constructor_cells[TRACKS][j].is_activated:
+                self.constructor_cells[TRACKS][j].on_activate()
+                self.constructor_cells[TRACKS][j]\
+                    .on_assign_new_data(remaining_tracks[j],
+                                        self.construction_state_matrix[TRACKS][remaining_tracks[j]])
+                if self.money_target_activated and self.money_target_cell_position == [TRACKS, j]:
+                    self.constructor_cells[TRACKS][j].on_activate_money_target()
+                else:
+                    self.constructor_cells[TRACKS][j].on_deactivate_money_target()
 
-                    return
+                return
 
-            for j in range(len(remaining_tracks), CONSTRUCTOR_VIEW_TRACK_CELLS):
-                if not self.constructor_cells[TRACKS][j].is_activated:
-                    self.constructor_cells[TRACKS][j].on_activate()
-                    self.constructor_cells[TRACKS][j].on_assign_new_data(0, [])
-                    return
+        for j in range(len(remaining_tracks), CONSTRUCTOR_VIEW_TRACK_CELLS):
+            if not self.constructor_cells[TRACKS][j].is_activated:
+                self.constructor_cells[TRACKS][j].on_activate()
+                self.constructor_cells[TRACKS][j].on_assign_new_data(0, [])
+                return
 
-            remaining_tiers = sorted(list(self.construction_state_matrix[ENVIRONMENT].keys()))
-            for j in range(min(len(remaining_tiers), CONSTRUCTOR_VIEW_ENVIRONMENT_CELLS)):
-                if not self.constructor_cells[ENVIRONMENT][j].is_activated:
-                    self.constructor_cells[ENVIRONMENT][j].on_activate()
-                    self.constructor_cells[ENVIRONMENT][j]\
-                        .on_assign_new_data(remaining_tiers[j],
-                                            self.construction_state_matrix[ENVIRONMENT][remaining_tiers[j]])
-                    if self.money_target_activated and self.money_target_cell_position == [ENVIRONMENT, j]:
-                        self.constructor_cells[ENVIRONMENT][j].on_activate_money_target()
-                    else:
-                        self.constructor_cells[ENVIRONMENT][j].on_deactivate_money_target()
+        remaining_tiers = sorted(list(self.construction_state_matrix[ENVIRONMENT].keys()))
+        for j in range(min(len(remaining_tiers), CONSTRUCTOR_VIEW_ENVIRONMENT_CELLS)):
+            if not self.constructor_cells[ENVIRONMENT][j].is_activated:
+                self.constructor_cells[ENVIRONMENT][j].on_activate()
+                self.constructor_cells[ENVIRONMENT][j]\
+                    .on_assign_new_data(remaining_tiers[j],
+                                        self.construction_state_matrix[ENVIRONMENT][remaining_tiers[j]])
+                if self.money_target_activated and self.money_target_cell_position == [ENVIRONMENT, j]:
+                    self.constructor_cells[ENVIRONMENT][j].on_activate_money_target()
+                else:
+                    self.constructor_cells[ENVIRONMENT][j].on_deactivate_money_target()
 
-                    return
+                return
 
-            for j in range(len(remaining_tiers), CONSTRUCTOR_VIEW_ENVIRONMENT_CELLS):
-                if not self.constructor_cells[ENVIRONMENT][j].is_activated:
-                    self.constructor_cells[ENVIRONMENT][j].on_activate()
-                    self.constructor_cells[ENVIRONMENT][j].on_assign_new_data(0, [])
-                    return
+        for j in range(len(remaining_tiers), CONSTRUCTOR_VIEW_ENVIRONMENT_CELLS):
+            if not self.constructor_cells[ENVIRONMENT][j].is_activated:
+                self.constructor_cells[ENVIRONMENT][j].on_activate()
+                self.constructor_cells[ENVIRONMENT][j].on_assign_new_data(0, [])
+                return
 
     def on_update_opacity(self, new_opacity):
+        """
+        Updates view opacity with given value.
+
+        :param new_opacity:                     new opacity value
+        """
         self.opacity = new_opacity
         self.on_update_sprite_opacity()
         for b in self.buttons:
@@ -216,6 +226,9 @@ class ConstructorView(View):
             self.constructor_cells[ENVIRONMENT][j].on_update_opacity(new_opacity)
 
     def on_update_sprite_opacity(self):
+        """
+        Applies new opacity value to all sprites and labels.
+        """
         if self.opacity <= 0:
             self.shader_sprite.delete()
             self.shader_sprite = None
@@ -474,8 +487,8 @@ class ConstructorView(View):
         self.shader_sprite.draw(GL_QUADS)
         self.shader.clear()
 
-    def on_update_map_id(self):
-        pass
-
     def on_init_graphics(self):
+        """
+        Initializes the view based on saved screen resolution and base offset.
+        """
         self.on_change_screen_resolution(self.screen_resolution)

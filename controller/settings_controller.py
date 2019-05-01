@@ -14,7 +14,7 @@ class SettingsController(Controller):
             navigated_from_main_menu            indicates if settings screen was opened from main menu
             navigated_from_game                 indicates if settings screen was opened from game screen
 
-        :param app:          App controller (parent controller)
+        :param app:                             App controller (parent controller)
         """
         super().__init__(parent_controller=app, logger=getLogger('root.app.settings.controller'))
         self.navigated_from_main_menu = False

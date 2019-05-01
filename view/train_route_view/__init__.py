@@ -8,28 +8,27 @@ class TrainRouteView(View):
     Implements Train route view.
     Train route object is responsible for properties, UI and events related to the train route.
     """
-    def __init__(self, track, train_route):
+    def __init__(self, map_id, track, train_route):
         """
         Properties:
-            none
+            map_id                              ID of the map which this train route belongs to
 
+        :param map_id:                          ID of the map which this train route belongs to
         :param track:                           route track number
         :param train_route:                     route type (e.g. left/right entry/exit)
         """
-        self.map_id = None
-        self.on_update_map_id()
-        super().__init__(logger=getLogger(f'root.app.game.map.{self.map_id}.train_route.{track}.{train_route}.view'))
+        super().__init__(logger=getLogger(f'root.app.game.map.{map_id}.train_route.{track}.{train_route}.view'))
+        self.map_id = map_id
         self.on_init_graphics()
 
-    def on_update(self):
-        pass
-
     def on_update_opacity(self, new_opacity):
+        """
+        Updates view opacity with given value.
+
+        :param new_opacity:                     new opacity value
+        """
         self.opacity = new_opacity
         self.on_update_sprite_opacity()
-
-    def on_update_sprite_opacity(self):
-        pass
 
     @view_is_not_active
     def on_activate(self):
@@ -73,8 +72,8 @@ class TrainRouteView(View):
         self.zoom_factor = zoom_factor
         self.zoom_out_activated = zoom_out_activated
 
-    def on_update_map_id(self):
-        pass
-
     def on_init_graphics(self):
+        """
+        Initializes the view based on saved screen resolution and base offset.
+        """
         self.on_change_screen_resolution(self.screen_resolution)

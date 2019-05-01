@@ -217,6 +217,7 @@ class Button:
         """
         self.is_activated = False
         if instant:
+            self.state = 'normal'
             self.opacity = 0
             self.vertex_list.delete()
             self.vertex_list = None
@@ -322,7 +323,7 @@ class Button:
         :param button:          determines which mouse button was pressed
         :param modifiers:       determines if some modifier key is held down (at the moment we don't use it)
         """
-        self.state = 'normal'
+        self.state = 'hover'
         self.vertex_list.colors = ((*BUTTON_BACKGROUND_RGB[self.state][self.transparent],
                                    BUTTON_BACKGROUND_ALPHA[self.state][self.transparent]
                                    * float(self.opacity) / 255.0) * 4)

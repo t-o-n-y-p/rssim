@@ -9,8 +9,27 @@ from ui.button.close_license_button import CloseLicenseButton
 
 
 class LicenseView(View):
+    """
+    Implements License view.
+    License object is responsible for properties, UI and events related to the license screen.
+    """
     def __init__(self):
+        """
+        Button click handlers:
+            on_close_license                    on_click handler for close license button
+
+        Properties:
+            license_page_control                LicensePageControl object
+            close_license_button                CloseLicenseButton object
+            buttons                             list of all buttons
+
+        """
         def on_close_license(button):
+            """
+            Notifies the controller to deactivate the view.
+
+            :param button:                      button that was clicked
+            """
             self.controller.on_deactivate_view()
 
         super().__init__(logger=getLogger('root.app.main_menu.license.view'))
@@ -23,12 +42,17 @@ class LicenseView(View):
         self.on_init_graphics()
 
     def on_init_graphics(self):
+        """
+        Initializes the view based on saved screen resolution and base offset.
+        """
         self.on_change_screen_resolution(self.screen_resolution)
 
-    def on_update(self):
-        pass
-
     def on_update_opacity(self, new_opacity):
+        """
+        Updates view opacity with given value.
+
+        :param new_opacity:                     new opacity value
+        """
         self.opacity = new_opacity
         self.on_update_sprite_opacity()
         self.license_page_control.on_update_opacity(new_opacity)
@@ -36,6 +60,9 @@ class LicenseView(View):
             b.on_update_opacity(new_opacity)
 
     def on_update_sprite_opacity(self):
+        """
+        Applies new opacity value to all sprites and labels.
+        """
         if self.opacity <= 0:
             self.shader_sprite.delete()
             self.shader_sprite = None

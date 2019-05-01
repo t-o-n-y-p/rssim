@@ -11,8 +11,29 @@ from i18n import I18N_RESOURCES
 
 
 class MainMenuView(View):
+    """
+    Implements MainMenu view.
+    MainMenu object is responsible for properties, UI and events related to the main menu screen.
+    """
     def __init__(self):
+        """
+        Button click handlers:
+            on_create_station                   on_click handler for create station button
+            on_open_license                     on_click handler for open license button
+
+        Properties:
+            create_station_button               CreateStationButton object
+            open_license_button                 OpenLicenseButton object
+            buttons                             list of all buttons
+            create_station_button_label         label from "Create new station" title
+
+        """
         def on_create_station(button):
+            """
+            Performs transition from main menu screen to game screen.
+
+            :param button:                      button that was clicked
+            """
             button.on_deactivate()
             self.controller.on_deactivate_view()
             self.controller.parent_controller.license_to_main_menu_transition_animation.on_deactivate()
@@ -21,6 +42,11 @@ class MainMenuView(View):
             self.controller.parent_controller.on_resume_game()
 
         def on_open_license(button):
+            """
+            Performs transition from main menu screen to license screen.
+
+            :param button:                      button that was clicked
+            """
             button.on_deactivate()
             self.controller.parent_controller.on_open_license()
 
@@ -34,18 +60,26 @@ class MainMenuView(View):
         self.on_init_graphics()
 
     def on_init_graphics(self):
+        """
+        Initializes the view based on saved screen resolution and base offset.
+        """
         self.on_change_screen_resolution(self.screen_resolution)
 
-    def on_update(self):
-        pass
-
     def on_update_opacity(self, new_opacity):
+        """
+        Updates view opacity with given value.
+
+        :param new_opacity:                     new opacity value
+        """
         self.opacity = new_opacity
         self.on_update_sprite_opacity()
         for b in self.buttons:
             b.on_update_opacity(new_opacity)
 
     def on_update_sprite_opacity(self):
+        """
+        Applies new opacity value to all sprites and labels.
+        """
         if self.opacity <= 0:
             self.shader_sprite.delete()
             self.shader_sprite = None

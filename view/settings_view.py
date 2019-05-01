@@ -31,6 +31,7 @@ class SettingsView(View):
         Action handlers for controls:
             on_update_windowed_resolution_state     is activated when player changes screen resolution inside control
             on_update_display_fps_state             is activated when player turns FPS on/off
+            on_update_fade_animations_state         is activated when player turns fade animations on/off
             on_update_level_up_notifications_state
                                             is activated when player turns level up notifications on/off
             on_update_feature_unlocked_notifications_state
@@ -43,7 +44,9 @@ class SettingsView(View):
         Properties:
             temp_windowed_resolution            windowed resolution selected by player
             temp_display_fps                    display_fps flag value selected by player
+            temp_fade_animations_enabled        fade_animations_enabled flag value selected by player
             display_fps_checkbox                DisplayFPSCheckbox object
+            fade_animations_checkbox            FadeAnimationsEnabledCheckbox object
             temp_level_up_notification_enabled
                                             level_up_notification_enabled flag value selected by player
             temp_feature_unlocked_notification_enabled
@@ -171,21 +174,20 @@ class SettingsView(View):
                                       possible_values_list=self.available_windowed_resolutions,
                                       on_update_state_action=on_update_windowed_resolution_state)
         self.accept_settings_button = AcceptSettingsButton(on_click_action=on_accept_changes)
-        self.buttons.append(self.accept_settings_button)
         self.reject_settings_button = RejectSettingsButton(on_click_action=on_reject_changes)
-        self.buttons.append(self.reject_settings_button)
-        self.buttons.extend(self.screen_resolution_control.buttons)
-        self.buttons.extend(self.display_fps_checkbox.buttons)
-        self.buttons.extend(self.fade_animations_checkbox.buttons)
-        self.buttons.extend(self.notifications_checkbox_group.buttons)
+        self.buttons = [self.accept_settings_button, self.reject_settings_button,
+                        *self.screen_resolution_control.buttons, *self.display_fps_checkbox.buttons,
+                        *self.fade_animations_checkbox.buttons, *self.notifications_checkbox_group.buttons]
         self.shader = from_files_names('shaders/shader.vert', 'shaders/settings_view/shader.frag')
         self.shader_sprite = None
         self.on_init_graphics()
 
-    def on_update(self):
-        pass
-
     def on_update_opacity(self, new_opacity):
+        """
+        Updates view opacity with given value.
+
+        :param new_opacity:                     new opacity value
+        """
         self.opacity = new_opacity
         self.on_update_sprite_opacity()
         self.screen_resolution_control.on_update_opacity(new_opacity)
@@ -196,6 +198,9 @@ class SettingsView(View):
             b.on_update_opacity(new_opacity)
 
     def on_update_sprite_opacity(self):
+        """
+        Applies new opacity value to all sprites and labels.
+        """
         if self.opacity <= 0:
             self.shader_sprite.delete()
             self.shader_sprite = None
@@ -311,4 +316,7 @@ class SettingsView(View):
         self.shader.clear()
 
     def on_init_graphics(self):
+        """
+        Initializes the view based on saved screen resolution and base offset.
+        """
         self.on_change_screen_resolution(self.screen_resolution)
