@@ -52,7 +52,7 @@ class AppModel(Model):
         self.view.on_activate()
         if self.fullscreen_mode:
             self.view.restore_button.on_activate()
-        else:
+        elif self.fullscreen_mode_available:
             self.view.fullscreen_button.on_activate()
 
     @fullscreen_mode_available
