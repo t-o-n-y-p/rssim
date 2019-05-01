@@ -150,9 +150,9 @@ class MapView(View):
         self.mini_map_frame_position = (0, 0)
         self.mini_map_frame_width = 0
         self.mini_map_frame_height = 0
-        self.base_offset_lower_left_limit = (0, 0)
+        self.base_offset_lower_left_limit = (0, self.bottom_bar_height)
         self.base_offset_upper_right_limit = (self.screen_resolution[0] - MAP_WIDTH,
-                                              self.screen_resolution[1] - MAP_HEIGHT)
+                                              self.screen_resolution[1] - MAP_HEIGHT - self.top_bar_height)
         self.zoom_in_button, self.zoom_out_button \
             = create_two_state_button(ZoomInButton(on_click_action=on_click_zoom_in_button,
                                                    on_hover_action=on_hover_action,
@@ -379,10 +379,12 @@ class MapView(View):
             self.check_base_offset_limits()
             self.mini_map_frame_position = (ceil(-self.base_offset[0] / (MAP_WIDTH // 2) * self.mini_map_width)
                                             + self.mini_map_position[0],
-                                            ceil(-self.base_offset[1] / (MAP_HEIGHT // 2) * self.mini_map_height)
+                                            ceil((self.bottom_bar_height - self.base_offset[1]) / (MAP_HEIGHT // 2)
+                                                 * self.mini_map_height)
                                             + self.mini_map_position[1])
             self.mini_map_frame_width = int(self.screen_resolution[0] / (MAP_WIDTH // 2) * self.mini_map_width)
-            self.mini_map_frame_height = int(self.screen_resolution[1] / (MAP_HEIGHT // 2) * self.mini_map_height)
+            self.mini_map_frame_height = int((self.screen_resolution[1] - self.bottom_bar_height - self.top_bar_height)
+                                             / (MAP_HEIGHT // 2) * self.mini_map_height)
         else:
             self.base_offset_upper_right_limit = (self.screen_resolution[0] - MAP_WIDTH,
                                                   self.screen_resolution[1] - MAP_HEIGHT)
@@ -391,10 +393,12 @@ class MapView(View):
             self.check_base_offset_limits()
             self.mini_map_frame_position = (ceil(-self.base_offset[0] / MAP_WIDTH * self.mini_map_width)
                                             + self.mini_map_position[0],
-                                            ceil(-self.base_offset[1] / MAP_HEIGHT * self.mini_map_height)
+                                            ceil((self.bottom_bar_height - self.base_offset[1]) / MAP_HEIGHT
+                                                 * self.mini_map_height)
                                             + self.mini_map_position[1])
             self.mini_map_frame_width = int(self.screen_resolution[0] / MAP_WIDTH * self.mini_map_width)
-            self.mini_map_frame_height = int(self.screen_resolution[1] / MAP_HEIGHT * self.mini_map_height)
+            self.mini_map_frame_height = int((self.screen_resolution[1] - self.bottom_bar_height - self.top_bar_height)
+                                             / MAP_HEIGHT * self.mini_map_height)
 
         self.controller.on_save_and_commit_last_known_base_offset(self.base_offset)
 
@@ -404,18 +408,19 @@ class MapView(View):
 
         :param screen_resolution:       new screen resolution
         """
-        if self.zoom_out_activated:
-            self.base_offset_upper_right_limit = (screen_resolution[0] - MAP_WIDTH // 2,
-                                                  screen_resolution[1] - MAP_HEIGHT // 2)
-        else:
-            self.base_offset_upper_right_limit = (screen_resolution[0] - MAP_WIDTH,
-                                                  screen_resolution[1] - MAP_HEIGHT)
-
         self.base_offset = (self.base_offset[0] + (screen_resolution[0] - self.screen_resolution[0]) // 2,
                             self.base_offset[1] + (screen_resolution[1] - self.screen_resolution[1]) // 2)
+        self.on_recalculate_ui_properties(screen_resolution)
+        self.base_offset_lower_left_limit = (0, self.bottom_bar_height)
+        if self.zoom_out_activated:
+            self.base_offset_upper_right_limit = (self.screen_resolution[0] - MAP_WIDTH // 2,
+                                                  self.screen_resolution[1] - MAP_HEIGHT // 2 - self.top_bar_height)
+        else:
+            self.base_offset_upper_right_limit = (self.screen_resolution[0] - MAP_WIDTH,
+                                                  self.screen_resolution[1] - MAP_HEIGHT - self.top_bar_height)
+
         self.check_base_offset_limits()
         self.controller.on_save_and_commit_last_known_base_offset(self.base_offset)
-        self.on_recalculate_ui_properties(screen_resolution)
         self.map_view_shader_bottom_limit = self.bottom_bar_height / self.screen_resolution[1] * 2 - 1
         self.map_view_shader_upper_limit = 1 - self.top_bar_height / self.screen_resolution[1] * 2
         if self.is_activated:
@@ -430,17 +435,21 @@ class MapView(View):
                                   self.screen_resolution[1] - self.top_bar_height - 6 - self.mini_map_height)
         if self.zoom_out_activated:
             self.mini_map_frame_width = int(self.screen_resolution[0] / (MAP_WIDTH // 2) * self.mini_map_width)
-            self.mini_map_frame_height = int(self.screen_resolution[1] / (MAP_HEIGHT // 2) * self.mini_map_height)
+            self.mini_map_frame_height = int((self.screen_resolution[1] - self.bottom_bar_height - self.top_bar_height)
+                                             / (MAP_HEIGHT // 2) * self.mini_map_height)
             self.mini_map_frame_position = (ceil(-self.base_offset[0] / (MAP_WIDTH // 2) * self.mini_map_width)
                                             + self.mini_map_position[0],
-                                            ceil(-self.base_offset[1] / (MAP_HEIGHT // 2) * self.mini_map_height)
+                                            ceil((self.bottom_bar_height - self.base_offset[1]) / (MAP_HEIGHT // 2)
+                                                 * self.mini_map_height)
                                             + self.mini_map_position[1])
         else:
             self.mini_map_frame_width = int(self.screen_resolution[0] / MAP_WIDTH * self.mini_map_width)
-            self.mini_map_frame_height = int(self.screen_resolution[1] / MAP_HEIGHT * self.mini_map_height)
+            self.mini_map_frame_height = int((self.screen_resolution[1] - self.bottom_bar_height - self.top_bar_height)
+                                             / MAP_HEIGHT * self.mini_map_height)
             self.mini_map_frame_position = (ceil(-self.base_offset[0] / MAP_WIDTH * self.mini_map_width)
                                             + self.mini_map_position[0],
-                                            ceil(-self.base_offset[1] / MAP_HEIGHT * self.mini_map_height)
+                                            ceil((self.bottom_bar_height - self.base_offset[1]) / MAP_HEIGHT
+                                                 * self.mini_map_height)
                                             + self.mini_map_position[1])
 
         if self.is_mini_map_activated:
@@ -513,12 +522,14 @@ class MapView(View):
         if self.zoom_out_activated:
             self.mini_map_frame_position = (ceil(-self.base_offset[0] / (MAP_WIDTH // 2) * self.mini_map_width)
                                             + self.mini_map_position[0],
-                                            ceil(-self.base_offset[1] / (MAP_HEIGHT // 2) * self.mini_map_height)
+                                            ceil((self.bottom_bar_height - self.base_offset[1]) / (MAP_HEIGHT // 2)
+                                                 * self.mini_map_height)
                                             + self.mini_map_position[1])
         else:
             self.mini_map_frame_position = (ceil(-self.base_offset[0] / MAP_WIDTH * self.mini_map_width)
                                             + self.mini_map_position[0],
-                                            ceil(-self.base_offset[1] / MAP_HEIGHT * self.mini_map_height)
+                                            ceil((self.bottom_bar_height - self.base_offset[1]) / MAP_HEIGHT
+                                                 * self.mini_map_height)
                                             + self.mini_map_position[1])
 
         self.controller.on_change_base_offset(self.base_offset)
@@ -596,6 +607,14 @@ class MapView(View):
         Initializes the view based on saved screen resolution and base offset.
         """
         self.on_recalculate_ui_properties(self.screen_resolution)
+        self.base_offset_lower_left_limit = (0, self.bottom_bar_height)
+        if self.zoom_out_activated:
+            self.base_offset_upper_right_limit = (self.screen_resolution[0] - MAP_WIDTH // 2,
+                                                  self.screen_resolution[1] - MAP_HEIGHT // 2 - self.top_bar_height)
+        else:
+            self.base_offset_upper_right_limit = (self.screen_resolution[0] - MAP_WIDTH,
+                                                  self.screen_resolution[1] - MAP_HEIGHT - self.top_bar_height)
+
         self.map_view_shader_bottom_limit = self.bottom_bar_height / self.screen_resolution[1] * 2 - 1
         self.map_view_shader_upper_limit = 1 - self.top_bar_height / self.screen_resolution[1] * 2
         self.mini_map_width = self.screen_resolution[0] // 4
@@ -603,22 +622,22 @@ class MapView(View):
         self.mini_map_position = (self.screen_resolution[0] - self.mini_map_width - 8,
                                   self.screen_resolution[1] - self.top_bar_height - 6 - self.mini_map_height)
         if self.zoom_out_activated:
-            self.base_offset_upper_right_limit = (self.screen_resolution[0] - MAP_WIDTH // 2,
-                                                  self.screen_resolution[1] - MAP_HEIGHT // 2)
             self.mini_map_frame_width = int(self.screen_resolution[0] / (MAP_WIDTH // 2) * self.mini_map_width)
-            self.mini_map_frame_height = int(self.screen_resolution[1] / (MAP_HEIGHT // 2) * self.mini_map_height)
+            self.mini_map_frame_height = int((self.screen_resolution[1] - self.bottom_bar_height - self.top_bar_height)
+                                             / (MAP_HEIGHT // 2) * self.mini_map_height)
             self.mini_map_frame_position = (ceil(-self.base_offset[0] / (MAP_WIDTH // 2) * self.mini_map_width)
                                             + self.mini_map_position[0],
-                                            ceil(-self.base_offset[1] / (MAP_HEIGHT // 2) * self.mini_map_height)
+                                            ceil((self.bottom_bar_height - self.base_offset[1]) / (MAP_HEIGHT // 2)
+                                                 * self.mini_map_height)
                                             + self.mini_map_position[1])
         else:
-            self.base_offset_upper_right_limit = (self.screen_resolution[0] - MAP_WIDTH,
-                                                  self.screen_resolution[1] - MAP_HEIGHT)
             self.mini_map_frame_width = int(self.screen_resolution[0] / MAP_WIDTH * self.mini_map_width)
-            self.mini_map_frame_height = int(self.screen_resolution[1] / MAP_HEIGHT * self.mini_map_height)
+            self.mini_map_frame_height = int((self.screen_resolution[1] - self.bottom_bar_height - self.top_bar_height)
+                                             / MAP_HEIGHT * self.mini_map_height)
             self.mini_map_frame_position = (ceil(-self.base_offset[0] / MAP_WIDTH * self.mini_map_width)
                                             + self.mini_map_position[0],
-                                            ceil(-self.base_offset[1] / MAP_HEIGHT * self.mini_map_height)
+                                            ceil((self.bottom_bar_height - self.base_offset[1]) / MAP_HEIGHT
+                                                 * self.mini_map_height)
                                             + self.mini_map_position[1])
 
         self.zoom_in_button.x_margin = 0

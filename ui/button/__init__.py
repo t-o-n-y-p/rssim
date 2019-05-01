@@ -98,7 +98,7 @@ BUTTON_BACKGROUND_RGB = {
 }
 # button background alpha for non-transparent and transparent button
 BUTTON_BACKGROUND_ALPHA = {
-    'normal': {False: 0.97, True: 0.0},
+    'normal': {False: 1.0, True: 0.0},
     'hover': {False: 1.0, True: 0.75},
     'pressed': {False: 1.0, True: 0.75}
 }

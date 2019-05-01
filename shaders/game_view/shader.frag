@@ -58,7 +58,7 @@ void main()
     Calculates color for all possible cases
 */
 {
-    float bottom_bar_opacity = 0.97;
+    float bottom_bar_opacity = 1.0;
     // calculate bottom bar color using game frame opacity
     if (is_inside_bottom_bar_or_bar_border() && game_frame_opacity > 0)
     {
