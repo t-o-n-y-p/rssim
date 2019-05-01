@@ -16,7 +16,7 @@ from ui.button.fullscreen_button import FullscreenButton
 from ui.button.restore_button import RestoreButton
 from ui.button.en_locale_button import ENLocaleButton
 from ui.button.ru_locale_button import RULocaleButton
-from textures import FLAG_RU, FLAG_GB
+from textures import FLAG_RU, FLAG_US
 
 
 class AppView(View):
@@ -36,7 +36,7 @@ class AppView(View):
 
         Properties:
             title_label                         text label for game title
-            flag_gb_sprite                      sprite from US flag for locale button
+            flag_us_sprite                      sprite from US flag for locale button
             flag_ru_sprite                      sprite from RU flag for locale button
             close_game_button                   CloseGameButton object
             iconify_button                      IconifyButton object
@@ -110,7 +110,7 @@ class AppView(View):
 
         super().__init__(logger=getLogger('root.app.view'))
         self.title_label = None
-        self.flag_gb_sprite = None
+        self.flag_us_sprite = None
         self.flag_ru_sprite = None
         self.close_game_button = CloseGameButton(on_click_action=on_close_game)
         self.iconify_button = IconifyButton(on_click_action=on_iconify_game)
@@ -151,15 +151,15 @@ class AppView(View):
         if self.opacity <= 0:
             self.title_label.delete()
             self.title_label = None
-            self.flag_gb_sprite.delete()
-            self.flag_gb_sprite = None
+            self.flag_us_sprite.delete()
+            self.flag_us_sprite = None
             self.flag_ru_sprite.delete()
             self.flag_ru_sprite = None
             self.shader_sprite.delete()
             self.shader_sprite = None
         else:
             self.title_label.color = (*WHITE_RGB, self.opacity)
-            self.flag_gb_sprite.opacity = self.opacity
+            self.flag_us_sprite.opacity = self.opacity
             self.flag_ru_sprite.opacity = self.opacity
 
     @view_is_not_active
@@ -181,19 +181,19 @@ class AppView(View):
                                      anchor_x='left', anchor_y='center', batch=self.batches['ui_batch'],
                                      group=self.groups['button_text'])
 
-        if self.flag_gb_sprite is None:
-            self.flag_gb_sprite = Sprite(FLAG_GB, x=self.top_bar_height // 2,
+        if self.flag_us_sprite is None:
+            self.flag_us_sprite = Sprite(FLAG_US, x=self.top_bar_height // 2,
                                          y=self.screen_resolution[1] - self.top_bar_height // 2,
                                          batch=self.batches['ui_batch'], group=self.groups['button_text'])
-            self.flag_gb_sprite.opacity = self.opacity
-            self.flag_gb_sprite.scale = 0.6 * self.top_bar_height / 256.0
+            self.flag_us_sprite.opacity = self.opacity
+            self.flag_us_sprite.scale = 0.6 * self.top_bar_height / float(FLAG_US.width)
 
         if self.flag_ru_sprite is None:
             self.flag_ru_sprite = Sprite(FLAG_RU, x=self.top_bar_height - 2 + self.top_bar_height // 2,
                                          y=self.screen_resolution[1] - self.top_bar_height // 2,
                                          batch=self.batches['ui_batch'], group=self.groups['button_text'])
             self.flag_ru_sprite.opacity = self.opacity
-            self.flag_ru_sprite.scale = 0.6 * self.top_bar_height / 256.0
+            self.flag_ru_sprite.scale = 0.6 * self.top_bar_height / float(FLAG_US.width)
 
         for b in self.buttons:
             if b.to_activate_on_controller_init:
@@ -220,12 +220,12 @@ class AppView(View):
             self.title_label.x = self.top_bar_height * 2 + self.top_bar_height // 4
             self.title_label.y = self.screen_resolution[1] - self.top_bar_height // 2
             self.title_label.font_size = int(16 / 40 * self.top_bar_height)
-            self.flag_gb_sprite.position = (self.top_bar_height // 2,
+            self.flag_us_sprite.position = (self.top_bar_height // 2,
                                             self.screen_resolution[1] - self.top_bar_height // 2)
-            self.flag_gb_sprite.scale = 0.6 * self.top_bar_height / 256
+            self.flag_us_sprite.scale = 0.6 * self.top_bar_height / float(FLAG_US.width)
             self.flag_ru_sprite.position = (self.top_bar_height // 2 + self.top_bar_height - 2,
                                             self.screen_resolution[1] - self.top_bar_height // 2)
-            self.flag_ru_sprite.scale = 0.6 * self.top_bar_height / 256
+            self.flag_ru_sprite.scale = 0.6 * self.top_bar_height / float(FLAG_RU.width)
 
         self.close_game_button.x_margin = self.screen_resolution[0] - self.top_bar_height
         self.close_game_button.y_margin = self.screen_resolution[1] - self.top_bar_height

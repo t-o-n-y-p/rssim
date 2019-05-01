@@ -66,12 +66,12 @@ GREEN_SIGNAL_IMAGE.anchor_y = 4
 
 # textures for localization buttons in the top left corner
 _flags = _resource.texture('flags.dds')
-FLAG_GB = _flags.get_region(0, 0, 256, 256)
-FLAG_RU = _flags.get_region(256, 0, 256, 256)
-FLAG_GB.anchor_x = 128
-FLAG_GB.anchor_y = 128
-FLAG_RU.anchor_x = 128
-FLAG_RU.anchor_y = 128
+FLAG_US = _flags.get_region(0, 0, 128, 128)
+FLAG_RU = _flags.get_region(128, 0, 128, 128)
+FLAG_US.anchor_x = FLAG_US.width // 2
+FLAG_US.anchor_y = FLAG_US.height // 2
+FLAG_RU.anchor_x = FLAG_RU.width // 2
+FLAG_RU.anchor_y = FLAG_RU.height // 2
 
 # textures for switches in crossovers in straight and diverging state
 SWITCHES_STRAIGHT = _resource.texture('switches_straight.dds')
