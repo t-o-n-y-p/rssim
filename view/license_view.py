@@ -92,6 +92,7 @@ class LicenseView(View):
         self.license_page_control.on_deactivate()
         for b in self.buttons:
             b.on_deactivate()
+            b.state = 'normal'
 
     def on_change_screen_resolution(self, screen_resolution):
         """

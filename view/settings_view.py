@@ -9,6 +9,7 @@ from ui.button.reject_settings_button import RejectSettingsButton
 from ui.settings.enum_value_control.screen_resolution_control import ScreenResolutionControl
 from ui.settings.checkbox.display_fps_checkbox import DisplayFPSCheckbox
 from ui.settings.checkbox.fade_animations_enabled_checkbox import FadeAnimationsEnabledCheckbox
+from ui.settings.checkbox.clock_24h_checkbox import Clock24HCheckbox
 from ui.settings.checkbox_group.notifications_checkbox_group import NotificationsCheckboxGroup
 
 
@@ -32,6 +33,7 @@ class SettingsView(View):
             on_update_windowed_resolution_state     is activated when player changes screen resolution inside control
             on_update_display_fps_state             is activated when player turns FPS on/off
             on_update_fade_animations_state         is activated when player turns fade animations on/off
+            on_update_clock_24h_state               is activated when player turns 24h clock on/off
             on_update_level_up_notifications_state
                                             is activated when player turns level up notifications on/off
             on_update_feature_unlocked_notifications_state
@@ -45,8 +47,10 @@ class SettingsView(View):
             temp_windowed_resolution            windowed resolution selected by player
             temp_display_fps                    display_fps flag value selected by player
             temp_fade_animations_enabled        fade_animations_enabled flag value selected by player
+            temp_clock_24h_enabled              clock_24h_enabled flag value selected by player
             display_fps_checkbox                DisplayFPSCheckbox object
             fade_animations_checkbox            FadeAnimationsEnabledCheckbox object
+            clock_24h_checkbox                  Clock24HCheckbox object
             temp_level_up_notification_enabled
                                             level_up_notification_enabled flag value selected by player
             temp_feature_unlocked_notification_enabled
@@ -108,6 +112,14 @@ class SettingsView(View):
             """
             self.temp_fade_animations_enabled = new_state
 
+        def on_update_clock_24h_state(new_state):
+            """
+            Updates temp_clock_24h_enabled flag value when player uses corresponding checkbox.
+
+            :param new_state:                   new flag value
+            """
+            self.temp_clock_24h_enabled = new_state
+
         def on_update_level_up_notifications_state(new_state):
             """
             Updates temp_level_up_notification_enabled flag value
@@ -148,10 +160,12 @@ class SettingsView(View):
         self.temp_windowed_resolution = (0, 0)
         self.temp_display_fps = False
         self.temp_fade_animations_enabled = False
+        self.temp_clock_24h_enabled = False
         self.display_fps_checkbox \
-            = DisplayFPSCheckbox(-1, -2, on_update_state_action=on_update_display_fps_state)
+            = DisplayFPSCheckbox(-1, -1, on_update_state_action=on_update_display_fps_state)
         self.fade_animations_checkbox \
-            = FadeAnimationsEnabledCheckbox(-1, -4, on_update_state_action=on_update_fade_animations_state)
+            = FadeAnimationsEnabledCheckbox(-1, -3, on_update_state_action=on_update_fade_animations_state)
+        self.clock_24h_checkbox = Clock24HCheckbox(-1, -5, on_update_state_action=on_update_clock_24h_state)
         self.temp_level_up_notification_enabled = False
         self.temp_feature_unlocked_notification_enabled = False
         self.temp_construction_completed_notification_enabled = False
@@ -169,13 +183,14 @@ class SettingsView(View):
         self.available_windowed_resolutions = self.config_db_cursor.fetchall()
         self.available_windowed_resolutions_position = 0
         self.screen_resolution_control \
-            = ScreenResolutionControl(-1, 4, possible_values_list=self.available_windowed_resolutions,
+            = ScreenResolutionControl(-1, 5, possible_values_list=self.available_windowed_resolutions,
                                       on_update_state_action=on_update_windowed_resolution_state)
         self.accept_settings_button = AcceptSettingsButton(on_click_action=on_accept_changes)
         self.reject_settings_button = RejectSettingsButton(on_click_action=on_reject_changes)
         self.buttons = [self.accept_settings_button, self.reject_settings_button,
                         *self.screen_resolution_control.buttons, *self.display_fps_checkbox.buttons,
-                        *self.fade_animations_checkbox.buttons, *self.notifications_checkbox_group.buttons]
+                        *self.fade_animations_checkbox.buttons, *self.clock_24h_checkbox.buttons,
+                        *self.notifications_checkbox_group.buttons]
         self.shader = from_files_names('shaders/shader.vert', 'shaders/settings_view/shader.frag')
         self.shader_sprite = None
         self.on_init_graphics()
@@ -191,6 +206,7 @@ class SettingsView(View):
         self.screen_resolution_control.on_update_opacity(new_opacity)
         self.display_fps_checkbox.on_update_opacity(new_opacity)
         self.fade_animations_checkbox.on_update_opacity(new_opacity)
+        self.clock_24h_checkbox.on_update_opacity(new_opacity)
         self.notifications_checkbox_group.on_update_opacity(new_opacity)
         for b in self.buttons:
             b.on_update_opacity(new_opacity)
@@ -215,6 +231,8 @@ class SettingsView(View):
         self.display_fps_checkbox.on_init_state(self.temp_display_fps)
         self.fade_animations_checkbox.on_activate()
         self.fade_animations_checkbox.on_init_state(self.temp_fade_animations_enabled)
+        self.clock_24h_checkbox.on_activate()
+        self.clock_24h_checkbox.on_init_state(self.temp_clock_24h_enabled)
         self.notifications_checkbox_group.on_activate()
         self.notifications_checkbox_group.on_init_state([self.temp_level_up_notification_enabled,
                                                          self.temp_feature_unlocked_notification_enabled,
@@ -238,9 +256,11 @@ class SettingsView(View):
         self.screen_resolution_control.on_deactivate()
         self.display_fps_checkbox.on_deactivate()
         self.fade_animations_checkbox.on_deactivate()
+        self.clock_24h_checkbox.on_deactivate()
         self.notifications_checkbox_group.on_deactivate()
         for b in self.buttons:
             b.on_deactivate()
+            b.state = 'normal'
 
     def on_change_screen_resolution(self, screen_resolution):
         """
@@ -252,6 +272,7 @@ class SettingsView(View):
         self.screen_resolution_control.on_change_screen_resolution(screen_resolution)
         self.display_fps_checkbox.on_change_screen_resolution(screen_resolution)
         self.fade_animations_checkbox.on_change_screen_resolution(screen_resolution)
+        self.clock_24h_checkbox.on_change_screen_resolution(screen_resolution)
         self.notifications_checkbox_group.on_change_screen_resolution(screen_resolution)
         self.accept_settings_button.x_margin = self.screen_resolution[0] - self.bottom_bar_height * 2 + 2
         self.accept_settings_button.y_margin = 0
@@ -283,6 +304,7 @@ class SettingsView(View):
         self.screen_resolution_control.on_update_current_locale(new_locale)
         self.display_fps_checkbox.on_update_current_locale(new_locale)
         self.fade_animations_checkbox.on_update_current_locale(new_locale)
+        self.clock_24h_checkbox.on_update_current_locale(new_locale)
         self.notifications_checkbox_group.on_update_current_locale(new_locale)
 
     @shader_sprite_exists

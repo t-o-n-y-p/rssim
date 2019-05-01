@@ -120,6 +120,7 @@ class SchedulerView(View):
 
         for b in self.buttons:
             b.on_deactivate()
+            b.state = 'normal'
 
     @view_is_active
     def on_update(self):

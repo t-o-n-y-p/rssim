@@ -17,12 +17,12 @@
 layout(pixel_center_integer) in vec4 gl_FragCoord;
 out vec4 color_frag;
 uniform int settings_opacity = 0;
-uniform int is_button_activated[16];
-uniform int button_x[16];
-uniform int button_y[16];
-uniform int button_w[16];
-uniform int button_h[16];
-uniform int number_of_buttons = 16;
+uniform int is_button_activated[18];
+uniform int button_x[18];
+uniform int button_y[18];
+uniform int button_w[18];
+uniform int button_h[18];
+uniform int number_of_buttons = 18;
 
 bool is_button_border()
 /*

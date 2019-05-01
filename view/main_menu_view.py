@@ -120,6 +120,7 @@ class MainMenuView(View):
         self.is_activated = False
         for b in self.buttons:
             b.on_deactivate()
+            b.state = 'normal'
 
     def on_change_screen_resolution(self, screen_resolution):
         """

@@ -107,6 +107,10 @@
 		"en": "Navigation animations",
 		"ru": "Анимированная навигация"
 	},
+	"clock_24h_enabled_description_string": {
+		"en": "24-hour time format",
+		"ru": "24-часовой формат времени"
+	},
 	"level_up_notification_caption_string": {
 		"en": "Level up",
 		"ru": "Новый уровень"

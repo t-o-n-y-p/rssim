@@ -109,3 +109,11 @@ class SettingsController(Controller):
         """
         self.fade_in_animation.on_update_fade_animation_state(new_state)
         self.fade_out_animation.on_update_fade_animation_state(new_state)
+
+    def on_update_clock_state(self, clock_24h_enabled):
+        """
+        Notifies the model about clock state update.
+
+        :param clock_24h_enabled:               indicates if 24h clock is enabled
+        """
+        self.model.on_update_clock_state(clock_24h_enabled)

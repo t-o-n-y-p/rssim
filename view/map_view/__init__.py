@@ -305,6 +305,7 @@ class MapView(View):
         self.is_mini_map_activated = False
         for b in self.buttons:
             b.on_deactivate()
+            b.state = 'normal'
 
     def on_change_base_offset(self, new_base_offset):
         """

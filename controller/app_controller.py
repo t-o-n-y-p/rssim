@@ -217,6 +217,7 @@ class AppController(Controller):
         """
         self.model.on_save_and_commit_clock_state(clock_24h_enabled)
         self.game.on_update_clock_state(clock_24h_enabled)
+        self.settings.on_update_clock_state(clock_24h_enabled)
 
     def on_disable_notifications(self):
         """
