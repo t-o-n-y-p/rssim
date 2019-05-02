@@ -373,7 +373,7 @@ class MapView(View):
 
         if self.zoom_out_activated:
             self.base_offset_upper_right_limit = (self.screen_resolution[0] - MAP_WIDTH // 2,
-                                                  self.screen_resolution[1] - MAP_HEIGHT // 2)
+                                                  self.screen_resolution[1] - MAP_HEIGHT // 2 - self.top_bar_height)
             self.base_offset = (self.base_offset[0] // 2 + self.screen_resolution[0] // 4,
                                 self.base_offset[1] // 2 + self.screen_resolution[1] // 4)
             self.check_base_offset_limits()
@@ -387,7 +387,7 @@ class MapView(View):
                                              / (MAP_HEIGHT // 2) * self.mini_map_height)
         else:
             self.base_offset_upper_right_limit = (self.screen_resolution[0] - MAP_WIDTH,
-                                                  self.screen_resolution[1] - MAP_HEIGHT)
+                                                  self.screen_resolution[1] - MAP_HEIGHT - self.top_bar_height)
             self.base_offset = (self.base_offset[0] * 2 - self.screen_resolution[0] // 2,
                                 self.base_offset[1] * 2 - self.screen_resolution[1] // 2)
             self.check_base_offset_limits()
