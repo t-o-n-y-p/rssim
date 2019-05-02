@@ -2,7 +2,7 @@ from pyglet import resource as _resource
 
 
 CAR_COLLECTIONS = 12
-_resource.path = ['font', 'img', 'img/textures_pack_1.zip', 'img/textures_pack_2.zip']
+_resource.path = ['font', 'img', 'img/textures.zip']
 _resource.reindex()
 _cars_texture = _resource.texture('cars_in_one.dds')
 
