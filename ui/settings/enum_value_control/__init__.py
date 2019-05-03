@@ -139,11 +139,13 @@ class EnumValueControl:
             self.decrement_button.on_activate()
         else:
             self.decrement_button.on_deactivate(instant=True)
+            self.decrement_button.state = 'normal'
 
         if self.choice_state < len(self.possible_values_list) - 1:
             self.increment_button.on_activate()
         else:
             self.increment_button.on_deactivate(instant=True)
+            self.decrement_button.state = 'normal'
 
     def on_change_screen_resolution(self, screen_resolution):
         """

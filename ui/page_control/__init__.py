@@ -148,11 +148,13 @@ class PageControl:
         """
         if self.current_page == 0:
             self.previous_page_button.on_deactivate(instant=True)
+            self.previous_page_button.state = 'normal'
         else:
             self.previous_page_button.on_activate(instant=True)
 
         if self.current_page == len(self.pages) - 1:
             self.next_page_button.on_deactivate(instant=True)
+            self.next_page_button.state = 'normal'
         else:
             self.next_page_button.on_activate(instant=True)
 
