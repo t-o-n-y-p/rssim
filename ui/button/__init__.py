@@ -217,7 +217,6 @@ class Button:
         """
         self.is_activated = False
         if instant:
-            self.state = 'normal'
             self.opacity = 0
             self.vertex_list.delete()
             self.vertex_list = None
