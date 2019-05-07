@@ -8,7 +8,7 @@ class CxFreezeLicensePage(LicensePage):
     Implements license page for cx_Freeze license.
     """
     def __init__(self):
-        super().__init__(logger=getLogger('root.app.main_menu.license.view.cx_freeze_license_page'))
+        super().__init__(logger=getLogger('root.app.license.view.cx_freeze_license_page'))
         self.license_text = '''cx_Freeze
 ================================================
 Copyright © 2007-2017, Anthony Tuininga.

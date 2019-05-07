@@ -17,7 +17,7 @@ class LicensePageControl(PageControl):
             on_mouse_scroll_handlers            list of on_mouse_scroll handlers from license pages
 
         """
-        super().__init__(logger=getLogger('root.app.main_menu.license.view.license_page_control'))
+        super().__init__(logger=getLogger('root.app.license.view.license_page_control'))
         self.pages = [PygletLicensePage(), PyshadersLicensePage(), Pywin32LicensePage(), CxFreezeLicensePage()]
         self.on_mouse_scroll_handlers = []
         for p in self.pages:

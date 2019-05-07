@@ -8,7 +8,7 @@ class PyshadersLicensePage(LicensePage):
     Implements license page for pyshaders license.
     """
     def __init__(self):
-        super().__init__(logger=getLogger('root.app.main_menu.license.view.pyshaders_license_page'))
+        super().__init__(logger=getLogger('root.app.license.view.pyshaders_license_page'))
         self.license_text = '''pyshaders
 ================================================
 Copyright (c) 2016 Gabriel Dubé

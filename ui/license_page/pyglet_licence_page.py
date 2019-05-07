@@ -8,7 +8,7 @@ class PygletLicensePage(LicensePage):
     Implements license page for pyglet license.
     """
     def __init__(self):
-        super().__init__(logger=getLogger('root.app.main_menu.license.view.pyglet_license_page'))
+        super().__init__(logger=getLogger('root.app.license.view.pyglet_license_page'))
         self.license_text = '''pyglet
 ================================================
 Copyright (c) 2006-2008 Alex Holkner
