@@ -3,16 +3,12 @@ from logging import getLogger
 from controller import *
 
 
-class LicenseController(Controller):
-    """
-    Implements License controller.
-    License object is responsible for properties, UI and events related to the license screen.
-    """
+class OnboardingController(Controller):
     def __init__(self, app):
         """
         :param app:                     App controller (parent controller)
         """
-        super().__init__(parent_controller=app, logger=getLogger('root.app.license.controller'))
+        super().__init__(parent_controller=app, logger=getLogger('root.app.onboarding.controller'))
 
     def on_update_view(self):
         """
@@ -25,7 +21,7 @@ class LicenseController(Controller):
     @controller_is_not_active
     def on_activate(self):
         """
-        Activates License object: controller and model. Model activates the view if necessary.
+        Activates Onboarding object: controller and model. Model activates the view if necessary.
         """
         self.is_activated = True
         self.model.on_activate()
@@ -33,7 +29,7 @@ class LicenseController(Controller):
     @controller_is_active
     def on_deactivate(self):
         """
-        Deactivates License object: controller, view and model.
+        Deactivates Onboarding object: controller, view and model.
         """
         self.is_activated = False
         self.model.on_deactivate()
@@ -57,16 +53,16 @@ class LicenseController(Controller):
 
     def on_activate_view(self):
         """
-        Activates the view if user opened license screen in the app.
+        Activates the view if user opened onboarding screen in the app.
         """
         self.model.on_activate_view()
 
     def on_deactivate_view(self):
         """
-        Deactivates the view and all child views if user closed license screen.
+        Deactivates the view if user closed onboarding screen.
         """
         self.view.on_deactivate()
-        self.parent_controller.on_close_license()
+        self.parent_controller.on_close_onboarding()
 
     def on_apply_shaders_and_draw_vertices(self):
         """

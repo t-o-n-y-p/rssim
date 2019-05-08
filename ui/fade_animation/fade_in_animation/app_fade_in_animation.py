@@ -13,6 +13,7 @@ class AppFadeInAnimation(FadeInAnimation):
         Properties:
             main_menu_fade_in_animation         fade-in animation for main menu view
             license_fade_in_animation           fade-in animation for license view
+            onboarding_fade_in_animation        fade-in animation for onbosrding view
             game_fade_in_animation              fade-in animation for game view
             settings_fade_in_animation          fade-in animation for settings view
             fps_fade_in_animation               fade-in animation for FPS view
@@ -22,6 +23,7 @@ class AppFadeInAnimation(FadeInAnimation):
         super().__init__(animation_object=app_controller, logger=getLogger('root.app.fade_in_animation'))
         self.main_menu_fade_in_animation = None
         self.license_fade_in_animation = None
+        self.onboarding_fade_in_animation = None
         self.game_fade_in_animation = None
         self.settings_fade_in_animation = None
         self.fps_fade_in_animation = None

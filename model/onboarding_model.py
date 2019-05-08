@@ -3,13 +3,9 @@ from logging import getLogger
 from model import *
 
 
-class LicenseModel(Model):
-    """
-    Implements License model.
-    License object is responsible for properties, UI and events related to the license screen.
-    """
+class OnboardingModel(Model):
     def __init__(self):
-        super().__init__(logger=getLogger('root.app.license.model'))
+        super().__init__(logger=getLogger('root.app.onboarding.model'))
 
     @model_is_not_active
     def on_activate(self):

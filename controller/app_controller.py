@@ -14,6 +14,7 @@ class AppController(Controller):
         Properties:
             loader                      RSSim class instance
             main_menu                   MainMenu object controller
+            onboarding                  Onboarding object controller
             license                     License object controller
             game                        Game object controller
             settings                    Settings object controller
@@ -36,16 +37,19 @@ class AppController(Controller):
         super().__init__(logger=getLogger('root.app.controller'))
         self.loader = loader
         self.main_menu = None
+        self.onboarding = None
         self.license = None
         self.game = None
         self.settings = None
         self.fps = None
         self.main_menu_to_game_transition_animation = None
+        self.main_menu_to_onboarding_transition_animation = None
         self.game_to_main_menu_transition_animation = None
         self.main_menu_to_license_transition_animation = None
         self.license_to_main_menu_transition_animation = None
         self.game_to_settings_transition_animation = None
         self.settings_to_game_transition_animation = None
+        self.onboarding_to_game_transition_animation = None
 
     def on_update_view(self):
         """
@@ -60,8 +64,11 @@ class AppController(Controller):
         self.license_to_main_menu_transition_animation.on_update()
         self.game_to_settings_transition_animation.on_update()
         self.settings_to_game_transition_animation.on_update()
+        self.main_menu_to_onboarding_transition_animation.on_update()
+        self.onboarding_to_game_transition_animation.on_update()
         self.license.on_update_view()
         self.main_menu.on_update_view()
+        self.onboarding.on_update_view()
         self.game.on_update_view()
         self.settings.on_update_view()
         self.fps.on_update_view()
@@ -89,6 +96,7 @@ class AppController(Controller):
         self.model.on_deactivate()
         self.view.on_deactivate()
         self.main_menu.on_deactivate()
+        self.onboarding.on_deactivate()
         self.license.on_deactivate()
         self.game.on_deactivate()
         self.settings.on_deactivate()
@@ -136,6 +144,7 @@ class AppController(Controller):
         """
         self.view.on_change_screen_resolution(screen_resolution)
         self.main_menu.on_change_screen_resolution(screen_resolution)
+        self.onboarding.on_change_screen_resolution(screen_resolution)
         self.license.on_change_screen_resolution(screen_resolution)
         self.game.on_change_screen_resolution(screen_resolution)
         self.settings.on_change_screen_resolution(screen_resolution)
@@ -191,6 +200,7 @@ class AppController(Controller):
         """
         self.view.on_apply_shaders_and_draw_vertices()
         self.main_menu.on_apply_shaders_and_draw_vertices()
+        self.onboarding.on_apply_shaders_and_draw_vertices()
         self.license.on_apply_shaders_and_draw_vertices()
         self.settings.on_apply_shaders_and_draw_vertices()
         self.game.on_apply_shaders_and_draw_vertices()
@@ -204,6 +214,7 @@ class AppController(Controller):
         self.model.on_save_and_commit_locale(new_locale)
         self.view.on_update_current_locale(new_locale)
         self.main_menu.on_update_current_locale(new_locale)
+        self.onboarding.on_update_current_locale(new_locale)
         self.license.on_update_current_locale(new_locale)
         self.game.on_update_current_locale(new_locale)
         self.settings.on_update_current_locale(new_locale)
@@ -300,6 +311,23 @@ class AppController(Controller):
         self.main_menu_to_license_transition_animation.on_deactivate()
         self.license_to_main_menu_transition_animation.on_activate()
 
+    def on_open_onboarding(self):
+        """
+        Performs transition from main menu screen to onboarding screen.
+        """
+        self.main_menu.on_deactivate_view()
+        self.game_to_main_menu_transition_animation.on_deactivate()
+        self.license_to_main_menu_transition_animation.on_deactivate()
+        self.main_menu_to_onboarding_transition_animation.on_activate()
+
+    def on_close_onboarding(self):
+        """
+        Performs transition from onboarding screen to game screen.
+        """
+        self.settings_to_game_transition_animation.on_deactivate()
+        self.main_menu_to_game_transition_animation.on_deactivate()
+        self.onboarding_to_game_transition_animation.on_activate()
+
     def on_update_fade_animation_state(self, new_state):
         """
         Notifies fade-in/fade-out animations about state update.
@@ -309,6 +337,7 @@ class AppController(Controller):
         self.fade_in_animation.on_update_fade_animation_state(new_state)
         self.fade_out_animation.on_update_fade_animation_state(new_state)
         self.main_menu.on_update_fade_animation_state(new_state)
+        self.onboarding.on_update_fade_animation_state(new_state)
         self.license.on_update_fade_animation_state(new_state)
         self.game.on_update_fade_animation_state(new_state)
         self.settings.on_update_fade_animation_state(new_state)

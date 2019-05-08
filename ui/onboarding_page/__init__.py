@@ -6,20 +6,6 @@ from database import USER_DB_CURSOR
 from i18n import I18N_RESOURCES
 
 
-def shader_sprite_exists(fn):
-    """
-    Use this decorator to execute function only if shader sprite property is not None.
-
-    :param fn:                      function to decorate
-    :return:                        decorator function
-    """
-    def _handle_if_shader_sprite_exists(*args, **kwargs):
-        if args[0].shader_sprite is not None:
-            fn(*args, **kwargs)
-
-    return _handle_if_shader_sprite_exists
-
-
 class OnboardingPage:
     def __init__(self, logger):
         self.logger = logger
@@ -87,6 +73,7 @@ class OnboardingPage:
             self.help_label.x, self.help_label.y \
                 = self.screen_resolution[0] // 2 + self.size[0] // 4, self.position[1] + self.size[1] // 2
             self.help_label.font_size = int(72 / 1280 * self.screen_resolution[0]) // 5
+            self.help_label.width = self.size[0] // 2
 
     def on_update_current_locale(self, new_locale):
         """
@@ -118,14 +105,3 @@ class OnboardingPage:
             self.help_label = None
         else:
             self.help_label.color = (*WHITE_RGB, self.opacity)
-
-    @shader_sprite_exists
-    def on_apply_shaders_and_draw_vertices(self):
-        """
-        Activates the shader, initializes all shader uniforms, draws shader sprite and deactivates the shader.
-        """
-        self.shader.use()
-        self.shader.uniforms.position = self.position
-        self.shader.uniforms.size = self.size
-        self.shader_sprite.draw(GL_QUADS)
-        self.shader.clear()

@@ -1,6 +1,7 @@
 from controller.app_controller import AppController
 from controller.main_menu_controller import MainMenuController
 from controller.license_controller import LicenseController
+from controller.onboarding_controller import OnboardingController
 from controller.game_controller import GameController
 from controller.map_controller.passenger_map_controller import PassengerMapController
 from controller.settings_controller import SettingsController
@@ -17,6 +18,7 @@ from controller.constructor_controller.passenger_map_constructor_controller impo
 from model.app_model import AppModel
 from model.main_menu_model import MainMenuModel
 from model.license_model import LicenseModel
+from model.onboarding_model import OnboardingModel
 from model.game_model import GameModel
 from model.map_model.passenger_map_model import PassengerMapModel
 from model.settings_model import SettingsModel
@@ -32,6 +34,7 @@ from model.constructor_model.passenger_map_constructor_model import PassengerMap
 from view.app_view import AppView
 from view.main_menu_view import MainMenuView
 from view.license_view import LicenseView
+from view.onboarding_view import OnboardingView
 from view.game_view import GameView
 from view.map_view.passenger_map_view import PassengerMapView
 from view.settings_view import SettingsView
@@ -54,6 +57,7 @@ from ui.fade_animation.fade_in_animation.game_fade_in_animation import GameFadeI
 from ui.fade_animation.fade_in_animation.license_fade_in_animation import LicenseFadeInAnimation
 from ui.fade_animation.fade_in_animation.main_menu_fade_in_animation import MainMenuFadeInAnimation
 from ui.fade_animation.fade_in_animation.map_fade_in_animation import MapFadeInAnimation
+from ui.fade_animation.fade_in_animation.onboarding_fade_in_animation import OnboardingFadeInAnimation
 from ui.fade_animation.fade_in_animation.railroad_switch_fade_in_animation import RailroadSwitchFadeInAnimation
 from ui.fade_animation.fade_in_animation.scheduler_fade_in_animation import SchedulerFadeInAnimation
 from ui.fade_animation.fade_in_animation.settings_fade_in_animation import SettingsFadeInAnimation
@@ -69,6 +73,7 @@ from ui.fade_animation.fade_out_animation.game_fade_out_animation import GameFad
 from ui.fade_animation.fade_out_animation.license_fade_out_animation import LicenseFadeOutAnimation
 from ui.fade_animation.fade_out_animation.main_menu_fade_out_animation import MainMenuFadeOutAnimation
 from ui.fade_animation.fade_out_animation.map_fade_out_animation import MapFadeOutAnimation
+from ui.fade_animation.fade_out_animation.onboarding_fade_out_animation import OnboardingFadeOutAnimation
 from ui.fade_animation.fade_out_animation.railroad_switch_fade_out_animation import RailroadSwitchFadeOutAnimation
 from ui.fade_animation.fade_out_animation.scheduler_fade_out_animation import SchedulerFadeOutAnimation
 from ui.fade_animation.fade_out_animation.settings_fade_out_animation import SettingsFadeOutAnimation
@@ -114,6 +119,7 @@ def create_app(loader):
     model.view = view
     controller.main_menu = _create_main_menu(controller)
     controller.license = _create_license(controller)
+    controller.onboarding = _create_onboarding(controller)
     controller.game = _create_game(controller)
     controller.settings = _create_settings(controller)
     controller.fps = _create_fps(controller)
@@ -135,13 +141,21 @@ def create_app(loader):
     controller.settings_to_game_transition_animation \
         = TransitionAnimation(fade_out_animation=controller.settings.fade_out_animation,
                               fade_in_animation=controller.game.fade_in_animation)
+    controller.main_menu_to_onboarding_transition_animation \
+        = TransitionAnimation(fade_out_animation=controller.main_menu.fade_out_animation,
+                              fade_in_animation=controller.onboarding.fade_in_animation)
+    controller.onboarding_to_game_transition_animation \
+        = TransitionAnimation(fade_out_animation=controller.onboarding.fade_out_animation,
+                              fade_in_animation=controller.game.fade_in_animation)
     controller.fade_in_animation.main_menu_fade_in_animation = controller.main_menu.fade_in_animation
     controller.fade_in_animation.license_fade_in_animation = controller.license.fade_in_animation
+    controller.fade_in_animation.onboarding_fade_in_animation = controller.onboarding.fade_in_animation
     controller.fade_in_animation.game_fade_in_animation = controller.game.fade_in_animation
     controller.fade_in_animation.settings_fade_in_animation = controller.settings.fade_in_animation
     controller.fade_in_animation.fps_fade_in_animation = controller.fps.fade_in_animation
     controller.fade_out_animation.main_menu_fade_out_animation = controller.main_menu.fade_out_animation
     controller.fade_out_animation.license_fade_out_animation = controller.license.fade_out_animation
+    controller.fade_out_animation.onboarding_fade_out_animation = controller.onboarding.fade_out_animation
     controller.fade_out_animation.game_fade_out_animation = controller.game.fade_out_animation
     controller.fade_out_animation.settings_fade_out_animation = controller.settings.fade_out_animation
     controller.fade_out_animation.fps_fade_out_animation = controller.fps.fade_out_animation
@@ -566,6 +580,27 @@ def _create_license(app):
     controller.fade_out_animation = LicenseFadeOutAnimation(controller)
     model = LicenseModel()
     view = LicenseView()
+    controller.model = model
+    model.controller = controller
+    controller.view = view
+    view.on_assign_controller(controller)
+    model.view = view
+    return controller
+
+
+def _create_onboarding(app):
+    """
+    Creates controller, model and view for Onboarding object.
+    It is responsible for onboarding screen.
+
+    :param app:                     App controller pointer
+    :return:                        Onboarding object controller
+    """
+    controller = OnboardingController(app)
+    controller.fade_in_animation = OnboardingFadeInAnimation(controller)
+    controller.fade_out_animation = OnboardingFadeOutAnimation(controller)
+    model = OnboardingModel()
+    view = OnboardingView()
     controller.model = model
     model.controller = controller
     controller.view = view

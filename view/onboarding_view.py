@@ -4,41 +4,37 @@ from pyglet.gl import GL_QUADS
 from pyshaders import from_files_names
 
 from view import *
-from ui.page_control.license_page_control import LicensePageControl
-from ui.button.close_license_button import CloseLicenseButton
+from ui.page_control.onboarding_page_control import OnboardingPageControl
+from ui.button.skip_onboarding_button import SkipOnboardingButton
 
 
-class LicenseView(View):
-    """
-    Implements License view.
-    License object is responsible for properties, UI and events related to the license screen.
-    """
+class OnboardingView(View):
     def __init__(self):
         """
         Button click handlers:
-            on_close_license                    on_click handler for close license button
+            on_skip_onboarding                  on_click handler for skip onboarding button
 
         Properties:
-            license_page_control                LicensePageControl object
-            close_license_button                CloseLicenseButton object
+            onboarding_page_control             OnboardingPageControl object
+            skip_onboarding_button              SkipOnboardingButton object
             buttons                             list of all buttons
 
         """
-        def on_close_license(button):
+        def on_skip_onboarding(button):
             """
             Notifies the controller to deactivate the view.
 
             :param button:                      button that was clicked
             """
             self.controller.on_deactivate_view()
+            self.controller.parent_controller.on_resume_game()
 
-        super().__init__(logger=getLogger('root.app.license.view'))
-        self.license_page_control = LicensePageControl()
-        self.close_license_button = CloseLicenseButton(on_click_action=on_close_license)
-        self.buttons = [*self.license_page_control.buttons, self.close_license_button]
-        self.shader = from_files_names('shaders/shader.vert', 'shaders/license_view/shader.frag')
+        super().__init__(logger=getLogger('root.app.onboarding.view'))
+        self.onboarding_page_control = OnboardingPageControl()
+        self.skip_onboarding_button = SkipOnboardingButton(on_click_action=on_skip_onboarding)
+        self.buttons = [*self.onboarding_page_control.buttons, self.skip_onboarding_button]
+        self.shader = from_files_names('shaders/shader.vert', 'shaders/onboarding_view/shader.frag')
         self.shader_sprite = None
-        self.on_mouse_scroll_handlers = self.license_page_control.on_mouse_scroll_handlers
         self.on_init_graphics()
 
     def on_init_graphics(self):
@@ -55,7 +51,7 @@ class LicenseView(View):
         """
         self.opacity = new_opacity
         self.on_update_sprite_opacity()
-        self.license_page_control.on_update_opacity(new_opacity)
+        self.onboarding_page_control.on_update_opacity(new_opacity)
         for b in self.buttons:
             b.on_update_opacity(new_opacity)
 
@@ -78,7 +74,7 @@ class LicenseView(View):
                 = self.batches['main_frame'].add(4, GL_QUADS, self.groups['main_frame'],
                                                  ('v2f/static', (-1.0, -1.0, -1.0, 1.0, 1.0, 1.0, 1.0, -1.0)))
 
-        self.license_page_control.on_activate()
+        self.onboarding_page_control.on_activate()
         for b in self.buttons:
             if b.to_activate_on_controller_init:
                 b.on_activate()
@@ -89,7 +85,7 @@ class LicenseView(View):
         Deactivates the view and destroys all labels and buttons.
         """
         self.is_activated = False
-        self.license_page_control.on_deactivate()
+        self.onboarding_page_control.on_deactivate()
         for b in self.buttons:
             b.on_deactivate()
             b.state = 'normal'
@@ -101,8 +97,9 @@ class LicenseView(View):
         :param screen_resolution:       new screen resolution
         """
         self.on_recalculate_ui_properties(screen_resolution)
-        self.license_page_control.on_change_screen_resolution(screen_resolution)
-        self.close_license_button.on_size_changed((self.bottom_bar_height, self.bottom_bar_height))
+        self.onboarding_page_control.on_change_screen_resolution(screen_resolution)
+        self.skip_onboarding_button.on_size_changed((self.bottom_bar_height, self.bottom_bar_height))
+        self.skip_onboarding_button.x_margin = self.screen_resolution[0] - self.bottom_bar_height
         for b in self.buttons:
             b.on_position_changed((b.x_margin, b.y_margin))
 
@@ -113,7 +110,7 @@ class LicenseView(View):
         :param new_locale:                      selected locale
         """
         self.current_locale = new_locale
-        self.license_page_control.on_update_current_locale(new_locale)
+        self.onboarding_page_control.on_update_current_locale(new_locale)
 
     @shader_sprite_exists
     def on_apply_shaders_and_draw_vertices(self):
@@ -121,7 +118,7 @@ class LicenseView(View):
         Activates the shader, initializes all shader uniforms, draws shader sprite and deactivates the shader.
         """
         self.shader.use()
-        self.shader.uniforms.license_opacity = self.opacity
+        self.shader.uniforms.onboarding_opacity = self.opacity
         is_button_activated = []
         button_x = []
         button_y = []
