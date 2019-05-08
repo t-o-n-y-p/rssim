@@ -119,6 +119,8 @@ class OnboardingView(View):
         """
         self.shader.use()
         self.shader.uniforms.onboarding_opacity = self.opacity
+        self.shader.uniforms.position = self.onboarding_page_control.pages[0].position
+        self.shader.uniforms.size = self.onboarding_page_control.pages[0].size
         is_button_activated = []
         button_x = []
         button_y = []
@@ -137,5 +139,6 @@ class OnboardingView(View):
         self.shader.uniforms.button_w = button_w
         self.shader.uniforms.button_h = button_h
         self.shader.uniforms.number_of_buttons = len(self.buttons)
+        self.shader.uniforms.page_number = self.onboarding_page_control.current_page
         self.shader_sprite.draw(GL_QUADS)
         self.shader.clear()

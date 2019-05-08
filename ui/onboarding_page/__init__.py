@@ -32,7 +32,7 @@ class OnboardingPage:
                                     font_size=int(72 / 1280 * self.screen_resolution[0]) // 5,
                                     color=(*WHITE_RGB, self.opacity),
                                     x=self.screen_resolution[0] // 2 + self.size[0] // 4,
-                                    y=self.position[1] + self.size[1] // 2, width=self.size[0] // 2,
+                                    y=self.position[1] + self.size[1] // 2, width=7 * self.size[0] // 16,
                                     anchor_x='center', anchor_y='center',
                                     align='center', multiline=True,
                                     batch=self.batches['ui_batch'], group=self.groups['button_text'])
@@ -73,7 +73,7 @@ class OnboardingPage:
             self.help_label.x, self.help_label.y \
                 = self.screen_resolution[0] // 2 + self.size[0] // 4, self.position[1] + self.size[1] // 2
             self.help_label.font_size = int(72 / 1280 * self.screen_resolution[0]) // 5
-            self.help_label.width = self.size[0] // 2
+            self.help_label.width = 7 * self.size[0] // 16
 
     def on_update_current_locale(self, new_locale):
         """
