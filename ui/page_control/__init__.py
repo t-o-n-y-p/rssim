@@ -1,10 +1,25 @@
 from pyglet.text import Label
+from pyglet.gl import GL_QUADS
 
 from i18n import I18N_RESOURCES
 from ui import *
 from ui.button.previous_page_button import PreviousPageButton
 from ui.button.next_page_button import NextPageButton
 from database import USER_DB_CURSOR
+
+
+def shader_sprite_exists(fn):
+    """
+    Use this decorator to execute function only if shader sprite property is not None.
+
+    :param fn:                      function to decorate
+    :return:                        decorator function
+    """
+    def _handle_if_shader_sprite_exists(*args, **kwargs):
+        if args[0].shader_sprite is not None:
+            fn(*args, **kwargs)
+
+    return _handle_if_shader_sprite_exists
 
 
 class PageControl:
@@ -81,6 +96,8 @@ class PageControl:
         self.previous_page_button = PreviousPageButton(on_click_action=on_navigate_to_previous_page)
         self.next_page_button = NextPageButton(on_click_action=on_navigate_to_next_page)
         self.buttons = [self.previous_page_button, self.next_page_button]
+        self.shader = None
+        self.shader_sprite = None
         self.opacity = 0
 
     def on_activate(self):
@@ -89,6 +106,11 @@ class PageControl:
         """
         self.is_activated = True
         self.current_page = 0
+        if self.shader_sprite is None:
+            self.shader_sprite\
+                = self.batches['main_frame'].add(4, GL_QUADS, self.groups['main_frame'],
+                                                 ('v2f/static', (-1.0, -1.0, -1.0, 1.0, 1.0, 1.0, 1.0, -1.0)))
+
         if self.current_page_label is None:
             text = I18N_RESOURCES[self.current_page_label_key][self.current_locale]\
                 .format(self.current_page + 1, len(self.pages))
@@ -187,7 +209,15 @@ class PageControl:
         Applies new opacity value to all sprites and labels.
         """
         if self.opacity <= 0:
+            self.shader_sprite.delete()
+            self.shader_sprite = None
             self.current_page_label.delete()
             self.current_page_label = None
         else:
             self.current_page_label.color = (*WHITE_RGB, self.opacity)
+
+    def on_apply_shaders_and_draw_vertices(self):
+        """
+        Activates the shader, initializes all shader uniforms, draws shader sprite and deactivates the shader.
+        """
+        pass
