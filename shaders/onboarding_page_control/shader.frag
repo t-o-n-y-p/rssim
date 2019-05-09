@@ -56,8 +56,22 @@ bool is_highlighted(int margin_x, int margin_y, int bottom_bar_height, int top_b
                && margin_y >= size[1] - top_bar_height - top_bar_height * 2 + 6
                && margin_y < size[1] - top_bar_height;
     else if (page_number == 2)
-        return margin_x >= 2 && margin_x <= bottom_bar_height - 2
-               && margin_y >= 2 && margin_y <= bottom_bar_height - 2;
+    {
+        ivec2 cell_size = ivec2(int(6.875 * bottom_bar_height), bottom_bar_height);
+        int interval_between_cells = int(bottom_bar_height / 4);
+        int general_height = 4 * cell_size[1] + 3 * interval_between_cells;
+        ivec2 fetched_coords = ivec2(int(size[0] / 4 - cell_size[0] - interval_between_cells / 2),
+                                     int(size[1] / 2 + general_height / 2 - cell_size[1] / 4 - cell_size[1] / 2));
+        return (margin_x >= 2 && margin_x <= bottom_bar_height - 2
+                && margin_y >= 2 && margin_y <= bottom_bar_height - 2
+               ) || (margin_y >= fetched_coords[1] + 2 && margin_y <= fetched_coords[1] + cell_size[1] - 3
+                     && ((margin_x >= fetched_coords[0] + cell_size[0] - cell_size[1] * 2 + 4
+                          && margin_x <= fetched_coords[0] + cell_size[0] - cell_size[1] - 1
+                         ) || (margin_x >= fetched_coords[0] + cell_size[0] - cell_size[1] - 2
+                               && margin_x <= fetched_coords[0] + cell_size[0] - 3)
+                        )
+                    );
+    }
     else if (page_number == 3)
         return margin_x >= bottom_bar_height + 1 && margin_x <= size[0] / 2 - 6 * bottom_bar_height
                && margin_y >= 2 && margin_y <= bottom_bar_height - 2;
@@ -80,6 +94,44 @@ bool is_highlighted(int margin_x, int margin_y, int bottom_bar_height, int top_b
         return false;
 }
 
+bool is_constructor_cell(int margin_x, int margin_y, int bottom_bar_height, int top_bar_height)
+{
+    if (page_number == 2)
+    {
+        ivec2 cell_size = ivec2(int(6.875 * bottom_bar_height), bottom_bar_height);
+        int interval_between_cells = int(bottom_bar_height / 4);
+        int general_height = 4 * cell_size[1] + 3 * interval_between_cells;
+        ivec2 fetched_coords = ivec2(int(size[0] / 4 - cell_size[0] - interval_between_cells / 2),
+                                     int(size[1] / 2 + general_height / 2 - cell_size[1] / 4 - cell_size[1] / 2));
+        bool constructor_cell_border = false;
+        for (int i=0; i<2; i++)
+            for (int j=0; j<4; j++)
+            {
+                ivec2 cell_position = ivec2(fetched_coords[0] + i * (cell_size[0] + interval_between_cells),
+                                            fetched_coords[1] - j * (cell_size[1] + interval_between_cells));
+                if ((margin_x >= cell_position[0] && margin_x < cell_position[0] + cell_size[0]
+                     && (margin_y == cell_position[1] || margin_y == cell_position[1] + 1
+                         || margin_y == cell_position[1] + cell_size[1] - 1
+                         || margin_y == cell_position[1] + cell_size[1] - 2)
+                    ) || (margin_y >= cell_position[1] && margin_y < cell_position[1] + cell_size[1]
+                          && (margin_x == cell_position[0] || margin_x == cell_position[0] + 1
+                              || margin_x == cell_position[0] + cell_size[0] - 1
+                              || margin_x == cell_position[0] + cell_size[0] - 2
+                              || margin_x == cell_position[0] + cell_size[0] - cell_size[1]
+                              || margin_x == cell_position[0] + cell_size[0] - cell_size[1] + 1
+                              || margin_x == cell_position[0] + cell_size[0] - cell_size[1] * 2 + 2
+                              || margin_x == cell_position[0] + cell_size[0] - cell_size[1] * 2 + 3)
+                         )
+                   )
+                    constructor_cell_border = true;
+            }
+
+        return constructor_cell_border;
+    }
+    else
+        return false;
+}
+
 void main()
 /*
     MAIN SHADER FUNCTION
@@ -91,7 +143,8 @@ void main()
     int bottom_bar_height = int(size[1] / 10);
     int top_bar_height = int(size[1] / 20);
     // button borders are filled with red
-    if (is_app_window_frame(margin_x, margin_y, bottom_bar_height, top_bar_height))
+    if (is_app_window_frame(margin_x, margin_y, bottom_bar_height, top_bar_height)
+        || is_constructor_cell(margin_x, margin_y, bottom_bar_height, top_bar_height))
         color_frag = vec4(1.0, 0.0, 0.0, float(onboarding_page_control_opacity) / 255.0);
     else if (is_highlighted(margin_x, margin_y, bottom_bar_height, top_bar_height))
         color_frag = vec4(1.0, 0.0, 0.0, float(onboarding_page_control_opacity) / 255.0 * 0.5);
