@@ -175,6 +175,10 @@
 		"en": "Create new station",
 		"ru": "Создать новую станцию"
 	},
+	"back_to_the_station_label_string": {
+		"en": "Back to the station",
+		"ru": "Вернуться на станцию"
+	},
 	"page_control_label_string": {
 		"en": "{0} of {1}",
 		"ru": "{0} из {1}"
@@ -184,7 +188,7 @@
 		"ru": ["AM", "PM"]
 	},
 	"skip_onboarding_string": {
-		"en": "Skip onboarding and navigate to the map",
+		"en": "Skip onboarding and move on to the map",
 		"ru": "Пропустить обучение и перейти на карту"
 	},
 	"clock_onboarding_page_string": {

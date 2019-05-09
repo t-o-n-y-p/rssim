@@ -59,9 +59,10 @@ class OnboardingController(Controller):
 
     def on_deactivate_view(self):
         """
-        Deactivates the view if user closed onboarding screen.
+        Deactivates the view if user closed onboarding screen. Notifies the model to turn off onboarding.
         """
         self.view.on_deactivate()
+        self.model.on_save_and_commit_onboarding_state()
         self.parent_controller.on_close_onboarding()
 
     def on_apply_shaders_and_draw_vertices(self):
