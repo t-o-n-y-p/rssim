@@ -182,5 +182,9 @@
 	"am_pm_string": {
 		"en": ["AM", "PM"],
 		"ru": ["AM", "PM"]
+	},
+	"skip_onboarding_string": {
+		"en": "Skip onboarding",
+		"ru": "Пропустить обучение"
 	}
 }

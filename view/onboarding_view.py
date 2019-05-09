@@ -1,11 +1,13 @@
 from logging import getLogger
 
 from pyglet.gl import GL_QUADS
+from pyglet.text import Label
 from pyshaders import from_files_names
 
 from view import *
 from ui.page_control.onboarding_page_control import OnboardingPageControl
 from ui.button.skip_onboarding_button import SkipOnboardingButton
+from i18n import I18N_RESOURCES
 
 
 class OnboardingView(View):
@@ -18,6 +20,7 @@ class OnboardingView(View):
             onboarding_page_control             OnboardingPageControl object
             skip_onboarding_button              SkipOnboardingButton object
             buttons                             list of all buttons
+            skip_onboarding_label               "Skip onboarding" prompt at the bottom of the screen
 
         """
         def on_skip_onboarding(button):
@@ -35,6 +38,7 @@ class OnboardingView(View):
         self.buttons = [*self.onboarding_page_control.buttons, self.skip_onboarding_button]
         self.shader = from_files_names('shaders/shader.vert', 'shaders/onboarding_view/shader.frag')
         self.shader_sprite = None
+        self.skip_onboarding_label = None
         self.on_init_graphics()
 
     def on_init_graphics(self):
@@ -62,6 +66,10 @@ class OnboardingView(View):
         if self.opacity <= 0:
             self.shader_sprite.delete()
             self.shader_sprite = None
+            self.skip_onboarding_label.delete()
+            self.skip_onboarding_label = None
+        else:
+            self.skip_onboarding_label.color = (*WHITE_RGB, self.opacity)
 
     @view_is_not_active
     def on_activate(self):
@@ -73,6 +81,14 @@ class OnboardingView(View):
             self.shader_sprite\
                 = self.batches['main_frame'].add(4, GL_QUADS, self.groups['main_frame'],
                                                  ('v2f/static', (-1.0, -1.0, -1.0, 1.0, 1.0, 1.0, 1.0, -1.0)))
+
+        if self.skip_onboarding_label is None:
+            self.skip_onboarding_label = Label(I18N_RESOURCES['skip_onboarding_string'][self.current_locale],
+                                               font_name='Arial', font_size=self.bottom_bar_height // 4,
+                                               color=(*WHITE_RGB, self.opacity),
+                                               x=self.screen_resolution[0] - 5 * self.bottom_bar_height // 4,
+                                               y=self.bottom_bar_height // 2, anchor_x='right', anchor_y='center',
+                                               batch=self.batches['ui_batch'], group=self.groups['button_text'])
 
         self.onboarding_page_control.on_activate()
         for b in self.buttons:
@@ -100,6 +116,11 @@ class OnboardingView(View):
         self.onboarding_page_control.on_change_screen_resolution(screen_resolution)
         self.skip_onboarding_button.on_size_changed((self.bottom_bar_height, self.bottom_bar_height))
         self.skip_onboarding_button.x_margin = self.screen_resolution[0] - self.bottom_bar_height
+        if self.is_activated:
+            self.skip_onboarding_label.x = self.screen_resolution[0] - 5 * self.bottom_bar_height // 4
+            self.skip_onboarding_label.y = self.bottom_bar_height // 2
+            self.skip_onboarding_label.font_size = self.bottom_bar_height // 4
+
         for b in self.buttons:
             b.on_position_changed((b.x_margin, b.y_margin))
 
@@ -111,6 +132,8 @@ class OnboardingView(View):
         """
         self.current_locale = new_locale
         self.onboarding_page_control.on_update_current_locale(new_locale)
+        if self.is_activated:
+            self.skip_onboarding_label.text = I18N_RESOURCES['skip_onboarding_string'][self.current_locale]
 
     @shader_sprite_exists
     def on_apply_shaders_and_draw_vertices(self):

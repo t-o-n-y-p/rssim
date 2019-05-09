@@ -49,6 +49,8 @@ class PageControl:
             previous_page_button                PreviousPageButton object
             next_page_button                    NextPageButton object
             buttons                             list of all buttons
+            shader                              page control shader
+            shader_sprite                       sprite from page control shader
             opacity                             current page opacity
 
         :param logger:                          telemetry instance

@@ -51,6 +51,31 @@ bool is_highlighted(int margin_x, int margin_y, int bottom_bar_height, int top_b
                ) || (margin_x >= top_bar_height * 2 - 2 && margin_x <= size[0] / 2 - 3
                      && margin_y >= size[1] - top_bar_height - top_bar_height * 2 + 4
                      && margin_y <= size[1] - top_bar_height - 1);
+    else if (page_number == 1)
+        return margin_x >= 2 && margin_x < top_bar_height * 2 - 4
+               && margin_y >= size[1] - top_bar_height - top_bar_height * 2 + 6
+               && margin_y < size[1] - top_bar_height;
+    else if (page_number == 2)
+        return margin_x >= 2 && margin_x <= bottom_bar_height - 2
+               && margin_y >= 2 && margin_y <= bottom_bar_height - 2;
+    else if (page_number == 3)
+        return margin_x >= bottom_bar_height + 1 && margin_x <= size[0] / 2 - 6 * bottom_bar_height
+               && margin_y >= 2 && margin_y <= bottom_bar_height - 2;
+    else if (page_number == 4)
+        return margin_x >= size[0] / 2 - 6 * bottom_bar_height + 3
+               && margin_x <= size[0] / 2 - 5 * bottom_bar_height - 1
+               && margin_y >= 2 && margin_y <= bottom_bar_height - 2;
+    else if (page_number == 5)
+        return margin_x >= size[0] / 2 - 5 * bottom_bar_height + 2
+               && margin_x <= size[0] / 2 - 4 * bottom_bar_height - 2
+               && margin_y >= 2 && margin_y <= bottom_bar_height - 2;
+    else if (page_number == 6)
+        return margin_x >= size[0] / 2 - 4 * bottom_bar_height - 1
+               && margin_x <= size[0] / 2 - bottom_bar_height - 2
+               && margin_y >= 2 && margin_y <= bottom_bar_height - 2;
+    else if (page_number == 7)
+        return margin_x >= size[0] / 2 - bottom_bar_height + 1 && margin_x <= size[0] / 2 - 3
+               && margin_y >= 2 && margin_y <= bottom_bar_height - 2;
     else
         return false;
 }
@@ -69,7 +94,7 @@ void main()
     if (is_app_window_frame(margin_x, margin_y, bottom_bar_height, top_bar_height))
         color_frag = vec4(1.0, 0.0, 0.0, float(onboarding_page_control_opacity) / 255.0);
     else if (is_highlighted(margin_x, margin_y, bottom_bar_height, top_bar_height))
-        color_frag = vec4(0.25, 0.0, 0.0, float(onboarding_page_control_opacity) / 255.0);
+        color_frag = vec4(1.0, 0.0, 0.0, float(onboarding_page_control_opacity) / 255.0 * 0.5);
     // all other pixels are transparent
     else
         color_frag = vec4(0.0);
