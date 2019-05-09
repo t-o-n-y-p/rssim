@@ -184,7 +184,39 @@
 		"ru": ["AM", "PM"]
 	},
 	"skip_onboarding_string": {
-		"en": "Skip onboarding",
-		"ru": "Пропустить обучение"
+		"en": "Skip onboarding and navigate to the map",
+		"ru": "Пропустить обучение и перейти на карту"
+	},
+	"clock_onboarding_page_string": {
+		"en": "In-game time is displayed in the bottom bar to the right from pause/resume button. \n\n12- and 24-hour formats are available.",
+		"ru": "Внутриигровое время отображается в нижней панели справа от кнопки паузы/возобновления. \n\nДоступны 12- и 24-часовой формат времени."
+	},
+	"constructor_onboarding_page_string": {
+		"en": "The first bottom bar button opens/closes constructor screen. \nFirst 4 tracks and first 4 environment tiers from queue are displayed on constructor screen. \nFor those which are unlocked, 2 buttons are displayed: the left one turns money target on/off so you can track your money progress with track or environment tier price set as 100%, and the right one puts track or environment tier under construction.",
+		"ru": "Первая кнопка в нижней панели открывает и закрывает экран строительства. \nНа экране строительства отображаются первые 4 пути и 4 стадии окружения из очереди. \nДля тех из них, которые разблокированы, отображаются 2 кнопки: левая устанавливает цель по деньгам, и ты можешь отслеживать свой прогресс относительно стоимости данного пути/окружения, а правая начинает строительство пути или окружения."
+	},
+	"exp_money_onboarding_page_string": {
+		"en": "Current level and bank account state are displayed in the bottom bar to the right from open/close constructor button. \nExperience progress bar is displayed with current level; it indicates how much experience left to reach the next level. \nMoney target progress bar is displayed with the bank account state; it indicates how much money left to buy the corresponding track or environment tier.",
+		"ru": "Текущий уровень и баланс отображаются в нижней панели справа от кнопки открытия/закрытия экрана строительства. \nПрогресс опыта отображается с текущим уровнем; он показывает, сколько опыта осталось до следующего уровня. \nПрогресс денег отображается с балансом; он показывает, сколько денег осталось до покупки соответствующего пути или окружения."
+	},
+	"map_onboarding_page_string": {
+		"en": "You can drag the map in any direction from any point within the highlighted area except of buttons.",
+		"ru": "Карту можно перетаскивать в любом направлении из любой точки в выделенной области, кроме кнопок."
+	},
+	"pause_resume_onboarding_page_string": {
+		"en": "The third bottom bar button pauses/resumes the game. \nYou can freeze the in-game time for a while using this button at any moment if required.",
+		"ru": "Третья кнопка в нижней панели приостанавливает/возобновляет игру. \nТы можешь при необходимости приостановить внутриигровое время с помощью этой кнопки."
+	},
+	"schedule_onboarding_page_string": {
+		"en": "The second bottom bar button opens/closes schedule screen. \nIt provides the table for up to 24 approaching trains within the next in-game hour.",
+		"ru": "Вторая кнопка в нижней панели открывает и закрывает экран расписания. \n На нем в виде таблицы отображается до 24 поездов, прибывающих на станцию в ближайший час."
+	},
+	"settings_onboarding_page_string": {
+		"en": "The last bottom bar button opens settings screen. \n There you can set app window resolution, some other graphics options, in-game clock format and notification options.",
+		"ru": "Последняя кнопка в нижней панели открывает экран настроек. \nЗдесь ты можешь задать разрешение окна игры, некоторые другие настройки графики, настройки внутриигровых часов и нотификаций."
+	},
+	"zoom_onboarding_page_string": {
+		"en": "Map is available in tow different scales. You can switch them using zoom button in the top left corner.",
+		"ru": "Карта доступна в двух масштабах. Ты можешь переключаться между ними с помощью кнопки масштаба в левом верхнем углу."
 	}
 }

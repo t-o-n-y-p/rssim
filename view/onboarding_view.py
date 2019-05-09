@@ -84,7 +84,7 @@ class OnboardingView(View):
 
         if self.skip_onboarding_label is None:
             self.skip_onboarding_label = Label(I18N_RESOURCES['skip_onboarding_string'][self.current_locale],
-                                               font_name='Arial', font_size=self.bottom_bar_height // 4,
+                                               font_name='Arial', font_size=self.bottom_bar_height // 5,
                                                color=(*WHITE_RGB, self.opacity),
                                                x=self.screen_resolution[0] - 5 * self.bottom_bar_height // 4,
                                                y=self.bottom_bar_height // 2, anchor_x='right', anchor_y='center',
@@ -119,7 +119,7 @@ class OnboardingView(View):
         if self.is_activated:
             self.skip_onboarding_label.x = self.screen_resolution[0] - 5 * self.bottom_bar_height // 4
             self.skip_onboarding_label.y = self.bottom_bar_height // 2
-            self.skip_onboarding_label.font_size = self.bottom_bar_height // 4
+            self.skip_onboarding_label.font_size = self.bottom_bar_height // 5
 
         for b in self.buttons:
             b.on_position_changed((b.x_margin, b.y_margin))
