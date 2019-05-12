@@ -18,14 +18,15 @@ class GameModel(Model):
             money                               current bank account state
             money_target                        reserved for future use
             player_progress                     exp needed to hit next level
+            exp_multiplier                      multiplier for exp based on exp bonus from shops
 
         """
         super().__init__(logger=getLogger('root.app.game.model'))
         self.game_paused = True
         self.user_db_cursor.execute('SELECT game_time FROM epoch_timestamp')
         self.game_time = self.user_db_cursor.fetchone()[0]
-        self.user_db_cursor.execute('SELECT level, exp, money, money_target FROM game_progress')
-        self.level, self.exp, self.money, self.money_target = self.user_db_cursor.fetchone()
+        self.user_db_cursor.execute('SELECT level, exp, money, money_target, exp_multiplier FROM game_progress')
+        self.level, self.exp, self.money, self.money_target, self.exp_multiplier = self.user_db_cursor.fetchone()
         self.config_db_cursor.execute('''SELECT player_progress FROM player_progress_config 
                                          WHERE level = ?''', (self.level, ))
         self.player_progress = self.config_db_cursor.fetchone()[0]
@@ -100,7 +101,7 @@ class GameModel(Model):
 
         :param exp:                     amount of exp gained
         """
-        self.exp += exp
+        self.exp += exp * self.exp_multiplier
         if self.exp >= self.player_progress and self.level < MAXIMUM_LEVEL:
             self.controller.on_level_up()
 

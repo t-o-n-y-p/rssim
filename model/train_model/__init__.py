@@ -238,7 +238,8 @@ class TrainModel(Model):
                 self.speed_factor_position = 0
             # when train needs to stop at stop point and distance is less than braking distance,
             # update state to 'decelerate'
-            elif self.stop_point - self.cars_position[0] <= PASSENGER_TRAIN_ACCELERATION_FACTOR[self.speed_factor_position]:
+            elif self.stop_point - self.cars_position[0] \
+                    <= PASSENGER_TRAIN_ACCELERATION_FACTOR[self.speed_factor_position]:
                 self.speed_state = 'decelerate'
             # when train needs to stop at stop point and distance is more than braking distance,
             # update state to 'accelerate' if train is not at maximum speed already

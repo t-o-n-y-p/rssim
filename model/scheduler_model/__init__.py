@@ -1,7 +1,6 @@
 from random import choice
 from operator import itemgetter
 from logging import getLogger
-from math import ceil
 
 from model import *
 
@@ -99,8 +98,8 @@ class SchedulerModel(Model):
                     train_options = (self.train_counter, self.next_cycle_start_time
                                      + choice(list(range(i[ARRIVAL_TIME_MIN], i[ARRIVAL_TIME_MAX]))),
                                      i[DIRECTION], i[NEW_DIRECTION], cars, self.frame_per_car * cars,
-                                     ceil(self.frame_per_car * cars / 8),
-                                     ceil(self.frame_per_car * cars / 8) * self.exp_to_money)
+                                     self.frame_per_car * cars / 8,
+                                     self.frame_per_car * cars / 8 * self.exp_to_money)
                     self.base_schedule.append(train_options)
                     self.train_counter = (self.train_counter + 1) % TRAIN_ID_LIMIT
 
