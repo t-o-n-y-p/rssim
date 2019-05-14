@@ -82,58 +82,6 @@ class MapController(Controller):
         for train in self.trains_list:
             train.on_update_view()
 
-    @controller_is_not_active
-    def on_activate(self):
-        """
-        Activates Map object: controller and model. Model activates the view if necessary.
-        Also activates child objects.
-        """
-        self.is_activated = True
-        self.model.on_activate()
-        self.scheduler.on_activate()
-        self.dispatcher.on_activate()
-        self.constructor.on_activate()
-        for signal in self.signals_list:
-            signal.on_activate()
-
-        for route in self.train_routes_sorted_list:
-            route.on_activate()
-
-        for switch in self.switches_list:
-            switch.on_activate()
-
-        for crossover in self.crossovers_list:
-            crossover.on_activate()
-
-        for train in self.trains_list:
-            train.on_activate()
-
-    @controller_is_active
-    def on_deactivate(self):
-        """
-        Deactivates App object: controller, view and model. Also deactivates all child objects.
-        """
-        self.is_activated = False
-        self.model.on_deactivate()
-        self.view.on_deactivate()
-        self.scheduler.on_deactivate()
-        self.dispatcher.on_deactivate()
-        self.constructor.on_deactivate()
-        for signal in self.signals_list:
-            signal.on_deactivate()
-
-        for route in self.train_routes_sorted_list:
-            route.on_deactivate()
-
-        for switch in self.switches_list:
-            switch.on_deactivate()
-
-        for crossover in self.crossovers_list:
-            crossover.on_deactivate()
-
-        for train in self.trains_list:
-            train.on_deactivate()
-
     def on_change_screen_resolution(self, screen_resolution):
         """
         Notifies the view and all child controllers about screen resolution update.
@@ -354,7 +302,7 @@ class MapController(Controller):
                 successful_departure_state.append(train.train_id)
 
         for train_id in successful_departure_state:
-            self.trains[train_id].on_deactivate()
+            self.trains[train_id].on_deactivate_view()
             self.fade_in_animation.train_fade_in_animations.remove(self.trains[train_id].fade_in_animation)
             self.fade_out_animation.train_fade_out_animations.remove(self.trains[train_id].fade_out_animation)
             self.trains_list.remove(self.trains.pop(train_id))
@@ -635,7 +583,6 @@ class MapController(Controller):
         # add new train to the dispatcher
         self.dispatcher.on_add_train(train)
         train.parent_controller.on_open_train_route(track, train_route, train_id, cars)
-        train.on_activate()
         if self.view.is_activated:
             train.on_activate_view()
             train.fade_in_animation.on_activate()

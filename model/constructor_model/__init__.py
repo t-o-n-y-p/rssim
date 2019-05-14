@@ -58,20 +58,6 @@ class ConstructorModel(Model):
                                     (self.map_id, ))
         self.money_target_cell_position = list(map(int, self.user_db_cursor.fetchone()[0].split(',')))
 
-    @model_is_not_active
-    def on_activate(self):
-        """
-        Activates the model. Does not activate the view because constructor screen is not opened by default.
-        """
-        self.is_activated = True
-
-    @model_is_active
-    def on_deactivate(self):
-        """
-        Deactivates the model.
-        """
-        self.is_activated = False
-
     def on_activate_view(self):
         """
         Updates constructor cell state, bank account state and activates the Constructor view.

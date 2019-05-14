@@ -138,25 +138,11 @@ class TrainRouteModel(Model):
                                       (track, train_route, self.map_id))
         self.train_route_section_positions = self.config_db_cursor.fetchall()
 
-    @model_is_not_active
-    def on_activate(self):
-        """
-        Activates the model and the view.
-        """
-        self.is_activated = True
-
     def on_activate_view(self):
         """
         Activates the view.
         """
         self.view.on_activate()
-
-    @model_is_active
-    def on_deactivate(self):
-        """
-        Deactivates the model.
-        """
-        self.is_activated = False
 
     def on_save_state(self):
         """

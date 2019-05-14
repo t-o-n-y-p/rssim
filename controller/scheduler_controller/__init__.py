@@ -29,25 +29,6 @@ class SchedulerController(Controller):
         self.fade_in_animation.on_update()
         self.fade_out_animation.on_update()
 
-    @controller_is_not_active
-    def on_activate(self):
-        """
-        Activates Scheduler object: controller and model. Model activates the view if necessary.
-        """
-        self.is_activated = True
-        self.model.on_activate()
-
-    @controller_is_active
-    def on_deactivate(self):
-        """
-        Deactivates Scheduler object: controller, view and model.
-        Notifies Map controller about it.
-        """
-        self.is_activated = False
-        self.model.on_deactivate()
-        self.view.on_deactivate()
-        self.parent_controller.on_close_schedule()
-
     def on_change_screen_resolution(self, screen_resolution):
         """
         Notifies the view about screen resolution update.

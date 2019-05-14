@@ -40,23 +40,6 @@ class DispatcherController(Controller):
         """
         self.view.on_deactivate()
 
-    @controller_is_not_active
-    def on_activate(self):
-        """
-        Activates Dispatcher object: controller and model. Model activates the view if necessary.
-        """
-        self.is_activated = True
-        self.model.on_activate()
-
-    @controller_is_active
-    def on_deactivate(self):
-        """
-        Deactivates Dispatcher object: controller, view and model.
-        """
-        self.is_activated = False
-        self.model.on_deactivate()
-        self.view.on_deactivate()
-
     def on_save_state(self):
         """
         Notifies the model to save dispatcher state to user progress database.

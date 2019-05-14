@@ -35,13 +35,6 @@ class MapModel(Model):
         self.user_db_cursor.execute('SELECT zoom_out_activated FROM graphics WHERE map_id = ?', (self.map_id, ))
         self.zoom_out_activated = bool(self.user_db_cursor.fetchone()[0])
 
-    @model_is_not_active
-    def on_activate(self):
-        """
-        Activates the model and the view.
-        """
-        self.is_activated = True
-
     def on_activate_view(self):
         """
         Activates the view if this map matches the map which was opened last.
@@ -49,13 +42,6 @@ class MapModel(Model):
         self.user_db_cursor.execute('SELECT map_id FROM graphics')
         if self.map_id == self.user_db_cursor.fetchone()[0]:
             self.view.on_activate()
-
-    @model_is_active
-    def on_deactivate(self):
-        """
-        Deactivates the model.
-        """
-        self.is_activated = False
 
     def on_unlock_track(self, track):
         """

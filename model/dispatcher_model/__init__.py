@@ -38,21 +38,6 @@ class DispatcherModel(Model):
                                          FROM track_config WHERE map_id = ?''', (self.map_id, ))
         self.supported_cars_by_track.extend(self.config_db_cursor.fetchall())
 
-    @model_is_not_active
-    def on_activate(self):
-        """
-        Activates the model. Does not activate the view
-        because dispatcher does not have any visual representation actually.
-        """
-        self.is_activated = True
-
-    @model_is_active
-    def on_deactivate(self):
-        """
-        Deactivates the model.
-        """
-        self.is_activated = False
-
     def on_activate_view(self):
         self.view.on_activate()
 

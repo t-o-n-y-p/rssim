@@ -31,20 +31,6 @@ class GameModel(Model):
                                          WHERE level = ?''', (self.level, ))
         self.player_progress = self.config_db_cursor.fetchone()[0]
 
-    @model_is_not_active
-    def on_activate(self):
-        """
-        Activates the model and the view.
-        """
-        self.is_activated = True
-
-    @model_is_active
-    def on_deactivate(self):
-        """
-        Deactivates the model.
-        """
-        self.is_activated = False
-
     def on_activate_view(self):
         """
         Activates view and refreshes all data: time, level, exp, money.
@@ -74,7 +60,6 @@ class GameModel(Model):
         self.game_paused = False
         self.view.on_resume_game()
 
-    @model_is_active
     def on_update_time(self):
         """
         Increases in-game time by 1 each frame. When number of frames in 1 in-game minute divides the counter,

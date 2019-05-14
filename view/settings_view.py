@@ -78,7 +78,7 @@ class SettingsView(View):
             :param button:                      button that was clicked
             """
             self.controller.on_save_and_commit_state()
-            self.controller.on_deactivate()
+            self.controller.on_deactivate_view()
 
         def on_reject_changes(button):
             """
@@ -86,7 +86,7 @@ class SettingsView(View):
 
             :param button:                      button that was clicked
             """
-            self.controller.on_deactivate()
+            self.controller.on_deactivate_view()
 
         def on_update_windowed_resolution_state(index):
             """

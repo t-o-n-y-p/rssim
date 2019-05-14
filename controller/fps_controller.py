@@ -22,24 +22,12 @@ class FPSController(Controller):
         self.fade_in_animation.on_update()
         self.fade_out_animation.on_update()
 
-    @controller_is_not_active
-    def on_activate(self):
-        """
-        Activates FPS object: controller and model. Model activates the view if necessary.
-        """
-        self.is_activated = True
-        self.model.on_activate()
+    def on_activate_view(self):
+        self.model.on_activate_view()
 
-    @controller_is_active
-    def on_deactivate(self):
-        """
-        Deactivates FPS object: controller, view and model.
-        """
-        self.is_activated = False
-        self.model.on_deactivate()
+    def on_deactivate_view(self):
         self.view.on_deactivate()
 
-    @controller_is_active
     def on_update_fps(self, fps):
         """
         Notifies the model about FPS value update.

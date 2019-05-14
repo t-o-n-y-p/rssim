@@ -37,13 +37,6 @@ class SettingsModel(Model):
             self.construction_completed_notification_enabled, self.enough_money_notification_enabled \
             = tuple(map(bool, self.user_db_cursor.fetchone()))
 
-    @model_is_not_active
-    def on_activate(self):
-        """
-        Activates the model and the view.
-        """
-        self.is_activated = True
-
     def on_activate_view(self):
         """
         Activates the Settings view, updates temp values for fade animations, windowed resolution
@@ -58,13 +51,6 @@ class SettingsModel(Model):
         self.view.temp_construction_completed_notification_enabled = self.construction_completed_notification_enabled
         self.view.temp_enough_money_notification_enabled = self.enough_money_notification_enabled
         self.view.on_activate()
-
-    @model_is_active
-    def on_deactivate(self):
-        """
-        Deactivates the model.
-        """
-        self.is_activated = False
 
     def on_save_and_commit_state(self):
         """

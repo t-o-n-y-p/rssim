@@ -34,23 +34,6 @@ class SignalController(Controller):
         self.fade_in_animation.on_update()
         self.fade_out_animation.on_update()
 
-    @controller_is_not_active
-    def on_activate(self):
-        """
-        Activates Signal object: controller and model. Model activates the view if necessary.
-        """
-        self.is_activated = True
-        self.model.on_activate()
-
-    @controller_is_active
-    def on_deactivate(self):
-        """
-        Deactivates Signal object: controller, view and model.
-        """
-        self.is_activated = False
-        self.model.on_deactivate()
-        self.view.on_deactivate()
-
     def on_change_base_offset(self, new_base_offset):
         """
         Notifies the view about base offset update.

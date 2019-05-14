@@ -60,20 +60,6 @@ class SchedulerModel(Model):
         self.user_db_cursor.execute('''SELECT entry_locked_state FROM map_progress WHERE map_id = ?''', (self.map_id, ))
         self.entry_locked_state = list(map(bool, list(map(int, self.user_db_cursor.fetchone()[0].split(',')))))
 
-    @model_is_not_active
-    def on_activate(self):
-        """
-        Activates the model. Does not activate the view because schedule screen is not opened by default.
-        """
-        self.is_activated = True
-
-    @model_is_active
-    def on_deactivate(self):
-        """
-        Deactivates the model.
-        """
-        self.is_activated = False
-
     def on_activate_view(self):
         """
         Activates the Scheduler view.

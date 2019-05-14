@@ -30,28 +30,6 @@ class GameController(Controller):
         for map_ in self.maps:
             map_.on_update_view()
 
-    @controller_is_not_active
-    def on_activate(self):
-        """
-        Activates Game object: controller and model. Model activates the view if necessary. Activates maps.
-        When App object is activated, we also activate Map object.
-        """
-        self.is_activated = True
-        self.model.on_activate()
-        for map_ in self.maps:
-            map_.on_activate()
-
-    @controller_is_active
-    def on_deactivate(self):
-        """
-        Deactivates Game object: controller, view and model. Also deactivates all child objects.
-        """
-        self.is_activated = False
-        self.model.on_deactivate()
-        self.view.on_deactivate()
-        for map_ in self.maps:
-            map_.on_deactivate()
-
     def on_change_screen_resolution(self, screen_resolution):
         """
         Notifies the view and all child controllers about screen resolution update.
@@ -89,7 +67,6 @@ class GameController(Controller):
         for map_ in self.maps:
             map_.on_deactivate_view()
 
-    @controller_is_active
     @game_is_not_paused
     def on_update_time(self):
         """

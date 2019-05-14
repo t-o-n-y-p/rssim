@@ -28,33 +28,6 @@ class SettingsController(Controller):
         self.fade_in_animation.on_update()
         self.fade_out_animation.on_update()
 
-    @controller_is_not_active
-    def on_activate(self):
-        """
-        Activates Settings object: controller and model. Model activates the view if necessary.
-        Determines which screen was activated before.
-        """
-        self.is_activated = True
-        self.model.on_activate()
-        self.parent_controller.on_deactivate_current_view()
-
-    @controller_is_active
-    def on_deactivate(self):
-        """
-        Deactivates Settings object: controller, view and model.
-        Activates view which was activated before settings screen.
-        """
-        self.is_activated = False
-        self.model.on_deactivate()
-        self.view.on_deactivate()
-        if self.navigated_from_main_menu:
-            self.navigated_from_main_menu = False
-
-        if self.navigated_from_game:
-            self.navigated_from_game = False
-            self.parent_controller.game_to_settings_transition_animation.on_deactivate()
-            self.parent_controller.settings_to_game_transition_animation.on_activate()
-
     def on_change_screen_resolution(self, screen_resolution):
         """
         Notifies the model about screen resolution update.
@@ -100,6 +73,16 @@ class SettingsController(Controller):
         Activates the view and Map controller if user opened game screen in the app.
         """
         self.model.on_activate_view()
+
+    def on_deactivate_view(self):
+        self.view.on_deactivate()
+        if self.navigated_from_main_menu:
+            self.navigated_from_main_menu = False
+
+        if self.navigated_from_game:
+            self.navigated_from_game = False
+            self.parent_controller.game_to_settings_transition_animation.on_deactivate()
+            self.parent_controller.settings_to_game_transition_animation.on_activate()
 
     def on_update_fade_animation_state(self, new_state):
         """

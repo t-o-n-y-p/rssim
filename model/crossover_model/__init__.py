@@ -84,25 +84,11 @@ class CrossoverModel(Model):
                                     (track_param_1, track_param_2, crossover_type, self.map_id))
         self.locked = bool(self.user_db_cursor.fetchone()[0])
 
-    @model_is_not_active
-    def on_activate(self):
-        """
-        Activates the model and the view.
-        """
-        self.is_activated = True
-
     def on_activate_view(self):
         """
         Activates the Crossover view.
         """
         self.view.on_activate()
-
-    @model_is_active
-    def on_deactivate(self):
-        """
-        Deactivates the model.
-        """
-        self.is_activated = False
 
     def on_save_state(self):
         """

@@ -1,31 +1,3 @@
-def controller_is_active(fn):
-    """
-    Use this decorator to execute function only if controller is active.
-
-    :param fn:                      function to decorate
-    :return:                        decorator function
-    """
-    def _handle_if_controller_is_activated(*args, **kwargs):
-        if args[0].is_activated:
-            fn(*args, **kwargs)
-
-    return _handle_if_controller_is_activated
-
-
-def controller_is_not_active(fn):
-    """
-    Use this decorator to execute function only if controller is not active.
-
-    :param fn:                      function to decorate
-    :return:                        decorator function
-    """
-    def _handle_if_controller_is_not_activated(*args, **kwargs):
-        if not args[0].is_activated:
-            fn(*args, **kwargs)
-
-    return _handle_if_controller_is_not_activated
-
-
 def game_is_not_paused(fn):
     """
     Use this decorator within Game controller to execute function only if game is not paused.
@@ -116,20 +88,6 @@ class Controller:
         Notifies object view, child objects views, fade-in/fade-out animations, transition animations to update.
         For some views all sprites are not created at once
         and remaining sprites are created frame by frame to avoid massive FPS drop.
-        """
-        pass
-
-    def on_activate(self):
-        """
-        Activates controller (and object in general), its model and view (if necessary)
-        and child objects (if necessary).
-        """
-        pass
-
-    def on_deactivate(self):
-        """
-        Deactivates controller (and object in general), its model and view (if necessary)
-        and child objects.
         """
         pass
 
@@ -231,4 +189,10 @@ class Controller:
 
         :param new_locale:                      selected locale
         """
+        pass
+
+    def on_activate_view(self):
+        pass
+
+    def on_deactivate_view(self):
         pass

@@ -27,13 +27,6 @@ class SignalModel(Model):
         self.state, self.locked = self.user_db_cursor.fetchone()
         self.locked = bool(self.locked)
 
-    @model_is_not_active
-    def on_activate(self):
-        """
-        Activates the model and the view.
-        """
-        self.is_activated = True
-
     def on_activate_view(self):
         """
         Updates state and locked values and activates the view.
@@ -41,13 +34,6 @@ class SignalModel(Model):
         self.view.state = self.state
         self.view.locked = self.locked
         self.view.on_activate()
-
-    @model_is_active
-    def on_deactivate(self):
-        """
-        Deactivates the model.
-        """
-        self.is_activated = False
 
     def on_save_state(self):
         """

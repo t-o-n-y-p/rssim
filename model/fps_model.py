@@ -20,24 +20,9 @@ class FPSModel(Model):
         self.display_fps = self.user_db_cursor.fetchone()[0]
         self.fps = 0
 
-    @model_is_not_active
-    def on_activate(self):
-        """
-        Activates the model and the view.
-        """
-        self.is_activated = True
-        self.on_activate_view()
-
     @display_fps_enabled
     def on_activate_view(self):
         self.view.on_activate()
-
-    @model_is_active
-    def on_deactivate(self):
-        """
-        Deactivates the model.
-        """
-        self.is_activated = False
 
     def on_update_fps(self, fps):
         """

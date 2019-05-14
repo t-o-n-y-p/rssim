@@ -1,34 +1,6 @@
 from database import USER_DB_CONNECTION, USER_DB_CURSOR, CONFIG_DB_CURSOR
 
 
-def model_is_active(fn):
-    """
-    Use this decorator to execute function only if model is active.
-
-    :param fn:                      function to decorate
-    :return:                        decorator function
-    """
-    def _handle_if_model_is_activated(*args, **kwargs):
-        if args[0].is_activated:
-            fn(*args, **kwargs)
-
-    return _handle_if_model_is_activated
-
-
-def model_is_not_active(fn):
-    """
-    Use this decorator to execute function only if model is not active.
-
-    :param fn:                      function to decorate
-    :return:                        decorator function
-    """
-    def _handle_if_model_is_not_activated(*args, **kwargs):
-        if not args[0].is_activated:
-            fn(*args, **kwargs)
-
-    return _handle_if_model_is_not_activated
-
-
 def fullscreen_mode_available(fn):
     """
     Use this decorator within App model to execute function only if fullscreen mode is enabled.
@@ -279,16 +251,7 @@ class Model:
         self.user_db_cursor = USER_DB_CURSOR
         self.config_db_cursor = CONFIG_DB_CURSOR
 
-    def on_activate(self):
-        """
-        Activates the model. Model can activate the view if necessary.
-        """
-        pass
-
-    def on_deactivate(self):
-        """
-        Deactivates the model.
-        """
+    def on_activate_view(self):
         pass
 
     def on_save_state(self):

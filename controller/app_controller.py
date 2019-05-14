@@ -73,34 +73,20 @@ class AppController(Controller):
         self.settings.on_update_view()
         self.fps.on_update_view()
 
-    @controller_is_not_active
-    def on_activate(self):
-        """
-        Activates App object: controller and model. Model activates the view if necessary.
-        When App object is activated, we also activate Game object
-        (because game process is started right away) and FPS object (to display FPS counter).
-        """
-        self.is_activated = True
-        self.model.on_activate()
-        self.main_menu.on_activate()
-        self.game.on_activate()
-        self.fps.on_activate()
+    def on_activate_view(self):
         self.fade_in_animation.on_activate()
+        self.model.on_activate_view()
+        self.main_menu.on_activate_view()
+        self.fps.on_activate_view()
 
-    @controller_is_active
-    def on_deactivate(self):
-        """
-        Deactivates App object: controller, view and model. Also deactivates all child objects.
-        """
-        self.is_activated = False
-        self.model.on_deactivate()
+    def on_deactivate_view(self):
         self.view.on_deactivate()
-        self.main_menu.on_deactivate()
-        self.onboarding.on_deactivate()
-        self.license.on_deactivate()
-        self.game.on_deactivate()
-        self.settings.on_deactivate()
-        self.fps.on_deactivate()
+        self.main_menu.on_deactivate_view()
+        self.onboarding.on_deactivate_view()
+        self.license.on_deactivate_view()
+        self.game.on_deactivate_view()
+        self.settings.on_deactivate_view()
+        self.fps.on_deactivate_view()
 
     def on_fullscreen_button_click(self):
         """
@@ -155,7 +141,7 @@ class AppController(Controller):
         Handles Close button being clicked on.
         Here we deactivate the app, notify game controller to save game progress and close the app window.
         """
-        self.on_deactivate()
+        self.on_deactivate_view()
         self.game.on_save_and_commit_state()
         exit()
 
