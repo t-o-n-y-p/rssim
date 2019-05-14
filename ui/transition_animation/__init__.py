@@ -75,7 +75,6 @@ class TransitionAnimation:
         """
         Fade-out animation deactivation event handler.
         """
-        self.fade_in_animation.animation_object.on_activate_view()
         self.fade_in_animation.on_activate()
 
     def on_fade_in_animation_deactivate(self):

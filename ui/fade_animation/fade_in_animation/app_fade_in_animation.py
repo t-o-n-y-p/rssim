@@ -36,6 +36,7 @@ class AppFadeInAnimation(FadeInAnimation):
         """
         self.is_activated = True
         self.current_opacity_chart_index = self.opacity_chart.index(self.animation_object.view.opacity)
+        self.animation_object.on_activate_view()
         self.main_menu_fade_in_animation.on_activate()
         # activate FPS animation only if FPS monitor is enabled
         USER_DB_CURSOR.execute('SELECT display_fps FROM graphics')

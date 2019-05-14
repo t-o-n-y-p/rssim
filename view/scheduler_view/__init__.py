@@ -43,7 +43,6 @@ class SchedulerView(View):
 
             :param button:                      button that was clicked
             """
-            self.controller.on_deactivate_view()
             self.controller.fade_out_animation.on_activate()
 
         super().__init__(logger=getLogger(f'root.app.game.map.{map_id}.scheduler.view'))

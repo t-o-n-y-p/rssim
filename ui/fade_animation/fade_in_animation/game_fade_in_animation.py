@@ -26,5 +26,6 @@ class GameFadeInAnimation(FadeInAnimation):
         """
         self.is_activated = True
         self.current_opacity_chart_index = self.opacity_chart.index(self.animation_object.view.opacity)
+        self.animation_object.on_activate_view()
         USER_DB_CURSOR.execute('SELECT map_id FROM graphics')
         self.map_fade_in_animations[USER_DB_CURSOR.fetchone()[0]].on_activate()

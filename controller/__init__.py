@@ -1,3 +1,31 @@
+def view_is_active(fn):
+    """
+    Use this decorator to execute function only if view is active.
+
+    :param fn:                      function to decorate
+    :return:                        decorator function
+    """
+    def _handle_if_view_is_activated(*args, **kwargs):
+        if args[0].view.is_activated:
+            fn(*args, **kwargs)
+
+    return _handle_if_view_is_activated
+
+
+def view_is_not_active(fn):
+    """
+    Use this decorator to execute function only if view is not active.
+
+    :param fn:                      function to decorate
+    :return:                        decorator function
+    """
+    def _handle_if_view_is_not_activated(*args, **kwargs):
+        if not args[0].view.is_activated:
+            fn(*args, **kwargs)
+
+    return _handle_if_view_is_not_activated
+
+
 def game_is_not_paused(fn):
     """
     Use this decorator within Game controller to execute function only if game is not paused.

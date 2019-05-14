@@ -22,3 +22,4 @@ class LicenseFadeInAnimation(FadeInAnimation):
         """
         self.is_activated = True
         self.current_opacity_chart_index = self.opacity_chart.index(self.animation_object.view.opacity)
+        self.animation_object.on_activate_view()

@@ -29,7 +29,7 @@ class OnboardingView(View):
 
             :param button:                      button that was clicked
             """
-            self.controller.on_deactivate_view()
+            self.controller.parent_controller.on_close_onboarding()
             self.controller.parent_controller.on_resume_game()
 
         super().__init__(logger=getLogger('root.app.onboarding.view'))

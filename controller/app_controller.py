@@ -74,7 +74,6 @@ class AppController(Controller):
         self.fps.on_update_view()
 
     def on_activate_view(self):
-        self.fade_in_animation.on_activate()
         self.model.on_activate_view()
         self.main_menu.on_activate_view()
         self.fps.on_activate_view()
@@ -158,19 +157,6 @@ class AppController(Controller):
         in case the settings screen was opened from game screen and then user closes settings screen.
         """
         self.game.on_activate_view()
-
-    def on_deactivate_current_view(self):
-        """
-        Determines where the user is located when Open settings button was clicked on:
-        either game screen or main menu screen.
-        Corresponding flag is enabled for Settings controller.
-        """
-        if self.game.view.is_activated:
-            self.game.on_deactivate_view()
-            self.settings.navigated_from_game = True
-        elif self.main_menu.view.is_activated:
-            self.main_menu.on_deactivate_view()
-            self.settings.navigated_from_main_menu = True
 
     def on_update_fps(self, fps):
         """
@@ -285,7 +271,6 @@ class AppController(Controller):
         """
         Performs transition from main menu screen to license screen.
         """
-        self.main_menu.on_deactivate_view()
         self.game_to_main_menu_transition_animation.on_deactivate()
         self.license_to_main_menu_transition_animation.on_deactivate()
         self.main_menu_to_license_transition_animation.on_activate()
@@ -301,7 +286,6 @@ class AppController(Controller):
         """
         Performs transition from main menu screen to onboarding screen.
         """
-        self.main_menu.on_deactivate_view()
         self.game_to_main_menu_transition_animation.on_deactivate()
         self.license_to_main_menu_transition_animation.on_deactivate()
         self.main_menu_to_onboarding_transition_animation.on_activate()

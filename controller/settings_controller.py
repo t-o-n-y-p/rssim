@@ -76,13 +76,6 @@ class SettingsController(Controller):
 
     def on_deactivate_view(self):
         self.view.on_deactivate()
-        if self.navigated_from_main_menu:
-            self.navigated_from_main_menu = False
-
-        if self.navigated_from_game:
-            self.navigated_from_game = False
-            self.parent_controller.game_to_settings_transition_animation.on_deactivate()
-            self.parent_controller.settings_to_game_transition_animation.on_activate()
 
     def on_update_fade_animation_state(self, new_state):
         """

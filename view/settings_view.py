@@ -78,7 +78,13 @@ class SettingsView(View):
             :param button:                      button that was clicked
             """
             self.controller.on_save_and_commit_state()
-            self.controller.on_deactivate_view()
+            if self.controller.navigated_from_main_menu:
+                self.controller.navigated_from_main_menu = False
+
+            if self.controller.navigated_from_game:
+                self.controller.navigated_from_game = False
+                self.controller.parent_controller.game_to_settings_transition_animation.on_deactivate()
+                self.controller.parent_controller.settings_to_game_transition_animation.on_activate()
 
         def on_reject_changes(button):
             """
@@ -86,7 +92,13 @@ class SettingsView(View):
 
             :param button:                      button that was clicked
             """
-            self.controller.on_deactivate_view()
+            if self.controller.navigated_from_main_menu:
+                self.controller.navigated_from_main_menu = False
+
+            if self.controller.navigated_from_game:
+                self.controller.navigated_from_game = False
+                self.controller.parent_controller.game_to_settings_transition_animation.on_deactivate()
+                self.controller.parent_controller.settings_to_game_transition_animation.on_activate()
 
         def on_update_windowed_resolution_state(index):
             """

@@ -90,7 +90,6 @@ class GameView(View):
             :param button:                      button that was clicked
             """
             button.on_deactivate()
-            self.controller.on_deactivate_view()
             self.controller.parent_controller.settings_to_game_transition_animation.on_deactivate()
             self.controller.parent_controller.game_to_settings_transition_animation.on_activate()
             self.controller.parent_controller.settings.navigated_from_game = True

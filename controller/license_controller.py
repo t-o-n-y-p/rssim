@@ -49,7 +49,6 @@ class LicenseController(Controller):
         Deactivates the view and all child views if user closed license screen.
         """
         self.view.on_deactivate()
-        self.parent_controller.on_close_license()
 
     def on_apply_shaders_and_draw_vertices(self):
         """

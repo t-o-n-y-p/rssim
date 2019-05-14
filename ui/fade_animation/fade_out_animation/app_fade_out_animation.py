@@ -35,6 +35,7 @@ class AppFadeOutAnimation(FadeOutAnimation):
         """
         self.is_activated = True
         self.current_opacity_chart_index = self.opacity_chart.index(self.animation_object.view.opacity)
+        self.animation_object.on_deactivate_view()
         self.main_menu_fade_out_animation.on_activate()
         self.license_fade_out_animation.on_activate()
         self.onboarding_fade_out_animation.on_activate()

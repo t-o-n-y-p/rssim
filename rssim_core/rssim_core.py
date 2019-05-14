@@ -65,7 +65,7 @@ class RSSim:
             self.app.on_fullscreen_mode_turned_on()
 
         # activate app after it is created
-        self.app.on_activate_view()
+        self.app.fade_in_animation.on_activate()
         self.notifications = []
 
         @SURFACE.event

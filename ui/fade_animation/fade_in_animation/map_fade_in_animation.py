@@ -40,6 +40,7 @@ class MapFadeInAnimation(FadeInAnimation):
         """
         self.is_activated = True
         self.current_opacity_chart_index = self.opacity_chart.index(self.animation_object.view.opacity)
+        self.animation_object.on_activate_view()
         for animation in self.signal_fade_in_animations:
             animation.on_activate()
 

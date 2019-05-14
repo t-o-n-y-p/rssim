@@ -30,7 +30,7 @@ class LicenseView(View):
 
             :param button:                      button that was clicked
             """
-            self.controller.on_deactivate_view()
+            self.controller.parent_controller.on_close_license()
 
         super().__init__(logger=getLogger('root.app.license.view'))
         self.license_page_control = LicensePageControl()

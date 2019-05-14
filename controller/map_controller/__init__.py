@@ -333,7 +333,6 @@ class MapController(Controller):
             self.on_close_constructor()
             self.constructor_to_scheduler_transition_animation.on_activate()
         else:
-            self.scheduler.on_activate_view()
             self.scheduler.fade_in_animation.on_activate()
         # if schedule screen is opened, zoom in/zoom out buttons should also be hidden
         self.view.on_deactivate_zoom_buttons()
@@ -353,7 +352,6 @@ class MapController(Controller):
             self.on_close_schedule()
             self.scheduler_to_constructor_transition_animation.on_activate()
         else:
-            self.constructor.on_activate_view()
             self.constructor.fade_in_animation.on_activate()
         # if constructor screen is opened, zoom in/zoom out buttons should also be hidden
         self.view.on_deactivate_zoom_buttons()
@@ -584,11 +582,8 @@ class MapController(Controller):
         self.dispatcher.on_add_train(train)
         train.parent_controller.on_open_train_route(track, train_route, train_id, cars)
         if self.view.is_activated:
-            train.on_activate_view()
             train.fade_in_animation.on_activate()
         else:
-            train.on_deactivate_view()
-            train.fade_in_animation.on_deactivate()
             train.fade_out_animation.on_activate()
 
     def on_add_money(self, money):
