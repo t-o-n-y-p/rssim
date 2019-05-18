@@ -119,6 +119,7 @@ class Button:
             batch                               UI batch for the button
             groups                              defines drawing layers (some labels and sprites behind others)
             transparent                         indicates if button needs black background or not
+            invisible                           indicates if button is fully invisible
             paired_button                       second button if action is back-and-forth
                                                 (e.g. pause/resume, fullscreen/restore)
             vertex_list                         button background primitive
@@ -150,6 +151,7 @@ class Button:
         self.batch = BATCHES['ui_batch']
         self.groups = GROUPS
         self.transparent = True
+        self.invisible = False
         self.paired_button = None
         self.vertex_list = None
         self.text_label = None
@@ -185,7 +187,7 @@ class Button:
         gl.glBlendFunc(gl.GL_SRC_ALPHA, gl.GL_ONE_MINUS_SRC_ALPHA)
         # 2 pixels are left for red button border,
         # that's why background position starts from (button_position + 2)
-        if self.vertex_list is None:
+        if self.vertex_list is None and not self.invisible:
             self.vertex_list = self.batch.add(4, gl.GL_QUADS, self.groups['button_background'],
                                               ('v2i', (self.position[0] + 2, self.position[1] + 2,
                                                        self.position[0] + self.button_size[0] - 2, self.position[1] + 2,
@@ -218,8 +220,10 @@ class Button:
         self.is_activated = False
         if instant:
             self.opacity = 0
-            self.vertex_list.delete()
-            self.vertex_list = None
+            if self.vertex_list is not None:
+                self.vertex_list.delete()
+                self.vertex_list = None
+
             if self.text_label is not None:
                 self.text_label.delete()
                 self.text_label = None
@@ -232,14 +236,15 @@ class Button:
         """
         self.position = position
         if self.is_activated:
-            # move the button background to the new position
-            # 2 pixels are left for red button border,
-            # that's why background position starts from (button_position + 2)
-            self.vertex_list.vertices = (self.position[0] + 2, self.position[1] + 2,
-                                         self.position[0] + self.button_size[0] - 2, self.position[1] + 2,
-                                         self.position[0] + self.button_size[0] - 2,
-                                         self.position[1] + self.button_size[1] - 2,
-                                         self.position[0] + 2, self.position[1] + self.button_size[1] - 2)
+            if self.vertex_list is not None:
+                # move the button background to the new position
+                # 2 pixels are left for red button border,
+                # that's why background position starts from (button_position + 2)
+                self.vertex_list.vertices = (self.position[0] + 2, self.position[1] + 2,
+                                             self.position[0] + self.button_size[0] - 2, self.position[1] + 2,
+                                             self.position[0] + self.button_size[0] - 2,
+                                             self.position[1] + self.button_size[1] - 2,
+                                             self.position[0] + 2, self.position[1] + self.button_size[1] - 2)
             # move the text label to the center of the button
             if self.text_label is not None:
                 self.text_label.x = self.position[0] + self.button_size[0] // 2
@@ -273,9 +278,11 @@ class Button:
                 and y in range(self.position[1] + 2, self.position[1] + self.button_size[1] - 2):
             if self.state != 'pressed':
                 self.state = 'hover'
-                self.vertex_list.colors = ((*BUTTON_BACKGROUND_RGB[self.state][self.transparent],
-                                           BUTTON_BACKGROUND_ALPHA[self.state][self.transparent]
-                                           * float(self.opacity) / 255.0) * 4)
+                if self.vertex_list is not None:
+                    self.vertex_list.colors = ((*BUTTON_BACKGROUND_RGB[self.state][self.transparent],
+                                               BUTTON_BACKGROUND_ALPHA[self.state][self.transparent]
+                                               * float(self.opacity) / 255.0) * 4)
+
                 self.surface.set_mouse_cursor(self.hand_cursor)
                 if self.on_hover_action is not None:
                     self.on_hover_action()
@@ -284,9 +291,11 @@ class Button:
         else:
             if self.state != 'normal':
                 self.state = 'normal'
-                self.vertex_list.colors = ((*BUTTON_BACKGROUND_RGB[self.state][self.transparent],
-                                           BUTTON_BACKGROUND_ALPHA[self.state][self.transparent]
-                                           * float(self.opacity) / 255.0) * 4)
+                if self.vertex_list is not None:
+                    self.vertex_list.colors = ((*BUTTON_BACKGROUND_RGB[self.state][self.transparent],
+                                               BUTTON_BACKGROUND_ALPHA[self.state][self.transparent]
+                                               * float(self.opacity) / 255.0) * 4)
+
                 self.surface.set_mouse_cursor(self.default_cursor)
                 if self.on_leave_action is not None:
                     self.on_leave_action()
@@ -304,9 +313,10 @@ class Button:
         :param modifiers:       determines if some modifier key is held down (at the moment we don't use it)
         """
         self.state = 'pressed'
-        self.vertex_list.colors = ((*BUTTON_BACKGROUND_RGB[self.state][self.transparent],
-                                   BUTTON_BACKGROUND_ALPHA[self.state][self.transparent]
-                                   * float(self.opacity) / 255.0) * 4)
+        if self.vertex_list is not None:
+            self.vertex_list.colors = ((*BUTTON_BACKGROUND_RGB[self.state][self.transparent],
+                                       BUTTON_BACKGROUND_ALPHA[self.state][self.transparent]
+                                       * float(self.opacity) / 255.0) * 4)
 
     @button_is_activated
     @cursor_is_over_the_button
@@ -323,9 +333,11 @@ class Button:
         :param modifiers:       determines if some modifier key is held down (at the moment we don't use it)
         """
         self.state = 'hover'
-        self.vertex_list.colors = ((*BUTTON_BACKGROUND_RGB[self.state][self.transparent],
-                                   BUTTON_BACKGROUND_ALPHA[self.state][self.transparent]
-                                   * float(self.opacity) / 255.0) * 4)
+        if self.vertex_list is not None:
+            self.vertex_list.colors = ((*BUTTON_BACKGROUND_RGB[self.state][self.transparent],
+                                       BUTTON_BACKGROUND_ALPHA[self.state][self.transparent]
+                                       * float(self.opacity) / 255.0) * 4)
+
         self.surface.set_mouse_cursor(self.default_cursor)
         self.on_click_action(self)
 
@@ -340,9 +352,11 @@ class Button:
         :param y:               mouse cursor Y position
         """
         self.state = 'normal'
-        self.vertex_list.colors = ((*BUTTON_BACKGROUND_RGB[self.state][self.transparent],
-                                   BUTTON_BACKGROUND_ALPHA[self.state][self.transparent]
-                                   * float(self.opacity) / 255.0) * 4)
+        if self.vertex_list is not None:
+            self.vertex_list.colors = ((*BUTTON_BACKGROUND_RGB[self.state][self.transparent],
+                                       BUTTON_BACKGROUND_ALPHA[self.state][self.transparent]
+                                       * float(self.opacity) / 255.0) * 4)
+
         self.surface.set_mouse_cursor(self.default_cursor)
         if self.on_leave_action is not None:
             self.on_leave_action()
