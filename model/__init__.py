@@ -223,6 +223,13 @@ TRACKS = 0                                      # matrix #0 stores tracks state
 ENVIRONMENT = 1                                 # matrix #1 stores environment tiers state
 CONSTRUCTOR_VIEW_TRACK_CELLS = 4                # number of cells for tracks on constructor screen
 CONSTRUCTOR_VIEW_ENVIRONMENT_CELLS = 4          # number of cells for environment tiers on constructor screen
+# shop_config matrix properties
+SHOP_LEVEL_REQUIRED = 0
+SHOP_PRICE = 1
+SHOP_INITIAL_CONSTRUCTION_TIME = 2
+SHOP_HOURLY_PROFIT = 3
+SHOP_STORAGE_CAPACITY = 4
+SHOP_EXP_BONUS = 5
 # ------------------- END CONSTANTS -------------------
 
 
