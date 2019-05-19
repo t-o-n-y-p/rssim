@@ -31,3 +31,44 @@ class ShopModel(Model):
                                      self.current_stage, self.money, self.next_stage_available, self.internal_shop_time,
                                      self.map_id, self.shop_id))
 
+    def on_activate_view(self):
+        self.view.on_activate()
+
+    def on_unlock(self):
+        self.locked = False
+
+    def on_put_under_construction(self):
+        self.under_construction = True
+        if self.current_stage == 0:
+            next_stage = self.first_available_shop_stage
+        else:
+            next_stage = self.current_stage + 1
+
+        self.construction_time = self.shop_config[next_stage][SHOP_INITIAL_CONSTRUCTION_TIME]
+        self.view.on_put_under_construction()
+
+    def on_update_time(self):
+        if self.current_stage > 0 and not self.under_construction:
+            self.internal_shop_time += 1
+            if self.internal_shop_time % FRAMES_IN_ONE_HOUR == 0 \
+                    and self.money < self.shop_config[self.current_stage][SHOP_STORAGE_CAPACITY]:
+                self.money += min(self.shop_config[self.current_stage][SHOP_HOURLY_PROFIT],
+                                  self.shop_config[self.current_stage][SHOP_STORAGE_CAPACITY] - self.money)
+                self.view.on_update_storage()
+
+        if self.under_construction:
+            self.construction_time -= 1
+            self.view.on_update_construction_time()
+            if self.construction_time == 0:
+                self.under_construction = False
+                if self.current_stage == 0:
+                    self.current_stage = self.first_available_shop_stage
+                else:
+                    self.current_stage += 1
+
+                self.view.on_construction_completed()
+
+    def on_clear_storage(self):
+        self.controller.parent_controller.parent_controller.on_add_money(self.money)
+        self.money = 0
+        self.view.on_clear_storage()
