@@ -122,18 +122,22 @@ def display_fps_enabled(fn):
 # --------------------- CONSTANTS ---------------------
 LEFT_SIDE_ENTRY_FIRST_TRACK = 21        # first available track for left side route is 21st
 RIGHT_SIDE_ENTRY_FIRST_TRACK = 22       # first available track for right side route is 22nd
-# track and environment state matrix properties
+# track, environment and shop stage state matrix properties
 LOCKED = 0                                      # property #0 indicates if track/env. is locked
 UNDER_CONSTRUCTION = 1                          # property #1 indicates if track/env. is under construction
 CONSTRUCTION_TIME = 2                           # property #2 indicates construction time left
 UNLOCK_CONDITION_FROM_LEVEL = 3                 # property #3 indicates if unlock condition from level is met
 UNLOCK_CONDITION_FROM_PREVIOUS_TRACK = 4        # property #4 indicates if unlock condition from previous track is met
 UNLOCK_CONDITION_FROM_PREVIOUS_ENVIRONMENT = 4  # property #4 indicates if unlock condition from previous env. is met
-UNLOCK_CONDITION_FROM_ENVIRONMENT = 5           # property #5 indicates if unlock condition from environment is met
+UNLOCK_CONDITION_FROM_PREVIOUS_STAGE = 4        # property #4 indicates if unlock condition from previous stage is met
+UNLOCK_CONDITION_FROM_ENVIRONMENT = 5           # indicates if unlock condition from environment is met (tracks only)
 UNLOCK_AVAILABLE = 6                            # property #6 indicates if all unlock conditions are met
 PRICE = 7                                       # property #7 indicates track/env. price
 LEVEL_REQUIRED = 8                              # property #8 indicates required level for this track/env.
-ENVIRONMENT_REQUIRED = 9                        # property #9 indicates required environment tier for this track
+ENVIRONMENT_REQUIRED = 9                        # property #9 indicates required environment tier (tracks only)
+HOURLY_PROFIT = 10
+STORAGE_CAPACITY = 11
+EXP_BONUS = 12
 # train direction codes
 DIRECTION_FROM_LEFT_TO_RIGHT = 0        # train comes from the left entry or goes away through the right exit
 DIRECTION_FROM_RIGHT_TO_LEFT = 1        # train comes from the right entry or goes away through the left exit
@@ -223,13 +227,6 @@ TRACKS = 0                                      # matrix #0 stores tracks state
 ENVIRONMENT = 1                                 # matrix #1 stores environment tiers state
 CONSTRUCTOR_VIEW_TRACK_CELLS = 4                # number of cells for tracks on constructor screen
 CONSTRUCTOR_VIEW_ENVIRONMENT_CELLS = 4          # number of cells for environment tiers on constructor screen
-# shop_config matrix properties
-SHOP_LEVEL_REQUIRED = 0
-SHOP_PRICE = 1
-SHOP_INITIAL_CONSTRUCTION_TIME = 2
-SHOP_HOURLY_PROFIT = 3
-SHOP_STORAGE_CAPACITY = 4
-SHOP_EXP_BONUS = 5
 # ------------------- END CONSTANTS -------------------
 
 
