@@ -218,6 +218,7 @@ class Button:
         :param instant:                 indicates if button should be deactivated with zero opacity straight away
         """
         self.is_activated = False
+        self.state = 'normal'
         if instant:
             self.opacity = 0
             if self.vertex_list is not None:

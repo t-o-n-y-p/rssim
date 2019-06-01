@@ -82,11 +82,3 @@ class TransitionAnimation:
         Fade-in animation deactivation event handler.
         """
         self.on_deactivate()
-
-    @transition_animation_is_active
-    def on_update(self):
-        """
-        Updates both fade-out and fade-in animations.
-        """
-        self.fade_out_animation.on_update()
-        self.fade_in_animation.on_update()

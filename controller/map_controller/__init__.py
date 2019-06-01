@@ -62,8 +62,6 @@ class MapController(Controller):
         self.view.on_update()
         self.fade_in_animation.on_update()
         self.fade_out_animation.on_update()
-        self.constructor_to_scheduler_transition_animation.on_update()
-        self.scheduler_to_constructor_transition_animation.on_update()
         self.scheduler.on_update_view()
         self.dispatcher.on_update_view()
         self.constructor.on_update_view()

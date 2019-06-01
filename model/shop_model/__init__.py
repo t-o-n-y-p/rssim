@@ -13,9 +13,9 @@ class ShopModel(Model):
         self.locked, self.current_stage, self.shop_storage_money, self.internal_shop_time \
             = self.user_db_cursor.fetchone()
         self.locked = bool(self.locked)
-        self.config_db_cursor.execute('''SELECT track_required, first_available_shop_stage FROM shops_config
+        self.config_db_cursor.execute('''SELECT track_required, level_required FROM shops_config
                                          WHERE map_id = ? AND shop_id = ?''', (self.map_id, self.shop_id))
-        self.track_required, self.first_available_shop_stage = self.config_db_cursor.fetchone()
+        self.track_required, self.level_required = self.config_db_cursor.fetchone()
         self.shop_stages_state_matrix = {}
         self.user_db_cursor.execute('''SELECT stage_number, locked, under_construction, construction_time,  
                                        unlock_condition_from_level, unlock_condition_from_previous_stage,
