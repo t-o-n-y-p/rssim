@@ -31,6 +31,7 @@ class MapFadeOutAnimation(FadeOutAnimation):
         self.crossover_fade_out_animations = []
         self.train_fade_out_animations = []
         self.train_route_fade_out_animations = []
+        self.shop_fade_out_animations = []
 
     @fade_animation_needed
     @fade_animation_is_not_active
@@ -57,4 +58,7 @@ class MapFadeOutAnimation(FadeOutAnimation):
             animation.on_activate()
 
         for animation in self.train_route_fade_out_animations:
+            animation.on_activate()
+
+        for animation in self.shop_fade_out_animations:
             animation.on_activate()

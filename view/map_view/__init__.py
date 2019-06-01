@@ -291,6 +291,7 @@ class MapView(View):
         """
         self.on_init_graphics()
         self.is_activated = True
+        self.map_move_mode_available = True
         if self.shader_sprite is None:
             self.shader_sprite \
                 = self.batches['main_frame'].add(4, GL_QUADS, self.groups['main_frame'],
@@ -321,9 +322,7 @@ class MapView(View):
         else:
             self.zoom_out_button.on_activate()
 
-        for shop_id in range(len(self.shop_buttons)):
-            if self.unlocked_tracks >= self.shops_track_required_state[shop_id]:
-                self.shop_buttons[shop_id].on_activate()
+        self.on_activate_shop_buttons()
 
     @view_is_active
     def on_deactivate(self):
@@ -708,3 +707,8 @@ class MapView(View):
 
         for b in self.buttons:
             b.on_position_changed((b.x_margin, b.y_margin))
+
+    def on_activate_shop_buttons(self):
+        for shop_id in range(len(self.shop_buttons)):
+            if self.unlocked_tracks >= self.shops_track_required_state[shop_id]:
+                self.shop_buttons[shop_id].on_activate()

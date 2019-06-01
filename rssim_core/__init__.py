@@ -328,6 +328,10 @@ def _create_passenger_map(game):
         controller.fade_in_animation.train_route_fade_in_animations.append(train_route.fade_in_animation)
         controller.fade_out_animation.train_route_fade_out_animations.append(train_route.fade_out_animation)
 
+    for shop in controller.shops:
+        controller.fade_in_animation.shop_fade_in_animations.append(shop.fade_in_animation)
+        controller.fade_out_animation.shop_fade_out_animations.append(shop.fade_out_animation)
+
     return controller
 
 

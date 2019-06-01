@@ -222,5 +222,9 @@
 	"zoom_onboarding_page_string": {
 		"en": "Map is available in tow different scales. You can switch them using zoom button in the top left corner.",
 		"ru": "Карта доступна в двух масштабах. Ты можешь переключаться между ними с помощью кнопки масштаба в левом верхнем углу."
+	},
+	"shop_details_title_string": {
+		"en": "Shop #{0}",
+		"ru": "Магазин №{0}"
 	}
 }
