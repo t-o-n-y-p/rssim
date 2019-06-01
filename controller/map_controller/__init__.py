@@ -49,6 +49,7 @@ class MapController(Controller):
         self.crossovers_list = []
         self.trains = {}
         self.trains_list = []
+        self.shops = []
         self.constructor_to_scheduler_transition_animation = None
         self.scheduler_to_constructor_transition_animation = None
         self.map_id = map_id
@@ -80,6 +81,9 @@ class MapController(Controller):
         for train in self.trains_list:
             train.on_update_view()
 
+        for shop in self.shops:
+            shop.on_update_view()
+
     def on_change_screen_resolution(self, screen_resolution):
         """
         Notifies the view and all child controllers about screen resolution update.
@@ -106,6 +110,9 @@ class MapController(Controller):
 
         for train in self.trains_list:
             train.on_change_screen_resolution(screen_resolution)
+
+        for shop in self.shops:
+            shop.on_change_screen_resolution(screen_resolution)
 
         self.on_change_base_offset(self.view.base_offset)
 
@@ -202,6 +209,9 @@ class MapController(Controller):
         for train in self.trains_list:
             train.on_deactivate_view()
 
+        for shop in self.shops:
+            shop.on_deactivate_view()
+
     def on_zoom_in(self):
         """
         Notifies the view and all Signal, Train route, Railroad switch, Crossover, Train views to zoom in all sprites.
@@ -278,6 +288,9 @@ class MapController(Controller):
         for train in self.trains_list:
             train.on_save_state()
 
+        for shop in self.shops:
+            shop.on_save_state()
+
     def on_update_time(self, game_time):
         """
         Notifies all Train route controllers sorted by priority, Train controllers,
@@ -308,6 +321,8 @@ class MapController(Controller):
         self.scheduler.on_update_time(game_time)
         self.dispatcher.on_update_time(game_time)
         self.constructor.on_update_time(game_time)
+        for shop in self.shops:
+            shop.on_update_time(game_time)
 
     def on_level_up(self, level):
         """
@@ -317,6 +332,8 @@ class MapController(Controller):
         """
         self.scheduler.on_level_up(level)
         self.constructor.on_level_up(level)
+        for shop in self.shops:
+            shop.on_level_up(level)
 
     def on_open_schedule(self):
         """
@@ -625,6 +642,9 @@ class MapController(Controller):
         for train in self.trains_list:
             train.on_update_current_locale(new_locale)
 
+        for shop in self.shops:
+            shop.on_update_current_locale(new_locale)
+
     def on_disable_notifications(self):
         """
         Disables system notifications for the view and all child controllers.
@@ -647,6 +667,9 @@ class MapController(Controller):
 
         for train in self.trains_list:
             train.on_disable_notifications()
+
+        for shop in self.shops:
+            shop.on_disable_notifications()
 
     def on_enable_notifications(self):
         """
@@ -671,6 +694,9 @@ class MapController(Controller):
         for train in self.trains_list:
             train.on_enable_notifications()
 
+        for shop in self.shops:
+            shop.on_enable_notifications()
+
     def on_change_feature_unlocked_notification_state(self, notification_state):
         """
         Notifies the Constructor controller about feature unlocked notification state update.
@@ -694,6 +720,8 @@ class MapController(Controller):
         self.view.on_apply_shaders_and_draw_vertices()
         self.constructor.on_apply_shaders_and_draw_vertices()
         self.scheduler.on_apply_shaders_and_draw_vertices()
+        for shop in self.shops:
+            shop.on_apply_shaders_and_draw_vertices()
 
     def on_save_and_commit_last_known_base_offset(self, base_offset):
         """
@@ -726,6 +754,9 @@ class MapController(Controller):
         for train in self.trains_list:
             train.on_update_fade_animation_state(new_state)
 
+        for shop in self.shops:
+            shop.on_update_fade_animation_state(new_state)
+
     def on_update_clock_state(self, clock_24h_enabled):
         """
         Notifies child controllers (if any) about clock state update.
@@ -733,3 +764,6 @@ class MapController(Controller):
         :param clock_24h_enabled:               indicates if 24h clock is enabled
         """
         self.scheduler.on_update_clock_state(clock_24h_enabled)
+
+    def on_open_shop_details(self, shop_id):
+        self.shops[shop_id].fade_in_animation.on_activate()

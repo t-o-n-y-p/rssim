@@ -62,10 +62,6 @@ class ShopModel(Model):
                                         )
 
     def on_activate_view(self):
-        for stage_number in self.shop_stages_state_matrix:
-            self.view.on_update_stage_state(self.shop_stages_state_matrix, stage_number)
-
-        self.view.on_update_money(self.money)
         self.view.on_activate()
 
     def on_unlock(self):

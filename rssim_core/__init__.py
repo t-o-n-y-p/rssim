@@ -15,6 +15,7 @@ from controller.crossover_controller.passenger_map_crossover_controller import P
 from controller.train_controller.passenger_train_controller import PassengerTrainController
 from controller.dispatcher_controller.passenger_map_dispatcher_controller import PassengerMapDispatcherController
 from controller.constructor_controller.passenger_map_constructor_controller import PassengerMapConstructorController
+from controller.shop_controller.passenger_map_shop_controller import PassengerMapShopController
 from model.app_model import AppModel
 from model.main_menu_model import MainMenuModel
 from model.license_model import LicenseModel
@@ -31,6 +32,7 @@ from model.crossover_model.passenger_map_crossover_model import PassengerMapCros
 from model.train_model.passenger_train_model import PassengerTrainModel
 from model.dispatcher_model.passenger_map_dispatcher_model import PassengerMapDispatcherModel
 from model.constructor_model.passenger_map_constructor_model import PassengerMapConstructorModel
+from model.shop_model.passenger_map_shop_model import PassengerMapShopModel
 from view.app_view import AppView
 from view.main_menu_view import MainMenuView
 from view.license_view import LicenseView
@@ -47,6 +49,7 @@ from view.crossover_view.passenger_map_crossover_view import PassengerMapCrossov
 from view.train_view.passenger_train_view import PassengerTrainView
 from view.dispatcher_view.passenger_map_dispatcher_view import PassengerMapDispatcherView
 from view.constructor_view.passenger_map_constructor_view import PassengerMapConstructorView
+from view.shop_view.passenger_map_shop_view import PassengerMapShopView
 from ui.transition_animation import TransitionAnimation
 from ui.fade_animation.fade_in_animation.app_fade_in_animation import AppFadeInAnimation
 from ui.fade_animation.fade_in_animation.constructor_fade_in_animation import ConstructorFadeInAnimation
@@ -64,6 +67,7 @@ from ui.fade_animation.fade_in_animation.settings_fade_in_animation import Setti
 from ui.fade_animation.fade_in_animation.signal_fade_in_animation import SignalFadeInAnimation
 from ui.fade_animation.fade_in_animation.train_fade_in_animation import TrainFadeInAnimation
 from ui.fade_animation.fade_in_animation.train_route_fade_in_animation import TrainRouteFadeInAnimation
+from ui.fade_animation.fade_in_animation.shop_fade_in_animation import ShopFadeInAnimation
 from ui.fade_animation.fade_out_animation.app_fade_out_animation import AppFadeOutAnimation
 from ui.fade_animation.fade_out_animation.constructor_fade_out_animation import ConstructorFadeOutAnimation
 from ui.fade_animation.fade_out_animation.crossover_fade_out_animation import CrossoverFadeOutAnimation
@@ -80,6 +84,7 @@ from ui.fade_animation.fade_out_animation.settings_fade_out_animation import Set
 from ui.fade_animation.fade_out_animation.signal_fade_out_animation import SignalFadeOutAnimation
 from ui.fade_animation.fade_out_animation.train_fade_out_animation import TrainFadeOutAnimation
 from ui.fade_animation.fade_out_animation.train_route_fade_out_animation import TrainRouteFadeOutAnimation
+from ui.fade_animation.fade_out_animation.shop_fade_out_animation import ShopFadeOutAnimation
 from database import CONFIG_DB_CURSOR, USER_DB_CURSOR
 
 
@@ -284,6 +289,11 @@ def _create_passenger_map(game):
         controller.crossovers[i[0]][i[1]][i[2]] \
             = _create_passenger_map_crossover(controller, i[0], i[1], i[2])
         controller.crossovers_list.append(controller.crossovers[i[0]][i[1]][i[2]])
+
+    CONFIG_DB_CURSOR.execute('''SELECT COUNT(*) FROM shops_config WHERE map_id = 0''')
+    number_of_shops = CONFIG_DB_CURSOR.fetchone()[0]
+    for i in range(number_of_shops):
+        controller.shops.append(_create_shop(controller, i))
 
     model = PassengerMapModel()
     view = PassengerMapView()
@@ -601,6 +611,20 @@ def _create_onboarding(app):
     controller.fade_out_animation = OnboardingFadeOutAnimation(controller)
     model = OnboardingModel()
     view = OnboardingView()
+    controller.model = model
+    model.controller = controller
+    controller.view = view
+    view.on_assign_controller(controller)
+    model.view = view
+    return controller
+
+
+def _create_shop(map_controller, shop_id):
+    controller = PassengerMapShopController(map_controller, shop_id)
+    controller.fade_in_animation = ShopFadeInAnimation(controller)
+    controller.fade_out_animation = ShopFadeOutAnimation(controller)
+    model = PassengerMapShopModel(shop_id)
+    view = PassengerMapShopView(shop_id)
     controller.model = model
     model.controller = controller
     controller.view = view

@@ -12,6 +12,7 @@ from ui.button.zoom_in_button import ZoomInButton
 from ui.button.zoom_out_button import ZoomOutButton
 from ui.button.open_schedule_button import OpenScheduleButton
 from ui.button.open_constructor_button import OpenConstructorButton
+from ui.button.open_shop_details_button import OpenShopDetailsButton
 from textures import get_full_map, get_full_map_e
 
 
@@ -114,6 +115,7 @@ class MapView(View):
             :param button:                      button that was clicked
             """
             button.on_deactivate(instant=True)
+            button.state = 'normal'
             self.controller.on_open_schedule()
 
         def on_open_constructor(button):
@@ -124,7 +126,14 @@ class MapView(View):
             :param button:                      button that was clicked
             """
             button.on_deactivate(instant=True)
+            button.state = 'normal'
             self.controller.on_open_constructor()
+
+        def on_open_shop_details(button):
+            for b in self.shop_buttons:
+                b.on_deactivate(instant=True)
+
+            self.controller.on_open_shop_details(self.shop_buttons.index(button))
 
         super().__init__(logger=getLogger(f'root.app.game.map.{map_id}.view'))
         self.map_id = map_id
@@ -164,6 +173,22 @@ class MapView(View):
         self.open_constructor_button = OpenConstructorButton(on_click_action=on_open_constructor)
         self.buttons = [self.zoom_in_button, self.zoom_out_button, self.open_schedule_button,
                         self.open_constructor_button]
+        self.shop_buttons = []
+        self.shops_track_required_state = []
+        self.shop_buttons_offsets = []
+        self.config_db_cursor.execute('''SELECT COUNT(*) FROM shops_config WHERE map_id = ?''', (self.map_id, ))
+        for shop_id in range(self.config_db_cursor.fetchone()[0]):
+            self.shop_buttons.append(OpenShopDetailsButton(on_click_action=on_open_shop_details,
+                                                           on_hover_action=on_hover_action,
+                                                           on_leave_action=on_leave_action))
+            self.config_db_cursor.execute('''SELECT track_required FROM shops_config 
+                                             WHERE map_id = ? AND shop_id = ?''', (self.map_id, shop_id))
+            self.shops_track_required_state.append(self.config_db_cursor.fetchone()[0])
+            self.config_db_cursor.execute('''SELECT button_x, button_y FROM shops_config 
+                                             WHERE map_id = ? AND shop_id = ?''', (self.map_id, shop_id))
+            self.shop_buttons_offsets.append(self.config_db_cursor.fetchone())
+
+        self.buttons.extend(self.shop_buttons)
         self.map_move_mode_available = True
         self.map_move_mode = False
         self.on_mouse_press_handlers.append(self.handle_mouse_press)
@@ -296,6 +321,10 @@ class MapView(View):
         else:
             self.zoom_out_button.on_activate()
 
+        for shop_id in range(len(self.shop_buttons)):
+            if self.unlocked_tracks >= self.shops_track_required_state[shop_id]:
+                self.shop_buttons[shop_id].on_activate()
+
     @view_is_active
     def on_deactivate(self):
         """
@@ -318,6 +347,17 @@ class MapView(View):
             self.main_map_sprite.position = (self.base_offset[0] + self.map_offset[0],
                                              self.base_offset[1] + self.map_offset[1])
             self.environment_sprite.position = self.base_offset
+
+        for shop_id in range(len(self.shop_buttons)):
+            if self.zoom_out_activated:
+                self.shop_buttons[shop_id].x_margin = self.shop_buttons_offsets[shop_id][0] // 2 + self.base_offset[0]
+                self.shop_buttons[shop_id].y_margin = self.shop_buttons_offsets[shop_id][1] // 2 + self.base_offset[1]
+            else:
+                self.shop_buttons[shop_id].x_margin = self.shop_buttons_offsets[shop_id][0] + self.base_offset[0]
+                self.shop_buttons[shop_id].y_margin = self.shop_buttons_offsets[shop_id][1] + self.base_offset[1]
+
+            self.shop_buttons[shop_id].on_position_changed((self.shop_buttons[shop_id].x_margin,
+                                                            self.shop_buttons[shop_id].y_margin))
 
     def on_unlock_track(self, track):
         """
@@ -399,6 +439,12 @@ class MapView(View):
             self.mini_map_frame_width = int(self.screen_resolution[0] / MAP_WIDTH * self.mini_map_width)
             self.mini_map_frame_height = int((self.screen_resolution[1] - self.bottom_bar_height - self.top_bar_height)
                                              / MAP_HEIGHT * self.mini_map_height)
+
+        for shop_id in range(len(self.shop_buttons)):
+            if self.zoom_out_activated:
+                self.shop_buttons[shop_id].on_size_changed((125, 20))
+            else:
+                self.shop_buttons[shop_id].on_size_changed((250, 40))
 
         self.controller.on_save_and_commit_last_known_base_offset(self.base_offset)
 
@@ -650,5 +696,15 @@ class MapView(View):
         self.open_schedule_button.y_margin = 0
         self.open_schedule_button.on_size_changed((self.bottom_bar_height, self.bottom_bar_height))
         self.open_constructor_button.on_size_changed((self.bottom_bar_height, self.bottom_bar_height))
+        for shop_id in range(len(self.shop_buttons)):
+            if self.zoom_out_activated:
+                self.shop_buttons[shop_id].on_size_changed((125, 20))
+                self.shop_buttons[shop_id].x_margin = self.shop_buttons_offsets[shop_id][0] // 2 + self.base_offset[0]
+                self.shop_buttons[shop_id].y_margin = self.shop_buttons_offsets[shop_id][1] // 2 + self.base_offset[1]
+            else:
+                self.shop_buttons[shop_id].on_size_changed((250, 40))
+                self.shop_buttons[shop_id].x_margin = self.shop_buttons_offsets[shop_id][0] + self.base_offset[0]
+                self.shop_buttons[shop_id].y_margin = self.shop_buttons_offsets[shop_id][1] + self.base_offset[1]
+
         for b in self.buttons:
             b.on_position_changed((b.x_margin, b.y_margin))
