@@ -130,9 +130,6 @@ class MapView(View):
             self.controller.on_open_constructor()
 
         def on_open_shop_details(button):
-            for b in self.shop_buttons:
-                b.on_deactivate(instant=True)
-
             self.controller.on_open_shop_details(self.shop_buttons.index(button))
 
         super().__init__(logger=getLogger(f'root.app.game.map.{map_id}.view'))
@@ -712,3 +709,7 @@ class MapView(View):
         for shop_id in range(len(self.shop_buttons)):
             if self.unlocked_tracks >= self.shops_track_required_state[shop_id]:
                 self.shop_buttons[shop_id].on_activate()
+
+    def on_deactivate_shop_buttons(self):
+        for shop_id in range(len(self.shop_buttons)):
+            self.shop_buttons[shop_id].on_deactivate()

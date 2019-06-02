@@ -351,6 +351,7 @@ class MapController(Controller):
             self.scheduler.fade_in_animation.on_activate()
         # if schedule screen is opened, zoom in/zoom out buttons should also be hidden
         self.view.on_deactivate_zoom_buttons()
+        self.view.on_deactivate_shop_buttons()
         # if mini map is active when user opens schedule screen, it should also be hidden
         self.view.is_mini_map_activated = False
 
@@ -370,6 +371,7 @@ class MapController(Controller):
             self.constructor.fade_in_animation.on_activate()
         # if constructor screen is opened, zoom in/zoom out buttons should also be hidden
         self.view.on_deactivate_zoom_buttons()
+        self.view.on_deactivate_shop_buttons()
         # if mini map is active when user opens constructor screen, it should also be hidden
         self.view.is_mini_map_activated = False
 
@@ -380,6 +382,7 @@ class MapController(Controller):
         zoom in/out buttons and open schedule button.
         """
         self.view.on_activate_zoom_buttons()
+        self.view.on_activate_shop_buttons()
         self.view.open_schedule_button.on_activate(instant=True)
 
     @map_view_is_active
@@ -389,6 +392,7 @@ class MapController(Controller):
         zoom in/out buttons and open constructor button.
         """
         self.view.on_activate_zoom_buttons()
+        self.view.on_activate_shop_buttons()
         self.view.open_constructor_button.on_activate(instant=True)
 
     def on_switch_signal_to_green(self, signal_track, signal_base_route):
@@ -768,6 +772,7 @@ class MapController(Controller):
     def on_open_shop_details(self, shop_id):
         self.shops[shop_id].fade_in_animation.on_activate()
         self.view.on_deactivate_zoom_buttons()
+        self.view.on_deactivate_shop_buttons()
         self.view.is_mini_map_activated = False
 
     def on_close_shop_details(self, shop_id):
