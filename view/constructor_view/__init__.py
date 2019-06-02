@@ -280,7 +280,6 @@ class ConstructorView(View):
         :param entity_number:                   number of track or environment tier
         :param game_time:                       current in-game time
         """
-        self.logger.debug(f'updating construction state: {construction_type} {entity_number}')
         self.construction_state_matrix = construction_state_matrix
         if construction_type == TRACKS:
             remaining_tracks = sorted(list(self.construction_state_matrix[TRACKS].keys()))
