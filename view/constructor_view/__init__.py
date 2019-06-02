@@ -91,7 +91,7 @@ class ConstructorView(View):
 
         super().__init__(logger=getLogger(f'root.app.game.map.{map_id}.constructor.view'))
         self.map_id = map_id
-        self.construction_state_matrix = None
+        self.construction_state_matrix = [{}, {}]
         self.money = 0
         self.close_constructor_button = CloseConstructorButton(on_click_action=on_close_constructor)
         self.buttons = [self.close_constructor_button, ]
@@ -280,15 +280,19 @@ class ConstructorView(View):
         :param entity_number:                   number of track or environment tier
         :param game_time:                       current in-game time
         """
+        self.logger.debug(f'updating construction state: {construction_type} {entity_number}')
         self.construction_state_matrix = construction_state_matrix
         if construction_type == TRACKS:
             remaining_tracks = sorted(list(self.construction_state_matrix[TRACKS].keys()))
-            self.constructor_cells[construction_type][remaining_tracks.index(entity_number)]\
-                .on_update_state(self.construction_state_matrix[TRACKS][entity_number])
+            if remaining_tracks.index(entity_number) < CONSTRUCTOR_VIEW_TRACK_CELLS:
+                self.constructor_cells[construction_type][remaining_tracks.index(entity_number)]\
+                    .on_update_state(self.construction_state_matrix[TRACKS][entity_number])
+
         elif construction_type == ENVIRONMENT:
             remaining_tiers = sorted(list(self.construction_state_matrix[ENVIRONMENT].keys()))
-            self.constructor_cells[construction_type][remaining_tiers.index(entity_number)]\
-                .on_update_state(self.construction_state_matrix[ENVIRONMENT][entity_number])
+            if remaining_tiers.index(entity_number) < CONSTRUCTOR_VIEW_ENVIRONMENT_CELLS:
+                self.constructor_cells[construction_type][remaining_tiers.index(entity_number)]\
+                    .on_update_state(self.construction_state_matrix[ENVIRONMENT][entity_number])
 
     @view_is_active
     def on_unlock_construction(self, construction_type, entity_number):

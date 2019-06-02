@@ -87,7 +87,7 @@ class GameModel(Model):
         :param exp:                     amount of exp gained
         """
         self.exp += exp * self.exp_multiplier
-        if self.exp >= self.player_progress and self.level < MAXIMUM_LEVEL:
+        while self.exp >= self.player_progress and self.level < MAXIMUM_LEVEL:
             self.controller.on_level_up()
 
         self.view.on_update_exp(self.exp, self.player_progress)

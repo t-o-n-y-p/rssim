@@ -39,6 +39,21 @@ def cell_is_not_active(fn):
     return _handle_if_cell_is_not_activated
 
 
+def unlock_available(fn):
+    """
+    Use this decorator to execute function
+    only if unlock_available flag is enabled for entity represented by this cell.
+
+    :param fn:                      function to decorate
+    :return:                        decorator function
+    """
+    def _handle_if_unlock_available(*args, **kwargs):
+        if len(args[0].data) > 0 and args[0].data[UNLOCK_AVAILABLE]:
+            fn(*args, **kwargs)
+
+    return _handle_if_unlock_available
+
+
 class ConstructorCell:
     """
     Implements base class for constructor cell.
@@ -134,7 +149,7 @@ class ConstructorCell:
         self.on_set_money_target_action = on_set_money_target_action
         self.on_reset_money_target_action = on_reset_money_target_action
         self.entity_number = None
-        self.data = None
+        self.data = []
         self.screen_resolution = (0, 0)
         self.position = [0, 0]
         self.size = [0, 0]
@@ -267,29 +282,29 @@ class ConstructorCell:
         self.on_update_build_button_state()
 
     @cell_is_active
+    @unlock_available
     def on_update_build_button_state(self):
         """
         Updates locked label and build button state based on available money.
         """
-        if self.data[UNLOCK_AVAILABLE]:
-            if self.money >= self.data[PRICE]:
-                self.build_button.on_activate()
-                if self.locked_label is not None:
-                    self.locked_label.delete()
-                    self.locked_label = None
+        if self.money >= self.data[PRICE]:
+            self.build_button.on_activate()
+            if self.locked_label is not None:
+                self.locked_label.delete()
+                self.locked_label = None
 
+        else:
+            self.build_button.on_deactivate(instant=True)
+            if self.locked_label is None:
+                self.locked_label = Label('', font_name='Webdings',
+                                          font_size=int(self.build_button.base_font_size_property * self.size[1]),
+                                          color=(*GREY_RGB, self.opacity),
+                                          x=self.position[0] + self.size[0] - self.size[1] // 2,
+                                          y=self.position[1] + self.size[1] // 2,
+                                          anchor_x='center', anchor_y='center',
+                                          batch=self.batches['ui_batch'], group=self.groups['button_text'])
             else:
-                self.build_button.on_deactivate(instant=True)
-                if self.locked_label is None:
-                    self.locked_label = Label('', font_name='Webdings',
-                                              font_size=int(self.build_button.base_font_size_property * self.size[1]),
-                                              color=(*GREY_RGB, self.opacity),
-                                              x=self.position[0] + self.size[0] - self.size[1] // 2,
-                                              y=self.position[1] + self.size[1] // 2,
-                                              anchor_x='center', anchor_y='center',
-                                              batch=self.batches['ui_batch'], group=self.groups['button_text'])
-                else:
-                    self.locked_label.text = ''
+                self.locked_label.text = ''
 
     @cell_is_not_active
     def on_activate(self):
