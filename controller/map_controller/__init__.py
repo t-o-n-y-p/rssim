@@ -769,3 +769,8 @@ class MapController(Controller):
         self.shops[shop_id].fade_in_animation.on_activate()
         self.view.on_deactivate_zoom_buttons()
         self.view.is_mini_map_activated = False
+
+    def on_close_shop_details(self, shop_id):
+        self.shops[shop_id].fade_out_animation.on_activate()
+        self.view.on_activate_zoom_buttons()
+        self.view.on_activate_shop_buttons()

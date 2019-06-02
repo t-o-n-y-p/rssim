@@ -6,10 +6,14 @@ from pyglet.text import Label
 
 from view import *
 from i18n import I18N_RESOURCES
+from ui.button.close_shop_details_button import CloseShopDetailsButton
 
 
 class ShopView(View):
     def __init__(self, map_id, shop_id):
+        def on_close_shop_details(button):
+            self.controller.parent_controller.on_close_shop_details(self.shop_id)
+
         super().__init__(logger=getLogger(f'root.app.game.map.{map_id}.shop.{shop_id}.view'))
         self.map_id = map_id
         self.shop_id = shop_id
@@ -20,6 +24,8 @@ class ShopView(View):
         self.shop_view_shader_bottom_limit = 0.0
         self.shop_view_shader_upper_limit = 0.0
         self.title_label = None
+        self.close_shop_details_button = CloseShopDetailsButton(on_click_action=on_close_shop_details)
+        self.buttons = [self.close_shop_details_button, ]
         self.on_init_graphics()
 
     def on_init_graphics(self):
@@ -53,12 +59,19 @@ class ShopView(View):
                                      anchor_x='left', anchor_y='center', batch=self.batches['ui_batch'],
                                      group=self.groups['button_text'])
 
+        for b in self.buttons:
+            if b.to_activate_on_controller_init:
+                b.on_activate()
+
     @view_is_active
     def on_deactivate(self):
         """
         Deactivates the view and destroys all labels and buttons.
         """
         self.is_activated = False
+        for b in self.buttons:
+            b.on_deactivate()
+            b.state = 'normal'
 
     def on_change_screen_resolution(self, screen_resolution):
         self.on_recalculate_ui_properties(screen_resolution)
@@ -69,11 +82,19 @@ class ShopView(View):
         self.shop_details_window_position = ((self.screen_resolution[0] - self.shop_details_window_size[0]) // 2,
                                              (self.screen_resolution[1] - self.shop_details_window_size[1]
                                               - 3 * self.bottom_bar_height // 2) // 2 + self.bottom_bar_height)
+        self.close_shop_details_button.on_size_changed((self.top_bar_height, self.top_bar_height))
+        self.close_shop_details_button.x_margin = self.shop_details_window_position[0] \
+                                                  + self.shop_details_window_size[0] - self.top_bar_height
+        self.close_shop_details_button.y_margin = self.shop_details_window_position[1] \
+                                                  + self.shop_details_window_size[1] - self.top_bar_height
         if self.is_activated:
             self.title_label.x = self.shop_details_window_position[0] + self.top_bar_height // 4
             self.title_label.y = self.shop_details_window_position[1] + self.shop_details_window_size[1] \
                                  - self.top_bar_height // 2
             self.title_label.font_size = int(16 / 40 * self.top_bar_height)
+
+        for b in self.buttons:
+            b.on_position_changed((b.x_margin, b.y_margin))
 
     @shader_sprite_exists
     def on_apply_shaders_and_draw_vertices(self):
@@ -96,6 +117,8 @@ class ShopView(View):
         """
         self.opacity = new_opacity
         self.on_update_sprite_opacity()
+        for b in self.buttons:
+            b.on_update_opacity(new_opacity)
 
     def on_update_sprite_opacity(self):
         """
