@@ -226,5 +226,9 @@
 	"shop_details_title_string": {
 		"en": "Shop #{0}",
 		"ru": "Магазин №{0}"
+	},
+	"shop_placeholder_description_string": {
+		"en": "Level {0} is required to operate this shop",
+		"ru": "Для управления этим магазином требуется уровень {0}"
 	}
 }
