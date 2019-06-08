@@ -170,3 +170,8 @@ class MapModel(Model):
                                          FROM crossovers_config WHERE track_unlocked_with = ? AND map_id = ?''',
                                       (track, self.map_id))
         return self.config_db_cursor.fetchall()
+
+    def get_shops_to_unlock_with_track(self, track):
+        self.config_db_cursor.execute('''SELECT shop_id FROM shops_config WHERE map_id = ? AND track_required = ?''',
+                                      (self.map_id, track))
+        return self.config_db_cursor.fetchall()
