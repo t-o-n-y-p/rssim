@@ -288,6 +288,7 @@ class ConstructorCell:
         Updates locked label and build button state based on available money.
         """
         if self.money >= self.data[PRICE]:
+            self.build_button.opacity = self.opacity
             self.build_button.on_activate()
             if self.locked_label is not None:
                 self.locked_label.delete()
@@ -388,11 +389,12 @@ class ConstructorCell:
         """
         self.money_target_activated = True
         if self.is_activated and len(self.data) > 0:
-            self.enable_money_target_button.on_deactivate()
+            self.enable_money_target_button.on_deactivate(instant=True)
             if self.data[UNLOCK_AVAILABLE]:
+                self.disable_money_target_button.opacity = self.opacity
                 self.disable_money_target_button.on_activate()
             else:
-                self.disable_money_target_button.on_deactivate()
+                self.disable_money_target_button.on_deactivate(instant=True)
 
     def on_deactivate_money_target(self):
         """
@@ -402,6 +404,7 @@ class ConstructorCell:
         if self.is_activated and len(self.data) > 0:
             self.disable_money_target_button.on_deactivate(instant=True)
             if self.data[UNLOCK_AVAILABLE]:
+                self.enable_money_target_button.opacity = self.opacity
                 self.enable_money_target_button.on_activate()
             else:
                 self.enable_money_target_button.on_deactivate(instant=True)
