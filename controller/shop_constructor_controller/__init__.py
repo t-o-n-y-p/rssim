@@ -73,8 +73,7 @@ class ShopConstructorController(Controller):
         """
         Notifies the view and child controllers to draw all sprites with shaders.
         """
-        pass
-        # self.view.on_apply_shaders_and_draw_vertices()
+        self.view.on_apply_shaders_and_draw_vertices()
 
     def on_level_up(self, level):
         """

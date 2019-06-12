@@ -65,7 +65,6 @@ class SchedulerView(View):
 
             self.schedule_rows.append(column)
 
-        self.shader_sprite = None
         self.shader = from_files_names('shaders/shader.vert', 'shaders/scheduler_view/shader.frag')
         self.scheduler_view_shader_bottom_limit = 0.0
         self.scheduler_view_shader_upper_limit = 0.0

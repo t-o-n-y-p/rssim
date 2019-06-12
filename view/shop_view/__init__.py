@@ -20,7 +20,6 @@ class ShopView(View):
         self.shop_details_window_position = (0, 0)
         self.shop_details_window_size = (0, 0)
         self.shader = from_files_names('shaders/shader.vert', 'shaders/shop_view/shader.frag')
-        self.shader_sprite = None
         self.shop_view_shader_bottom_limit = 0.0
         self.shop_view_shader_upper_limit = 0.0
         self.title_label = None
@@ -77,6 +76,12 @@ class ShopView(View):
         self.on_recalculate_ui_properties(screen_resolution)
         self.shop_view_shader_bottom_limit = self.bottom_bar_height / self.screen_resolution[1] * 2 - 1
         self.shop_view_shader_upper_limit = 1 - self.top_bar_height / self.screen_resolution[1] * 2
+        if self.is_activated:
+            self.shader_sprite.vertices = (-1.0, self.shop_view_shader_bottom_limit,
+                                           -1.0, self.shop_view_shader_upper_limit,
+                                           1.0, self.shop_view_shader_upper_limit,
+                                           1.0, self.shop_view_shader_bottom_limit)
+
         self.shop_details_window_size = (int(6.875 * self.bottom_bar_height) * 2 + self.bottom_bar_height // 4,
                                          19 * self.bottom_bar_height // 4)
         self.shop_details_window_position = ((self.screen_resolution[0] - self.shop_details_window_size[0]) // 2,

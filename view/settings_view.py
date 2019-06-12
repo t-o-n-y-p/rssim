@@ -204,7 +204,6 @@ class SettingsView(View):
                         *self.fade_animations_checkbox.buttons, *self.clock_24h_checkbox.buttons,
                         *self.notifications_checkbox_group.buttons]
         self.shader = from_files_names('shaders/shader.vert', 'shaders/settings_view/shader.frag')
-        self.shader_sprite = None
         self.on_init_graphics()
 
     def on_update_opacity(self, new_opacity):

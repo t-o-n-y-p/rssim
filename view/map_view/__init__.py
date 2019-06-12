@@ -191,7 +191,6 @@ class MapView(View):
         self.on_mouse_press_handlers.append(self.handle_mouse_press)
         self.on_mouse_release_handlers.append(self.handle_mouse_release)
         self.on_mouse_drag_handlers.append(self.handle_mouse_drag)
-        self.shader_sprite = None
         self.shader = from_files_names('shaders/shader.vert', 'shaders/map_view/shader.frag')
         self.map_view_shader_bottom_limit = 0.0
         self.map_view_shader_upper_limit = 0.0

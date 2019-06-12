@@ -125,7 +125,6 @@ class GameView(View):
         self.enough_money_notification_enabled = bool(self.enough_money_notification_enabled)
         self.user_db_cursor.execute('SELECT clock_24h FROM i18n')
         self.clock_24h_enabled = bool(self.user_db_cursor.fetchone()[0])
-        self.shader_sprite = None
         self.shader = from_files_names('shaders/shader.vert', 'shaders/game_view/shader.frag')
         self.game_view_shader_upper_limit = 0.0
         self.on_init_graphics()

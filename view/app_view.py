@@ -132,7 +132,6 @@ class AppView(View):
         self.on_mouse_release_handlers.append(self.handle_mouse_release)
         self.on_mouse_drag_handlers.append(self.handle_mouse_drag)
         self.shader = from_files_names('shaders/shader.vert', 'shaders/app_view/shader.frag')
-        self.shader_sprite = None
         self.on_init_graphics()
 
     def on_update_opacity(self, new_opacity):

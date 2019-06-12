@@ -72,7 +72,6 @@ class MainMenuView(View):
         self.create_station_button_label = None
         self.back_to_the_station_label = None
         self.shader = from_files_names('shaders/shader.vert', 'shaders/main_menu_view/shader.frag')
-        self.shader_sprite = None
         self.on_init_graphics()
 
     def on_init_graphics(self):

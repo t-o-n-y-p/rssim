@@ -124,7 +124,6 @@ class ConstructorView(View):
         self.user_db_cursor.execute('''SELECT money_target_cell_position FROM constructor WHERE map_id = ?''',
                                     (self.map_id, ))
         self.money_target_cell_position = list(map(int, self.user_db_cursor.fetchone()[0].split(',')))
-        self.shader_sprite = None
         self.shader = from_files_names('shaders/shader.vert', 'shaders/constructor_view/shader.frag')
         self.constructor_view_shader_bottom_limit = 0.0
         self.constructor_view_shader_upper_limit = 0.0

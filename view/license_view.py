@@ -37,7 +37,6 @@ class LicenseView(View):
         self.close_license_button = CloseLicenseButton(on_click_action=on_close_license)
         self.buttons = [*self.license_page_control.buttons, self.close_license_button]
         self.shader = from_files_names('shaders/shader.vert', 'shaders/license_view/shader.frag')
-        self.shader_sprite = None
         self.on_mouse_scroll_handlers = self.license_page_control.on_mouse_scroll_handlers
         self.on_init_graphics()
 

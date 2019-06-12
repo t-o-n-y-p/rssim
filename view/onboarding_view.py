@@ -37,7 +37,6 @@ class OnboardingView(View):
         self.skip_onboarding_button = SkipOnboardingButton(on_click_action=on_skip_onboarding)
         self.buttons = [*self.onboarding_page_control.buttons, self.skip_onboarding_button]
         self.shader = from_files_names('shaders/shader.vert', 'shaders/onboarding_view/shader.frag')
-        self.shader_sprite = None
         self.skip_onboarding_label = None
         self.on_init_graphics()
 
