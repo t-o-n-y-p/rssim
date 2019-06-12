@@ -230,12 +230,6 @@ def _create_passenger_map(game):
     controller.scheduler = _create_passenger_map_scheduler(controller)
     controller.dispatcher = _create_passenger_map_dispatcher(controller)
     controller.constructor = _create_passenger_map_constructor(controller)
-    controller.constructor_to_scheduler_transition_animation \
-        = TransitionAnimation(fade_out_animation=controller.constructor.fade_out_animation,
-                              fade_in_animation=controller.scheduler.fade_in_animation)
-    controller.scheduler_to_constructor_transition_animation \
-        = TransitionAnimation(fade_out_animation=controller.scheduler.fade_out_animation,
-                              fade_in_animation=controller.constructor.fade_in_animation)
     # read train IDs from database, create trains and append them to both dictionary and list
     USER_DB_CURSOR.execute('SELECT train_id FROM trains WHERE map_id = 0')
     train_ids = USER_DB_CURSOR.fetchall()
