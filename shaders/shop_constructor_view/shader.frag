@@ -32,6 +32,40 @@ int is_vertical_line(int margin_x, int margin_y, int vertical_line_width)
     return -1;
 }
 
+int is_grey_horizontal_line(int margin_x, int margin_y, int vertical_line_width)
+{
+    if (margin_x >= 0 && margin_x <= shop_stages_cells_size[0] - 1
+        && ((margin_y >= 0 && margin_y <= vertical_line_width - 1)
+            || (margin_y >= shop_stages_cells_size[1] - vertical_line_width
+                && margin_y <= shop_stages_cells_size[1] - 1)))
+    {
+        for (int i=4; i>=1; i--)
+            if (margin_x < int(i * (shop_stages_cells_size[0] - vertical_line_width) / 4))
+                return i;
+
+        return -1;
+    }
+    else
+        return -1;
+}
+
+int is_light_blue_horizontal_line(int margin_x, int margin_y, int vertical_line_width)
+{
+    if (margin_x >= 0 && margin_x <= shop_stages_cells_size[0] - 1
+        && ((margin_y >= vertical_line_width && margin_y <= vertical_line_width * 3 - 1)
+            || (margin_y >= shop_stages_cells_size[1] - vertical_line_width * 3
+                && margin_y <= shop_stages_cells_size[1] - vertical_line_width - 1)))
+    {
+        for (int i=4; i>=1; i--)
+            if (margin_x < int(i * (shop_stages_cells_size[0] - vertical_line_width) / 4))
+                return i;
+
+        return -1;
+    }
+    else
+        return -1;
+}
+
 void main()
 /*
     MAIN SHADER FUNCTION
@@ -43,9 +77,26 @@ void main()
     int vertical_line_width = int(shop_stages_cells_size[0] / 80);
     int number_of_stage_vertical_line = is_vertical_line(margin_x, margin_y, vertical_line_width);
     if (number_of_stage_vertical_line < 0)
-        color_frag = vec4(0.0);
+    {
+        int number_of_stage_horizontal_line = is_grey_horizontal_line(margin_x, margin_y, vertical_line_width);
+        if (number_of_stage_horizontal_line < 0)
+        {
+            int number_of_light_blue_stage_horizontal_line
+            = is_light_blue_horizontal_line(margin_x, margin_y, vertical_line_width);
+            if (number_of_light_blue_stage_horizontal_line < 0)
+                color_frag = vec4(0.0);
+            else if (number_of_light_blue_stage_horizontal_line <= current_stage)
+                color_frag = vec4(0.42578125, 0.5, 0.61, float(shop_constructor_opacity) / 255.0);
+            else
+                color_frag = vec4(vec3(0.1), pow(float(shop_constructor_opacity) / 255.0, 3));
+        }
+        else if (number_of_stage_horizontal_line <= current_stage)
+            color_frag = vec4(vec3(0.65), pow(float(shop_constructor_opacity) / 255.0, 3));
+        else
+            color_frag = vec4(vec3(0.1), pow(float(shop_constructor_opacity) / 255.0, 3));
+    }
     else if (number_of_stage_vertical_line <= current_stage)
         color_frag = vec4(0.140625, 0.20703125, 0.3671875, float(shop_constructor_opacity) / 255.0);
     else
-        color_frag = vec4(vec3(0.1), float(shop_constructor_opacity) / 255.0);
+        color_frag = vec4(vec3(0.1), pow(float(shop_constructor_opacity) / 255.0, 3));
 }

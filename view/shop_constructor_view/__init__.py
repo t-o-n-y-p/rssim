@@ -67,7 +67,7 @@ class ShopConstructorView(View):
                                            + (shop_details_window_size[1] - self.top_bar_height
                                               - 4 * self.bottom_bar_height) // 2)
         self.shop_stages_cells_size = (shop_details_window_size[0] - self.top_bar_height // 2,
-                                       3 * self.bottom_bar_height)
+                                       3 * self.bottom_bar_height - self.bottom_bar_height // 8)
 
     def on_update_opacity(self, new_opacity):
         """
