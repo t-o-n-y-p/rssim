@@ -33,5 +33,9 @@ class ShopConstructorModel(Model):
         self.current_stage, self.shop_storage_money, self.internal_shop_time = self.user_db_cursor.fetchone()
 
     def on_activate_view(self):
+        for stage_number in range(4):
+            self.view.on_update_stage_state(self.shop_stages_state_matrix, stage_number)
+
         self.view.current_stage = self.current_stage
+        self.view.shop_storage_money = self.shop_storage_money
         self.view.on_activate()

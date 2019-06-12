@@ -2,6 +2,7 @@ from logging import getLogger
 
 from pyshaders import from_files_names
 from pyglet.gl import GL_QUADS
+from pyglet.text import Label
 
 from view import *
 from i18n import I18N_RESOURCES
@@ -12,12 +13,21 @@ class ShopConstructorView(View):
         super().__init__(logger=getLogger(f'root.app.game.map.{map_id}.shop.{shop_id}.constructor.view'))
         self.map_id = map_id
         self.shop_id = shop_id
-        self.current_stage = 0
+        self.shop_stages_state_matrix = {}
+        self.user_db_cursor.execute('''SELECT current_stage, shop_storage_money
+                                       FROM shops WHERE map_id = ? AND shop_id = ?''', (self.map_id, self.shop_id))
+        self.current_stage, self.shop_storage_money = self.user_db_cursor.fetchone()
         self.shop_stages_cells_position = (0, 0)
         self.shop_stages_cells_size = (0, 0)
+        self.shop_details_window_position = (0, 0)
+        self.shop_details_window_size = (0, 0)
         self.shader = from_files_names('shaders/shader.vert', 'shaders/shop_constructor_view/shader.frag')
         self.shop_view_shader_bottom_limit = 0.0
         self.shop_view_shader_upper_limit = 0.0
+        self.current_hourly_profit_label = None
+        self.current_exp_bonus_label = None
+        self.hourly_profit_value_label = None
+        self.exp_bonus_value_label = None
         self.on_init_graphics()
 
     def on_init_graphics(self):
@@ -40,6 +50,58 @@ class ShopConstructorView(View):
                                                                  1.0, self.shop_view_shader_upper_limit,
                                                                  1.0, self.shop_view_shader_bottom_limit)))
 
+        if self.current_hourly_profit_label is None:
+            self.current_hourly_profit_label \
+                = Label(I18N_RESOURCES['current_hourly_profit_string'][self.current_locale],
+                        font_size=self.bottom_bar_height // 5, color=(*WHITE_RGB, self.opacity),
+                        x=self.shop_details_window_position[0] + self.bottom_bar_height // 8,
+                        y=self.shop_details_window_position[1] + self.bottom_bar_height // 8
+                          + 3 * self.bottom_bar_height + 2 * self.bottom_bar_height // 3,
+                        anchor_x='left', anchor_y='center',
+                        batch=self.batches['ui_batch'], group=self.groups['button_text'])
+
+        if self.current_exp_bonus_label is None:
+            self.current_exp_bonus_label \
+                = Label(I18N_RESOURCES['current_exp_bonus_string'][self.current_locale],
+                        font_size=self.bottom_bar_height // 5, color=(*WHITE_RGB, self.opacity),
+                        x=self.shop_details_window_position[0] + self.bottom_bar_height // 8,
+                        y=self.shop_details_window_position[1] + self.bottom_bar_height // 8
+                          + 3 * self.bottom_bar_height + self.bottom_bar_height // 3,
+                        anchor_x='left', anchor_y='center',
+                        batch=self.batches['ui_batch'], group=self.groups['button_text'])
+
+        if self.hourly_profit_value_label is None:
+            if self.current_stage == 0:
+                hourly_profit_value_text = '0  ¤'
+            else:
+                hourly_profit_value_text = f'{self.shop_stages_state_matrix[self.current_stage][HOURLY_PROFIT]}  ¤'
+
+            self.hourly_profit_value_label \
+                = Label(hourly_profit_value_text, font_size=self.bottom_bar_height // 5,
+                        color=(*GREEN_RGB, self.opacity),
+                        x=self.shop_details_window_position[0] + self.bottom_bar_height // 8
+                          + 3 * self.bottom_bar_height,
+                        y=self.shop_details_window_position[1] + self.bottom_bar_height // 8
+                          + 3 * self.bottom_bar_height + 2 * self.bottom_bar_height // 3,
+                        anchor_x='left', anchor_y='center',
+                        batch=self.batches['ui_batch'], group=self.groups['button_text'])
+
+        if self.exp_bonus_value_label is None:
+            if self.current_stage == 0:
+                exp_bonus_value_text = '0  %'
+            else:
+                exp_bonus_value_text = f'{self.shop_stages_state_matrix[self.current_stage][EXP_BONUS]}  %'
+
+            self.exp_bonus_value_label \
+                = Label(exp_bonus_value_text, font_size=self.bottom_bar_height // 5,
+                        color=(*ORANGE_RGB, self.opacity),
+                        x=self.shop_details_window_position[0] + self.bottom_bar_height // 8
+                          + 3 * self.bottom_bar_height,
+                        y=self.shop_details_window_position[1] + self.bottom_bar_height // 8
+                          + 3 * self.bottom_bar_height + self.bottom_bar_height // 3,
+                        anchor_x='left', anchor_y='center',
+                        batch=self.batches['ui_batch'], group=self.groups['button_text'])
+
     @view_is_active
     def on_deactivate(self):
         """
@@ -51,23 +113,41 @@ class ShopConstructorView(View):
         self.on_recalculate_ui_properties(screen_resolution)
         self.shop_view_shader_bottom_limit = self.bottom_bar_height / self.screen_resolution[1] * 2 - 1
         self.shop_view_shader_upper_limit = 1 - self.top_bar_height / self.screen_resolution[1] * 2
+
+        self.shop_details_window_size = (int(6.875 * self.bottom_bar_height) * 2 + self.bottom_bar_height // 4,
+                                         19 * self.bottom_bar_height // 4)
+        self.shop_details_window_position = ((self.screen_resolution[0] - self.shop_details_window_size[0]) // 2,
+                                             (self.screen_resolution[1] - self.shop_details_window_size[1]
+                                              - 3 * self.bottom_bar_height // 2) // 2 + self.bottom_bar_height)
+        self.shop_stages_cells_position = (self.shop_details_window_position[0] + self.top_bar_height // 4,
+                                           self.shop_details_window_position[1]
+                                           + (self.shop_details_window_size[1] - self.top_bar_height
+                                              - 4 * self.bottom_bar_height) // 2)
+        self.shop_stages_cells_size = (self.shop_details_window_size[0] - self.top_bar_height // 2,
+                                       3 * self.bottom_bar_height - self.bottom_bar_height // 8)
         if self.is_activated:
             self.shader_sprite.vertices = (-1.0, self.shop_view_shader_bottom_limit,
                                            -1.0, self.shop_view_shader_upper_limit,
                                            1.0, self.shop_view_shader_upper_limit,
                                            1.0, self.shop_view_shader_bottom_limit)
-
-        shop_details_window_size = (int(6.875 * self.bottom_bar_height) * 2 + self.bottom_bar_height // 4,
-                                    19 * self.bottom_bar_height // 4)
-        shop_details_window_position = ((self.screen_resolution[0] - shop_details_window_size[0]) // 2,
-                                        (self.screen_resolution[1] - shop_details_window_size[1]
-                                        - 3 * self.bottom_bar_height // 2) // 2 + self.bottom_bar_height)
-        self.shop_stages_cells_position = (shop_details_window_position[0] + self.top_bar_height // 4,
-                                           shop_details_window_position[1]
-                                           + (shop_details_window_size[1] - self.top_bar_height
-                                              - 4 * self.bottom_bar_height) // 2)
-        self.shop_stages_cells_size = (shop_details_window_size[0] - self.top_bar_height // 2,
-                                       3 * self.bottom_bar_height - self.bottom_bar_height // 8)
+            self.current_hourly_profit_label.x = self.shop_details_window_position[0] + self.bottom_bar_height // 8
+            self.current_hourly_profit_label.y = self.shop_details_window_position[1] + self.bottom_bar_height // 8 \
+                                                 + 3 * self.bottom_bar_height + 2 * self.bottom_bar_height // 3
+            self.current_hourly_profit_label.font_size = self.bottom_bar_height // 5
+            self.current_exp_bonus_label.x = self.shop_details_window_position[0] + self.bottom_bar_height // 8
+            self.current_exp_bonus_label.y = self.shop_details_window_position[1] + self.bottom_bar_height // 8 \
+                                                 + 3 * self.bottom_bar_height + self.bottom_bar_height // 3
+            self.current_exp_bonus_label.font_size = self.bottom_bar_height // 5
+            self.hourly_profit_value_label.x = self.shop_details_window_position[0] + self.bottom_bar_height // 8 \
+                                               + 3 * self.bottom_bar_height
+            self.hourly_profit_value_label.y = self.shop_details_window_position[1] + self.bottom_bar_height // 8 \
+                                                 + 3 * self.bottom_bar_height + 2 * self.bottom_bar_height // 3
+            self.hourly_profit_value_label.font_size = self.bottom_bar_height // 5
+            self.exp_bonus_value_label.x = self.shop_details_window_position[0] + self.bottom_bar_height // 8 \
+                                               + 3 * self.bottom_bar_height
+            self.exp_bonus_value_label.y = self.shop_details_window_position[1] + self.bottom_bar_height // 8 \
+                                                 + 3 * self.bottom_bar_height + self.bottom_bar_height // 3
+            self.exp_bonus_value_label.font_size = self.bottom_bar_height // 5
 
     def on_update_opacity(self, new_opacity):
         """
@@ -85,6 +165,19 @@ class ShopConstructorView(View):
         if self.opacity <= 0:
             self.shader_sprite.delete()
             self.shader_sprite = None
+            self.current_hourly_profit_label.delete()
+            self.current_hourly_profit_label = None
+            self.current_exp_bonus_label.delete()
+            self.current_exp_bonus_label = None
+            self.hourly_profit_value_label.delete()
+            self.hourly_profit_value_label = None
+            self.exp_bonus_value_label.delete()
+            self.exp_bonus_value_label = None
+        else:
+            self.current_hourly_profit_label.color = (*WHITE_RGB, self.opacity)
+            self.current_exp_bonus_label.color = (*WHITE_RGB, self.opacity)
+            self.hourly_profit_value_label.color = (*GREEN_RGB, self.opacity)
+            self.exp_bonus_value_label.color = (*ORANGE_RGB, self.opacity)
 
     def on_update_current_locale(self, new_locale):
         """
@@ -93,6 +186,9 @@ class ShopConstructorView(View):
         :param new_locale:                      selected locale
         """
         self.current_locale = new_locale
+        if self.is_activated:
+            self.current_hourly_profit_label.text = I18N_RESOURCES['current_hourly_profit_string'][self.current_locale]
+            self.current_exp_bonus_label.text = I18N_RESOURCES['current_exp_bonus_string'][self.current_locale]
 
     @shader_sprite_exists
     def on_apply_shaders_and_draw_vertices(self):
@@ -106,3 +202,6 @@ class ShopConstructorView(View):
         self.shader.uniforms.current_stage = self.current_stage
         self.shader_sprite.draw(GL_QUADS)
         self.shader.clear()
+
+    def on_update_stage_state(self, shop_stages_state_matrix, stage_number):
+        self.shop_stages_state_matrix = shop_stages_state_matrix

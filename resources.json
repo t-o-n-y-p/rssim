@@ -230,5 +230,13 @@
 	"shop_placeholder_description_string": {
 		"en": "Level {0} is required to operate this shop",
 		"ru": "Для управления этим магазином требуется уровень {0}"
+	},
+	"current_hourly_profit_string": {
+		"en": "Hourly profit:",
+		"ru": "Доход в час:"
+	},
+	"current_exp_bonus_string": {
+		"en": "Exp bonus:",
+		"ru": "Бонус к опыту:"
 	}
 }
