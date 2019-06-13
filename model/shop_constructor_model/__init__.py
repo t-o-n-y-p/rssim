@@ -37,5 +37,5 @@ class ShopConstructorModel(Model):
             self.view.on_update_stage_state(self.shop_stages_state_matrix, stage_number)
 
         self.view.current_stage = self.current_stage
-        self.view.shop_storage_money = self.shop_storage_money
         self.view.on_activate()
+        self.view.on_update_storage_money(self.shop_storage_money)
