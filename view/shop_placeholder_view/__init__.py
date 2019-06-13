@@ -58,8 +58,10 @@ class ShopPlaceholderView(View):
         if self.is_activated:
             self.lock_label.x = self.screen_resolution[0] // 2
             self.lock_label.y = self.screen_resolution[1] // 2 + self.bottom_bar_height // 2
+            self.lock_label.font_size = 3 * self.bottom_bar_height // 4
             self.description_label.x = self.screen_resolution[0] // 2
             self.description_label.y = self.screen_resolution[1] // 2 - self.top_bar_height // 2
+            self.description_label.font_size = self.bottom_bar_height // 5
 
     def on_update_opacity(self, new_opacity):
         """
