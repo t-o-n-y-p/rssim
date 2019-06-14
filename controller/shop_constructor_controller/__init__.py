@@ -87,7 +87,7 @@ class ShopConstructorController(Controller):
         pass
 
     def on_save_state(self):
-        pass
+        self.model.on_save_state()
 
     def on_clear_storage(self):
         self.parent_controller.parent_controller.parent_controller.on_add_money(self.model.shop_storage_money)
