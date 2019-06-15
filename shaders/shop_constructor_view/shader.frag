@@ -5,6 +5,39 @@ uniform int shop_constructor_opacity = 0;
 uniform ivec2 shop_stages_cells_position = ivec2(0, 0);
 uniform ivec2 shop_stages_cells_size = ivec2(0, 0);
 uniform int current_stage = 0;
+uniform int is_button_activated[1];
+uniform int button_x[1];
+uniform int button_y[1];
+uniform int button_w[1];
+uniform int button_h[1];
+uniform int number_of_buttons = 1;
+
+
+bool is_button_border()
+/*
+    Returns "true" if pixel belongs to any button border and "false" if it does not.
+*/
+{
+    int button_margin_x, button_margin_y;
+    for(int i = 0; i < number_of_buttons; i++)
+    {
+        if (is_button_activated[i] == 1)
+        {
+            button_margin_x = int(gl_FragCoord[0]) - button_x[i];
+            button_margin_y = int(gl_FragCoord[1]) - button_y[i];
+            if ((button_margin_x >= 0 && button_margin_x <= button_w[i] - 1
+                 && (button_margin_y == 0 || button_margin_y == 1 || button_margin_y == button_h[i] - 2
+                     || button_margin_y == button_h[i] - 1)
+                ) || (button_margin_y >= 0 && button_margin_y <= button_h[i] - 1
+                      && (button_margin_x == 0 || button_margin_x == 1 || button_margin_x == button_w[i] - 2
+                          || button_margin_x == button_w[i] - 1)
+                     )
+            )
+                return true;
+        }
+    }
+    return false;
+}
 
 int is_vertical_line(int margin_x, int margin_y, int vertical_line_width)
 {
@@ -84,7 +117,12 @@ void main()
             int number_of_light_blue_stage_horizontal_line
             = is_light_blue_horizontal_line(margin_x, margin_y, vertical_line_width);
             if (number_of_light_blue_stage_horizontal_line < 0)
-                color_frag = vec4(0.0);
+            {
+                if (is_button_border())
+                    color_frag = vec4(1.0, 0.0, 0.0, float(shop_constructor_opacity) / 255.0);
+                else
+                    color_frag = vec4(0.0);
+            }
             else if (number_of_light_blue_stage_horizontal_line <= current_stage)
                 color_frag = vec4(0.42578125, 0.5, 0.61, float(shop_constructor_opacity) / 255.0);
             else

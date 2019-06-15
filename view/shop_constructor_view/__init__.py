@@ -289,6 +289,24 @@ class ShopConstructorView(View):
         self.shader.uniforms.shop_stages_cells_position = self.shop_stages_cells_position
         self.shader.uniforms.shop_stages_cells_size = self.shop_stages_cells_size
         self.shader.uniforms.current_stage = self.current_stage
+        is_button_activated = []
+        button_x = []
+        button_y = []
+        button_w = []
+        button_h = []
+        for b in self.buttons:
+            is_button_activated.append(int(b.is_activated))
+            button_x.append(b.position[0])
+            button_y.append(b.position[1])
+            button_w.append(b.button_size[0])
+            button_h.append(b.button_size[1])
+
+        self.shader.uniforms.is_button_activated = is_button_activated
+        self.shader.uniforms.button_x = button_x
+        self.shader.uniforms.button_y = button_y
+        self.shader.uniforms.button_w = button_w
+        self.shader.uniforms.button_h = button_h
+        self.shader.uniforms.number_of_buttons = len(self.buttons)
         self.shader_sprite.draw(GL_QUADS)
         self.shader.clear()
 
