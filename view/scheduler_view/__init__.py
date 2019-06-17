@@ -223,19 +223,17 @@ class SchedulerView(View):
         """
         Calculates all offsets and font sizes.
         """
-        general_height = 4 * int(72 / 1280 * self.screen_resolution[0]) \
-                         + 3 * int(72 / 1280 * self.screen_resolution[0]) // 4
-        size = (int(6.875 * int(72 / 1280 * self.screen_resolution[0])),
-                general_height // (SCHEDULE_ROWS + 1))
-        schedule_interval_between_columns = int(72 / 1280 * self.screen_resolution[0]) // 4
-        top_left_row_position = (self.screen_resolution[0] // 2
-                                 - int(6.875 * int(72 / 1280 * self.screen_resolution[0])) // 2
+        bottom_bar_height = get_bottom_bar_height(self.screen_resolution)
+        inner_area_rect = get_inner_area_rect(self.screen_resolution)
+        size = (int(6.875 * bottom_bar_height), inner_area_rect[3] // (SCHEDULE_ROWS + 1))
+        schedule_interval_between_columns = bottom_bar_height // 4
+        top_left_row_position = (self.screen_resolution[0] // 2 - size[0] // 2
                                  - schedule_interval_between_columns // 2,
                                  self.screen_resolution[1]
-                                 - ((self.screen_resolution[1] - int(72 / 1280 * self.screen_resolution[0]) // 2
-                                     - int(72 / 1280 * self.screen_resolution[0]) - general_height) // 2
+                                 - ((self.screen_resolution[1] - bottom_bar_height // 2
+                                     - bottom_bar_height - inner_area_rect[3]) // 2
                                     + size[1] // 2 * 3)
-                                 - int(72 / 1280 * self.screen_resolution[0]) // 2)
+                                 - bottom_bar_height // 2)
         self.schedule_left_caption_position = (top_left_row_position[0], top_left_row_position[1] + size[1])
         self.schedule_right_caption_position = (top_left_row_position[0] + size[0] + schedule_interval_between_columns,
                                                 top_left_row_position[1] + size[1])

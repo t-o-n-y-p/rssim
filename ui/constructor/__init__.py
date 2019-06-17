@@ -331,14 +331,20 @@ class ConstructorCell:
         :param screen_resolution:       new screen resolution
         """
         self.screen_resolution = screen_resolution
-        self.size = (int(6.875 * int(72 / 1280 * self.screen_resolution[0])),
-                     int(72 / 1280 * self.screen_resolution[0]))
-        interval_between_cells = int(72 / 1280 * self.screen_resolution[0]) // 4
-        general_height = 4 * self.size[1] + 3 * interval_between_cells
-        fetched_coords = (self.screen_resolution[0] // 2 - self.size[0] - interval_between_cells // 2,
-                          self.screen_resolution[1] // 2 + general_height // 2 - self.size[1] // 4 - self.size[1] // 2)
-        self.position = (fetched_coords[0] + self.construction_type * (self.size[0] + interval_between_cells),
-                         fetched_coords[1] - self.row * (self.size[1] + interval_between_cells))
+        bottom_bar_height = get_bottom_bar_height(self.screen_resolution)
+        self.size = (int(6.875 * bottom_bar_height), bottom_bar_height)
+        interval_between_cells = bottom_bar_height // 4
+        inner_area_rect = get_inner_area_rect(self.screen_resolution)
+        if self.construction_type == TRACKS:
+            self.position = (inner_area_rect[0],
+                             inner_area_rect[1]
+                             + (CONSTRUCTOR_VIEW_TRACK_CELLS - 1 - self.row) * (self.size[1] + interval_between_cells))
+        elif self.construction_type == ENVIRONMENT:
+            self.position = (inner_area_rect[0] + self.size[0] + interval_between_cells,
+                             inner_area_rect[1]
+                             + (CONSTRUCTOR_VIEW_ENVIRONMENT_CELLS - 1 - self.row)
+                             * (self.size[1] + interval_between_cells))
+
         if self.locked_label is not None:
             self.locked_label.x = self.position[0] + self.size[0] - self.size[1] // 2
             self.locked_label.y = self.position[1] + self.size[1] // 2

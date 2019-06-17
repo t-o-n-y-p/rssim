@@ -25,8 +25,8 @@ class ShopConstructorView(View):
         self.current_stage, self.shop_storage_money = self.user_db_cursor.fetchone()
         self.shop_stages_cells_position = (0, 0)
         self.shop_stages_cells_size = (0, 0)
-        self.shop_details_window_position = (0, 0)
-        self.shop_details_window_size = (0, 0)
+        self.shop_details_window_position = self.inner_area_position
+        self.shop_details_window_size = self.inner_area_size
         self.shader = from_files_names('shaders/shader.vert', 'shaders/shop_constructor_view/shader.frag')
         self.shop_view_shader_bottom_limit = 0.0
         self.shop_view_shader_upper_limit = 0.0
@@ -164,12 +164,8 @@ class ShopConstructorView(View):
         self.on_recalculate_ui_properties(screen_resolution)
         self.shop_view_shader_bottom_limit = self.bottom_bar_height / self.screen_resolution[1] * 2 - 1
         self.shop_view_shader_upper_limit = 1 - self.top_bar_height / self.screen_resolution[1] * 2
-
-        self.shop_details_window_size = (int(6.875 * self.bottom_bar_height) * 2 + self.bottom_bar_height // 4,
-                                         19 * self.bottom_bar_height // 4)
-        self.shop_details_window_position = ((self.screen_resolution[0] - self.shop_details_window_size[0]) // 2,
-                                             (self.screen_resolution[1] - self.shop_details_window_size[1]
-                                              - 3 * self.bottom_bar_height // 2) // 2 + self.bottom_bar_height)
+        self.shop_details_window_position = self.inner_area_position
+        self.shop_details_window_size = self.inner_area_size
         self.shop_stages_cells_position = (self.shop_details_window_position[0] + self.top_bar_height // 4,
                                            self.shop_details_window_position[1]
                                            + (self.shop_details_window_size[1] - self.top_bar_height

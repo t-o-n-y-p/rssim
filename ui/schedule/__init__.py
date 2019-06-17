@@ -136,19 +136,17 @@ class ScheduleRow:
         :param screen_resolution:       new screen resolution
         """
         self.screen_resolution = screen_resolution
-        general_height = 4 * int(72 / 1280 * self.screen_resolution[0]) \
-                         + 3 * int(72 / 1280 * self.screen_resolution[0]) // 4
-        self.size = (int(6.875 * int(72 / 1280 * self.screen_resolution[0])),
-                     general_height // (SCHEDULE_ROWS + 1))
-        schedule_interval_between_columns = int(72 / 1280 * self.screen_resolution[0]) // 4
-        top_left_row_position = (self.screen_resolution[0] // 2
-                                 - int(6.875 * int(72 / 1280 * self.screen_resolution[0])) // 2
+        bottom_bar_height = get_bottom_bar_height(self.screen_resolution)
+        inner_area_rect = get_inner_area_rect(self.screen_resolution)
+        self.size = (int(6.875 * bottom_bar_height), inner_area_rect[3] // (SCHEDULE_ROWS + 1))
+        schedule_interval_between_columns = bottom_bar_height // 4
+        top_left_row_position = (self.screen_resolution[0] // 2 - self.size[0] // 2
                                  - schedule_interval_between_columns // 2,
                                  self.screen_resolution[1]
-                                 - ((self.screen_resolution[1] - int(72 / 1280 * self.screen_resolution[0]) // 2
-                                     - int(72 / 1280 * self.screen_resolution[0]) - general_height) // 2
+                                 - ((self.screen_resolution[1] - bottom_bar_height // 2
+                                     - bottom_bar_height - inner_area_rect[3]) // 2
                                     + self.size[1] // 2 * 3)
-                                 - int(72 / 1280 * self.screen_resolution[0]) // 2)
+                                 - bottom_bar_height // 2)
         self.position = (top_left_row_position[0] + self.column * (self.size[0] + schedule_interval_between_columns),
                          top_left_row_position[1] - self.row * self.size[1])
         if self.main_sprite is not None:

@@ -6,6 +6,10 @@ MIN_RESOLUTION_WIDTH = 1280                     # minimum screen resolution widt
 MIN_RESOLUTION_HEIGHT = 720                     # minimum screen resolution height supported by the app UI
 SCHEDULE_ROWS = 12                              # number of schedule rows on schedule screen
 SCHEDULE_COLUMNS = 2                            # number of schedule columns on schedule screen
+TRACKS = 0                                      # matrix #0 stores tracks state
+ENVIRONMENT = 1                                 # matrix #1 stores environment tiers state
+CONSTRUCTOR_VIEW_TRACK_CELLS = 4                # number of cells for tracks on constructor screen
+CONSTRUCTOR_VIEW_ENVIRONMENT_CELLS = 4          # number of cells for environment tiers on constructor screen
 # track and environment state matrix properties
 LOCKED = 0                                      # property #0 indicates if track/env. is locked
 UNDER_CONSTRUCTION = 1                          # property #1 indicates if track/env. is under construction
@@ -65,3 +69,21 @@ GROUPS = {'environment': OrderedGroup(0),
           'exp_money_time': OrderedGroup(10),
           'button_text': OrderedGroup(11)}
 # ------------------- END CONSTANTS -------------------
+
+
+def get_top_bar_height(screen_resolution):
+    return int(72 / 1280 * screen_resolution[0]) // 2
+
+
+def get_bottom_bar_height(screen_resolution):
+    return int(72 / 1280 * screen_resolution[0])
+
+
+def get_inner_area_rect(screen_resolution):
+    bottom_bar_height = get_bottom_bar_height(screen_resolution)
+    inner_area_size = ((int(6.875 * bottom_bar_height) * 2 + bottom_bar_height // 4,
+                        19 * bottom_bar_height // 4))
+    inner_area_position = ((screen_resolution[0] - inner_area_size[0]) // 2,
+                           (screen_resolution[1] - inner_area_size[1] - 3 * bottom_bar_height // 2) // 2
+                           + bottom_bar_height)
+    return (*inner_area_position, *inner_area_size)

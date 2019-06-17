@@ -47,26 +47,26 @@ class DispatcherModel(Model):
 
         :param game_time:               current in-game time
         """
-        for i in self.trains:
+        for t in self.trains:
             # get track priority list based on train state, direction and new direction
             track_priority_list = []
-            if i.model.state == 'approaching':
-                track_priority_list = MAIN_PRIORITY_TRACKS[i.model.direction][i.model.new_direction]
-            elif i.model.state == 'approaching_pass_through':
-                track_priority_list = PASS_THROUGH_PRIORITY_TRACKS[i.model.direction]
+            if t.model.state == 'approaching':
+                track_priority_list = MAIN_PRIORITY_TRACKS[t.model.direction][t.model.new_direction]
+            elif t.model.state == 'approaching_pass_through':
+                track_priority_list = PASS_THROUGH_PRIORITY_TRACKS[t.model.direction]
 
             for track in track_priority_list:
                 if track <= self.unlocked_tracks and not self.track_busy_status[track] \
-                        and i.model.cars in range(self.supported_cars_by_track[track][0],
+                        and t.model.cars in range(self.supported_cars_by_track[track][0],
                                                   self.supported_cars_by_track[track][1] + 1):
                     self.track_busy_status[track] = True
-                    i.model.state = 'pending_boarding'
-                    self.controller.parent_controller.on_close_train_route(i.model.track, i.model.train_route)
-                    i.model.track = track
-                    i.model.train_route = ENTRY_TRAIN_ROUTE[i.model.direction]
-                    self.controller.parent_controller.on_open_train_route(track, ENTRY_TRAIN_ROUTE[i.model.direction],
-                                                                          i.train_id, i.model.cars)
-                    self.trains.remove(i)
+                    t.model.state = 'pending_boarding'
+                    self.controller.parent_controller.on_close_train_route(t.model.track, t.model.train_route)
+                    t.model.track = track
+                    t.model.train_route = ENTRY_TRAIN_ROUTE[t.model.direction]
+                    self.controller.parent_controller.on_open_train_route(track, ENTRY_TRAIN_ROUTE[t.model.direction],
+                                                                          t.train_id, t.model.cars)
+                    self.trains.remove(t)
                     break
 
     def on_save_state(self):

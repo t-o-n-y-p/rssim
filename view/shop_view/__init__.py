@@ -17,8 +17,8 @@ class ShopView(View):
         super().__init__(logger=getLogger(f'root.app.game.map.{map_id}.shop.{shop_id}.view'))
         self.map_id = map_id
         self.shop_id = shop_id
-        self.shop_details_window_position = (0, 0)
-        self.shop_details_window_size = (0, 0)
+        self.shop_details_window_position = self.inner_area_position
+        self.shop_details_window_size = self.inner_area_size
         self.shader = from_files_names('shaders/shader.vert', 'shaders/shop_view/shader.frag')
         self.shop_view_shader_bottom_limit = 0.0
         self.shop_view_shader_upper_limit = 0.0
@@ -82,11 +82,8 @@ class ShopView(View):
                                            1.0, self.shop_view_shader_upper_limit,
                                            1.0, self.shop_view_shader_bottom_limit)
 
-        self.shop_details_window_size = (int(6.875 * self.bottom_bar_height) * 2 + self.bottom_bar_height // 4,
-                                         19 * self.bottom_bar_height // 4)
-        self.shop_details_window_position = ((self.screen_resolution[0] - self.shop_details_window_size[0]) // 2,
-                                             (self.screen_resolution[1] - self.shop_details_window_size[1]
-                                              - 3 * self.bottom_bar_height // 2) // 2 + self.bottom_bar_height)
+        self.shop_details_window_position = self.inner_area_position
+        self.shop_details_window_size = self.inner_area_size
         self.close_shop_details_button.on_size_changed((self.top_bar_height, self.top_bar_height))
         self.close_shop_details_button.x_margin = self.shop_details_window_position[0] \
                                                   + self.shop_details_window_size[0] - self.top_bar_height

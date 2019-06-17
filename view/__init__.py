@@ -258,10 +258,6 @@ def shader_sprite_exists(fn):
 MAP_WIDTH = 8192                                # full-size map width
 MAP_HEIGHT = 4096                               # full-size map height
 MINI_MAP_FADE_OUT_TIMER = 1.0                   # time since user releases mouse button after which mini-map disappears
-TRACKS = 0                                      # matrix #0 stores tracks state
-ENVIRONMENT = 1                                 # matrix #1 stores environment tiers state
-CONSTRUCTOR_VIEW_TRACK_CELLS = 4                # number of cells for tracks on constructor screen
-CONSTRUCTOR_VIEW_ENVIRONMENT_CELLS = 4          # number of cells for environment tiers on constructor screen
 # track, environment and shop stage state matrix properties
 LOCKED = 0                                      # property #0 indicates if track/env. is locked
 UNDER_CONSTRUCTION = 1                          # property #1 indicates if track/env. is under construction
@@ -344,6 +340,8 @@ class View:
             self.screen_resolution = self.user_db_cursor.fetchone()
 
         self.bottom_bar_height, self.top_bar_height = 0, 0
+        self.inner_area_position = (0, 0)
+        self.inner_area_size = (0, 0)
         self.on_recalculate_ui_properties(self.screen_resolution)
         self.user_db_cursor.execute('SELECT last_known_base_offset FROM graphics')
         self.base_offset = tuple(map(int, self.user_db_cursor.fetchone()[0].split(',')))
@@ -419,8 +417,11 @@ class View:
         :param screen_resolution:               new screen resolution
         """
         self.screen_resolution = screen_resolution
-        self.bottom_bar_height = int(72 / 1280 * self.screen_resolution[0])
-        self.top_bar_height = self.bottom_bar_height // 2
+        self.bottom_bar_height = get_bottom_bar_height(self.screen_resolution)
+        self.top_bar_height = get_top_bar_height(self.screen_resolution)
+        inner_area_rect = get_inner_area_rect(self.screen_resolution)
+        self.inner_area_position = inner_area_rect[0:2]
+        self.inner_area_size = inner_area_rect[2:4]
 
     def on_update_current_locale(self, new_locale):
         """
