@@ -287,25 +287,15 @@ class ConstructorCell:
         """
         Updates locked label and build button state based on available money.
         """
-        if self.money >= self.data[PRICE]:
-            self.build_button.opacity = self.opacity
-            self.build_button.on_activate()
-            if self.locked_label is not None:
-                self.locked_label.delete()
-                self.locked_label = None
+        if self.locked_label is not None:
+            self.locked_label.delete()
+            self.locked_label = None
 
+        self.build_button.opacity = self.opacity
+        if self.money >= self.data[PRICE]:
+            self.build_button.on_activate()
         else:
-            self.build_button.on_deactivate(instant=True)
-            if self.locked_label is None:
-                self.locked_label = Label('', font_name='Webdings',
-                                          font_size=int(self.build_button.base_font_size_property * self.size[1]),
-                                          color=(*GREY_RGB, self.opacity),
-                                          x=self.position[0] + self.size[0] - self.size[1] // 2,
-                                          y=self.position[1] + self.size[1] // 2,
-                                          anchor_x='center', anchor_y='center',
-                                          batch=self.batches['ui_batch'], group=self.groups['button_text'])
-            else:
-                self.locked_label.text = ''
+            self.build_button.on_disable()
 
     @cell_is_not_active
     def on_activate(self):

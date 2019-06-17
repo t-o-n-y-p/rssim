@@ -3,7 +3,7 @@ from pyglet.text import Label
 from pyglet.window import mouse
 from pyglet.resource import add_font
 
-from ui import SURFACE, BATCHES, GROUPS, WHITE_RGB
+from ui import SURFACE, BATCHES, GROUPS, WHITE_RGB, GREY_RGB
 
 
 def button_is_not_activated(fn):
@@ -32,6 +32,20 @@ def button_is_activated(fn):
             fn(*args, **kwargs)
 
     return _handle_if_is_activated
+
+
+def button_is_activated_or_disabled(fn):
+    """
+    Use this decorator to execute function only if button is active or disabled.
+
+    :param fn:                      function to decorate
+    :return:                        decorator function
+    """
+    def _handle_if_is_activated_or_disabled(*args, **kwargs):
+        if args[0].is_activated or args[0].disabled_state:
+            fn(*args, **kwargs)
+
+    return _handle_if_is_activated_or_disabled
 
 
 def left_mouse_button(fn):
@@ -171,6 +185,7 @@ class Button:
         self.hand_cursor = self.surface.get_system_mouse_cursor(SURFACE.CURSOR_HAND)
         self.default_cursor = self.surface.get_system_mouse_cursor(SURFACE.CURSOR_DEFAULT)
         self.opacity = 0
+        self.disabled_state = False
 
     @button_is_not_activated
     def on_activate(self, instant=False):
@@ -180,6 +195,7 @@ class Button:
         :param instant:                 indicates if button should be activated with maximum opacity straight away
         """
         self.is_activated = True
+        self.disabled_state = False
         if instant:
             self.opacity = 255
 
@@ -209,8 +225,10 @@ class Button:
                                         y=self.position[1] + self.button_size[1] // 2,
                                         anchor_x='center', anchor_y='center', batch=self.batch,
                                         group=self.groups['button_text'])
+        else:
+            self.text_label.color = (*WHITE_RGB, self.opacity)
 
-    @button_is_activated
+    @button_is_activated_or_disabled
     def on_deactivate(self, instant=False):
         """
         Deactivates the button. Removes background and text label from the graphics memory.
@@ -218,6 +236,7 @@ class Button:
         :param instant:                 indicates if button should be deactivated with zero opacity straight away
         """
         self.is_activated = False
+        self.disabled_state = False
         if instant:
             self.opacity = 0
             if self.vertex_list is not None:
@@ -227,6 +246,20 @@ class Button:
             if self.text_label is not None:
                 self.text_label.delete()
                 self.text_label = None
+
+    def on_disable(self):
+        self.on_deactivate()
+        self.disabled_state = True
+        if self.text_label is None:
+            if self.text not in (None, ''):
+                self.text_label = Label(self.text, font_name=self.font_name, bold=self.is_bold,
+                                        font_size=self.font_size, color=(*GREY_RGB, self.opacity),
+                                        x=self.position[0] + self.button_size[0] // 2,
+                                        y=self.position[1] + self.button_size[1] // 2,
+                                        anchor_x='center', anchor_y='center', batch=self.batch,
+                                        group=self.groups['button_text'])
+        else:
+            self.text_label.color = (*GREY_RGB, self.opacity)
 
     def on_position_changed(self, position):
         """
@@ -389,4 +422,4 @@ class Button:
                     = ((BUTTON_BACKGROUND_ALPHA[self.state][self.transparent] * float(self.opacity) / 255.0, ) * 4)
 
             if self.text_label is not None:
-                self.text_label.color = (*WHITE_RGB, self.opacity)
+                self.text_label.color = (*self.text_label.color[0:3], self.opacity)
