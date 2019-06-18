@@ -310,6 +310,11 @@ class ShopConstructorView(View):
         self.shop_stages_state_matrix = shop_stages_state_matrix
 
     def on_update_storage_money(self, storage_money):
+        if self.shop_storage_money == 0 and storage_money > 0:
+            self.clear_shop_storage_button.on_activate()
+        else:
+            self.clear_shop_storage_button.on_disable()
+
         self.shop_storage_money = storage_money
         if self.is_activated:
             self.storage_money_label.text = '{0:,}  ¤'.format(self.shop_storage_money).replace(',', ' ')
