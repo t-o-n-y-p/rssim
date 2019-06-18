@@ -1,6 +1,5 @@
 from logging import getLogger
 
-from pyglet.text import Label
 from pyglet.gl import GL_QUADS
 from pyshaders import from_files_names
 
@@ -8,7 +7,6 @@ from view import *
 from ui.button.create_station_button import CreateStationButton
 from ui.button.back_to_the_station_button import BackToTheStationButton
 from ui.button.open_license_button import OpenLicenseButton
-from i18n import I18N_RESOURCES
 
 
 class MainMenuView(View):
@@ -69,8 +67,6 @@ class MainMenuView(View):
         self.back_to_the_station_button = BackToTheStationButton(on_click_action=on_back_to_the_station)
         self.open_license_button = OpenLicenseButton(on_click_action=on_open_license)
         self.buttons = [self.create_station_button, self.back_to_the_station_button, self.open_license_button]
-        self.create_station_button_label = None
-        self.back_to_the_station_label = None
         self.shader = from_files_names('shaders/shader.vert', 'shaders/main_menu_view/shader.frag')
         self.on_init_graphics()
 
@@ -98,20 +94,6 @@ class MainMenuView(View):
         if self.opacity <= 0:
             self.shader_sprite.delete()
             self.shader_sprite = None
-            if self.create_station_button_label is not None:
-                self.create_station_button_label.delete()
-                self.create_station_button_label = None
-
-            if self.back_to_the_station_label is not None:
-                self.back_to_the_station_label.delete()
-                self.back_to_the_station_label = None
-
-        else:
-            if self.create_station_button_label is not None:
-                self.create_station_button_label.color = (*WHITE_RGB, self.opacity)
-
-            if self.back_to_the_station_label is not None:
-                self.back_to_the_station_label.color = (*WHITE_RGB, self.opacity)
 
     @view_is_not_active
     def on_activate(self):
@@ -128,24 +110,8 @@ class MainMenuView(View):
         onboarding_required = bool(self.user_db_cursor.fetchone()[0])
         if onboarding_required:
             self.create_station_button.on_activate()
-            if self.create_station_button_label is None:
-                self.create_station_button_label \
-                    = Label(I18N_RESOURCES['create_station_label_string'][self.current_locale],
-                            font_name='Perfo', bold=True, font_size=3 * self.bottom_bar_height // 8,
-                            color=(*WHITE_RGB, self.opacity), x=self.screen_resolution[0] // 2,
-                            y=self.screen_resolution[1] // 2 + int(72 / 1280 * self.screen_resolution[0]) // 4,
-                            anchor_x='center', anchor_y='center',
-                            batch=self.batches['ui_batch'], group=self.groups['button_text'])
         else:
             self.back_to_the_station_button.on_activate()
-            if self.back_to_the_station_label is None:
-                self.back_to_the_station_label \
-                    = Label(I18N_RESOURCES['back_to_the_station_label_string'][self.current_locale],
-                            font_name='Perfo', bold=True, font_size=3 * self.bottom_bar_height // 8,
-                            color=(*WHITE_RGB, self.opacity), x=self.screen_resolution[0] // 2,
-                            y=self.screen_resolution[1] // 2 + int(72 / 1280 * self.screen_resolution[0]) // 4,
-                            anchor_x='center', anchor_y='center',
-                            batch=self.batches['ui_batch'], group=self.groups['button_text'])
 
         for b in self.buttons:
             if b.to_activate_on_controller_init:
@@ -169,17 +135,6 @@ class MainMenuView(View):
         """
         self.on_recalculate_ui_properties(screen_resolution)
         medium_line = self.screen_resolution[1] // 2 + int(72 / 1280 * self.screen_resolution[0]) // 4
-        if self.is_activated:
-            if self.create_station_button_label is not None:
-                self.create_station_button_label.x = self.screen_resolution[0] // 2
-                self.create_station_button_label.y = medium_line
-                self.create_station_button_label.font_size = 3 * self.bottom_bar_height // 8
-
-            if self.back_to_the_station_label is not None:
-                self.back_to_the_station_label.x = self.screen_resolution[0] // 2
-                self.back_to_the_station_label.y = medium_line
-                self.back_to_the_station_label.font_size = 3 * self.bottom_bar_height // 8
-
         self.open_license_button.on_size_changed((self.bottom_bar_height, self.bottom_bar_height))
         self.create_station_button.on_size_changed((self.bottom_bar_height * 7, self.bottom_bar_height))
         self.create_station_button.x_margin = self.screen_resolution[0] // 2 - self.bottom_bar_height * 7 // 2
@@ -197,14 +152,8 @@ class MainMenuView(View):
         :param new_locale:                      selected locale
         """
         self.current_locale = new_locale
-        if self.is_activated:
-            if self.create_station_button_label is not None:
-                self.create_station_button_label.text \
-                    = I18N_RESOURCES['create_station_label_string'][self.current_locale]
-
-            if self.back_to_the_station_label is not None:
-                self.back_to_the_station_label.text \
-                    = I18N_RESOURCES['back_to_the_station_label_string'][self.current_locale]
+        self.create_station_button.on_update_current_locale(new_locale)
+        self.back_to_the_station_button.on_update_current_locale(new_locale)
 
     @shader_sprite_exists
     def on_apply_shaders_and_draw_vertices(self):

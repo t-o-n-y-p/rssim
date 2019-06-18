@@ -4,6 +4,7 @@ from pyglet.window import mouse
 from pyglet.resource import add_font
 
 from ui import SURFACE, BATCHES, GROUPS, WHITE_RGB, GREY_RGB
+from database import USER_DB_CURSOR
 
 
 def button_is_not_activated(fn):
@@ -186,6 +187,8 @@ class Button:
         self.default_cursor = self.surface.get_system_mouse_cursor(SURFACE.CURSOR_DEFAULT)
         self.opacity = 0
         self.disabled_state = False
+        USER_DB_CURSOR.execute('SELECT current_locale FROM i18n')
+        self.current_locale = USER_DB_CURSOR.fetchone()[0]
 
     @button_is_not_activated
     def on_activate(self, instant=False):
@@ -423,3 +426,6 @@ class Button:
 
             if self.text_label is not None:
                 self.text_label.color = (*self.text_label.color[0:3], self.opacity)
+
+    def on_update_current_locale(self, new_locale):
+        pass
