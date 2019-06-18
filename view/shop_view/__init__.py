@@ -17,7 +17,8 @@ class ShopView(View):
         super().__init__(logger=getLogger(f'root.app.game.map.{map_id}.shop.{shop_id}.view'))
         self.map_id = map_id
         self.shop_id = shop_id
-        self.shop_details_window_position = self.inner_area_position
+        self.user_db_cursor.execute('''SELECT last_known_shop_window_position FROM graphics''')
+        self.shop_details_window_position = tuple(map(int, self.user_db_cursor.fetchone()[0].split(',')))
         self.shop_details_window_size = self.inner_area_size
         self.shader = from_files_names('shaders/shader.vert', 'shaders/shop_view/shader.frag')
         self.shop_view_shader_bottom_limit = 0.0

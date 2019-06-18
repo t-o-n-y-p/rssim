@@ -25,7 +25,8 @@ class ShopConstructorView(View):
         self.current_stage, self.shop_storage_money = self.user_db_cursor.fetchone()
         self.shop_stages_cells_position = (0, 0)
         self.shop_stages_cells_size = (0, 0)
-        self.shop_details_window_position = self.inner_area_position
+        self.user_db_cursor.execute('''SELECT last_known_shop_window_position FROM graphics''')
+        self.shop_details_window_position = tuple(map(int, self.user_db_cursor.fetchone()[0].split(',')))
         self.shop_details_window_size = self.inner_area_size
         self.shader = from_files_names('shaders/shader.vert', 'shaders/shop_constructor_view/shader.frag')
         self.shop_view_shader_bottom_limit = 0.0

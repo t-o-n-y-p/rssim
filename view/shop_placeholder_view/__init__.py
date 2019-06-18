@@ -11,6 +11,9 @@ class ShopPlaceholderView(View):
         super().__init__(logger=getLogger(f'root.app.game.map.{map_id}.shop.{shop_id}.placeholder.view'))
         self.map_id = map_id
         self.shop_id = shop_id
+        self.user_db_cursor.execute('''SELECT last_known_shop_window_position FROM graphics''')
+        self.shop_details_window_position = tuple(map(int, self.user_db_cursor.fetchone()[0].split(',')))
+        self.shop_details_window_size = self.inner_area_size
         self.lock_label = None
         self.description_label = None
         self.config_db_cursor.execute('''SELECT level_required FROM shops_config
@@ -31,9 +34,12 @@ class ShopPlaceholderView(View):
         """
         self.is_activated = True
         if self.lock_label is None:
-            self.lock_label = Label('', font_name='Webdings', font_size=3 * self.bottom_bar_height // 4,
-                                    color=(*GREY_RGB, self.opacity), x=self.screen_resolution[0] // 2,
-                                    y=self.screen_resolution[1] // 2 + self.bottom_bar_height // 2,
+            self.lock_label = Label('', font_name='Webdings', font_size=self.bottom_bar_height,
+                                    color=(*GREY_RGB, self.opacity),
+                                    x=self.shop_details_window_position[0] + self.shop_details_window_size[0] // 2,
+                                    y=self.shop_details_window_position[1]
+                                      + (self.shop_details_window_size[1] - self.top_bar_height) // 2
+                                      + self.top_bar_height,
                                     anchor_x='center', anchor_y='center',
                                     batch=self.batches['ui_batch'], group=self.groups['button_text'])
 
@@ -41,8 +47,12 @@ class ShopPlaceholderView(View):
             self.description_label = Label(I18N_RESOURCES['shop_placeholder_description_string'][self.current_locale]
                                            .format(self.level_required), font_name='Arial',
                                            font_size=self.bottom_bar_height // 5,
-                                           color=(*GREY_RGB, self.opacity), x=self.screen_resolution[0] // 2,
-                                           y=self.screen_resolution[1] // 2 - self.top_bar_height // 2,
+                                           color=(*GREY_RGB, self.opacity),
+                                           x=self.shop_details_window_position[0]
+                                             + self.shop_details_window_size[0] // 2,
+                                           y=self.shop_details_window_position[1]
+                                             + (self.shop_details_window_size[1] - self.top_bar_height) // 2
+                                             - self.top_bar_height,
                                            anchor_x='center', anchor_y='center',
                                            batch=self.batches['ui_batch'], group=self.groups['button_text'])
 
@@ -56,11 +66,14 @@ class ShopPlaceholderView(View):
     def on_change_screen_resolution(self, screen_resolution):
         self.on_recalculate_ui_properties(screen_resolution)
         if self.is_activated:
-            self.lock_label.x = self.screen_resolution[0] // 2
-            self.lock_label.y = self.screen_resolution[1] // 2 + self.bottom_bar_height // 2
-            self.lock_label.font_size = 3 * self.bottom_bar_height // 4
-            self.description_label.x = self.screen_resolution[0] // 2
-            self.description_label.y = self.screen_resolution[1] // 2 - self.top_bar_height // 2
+            self.lock_label.x = self.shop_details_window_position[0] + self.shop_details_window_size[0] // 2
+            self.lock_label.y = self.shop_details_window_position[1] \
+                                + (self.shop_details_window_size[1] - self.top_bar_height) // 2 + self.top_bar_height
+            self.lock_label.font_size = self.bottom_bar_height
+            self.description_label.x = self.shop_details_window_position[0] + self.shop_details_window_size[0] // 2
+            self.description_label.y = self.shop_details_window_position[1] \
+                                       + (self.shop_details_window_size[1] - self.top_bar_height) // 2 \
+                                       - self.top_bar_height
             self.description_label.font_size = self.bottom_bar_height // 5
 
     def on_update_opacity(self, new_opacity):
