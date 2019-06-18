@@ -17,6 +17,7 @@ from ui.button.restore_button import RestoreButton
 from ui.button.en_locale_button import ENLocaleButton
 from ui.button.ru_locale_button import RULocaleButton
 from textures import FLAG_RU, FLAG_US
+from ui.label.app_title_label import AppTitleLabel
 
 
 class AppView(View):
@@ -111,7 +112,7 @@ class AppView(View):
             self.controller.on_update_clock_state(clock_24h_enabled=True)
 
         super().__init__(logger=getLogger('root.app.view'))
-        self.title_label = None
+        self.title_label = AppTitleLabel()
         self.flag_us_sprite = None
         self.flag_ru_sprite = None
         self.close_game_button = CloseGameButton(on_click_action=on_close_game)
@@ -151,7 +152,6 @@ class AppView(View):
         """
         if self.opacity <= 0:
             self.title_label.delete()
-            self.title_label = None
             self.flag_us_sprite.delete()
             self.flag_us_sprite = None
             self.flag_ru_sprite.delete()
@@ -159,7 +159,7 @@ class AppView(View):
             self.shader_sprite.delete()
             self.shader_sprite = None
         else:
-            self.title_label.color = (*WHITE_RGB, self.opacity)
+            self.title_label.on_update_opacity(self.opacity)
             self.flag_us_sprite.opacity = self.opacity
             self.flag_ru_sprite.opacity = self.opacity
 
@@ -174,14 +174,7 @@ class AppView(View):
                 = self.batches['main_frame'].add(4, GL_QUADS, self.groups['main_frame'],
                                                  ('v2f/static', (-1.0, -1.0, -1.0, 1.0, 1.0, 1.0, 1.0, -1.0)))
 
-        if self.title_label is None:
-            self.title_label = Label('Railway Station Simulator', font_name='Arial',
-                                     font_size=int(16 / 40 * self.top_bar_height), color=(*WHITE_RGB, self.opacity),
-                                     x=self.top_bar_height * 2 + self.top_bar_height // 4,
-                                     y=self.screen_resolution[1] - self.top_bar_height // 2,
-                                     anchor_x='left', anchor_y='center', batch=self.batches['ui_batch'],
-                                     group=self.groups['button_text'])
-
+        self.title_label.create()
         if self.flag_us_sprite is None:
             self.flag_us_sprite = Sprite(FLAG_US, x=self.top_bar_height // 2,
                                          y=self.screen_resolution[1] - self.top_bar_height // 2,
@@ -218,10 +211,8 @@ class AppView(View):
         """
         self.on_recalculate_ui_properties(screen_resolution)
         self.surface.set_size(screen_resolution[0], screen_resolution[1])
+        self.title_label.on_change_screen_resolution(self.screen_resolution)
         if self.is_activated:
-            self.title_label.x = self.top_bar_height * 2 + self.top_bar_height // 4
-            self.title_label.y = self.screen_resolution[1] - self.top_bar_height // 2
-            self.title_label.font_size = int(16 / 40 * self.top_bar_height)
             self.flag_us_sprite.position = (self.top_bar_height // 2,
                                             self.screen_resolution[1] - self.top_bar_height // 2)
             self.flag_us_sprite.scale = 0.6 * self.top_bar_height / float(FLAG_US.width)
