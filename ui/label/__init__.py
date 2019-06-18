@@ -2,6 +2,7 @@ import pyglet.text
 
 from i18n import I18N_RESOURCES
 from database import USER_DB_CURSOR
+from ui import WHITE_RGB
 
 
 def text_label_does_not_exist(fn):
@@ -25,16 +26,16 @@ class Label:
         self.logger = logger
         self.args = args
         self.text_label = None
-        self.text = ''
-        self.font_name = ''
+        self.text = 'Default text'
+        self.font_name = 'Arial'
         self.bold = False
-        self.font_size = 0
-        self.base_color = ()
+        self.font_size = 20
+        self.base_color = WHITE_RGB
         self.opacity = 0
         self.x = 0
         self.y = 0
-        self.anchor_x = ''
-        self.anchor_y = ''
+        self.anchor_x = 'center'
+        self.anchor_y = 'center'
         self.batch = None
         self.group = None
 
@@ -94,11 +95,9 @@ class LocalizedLabel(Label):
         super().__init__(logger=logger, args=args)
         self.i18n_resources_key = i18n_resources_key
         USER_DB_CURSOR.execute('SELECT current_locale FROM i18n')
-        self.current_locale = USER_DB_CURSOR.fetchone()[0]
-        self.text = I18N_RESOURCES[self.i18n_resources_key][self.current_locale]
+        self.text = I18N_RESOURCES[self.i18n_resources_key][USER_DB_CURSOR.fetchone()[0]]
 
     def on_update_current_locale(self, new_locale):
-        self.current_locale = new_locale
-        self.text = I18N_RESOURCES[self.i18n_resources_key][self.current_locale]
+        self.text = I18N_RESOURCES[self.i18n_resources_key][new_locale]
         if self.text_label is not None:
             self.text_label.text = self.text.format(*self.args)
