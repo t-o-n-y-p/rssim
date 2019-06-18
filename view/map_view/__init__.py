@@ -544,7 +544,6 @@ class MapView(View):
         :param modifiers:       determines if some modifier key is held down (at the moment we don't use it)
         """
         self.map_move_mode = True
-        self.on_activate_mini_map()
 
     @map_move_mode_enabled
     def handle_mouse_drag(self, x, y, dx, dy, buttons, modifiers):
@@ -558,6 +557,7 @@ class MapView(View):
         :param buttons:         determines which mouse button was pressed
         :param modifiers:       determines if some modifier key is held down (at the moment we don't use it)
         """
+        self.on_activate_mini_map()
         self.base_offset = (self.base_offset[0] + dx, self.base_offset[1] + dy)
         self.check_base_offset_limits()
         if self.zoom_out_activated:
