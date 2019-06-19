@@ -9,14 +9,8 @@ class FPSLabel(Label):
         super().__init__(logger=getLogger('root.fps_label'), args=args)
         self.text = '{0} FPS'
         self.font_name = 'Courier New'
-        self.bold = False
-        self.font_size = 0
         self.base_color = WHITE_RGB
-        self.opacity = 0
-        self.x = 0
-        self.y = 0
         self.anchor_x = 'right'
-        self.anchor_y = 'center'
         self.batch = BATCHES['ui_batch']
         self.group = GROUPS['button_text']
 
