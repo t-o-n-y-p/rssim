@@ -3,6 +3,7 @@ from logging import getLogger
 from pyglet.text import Label
 
 from view import *
+from ui.label.fps_label import FPSLabel
 
 
 class FPSView(View):
@@ -17,7 +18,7 @@ class FPSView(View):
 
         """
         super().__init__(logger=getLogger('root.app.fps.view'))
-        self.fps_label = None
+        self.fps_label = FPSLabel(args=(0, ))
         self.on_init_graphics()
 
     def on_update_opacity(self, new_opacity):
@@ -35,9 +36,8 @@ class FPSView(View):
         """
         if self.opacity <= 0:
             self.fps_label.delete()
-            self.fps_label = None
         else:
-            self.fps_label.color = (*WHITE_RGB, self.opacity)
+            self.fps_label.on_update_opacity(self.opacity)
 
     @view_is_not_active
     def on_activate(self):
@@ -45,13 +45,7 @@ class FPSView(View):
         Activates the view and creates sprites and labels.
         """
         self.is_activated = True
-        if self.fps_label is None:
-            self.fps_label = Label(text='0 FPS', font_name='Courier New', font_size=int(16 / 40 * self.top_bar_height),
-                                   color=(*WHITE_RGB, self.opacity),
-                                   x=self.screen_resolution[0] - self.top_bar_height * 3 - self.top_bar_height // 4,
-                                   y=self.screen_resolution[1] - self.top_bar_height // 2,
-                                   anchor_x='right', anchor_y='center', batch=self.batches['ui_batch'],
-                                   group=self.groups['button_text'])
+        self.fps_label.create()
 
     @view_is_active
     def on_deactivate(self):
@@ -67,7 +61,7 @@ class FPSView(View):
 
         :param fps:                             new FPS value
         """
-        self.fps_label.text = f'{fps} FPS'
+        self.fps_label.on_update_args(new_args=(fps, ))
 
     def on_change_screen_resolution(self, screen_resolution):
         """
@@ -76,10 +70,7 @@ class FPSView(View):
         :param screen_resolution:       new screen resolution
         """
         self.on_recalculate_ui_properties(screen_resolution)
-        if self.is_activated:
-            self.fps_label.x = self.screen_resolution[0] - self.top_bar_height * 3 - self.top_bar_height // 4
-            self.fps_label.y = self.screen_resolution[1] - self.top_bar_height // 2
-            self.fps_label.font_size = int(16 / 40 * self.top_bar_height)
+        self.fps_label.on_change_screen_resolution(screen_resolution)
 
     def on_init_graphics(self):
         """
