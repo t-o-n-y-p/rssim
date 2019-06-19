@@ -16,6 +16,8 @@ from notifications.level_up_notification import LevelUpNotification
 from notifications.enough_money_track_notification import EnoughMoneyTrackNotification
 from notifications.enough_money_environment_notification import EnoughMoneyEnvironmentNotification
 from i18n import I18N_RESOURCES
+from ui.label.main_clock_label_24h import MainClockLabel24H
+from ui.label.main_clock_label_12h import MainClockLabel12H
 
 
 class GameView(View):
@@ -111,7 +113,8 @@ class GameView(View):
         self.open_settings_button = OpenSettingsGameViewButton(on_click_action=on_open_settings)
         self.buttons = [self.pause_game_button, self.resume_game_button, self.open_settings_button]
         add_font('perfo-bold.ttf')
-        self.time_label = None
+        self.main_clock_label_24h = MainClockLabel24H()
+        self.main_clock_label_12h = MainClockLabel12H()
         self.level_label = None
         self.money_label = None
         self.game_time = 0
@@ -147,8 +150,8 @@ class GameView(View):
         if self.opacity <= 0:
             self.shader_sprite.delete()
             self.shader_sprite = None
-            self.time_label.delete()
-            self.time_label = None
+            self.main_clock_label_24h.delete()
+            self.main_clock_label_12h.delete()
             self.progress_bar_exp_inactive.delete()
             self.progress_bar_exp_inactive = None
             self.progress_bar_exp_active.delete()
@@ -162,7 +165,8 @@ class GameView(View):
             self.level_label.delete()
             self.level_label = None
         else:
-            self.time_label.color = (*WHITE_RGB, self.opacity)
+            self.main_clock_label_24h.on_update_opacity(self.opacity)
+            self.main_clock_label_12h.on_update_opacity(self.opacity)
             self.progress_bar_exp_inactive.opacity = self.opacity
             self.progress_bar_exp_active.opacity = self.opacity
             self.progress_bar_money_inactive.opacity = self.opacity
@@ -182,12 +186,10 @@ class GameView(View):
                                                  ('v2f/static', (-1.0, -1.0, -1.0, self.game_view_shader_upper_limit,
                                                                  1.0, self.game_view_shader_upper_limit, 1.0, -1.0)))
 
-        if self.time_label is None:
-            self.time_label = Label(self.get_time_text(), font_name='Perfo', bold=True,
-                                    font_size=int(32 / 80 * self.bottom_bar_height), color=(*WHITE_RGB, self.opacity),
-                                    x=self.screen_resolution[0] - int(200 / 80 * self.bottom_bar_height),
-                                    y=self.bottom_bar_height // 2, anchor_x='center', anchor_y='center',
-                                    batch=self.batches['ui_batch'], group=self.groups['button_text'])
+        if self.clock_24h_enabled:
+            self.main_clock_label_24h.create()
+        else:
+            self.main_clock_label_12h.create()
 
         if self.progress_bar_exp_inactive is None:
             self.progress_bar_exp_inactive = Sprite(self.progress_bar_inactive_image,
@@ -267,6 +269,8 @@ class GameView(View):
         self.money_offset = self.exp_offset + self.bottom_bar_height // 8 \
                           + int(self.progress_bar_inactive_image.width * self.bottom_bar_height / 80)
         self.game_view_shader_upper_limit = self.bottom_bar_height / self.screen_resolution[1] * 2 - 1
+        self.main_clock_label_24h.on_change_screen_resolution(self.screen_resolution)
+        self.main_clock_label_12h.on_change_screen_resolution(self.screen_resolution)
         if self.is_activated:
             self.level_label.x = self.exp_offset + int(self.progress_bar_inactive_image.width / 2 / 80
                                                        * self.bottom_bar_height)
@@ -276,9 +280,6 @@ class GameView(View):
                                                          * self.bottom_bar_height)
             self.money_label.y = self.bottom_bar_height // 2
             self.money_label.font_size = int(22 / 80 * self.bottom_bar_height)
-            self.time_label.x = self.screen_resolution[0] - int(200 / 80 * self.bottom_bar_height)
-            self.time_label.y = self.bottom_bar_height // 2
-            self.time_label.font_size = int(32 / 80 * self.bottom_bar_height)
             self.progress_bar_exp_inactive.scale = self.bottom_bar_height / 80
             self.progress_bar_exp_inactive.position = (self.exp_offset, self.bottom_bar_height // 8)
             self.progress_bar_money_inactive.scale = self.bottom_bar_height / 80
@@ -323,8 +324,16 @@ class GameView(View):
         :param game_time:                       current in-game time
         """
         self.game_time = game_time
-        if self.is_activated:
-            self.time_label.text = self.get_time_text()
+        am_pm_index = ((self.game_time // FRAMES_IN_ONE_HOUR) // 12 + 1) % 2
+        self.main_clock_label_24h.on_update_args(
+            ((self.game_time // FRAMES_IN_ONE_HOUR + 12) % HOURS_IN_ONE_DAY,
+             (self.game_time // FRAMES_IN_ONE_MINUTE) % MINUTES_IN_ONE_HOUR)
+        )
+        self.main_clock_label_12h.on_update_args(
+            ((self.game_time // FRAMES_IN_ONE_HOUR + 11) % 12 + 1,
+             (self.game_time // FRAMES_IN_ONE_MINUTE) % MINUTES_IN_ONE_HOUR,
+             I18N_RESOURCES['am_pm_string'][self.current_locale][am_pm_index])
+        )
 
     @view_is_active
     def on_update_exp(self, exp, player_progress):
@@ -397,9 +406,10 @@ class GameView(View):
         :param new_locale:                      selected locale
         """
         self.current_locale = new_locale
+        self.main_clock_label_24h.on_update_current_locale(self.current_locale)
+        self.main_clock_label_12h.on_update_current_locale(self.current_locale)
         if self.is_activated:
             self.level_label.text = I18N_RESOURCES['level_string'][self.current_locale].format(self.level)
-            self.time_label.text = self.get_time_text()
 
     @notifications_available
     @level_up_notification_enabled
@@ -467,18 +477,6 @@ class GameView(View):
         """
         self.on_change_screen_resolution(self.screen_resolution)
 
-    def get_time_text(self):
-        if self.clock_24h_enabled:
-            return I18N_RESOURCES['24h_main_clock_string'][self.current_locale]\
-                .format((self.game_time // FRAMES_IN_ONE_HOUR + 12) % HOURS_IN_ONE_DAY,
-                        (self.game_time // FRAMES_IN_ONE_MINUTE) % MINUTES_IN_ONE_HOUR)
-        else:
-            am_pm_index = ((self.game_time // FRAMES_IN_ONE_HOUR) // 12 + 1) % 2
-            return I18N_RESOURCES['12h_main_clock_string'][self.current_locale]\
-                .format((self.game_time // FRAMES_IN_ONE_HOUR + 11) % 12 + 1,
-                        (self.game_time // FRAMES_IN_ONE_MINUTE) % MINUTES_IN_ONE_HOUR,
-                        I18N_RESOURCES['am_pm_string'][self.current_locale][am_pm_index])
-
     def on_update_clock_state(self, clock_24h_enabled):
         """
         Updates main game clock when clock state is updated.
@@ -486,5 +484,9 @@ class GameView(View):
         :param clock_24h_enabled:               indicates if 24h clock is enabled
         """
         self.clock_24h_enabled = clock_24h_enabled
-        if self.is_activated:
-            self.time_label.text = self.get_time_text()
+        if self.clock_24h_enabled:
+            self.main_clock_label_12h.delete()
+            self.main_clock_label_24h.create()
+        else:
+            self.main_clock_label_24h.delete()
+            self.main_clock_label_12h.create()

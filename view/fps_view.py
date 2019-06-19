@@ -18,7 +18,7 @@ class FPSView(View):
 
         """
         super().__init__(logger=getLogger('root.app.fps.view'))
-        self.fps_label = FPSLabel(args=(0, ))
+        self.fps_label = FPSLabel()
         self.on_init_graphics()
 
     def on_update_opacity(self, new_opacity):

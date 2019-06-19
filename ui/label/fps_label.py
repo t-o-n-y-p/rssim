@@ -5,9 +5,10 @@ from ui import *
 
 
 class FPSLabel(Label):
-    def __init__(self, args):
-        super().__init__(logger=getLogger('root.fps_label'), args=args)
+    def __init__(self):
+        super().__init__(logger=getLogger('root.fps_label'))
         self.text = '{0} FPS'
+        self.args = (0, )
         self.font_name = 'Courier New'
         self.base_color = WHITE_RGB
         self.anchor_x = 'right'

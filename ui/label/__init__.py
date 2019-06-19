@@ -22,9 +22,9 @@ def text_label_exists(fn):
 
 
 class Label:
-    def __init__(self, logger, args=()):
+    def __init__(self, logger):
         self.logger = logger
-        self.args = args
+        self.args = ()
         self.text_label = None
         self.text = 'Default text'
         self.font_name = 'Arial'
@@ -91,13 +91,15 @@ class Label:
 
 
 class LocalizedLabel(Label):
-    def __init__(self, logger, i18n_resources_key, args=()):
-        super().__init__(logger=logger, args=args)
+    def __init__(self, logger, i18n_resources_key):
+        super().__init__(logger=logger)
         self.i18n_resources_key = i18n_resources_key
         USER_DB_CURSOR.execute('SELECT current_locale FROM i18n')
-        self.text = I18N_RESOURCES[self.i18n_resources_key][USER_DB_CURSOR.fetchone()[0]]
+        self.current_locale = USER_DB_CURSOR.fetchone()[0]
+        self.text = I18N_RESOURCES[self.i18n_resources_key][self.current_locale]
 
     def on_update_current_locale(self, new_locale):
-        self.text = I18N_RESOURCES[self.i18n_resources_key][new_locale]
+        self.current_locale = new_locale
+        self.text = I18N_RESOURCES[self.i18n_resources_key][self.current_locale]
         if self.text_label is not None:
             self.text_label.text = self.text.format(*self.args)
