@@ -469,13 +469,15 @@ class GameView(View):
 
     def get_time_text(self):
         if self.clock_24h_enabled:
-            return '{0:0>2} : {1:0>2}'.format((self.game_time // FRAMES_IN_ONE_HOUR + 12) % HOURS_IN_ONE_DAY,
-                                              (self.game_time // FRAMES_IN_ONE_MINUTE) % MINUTES_IN_ONE_HOUR)
+            return I18N_RESOURCES['24h_main_clock_string'][self.current_locale]\
+                .format((self.game_time // FRAMES_IN_ONE_HOUR + 12) % HOURS_IN_ONE_DAY,
+                        (self.game_time // FRAMES_IN_ONE_MINUTE) % MINUTES_IN_ONE_HOUR)
         else:
             am_pm_index = ((self.game_time // FRAMES_IN_ONE_HOUR) // 12 + 1) % 2
-            return '{0} : {1:0>2} {2}'.format((self.game_time // FRAMES_IN_ONE_HOUR + 11) % 12 + 1,
-                                              (self.game_time // FRAMES_IN_ONE_MINUTE) % MINUTES_IN_ONE_HOUR,
-                                              I18N_RESOURCES['am_pm_string'][self.current_locale][am_pm_index])
+            return I18N_RESOURCES['12h_main_clock_string'][self.current_locale]\
+                .format((self.game_time // FRAMES_IN_ONE_HOUR + 11) % 12 + 1,
+                        (self.game_time // FRAMES_IN_ONE_MINUTE) % MINUTES_IN_ONE_HOUR,
+                        I18N_RESOURCES['am_pm_string'][self.current_locale][am_pm_index])
 
     def on_update_clock_state(self, clock_24h_enabled):
         """
