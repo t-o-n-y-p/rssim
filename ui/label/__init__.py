@@ -34,6 +34,7 @@ class Label:
         self.opacity = 0
         self.x = 0
         self.y = 0
+        self.offset = (0, 0)
         self.anchor_x = 'center'
         self.anchor_y = 'center'
         self.batch = None
@@ -63,7 +64,10 @@ class Label:
         self.text_label.delete()
         self.text_label = None
 
-    def on_change_screen_resolution(self, screen_resolution):
+    def on_change_screen_resolution(self, screen_resolution, new_offset=None):
+        if new_offset is not None:
+            self.offset = new_offset
+
         self.x = self.get_x(screen_resolution)
         self.y = self.get_y(screen_resolution)
         self.font_size = self.get_font_size(screen_resolution)
@@ -72,6 +76,16 @@ class Label:
             self.text_label.x = self.x
             self.text_label.y = self.y
             self.text_label.font_size = self.font_size
+            self.text_label.end_update()
+
+    def on_change_offset(self, new_offset):
+        self.x = self.x - self.offset[0] + new_offset[0]
+        self.y = self.y - self.offset[1] + new_offset[1]
+        self.offset = new_offset
+        if self.text_label is not None:
+            self.text_label.begin_update()
+            self.text_label.x = self.x
+            self.text_label.y = self.y
             self.text_label.end_update()
 
     def on_change_base_color(self, new_base_color):
