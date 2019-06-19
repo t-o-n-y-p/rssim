@@ -203,13 +203,13 @@ class ScheduleRow:
     def get_main_sprite_text(self):
         if self.clock_24h_enabled:
             # !!! FIGURE SPACE is used for {3: >2}, not regular space
-            return '{0:0>6}       {1:0>2} : {2:0>2}                                     {3: >2}'\
+            return I18N_RESOURCES['24h_schedule_row_string'][self.current_locale]\
                 .format(self.data[TRAIN_ID], (self.data[ARRIVAL_TIME] // FRAMES_IN_ONE_HOUR + 12) % HOURS_IN_ONE_DAY,
                         (self.data[ARRIVAL_TIME] // FRAMES_IN_ONE_MINUTE) % MINUTES_IN_ONE_HOUR, self.data[CARS])
         else:
             am_pm_index = ((self.data[ARRIVAL_TIME] // FRAMES_IN_ONE_HOUR) // 12 + 1) % 2
             # !!! FIGURE SPACE is used for {1: >2} and {4: >2}, not regular space
-            return '{0:0>6}    {1: >2} : {2:0>2} {3}                                  {4: >2}'\
+            return I18N_RESOURCES['12h_schedule_row_string'][self.current_locale]\
                 .format(self.data[TRAIN_ID], (self.data[ARRIVAL_TIME] // FRAMES_IN_ONE_HOUR + 11) % 12 + 1,
                         (self.data[ARRIVAL_TIME] // FRAMES_IN_ONE_MINUTE) % MINUTES_IN_ONE_HOUR,
                         I18N_RESOURCES['am_pm_string'][self.current_locale][am_pm_index], self.data[CARS])
