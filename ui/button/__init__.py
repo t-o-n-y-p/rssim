@@ -253,6 +253,10 @@ class Button:
     def on_disable(self):
         self.on_deactivate()
         self.disabled_state = True
+        if self.vertex_list is not None:
+            self.vertex_list.delete()
+            self.vertex_list = None
+
         if self.text_label is None:
             if self.text not in (None, ''):
                 self.text_label = Label(self.text, font_name=self.font_name, bold=self.is_bold,
@@ -271,7 +275,7 @@ class Button:
         :param position:                        new button position (including 2-pixel borders)
         """
         self.position = position
-        if self.is_activated:
+        if self.is_activated or self.disabled_state:
             if self.vertex_list is not None:
                 # move the button background to the new position
                 # 2 pixels are left for red button border,
@@ -294,7 +298,7 @@ class Button:
         """
         self.button_size = new_button_size
         self.font_size = int(self.base_font_size_property * min(self.button_size))
-        if self.is_activated:
+        if self.text_label is not None:
             self.text_label.font_size = self.font_size
 
     @button_is_activated

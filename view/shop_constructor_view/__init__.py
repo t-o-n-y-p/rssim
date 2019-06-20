@@ -254,12 +254,13 @@ class ShopConstructorView(View):
 
     @view_is_active
     def on_update_storage_money(self, storage_money):
-        if storage_money > 0:
+        self.shop_storage_money = storage_money
+        if self.shop_storage_money > 0:
             self.clear_shop_storage_button.on_activate()
         else:
             self.clear_shop_storage_button.on_disable()
 
-        self.shop_storage_money = storage_money
+        self.shop_storage_progress_bar.on_update_text_label_args((storage_money, ))
         if self.current_stage > 0:
             self.shop_storage_progress_bar\
                 .on_update_progress_bar_state(storage_money,
