@@ -72,11 +72,12 @@ int is_grey_horizontal_line(int margin_x, int margin_y, int vertical_line_width)
             || (margin_y >= shop_stages_cells_size[1] - vertical_line_width
                 && margin_y <= shop_stages_cells_size[1] - 1)))
     {
+        int stage_value = -1;
         for (int i=4; i>=1; i--)
             if (margin_x < int(i * (shop_stages_cells_size[0] - vertical_line_width) / 4))
-                return i;
+                stage_value = i;
 
-        return -1;
+        return stage_value;
     }
     else
         return -1;
@@ -89,11 +90,12 @@ int is_light_blue_horizontal_line(int margin_x, int margin_y, int vertical_line_
             || (margin_y >= shop_stages_cells_size[1] - vertical_line_width * 3
                 && margin_y <= shop_stages_cells_size[1] - vertical_line_width - 1)))
     {
+        int stage_value = -1;
         for (int i=4; i>=1; i--)
             if (margin_x < int(i * (shop_stages_cells_size[0] - vertical_line_width) / 4))
-                return i;
+                stage_value = i;
 
-        return -1;
+        return stage_value;
     }
     else
         return -1;
