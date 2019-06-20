@@ -1,8 +1,15 @@
 from pyglet.sprite import Sprite
-from pyglet.text import Label
 
 from ui import *
 from database import USER_DB_CURSOR
+
+
+def progress_bar_is_active(fn):
+    def _handle_if_progress_bar_is_activated(*args, **kwargs):
+        if args[0].is_activated:
+            fn(*args, **kwargs)
+
+    return _handle_if_progress_bar_is_activated
 
 
 class RectangleProgressBar:
@@ -11,6 +18,7 @@ class RectangleProgressBar:
         self.is_activated = False
         self.screen_resolution = (1280, 720)
         self.position = (0, 0)
+        self.offset = (0, 0)
         self.inactive_image = None
         self.inactive_sprite = None
         self.active_image = None
@@ -43,9 +51,13 @@ class RectangleProgressBar:
     def on_deactivate(self):
         self.is_activated = False
 
-    def on_change_screen_resolution(self, screen_resolution):
+    def on_change_screen_resolution(self, screen_resolution, new_offset=None):
+        if new_offset is not None:
+            self.offset = new_offset
+
         self.screen_resolution = screen_resolution
-        self.position = self.get_position(screen_resolution)
+        rel_position = self.get_position(self.screen_resolution)
+        self.position = (self.offset[0] + rel_position[0], self.offset[1] + rel_position[1])
         self.text_label.on_change_screen_resolution(screen_resolution, new_offset=self.position)
         if self.inactive_sprite is not None:
             self.inactive_sprite.position = self.position
@@ -74,6 +86,7 @@ class RectangleProgressBar:
     def on_update_text_label_args(self, new_args):
         self.text_label.on_update_args(new_args)
 
+    @progress_bar_is_active
     def on_update_progress_bar_state(self, current_value, maximum_value):
         if maximum_value == 0:
             self.current_percent = 0

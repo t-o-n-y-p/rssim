@@ -1,8 +1,5 @@
 from logging import getLogger
 
-from pyglet.image import load
-from pyglet.sprite import Sprite
-from pyglet.text import Label
 from pyglet.resource import add_font
 from pyglet.gl import GL_QUADS
 from pyshaders import from_files_names
@@ -274,8 +271,6 @@ class GameView(View):
         :param money:                           money value
         :param money_target:                    current money target assigned by player
         """
-        # money_str = '{0:0>10}  ¤'.format(int(money))
-        # self.money_label.text = ' '.join((money_str[0], money_str[1:4], money_str[4:7], money_str[7:13]))
         self.money_progress_bar.on_update_text_label_args((int(money), ))
         self.money_progress_bar.on_update_progress_bar_state(money, money_target)
 

@@ -3,12 +3,11 @@ from logging import getLogger
 from pyshaders import from_files_names
 from pyglet.gl import GL_QUADS
 from pyglet.text import Label
-from pyglet.image import load
-from pyglet.sprite import Sprite
 
 from view import *
 from i18n import I18N_RESOURCES
 from ui.button.clear_shop_storage_button import ClearShopStorageButton
+from ui.rectangle_progress_bar.shop_storage_progress_bar import ShopStorageProgressBar
 
 
 class ShopConstructorView(View):
@@ -35,13 +34,7 @@ class ShopConstructorView(View):
         self.current_exp_bonus_label = None
         self.hourly_profit_value_label = None
         self.exp_bonus_value_label = None
-        self.progress_bar_money_inactive_image = load('img/game_progress_bars/progress_bar_inactive.png')
-        self.progress_bar_money_inactive = None
-        self.progress_bar_money_active_image = load('img/game_progress_bars/progress_bar_money_active.png')
-        self.progress_bar_money_active = None
-        self.money_progress_bar_position = (0, 0)
-        self.storage_money_label = None
-        self.storage_money_percent = 0
+        self.shop_storage_progress_bar = ShopStorageProgressBar()
         self.clear_shop_storage_button = ClearShopStorageButton(on_click_action=on_clear_storage)
         self.buttons = [self.clear_shop_storage_button, ]
         self.on_init_graphics()
@@ -118,35 +111,7 @@ class ShopConstructorView(View):
                         anchor_x='left', anchor_y='center',
                         batch=self.batches['ui_batch'], group=self.groups['button_text'])
 
-        if self.progress_bar_money_inactive is None:
-            self.progress_bar_money_inactive = Sprite(self.progress_bar_money_inactive_image,
-                                                      x=self.money_progress_bar_position[0],
-                                                      y=self.money_progress_bar_position[1],
-                                                      batch=self.batches['ui_batch'],
-                                                      group=self.groups['button_background'])
-            self.progress_bar_money_inactive.scale = self.bottom_bar_height / 80
-            self.progress_bar_money_inactive.opacity = self.opacity
-
-        if self.progress_bar_money_active is None:
-            self.progress_bar_money_active = Sprite(self.progress_bar_money_active_image,
-                                                    x=self.money_progress_bar_position[0],
-                                                    y=self.money_progress_bar_position[1],
-                                                    batch=self.batches['ui_batch'],
-                                                    group=self.groups['button_text'])
-            self.progress_bar_money_active.scale = self.bottom_bar_height / 80
-            self.progress_bar_money_active.opacity = self.opacity
-
-        if self.storage_money_label is None:
-            self.storage_money_label = Label('0', font_name='Perfo', bold=True, color=(*GREEN_RGB, self.opacity),
-                                             font_size=int(22 / 80 * self.bottom_bar_height),
-                                             x=self.money_progress_bar_position[0]
-                                               + int(self.progress_bar_money_inactive_image.width / 2 / 80
-                                                     * self.bottom_bar_height),
-                                             y=self.money_progress_bar_position[1] - self.bottom_bar_height // 8
-                                               + self.bottom_bar_height // 2,
-                                             anchor_x='center', anchor_y='center',
-                                             batch=self.batches['ui_batch'], group=self.groups['button_text'])
-
+        self.shop_storage_progress_bar.on_activate()
         for b in self.buttons:
             if b.to_activate_on_controller_init:
                 b.on_activate()
@@ -157,6 +122,7 @@ class ShopConstructorView(View):
         Deactivates the view and destroys all labels and buttons.
         """
         self.is_activated = False
+        self.shop_storage_progress_bar.on_deactivate()
         for b in self.buttons:
             b.on_deactivate()
             b.state = 'normal'
@@ -173,12 +139,8 @@ class ShopConstructorView(View):
                                               - 4 * self.bottom_bar_height) // 2)
         self.shop_stages_cells_size = (self.shop_details_window_size[0] - self.top_bar_height // 2,
                                        3 * self.bottom_bar_height - self.bottom_bar_height // 8)
-        self.money_progress_bar_position \
-            = (self.shop_details_window_position[0] + self.shop_details_window_size[0] - self.bottom_bar_height // 8
-               - int(self.progress_bar_money_inactive_image.width * self.bottom_bar_height / 80)
-               - self.bottom_bar_height // 8 - self.bottom_bar_height,
-               self.shop_details_window_position[1] + self.bottom_bar_height // 8
-               + 3 * self.bottom_bar_height + self.bottom_bar_height // 8)
+        self.shop_storage_progress_bar.on_change_screen_resolution(screen_resolution,
+                                                                   new_offset=self.shop_details_window_position)
         self.clear_shop_storage_button.on_size_changed((self.bottom_bar_height, self.bottom_bar_height))
         self.clear_shop_storage_button.x_margin = self.shop_details_window_position[0] \
                                                   + self.shop_details_window_size[0] \
@@ -211,18 +173,6 @@ class ShopConstructorView(View):
             self.exp_bonus_value_label.y = self.shop_details_window_position[1] + self.bottom_bar_height // 8 \
                                                  + 3 * self.bottom_bar_height + self.bottom_bar_height // 3
             self.exp_bonus_value_label.font_size = self.bottom_bar_height // 5
-            self.progress_bar_money_inactive.update(x=self.money_progress_bar_position[0],
-                                                    y=self.money_progress_bar_position[1],
-                                                    scale=self.bottom_bar_height / 80)
-            self.progress_bar_money_active.update(x=self.money_progress_bar_position[0],
-                                                  y=self.money_progress_bar_position[1],
-                                                  scale=self.bottom_bar_height / 80)
-            self.storage_money_label.x = self.money_progress_bar_position[0] \
-                                         + int(self.progress_bar_money_inactive_image.width / 2 / 80
-                                               * self.bottom_bar_height)
-            self.storage_money_label.y = self.money_progress_bar_position[1] - self.bottom_bar_height // 8 \
-                                         + self.bottom_bar_height // 2
-            self.storage_money_label.font_size = int(22 / 80 * self.bottom_bar_height)
 
     def on_update_opacity(self, new_opacity):
         """
@@ -231,6 +181,7 @@ class ShopConstructorView(View):
         :param new_opacity:                     new opacity value
         """
         self.opacity = new_opacity
+        self.shop_storage_progress_bar.on_update_opacity(new_opacity)
         self.on_update_sprite_opacity()
         for b in self.buttons:
             b.on_update_opacity(new_opacity)
@@ -250,20 +201,11 @@ class ShopConstructorView(View):
             self.hourly_profit_value_label = None
             self.exp_bonus_value_label.delete()
             self.exp_bonus_value_label = None
-            self.progress_bar_money_inactive.delete()
-            self.progress_bar_money_inactive = None
-            self.progress_bar_money_active.delete()
-            self.progress_bar_money_active = None
-            self.storage_money_label.delete()
-            self.storage_money_label = None
         else:
             self.current_hourly_profit_label.color = (*WHITE_RGB, self.opacity)
             self.current_exp_bonus_label.color = (*WHITE_RGB, self.opacity)
             self.hourly_profit_value_label.color = (*GREEN_RGB, self.opacity)
             self.exp_bonus_value_label.color = (*ORANGE_RGB, self.opacity)
-            self.progress_bar_money_inactive.opacity = self.opacity
-            self.progress_bar_money_active.opacity = self.opacity
-            self.storage_money_label.color = (*GREEN_RGB, self.opacity)
 
     def on_update_current_locale(self, new_locale):
         """
@@ -310,31 +252,17 @@ class ShopConstructorView(View):
     def on_update_stage_state(self, shop_stages_state_matrix, stage_number):
         self.shop_stages_state_matrix = shop_stages_state_matrix
 
+    @view_is_active
     def on_update_storage_money(self, storage_money):
-        if self.shop_storage_money == 0 and storage_money > 0:
+        if storage_money > 0:
             self.clear_shop_storage_button.on_activate()
         else:
             self.clear_shop_storage_button.on_disable()
 
         self.shop_storage_money = storage_money
-        if self.is_activated:
-            self.storage_money_label.text = '{0:,}  ¤'.format(self.shop_storage_money).replace(',', ' ')
-            if self.current_stage == 0:
-                self.storage_money_percent = 0
-            else:
-                self.storage_money_percent \
-                    = int(self.shop_storage_money / self.shop_stages_state_matrix[self.current_stage][STORAGE_CAPACITY]
-                          * 100)
-                if self.storage_money_percent > 100:
-                    self.storage_money_percent = 100
-
-            if self.storage_money_percent == 0:
-                image_region = self.progress_bar_money_active_image\
-                    .get_region(self.progress_bar_money_active_image.height // 2,
-                                self.progress_bar_money_active_image.height // 2, 1, 1)
-            else:
-                image_region = self.progress_bar_money_active_image\
-                    .get_region(0, 0, self.storage_money_percent * self.progress_bar_money_active_image.width // 100,
-                                self.progress_bar_money_active_image.height)
-
-            self.progress_bar_money_active.image = image_region
+        if self.current_stage > 0:
+            self.shop_storage_progress_bar\
+                .on_update_progress_bar_state(storage_money,
+                                              self.shop_stages_state_matrix[self.current_stage][STORAGE_CAPACITY])
+        else:
+            self.shop_storage_progress_bar.on_update_progress_bar_state(storage_money, 0)
