@@ -18,6 +18,8 @@ from notifications.enough_money_environment_notification import EnoughMoneyEnvir
 from i18n import I18N_RESOURCES
 from ui.label.main_clock_label_24h import MainClockLabel24H
 from ui.label.main_clock_label_12h import MainClockLabel12H
+from ui.rectangle_progress_bar.exp_progress_bar import ExpProgressBar
+from ui.rectangle_progress_bar.money_progress_bar import MoneyProgressBar
 
 
 class GameView(View):
@@ -97,16 +99,8 @@ class GameView(View):
             self.controller.parent_controller.settings.navigated_from_game = True
 
         super().__init__(logger=getLogger('root.app.game.view'))
-        self.progress_bar_inactive_image = load('img/game_progress_bars/progress_bar_inactive.png')
-        self.progress_bar_exp_inactive = None
-        self.progress_bar_money_inactive = None
-        self.progress_bar_exp_active_image = load('img/game_progress_bars/progress_bar_active.png')
-        self.progress_bar_money_active_image = load('img/game_progress_bars/progress_bar_money_active.png')
-        self.progress_bar_exp_active = None
-        self.progress_bar_money_active = None
-        self.exp_offset = self.bottom_bar_height + self.bottom_bar_height // 8
-        self.money_offset = self.exp_offset + self.bottom_bar_height // 8 \
-                          + int(self.progress_bar_inactive_image.width * self.bottom_bar_height / 80)
+        self.exp_progress_bar = ExpProgressBar()
+        self.money_progress_bar = MoneyProgressBar()
         self.pause_game_button, self.resume_game_button \
             = create_two_state_button(PauseGameButton(on_click_action=on_pause_game),
                                       ResumeGameButton(on_click_action=on_resume_game))
@@ -115,7 +109,6 @@ class GameView(View):
         add_font('perfo-bold.ttf')
         self.main_clock_label_24h = MainClockLabel24H()
         self.main_clock_label_12h = MainClockLabel12H()
-        self.level_label = None
         self.money_label = None
         self.game_time = 0
         self.exp_percent = 0
@@ -139,6 +132,8 @@ class GameView(View):
         :param new_opacity:                     new opacity value
         """
         self.opacity = new_opacity
+        self.exp_progress_bar.on_update_opacity(self.opacity)
+        self.money_progress_bar.on_update_opacity(self.opacity)
         self.on_update_sprite_opacity()
         for b in self.buttons:
             b.on_update_opacity(new_opacity)
@@ -152,27 +147,9 @@ class GameView(View):
             self.shader_sprite = None
             self.main_clock_label_24h.delete()
             self.main_clock_label_12h.delete()
-            self.progress_bar_exp_inactive.delete()
-            self.progress_bar_exp_inactive = None
-            self.progress_bar_exp_active.delete()
-            self.progress_bar_exp_active = None
-            self.progress_bar_money_inactive.delete()
-            self.progress_bar_money_inactive = None
-            self.progress_bar_money_active.delete()
-            self.progress_bar_money_active = None
-            self.money_label.delete()
-            self.money_label = None
-            self.level_label.delete()
-            self.level_label = None
         else:
             self.main_clock_label_24h.on_update_opacity(self.opacity)
             self.main_clock_label_12h.on_update_opacity(self.opacity)
-            self.progress_bar_exp_inactive.opacity = self.opacity
-            self.progress_bar_exp_active.opacity = self.opacity
-            self.progress_bar_money_inactive.opacity = self.opacity
-            self.progress_bar_money_active.opacity = self.opacity
-            self.level_label.color = (*WHITE_RGB, self.opacity)
-            self.money_label.color = (*GREEN_RGB, self.opacity)
 
     @view_is_not_active
     def on_activate(self):
@@ -191,59 +168,8 @@ class GameView(View):
         else:
             self.main_clock_label_12h.create()
 
-        if self.progress_bar_exp_inactive is None:
-            self.progress_bar_exp_inactive = Sprite(self.progress_bar_inactive_image,
-                                                    x=self.exp_offset,
-                                                    y=self.bottom_bar_height // 8,
-                                                    batch=self.batches['ui_batch'],
-                                                    group=self.groups['button_background'])
-            self.progress_bar_exp_inactive.scale = self.bottom_bar_height / 80
-            self.progress_bar_exp_inactive.opacity = self.opacity
-
-        if self.progress_bar_exp_active is None:
-            self.progress_bar_exp_active = Sprite(self.progress_bar_exp_active_image, x=self.exp_offset,
-                                                  y=self.bottom_bar_height // 8,
-                                                  batch=self.batches['ui_batch'],
-                                                  group=self.groups['button_text'])
-            self.progress_bar_exp_active.scale = self.bottom_bar_height / 80
-            self.progress_bar_exp_active.opacity = self.opacity
-
-        if self.level_label is None:
-            self.level_label = Label(I18N_RESOURCES['level_string'][self.current_locale].format(0),
-                                     font_name='Perfo', bold=True, color=(*WHITE_RGB, self.opacity),
-                                     font_size=int(22 / 80 * self.bottom_bar_height),
-                                     x=self.exp_offset + int(self.progress_bar_inactive_image.width / 2 / 80
-                                                             * self.bottom_bar_height),
-                                     y=self.bottom_bar_height // 2,
-                                     anchor_x='center', anchor_y='center', batch=self.batches['ui_batch'],
-                                     group=self.groups['button_text'])
-
-        if self.progress_bar_money_inactive is None:
-            self.progress_bar_money_inactive = Sprite(self.progress_bar_inactive_image,
-                                                      x=self.money_offset,
-                                                      y=self.bottom_bar_height // 8,
-                                                      batch=self.batches['ui_batch'],
-                                                      group=self.groups['button_background'])
-            self.progress_bar_money_inactive.scale = self.bottom_bar_height / 80
-            self.progress_bar_money_inactive.opacity = self.opacity
-
-        if self.progress_bar_money_active is None:
-            self.progress_bar_money_active = Sprite(self.progress_bar_money_active_image, x=self.money_offset,
-                                                    y=self.bottom_bar_height // 8,
-                                                    batch=self.batches['ui_batch'],
-                                                    group=self.groups['button_text'])
-            self.progress_bar_money_active.scale = self.bottom_bar_height / 80
-            self.progress_bar_money_active.opacity = self.opacity
-
-        if self.money_label is None:
-            self.money_label = Label('0', font_name='Perfo', bold=True, color=(*GREEN_RGB, self.opacity),
-                                     font_size=int(22 / 80 * self.bottom_bar_height),
-                                     x=self.money_offset + int(self.progress_bar_inactive_image.width / 2 / 80
-                                                               * self.bottom_bar_height),
-                                     y=self.bottom_bar_height // 2,
-                                     anchor_x='center', anchor_y='center',
-                                     batch=self.batches['ui_batch'], group=self.groups['button_text'])
-
+        self.exp_progress_bar.on_activate()
+        self.money_progress_bar.on_activate()
         for b in self.buttons:
             if b.to_activate_on_controller_init:
                 b.on_activate()
@@ -254,6 +180,8 @@ class GameView(View):
         Deactivates the view and destroys all labels and buttons.
         """
         self.is_activated = False
+        self.exp_progress_bar.on_deactivate()
+        self.money_progress_bar.on_deactivate()
         for b in self.buttons:
             b.on_deactivate()
             b.state = 'normal'
@@ -265,29 +193,12 @@ class GameView(View):
         :param screen_resolution:       new screen resolution
         """
         self.on_recalculate_ui_properties(screen_resolution)
-        self.exp_offset = self.bottom_bar_height + self.bottom_bar_height // 8
-        self.money_offset = self.exp_offset + self.bottom_bar_height // 8 \
-                          + int(self.progress_bar_inactive_image.width * self.bottom_bar_height / 80)
+        self.exp_progress_bar.on_change_screen_resolution(self.screen_resolution)
+        self.money_progress_bar.on_change_screen_resolution(self.screen_resolution)
         self.game_view_shader_upper_limit = self.bottom_bar_height / self.screen_resolution[1] * 2 - 1
         self.main_clock_label_24h.on_change_screen_resolution(self.screen_resolution)
         self.main_clock_label_12h.on_change_screen_resolution(self.screen_resolution)
         if self.is_activated:
-            self.level_label.x = self.exp_offset + int(self.progress_bar_inactive_image.width / 2 / 80
-                                                       * self.bottom_bar_height)
-            self.level_label.y = self.bottom_bar_height // 2
-            self.level_label.font_size = int(22 / 80 * self.bottom_bar_height)
-            self.money_label.x = self.money_offset + int(self.progress_bar_inactive_image.width / 2 / 80
-                                                         * self.bottom_bar_height)
-            self.money_label.y = self.bottom_bar_height // 2
-            self.money_label.font_size = int(22 / 80 * self.bottom_bar_height)
-            self.progress_bar_exp_inactive.scale = self.bottom_bar_height / 80
-            self.progress_bar_exp_inactive.position = (self.exp_offset, self.bottom_bar_height // 8)
-            self.progress_bar_money_inactive.scale = self.bottom_bar_height / 80
-            self.progress_bar_money_inactive.position = (self.money_offset, self.bottom_bar_height // 8)
-            self.progress_bar_exp_active.update(x=self.exp_offset, y=self.bottom_bar_height // 8,
-                                                scale=self.bottom_bar_height / 80)
-            self.progress_bar_money_active.update(x=self.money_offset, y=self.bottom_bar_height // 8,
-                                                  scale=self.bottom_bar_height / 80)
             self.shader_sprite.vertices = (-1.0, -1.0, -1.0, self.game_view_shader_upper_limit,
                                            1.0, self.game_view_shader_upper_limit, 1.0, -1.0)
 
@@ -343,23 +254,7 @@ class GameView(View):
         :param exp:                             exp value
         :param player_progress:                 exp needed to hit next level
         """
-        if player_progress < 1:
-            self.exp_percent = 0
-        else:
-            self.exp_percent = int(exp / player_progress * 100)
-            if self.exp_percent > 100:
-                self.exp_percent = 100
-
-        if self.exp_percent == 0:
-            image_region = self.progress_bar_exp_active_image\
-                .get_region(self.progress_bar_exp_active_image.height // 2,
-                            self.progress_bar_exp_active_image.height // 2, 1, 1)
-        else:
-            image_region = self.progress_bar_exp_active_image\
-                .get_region(0, 0, self.exp_percent * self.progress_bar_exp_active_image.width // 100,
-                            self.progress_bar_exp_active_image.height)
-
-        self.progress_bar_exp_active.image = image_region
+        self.exp_progress_bar.on_update_progress_bar_state(exp, player_progress)
 
     @view_is_active
     def on_update_level(self, level):
@@ -369,7 +264,7 @@ class GameView(View):
         :param level:                           current player level
         """
         self.level = level
-        self.level_label.text = I18N_RESOURCES['level_string'][self.current_locale].format(self.level)
+        self.exp_progress_bar.on_update_text_label_args((self.level, ))
 
     @view_is_active
     def on_update_money(self, money, money_target):
@@ -379,25 +274,10 @@ class GameView(View):
         :param money:                           money value
         :param money_target:                    current money target assigned by player
         """
-        money_str = '{0:0>10}  ¤'.format(int(money))
-        self.money_label.text = ' '.join((money_str[0], money_str[1:4], money_str[4:7], money_str[7:13]))
-        if money_target < 1:
-            self.money_percent = 0
-        else:
-            self.money_percent = int(money / money_target * 100)
-            if self.money_percent > 100:
-                self.money_percent = 100
-
-        if self.money_percent == 0:
-            image_region = self.progress_bar_money_active_image\
-                .get_region(self.progress_bar_money_active_image.height // 2,
-                            self.progress_bar_money_active_image.height // 2, 1, 1)
-        else:
-            image_region = self.progress_bar_money_active_image\
-                .get_region(0, 0, self.money_percent * self.progress_bar_money_active_image.width // 100,
-                            self.progress_bar_money_active_image.height)
-
-        self.progress_bar_money_active.image = image_region
+        # money_str = '{0:0>10}  ¤'.format(int(money))
+        # self.money_label.text = ' '.join((money_str[0], money_str[1:4], money_str[4:7], money_str[7:13]))
+        self.money_progress_bar.on_update_text_label_args((int(money), ))
+        self.money_progress_bar.on_update_progress_bar_state(money, money_target)
 
     def on_update_current_locale(self, new_locale):
         """
@@ -408,8 +288,7 @@ class GameView(View):
         self.current_locale = new_locale
         self.main_clock_label_24h.on_update_current_locale(self.current_locale)
         self.main_clock_label_12h.on_update_current_locale(self.current_locale)
-        if self.is_activated:
-            self.level_label.text = I18N_RESOURCES['level_string'][self.current_locale].format(self.level)
+        self.exp_progress_bar.on_update_current_locale(self.current_locale)
 
     @notifications_available
     @level_up_notification_enabled

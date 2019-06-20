@@ -52,9 +52,12 @@ class Label:
     def get_font_size(screen_resolution):
         pass
 
+    def get_formatted_text(self):
+        pass
+
     @text_label_does_not_exist
     def create(self):
-        self.text_label = pyglet.text.Label(self.text.format(*self.args), font_name=self.font_name, bold=self.bold,
+        self.text_label = pyglet.text.Label(self.get_formatted_text(), font_name=self.font_name, bold=self.bold,
                                             font_size=self.font_size, color=(*self.base_color, self.opacity),
                                             x=self.x, y=self.y, anchor_x=self.anchor_x, anchor_y=self.anchor_y,
                                             batch=self.batch, group=self.group)
@@ -68,8 +71,8 @@ class Label:
         if new_offset is not None:
             self.offset = new_offset
 
-        self.x = self.get_x(screen_resolution)
-        self.y = self.get_y(screen_resolution)
+        self.x = self.offset[0] + self.get_x(screen_resolution)
+        self.y = self.offset[1] + self.get_y(screen_resolution)
         self.font_size = self.get_font_size(screen_resolution)
         if self.text_label is not None:
             self.text_label.begin_update()
@@ -101,7 +104,7 @@ class Label:
     def on_update_args(self, new_args):
         self.args = new_args
         if self.text_label is not None:
-            self.text_label.text = self.text.format(*self.args)
+            self.text_label.text = self.get_formatted_text()
 
 
 class LocalizedLabel(Label):
@@ -116,4 +119,4 @@ class LocalizedLabel(Label):
         self.current_locale = new_locale
         self.text = I18N_RESOURCES[self.i18n_resources_key][self.current_locale]
         if self.text_label is not None:
-            self.text_label.text = self.text.format(*self.args)
+            self.text_label.text = self.get_formatted_text()

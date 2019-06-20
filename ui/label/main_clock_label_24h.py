@@ -30,3 +30,6 @@ class MainClockLabel24H(LocalizedLabel):
     def get_font_size(screen_resolution):
         bottom_bar_height = get_bottom_bar_height(screen_resolution)
         return int(32 / 80 * bottom_bar_height)
+
+    def get_formatted_text(self):
+        return self.text.format(*self.args)

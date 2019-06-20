@@ -4,11 +4,11 @@ from ui.label import LocalizedLabel
 from ui import *
 
 
-class MainClockLabel12H(LocalizedLabel):
+class CurrentLevelLabel(LocalizedLabel):
     def __init__(self):
-        super().__init__(logger=getLogger('root.main_clock_label_12h'),
-                         i18n_resources_key='12h_main_clock_string')
-        self.args = (12, 0, 'PM')
+        super().__init__(logger=getLogger('root.current_level_label'),
+                         i18n_resources_key='level_string')
+        self.args = (0, )
         self.font_name = 'Perfo'
         self.bold = True
         self.base_color = WHITE_RGB
@@ -19,17 +19,17 @@ class MainClockLabel12H(LocalizedLabel):
     @staticmethod
     def get_x(screen_resolution):
         bottom_bar_height = get_bottom_bar_height(screen_resolution)
-        return screen_resolution[0] - int(200 / 80 * bottom_bar_height)
+        return 15 * bottom_bar_height // 8
 
     @staticmethod
     def get_y(screen_resolution):
         bottom_bar_height = get_bottom_bar_height(screen_resolution)
-        return bottom_bar_height // 2
+        return 3 * bottom_bar_height // 8
 
     @staticmethod
     def get_font_size(screen_resolution):
         bottom_bar_height = get_bottom_bar_height(screen_resolution)
-        return int(32 / 80 * bottom_bar_height)
+        return int(22 / 80 * bottom_bar_height)
 
     def get_formatted_text(self):
         return self.text.format(*self.args)
