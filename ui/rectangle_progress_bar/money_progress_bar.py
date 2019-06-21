@@ -18,3 +18,8 @@ class MoneyProgressBar(RectangleProgressBar):
     def get_position(screen_resolution):
         bottom_bar_height = get_bottom_bar_height(screen_resolution)
         return 5 * bottom_bar_height, bottom_bar_height // 8
+
+    @staticmethod
+    def get_scale(screen_resolution):
+        bottom_bar_height = get_bottom_bar_height(screen_resolution)
+        return bottom_bar_height / 80

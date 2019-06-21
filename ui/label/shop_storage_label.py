@@ -19,17 +19,17 @@ class ShopStorageLabel(Label):
     @staticmethod
     def get_x(screen_resolution):
         bottom_bar_height = get_bottom_bar_height(screen_resolution)
-        return 15 * bottom_bar_height // 8
+        return 5 * bottom_bar_height // 2
 
     @staticmethod
     def get_y(screen_resolution):
         bottom_bar_height = get_bottom_bar_height(screen_resolution)
-        return 3 * bottom_bar_height // 8
+        return bottom_bar_height // 2
 
     @staticmethod
     def get_font_size(screen_resolution):
         bottom_bar_height = get_bottom_bar_height(screen_resolution)
-        return int(22 / 80 * bottom_bar_height)
+        return int(29 / 80 * bottom_bar_height)
 
     def get_formatted_text(self):
         money_str = self.text.format(*self.args)

@@ -17,5 +17,10 @@ class ShopStorageProgressBar(RectangleProgressBar):
     @staticmethod
     def get_position(screen_resolution):
         bottom_bar_height = get_bottom_bar_height(screen_resolution)
-        return int(6.875 * bottom_bar_height) * 2 - bottom_bar_height - 15 * bottom_bar_height // 4, \
-               3 * bottom_bar_height + bottom_bar_height // 4
+        return int(6.875 * bottom_bar_height) * 2 - bottom_bar_height - 5 * bottom_bar_height, \
+               3 * bottom_bar_height + bottom_bar_height // 8
+
+    @staticmethod
+    def get_scale(screen_resolution):
+        bottom_bar_height = get_bottom_bar_height(screen_resolution)
+        return bottom_bar_height / 80 * (4/3)

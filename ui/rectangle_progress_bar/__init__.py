@@ -33,19 +33,23 @@ class RectangleProgressBar:
     def get_position(screen_resolution):
         pass
 
+    @staticmethod
+    def get_scale(screen_resolution):
+        pass
+
     def on_activate(self):
         self.is_activated = True
         self.text_label.create()
         if self.inactive_sprite is None:
             self.inactive_sprite = Sprite(self.inactive_image, x=self.position[0], y=self.position[1],
                                           batch=BATCHES['ui_batch'], group=GROUPS['button_background'])
-            self.inactive_sprite.scale = get_bottom_bar_height(self.screen_resolution) / 80
+            self.inactive_sprite.scale = self.get_scale(self.screen_resolution)
             self.inactive_sprite.opacity = self.opacity
 
         if self.active_sprite is None:
             self.active_sprite = Sprite(self.active_image, x=self.position[0], y=self.position[1],
                                         batch=BATCHES['ui_batch'], group=GROUPS['button_text'])
-            self.active_sprite.scale = get_bottom_bar_height(self.screen_resolution) / 80
+            self.active_sprite.scale = self.get_scale(self.screen_resolution)
             self.active_sprite.opacity = self.opacity
 
     def on_deactivate(self):
@@ -61,11 +65,11 @@ class RectangleProgressBar:
         self.text_label.on_change_screen_resolution(screen_resolution, new_offset=self.position)
         if self.inactive_sprite is not None:
             self.inactive_sprite.position = self.position
-            self.inactive_sprite.scale = get_bottom_bar_height(self.screen_resolution) / 80
+            self.inactive_sprite.scale = self.get_scale(self.screen_resolution)
 
         if self.active_sprite is not None:
             self.active_sprite.position = self.position
-            self.active_sprite.scale = get_bottom_bar_height(self.screen_resolution) / 80
+            self.active_sprite.scale = self.get_scale(self.screen_resolution)
 
     def on_update_opacity(self, new_opacity):
         self.opacity = new_opacity
