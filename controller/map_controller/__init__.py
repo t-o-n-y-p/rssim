@@ -617,6 +617,8 @@ class MapController(Controller):
         :param money:                   amount of money gained
         """
         self.constructor.on_add_money(money)
+        for shop in self.shops:
+            shop.on_add_money(money)
 
     def on_pay_money(self, money):
         """
@@ -625,6 +627,8 @@ class MapController(Controller):
         :param money:                   amount of money spent
         """
         self.constructor.on_pay_money(money)
+        for shop in self.shops:
+            shop.on_pay_money(money)
 
     def on_update_current_locale(self, new_locale):
         """

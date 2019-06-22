@@ -233,3 +233,6 @@ class GameController(Controller):
         self.view.on_update_clock_state(clock_24h_enabled)
         for map_ in self.maps:
             map_.on_update_clock_state(clock_24h_enabled)
+
+    def on_add_exp_bonus(self, exp_bonus):
+        self.model.on_add_exp_bonus(exp_bonus)

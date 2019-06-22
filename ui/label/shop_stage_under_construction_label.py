@@ -12,6 +12,8 @@ class ShopStageUnderConstructionLabel(LocalizedLabel):
         self.font_name = 'Arial'
         self.base_color = ORANGE_RGB
         self.anchor_x = 'center'
+        self.align = 'center'
+        self.multiline = True
         self.batch = BATCHES['ui_batch']
         self.group = GROUPS['button_text']
 
@@ -29,6 +31,11 @@ class ShopStageUnderConstructionLabel(LocalizedLabel):
     def get_font_size(screen_resolution):
         bottom_bar_height = get_bottom_bar_height(screen_resolution)
         return bottom_bar_height // 5
+
+    @staticmethod
+    def get_width(screen_resolution):
+        bottom_bar_height = get_bottom_bar_height(screen_resolution)
+        return 4 * bottom_bar_height
 
     def get_formatted_text(self):
         return self.text.format(*self.arguments)

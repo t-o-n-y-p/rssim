@@ -81,10 +81,10 @@ class ShopConstructorController(Controller):
 
         :param level:                   new level value
         """
-        pass
+        self.model.on_level_up(level)
 
     def on_update_time(self, game_time):
-        pass
+        self.model.on_update_time(game_time)
 
     def on_save_state(self):
         self.model.on_save_state()
@@ -93,3 +93,12 @@ class ShopConstructorController(Controller):
         self.parent_controller.parent_controller.parent_controller.on_add_money(self.model.shop_storage_money)
         self.model.shop_storage_money = 0
         self.view.on_update_storage_money(0)
+
+    def on_add_money(self, money):
+        self.model.on_add_money(money)
+
+    def on_pay_money(self, money):
+        self.model.on_pay_money(money)
+
+    def on_put_stage_under_construction(self, stage_number):
+        self.model.on_put_stage_under_construction(stage_number)

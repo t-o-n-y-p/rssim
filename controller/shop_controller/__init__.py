@@ -118,3 +118,19 @@ class ShopController(Controller):
         """
         self.view.on_apply_shaders_and_draw_vertices()
         self.shop_constructor.on_apply_shaders_and_draw_vertices()
+
+    def on_add_money(self, money):
+        """
+        Notifies Constructor controller about bank account state change when user gains money.
+
+        :param money:                   amount of money gained
+        """
+        self.shop_constructor.on_add_money(money)
+
+    def on_pay_money(self, money):
+        """
+        Notifies the model and Map controller about bank account state change when user pays money.
+
+        :param money:                   amount of money spent
+        """
+        self.shop_constructor.on_pay_money(money)

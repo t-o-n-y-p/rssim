@@ -76,7 +76,8 @@ class GameModel(Model):
         """
         self.user_db_cursor.execute('UPDATE epoch_timestamp SET game_time = ?', (self.game_time, ))
         self.user_db_cursor.execute('''UPDATE game_progress SET level = ?, exp = ?, money = ?, 
-                                    money_target = ?''', (self.level, self.exp, self.money, self.money_target))
+                                       money_target = ?, exp_multiplier = ?''',
+                                    (self.level, self.exp, self.money, self.money_target, self.exp_multiplier))
 
     @maximum_level_not_reached
     def on_add_exp(self, exp):
@@ -159,3 +160,6 @@ class GameModel(Model):
         """
         self.user_db_cursor.execute('SELECT map_id FROM graphics')
         return self.user_db_cursor.fetchone()[0]
+
+    def on_add_exp_bonus(self, exp_bonus):
+        self.exp_multiplier += exp_bonus

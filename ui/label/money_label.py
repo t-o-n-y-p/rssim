@@ -31,6 +31,10 @@ class MoneyLabel(Label):
         bottom_bar_height = get_bottom_bar_height(screen_resolution)
         return int(22 / 80 * bottom_bar_height)
 
+    @staticmethod
+    def get_width(screen_resolution):
+        return None
+
     def get_formatted_text(self):
         money_str = self.text.format(*self.arguments)
         return ' '.join((money_str[0], money_str[1:4], money_str[4:7], money_str[7:13]))

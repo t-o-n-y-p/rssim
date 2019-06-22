@@ -29,5 +29,9 @@ class ShopStageLockedLabel(Label):
         bottom_bar_height = get_bottom_bar_height(screen_resolution)
         return int(24 / 40 * bottom_bar_height)
 
+    @staticmethod
+    def get_width(screen_resolution):
+        return None
+
     def get_formatted_text(self):
         return self.text

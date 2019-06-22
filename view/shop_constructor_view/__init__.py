@@ -297,3 +297,11 @@ class ShopConstructorView(View):
     def on_update_money(self, money):
         for stage_cell in self.shop_stage_cells:
             self.shop_stage_cells[stage_cell].on_update_money(money)
+
+    def on_unlock_stage(self, stage):
+        self.current_stage = stage
+        self.hourly_profit_value_label.text = f'{self.shop_stages_state_matrix[self.current_stage][HOURLY_PROFIT]}  ¤'
+        self.exp_bonus_value_label.text = f'{self.shop_stages_state_matrix[self.current_stage][EXP_BONUS]}  %'
+        self.shop_storage_progress_bar \
+            .on_update_progress_bar_state(self.shop_storage_money,
+                                          self.shop_stages_state_matrix[self.current_stage][STORAGE_CAPACITY])

@@ -22,13 +22,17 @@ class ShopStagePriceLabel(Label):
 
     @staticmethod
     def get_y(screen_resolution):
-        bottom_bar_height = get_bottom_bar_height(screen_resolution)
-        return bottom_bar_height + bottom_bar_height // 2
+        top_bar_height = get_top_bar_height(screen_resolution)
+        return top_bar_height + 3 * top_bar_height // 4
 
     @staticmethod
     def get_font_size(screen_resolution):
         bottom_bar_height = get_bottom_bar_height(screen_resolution)
         return bottom_bar_height // 5
+
+    @staticmethod
+    def get_width(screen_resolution):
+        return None
 
     def get_formatted_text(self):
         money_str = self.text.format(*self.arguments)

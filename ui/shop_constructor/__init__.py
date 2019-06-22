@@ -104,15 +104,17 @@ class ShopStageCell:
             # self.exp_bonus_description_label.create()
             # self.exp_bonus_value_label.on_update_args((self.data[EXP_BONUS], ))
             # self.exp_bonus_value_label.create()
-            # self.price_label.on_update_args((self.data[PRICE], ))
+            self.price_label.on_update_args((self.data[PRICE], ))
             self.price_label.create()
             self.on_update_build_button_state()
         elif self.data[LOCKED]:
             self.locked_label.create()
             if not self.data[UNLOCK_CONDITION_FROM_LEVEL]:
+                self.previous_stage_placeholder_label.delete()
                 self.level_placeholder_label.on_update_args((self.data[LEVEL_REQUIRED], ))
                 self.level_placeholder_label.create()
             elif not self.data[UNLOCK_CONDITION_FROM_PREVIOUS_STAGE]:
+                self.level_placeholder_label.delete()
                 self.previous_stage_placeholder_label.on_update_args((self.stage_number - 1, ))
                 self.previous_stage_placeholder_label.create()
 
@@ -192,7 +194,7 @@ class ShopStageCell:
         self.build_button.on_size_changed((get_top_bar_height(screen_resolution),
                                            get_top_bar_height(screen_resolution)))
         self.build_button.x_margin = self.position[0] + 5 * get_top_bar_height(screen_resolution)
-        self.build_button.y_margin = self.position[1] + get_bottom_bar_height(screen_resolution)
+        self.build_button.y_margin = self.position[1] + 5 * get_top_bar_height(screen_resolution) // 4
 
     def on_update_current_locale(self, new_locale):
         """

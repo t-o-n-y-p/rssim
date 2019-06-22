@@ -30,5 +30,9 @@ class FPSLabel(Label):
         top_bar_height = get_top_bar_height(screen_resolution)
         return int(16 / 40 * top_bar_height)
 
+    @staticmethod
+    def get_width(screen_resolution):
+        return None
+
     def get_formatted_text(self):
         return self.text.format(*self.arguments)

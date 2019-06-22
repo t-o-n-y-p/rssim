@@ -46,9 +46,12 @@ class Label:
         self.opacity = 0
         self.x = 0
         self.y = 0
+        self.width = None
         self.offset = (0, 0)
         self.anchor_x = 'center'
         self.anchor_y = 'center'
+        self.align = 'left'
+        self.multiline = False
         self.batch = None
         self.group = None
 
@@ -64,6 +67,10 @@ class Label:
     def get_font_size(screen_resolution):
         pass
 
+    @staticmethod
+    def get_width(screen_resolution):
+        pass
+
     def get_formatted_text(self):
         pass
 
@@ -71,8 +78,9 @@ class Label:
     def create(self):
         self.text_label = pyglet.text.Label(self.get_formatted_text(), font_name=self.font_name, bold=self.bold,
                                             font_size=self.font_size, color=(*self.base_color, self.opacity),
-                                            x=self.x, y=self.y, anchor_x=self.anchor_x, anchor_y=self.anchor_y,
-                                            batch=self.batch, group=self.group)
+                                            x=self.x, y=self.y, width=self.width,
+                                            anchor_x=self.anchor_x, anchor_y=self.anchor_y, align=self.align,
+                                            multiline=self.multiline, batch=self.batch, group=self.group)
 
     @text_label_exists
     def delete(self):
@@ -86,11 +94,13 @@ class Label:
         self.x = self.offset[0] + self.get_x(screen_resolution)
         self.y = self.offset[1] + self.get_y(screen_resolution)
         self.font_size = self.get_font_size(screen_resolution)
+        self.width = self.get_width(screen_resolution)
         if self.text_label is not None:
             self.text_label.begin_update()
             self.text_label.x = self.x
             self.text_label.y = self.y
             self.text_label.font_size = self.font_size
+            self.text_label.width = self.width
             self.text_label.end_update()
 
     def on_change_offset(self, new_offset):
