@@ -170,14 +170,9 @@ class ShopStageCell:
             b.on_deactivate()
 
     def on_change_screen_resolution(self, screen_resolution, new_offset):
-        """
-        Updates screen resolution and moves all labels and sprites to its new positions.
-
-        :param screen_resolution:       new screen resolution
-        """
         self.screen_resolution = screen_resolution
         general_cells_width = get_inner_area_rect(screen_resolution)[2] - get_top_bar_height(screen_resolution) // 2
-        self.position = (general_cells_width + general_cells_width // 160
+        self.position = (new_offset[0] + general_cells_width // 160
                          + int((self.stage_number - 1) / 4 * (general_cells_width - general_cells_width // 80)),
                          new_offset[1])
         self.locked_label.on_change_screen_resolution(screen_resolution, new_offset=self.position)

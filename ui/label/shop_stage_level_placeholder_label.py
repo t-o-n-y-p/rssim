@@ -18,12 +18,12 @@ class ShopStageLevelPlaceholderLabel(LocalizedLabel):
     @staticmethod
     def get_x(screen_resolution):
         top_bar_height = get_top_bar_height(screen_resolution)
-        return int(17 * top_bar_height / 10)
+        return int(35 * top_bar_height / 10)
 
     @staticmethod
     def get_y(screen_resolution):
         top_bar_height = get_top_bar_height(screen_resolution)
-        return 10 * top_bar_height // 4
+        return 9 * top_bar_height // 4
 
     @staticmethod
     def get_font_size(screen_resolution):
