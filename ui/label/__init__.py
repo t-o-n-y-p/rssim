@@ -23,8 +23,12 @@ def text_label_exists(fn):
 
 def arguments_have_changed(fn):
     def _update_label_if_args_have_changed(*args, **kwargs):
-        if args[0].arguments != kwargs['new_args']:
-            fn(*args, **kwargs)
+        if len(kwargs) > 0:
+            if args[0].arguments != kwargs['new_args']:
+                fn(*args, **kwargs)
+        else:
+            if args[0].arguments != args[1]:
+                fn(*args, **kwargs)
 
     return _update_label_if_args_have_changed
 

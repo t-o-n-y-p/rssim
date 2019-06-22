@@ -5,12 +5,12 @@ uniform int shop_constructor_opacity = 0;
 uniform ivec2 shop_stages_cells_position = ivec2(0, 0);
 uniform ivec2 shop_stages_cells_size = ivec2(0, 0);
 uniform int current_stage = 0;
-uniform int is_button_activated[1];
-uniform int button_x[1];
-uniform int button_y[1];
-uniform int button_w[1];
-uniform int button_h[1];
-uniform int number_of_buttons = 1;
+uniform int is_button_activated[5];
+uniform int button_x[5];
+uniform int button_y[5];
+uniform int button_w[5];
+uniform int button_h[5];
+uniform int number_of_buttons = 5;
 
 
 bool is_button_border()

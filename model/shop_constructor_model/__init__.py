@@ -35,7 +35,7 @@ class ShopConstructorModel(Model):
     def on_activate_view(self):
         self.view.current_stage = self.current_stage
         self.view.on_activate()
-        for stage_number in range(4):
+        for stage_number in range(1, 5):
             self.view.on_update_stage_state(self.shop_stages_state_matrix, stage_number)
 
         self.view.on_update_storage_money(self.shop_storage_money)

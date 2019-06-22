@@ -3,6 +3,8 @@ from logging import getLogger
 from database import USER_DB_CURSOR
 from ui import *
 from ui.button.build_shop_stage_button import BuildShopStageButton
+from ui.label.shop_stage_locked_label import ShopStageLockedLabel
+from ui.label.shop_stage_level_placeholder_label import ShopStageLevelPlaceholderLabel
 
 
 def cell_is_active(fn):
@@ -46,8 +48,8 @@ class ShopStageCell:
         self.screen_resolution = (0, 0)
         self.position = [0, 0]
         self.size = [0, 0]
-        self.locked_label = None
-        self.level_placeholder_label = None
+        self.locked_label = ShopStageLockedLabel()
+        self.level_placeholder_label = ShopStageLevelPlaceholderLabel()
         self.previous_stage_placeholder_label = None
         self.hourly_profit_description_label = None
         self.hourly_profit_value_label = None
@@ -73,64 +75,64 @@ class ShopStageCell:
         if self.data[UNDER_CONSTRUCTION]:
             self.locked_label.delete()
             self.level_placeholder_label.delete()
-            self.previous_stage_placeholder_label.delete()
-            self.under_construction_label.on_update_args((self.data[CONSTRUCTION_TIME] // FRAMES_IN_ONE_HOUR,
-                                                          (self.data[CONSTRUCTION_TIME] // FRAMES_IN_ONE_MINUTE)
-                                                          % MINUTES_IN_ONE_HOUR))
-            self.under_construction_label.create()
-            self.hourly_profit_description_label.delete()
-            self.hourly_profit_value_label.delete()
-            self.storage_capacity_description_label.delete()
-            self.storage_capacity_value_label.delete()
-            self.exp_bonus_description_label.delete()
-            self.exp_bonus_value_label.delete()
-            self.price_label.delete()
+            # self.previous_stage_placeholder_label.delete()
+            # self.under_construction_label.on_update_args((self.data[CONSTRUCTION_TIME] // FRAMES_IN_ONE_HOUR,
+            #                                               (self.data[CONSTRUCTION_TIME] // FRAMES_IN_ONE_MINUTE)
+            #                                               % MINUTES_IN_ONE_HOUR))
+            # self.under_construction_label.create()
+            # self.hourly_profit_description_label.delete()
+            # self.hourly_profit_value_label.delete()
+            # self.storage_capacity_description_label.delete()
+            # self.storage_capacity_value_label.delete()
+            # self.exp_bonus_description_label.delete()
+            # self.exp_bonus_value_label.delete()
+            # self.price_label.delete()
         elif self.data[UNLOCK_AVAILABLE]:
             self.locked_label.delete()
             self.level_placeholder_label.delete()
-            self.previous_stage_placeholder_label.delete()
-            self.under_construction_label.delete()
-            self.hourly_profit_description_label.create()
-            self.hourly_profit_value_label.on_update_args((self.data[HOURLY_PROFIT], ))
-            self.hourly_profit_value_label.create()
-            self.storage_capacity_description_label.create()
-            self.storage_capacity_value_label.on_update_args((self.data[STORAGE_CAPACITY], ))
-            self.storage_capacity_value_label.create()
-            self.exp_bonus_description_label.create()
-            self.exp_bonus_value_label.on_update_args((self.data[EXP_BONUS], ))
-            self.exp_bonus_value_label.create()
-            self.price_label.on_update_args((self.data[PRICE], ))
-            self.price_label.create()
-            self.on_update_build_button_state()
+            # self.previous_stage_placeholder_label.delete()
+            # self.under_construction_label.delete()
+            # self.hourly_profit_description_label.create()
+            # self.hourly_profit_value_label.on_update_args((self.data[HOURLY_PROFIT], ))
+            # self.hourly_profit_value_label.create()
+            # self.storage_capacity_description_label.create()
+            # self.storage_capacity_value_label.on_update_args((self.data[STORAGE_CAPACITY], ))
+            # self.storage_capacity_value_label.create()
+            # self.exp_bonus_description_label.create()
+            # self.exp_bonus_value_label.on_update_args((self.data[EXP_BONUS], ))
+            # self.exp_bonus_value_label.create()
+            # self.price_label.on_update_args((self.data[PRICE], ))
+            # self.price_label.create()
+            # self.on_update_build_button_state()
         elif self.data[LOCKED]:
             self.locked_label.create()
             if not self.data[UNLOCK_CONDITION_FROM_LEVEL]:
                 self.level_placeholder_label.on_update_args((self.data[LEVEL_REQUIRED], ))
                 self.level_placeholder_label.create()
-            elif not self.data[UNLOCK_CONDITION_FROM_PREVIOUS_STAGE]:
-                self.previous_stage_placeholder_label.on_update_args((self.stage_number - 1, ))
-                self.previous_stage_placeholder_label.create()
-
-            self.under_construction_label.delete()
-            self.hourly_profit_description_label.delete()
-            self.hourly_profit_value_label.delete()
-            self.storage_capacity_description_label.delete()
-            self.storage_capacity_value_label.delete()
-            self.exp_bonus_description_label.delete()
-            self.exp_bonus_value_label.delete()
-            self.price_label.delete()
+            # elif not self.data[UNLOCK_CONDITION_FROM_PREVIOUS_STAGE]:
+            #     self.previous_stage_placeholder_label.on_update_args((self.stage_number - 1, ))
+            #     self.previous_stage_placeholder_label.create()
+            #
+            # self.under_construction_label.delete()
+            # self.hourly_profit_description_label.delete()
+            # self.hourly_profit_value_label.delete()
+            # self.storage_capacity_description_label.delete()
+            # self.storage_capacity_value_label.delete()
+            # self.exp_bonus_description_label.delete()
+            # self.exp_bonus_value_label.delete()
+            # self.price_label.delete()
         else:
             self.locked_label.delete()
             self.level_placeholder_label.delete()
-            self.previous_stage_placeholder_label.delete()
-            self.under_construction_label.delete()
-            self.hourly_profit_description_label.delete()
-            self.hourly_profit_value_label.delete()
-            self.storage_capacity_description_label.delete()
-            self.storage_capacity_value_label.delete()
-            self.exp_bonus_description_label.delete()
-            self.exp_bonus_value_label.delete()
-            self.price_label.delete()
+            # self.previous_stage_placeholder_label.delete()
+            # self.under_construction_label.delete()
+            # self.hourly_profit_description_label.delete()
+            # self.hourly_profit_value_label.delete()
+            # self.storage_capacity_description_label.delete()
+            # self.storage_capacity_value_label.delete()
+            # self.exp_bonus_description_label.delete()
+            # self.exp_bonus_value_label.delete()
+            # self.price_label.delete()
 
     def on_update_money(self, money):
         """
@@ -178,21 +180,21 @@ class ShopStageCell:
         self.position = (general_cells_width + general_cells_width // 160
                          + int((self.stage_number - 1) / 4 * (general_cells_width - general_cells_width // 80)),
                          new_offset[1])
-        self.locked_label.on_update_screen_resolution(screen_resolution, new_offset=self.position)
-        self.level_placeholder_label.on_update_screen_resolution(screen_resolution, new_offset=self.position)
-        self.previous_stage_placeholder_label.on_update_screen_resolution(screen_resolution, new_offset=self.position)
-        self.under_construction_label.on_update_screen_resolution(screen_resolution, new_offset=self.position)
-        self.hourly_profit_description_label.on_update_screen_resolution(screen_resolution, new_offset=self.position)
-        self.hourly_profit_value_label.on_update_screen_resolution(screen_resolution, new_offset=self.position)
-        self.storage_capacity_description_label.on_update_screen_resolution(screen_resolution, new_offset=self.position)
-        self.storage_capacity_value_label.on_update_screen_resolution(screen_resolution, new_offset=self.position)
-        self.exp_bonus_description_label.on_update_screen_resolution(screen_resolution, new_offset=self.position)
-        self.exp_bonus_value_label.on_update_screen_resolution(screen_resolution, new_offset=self.position)
-        self.price_label.on_update_screen_resolution(screen_resolution, new_offset=self.position)
+        self.locked_label.on_change_screen_resolution(screen_resolution, new_offset=self.position)
+        self.level_placeholder_label.on_change_screen_resolution(screen_resolution, new_offset=self.position)
+        # self.previous_stage_placeholder_label.on_change_screen_resolution(screen_resolution, new_offset=self.position)
+        # self.under_construction_label.on_change_screen_resolution(screen_resolution, new_offset=self.position)
+        # self.hourly_profit_description_label.on_change_screen_resolution(screen_resolution, new_offset=self.position)
+        # self.hourly_profit_value_label.on_change_screen_resolution(screen_resolution, new_offset=self.position)
+        # self.storage_capacity_description_label.on_change_screen_resolution(screen_resolution, new_offset=self.position)
+        # self.storage_capacity_value_label.on_change_screen_resolution(screen_resolution, new_offset=self.position)
+        # self.exp_bonus_description_label.on_change_screen_resolution(screen_resolution, new_offset=self.position)
+        # self.exp_bonus_value_label.on_change_screen_resolution(screen_resolution, new_offset=self.position)
+        # self.price_label.on_change_screen_resolution(screen_resolution, new_offset=self.position)
         self.build_button.on_size_changed((get_top_bar_height(screen_resolution),
                                            get_top_bar_height(screen_resolution)))
-        self.build_button.x_margin = self.position + 5 * get_top_bar_height(screen_resolution)
-        self.build_button.y_margin = self.position + get_bottom_bar_height(screen_resolution)
+        self.build_button.x_margin = self.position[0] + 5 * get_top_bar_height(screen_resolution)
+        self.build_button.y_margin = self.position[1] + get_bottom_bar_height(screen_resolution)
 
     def on_update_current_locale(self, new_locale):
         """
@@ -202,12 +204,12 @@ class ShopStageCell:
         """
         self.current_locale = new_locale
         self.level_placeholder_label.on_update_current_locale(self.current_locale)
-        self.previous_stage_placeholder_label.on_update_current_locale(self.current_locale)
-        self.under_construction_label.on_update_current_locale(self.current_locale)
-        self.hourly_profit_description_label.on_update_current_locale(self.current_locale)
-        self.storage_capacity_description_label.on_update_current_locale(self.current_locale)
-        self.exp_bonus_description_label.on_update_current_locale(self.current_locale)
-        self.exp_bonus_value_label.on_update_current_locale(self.current_locale)
+        # self.previous_stage_placeholder_label.on_update_current_locale(self.current_locale)
+        # self.under_construction_label.on_update_current_locale(self.current_locale)
+        # self.hourly_profit_description_label.on_update_current_locale(self.current_locale)
+        # self.storage_capacity_description_label.on_update_current_locale(self.current_locale)
+        # self.exp_bonus_description_label.on_update_current_locale(self.current_locale)
+        # self.exp_bonus_value_label.on_update_current_locale(self.current_locale)
 
     def on_update_opacity(self, new_opacity):
         """
@@ -225,24 +227,24 @@ class ShopStageCell:
         if self.opacity <= 0:
             self.locked_label.delete()
             self.level_placeholder_label.delete()
-            self.previous_stage_placeholder_label.delete()
-            self.under_construction_label.delete()
-            self.hourly_profit_description_label.delete()
-            self.hourly_profit_value_label.delete()
-            self.storage_capacity_description_label.delete()
-            self.storage_capacity_value_label.delete()
-            self.exp_bonus_description_label.delete()
-            self.exp_bonus_value_label.delete()
-            self.price_label.delete()
+            # self.previous_stage_placeholder_label.delete()
+            # self.under_construction_label.delete()
+            # self.hourly_profit_description_label.delete()
+            # self.hourly_profit_value_label.delete()
+            # self.storage_capacity_description_label.delete()
+            # self.storage_capacity_value_label.delete()
+            # self.exp_bonus_description_label.delete()
+            # self.exp_bonus_value_label.delete()
+            # self.price_label.delete()
         else:
             self.locked_label.on_update_opacity(self.opacity)
             self.level_placeholder_label.on_update_opacity(self.opacity)
-            self.previous_stage_placeholder_label.on_update_opacity(self.opacity)
-            self.under_construction_label.on_update_opacity(self.opacity)
-            self.hourly_profit_description_label.on_update_opacity(self.opacity)
-            self.hourly_profit_value_label.on_update_opacity(self.opacity)
-            self.storage_capacity_description_label.on_update_opacity(self.opacity)
-            self.storage_capacity_value_label.on_update_opacity(self.opacity)
-            self.exp_bonus_description_label.on_update_opacity(self.opacity)
-            self.exp_bonus_value_label.on_update_opacity(self.opacity)
-            self.price_label.on_update_opacity(self.opacity)
+            # self.previous_stage_placeholder_label.on_update_opacity(self.opacity)
+            # self.under_construction_label.on_update_opacity(self.opacity)
+            # self.hourly_profit_description_label.on_update_opacity(self.opacity)
+            # self.hourly_profit_value_label.on_update_opacity(self.opacity)
+            # self.storage_capacity_description_label.on_update_opacity(self.opacity)
+            # self.storage_capacity_value_label.on_update_opacity(self.opacity)
+            # self.exp_bonus_description_label.on_update_opacity(self.opacity)
+            # self.exp_bonus_value_label.on_update_opacity(self.opacity)
+            # self.price_label.on_update_opacity(self.opacity)

@@ -55,6 +55,10 @@
 		"en": "Requires level {0}",
 		"ru": "Требуется уровень {0}"
 	},
+	"unlock_condition_from_level_shop_stage_string": {
+		"en": "Requires level {0}",
+		"ru": "Требуется уровень {0}"
+	},
 	"unlock_condition_from_environment_track_description_string": {
 		"en": "Requires Environment: Tier {0}",
 		"ru": "Требуется Окружение: Этап {0}"

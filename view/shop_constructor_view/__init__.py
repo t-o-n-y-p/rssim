@@ -42,7 +42,7 @@ class ShopConstructorView(View):
         self.clear_shop_storage_button = ClearShopStorageButton(on_click_action=on_clear_storage)
         self.buttons = [self.clear_shop_storage_button, ]
         self.shop_stage_cells = {}
-        for i in range(4):
+        for i in range(1, 5):
             self.shop_stage_cells[i] = ShopStageCell(stage_number=i, on_buy_stage_action=on_buy_stage_action)
             self.buttons.append(self.shop_stage_cells[i].build_button)
 
