@@ -8,12 +8,16 @@ from view import *
 from i18n import I18N_RESOURCES
 from ui.button.clear_shop_storage_button import ClearShopStorageButton
 from ui.rectangle_progress_bar.shop_storage_progress_bar import ShopStorageProgressBar
+from ui.shop_constructor import ShopStageCell
 
 
 class ShopConstructorView(View):
     def __init__(self, map_id, shop_id):
         def on_clear_storage(button):
             self.controller.on_clear_storage()
+
+        def on_buy_stage_action(stage_number):
+            self.controller.on_put_stage_under_construction(stage_number)
 
         super().__init__(logger=getLogger(f'root.app.game.map.{map_id}.shop.{shop_id}.constructor.view'))
         self.map_id = map_id
@@ -37,6 +41,11 @@ class ShopConstructorView(View):
         self.shop_storage_progress_bar = ShopStorageProgressBar()
         self.clear_shop_storage_button = ClearShopStorageButton(on_click_action=on_clear_storage)
         self.buttons = [self.clear_shop_storage_button, ]
+        self.shop_stage_cells = {}
+        for i in range(4):
+            self.shop_stage_cells[i] = ShopStageCell(stage_number=i, on_buy_stage_action=on_buy_stage_action)
+            self.buttons.append(self.shop_stage_cells[i].build_button)
+
         self.on_init_graphics()
 
     def on_init_graphics(self):
@@ -112,6 +121,9 @@ class ShopConstructorView(View):
                         batch=self.batches['ui_batch'], group=self.groups['button_text'])
 
         self.shop_storage_progress_bar.on_activate()
+        for stage_cell in self.shop_stage_cells:
+            self.shop_stage_cells[stage_cell].on_activate()
+
         for b in self.buttons:
             if b.to_activate_on_controller_init:
                 b.on_activate()
@@ -123,6 +135,9 @@ class ShopConstructorView(View):
         """
         self.is_activated = False
         self.shop_storage_progress_bar.on_deactivate()
+        for stage_cell in self.shop_stage_cells:
+            self.shop_stage_cells[stage_cell].on_deactivate()
+
         for b in self.buttons:
             b.on_deactivate()
             b.state = 'normal'
@@ -141,6 +156,10 @@ class ShopConstructorView(View):
                                        3 * self.bottom_bar_height - self.bottom_bar_height // 8)
         self.shop_storage_progress_bar.on_change_screen_resolution(screen_resolution,
                                                                    new_offset=self.shop_details_window_position)
+        for stage_cell in self.shop_stage_cells:
+            self.shop_stage_cells[stage_cell].on_change_screen_resolution(screen_resolution,
+                                                                          new_offset=self.shop_stages_cells_position)
+
         self.clear_shop_storage_button.on_size_changed((self.bottom_bar_height, self.bottom_bar_height))
         self.clear_shop_storage_button.x_margin = self.shop_details_window_position[0] \
                                                   + self.shop_details_window_size[0] \
@@ -182,6 +201,9 @@ class ShopConstructorView(View):
         """
         self.opacity = new_opacity
         self.shop_storage_progress_bar.on_update_opacity(new_opacity)
+        for stage_cell in self.shop_stage_cells:
+            self.shop_stage_cells[stage_cell].on_update_opacity(new_opacity)
+
         self.on_update_sprite_opacity()
         for b in self.buttons:
             b.on_update_opacity(new_opacity)
@@ -214,6 +236,9 @@ class ShopConstructorView(View):
         :param new_locale:                      selected locale
         """
         self.current_locale = new_locale
+        for stage_cell in self.shop_stage_cells:
+            self.shop_stage_cells[stage_cell].on_update_current_locale(new_locale)
+
         if self.is_activated:
             self.current_hourly_profit_label.text = I18N_RESOURCES['current_hourly_profit_string'][self.current_locale]
             self.current_exp_bonus_label.text = I18N_RESOURCES['current_exp_bonus_string'][self.current_locale]
@@ -251,6 +276,7 @@ class ShopConstructorView(View):
 
     def on_update_stage_state(self, shop_stages_state_matrix, stage_number):
         self.shop_stages_state_matrix = shop_stages_state_matrix
+        self.shop_stage_cells[stage_number].on_update_data(self.shop_stages_state_matrix[stage_number])
 
     @view_is_active
     def on_update_storage_money(self, storage_money):
@@ -267,3 +293,7 @@ class ShopConstructorView(View):
                                               self.shop_stages_state_matrix[self.current_stage][STORAGE_CAPACITY])
         else:
             self.shop_storage_progress_bar.on_update_progress_bar_state(storage_money, 0)
+
+    def on_update_money(self, money):
+        for stage_cell in self.shop_stage_cells:
+            self.shop_stage_cells[stage_cell].on_update_money(money)

@@ -21,10 +21,18 @@ def text_label_exists(fn):
     return _delete_text_label_if_it_exists
 
 
+def arguments_have_changed(fn):
+    def _update_label_if_args_have_changed(*args, **kwargs):
+        if args[0].arguments != kwargs['new_args']:
+            fn(*args, **kwargs)
+
+    return _update_label_if_args_have_changed
+
+
 class Label:
     def __init__(self, logger):
         self.logger = logger
-        self.args = ()
+        self.arguments = ()
         self.text_label = None
         self.text = 'Default text'
         self.font_name = 'Arial'
@@ -101,8 +109,9 @@ class Label:
         if self.text_label is not None:
             self.text_label.color = (*self.base_color, self.opacity)
 
+    @arguments_have_changed
     def on_update_args(self, new_args):
-        self.args = new_args
+        self.arguments = new_args
         if self.text_label is not None:
             self.text_label.text = self.get_formatted_text()
 

@@ -8,7 +8,7 @@ class MainClockLabel24H(LocalizedLabel):
     def __init__(self):
         super().__init__(logger=getLogger('root.main_clock_label_24h'),
                          i18n_resources_key='24h_main_clock_string')
-        self.args = (12, 0)
+        self.arguments = (12, 0)
         self.font_name = 'Perfo'
         self.bold = True
         self.base_color = WHITE_RGB
@@ -32,4 +32,4 @@ class MainClockLabel24H(LocalizedLabel):
         return int(32 / 80 * bottom_bar_height)
 
     def get_formatted_text(self):
-        return self.text.format(*self.args)
+        return self.text.format(*self.arguments)

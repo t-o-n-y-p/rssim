@@ -10,18 +10,22 @@ TRACKS = 0                                      # matrix #0 stores tracks state
 ENVIRONMENT = 1                                 # matrix #1 stores environment tiers state
 CONSTRUCTOR_VIEW_TRACK_CELLS = 4                # number of cells for tracks on constructor screen
 CONSTRUCTOR_VIEW_ENVIRONMENT_CELLS = 4          # number of cells for environment tiers on constructor screen
-# track and environment state matrix properties
+# track, environment and shop stage state matrix properties
 LOCKED = 0                                      # property #0 indicates if track/env. is locked
 UNDER_CONSTRUCTION = 1                          # property #1 indicates if track/env. is under construction
 CONSTRUCTION_TIME = 2                           # property #2 indicates construction time left
 UNLOCK_CONDITION_FROM_LEVEL = 3                 # property #3 indicates if unlock condition from level is met
 UNLOCK_CONDITION_FROM_PREVIOUS_TRACK = 4        # property #4 indicates if unlock condition from previous track is met
 UNLOCK_CONDITION_FROM_PREVIOUS_ENVIRONMENT = 4  # property #4 indicates if unlock condition from previous env. is met
-UNLOCK_CONDITION_FROM_ENVIRONMENT = 5           # property #5 indicates if unlock condition from environment is met
+UNLOCK_CONDITION_FROM_PREVIOUS_STAGE = 4        # property #4 indicates if unlock condition from previous stage is met
+UNLOCK_CONDITION_FROM_ENVIRONMENT = 5           # indicates if unlock condition from environment is met (tracks only)
 UNLOCK_AVAILABLE = 6                            # property #6 indicates if all unlock conditions are met
 PRICE = 7                                       # property #7 indicates track/env. price
 LEVEL_REQUIRED = 8                              # property #8 indicates required level for this track/env.
-ENVIRONMENT_REQUIRED = 9                        # property #9 indicates required environment tier for this track
+ENVIRONMENT_REQUIRED = 9                        # property #9 indicates required environment tier (tracks only)
+HOURLY_PROFIT = 10
+STORAGE_CAPACITY = 11
+EXP_BONUS = 12
 # colors
 GREY_RGB = (112, 112, 112)                      # grey UI color
 ORANGE_RGB = (255, 127, 0)                      # orange UI color

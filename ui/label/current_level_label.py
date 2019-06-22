@@ -8,7 +8,7 @@ class CurrentLevelLabel(LocalizedLabel):
     def __init__(self):
         super().__init__(logger=getLogger('root.current_level_label'),
                          i18n_resources_key='level_string')
-        self.args = (0, )
+        self.arguments = (0,)
         self.font_name = 'Perfo'
         self.bold = True
         self.base_color = WHITE_RGB
@@ -32,4 +32,4 @@ class CurrentLevelLabel(LocalizedLabel):
         return int(22 / 80 * bottom_bar_height)
 
     def get_formatted_text(self):
-        return self.text.format(*self.args)
+        return self.text.format(*self.arguments)

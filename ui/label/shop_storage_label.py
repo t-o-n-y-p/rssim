@@ -8,7 +8,7 @@ class ShopStorageLabel(Label):
     def __init__(self):
         super().__init__(logger=getLogger('root.shop_storage_label'))
         self.text = '{0}  ¤'
-        self.args = (0, )
+        self.arguments = (0, )
         self.font_name = 'Perfo'
         self.bold = True
         self.base_color = GREEN_RGB
@@ -32,7 +32,7 @@ class ShopStorageLabel(Label):
         return int(29 / 80 * bottom_bar_height)
 
     def get_formatted_text(self):
-        money_str = self.text.format(*self.args)
+        money_str = self.text.format(*self.arguments)
         if len(money_str) < 7:
             return money_str
         else:

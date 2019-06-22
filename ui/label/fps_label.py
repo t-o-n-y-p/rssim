@@ -8,7 +8,7 @@ class FPSLabel(Label):
     def __init__(self):
         super().__init__(logger=getLogger('root.fps_label'))
         self.text = '{0} FPS'
-        self.args = (0, )
+        self.arguments = (0, )
         self.font_name = 'Courier New'
         self.base_color = WHITE_RGB
         self.anchor_x = 'right'
@@ -31,4 +31,4 @@ class FPSLabel(Label):
         return int(16 / 40 * top_bar_height)
 
     def get_formatted_text(self):
-        return self.text.format(*self.args)
+        return self.text.format(*self.arguments)
