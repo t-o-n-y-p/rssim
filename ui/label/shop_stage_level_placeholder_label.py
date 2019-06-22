@@ -22,8 +22,8 @@ class ShopStageLevelPlaceholderLabel(LocalizedLabel):
 
     @staticmethod
     def get_y(screen_resolution):
-        top_bar_height = get_top_bar_height(screen_resolution)
-        return 9 * top_bar_height // 4
+        bottom_bar_height = get_bottom_bar_height(screen_resolution)
+        return (3 * bottom_bar_height - bottom_bar_height // 8) // 2 - bottom_bar_height // 4
 
     @staticmethod
     def get_font_size(screen_resolution):

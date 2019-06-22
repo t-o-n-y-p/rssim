@@ -35,6 +35,10 @@
 		"en": "Under construction. {0}h {1}min remaining",
 		"ru": "Идет строительство. Осталось {0}ч {1}мин"
 	},
+	"under_construction_shop_stage_description_string": {
+		"en": "Under construction. \n{0}h {1}min remaining",
+		"ru": "Идет строительство. \nОсталось {0}ч {1}мин"
+	},
 	"under_construction_days_description_string": {
 		"en": {
 			"one": "Under construction. {0} day remaining",
@@ -64,12 +68,16 @@
 		"ru": "Требуется Окружение: Этап {0}"
 	},
 	"unlock_condition_from_previous_track_track_description_string": {
-		"en": "Build track {0} to unlock",
-		"ru": "Постройте путь {0}, чтобы открыть"
+		"en": "Requires Track {0}",
+		"ru": "Требуется Путь {0}"
 	},
 	"unlock_condition_from_previous_environment_environment_description_string": {
-		"en": "Build Tier {0} to unlock",
-		"ru": "Постройте Этап {0}, чтобы открыть"
+		"en": "Requires Environment: Tier {0}",
+		"ru": "Требуется Окружение: Этап {0}"
+	},
+	"unlock_condition_from_previous_shop_stage_description_string": {
+		"en": "Requires Stage {0}",
+		"ru": "Требуется Стадия {0}"
 	},
 	"level_string": {
 		"en": "LEVEL  {0}",
@@ -252,10 +260,18 @@
 		"ru": "Для управления этим магазином требуется уровень {0}"
 	},
 	"current_hourly_profit_string": {
+		"en": "Current hourly profit:",
+		"ru": "Текущий доход в час:"
+	},
+	"current_exp_bonus_string": {
+		"en": "Current exp bonus:",
+		"ru": "Текущий бонус к опыту:"
+	},
+	"hourly_profit_string": {
 		"en": "Hourly profit:",
 		"ru": "Доход в час:"
 	},
-	"current_exp_bonus_string": {
+	"exp_bonus_string": {
 		"en": "Exp bonus:",
 		"ru": "Бонус к опыту:"
 	}

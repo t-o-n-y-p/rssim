@@ -98,7 +98,7 @@ class ShopConstructorView(View):
                 = Label(hourly_profit_value_text, font_size=self.bottom_bar_height // 5,
                         color=(*GREEN_RGB, self.opacity),
                         x=self.shop_details_window_position[0] + self.bottom_bar_height // 8
-                          + 3 * self.bottom_bar_height,
+                          + 4 * self.bottom_bar_height,
                         y=self.shop_details_window_position[1] + self.bottom_bar_height // 8
                           + 3 * self.bottom_bar_height + 2 * self.bottom_bar_height // 3,
                         anchor_x='left', anchor_y='center',
@@ -114,7 +114,7 @@ class ShopConstructorView(View):
                 = Label(exp_bonus_value_text, font_size=self.bottom_bar_height // 5,
                         color=(*ORANGE_RGB, self.opacity),
                         x=self.shop_details_window_position[0] + self.bottom_bar_height // 8
-                          + 3 * self.bottom_bar_height,
+                          + 4 * self.bottom_bar_height,
                         y=self.shop_details_window_position[1] + self.bottom_bar_height // 8
                           + 3 * self.bottom_bar_height + self.bottom_bar_height // 3,
                         anchor_x='left', anchor_y='center',
@@ -183,12 +183,12 @@ class ShopConstructorView(View):
                                                  + 3 * self.bottom_bar_height + self.bottom_bar_height // 3
             self.current_exp_bonus_label.font_size = self.bottom_bar_height // 5
             self.hourly_profit_value_label.x = self.shop_details_window_position[0] + self.bottom_bar_height // 8 \
-                                               + 3 * self.bottom_bar_height
+                                               + 4 * self.bottom_bar_height
             self.hourly_profit_value_label.y = self.shop_details_window_position[1] + self.bottom_bar_height // 8 \
                                                  + 3 * self.bottom_bar_height + 2 * self.bottom_bar_height // 3
             self.hourly_profit_value_label.font_size = self.bottom_bar_height // 5
             self.exp_bonus_value_label.x = self.shop_details_window_position[0] + self.bottom_bar_height // 8 \
-                                               + 3 * self.bottom_bar_height
+                                               + 4 * self.bottom_bar_height
             self.exp_bonus_value_label.y = self.shop_details_window_position[1] + self.bottom_bar_height // 8 \
                                                  + 3 * self.bottom_bar_height + self.bottom_bar_height // 3
             self.exp_bonus_value_label.font_size = self.bottom_bar_height // 5

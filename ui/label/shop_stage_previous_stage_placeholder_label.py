@@ -1,14 +1,15 @@
 from logging import getLogger
 
-from ui.label import Label
+from ui.label import LocalizedLabel
 from ui import *
 
 
-class ShopStageLockedLabel(Label):
+class ShopStagePreviousStagePlaceholderLabel(LocalizedLabel):
     def __init__(self):
-        super().__init__(logger=getLogger('root.shop_stage_locked_label'))
-        self.text = ''
-        self.font_name = 'Webdings'
+        super().__init__(logger=getLogger('root.shop_stage_level_placeholder_label'),
+                         i18n_resources_key='unlock_condition_from_previous_shop_stage_description_string')
+        self.arguments = (0,)
+        self.font_name = 'Arial'
         self.base_color = GREY_RGB
         self.anchor_x = 'center'
         self.batch = BATCHES['ui_batch']
@@ -22,12 +23,12 @@ class ShopStageLockedLabel(Label):
     @staticmethod
     def get_y(screen_resolution):
         bottom_bar_height = get_bottom_bar_height(screen_resolution)
-        return (3 * bottom_bar_height - bottom_bar_height // 8) // 2 + bottom_bar_height // 4
+        return (3 * bottom_bar_height - bottom_bar_height // 8) // 2 - bottom_bar_height // 4
 
     @staticmethod
     def get_font_size(screen_resolution):
         bottom_bar_height = get_bottom_bar_height(screen_resolution)
-        return int(24 / 40 * bottom_bar_height)
+        return bottom_bar_height // 5
 
     def get_formatted_text(self):
-        return self.text
+        return self.text.format(*self.arguments)
