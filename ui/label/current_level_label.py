@@ -5,9 +5,9 @@ from ui import *
 
 
 class CurrentLevelLabel(LocalizedLabel):
-    def __init__(self, viewport):
+    def __init__(self, parent_viewport):
         super().__init__(logger=getLogger('root.current_level_label'),
-                         i18n_resources_key='level_string', viewport=viewport)
+                         i18n_resources_key='level_string', parent_viewport=parent_viewport)
         self.arguments = (0,)
         self.font_name = 'Perfo'
         self.bold = True
@@ -18,11 +18,11 @@ class CurrentLevelLabel(LocalizedLabel):
 
     def get_x(self):
         bottom_bar_height = get_bottom_bar_height(self.screen_resolution)
-        return self.viewport.x1 + 15 * bottom_bar_height // 8
+        return self.parent_viewport.x1 + 15 * bottom_bar_height // 8
 
     def get_y(self):
         bottom_bar_height = get_bottom_bar_height(self.screen_resolution)
-        return self.viewport.y1 + 3 * bottom_bar_height // 8
+        return self.parent_viewport.y1 + 3 * bottom_bar_height // 8
 
     def get_font_size(self):
         bottom_bar_height = get_bottom_bar_height(self.screen_resolution)

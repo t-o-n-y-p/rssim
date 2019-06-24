@@ -8,18 +8,17 @@ from ui.label.money_label import MoneyLabel
 
 
 class MoneyProgressBar(RectangleProgressBar):
-    def __init__(self):
-        super().__init__(logger=getLogger('root.money_progress_bar'))
+    def __init__(self, parent_viewport):
+        super().__init__(logger=getLogger('root.money_progress_bar'), parent_viewport=parent_viewport)
         self.inactive_image = load('img/game_progress_bars/progress_bar_inactive.png')
         self.active_image = load('img/game_progress_bars/progress_bar_money_active.png')
-        self.text_label = MoneyLabel()
+        self.text_label = MoneyLabel(parent_viewport=self.viewport)
 
-    @staticmethod
-    def get_position(screen_resolution):
-        bottom_bar_height = get_bottom_bar_height(screen_resolution)
-        return 5 * bottom_bar_height, bottom_bar_height // 8
+    def get_position(self):
+        bottom_bar_height = get_bottom_bar_height(self.screen_resolution)
+        return (self.parent_viewport.x1 + 5 * bottom_bar_height,
+                self.parent_viewport.y1 + bottom_bar_height // 8)
 
-    @staticmethod
-    def get_scale(screen_resolution):
-        bottom_bar_height = get_bottom_bar_height(screen_resolution)
+    def get_scale(self):
+        bottom_bar_height = get_bottom_bar_height(self.screen_resolution)
         return bottom_bar_height / 80

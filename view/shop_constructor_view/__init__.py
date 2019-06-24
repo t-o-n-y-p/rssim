@@ -29,8 +29,9 @@ class ShopConstructorView(View):
         self.shop_stages_cells_position = (0, 0)
         self.shop_stages_cells_size = (0, 0)
         self.user_db_cursor.execute('''SELECT last_known_shop_window_position FROM graphics''')
-        self.shop_details_window_position = tuple(map(int, self.user_db_cursor.fetchone()[0].split(',')))
-        self.shop_details_window_size = self.inner_area_size
+        self.viewport.x1, self.viewport.y1 = tuple(map(int, self.user_db_cursor.fetchone()[0].split(',')))
+        self.viewport.x2 = self.viewport.x1 + self.inner_area_size[0]
+        self.viewport.y2 = self.viewport.y1 + self.inner_area_size[1]
         self.shader = from_files_names('shaders/shader.vert', 'shaders/shop_constructor_view/shader.frag')
         self.shop_view_shader_bottom_limit = 0.0
         self.shop_view_shader_upper_limit = 0.0
@@ -38,12 +39,13 @@ class ShopConstructorView(View):
         self.current_exp_bonus_label = None
         self.hourly_profit_value_label = None
         self.exp_bonus_value_label = None
-        self.shop_storage_progress_bar = ShopStorageProgressBar()
+        self.shop_storage_progress_bar = ShopStorageProgressBar(parent_viewport=self.viewport)
         self.clear_shop_storage_button = ClearShopStorageButton(on_click_action=on_clear_storage)
         self.buttons = [self.clear_shop_storage_button, ]
         self.shop_stage_cells = {}
         for i in range(1, 5):
-            self.shop_stage_cells[i] = ShopStageCell(stage_number=i, on_buy_stage_action=on_buy_stage_action)
+            self.shop_stage_cells[i] = ShopStageCell(stage_number=i, on_buy_stage_action=on_buy_stage_action,
+                                                     parent_viewport=self.viewport)
             self.buttons.append(self.shop_stage_cells[i].build_button)
 
         self.on_init_graphics()
@@ -72,8 +74,8 @@ class ShopConstructorView(View):
             self.current_hourly_profit_label \
                 = Label(I18N_RESOURCES['current_hourly_profit_string'][self.current_locale],
                         font_size=self.bottom_bar_height // 5, color=(*WHITE_RGB, self.opacity),
-                        x=self.shop_details_window_position[0] + self.bottom_bar_height // 8,
-                        y=self.shop_details_window_position[1] + self.bottom_bar_height // 8
+                        x=self.viewport.x1 + self.bottom_bar_height // 8,
+                        y=self.viewport.y1 + self.bottom_bar_height // 8
                           + 3 * self.bottom_bar_height + 2 * self.bottom_bar_height // 3,
                         anchor_x='left', anchor_y='center',
                         batch=self.batches['ui_batch'], group=self.groups['button_text'])
@@ -82,8 +84,8 @@ class ShopConstructorView(View):
             self.current_exp_bonus_label \
                 = Label(I18N_RESOURCES['current_exp_bonus_string'][self.current_locale],
                         font_size=self.bottom_bar_height // 5, color=(*WHITE_RGB, self.opacity),
-                        x=self.shop_details_window_position[0] + self.bottom_bar_height // 8,
-                        y=self.shop_details_window_position[1] + self.bottom_bar_height // 8
+                        x=self.viewport.x1 + self.bottom_bar_height // 8,
+                        y=self.viewport.y1 + self.bottom_bar_height // 8
                           + 3 * self.bottom_bar_height + self.bottom_bar_height // 3,
                         anchor_x='left', anchor_y='center',
                         batch=self.batches['ui_batch'], group=self.groups['button_text'])
@@ -97,9 +99,9 @@ class ShopConstructorView(View):
             self.hourly_profit_value_label \
                 = Label(hourly_profit_value_text, font_size=self.bottom_bar_height // 5,
                         color=(*GREEN_RGB, self.opacity),
-                        x=self.shop_details_window_position[0] + self.bottom_bar_height // 8
+                        x=self.viewport.x1 + self.bottom_bar_height // 8
                           + 4 * self.bottom_bar_height,
-                        y=self.shop_details_window_position[1] + self.bottom_bar_height // 8
+                        y=self.viewport.y1 + self.bottom_bar_height // 8
                           + 3 * self.bottom_bar_height + 2 * self.bottom_bar_height // 3,
                         anchor_x='left', anchor_y='center',
                         batch=self.batches['ui_batch'], group=self.groups['button_text'])
@@ -113,9 +115,9 @@ class ShopConstructorView(View):
             self.exp_bonus_value_label \
                 = Label(exp_bonus_value_text, font_size=self.bottom_bar_height // 5,
                         color=(*ORANGE_RGB, self.opacity),
-                        x=self.shop_details_window_position[0] + self.bottom_bar_height // 8
+                        x=self.viewport.x1 + self.bottom_bar_height // 8
                           + 4 * self.bottom_bar_height,
-                        y=self.shop_details_window_position[1] + self.bottom_bar_height // 8
+                        y=self.viewport.y1 + self.bottom_bar_height // 8
                           + 3 * self.bottom_bar_height + self.bottom_bar_height // 3,
                         anchor_x='left', anchor_y='center',
                         batch=self.batches['ui_batch'], group=self.groups['button_text'])
@@ -144,27 +146,26 @@ class ShopConstructorView(View):
 
     def on_change_screen_resolution(self, screen_resolution):
         self.on_recalculate_ui_properties(screen_resolution)
+        self.viewport.x1 = self.inner_area_position[0]
+        self.viewport.y1 = self.inner_area_position[1]
+        self.viewport.x2 = self.viewport.x1 + self.inner_area_size[0]
+        self.viewport.y2 = self.viewport.y1 + self.inner_area_size[1]
         self.shop_view_shader_bottom_limit = self.bottom_bar_height / self.screen_resolution[1] * 2 - 1
         self.shop_view_shader_upper_limit = 1 - self.top_bar_height / self.screen_resolution[1] * 2
-        self.shop_details_window_position = self.inner_area_position
-        self.shop_details_window_size = self.inner_area_size
-        self.shop_stages_cells_position = (self.shop_details_window_position[0] + self.top_bar_height // 4,
-                                           self.shop_details_window_position[1]
-                                           + (self.shop_details_window_size[1] - self.top_bar_height
+        self.shop_stages_cells_position = (self.viewport.x1 + self.top_bar_height // 4,
+                                           self.viewport.y1
+                                           + ((self.viewport.y2 - self.viewport.y1) - self.top_bar_height
                                               - 4 * self.bottom_bar_height) // 2)
-        self.shop_stages_cells_size = (self.shop_details_window_size[0] - self.top_bar_height // 2,
+        self.shop_stages_cells_size = ((self.viewport.x2 - self.viewport.x1) - self.top_bar_height // 2,
                                        3 * self.bottom_bar_height - self.bottom_bar_height // 8)
-        self.shop_storage_progress_bar.on_change_screen_resolution(screen_resolution,
-                                                                   new_offset=self.shop_details_window_position)
+        self.shop_storage_progress_bar.on_change_screen_resolution(self.screen_resolution)
         for stage_cell in self.shop_stage_cells:
-            self.shop_stage_cells[stage_cell].on_change_screen_resolution(screen_resolution,
-                                                                          new_offset=self.shop_stages_cells_position)
+            self.shop_stage_cells[stage_cell].on_change_screen_resolution(self.screen_resolution)
 
         self.clear_shop_storage_button.on_size_changed((self.bottom_bar_height, self.bottom_bar_height))
-        self.clear_shop_storage_button.x_margin = self.shop_details_window_position[0] \
-                                                  + self.shop_details_window_size[0] \
+        self.clear_shop_storage_button.x_margin = self.viewport.x2 \
                                                   - self.bottom_bar_height // 8 - self.bottom_bar_height
-        self.clear_shop_storage_button.y_margin = self.shop_details_window_position[1] + self.bottom_bar_height // 8 \
+        self.clear_shop_storage_button.y_margin = self.viewport.y1 + self.bottom_bar_height // 8 \
                                                   + 3 * self.bottom_bar_height
         for b in self.buttons:
             b.on_position_changed((b.x_margin, b.y_margin))
@@ -174,22 +175,22 @@ class ShopConstructorView(View):
                                            -1.0, self.shop_view_shader_upper_limit,
                                            1.0, self.shop_view_shader_upper_limit,
                                            1.0, self.shop_view_shader_bottom_limit)
-            self.current_hourly_profit_label.x = self.shop_details_window_position[0] + self.bottom_bar_height // 8
-            self.current_hourly_profit_label.y = self.shop_details_window_position[1] + self.bottom_bar_height // 8 \
+            self.current_hourly_profit_label.x = self.viewport.x1 + self.bottom_bar_height // 8
+            self.current_hourly_profit_label.y = self.viewport.y1 + self.bottom_bar_height // 8 \
                                                  + 3 * self.bottom_bar_height + 2 * self.bottom_bar_height // 3
             self.current_hourly_profit_label.font_size = self.bottom_bar_height // 5
-            self.current_exp_bonus_label.x = self.shop_details_window_position[0] + self.bottom_bar_height // 8
-            self.current_exp_bonus_label.y = self.shop_details_window_position[1] + self.bottom_bar_height // 8 \
+            self.current_exp_bonus_label.x = self.viewport.x1 + self.bottom_bar_height // 8
+            self.current_exp_bonus_label.y = self.viewport.y1 + self.bottom_bar_height // 8 \
                                                  + 3 * self.bottom_bar_height + self.bottom_bar_height // 3
             self.current_exp_bonus_label.font_size = self.bottom_bar_height // 5
-            self.hourly_profit_value_label.x = self.shop_details_window_position[0] + self.bottom_bar_height // 8 \
+            self.hourly_profit_value_label.x = self.viewport.x1 + self.bottom_bar_height // 8 \
                                                + 4 * self.bottom_bar_height
-            self.hourly_profit_value_label.y = self.shop_details_window_position[1] + self.bottom_bar_height // 8 \
+            self.hourly_profit_value_label.y = self.viewport.y1 + self.bottom_bar_height // 8 \
                                                  + 3 * self.bottom_bar_height + 2 * self.bottom_bar_height // 3
             self.hourly_profit_value_label.font_size = self.bottom_bar_height // 5
-            self.exp_bonus_value_label.x = self.shop_details_window_position[0] + self.bottom_bar_height // 8 \
+            self.exp_bonus_value_label.x = self.viewport.x1 + self.bottom_bar_height // 8 \
                                                + 4 * self.bottom_bar_height
-            self.exp_bonus_value_label.y = self.shop_details_window_position[1] + self.bottom_bar_height // 8 \
+            self.exp_bonus_value_label.y = self.viewport.y1 + self.bottom_bar_height // 8 \
                                                  + 3 * self.bottom_bar_height + self.bottom_bar_height // 3
             self.exp_bonus_value_label.font_size = self.bottom_bar_height // 5
 

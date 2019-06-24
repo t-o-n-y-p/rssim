@@ -5,8 +5,8 @@ from ui import *
 
 
 class FPSLabel(Label):
-    def __init__(self, viewport):
-        super().__init__(logger=getLogger('root.fps_label'), viewport=viewport)
+    def __init__(self, parent_viewport):
+        super().__init__(logger=getLogger('root.fps_label'), parent_viewport=parent_viewport)
         self.text = '{0} FPS'
         self.arguments = (0, )
         self.font_name = 'Courier New'
@@ -17,11 +17,11 @@ class FPSLabel(Label):
 
     def get_x(self):
         top_bar_height = get_top_bar_height(self.screen_resolution)
-        return self.viewport.x2 - top_bar_height * 3 - top_bar_height // 4
+        return self.parent_viewport.x2 - top_bar_height * 3 - top_bar_height // 4
 
     def get_y(self):
         top_bar_height = get_top_bar_height(self.screen_resolution)
-        return self.viewport.y2 - top_bar_height // 2
+        return self.parent_viewport.y2 - top_bar_height // 2
 
     def get_font_size(self):
         top_bar_height = get_top_bar_height(self.screen_resolution)

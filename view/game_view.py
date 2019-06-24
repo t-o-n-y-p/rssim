@@ -96,16 +96,16 @@ class GameView(View):
             self.controller.parent_controller.settings.navigated_from_game = True
 
         super().__init__(logger=getLogger('root.app.game.view'))
-        self.exp_progress_bar = ExpProgressBar()
-        self.money_progress_bar = MoneyProgressBar()
+        self.exp_progress_bar = ExpProgressBar(parent_viewport=self.viewport)
+        self.money_progress_bar = MoneyProgressBar(parent_viewport=self.viewport)
         self.pause_game_button, self.resume_game_button \
             = create_two_state_button(PauseGameButton(on_click_action=on_pause_game),
                                       ResumeGameButton(on_click_action=on_resume_game))
         self.open_settings_button = OpenSettingsGameViewButton(on_click_action=on_open_settings)
         self.buttons = [self.pause_game_button, self.resume_game_button, self.open_settings_button]
         add_font('perfo-bold.ttf')
-        self.main_clock_label_24h = MainClockLabel24H()
-        self.main_clock_label_12h = MainClockLabel12H()
+        self.main_clock_label_24h = MainClockLabel24H(parent_viewport=self.viewport)
+        self.main_clock_label_12h = MainClockLabel12H(parent_viewport=self.viewport)
         self.money_label = None
         self.game_time = 0
         self.exp_percent = 0
@@ -190,6 +190,9 @@ class GameView(View):
         :param screen_resolution:       new screen resolution
         """
         self.on_recalculate_ui_properties(screen_resolution)
+        self.viewport.x1 = 0
+        self.viewport.y1 = 0
+        self.viewport.x2, self.viewport.y2 = self.screen_resolution
         self.exp_progress_bar.on_change_screen_resolution(self.screen_resolution)
         self.money_progress_bar.on_change_screen_resolution(self.screen_resolution)
         self.game_view_shader_upper_limit = self.bottom_bar_height / self.screen_resolution[1] * 2 - 1

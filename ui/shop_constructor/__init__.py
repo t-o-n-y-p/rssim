@@ -35,7 +35,7 @@ def unlock_available(fn):
 
 
 class ShopStageCell:
-    def __init__(self, stage_number, on_buy_stage_action):
+    def __init__(self, stage_number, on_buy_stage_action, parent_viewport):
         def on_buy_shop_stage(button):
             button.on_deactivate(instant=True)
             self.on_buy_stage_action(self.stage_number)
@@ -49,19 +49,19 @@ class ShopStageCell:
         self.on_buy_stage_action = on_buy_stage_action
         self.data = []
         self.screen_resolution = (0, 0)
-        self.position = [0, 0]
-        self.size = [0, 0]
-        self.locked_label = ShopStageLockedLabel()
-        self.level_placeholder_label = ShopStageLevelPlaceholderLabel()
-        self.previous_stage_placeholder_label = ShopStagePreviousStagePlaceholderLabel()
+        self.parent_viewport = parent_viewport
+        self.viewport = Viewport()
+        self.locked_label = ShopStageLockedLabel(parent_viewport=self.viewport)
+        self.level_placeholder_label = ShopStageLevelPlaceholderLabel(parent_viewport=self.viewport)
+        self.previous_stage_placeholder_label = ShopStagePreviousStagePlaceholderLabel(parent_viewport=self.viewport)
         self.hourly_profit_description_label = None
         self.hourly_profit_value_label = None
         self.storage_capacity_description_label = None
         self.storage_capacity_value_label = None
         self.exp_bonus_description_label = None
         self.exp_bonus_value_label = None
-        self.price_label = ShopStagePriceLabel()
-        self.under_construction_label = ShopStageUnderConstructionLabel()
+        self.price_label = ShopStagePriceLabel(parent_viewport=self.viewport)
+        self.under_construction_label = ShopStageUnderConstructionLabel(parent_viewport=self.viewport)
         self.build_button = BuildShopStageButton(on_click_action=on_buy_shop_stage)
         self.buttons = [self.build_button, ]
         self.money = 0
@@ -174,27 +174,30 @@ class ShopStageCell:
         for b in self.buttons:
             b.on_deactivate()
 
-    def on_change_screen_resolution(self, screen_resolution, new_offset):
+    def on_change_screen_resolution(self, screen_resolution):
         self.screen_resolution = screen_resolution
-        general_cells_width = get_inner_area_rect(screen_resolution)[2] - get_top_bar_height(screen_resolution) // 2
-        self.position = (new_offset[0] + general_cells_width // 160
-                         + int((self.stage_number - 1) / 4 * (general_cells_width - general_cells_width // 80)),
-                         new_offset[1])
-        self.locked_label.on_change_screen_resolution(screen_resolution, new_offset=self.position)
-        self.level_placeholder_label.on_change_screen_resolution(screen_resolution, new_offset=self.position)
-        self.previous_stage_placeholder_label.on_change_screen_resolution(screen_resolution, new_offset=self.position)
-        self.under_construction_label.on_change_screen_resolution(screen_resolution, new_offset=self.position)
-        # self.hourly_profit_description_label.on_change_screen_resolution(screen_resolution, new_offset=self.position)
-        # self.hourly_profit_value_label.on_change_screen_resolution(screen_resolution, new_offset=self.position)
-        # self.storage_capacity_description_label.on_change_screen_resolution(screen_resolution, new_offset=self.position)
-        # self.storage_capacity_value_label.on_change_screen_resolution(screen_resolution, new_offset=self.position)
-        # self.exp_bonus_description_label.on_change_screen_resolution(screen_resolution, new_offset=self.position)
-        # self.exp_bonus_value_label.on_change_screen_resolution(screen_resolution, new_offset=self.position)
-        self.price_label.on_change_screen_resolution(screen_resolution, new_offset=self.position)
-        self.build_button.on_size_changed((get_top_bar_height(screen_resolution),
-                                           get_top_bar_height(screen_resolution)))
-        self.build_button.x_margin = self.position[0] + 5 * get_top_bar_height(screen_resolution)
-        self.build_button.y_margin = self.position[1] + 5 * get_top_bar_height(screen_resolution) // 4
+        bottom_bar_height = get_bottom_bar_height(self.screen_resolution)
+        general_cells_width = get_inner_area_rect(screen_resolution)[2] - bottom_bar_height // 4
+        self.viewport.x1 = self.parent_viewport.x1 + bottom_bar_height // 8 + general_cells_width // 160 \
+                           + int((self.stage_number - 1) / 4 * (general_cells_width - general_cells_width // 80))
+        self.viewport.y1 = self.parent_viewport.y1 + bottom_bar_height // 8
+        self.viewport.x2 = self.viewport.x1 + (general_cells_width - general_cells_width // 80) // 4
+        self.viewport.y2 = self.parent_viewport.y1 + 3 * bottom_bar_height - bottom_bar_height // 8
+        self.locked_label.on_change_screen_resolution(self.screen_resolution)
+        self.level_placeholder_label.on_change_screen_resolution(self.screen_resolution)
+        self.previous_stage_placeholder_label.on_change_screen_resolution(self.screen_resolution)
+        self.under_construction_label.on_change_screen_resolution(self.screen_resolution)
+        # self.hourly_profit_description_label.on_change_screen_resolution(self.screen_resolution)
+        # self.hourly_profit_value_label.on_change_screen_resolution(self.screen_resolution)
+        # self.storage_capacity_description_label.on_change_screen_resolution(self.screen_resolution)
+        # self.storage_capacity_value_label.on_change_screen_resolution(self.screen_resolution)
+        # self.exp_bonus_description_label.on_change_screen_resolution(self.screen_resolution)
+        # self.exp_bonus_value_label.on_change_screen_resolution(self.screen_resolution)
+        self.price_label.on_change_screen_resolution(self.screen_resolution)
+        self.build_button.on_size_changed((get_top_bar_height(self.screen_resolution),
+                                           get_top_bar_height(self.screen_resolution)))
+        self.build_button.x_margin = self.viewport.x1 + 5 * get_top_bar_height(self.screen_resolution)
+        self.build_button.y_margin = self.viewport.y1 + 5 * get_top_bar_height(self.screen_resolution) // 4
 
     def on_update_current_locale(self, new_locale):
         """

@@ -34,7 +34,7 @@ def arguments_have_changed(fn):
 
 
 class Label:
-    def __init__(self, logger, viewport):
+    def __init__(self, logger, parent_viewport):
         self.logger = logger
         self.arguments = ()
         self.text_label = None
@@ -47,7 +47,7 @@ class Label:
         self.x = 0
         self.y = 0
         self.width = None
-        self.viewport = viewport
+        self.parent_viewport = parent_viewport
         self.anchor_x = 'center'
         self.anchor_y = 'center'
         self.align = 'left'
@@ -125,8 +125,8 @@ class Label:
 
 
 class LocalizedLabel(Label):
-    def __init__(self, logger, i18n_resources_key, viewport):
-        super().__init__(logger=logger, viewport=viewport)
+    def __init__(self, logger, i18n_resources_key, parent_viewport):
+        super().__init__(logger=logger, parent_viewport=parent_viewport)
         self.i18n_resources_key = i18n_resources_key
         USER_DB_CURSOR.execute('SELECT current_locale FROM i18n')
         self.current_locale = USER_DB_CURSOR.fetchone()[0]

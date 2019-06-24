@@ -112,7 +112,7 @@ class AppView(View):
             self.controller.on_update_clock_state(clock_24h_enabled=True)
 
         super().__init__(logger=getLogger('root.app.view'))
-        self.title_label = AppTitleLabel()
+        self.title_label = AppTitleLabel(parent_viewport=self.viewport)
         self.flag_us_sprite = None
         self.flag_ru_sprite = None
         self.close_game_button = CloseGameButton(on_click_action=on_close_game)
@@ -210,6 +210,9 @@ class AppView(View):
         :param screen_resolution:       new screen resolution
         """
         self.on_recalculate_ui_properties(screen_resolution)
+        self.viewport.x1 = 0
+        self.viewport.y1 = 0
+        self.viewport.x2, self.viewport.y2 = self.screen_resolution
         self.surface.set_size(screen_resolution[0], screen_resolution[1])
         self.title_label.on_change_screen_resolution(self.screen_resolution)
         if self.is_activated:

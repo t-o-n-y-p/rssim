@@ -5,8 +5,8 @@ from ui import *
 
 
 class ShopStagePriceLabel(Label):
-    def __init__(self, viewport):
-        super().__init__(logger=getLogger('root.shop_stage_price_label'), viewport=viewport)
+    def __init__(self, parent_viewport):
+        super().__init__(logger=getLogger('root.shop_stage_price_label'), parent_viewport=parent_viewport)
         self.text = '{0}  ¤'
         self.arguments = (0, )
         self.font_name = 'Arial'
@@ -17,11 +17,11 @@ class ShopStagePriceLabel(Label):
 
     def get_x(self):
         top_bar_height = get_top_bar_height(self.screen_resolution)
-        return self.viewport.x1 + top_bar_height
+        return self.parent_viewport.x1 + top_bar_height
 
     def get_y(self):
         top_bar_height = get_top_bar_height(self.screen_resolution)
-        return self.viewport.y1 + top_bar_height + 3 * top_bar_height // 4
+        return self.parent_viewport.y1 + top_bar_height + 3 * top_bar_height // 4
 
     def get_font_size(self):
         bottom_bar_height = get_bottom_bar_height(self.screen_resolution)

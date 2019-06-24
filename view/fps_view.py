@@ -18,7 +18,7 @@ class FPSView(View):
 
         """
         super().__init__(logger=getLogger('root.app.fps.view'))
-        self.fps_label = FPSLabel()
+        self.fps_label = FPSLabel(parent_viewport=self.viewport)
         self.on_init_graphics()
 
     def on_update_opacity(self, new_opacity):
@@ -70,6 +70,9 @@ class FPSView(View):
         :param screen_resolution:       new screen resolution
         """
         self.on_recalculate_ui_properties(screen_resolution)
+        self.viewport.x1 = 0
+        self.viewport.y1 = 0
+        self.viewport.x2, self.viewport.y2 = self.screen_resolution
         self.fps_label.on_change_screen_resolution(screen_resolution)
 
     def on_init_graphics(self):

@@ -13,12 +13,12 @@ def progress_bar_is_active(fn):
 
 
 class RectangleProgressBar:
-    def __init__(self, logger):
+    def __init__(self, logger, parent_viewport):
         self.logger = logger
         self.is_activated = False
         self.screen_resolution = (1280, 720)
-        self.position = (0, 0)
-        self.offset = (0, 0)
+        self.parent_viewport = parent_viewport
+        self.viewport = Viewport()
         self.inactive_image = None
         self.inactive_sprite = None
         self.active_image = None
@@ -29,47 +29,43 @@ class RectangleProgressBar:
         self.current_locale = USER_DB_CURSOR.fetchone()[0]
         self.current_percent = 0
 
-    @staticmethod
-    def get_position(screen_resolution):
+    def get_position(self):
         pass
 
-    @staticmethod
-    def get_scale(screen_resolution):
+    def get_scale(self):
         pass
 
     def on_activate(self):
         self.is_activated = True
         self.text_label.create()
         if self.inactive_sprite is None:
-            self.inactive_sprite = Sprite(self.inactive_image, x=self.position[0], y=self.position[1],
+            self.inactive_sprite = Sprite(self.inactive_image, x=self.viewport.x1, y=self.viewport.y1,
                                           batch=BATCHES['ui_batch'], group=GROUPS['button_background'])
-            self.inactive_sprite.scale = self.get_scale(self.screen_resolution)
+            self.inactive_sprite.scale = self.get_scale()
             self.inactive_sprite.opacity = self.opacity
 
         if self.active_sprite is None:
-            self.active_sprite = Sprite(self.active_image, x=self.position[0], y=self.position[1],
+            self.active_sprite = Sprite(self.active_image, x=self.viewport.x1, y=self.viewport.y1,
                                         batch=BATCHES['ui_batch'], group=GROUPS['button_text'])
-            self.active_sprite.scale = self.get_scale(self.screen_resolution)
+            self.active_sprite.scale = self.get_scale()
             self.active_sprite.opacity = self.opacity
 
     def on_deactivate(self):
         self.is_activated = False
 
-    def on_change_screen_resolution(self, screen_resolution, new_offset=None):
-        if new_offset is not None:
-            self.offset = new_offset
-
+    def on_change_screen_resolution(self, screen_resolution):
         self.screen_resolution = screen_resolution
-        rel_position = self.get_position(self.screen_resolution)
-        self.position = (self.offset[0] + rel_position[0], self.offset[1] + rel_position[1])
-        self.text_label.on_change_screen_resolution(screen_resolution, new_offset=self.position)
+        self.viewport.x1, self.viewport.y1 = self.get_position()
+        self.viewport.x2 = self.viewport.x1 + int(self.inactive_image.width * self.get_scale())
+        self.viewport.y2 = self.viewport.y1 + int(self.inactive_image.height * self.get_scale())
+        self.text_label.on_change_screen_resolution(self.screen_resolution)
         if self.inactive_sprite is not None:
-            self.inactive_sprite.position = self.position
-            self.inactive_sprite.scale = self.get_scale(self.screen_resolution)
+            self.inactive_sprite.position = (self.viewport.x1, self.viewport.y1)
+            self.inactive_sprite.scale = self.get_scale()
 
         if self.active_sprite is not None:
-            self.active_sprite.position = self.position
-            self.active_sprite.scale = self.get_scale(self.screen_resolution)
+            self.active_sprite.position = (self.viewport.x1, self.viewport.y1)
+            self.active_sprite.scale = self.get_scale()
 
     def on_update_opacity(self, new_opacity):
         self.opacity = new_opacity
