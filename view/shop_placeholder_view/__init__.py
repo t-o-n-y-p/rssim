@@ -1,9 +1,6 @@
 from logging import getLogger
 
-from pyglet.text import Label
-
 from view import *
-from i18n import I18N_RESOURCES
 from ui.label.shop_locked_label import ShopLockedLabel
 from ui.label.shop_level_placeholder_label import ShopLevelPlaceholderLabel
 

@@ -1,7 +1,5 @@
 from logging import getLogger
 
-from pyglet.text import Label
-
 from view import *
 from ui.label.fps_label import FPSLabel
 

@@ -1,6 +1,5 @@
 from logging import getLogger
 
-from pyglet.text import Label
 from pyglet.sprite import Sprite
 from pyglet.gl import GL_QUADS
 from win32api import GetCursorPos
