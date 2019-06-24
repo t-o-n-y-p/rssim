@@ -153,9 +153,7 @@ class ShopConstructorView(View):
         self.shop_view_shader_bottom_limit = self.bottom_bar_height / self.screen_resolution[1] * 2 - 1
         self.shop_view_shader_upper_limit = 1 - self.top_bar_height / self.screen_resolution[1] * 2
         self.shop_stages_cells_position = (self.viewport.x1 + self.top_bar_height // 4,
-                                           self.viewport.y1
-                                           + ((self.viewport.y2 - self.viewport.y1) - self.top_bar_height
-                                              - 4 * self.bottom_bar_height) // 2)
+                                           self.viewport.y1 + self.top_bar_height // 4)
         self.shop_stages_cells_size = ((self.viewport.x2 - self.viewport.x1) - self.top_bar_height // 2,
                                        3 * self.bottom_bar_height - self.bottom_bar_height // 8)
         self.shop_storage_progress_bar.on_change_screen_resolution(self.screen_resolution)
