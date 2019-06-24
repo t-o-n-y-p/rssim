@@ -5,9 +5,9 @@ from ui import *
 
 
 class CurrentLevelLabel(LocalizedLabel):
-    def __init__(self):
+    def __init__(self, viewport):
         super().__init__(logger=getLogger('root.current_level_label'),
-                         i18n_resources_key='level_string')
+                         i18n_resources_key='level_string', viewport=viewport)
         self.arguments = (0,)
         self.font_name = 'Perfo'
         self.bold = True
@@ -16,23 +16,19 @@ class CurrentLevelLabel(LocalizedLabel):
         self.batch = BATCHES['ui_batch']
         self.group = GROUPS['button_text']
 
-    @staticmethod
-    def get_x(screen_resolution):
-        bottom_bar_height = get_bottom_bar_height(screen_resolution)
-        return 15 * bottom_bar_height // 8
+    def get_x(self):
+        bottom_bar_height = get_bottom_bar_height(self.screen_resolution)
+        return self.viewport.x1 + 15 * bottom_bar_height // 8
 
-    @staticmethod
-    def get_y(screen_resolution):
-        bottom_bar_height = get_bottom_bar_height(screen_resolution)
-        return 3 * bottom_bar_height // 8
+    def get_y(self):
+        bottom_bar_height = get_bottom_bar_height(self.screen_resolution)
+        return self.viewport.y1 + 3 * bottom_bar_height // 8
 
-    @staticmethod
-    def get_font_size(screen_resolution):
-        bottom_bar_height = get_bottom_bar_height(screen_resolution)
+    def get_font_size(self):
+        bottom_bar_height = get_bottom_bar_height(self.screen_resolution)
         return int(22 / 80 * bottom_bar_height)
 
-    @staticmethod
-    def get_width(screen_resolution):
+    def get_width(self):
         return None
 
     def get_formatted_text(self):

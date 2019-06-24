@@ -320,6 +320,7 @@ class View:
         self.surface = SURFACE
         self.batches = BATCHES
         self.groups = GROUPS
+        self.viewport = Viewport()
         self.is_activated = False
         self.opacity = 0
         self.buttons = []

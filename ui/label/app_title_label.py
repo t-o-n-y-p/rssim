@@ -5,8 +5,8 @@ from ui import *
 
 
 class AppTitleLabel(Label):
-    def __init__(self):
-        super().__init__(logger=getLogger('root.app_title_label'))
+    def __init__(self, viewport):
+        super().__init__(logger=getLogger('root.app_title_label'), viewport=viewport)
         self.text = 'Railway Station Simulator'
         self.font_name = 'Arial'
         self.base_color = WHITE_RGB
@@ -14,23 +14,19 @@ class AppTitleLabel(Label):
         self.batch = BATCHES['ui_batch']
         self.group = GROUPS['button_text']
 
-    @staticmethod
-    def get_x(screen_resolution):
-        top_bar_height = get_top_bar_height(screen_resolution)
-        return top_bar_height * 2 + top_bar_height // 4
+    def get_x(self):
+        top_bar_height = get_top_bar_height(self.screen_resolution)
+        return self.viewport.x1 + top_bar_height * 2 + top_bar_height // 4
 
-    @staticmethod
-    def get_y(screen_resolution):
-        top_bar_height = get_top_bar_height(screen_resolution)
-        return screen_resolution[1] - top_bar_height // 2
+    def get_y(self):
+        top_bar_height = get_top_bar_height(self.screen_resolution)
+        return self.viewport.y2 - top_bar_height // 2
 
-    @staticmethod
-    def get_font_size(screen_resolution):
-        top_bar_height = get_top_bar_height(screen_resolution)
+    def get_font_size(self):
+        top_bar_height = get_top_bar_height(self.screen_resolution)
         return int(16 / 40 * top_bar_height)
 
-    @staticmethod
-    def get_width(screen_resolution):
+    def get_width(self):
         return None
 
     def get_formatted_text(self):

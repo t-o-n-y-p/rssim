@@ -34,7 +34,7 @@ def arguments_have_changed(fn):
 
 
 class Label:
-    def __init__(self, logger):
+    def __init__(self, logger, viewport):
         self.logger = logger
         self.arguments = ()
         self.text_label = None
@@ -47,28 +47,25 @@ class Label:
         self.x = 0
         self.y = 0
         self.width = None
-        self.offset = (0, 0)
+        self.viewport = viewport
         self.anchor_x = 'center'
         self.anchor_y = 'center'
         self.align = 'left'
         self.multiline = False
         self.batch = None
         self.group = None
+        self.screen_resolution = (1280, 720)
 
-    @staticmethod
-    def get_x(screen_resolution):
+    def get_x(self):
         pass
 
-    @staticmethod
-    def get_y(screen_resolution):
+    def get_y(self):
         pass
 
-    @staticmethod
-    def get_font_size(screen_resolution):
+    def get_font_size(self):
         pass
 
-    @staticmethod
-    def get_width(screen_resolution):
+    def get_width(self):
         pass
 
     def get_formatted_text(self):
@@ -87,14 +84,12 @@ class Label:
         self.text_label.delete()
         self.text_label = None
 
-    def on_change_screen_resolution(self, screen_resolution, new_offset=None):
-        if new_offset is not None:
-            self.offset = new_offset
-
-        self.x = self.offset[0] + self.get_x(screen_resolution)
-        self.y = self.offset[1] + self.get_y(screen_resolution)
-        self.font_size = self.get_font_size(screen_resolution)
-        self.width = self.get_width(screen_resolution)
+    def on_change_screen_resolution(self, screen_resolution):
+        self.screen_resolution = screen_resolution
+        self.x = self.get_x()
+        self.y = self.get_y()
+        self.font_size = self.get_font_size()
+        self.width = self.get_width()
         if self.text_label is not None:
             self.text_label.begin_update()
             self.text_label.x = self.x
@@ -103,10 +98,9 @@ class Label:
             self.text_label.width = self.width
             self.text_label.end_update()
 
-    def on_change_offset(self, new_offset):
-        self.x = self.x - self.offset[0] + new_offset[0]
-        self.y = self.y - self.offset[1] + new_offset[1]
-        self.offset = new_offset
+    def on_position_changed(self):
+        self.x = self.get_x()
+        self.y = self.get_y()
         if self.text_label is not None:
             self.text_label.begin_update()
             self.text_label.x = self.x
@@ -131,8 +125,8 @@ class Label:
 
 
 class LocalizedLabel(Label):
-    def __init__(self, logger, i18n_resources_key):
-        super().__init__(logger=logger)
+    def __init__(self, logger, i18n_resources_key, viewport):
+        super().__init__(logger=logger, viewport=viewport)
         self.i18n_resources_key = i18n_resources_key
         USER_DB_CURSOR.execute('SELECT current_locale FROM i18n')
         self.current_locale = USER_DB_CURSOR.fetchone()[0]

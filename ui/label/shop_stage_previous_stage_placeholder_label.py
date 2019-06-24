@@ -5,9 +5,10 @@ from ui import *
 
 
 class ShopStagePreviousStagePlaceholderLabel(LocalizedLabel):
-    def __init__(self):
+    def __init__(self, viewport):
         super().__init__(logger=getLogger('root.shop_stage_level_placeholder_label'),
-                         i18n_resources_key='unlock_condition_from_previous_shop_stage_description_string')
+                         i18n_resources_key='unlock_condition_from_previous_shop_stage_description_string',
+                         viewport=viewport)
         self.arguments = (0,)
         self.font_name = 'Arial'
         self.base_color = GREY_RGB
@@ -15,23 +16,18 @@ class ShopStagePreviousStagePlaceholderLabel(LocalizedLabel):
         self.batch = BATCHES['ui_batch']
         self.group = GROUPS['button_text']
 
-    @staticmethod
-    def get_x(screen_resolution):
-        top_bar_height = get_top_bar_height(screen_resolution)
-        return int(35 * top_bar_height / 10)
+    def get_x(self):
+        return (self.viewport.x1 + self.viewport.x2) // 2
 
-    @staticmethod
-    def get_y(screen_resolution):
-        bottom_bar_height = get_bottom_bar_height(screen_resolution)
-        return (3 * bottom_bar_height - bottom_bar_height // 8) // 2 - bottom_bar_height // 4
+    def get_y(self):
+        bottom_bar_height = get_bottom_bar_height(self.screen_resolution)
+        return (self.viewport.y1 + self.viewport.y2) // 2 - bottom_bar_height // 4
 
-    @staticmethod
-    def get_font_size(screen_resolution):
-        bottom_bar_height = get_bottom_bar_height(screen_resolution)
+    def get_font_size(self):
+        bottom_bar_height = get_bottom_bar_height(self.screen_resolution)
         return bottom_bar_height // 5
 
-    @staticmethod
-    def get_width(screen_resolution):
+    def get_width(self):
         return None
 
     def get_formatted_text(self):

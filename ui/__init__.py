@@ -91,3 +91,11 @@ def get_inner_area_rect(screen_resolution):
                            (screen_resolution[1] - inner_area_size[1] - 3 * bottom_bar_height // 2) // 2
                            + bottom_bar_height)
     return (*inner_area_position, *inner_area_size)
+
+
+class Viewport:
+    def __init__(self):
+        self.x1 = 0
+        self.y1 = 0
+        self.x2 = 0
+        self.y2 = 0

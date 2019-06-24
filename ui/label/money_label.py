@@ -5,8 +5,8 @@ from ui import *
 
 
 class MoneyLabel(Label):
-    def __init__(self):
-        super().__init__(logger=getLogger('root.money_label'))
+    def __init__(self, viewport):
+        super().__init__(logger=getLogger('root.money_label'), viewport=viewport)
         self.text = '{0:0>10}  ¤'
         self.arguments = (0, )
         self.font_name = 'Perfo'
@@ -16,23 +16,19 @@ class MoneyLabel(Label):
         self.batch = BATCHES['ui_batch']
         self.group = GROUPS['button_text']
 
-    @staticmethod
-    def get_x(screen_resolution):
-        bottom_bar_height = get_bottom_bar_height(screen_resolution)
-        return 15 * bottom_bar_height // 8
+    def get_x(self):
+        bottom_bar_height = get_bottom_bar_height(self.screen_resolution)
+        return self.viewport.x1 + 15 * bottom_bar_height // 8
 
-    @staticmethod
-    def get_y(screen_resolution):
-        bottom_bar_height = get_bottom_bar_height(screen_resolution)
-        return 3 * bottom_bar_height // 8
+    def get_y(self):
+        bottom_bar_height = get_bottom_bar_height(self.screen_resolution)
+        return self.viewport.y1 + 3 * bottom_bar_height // 8
 
-    @staticmethod
-    def get_font_size(screen_resolution):
-        bottom_bar_height = get_bottom_bar_height(screen_resolution)
+    def get_font_size(self):
+        bottom_bar_height = get_bottom_bar_height(self.screen_resolution)
         return int(22 / 80 * bottom_bar_height)
 
-    @staticmethod
-    def get_width(screen_resolution):
+    def get_width(self):
         return None
 
     def get_formatted_text(self):
