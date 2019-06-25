@@ -4,6 +4,7 @@ from pyglet.gl import GL_QUADS
 from pyshaders import from_files_names
 
 from view import *
+from ui import Viewport
 from ui.constructor.track_cell import TrackCell
 from ui.constructor.environment_cell import EnvironmentCell
 from ui.button.close_constructor_button import CloseConstructorButton
@@ -11,6 +12,8 @@ from notifications.track_unlocked_notification import TrackUnlockedNotification
 from notifications.environment_unlocked_notification import EnvironmentUnlockedNotification
 from notifications.environment_construction_completed_notification import EnvironmentConstructionCompletedNotification
 from notifications.track_construction_completed_notification import TrackConstructionCompletedNotification
+from ui.label.no_more_tracks_available_label import NoMoreTracksAvailableLabel
+from ui.label.no_more_environment_available_label import NoMoreEnvironmentAvailableLabel
 
 
 class ConstructorView(View):
@@ -93,6 +96,8 @@ class ConstructorView(View):
         self.map_id = map_id
         self.viewport.x1, self.viewport.y1 = 0, 0
         self.viewport.x2, self.viewport.y2 = self.screen_resolution
+        self.no_more_tracks_available_placeholder_viewport = Viewport()
+        self.no_more_tiers_available_placeholder_viewport = Viewport()
         self.construction_state_matrix = [{}, {}]
         self.money = 0
         self.close_constructor_button = CloseConstructorButton(on_click_action=on_close_constructor)
@@ -127,6 +132,10 @@ class ConstructorView(View):
         self.shader = from_files_names('shaders/shader.vert', 'shaders/constructor_view/shader.frag')
         self.constructor_view_shader_bottom_limit = 0.0
         self.constructor_view_shader_upper_limit = 0.0
+        self.no_more_tracks_available_label \
+            = NoMoreTracksAvailableLabel(parent_viewport=self.no_more_tracks_available_placeholder_viewport)
+        self.no_more_tiers_available_label \
+            = NoMoreEnvironmentAvailableLabel(parent_viewport=self.no_more_tiers_available_placeholder_viewport)
         self.on_init_graphics()
 
     @view_is_not_active
@@ -142,6 +151,13 @@ class ConstructorView(View):
                                                                  -1.0, self.constructor_view_shader_upper_limit,
                                                                  1.0, self.constructor_view_shader_upper_limit,
                                                                  1.0, self.constructor_view_shader_bottom_limit)))
+
+        if len(self.construction_state_matrix[TRACKS]) < CONSTRUCTOR_VIEW_TRACK_CELLS:
+            self.no_more_tracks_available_label.create()
+
+        if len(self.construction_state_matrix[ENVIRONMENT]) < CONSTRUCTOR_VIEW_ENVIRONMENT_CELLS:
+            self.no_more_tiers_available_label.create()
+
         for b in self.buttons:
             if b.to_activate_on_controller_init:
                 b.on_activate()
@@ -231,6 +247,11 @@ class ConstructorView(View):
         if self.opacity <= 0:
             self.shader_sprite.delete()
             self.shader_sprite = None
+            self.no_more_tracks_available_label.delete()
+            self.no_more_tiers_available_label.delete()
+        else:
+            self.no_more_tracks_available_label.on_update_opacity(self.opacity)
+            self.no_more_tiers_available_label.on_update_opacity(self.opacity)
 
     def on_change_screen_resolution(self, screen_resolution):
         """
@@ -253,6 +274,28 @@ class ConstructorView(View):
         for j in range(CONSTRUCTOR_VIEW_ENVIRONMENT_CELLS):
             self.constructor_cells[ENVIRONMENT][j].on_change_screen_resolution(screen_resolution)
 
+        self.no_more_tracks_available_placeholder_viewport.x1 = self.constructor_cells[TRACKS][-1].viewport.x1
+        self.no_more_tracks_available_placeholder_viewport.x2 = self.constructor_cells[TRACKS][-1].viewport.x2
+        self.no_more_tracks_available_placeholder_viewport.y1 = self.constructor_cells[TRACKS][-1].viewport.y1
+        if len(self.construction_state_matrix[TRACKS]) < CONSTRUCTOR_VIEW_TRACK_CELLS:
+            self.no_more_tracks_available_placeholder_viewport.y2 = self.constructor_cells[TRACKS][
+                len(self.construction_state_matrix[TRACKS]) - CONSTRUCTOR_VIEW_TRACK_CELLS
+            ].viewport.y2
+        else:
+            self.no_more_tracks_available_placeholder_viewport.y2 = self.constructor_cells[TRACKS][-1].viewport.y2
+
+        self.no_more_tiers_available_placeholder_viewport.x1 = self.constructor_cells[ENVIRONMENT][-1].viewport.x1
+        self.no_more_tiers_available_placeholder_viewport.x2 = self.constructor_cells[ENVIRONMENT][-1].viewport.x2
+        self.no_more_tiers_available_placeholder_viewport.y1 = self.constructor_cells[ENVIRONMENT][-1].viewport.y1
+        if len(self.construction_state_matrix[ENVIRONMENT]) < CONSTRUCTOR_VIEW_ENVIRONMENT_CELLS:
+            self.no_more_tiers_available_placeholder_viewport.y2 = self.constructor_cells[TRACKS][
+                len(self.construction_state_matrix[ENVIRONMENT]) - CONSTRUCTOR_VIEW_ENVIRONMENT_CELLS
+            ].viewport.y2
+        else:
+            self.no_more_tiers_available_placeholder_viewport.y2 = self.constructor_cells[ENVIRONMENT][-1].viewport.y2
+
+        self.no_more_tracks_available_label.on_change_screen_resolution(self.screen_resolution)
+        self.no_more_tiers_available_label.on_change_screen_resolution(self.screen_resolution)
         self.close_constructor_button.on_size_changed((self.bottom_bar_height, self.bottom_bar_height))
         for b in self.buttons:
             b.on_position_changed((b.x_margin, b.y_margin))
@@ -316,6 +359,13 @@ class ConstructorView(View):
             for j in range(len(remaining_tracks), CONSTRUCTOR_VIEW_TRACK_CELLS):
                 self.constructor_cells[TRACKS][j].on_assign_new_data(0, [])
 
+            if len(remaining_tracks) < CONSTRUCTOR_VIEW_TRACK_CELLS:
+                self.no_more_tracks_available_placeholder_viewport.y2 = self.constructor_cells[TRACKS][
+                    len(remaining_tracks) - CONSTRUCTOR_VIEW_TRACK_CELLS
+                ].viewport.y2
+                self.no_more_tracks_available_label.on_position_changed()
+                self.no_more_tracks_available_label.create()
+
         elif construction_type == ENVIRONMENT:
             remaining_tiers = sorted(list(self.construction_state_matrix[ENVIRONMENT].keys()))
             remaining_tiers.remove(entity_number)
@@ -331,6 +381,13 @@ class ConstructorView(View):
             for j in range(len(remaining_tiers), CONSTRUCTOR_VIEW_ENVIRONMENT_CELLS):
                 self.constructor_cells[ENVIRONMENT][j].on_assign_new_data(0, [])
 
+            if len(remaining_tiers) < CONSTRUCTOR_VIEW_ENVIRONMENT_CELLS:
+                self.no_more_tiers_available_placeholder_viewport.y2 = self.constructor_cells[TRACKS][
+                    len(remaining_tiers) - CONSTRUCTOR_VIEW_ENVIRONMENT_CELLS
+                ].viewport.y2
+                self.no_more_tiers_available_label.on_position_changed()
+                self.no_more_tiers_available_label.create()
+
     def on_update_current_locale(self, new_locale):
         """
         Updates current locale selected by user and all text labels.
@@ -338,6 +395,8 @@ class ConstructorView(View):
         :param new_locale:                      selected locale
         """
         self.current_locale = new_locale
+        self.no_more_tracks_available_label.on_update_current_locale(self.current_locale)
+        self.no_more_tiers_available_label.on_update_current_locale(self.current_locale)
         for j in range(CONSTRUCTOR_VIEW_TRACK_CELLS):
             self.constructor_cells[TRACKS][j].on_update_current_locale(self.current_locale)
 
@@ -450,6 +509,7 @@ class ConstructorView(View):
         cell_w = []
         cell_h = []
         cell_unlock_available = []
+        cell_data_length = []
         for j in range(CONSTRUCTOR_VIEW_TRACK_CELLS):
             cell_x.append(self.constructor_cells[TRACKS][j].viewport.x1)
             cell_y.append(self.constructor_cells[TRACKS][j].viewport.y1)
@@ -462,6 +522,8 @@ class ConstructorView(View):
                     cell_unlock_available.append(False)
             else:
                 cell_unlock_available.append(False)
+
+            cell_data_length.append(len(self.constructor_cells[TRACKS][j].data))
 
         for j in range(CONSTRUCTOR_VIEW_ENVIRONMENT_CELLS):
             cell_x.append(self.constructor_cells[ENVIRONMENT][j].viewport.x1)
@@ -478,12 +540,15 @@ class ConstructorView(View):
             else:
                 cell_unlock_available.append(False)
 
+            cell_data_length.append(len(self.constructor_cells[ENVIRONMENT][j].data))
+
         self.shader.uniforms.cell_x = cell_x
         self.shader.uniforms.cell_y = cell_y
         self.shader.uniforms.cell_w = cell_w
         self.shader.uniforms.cell_h = cell_h
         self.shader.uniforms.cell_unlock_available = cell_unlock_available
         self.shader.uniforms.number_of_cells = CONSTRUCTOR_VIEW_TRACK_CELLS + CONSTRUCTOR_VIEW_ENVIRONMENT_CELLS
+        self.shader.uniforms.data_length = cell_data_length
         self.shader_sprite.draw(GL_QUADS)
         self.shader.clear()
 

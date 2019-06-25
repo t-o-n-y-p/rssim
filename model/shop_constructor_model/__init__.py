@@ -70,9 +70,9 @@ class ShopConstructorModel(Model):
                     if stage < 4:
                         self.shop_stages_state_matrix[stage + 1][UNLOCK_CONDITION_FROM_PREVIOUS_STAGE] = True
                         self.on_check_shop_stage_unlock_conditions(stage + 1)
-                        self.view.on_update_stage_state(self.shop_stages_state_matrix, stage + 1)
+                        self.view.on_update_stage_state(stage + 1)
 
-                self.view.on_update_stage_state(self.shop_stages_state_matrix, stage)
+                self.view.on_update_stage_state(stage)
 
     def on_save_state(self):
         self.user_db_cursor.execute('''UPDATE shops SET current_stage = ?, shop_storage_money = ?, 
@@ -108,7 +108,7 @@ class ShopConstructorModel(Model):
             if self.shop_stages_state_matrix[stage][LEVEL_REQUIRED] == level:
                 self.shop_stages_state_matrix[stage][UNLOCK_CONDITION_FROM_LEVEL] = True
                 self.on_check_shop_stage_unlock_conditions(stage)
-                self.view.on_update_stage_state(self.shop_stages_state_matrix, stage)
+                self.view.on_update_stage_state(stage)
 
     def on_check_shop_stage_unlock_conditions(self, stage):
         if self.shop_stages_state_matrix[stage][UNLOCK_CONDITION_FROM_PREVIOUS_STAGE] \
@@ -120,6 +120,6 @@ class ShopConstructorModel(Model):
     def on_put_stage_under_construction(self, stage_number):
         self.shop_stages_state_matrix[stage_number][UNLOCK_AVAILABLE] = False
         self.shop_stages_state_matrix[stage_number][UNDER_CONSTRUCTION] = True
-        self.view.on_update_stage_state(self.shop_stages_state_matrix, stage_number)
+        self.view.on_update_stage_state(stage_number)
         self.controller.parent_controller.parent_controller.parent_controller \
             .on_pay_money(self.shop_stages_state_matrix[stage_number][PRICE])

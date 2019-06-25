@@ -4,7 +4,6 @@ from ui.label.track_cell_title_label import TrackCellTitleLabel
 from ui.label.previous_track_required_label import PreviousTrackRequiredLabel
 from ui.label.environment_required_label import EnvironmentRequiredLabel
 from ui.label.track_unlock_available_label import TrackUnlockAvailableLabel
-from ui.label.no_more_tracks_available_label import NoMoreTracksAvailableLabel
 
 
 class TrackCell(ConstructorCell):
@@ -20,7 +19,6 @@ class TrackCell(ConstructorCell):
         self.previous_entity_required_label = PreviousTrackRequiredLabel(parent_viewport=self.viewport)
         self.environment_required_label = EnvironmentRequiredLabel(parent_viewport=self.viewport)
         self.unlock_available_label = TrackUnlockAvailableLabel(parent_viewport=self.viewport)
-        self.placeholder_label = NoMoreTracksAvailableLabel(parent_viewport=self.viewport)
 
     def on_update_description_label(self):
         """

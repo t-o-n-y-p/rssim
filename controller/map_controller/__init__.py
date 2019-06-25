@@ -155,8 +155,9 @@ class MapController(Controller):
         for track_param_1, track_param_2, crossover_type in self.model.get_crossovers_to_unlock_with_track(track):
             self.crossovers[track_param_1][track_param_2][crossover_type].on_unlock()
 
-        for shop_id in self.model.get_shops_to_unlock_with_track(track):
-            self.view.shop_buttons[shop_id[0]].on_activate()
+        if self.view.is_activated:
+            for shop_id in self.model.get_shops_to_unlock_with_track(track):
+                self.view.shop_buttons[shop_id[0]].on_activate()
 
     def on_unlock_environment(self, tier):
         """

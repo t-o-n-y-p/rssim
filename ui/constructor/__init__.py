@@ -162,7 +162,6 @@ class ConstructorCell:
         self.unlock_available_label = None
         self.under_construction_days_label = UnderConstructionDaysLabel(parent_viewport=self.viewport)
         self.under_construction_hours_minutes_label = UnderConstructionHoursMinutesLabel(parent_viewport=self.viewport)
-        self.placeholder_label = None
         self.enable_money_target_button, self.disable_money_target_button \
             = create_two_state_button(SetMoneyTargetButton(on_click_action=on_set_money_target),
                                       ResetMoneyTargetButton(on_click_action=on_reset_money_target))
@@ -184,12 +183,13 @@ class ConstructorCell:
         self.data = data
         # when data is empty, it means no more tracks/tiers are available, only placeholder is active
         if len(self.data) == 0 or self.entity_number == 0:
-            self.placeholder_label.create()
             self.locked_label.delete()
             self.title_label.delete()
             self.level_required_label.delete()
             self.previous_entity_required_label.delete()
-            self.environment_required_label.delete()
+            if self.environment_required_label is not None:
+                self.environment_required_label.delete()
+
             self.unlock_available_label.delete()
             self.under_construction_days_label.delete()
             self.under_construction_hours_minutes_label.delete()
@@ -197,7 +197,6 @@ class ConstructorCell:
                 b.on_deactivate()
 
         else:
-            self.placeholder_label.delete()
             if not self.data[UNLOCK_AVAILABLE] and not self.data[UNDER_CONSTRUCTION]:
                 self.locked_label.create()
             else:
@@ -306,7 +305,6 @@ class ConstructorCell:
         self.unlock_available_label.on_change_screen_resolution(self.screen_resolution)
         self.under_construction_days_label.on_change_screen_resolution(self.screen_resolution)
         self.under_construction_hours_minutes_label.on_change_screen_resolution(self.screen_resolution)
-        self.placeholder_label.on_change_screen_resolution(self.screen_resolution)
         self.build_button.on_size_changed((bottom_bar_height, bottom_bar_height))
         self.enable_money_target_button.on_size_changed((bottom_bar_height, bottom_bar_height))
         self.disable_money_target_button.on_size_changed((bottom_bar_height, bottom_bar_height))
@@ -333,7 +331,6 @@ class ConstructorCell:
         self.unlock_available_label.on_update_current_locale(self.current_locale)
         self.under_construction_days_label.on_update_current_locale(self.current_locale)
         self.under_construction_hours_minutes_label.on_update_current_locale(self.current_locale)
-        self.placeholder_label.on_update_current_locale(self.current_locale)
 
     def on_activate_money_target(self):
         """
@@ -385,7 +382,6 @@ class ConstructorCell:
             self.unlock_available_label.delete()
             self.under_construction_days_label.delete()
             self.under_construction_hours_minutes_label.delete()
-            self.placeholder_label.delete()
         else:
             self.locked_label.on_update_opacity(self.opacity)
             self.title_label.on_update_opacity(self.opacity)
@@ -397,4 +393,3 @@ class ConstructorCell:
             self.unlock_available_label.on_update_opacity(self.opacity)
             self.under_construction_days_label.on_update_opacity(self.opacity)
             self.under_construction_hours_minutes_label.on_update_opacity(self.opacity)
-            self.placeholder_label.on_update_opacity(self.opacity)

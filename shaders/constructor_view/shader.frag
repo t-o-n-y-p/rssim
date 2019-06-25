@@ -25,6 +25,7 @@ uniform int cell_w[8];
 uniform int cell_h[8];
 uniform int cell_unlock_available[8];
 uniform int number_of_cells = 8;
+uniform int data_length[8];
 
 bool is_cell_border()
 /*
@@ -34,17 +35,20 @@ bool is_cell_border()
     int margin_x, margin_y;
     for(int i = 0; i < number_of_cells; i++)
     {
-        margin_x = int(gl_FragCoord[0]) - cell_x[i];
-        margin_y = int(gl_FragCoord[1]) - cell_y[i];
-        if ((margin_x >= 0 && margin_x <= cell_w[i] - 1
-             && (margin_y == 0 || margin_y == 1 || margin_y == cell_h[i] - 2
-                 || margin_y == cell_h[i] - 1)
-            ) || (margin_y >= 0 && margin_y <= cell_h[i] - 1
-                  && (margin_x == 0 || margin_x == 1 || margin_x == cell_w[i] - 2
-                      || margin_x == cell_w[i] - 1)
-                 )
-        )
-            return true;
+        if (data_length[i] > 0)
+        {
+            margin_x = int(gl_FragCoord[0]) - cell_x[i];
+            margin_y = int(gl_FragCoord[1]) - cell_y[i];
+            if ((margin_x >= 0 && margin_x <= cell_w[i] - 1
+                 && (margin_y == 0 || margin_y == 1 || margin_y == cell_h[i] - 2
+                     || margin_y == cell_h[i] - 1)
+                ) || (margin_y >= 0 && margin_y <= cell_h[i] - 1
+                      && (margin_x == 0 || margin_x == 1 || margin_x == cell_w[i] - 2
+                          || margin_x == cell_w[i] - 1)
+                     )
+            )
+                return true;
+        }
     }
     return false;
 }

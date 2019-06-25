@@ -3,7 +3,6 @@ from ui.constructor import ConstructorCell
 from ui.label.environment_cell_title_label import EnvironmentCellTitleLabel
 from ui.label.previous_environment_required_label import PreviousEnvironmentRequiredLabel
 from ui.label.environment_unlock_available_label import EnvironmentUnlockAvailableLabel
-from ui.label.no_more_environment_available_label import NoMoreEnvironmentAvailableLabel
 
 
 class EnvironmentCell(ConstructorCell):
@@ -18,7 +17,6 @@ class EnvironmentCell(ConstructorCell):
         self.title_label = EnvironmentCellTitleLabel(parent_viewport=self.viewport)
         self.previous_entity_required_label = PreviousEnvironmentRequiredLabel(parent_viewport=self.viewport)
         self.unlock_available_label = EnvironmentUnlockAvailableLabel(parent_viewport=self.viewport)
-        self.placeholder_label = NoMoreEnvironmentAvailableLabel(parent_viewport=self.viewport)
 
     def on_update_description_label(self):
         """
