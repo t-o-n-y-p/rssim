@@ -274,5 +274,9 @@
 	"exp_bonus_string": {
 		"en": "Exp bonus:",
 		"ru": "Бонус к опыту:"
+	},
+	"exp_bonus_value_string": {
+		"en": "{1:.0f}.{0:.0%}",
+		"ru": "{1:.0f},{0:.0%}"
 	}
 }
