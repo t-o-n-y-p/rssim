@@ -374,9 +374,9 @@ class ConstructorView(View):
                     .on_assign_new_data(remaining_tiers[j],
                                         self.construction_state_matrix[ENVIRONMENT][remaining_tiers[j]])
                 if self.money_target_activated and self.money_target_cell_position == [ENVIRONMENT, j]:
-                    self.constructor_cells[TRACKS][j].on_activate_money_target()
+                    self.constructor_cells[ENVIRONMENT][j].on_activate_money_target()
                 else:
-                    self.constructor_cells[TRACKS][j].on_deactivate_money_target()
+                    self.constructor_cells[ENVIRONMENT][j].on_deactivate_money_target()
 
             for j in range(len(remaining_tiers), CONSTRUCTOR_VIEW_ENVIRONMENT_CELLS):
                 self.constructor_cells[ENVIRONMENT][j].on_assign_new_data(0, [])
