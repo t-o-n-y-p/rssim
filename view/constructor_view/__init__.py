@@ -91,6 +91,8 @@ class ConstructorView(View):
 
         super().__init__(logger=getLogger(f'root.app.game.map.{map_id}.constructor.view'))
         self.map_id = map_id
+        self.viewport.x1, self.viewport.y1 = 0, 0
+        self.viewport.x2, self.viewport.y2 = self.screen_resolution
         self.construction_state_matrix = [{}, {}]
         self.money = 0
         self.close_constructor_button = CloseConstructorButton(on_click_action=on_close_constructor)
@@ -100,14 +102,14 @@ class ConstructorView(View):
         for j in range(CONSTRUCTOR_VIEW_TRACK_CELLS):
             track_cells.append(
                 TrackCell(TRACKS, j, on_buy_construction_action, on_set_money_target_action,
-                          on_reset_money_target_action)
+                          on_reset_money_target_action, parent_viewport=self.viewport)
             )
             self.buttons.extend(track_cells[j].buttons)
 
         for j in range(CONSTRUCTOR_VIEW_ENVIRONMENT_CELLS):
             environment_cells.append(
                 EnvironmentCell(ENVIRONMENT, j, on_buy_construction_action, on_set_money_target_action,
-                                on_reset_money_target_action)
+                                on_reset_money_target_action, parent_viewport=self.viewport)
             )
             self.buttons.extend(environment_cells[j].buttons)
 
@@ -268,27 +270,23 @@ class ConstructorView(View):
         for j in range(CONSTRUCTOR_VIEW_ENVIRONMENT_CELLS):
             self.constructor_cells[ENVIRONMENT][j].on_update_money(money)
 
-    def on_update_construction_state(self, construction_state_matrix, construction_type, entity_number, game_time=0):
+    def on_update_construction_state(self, construction_type, entity_number, game_time=0):
         """
         Updates state for given construction.
 
-        :param construction_state_matrix:       tracks and environment state storage
         :param construction_type:               type of construction: track or environment
         :param entity_number:                   number of track or environment tier
         :param game_time:                       current in-game time
         """
-        self.construction_state_matrix = construction_state_matrix
         if construction_type == TRACKS:
             remaining_tracks = sorted(list(self.construction_state_matrix[TRACKS].keys()))
             if remaining_tracks.index(entity_number) < CONSTRUCTOR_VIEW_TRACK_CELLS:
-                self.constructor_cells[construction_type][remaining_tracks.index(entity_number)]\
-                    .on_update_state(self.construction_state_matrix[TRACKS][entity_number])
+                self.constructor_cells[construction_type][remaining_tracks.index(entity_number)].on_update_state()
 
         elif construction_type == ENVIRONMENT:
             remaining_tiers = sorted(list(self.construction_state_matrix[ENVIRONMENT].keys()))
             if remaining_tiers.index(entity_number) < CONSTRUCTOR_VIEW_ENVIRONMENT_CELLS:
-                self.constructor_cells[construction_type][remaining_tiers.index(entity_number)]\
-                    .on_update_state(self.construction_state_matrix[ENVIRONMENT][entity_number])
+                self.constructor_cells[construction_type][remaining_tiers.index(entity_number)].on_update_state()
 
     @view_is_active
     def on_unlock_construction(self, construction_type, entity_number):
@@ -453,10 +451,10 @@ class ConstructorView(View):
         cell_h = []
         cell_unlock_available = []
         for j in range(CONSTRUCTOR_VIEW_TRACK_CELLS):
-            cell_x.append(self.constructor_cells[TRACKS][j].position[0])
-            cell_y.append(self.constructor_cells[TRACKS][j].position[1])
-            cell_w.append(self.constructor_cells[TRACKS][j].size[0])
-            cell_h.append(self.constructor_cells[TRACKS][j].size[1])
+            cell_x.append(self.constructor_cells[TRACKS][j].viewport.x1)
+            cell_y.append(self.constructor_cells[TRACKS][j].viewport.y1)
+            cell_w.append(self.constructor_cells[TRACKS][j].viewport.x2 - self.constructor_cells[TRACKS][j].viewport.x1)
+            cell_h.append(self.constructor_cells[TRACKS][j].viewport.y2 - self.constructor_cells[TRACKS][j].viewport.y1)
             if self.constructor_cells[TRACKS][j].data is not None:
                 if len(self.constructor_cells[TRACKS][j].data) > 0:
                     cell_unlock_available.append(int(self.constructor_cells[TRACKS][j].data[UNLOCK_AVAILABLE]))
@@ -466,10 +464,12 @@ class ConstructorView(View):
                 cell_unlock_available.append(False)
 
         for j in range(CONSTRUCTOR_VIEW_ENVIRONMENT_CELLS):
-            cell_x.append(self.constructor_cells[ENVIRONMENT][j].position[0])
-            cell_y.append(self.constructor_cells[ENVIRONMENT][j].position[1])
-            cell_w.append(self.constructor_cells[ENVIRONMENT][j].size[0])
-            cell_h.append(self.constructor_cells[ENVIRONMENT][j].size[1])
+            cell_x.append(self.constructor_cells[ENVIRONMENT][j].viewport.x1)
+            cell_y.append(self.constructor_cells[ENVIRONMENT][j].viewport.y1)
+            cell_w.append(self.constructor_cells[ENVIRONMENT][j].viewport.x2
+                          - self.constructor_cells[ENVIRONMENT][j].viewport.x1)
+            cell_h.append(self.constructor_cells[ENVIRONMENT][j].viewport.y2
+                          - self.constructor_cells[ENVIRONMENT][j].viewport.y1)
             if self.constructor_cells[ENVIRONMENT][j].data is not None:
                 if len(self.constructor_cells[ENVIRONMENT][j].data) > 0:
                     cell_unlock_available.append(int(self.constructor_cells[ENVIRONMENT][j].data[UNLOCK_AVAILABLE]))

@@ -1,6 +1,10 @@
 from ui import *
 from ui.constructor import ConstructorCell
-from i18n import I18N_RESOURCES, i18n_number_category
+from ui.label.track_cell_title_label import TrackCellTitleLabel
+from ui.label.previous_track_required_label import PreviousTrackRequiredLabel
+from ui.label.environment_required_label import EnvironmentRequiredLabel
+from ui.label.track_unlock_available_label import TrackUnlockAvailableLabel
+from ui.label.no_more_tracks_available_label import NoMoreTracksAvailableLabel
 
 
 class TrackCell(ConstructorCell):
@@ -9,64 +13,60 @@ class TrackCell(ConstructorCell):
     For properties definition see base ConstructorCell class.
     """
     def __init__(self, column, row, on_buy_construction_action, on_set_money_target_action,
-                 on_reset_money_target_action):
+                 on_reset_money_target_action, parent_viewport):
         super().__init__(column, row, on_buy_construction_action, on_set_money_target_action,
-                         on_reset_money_target_action)
-        self.title_key = 'title_track_string'
-        self.placeholder_key = 'no_more_tracks_available_placeholder_string'
-        self.description_keys = {'UNDER_CONSTRUCTION':
-                                 {'hours': 'under_construction_hours_minutes_description_string',
-                                  'days': 'under_construction_days_description_string'},
-                                 'UNLOCK_AVAILABLE': 'unlock_available_track_description_string',
-                                 'UNLOCK_CONDITION_FROM_LEVEL': 'unlock_condition_from_level_track_description_string',
-                                 'UNLOCK_CONDITION_FROM_PREVIOUS_TRACK':
-                                     'unlock_condition_from_previous_track_track_description_string',
-                                 'UNLOCK_CONDITION_FROM_ENVIRONMENT':
-                                     'unlock_condition_from_environment_track_description_string'}
+                         on_reset_money_target_action, parent_viewport)
+        self.title_label = TrackCellTitleLabel(parent_viewport=self.viewport)
+        self.previous_entity_required_label = PreviousTrackRequiredLabel(parent_viewport=self.viewport)
+        self.environment_required_label = EnvironmentRequiredLabel(parent_viewport=self.viewport)
+        self.unlock_available_label = TrackUnlockAvailableLabel(parent_viewport=self.viewport)
+        self.placeholder_label = NoMoreTracksAvailableLabel(parent_viewport=self.viewport)
 
     def on_update_description_label(self):
         """
         Updates track cell description based on data.
         """
         if self.data[UNDER_CONSTRUCTION]:
+            self.level_required_label.delete()
+            self.previous_entity_required_label.delete()
+            self.environment_required_label.delete()
+            self.unlock_available_label.delete()
             if self.data[CONSTRUCTION_TIME] >= FRAMES_IN_ONE_DAY:
-                days_left = self.data[CONSTRUCTION_TIME] // FRAMES_IN_ONE_DAY
-                text = I18N_RESOURCES[self.description_keys['UNDER_CONSTRUCTION']['days']][self.current_locale][
-                    i18n_number_category(days_left, self.current_locale)
-                ].format(days_left)
+                self.under_construction_days_label.on_update_args((self.data[CONSTRUCTION_TIME] // FRAMES_IN_ONE_DAY, ))
+                self.under_construction_days_label.create()
+                self.under_construction_hours_minutes_label.delete()
             else:
-                text = I18N_RESOURCES[self.description_keys['UNDER_CONSTRUCTION']['hours']][self.current_locale]\
-                    .format(self.data[CONSTRUCTION_TIME] // FRAMES_IN_ONE_HOUR,
-                            (self.data[CONSTRUCTION_TIME] // FRAMES_IN_ONE_MINUTE) % MINUTES_IN_ONE_HOUR)
-
-            if self.description_label.text != text:
-                self.description_label.text = text
-                self.description_label.color = (*ORANGE_RGB, self.opacity)
+                self.under_construction_hours_minutes_label\
+                    .on_update_args((self.data[CONSTRUCTION_TIME] // FRAMES_IN_ONE_HOUR,
+                                     (self.data[CONSTRUCTION_TIME] // FRAMES_IN_ONE_MINUTE) % MINUTES_IN_ONE_HOUR))
+                self.under_construction_hours_minutes_label.create()
+                self.under_construction_days_label.delete()
 
         elif self.data[UNLOCK_AVAILABLE]:
-            text = I18N_RESOURCES[self.description_keys['UNLOCK_AVAILABLE']][self.current_locale] \
-                .format(self.data[PRICE]).replace(',', ' ')
-            if self.description_label.text != text:
-                self.description_label.text = text
-                self.description_label.color = (*GREEN_RGB, self.opacity)
-
+            self.level_required_label.delete()
+            self.previous_entity_required_label.delete()
+            self.environment_required_label.delete()
+            self.unlock_available_label.create()
+            self.under_construction_days_label.delete()
+            self.under_construction_hours_minutes_label.delete()
         elif not self.data[UNLOCK_CONDITION_FROM_LEVEL]:
-            text = I18N_RESOURCES[self.description_keys['UNLOCK_CONDITION_FROM_LEVEL']][self.current_locale] \
-                .format(self.data[LEVEL_REQUIRED])
-            if self.description_label.text != text:
-                self.description_label.text = text
-                self.description_label.color = (*GREY_RGB, self.opacity)
-
+            self.level_required_label.create()
+            self.previous_entity_required_label.delete()
+            self.environment_required_label.delete()
+            self.unlock_available_label.delete()
+            self.under_construction_days_label.delete()
+            self.under_construction_hours_minutes_label.delete()
         elif not self.data[UNLOCK_CONDITION_FROM_ENVIRONMENT]:
-            text = I18N_RESOURCES[self.description_keys['UNLOCK_CONDITION_FROM_ENVIRONMENT']][self.current_locale] \
-                .format(self.data[ENVIRONMENT_REQUIRED])
-            if self.description_label.text != text:
-                self.description_label.text = text
-                self.description_label.color = (*GREY_RGB, self.opacity)
-
+            self.level_required_label.delete()
+            self.previous_entity_required_label.delete()
+            self.environment_required_label.create()
+            self.unlock_available_label.delete()
+            self.under_construction_days_label.delete()
+            self.under_construction_hours_minutes_label.delete()
         elif not self.data[UNLOCK_CONDITION_FROM_PREVIOUS_TRACK]:
-            text = I18N_RESOURCES[self.description_keys['UNLOCK_CONDITION_FROM_PREVIOUS_TRACK']][self.current_locale] \
-                .format(self.entity_number - 1)
-            if self.description_label.text != text:
-                self.description_label.text = text
-                self.description_label.color = (*GREY_RGB, self.opacity)
+            self.level_required_label.delete()
+            self.previous_entity_required_label.create()
+            self.environment_required_label.delete()
+            self.unlock_available_label.delete()
+            self.under_construction_days_label.delete()
+            self.under_construction_hours_minutes_label.delete()

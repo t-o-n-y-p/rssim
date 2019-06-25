@@ -1,6 +1,9 @@
 from ui import *
 from ui.constructor import ConstructorCell
-from i18n import I18N_RESOURCES, i18n_number_category
+from ui.label.environment_cell_title_label import EnvironmentCellTitleLabel
+from ui.label.previous_environment_required_label import PreviousEnvironmentRequiredLabel
+from ui.label.environment_unlock_available_label import EnvironmentUnlockAvailableLabel
+from ui.label.no_more_environment_available_label import NoMoreEnvironmentAvailableLabel
 
 
 class EnvironmentCell(ConstructorCell):
@@ -9,57 +12,48 @@ class EnvironmentCell(ConstructorCell):
     For properties definition see base ConstructorCell class.
     """
     def __init__(self, column, row, on_buy_construction_action, on_set_money_target_action,
-                 on_reset_money_target_action):
+                 on_reset_money_target_action, parent_viewport):
         super().__init__(column, row, on_buy_construction_action, on_set_money_target_action,
-                         on_reset_money_target_action)
-        self.title_key = 'title_environment_string'
-        self.placeholder_key = 'no_more_tiers_available_placeholder_string'
-        self.description_keys = {'UNDER_CONSTRUCTION':
-                                 {'hours': 'under_construction_hours_minutes_description_string',
-                                  'days': 'under_construction_days_description_string'},
-                                 'UNLOCK_AVAILABLE': 'unlock_available_environment_description_string',
-                                 'UNLOCK_CONDITION_FROM_LEVEL':
-                                     'unlock_condition_from_level_environment_description_string',
-                                 'UNLOCK_CONDITION_FROM_PREVIOUS_ENVIRONMENT':
-                                     'unlock_condition_from_previous_environment_environment_description_string'}
+                         on_reset_money_target_action, parent_viewport)
+        self.title_label = EnvironmentCellTitleLabel(parent_viewport=self.viewport)
+        self.previous_entity_required_label = PreviousEnvironmentRequiredLabel(parent_viewport=self.viewport)
+        self.unlock_available_label = EnvironmentUnlockAvailableLabel(parent_viewport=self.viewport)
+        self.placeholder_label = NoMoreEnvironmentAvailableLabel(parent_viewport=self.viewport)
 
     def on_update_description_label(self):
         """
         Updates environment cell description based on data.
         """
         if self.data[UNDER_CONSTRUCTION]:
+            self.level_required_label.delete()
+            self.previous_entity_required_label.delete()
+            self.unlock_available_label.delete()
             if self.data[CONSTRUCTION_TIME] >= FRAMES_IN_ONE_DAY:
-                days_left = self.data[CONSTRUCTION_TIME] // FRAMES_IN_ONE_DAY
-                text = I18N_RESOURCES[self.description_keys['UNDER_CONSTRUCTION']['days']][self.current_locale][
-                    i18n_number_category(days_left, self.current_locale)
-                ].format(days_left)
+                self.under_construction_days_label.on_update_args((self.data[CONSTRUCTION_TIME] // FRAMES_IN_ONE_DAY, ))
+                self.under_construction_days_label.create()
+                self.under_construction_hours_minutes_label.delete()
             else:
-                text = I18N_RESOURCES[self.description_keys['UNDER_CONSTRUCTION']['hours']][self.current_locale]\
-                    .format(self.data[CONSTRUCTION_TIME] // FRAMES_IN_ONE_HOUR,
-                            (self.data[CONSTRUCTION_TIME] // FRAMES_IN_ONE_MINUTE) % MINUTES_IN_ONE_HOUR)
-
-            if self.description_label.text != text:
-                self.description_label.text = text
-                self.description_label.color = (*ORANGE_RGB, self.opacity)
+                self.under_construction_hours_minutes_label\
+                    .on_update_args((self.data[CONSTRUCTION_TIME] // FRAMES_IN_ONE_HOUR,
+                                     (self.data[CONSTRUCTION_TIME] // FRAMES_IN_ONE_MINUTE) % MINUTES_IN_ONE_HOUR))
+                self.under_construction_hours_minutes_label.create()
+                self.under_construction_days_label.delete()
 
         elif self.data[UNLOCK_AVAILABLE]:
-            text = I18N_RESOURCES[self.description_keys['UNLOCK_AVAILABLE']][self.current_locale]\
-                .format(self.data[PRICE]).replace(',', ' ')
-            if self.description_label.text != text:
-                self.description_label.text = text
-                self.description_label.color = (*GREEN_RGB, self.opacity)
-
+            self.level_required_label.delete()
+            self.previous_entity_required_label.delete()
+            self.unlock_available_label.create()
+            self.under_construction_days_label.delete()
+            self.under_construction_hours_minutes_label.delete()
         elif not self.data[UNLOCK_CONDITION_FROM_LEVEL]:
-            text = I18N_RESOURCES[self.description_keys['UNLOCK_CONDITION_FROM_LEVEL']][self.current_locale]\
-                .format(self.data[LEVEL_REQUIRED])
-            if self.description_label.text != text:
-                self.description_label.text = text
-                self.description_label.color = (*GREY_RGB, self.opacity)
-
+            self.level_required_label.create()
+            self.previous_entity_required_label.delete()
+            self.unlock_available_label.delete()
+            self.under_construction_days_label.delete()
+            self.under_construction_hours_minutes_label.delete()
         elif not self.data[UNLOCK_CONDITION_FROM_PREVIOUS_ENVIRONMENT]:
-            text = I18N_RESOURCES[
-                    self.description_keys['UNLOCK_CONDITION_FROM_PREVIOUS_ENVIRONMENT']
-                ][self.current_locale].format(self.entity_number - 1)
-            if self.description_label.text != text:
-                self.description_label.text = text
-                self.description_label.color = (*GREY_RGB, self.opacity)
+            self.level_required_label.delete()
+            self.previous_entity_required_label.create()
+            self.unlock_available_label.delete()
+            self.under_construction_days_label.delete()
+            self.under_construction_hours_minutes_label.delete()

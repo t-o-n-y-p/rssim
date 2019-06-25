@@ -1,14 +1,15 @@
 from logging import getLogger
 
-from pyglet.text import Label
-
-from i18n import I18N_RESOURCES
 from database import USER_DB_CURSOR
 from ui import *
 from ui.button import create_two_state_button
 from ui.button.build_construction_button import BuildConstructionButton
 from ui.button.set_money_target_button import SetMoneyTargetButton
 from ui.button.reset_money_target_button import ResetMoneyTargetButton
+from ui.label.constructor_locked_label import ConstructorLockedLabel
+from ui.label.constructor_level_placeholder_label import ConstructorLevelPlaceholderLabel
+from ui.label.under_construction_days_label import UnderConstructionDaysLabel
+from ui.label.under_construction_hours_minutes_label import UnderConstructionHoursMinutesLabel
 
 
 def cell_is_active(fn):
@@ -59,7 +60,7 @@ class ConstructorCell:
     Implements base class for constructor cell.
     """
     def __init__(self, construction_type, row, on_buy_construction_action, on_set_money_target_action,
-                 on_reset_money_target_action):
+                 on_reset_money_target_action, parent_viewport):
         """
         Button click handlers:
             on_set_money_target                 on_click handler for set money target button
@@ -141,6 +142,8 @@ class ConstructorCell:
 
         self.logger = getLogger(f'root.app.game.map.constructor.view.cell.{construction_type}.{row}')
         self.is_activated = False
+        self.parent_viewport = parent_viewport
+        self.viewport = Viewport()
         self.construction_type, self.row = construction_type, row
         self.surface, self.batches, self.groups = SURFACE, BATCHES, GROUPS
         USER_DB_CURSOR.execute('SELECT current_locale FROM i18n')
@@ -151,14 +154,14 @@ class ConstructorCell:
         self.entity_number = None
         self.data = []
         self.screen_resolution = (0, 0)
-        self.position = [0, 0]
-        self.size = [0, 0]
-        self.locked_label = None
-        self.title_key = None
+        self.locked_label = ConstructorLockedLabel(parent_viewport=self.viewport)
         self.title_label = None
-        self.description_keys = {}
-        self.description_label = None
-        self.placeholder_key = None
+        self.level_required_label = ConstructorLevelPlaceholderLabel(parent_viewport=self.viewport)
+        self.previous_entity_required_label = None
+        self.environment_required_label = None
+        self.unlock_available_label = None
+        self.under_construction_days_label = UnderConstructionDaysLabel(parent_viewport=self.viewport)
+        self.under_construction_hours_minutes_label = UnderConstructionHoursMinutesLabel(parent_viewport=self.viewport)
         self.placeholder_label = None
         self.enable_money_target_button, self.disable_money_target_button \
             = create_two_state_button(SetMoneyTargetButton(on_click_action=on_set_money_target),
@@ -181,67 +184,32 @@ class ConstructorCell:
         self.data = data
         # when data is empty, it means no more tracks/tiers are available, only placeholder is active
         if len(self.data) == 0 or self.entity_number == 0:
-            if self.placeholder_label is None:
-                self.placeholder_label = Label(I18N_RESOURCES[self.placeholder_key][self.current_locale],
-                                               font_name='Arial', font_size=int(11 * self.size[1] / 40),
-                                               color=(*GREY_RGB, self.opacity),
-                                               x=self.position[0] + self.size[0] // 2,
-                                               y=self.position[1] + self.size[1] // 2,
-                                               anchor_x='center', anchor_y='center',
-                                               batch=self.batches['ui_batch'], group=self.groups['button_text'])
-            else:
-                self.placeholder_label.text = I18N_RESOURCES[self.placeholder_key][self.current_locale]
-
-            if self.locked_label is not None:
-                self.locked_label.delete()
-                self.locked_label = None
-
-            if self.title_label is not None:
-                self.title_label.delete()
-                self.title_label = None
-
-            if self.description_label is not None:
-                self.description_label.delete()
-                self.description_label = None
-
+            self.placeholder_label.create()
+            self.locked_label.delete()
+            self.title_label.delete()
+            self.level_required_label.delete()
+            self.previous_entity_required_label.delete()
+            self.environment_required_label.delete()
+            self.unlock_available_label.delete()
+            self.under_construction_days_label.delete()
+            self.under_construction_hours_minutes_label.delete()
             for b in self.buttons:
                 b.on_deactivate()
 
         else:
-            if self.placeholder_label is not None:
-                self.placeholder_label.delete()
-                self.placeholder_label = None
-
+            self.placeholder_label.delete()
             if not self.data[UNLOCK_AVAILABLE] and not self.data[UNDER_CONSTRUCTION]:
-                if self.locked_label is None:
-                    self.locked_label = Label('', font_name='Webdings',
-                                              font_size=int(self.build_button.base_font_size_property * self.size[1]),
-                                              color=(*GREY_RGB, self.opacity),
-                                              x=self.position[0] + self.size[0] - self.size[1] // 2,
-                                              y=self.position[1] + self.size[1] // 2,
-                                              anchor_x='center', anchor_y='center',
-                                              batch=self.batches['ui_batch'], group=self.groups['button_text'])
-                else:
-                    self.locked_label.text = ''
-
-            if self.title_label is None:
-                self.title_label = Label(I18N_RESOURCES[self.title_key][self.current_locale].format(self.entity_number),
-                                         font_name='Arial', font_size=int(0.3 * self.size[1]),
-                                         color=(*WHITE_RGB, self.opacity),
-                                         x=self.position[0] + self.size[1] // 8,
-                                         y=self.position[1] + int(0.7 * self.size[1]),
-                                         anchor_x='left', anchor_y='center',
-                                         batch=self.batches['ui_batch'], group=self.groups['button_text'])
+                self.locked_label.create()
             else:
-                self.title_label.text = I18N_RESOURCES[self.title_key][self.current_locale].format(self.entity_number)
+                self.locked_label.delete()
 
-            if self.description_label is None:
-                self.description_label = Label('0', font_name='Arial', font_size=self.size[1] // 5,
-                                               color=(*GREY_RGB, self.opacity),
-                                               x=self.position[0] + self.size[1] // 8,
-                                               y=self.position[1] + int(22 * self.size[1] / 80),
-                                               anchor_x='left', anchor_y='center',
-                                               batch=self.batches['ui_batch'], group=self.groups['button_text'])
+            self.title_label.on_update_args((self.entity_number, ))
+            self.title_label.create()
+            self.unlock_available_label.on_update_args((self.data[PRICE], ))
+            self.level_required_label.on_update_args((self.data[LEVEL_REQUIRED], ))
+            self.previous_entity_required_label.on_update_args((self.entity_number - 1, ))
+            if self.environment_required_label is not None:
+                self.environment_required_label.on_update_args((self.data[ENVIRONMENT_REQUIRED], ))
 
             self.on_update_description_label()
             self.on_update_build_button_state()
@@ -254,23 +222,19 @@ class ConstructorCell:
         pass
 
     @cell_is_active
-    def on_update_state(self, data):
+    def on_update_state(self):
         """
         Updates buttons and description state.
-
-        :param data:                    one row of data from construction state matrix
         """
-        self.data = data
+        self.on_update_description_label()
         # when UNLOCK_AVAILABLE flag becomes enabled, we need to activate build button
         # (or locked label if there is no enough money) and set money target button
         if self.data[UNLOCK_AVAILABLE]:
+            self.locked_label.delete()
             self.on_update_build_button_state()
             if not self.money_target_activated and not self.enable_money_target_button.is_activated \
                     and not self.disable_money_target_button.is_activated:
                 self.on_deactivate_money_target()
-
-        if self.is_activated:
-            self.on_update_description_label()
 
     def on_update_money(self, money):
         """
@@ -287,10 +251,6 @@ class ConstructorCell:
         """
         Updates locked label and build button state based on available money.
         """
-        if self.locked_label is not None:
-            self.locked_label.delete()
-            self.locked_label = None
-
         self.build_button.opacity = self.opacity
         if self.money >= self.data[PRICE]:
             self.build_button.on_activate()
@@ -322,48 +282,40 @@ class ConstructorCell:
         """
         self.screen_resolution = screen_resolution
         bottom_bar_height = get_bottom_bar_height(self.screen_resolution)
-        self.size = (int(6.875 * bottom_bar_height), bottom_bar_height)
-        interval_between_cells = bottom_bar_height // 4
         inner_area_rect = get_inner_area_rect(self.screen_resolution)
+        self.viewport.x1 = inner_area_rect[0] \
+                           + self.construction_type * (int(6.875 * bottom_bar_height) + bottom_bar_height // 4)
+        self.viewport.x2 = self.viewport.x1 + int(6.875 * bottom_bar_height)
         if self.construction_type == TRACKS:
-            self.position = (inner_area_rect[0],
-                             inner_area_rect[1]
-                             + (CONSTRUCTOR_VIEW_TRACK_CELLS - 1 - self.row) * (self.size[1] + interval_between_cells))
+            self.viewport.y1 = inner_area_rect[1] \
+                               + (CONSTRUCTOR_VIEW_TRACK_CELLS - 1 - self.row) \
+                               * (bottom_bar_height + bottom_bar_height // 4)
         elif self.construction_type == ENVIRONMENT:
-            self.position = (inner_area_rect[0] + self.size[0] + interval_between_cells,
-                             inner_area_rect[1]
-                             + (CONSTRUCTOR_VIEW_ENVIRONMENT_CELLS - 1 - self.row)
-                             * (self.size[1] + interval_between_cells))
+            self.viewport.y1 = inner_area_rect[1] \
+                               + (CONSTRUCTOR_VIEW_ENVIRONMENT_CELLS - 1 - self.row) \
+                               * (bottom_bar_height + bottom_bar_height // 4)
 
-        if self.locked_label is not None:
-            self.locked_label.x = self.position[0] + self.size[0] - self.size[1] // 2
-            self.locked_label.y = self.position[1] + self.size[1] // 2
-            self.locked_label.font_size = int(self.build_button.base_font_size_property * self.size[1])
+        self.viewport.y2 = self.viewport.y1 + bottom_bar_height
+        self.locked_label.on_change_screen_resolution(self.screen_resolution)
+        self.title_label.on_change_screen_resolution(self.screen_resolution)
+        self.level_required_label.on_change_screen_resolution(self.screen_resolution)
+        self.previous_entity_required_label.on_change_screen_resolution(self.screen_resolution)
+        if self.environment_required_label is not None:
+            self.environment_required_label.on_change_screen_resolution(self.screen_resolution)
 
-        if self.title_label is not None:
-            self.title_label.x = self.position[0] + self.size[1] // 8
-            self.title_label.y = self.position[1] + int(0.7 * self.size[1])
-            self.title_label.font_size = int(0.3 * self.size[1])
-
-        if self.description_label is not None:
-            self.description_label.x = self.position[0] + self.size[1] // 8
-            self.description_label.y = self.position[1] + int(22 * self.size[1] / 80)
-            self.description_label.font_size = self.size[1] // 5
-
-        if self.placeholder_label is not None:
-            self.placeholder_label.x = self.position[0] + self.size[0] // 2
-            self.placeholder_label.y = self.position[1] + self.size[1] // 2
-            self.placeholder_label.font_size = int(11 * self.size[1] / 40)
-
-        self.build_button.on_size_changed((self.size[1], self.size[1]))
-        self.enable_money_target_button.on_size_changed((self.size[1], self.size[1]))
-        self.disable_money_target_button.on_size_changed((self.size[1], self.size[1]))
-        self.build_button.x_margin = self.position[0] + self.size[0] - self.size[1]
-        self.build_button.y_margin = self.position[1]
-        self.enable_money_target_button.x_margin = self.position[0] + self.size[0] - self.size[1] * 2 + 2
-        self.enable_money_target_button.y_margin = self.position[1]
-        self.disable_money_target_button.x_margin = self.position[0] + self.size[0] - self.size[1] * 2 + 2
-        self.disable_money_target_button.y_margin = self.position[1]
+        self.unlock_available_label.on_change_screen_resolution(self.screen_resolution)
+        self.under_construction_days_label.on_change_screen_resolution(self.screen_resolution)
+        self.under_construction_hours_minutes_label.on_change_screen_resolution(self.screen_resolution)
+        self.placeholder_label.on_change_screen_resolution(self.screen_resolution)
+        self.build_button.on_size_changed((bottom_bar_height, bottom_bar_height))
+        self.enable_money_target_button.on_size_changed((bottom_bar_height, bottom_bar_height))
+        self.disable_money_target_button.on_size_changed((bottom_bar_height, bottom_bar_height))
+        self.build_button.x_margin = self.viewport.x2 - bottom_bar_height
+        self.build_button.y_margin = self.viewport.y1
+        self.enable_money_target_button.x_margin = self.viewport.x2 - bottom_bar_height * 2 + 2
+        self.enable_money_target_button.y_margin = self.viewport.y1
+        self.disable_money_target_button.x_margin = self.viewport.x2 - bottom_bar_height * 2 + 2
+        self.disable_money_target_button.y_margin = self.viewport.y1
 
     def on_update_current_locale(self, new_locale):
         """
@@ -372,12 +324,16 @@ class ConstructorCell:
         :param new_locale:                      selected locale
         """
         self.current_locale = new_locale
-        if self.is_activated:
-            if len(self.data) == 0 or self.entity_number == 0:
-                self.placeholder_label.text = I18N_RESOURCES[self.placeholder_key][self.current_locale]
-            else:
-                self.title_label.text = I18N_RESOURCES[self.title_key][self.current_locale].format(self.entity_number)
-                self.on_update_description_label()
+        self.title_label.on_update_current_locale(self.current_locale)
+        self.level_required_label.on_update_current_locale(self.current_locale)
+        self.previous_entity_required_label.on_update_current_locale(self.current_locale)
+        if self.environment_required_label is not None:
+            self.environment_required_label.on_update_current_locale(self.current_locale)
+
+        self.unlock_available_label.on_update_current_locale(self.current_locale)
+        self.under_construction_days_label.on_update_current_locale(self.current_locale)
+        self.under_construction_hours_minutes_label.on_update_current_locale(self.current_locale)
+        self.placeholder_label.on_update_current_locale(self.current_locale)
 
     def on_activate_money_target(self):
         """
@@ -419,31 +375,26 @@ class ConstructorCell:
         Applies new opacity value to all sprites and labels.
         """
         if self.opacity <= 0:
-            if self.locked_label is not None:
-                self.locked_label.delete()
-                self.locked_label = None
+            self.locked_label.delete()
+            self.title_label.delete()
+            self.level_required_label.delete()
+            self.previous_entity_required_label.delete()
+            if self.environment_required_label is not None:
+                self.environment_required_label.delete()
 
-            if self.title_label is not None:
-                self.title_label.delete()
-                self.title_label = None
-
-            if self.description_label is not None:
-                self.description_label.delete()
-                self.description_label = None
-
-            if self.placeholder_label is not None:
-                self.placeholder_label.delete()
-                self.placeholder_label = None
-
+            self.unlock_available_label.delete()
+            self.under_construction_days_label.delete()
+            self.under_construction_hours_minutes_label.delete()
+            self.placeholder_label.delete()
         else:
-            if self.locked_label is not None:
-                self.locked_label.color = (*GREY_RGB, self.opacity)
+            self.locked_label.on_update_opacity(self.opacity)
+            self.title_label.on_update_opacity(self.opacity)
+            self.level_required_label.on_update_opacity(self.opacity)
+            self.previous_entity_required_label.on_update_opacity(self.opacity)
+            if self.environment_required_label is not None:
+                self.environment_required_label.on_update_opacity(self.opacity)
 
-            if self.title_label is not None:
-                self.title_label.color = (*WHITE_RGB, self.opacity)
-
-            if self.description_label is not None:
-                self.description_label.color = (*self.description_label.color[0:3], self.opacity)
-
-            if self.placeholder_label is not None:
-                self.placeholder_label.color = (*GREY_RGB, self.opacity)
+            self.unlock_available_label.on_update_opacity(self.opacity)
+            self.under_construction_days_label.on_update_opacity(self.opacity)
+            self.under_construction_hours_minutes_label.on_update_opacity(self.opacity)
+            self.placeholder_label.on_update_opacity(self.opacity)

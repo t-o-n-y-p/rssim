@@ -563,6 +563,7 @@ def _create_passenger_map_constructor(map_controller):
     controller.view = view
     view.on_assign_controller(controller)
     model.view = view
+    view.construction_state_matrix = model.construction_state_matrix
     return controller
 
 
