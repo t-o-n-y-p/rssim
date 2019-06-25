@@ -219,9 +219,8 @@ class ShopConstructorView(View):
         self.shader_sprite.draw(GL_QUADS)
         self.shader.clear()
 
-    def on_update_stage_state(self, shop_stages_state_matrix, stage_number):
-        self.shop_stages_state_matrix = shop_stages_state_matrix
-        self.shop_stage_cells[stage_number].on_update_data(self.shop_stages_state_matrix[stage_number])
+    def on_update_stage_state(self, stage_number):
+        self.shop_stage_cells[stage_number].on_update_state()
 
     @view_is_active
     def on_update_storage_money(self, storage_money):

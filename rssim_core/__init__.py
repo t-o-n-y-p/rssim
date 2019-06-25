@@ -677,4 +677,8 @@ def _create_shop_constructor(shop_controller, shop_id):
     controller.view = view
     view.on_assign_controller(controller)
     model.view = view
+    view.shop_stages_state_matrix = model.shop_stages_state_matrix
+    for i in range(1, 5):
+        view.shop_stage_cells[i].data = view.shop_stages_state_matrix[i]
+
     return controller

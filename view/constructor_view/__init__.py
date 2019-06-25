@@ -115,9 +115,7 @@ class ConstructorView(View):
         self.user_db_cursor.execute('''SELECT feature_unlocked_notification_enabled, 
                                        construction_completed_notification_enabled FROM notification_settings''')
         self.feature_unlocked_notification_enabled, self.construction_completed_notification_enabled \
-            = self.user_db_cursor.fetchone()
-        self.feature_unlocked_notification_enabled = bool(self.feature_unlocked_notification_enabled)
-        self.construction_completed_notification_enabled = bool(self.construction_completed_notification_enabled)
+            = tuple(map(bool, self.user_db_cursor.fetchone()))
         self.user_db_cursor.execute('''SELECT money_target_activated FROM constructor WHERE map_id = ?''',
                                     (self.map_id, ))
         self.money_target_activated = bool(self.user_db_cursor.fetchone()[0])

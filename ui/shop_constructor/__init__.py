@@ -68,13 +68,7 @@ class ShopStageCell:
         self.opacity = 0
 
     @cell_is_active
-    def on_update_data(self, data):
-        """
-        Fully updates data inside the cell.
-
-        :param data:                    one row of data from construction state matrix
-        """
-        self.data = data
+    def on_update_state(self):
         if self.data[UNDER_CONSTRUCTION]:
             self.locked_label.delete()
             self.level_placeholder_label.delete()
