@@ -17,6 +17,7 @@ from ui.button.en_locale_button import ENLocaleButton
 from ui.button.ru_locale_button import RULocaleButton
 from textures import FLAG_RU, FLAG_US
 from ui.label.app_title_label import AppTitleLabel
+from ui.shader_sprite.app_view_shader_sprite import AppViewShaderSprite
 
 
 class AppView(View):
@@ -131,7 +132,7 @@ class AppView(View):
         self.on_mouse_press_handlers.append(self.handle_mouse_press)
         self.on_mouse_release_handlers.append(self.handle_mouse_release)
         self.on_mouse_drag_handlers.append(self.handle_mouse_drag)
-        self.shader = from_files_names('shaders/shader.vert', 'shaders/app_view/shader.frag')
+        self.shader_sprite = AppViewShaderSprite(view=self)
         self.on_init_graphics()
 
     def on_update_opacity(self, new_opacity):
@@ -156,7 +157,6 @@ class AppView(View):
             self.flag_ru_sprite.delete()
             self.flag_ru_sprite = None
             self.shader_sprite.delete()
-            self.shader_sprite = None
         else:
             self.title_label.on_update_opacity(self.opacity)
             self.flag_us_sprite.opacity = self.opacity
@@ -168,11 +168,7 @@ class AppView(View):
         Activates the view and creates all sprites and labels.
         """
         self.is_activated = True
-        if self.shader_sprite is None:
-            self.shader_sprite\
-                = self.batches['main_frame'].add(4, GL_QUADS, self.groups['main_frame'],
-                                                 ('v2f/static', (-1.0, -1.0, -1.0, 1.0, 1.0, 1.0, 1.0, -1.0)))
-
+        self.shader_sprite.create()
         self.title_label.create()
         if self.flag_us_sprite is None:
             self.flag_us_sprite = Sprite(FLAG_US, x=self.top_bar_height // 2,
@@ -214,6 +210,7 @@ class AppView(View):
         self.viewport.x2, self.viewport.y2 = self.screen_resolution
         self.surface.set_size(screen_resolution[0], screen_resolution[1])
         self.title_label.on_change_screen_resolution(self.screen_resolution)
+        self.shader_sprite.on_change_screen_resolution()
         if self.is_activated:
             self.flag_us_sprite.position = (self.top_bar_height // 2,
                                             self.screen_resolution[1] - self.top_bar_height // 2)
@@ -309,17 +306,11 @@ class AppView(View):
                      self.game_window_position[2] - self.game_window_position[0],
                      self.game_window_position[3] - self.game_window_position[1], SWP_NOREDRAW)
 
-    @shader_sprite_exists
     def on_apply_shaders_and_draw_vertices(self):
         """
         Activates the shader, initializes all shader uniforms, draws shader sprite and deactivates the shader.
         """
-        self.shader.use()
-        self.shader.uniforms.screen_resolution = self.screen_resolution
-        self.shader.uniforms.top_bar_height = self.top_bar_height
-        self.shader.uniforms.opacity = self.opacity
-        self.shader_sprite.draw(GL_QUADS)
-        self.shader.clear()
+        self.shader_sprite.draw()
 
     def on_init_graphics(self):
         """
