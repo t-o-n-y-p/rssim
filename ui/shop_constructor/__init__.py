@@ -189,8 +189,8 @@ class ShopStageCell:
         self.price_label.on_change_screen_resolution(self.screen_resolution)
         self.build_button.on_size_changed((get_top_bar_height(self.screen_resolution),
                                            get_top_bar_height(self.screen_resolution)))
-        self.build_button.x_margin = self.viewport.x1 + 5 * get_top_bar_height(self.screen_resolution)
-        self.build_button.y_margin = self.viewport.y1 + 5 * get_top_bar_height(self.screen_resolution) // 4
+        self.build_button.x_margin = self.viewport.x2 - 2 * get_top_bar_height(self.screen_resolution)
+        self.build_button.y_margin = self.viewport.y1 + get_top_bar_height(self.screen_resolution)
 
     def on_update_current_locale(self, new_locale):
         """

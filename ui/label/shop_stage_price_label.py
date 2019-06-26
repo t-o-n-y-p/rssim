@@ -21,7 +21,7 @@ class ShopStagePriceLabel(Label):
 
     def get_y(self):
         top_bar_height = get_top_bar_height(self.screen_resolution)
-        return self.parent_viewport.y1 + top_bar_height + 3 * top_bar_height // 4
+        return self.parent_viewport.y1 + 3 * top_bar_height // 2
 
     def get_font_size(self):
         bottom_bar_height = get_bottom_bar_height(self.screen_resolution)
