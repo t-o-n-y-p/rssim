@@ -164,7 +164,6 @@ class ShopStageCell:
         Deactivates the cell and all buttons, clears the data.
         """
         self.is_activated = False
-        self.data = []
         for b in self.buttons:
             b.on_deactivate()
 
