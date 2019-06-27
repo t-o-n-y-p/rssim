@@ -4,9 +4,9 @@ from ui.label import Label
 from ui import *
 
 
-class ShopStagePriceLabel(Label):
+class ShopStageHourlyProfitValueLabel(Label):
     def __init__(self, parent_viewport):
-        super().__init__(logger=getLogger('root.shop_stage_price_label'), parent_viewport=parent_viewport)
+        super().__init__(logger=getLogger('root.shop_stage_hourly_profit_value_label'), parent_viewport=parent_viewport)
         self.text = '{0}  ¤'
         self.arguments = (0, )
         self.font_name = 'Arial'
@@ -17,11 +17,11 @@ class ShopStagePriceLabel(Label):
 
     def get_x(self):
         top_bar_height = get_top_bar_height(self.screen_resolution)
-        return self.parent_viewport.x1 + top_bar_height // 2
+        return self.parent_viewport.x2 - top_bar_height * 2
 
     def get_y(self):
         top_bar_height = get_top_bar_height(self.screen_resolution)
-        return self.parent_viewport.y1 + 13 * top_bar_height // 8
+        return self.parent_viewport.y2 - 13 * top_bar_height // 8
 
     def get_font_size(self):
         bottom_bar_height = get_bottom_bar_height(self.screen_resolution)
@@ -31,8 +31,4 @@ class ShopStagePriceLabel(Label):
         return None
 
     def get_formatted_text(self):
-        money_str = self.text.format(*self.arguments)
-        if len(money_str) < 7:
-            return money_str
-        else:
-            return ' '.join((money_str[0:len(money_str) - 6], money_str[len(money_str) - 6:len(money_str)]))
+        return self.text.format(*self.arguments)

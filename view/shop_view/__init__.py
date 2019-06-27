@@ -24,6 +24,7 @@ class ShopView(View):
         self.shop_view_shader_bottom_limit = 0.0
         self.shop_view_shader_upper_limit = 0.0
         self.title_label = ShopTitleLabel(parent_viewport=self.viewport)
+        self.title_label.on_update_args((self.shop_id + 1, ))
         self.close_shop_details_button = CloseShopDetailsButton(on_click_action=on_close_shop_details)
         self.buttons = [self.close_shop_details_button, ]
         self.on_init_graphics()
