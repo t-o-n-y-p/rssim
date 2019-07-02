@@ -7,7 +7,7 @@ from ui.shader_sprite import ShaderSprite
 
 class AppViewShaderSprite(ShaderSprite):
     def __init__(self, view):
-        super().__init__(logger=getLogger('root.app.view.ahader_sprite'), view=view)
+        super().__init__(logger=getLogger('root.app.view.shader_sprite'), view=view)
         self.shader = from_files_names('shaders/shader.vert', 'shaders/app_view/shader.frag')
 
     def get_bottom_edge(self):

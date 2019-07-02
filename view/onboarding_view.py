@@ -1,13 +1,12 @@
 from logging import getLogger
 
-from pyglet.gl import GL_QUADS
 from pyglet.text import Label
-from pyshaders import from_files_names
 
 from view import *
 from ui.page_control.onboarding_page_control import OnboardingPageControl
 from ui.button.skip_onboarding_button import SkipOnboardingButton
 from i18n import I18N_RESOURCES
+from ui.shader_sprite.onboarding_view_shader_sprite import OnboardingViewShaderSprite
 
 
 class OnboardingView(View):
@@ -36,7 +35,7 @@ class OnboardingView(View):
         self.onboarding_page_control = OnboardingPageControl()
         self.skip_onboarding_button = SkipOnboardingButton(on_click_action=on_skip_onboarding)
         self.buttons = [*self.onboarding_page_control.buttons, self.skip_onboarding_button]
-        self.shader = from_files_names('shaders/shader.vert', 'shaders/onboarding_view/shader.frag')
+        self.shader_sprite = OnboardingViewShaderSprite(view=self)
         self.skip_onboarding_label = None
         self.on_init_graphics()
 
@@ -64,7 +63,6 @@ class OnboardingView(View):
         """
         if self.opacity <= 0:
             self.shader_sprite.delete()
-            self.shader_sprite = None
             self.skip_onboarding_label.delete()
             self.skip_onboarding_label = None
         else:
@@ -76,11 +74,7 @@ class OnboardingView(View):
         Activates the view and creates sprites and labels.
         """
         self.is_activated = True
-        if self.shader_sprite is None:
-            self.shader_sprite\
-                = self.batches['main_frame'].add(4, GL_QUADS, self.groups['main_frame'],
-                                                 ('v2f/static', (-1.0, -1.0, -1.0, 1.0, 1.0, 1.0, 1.0, -1.0)))
-
+        self.shader_sprite.create()
         if self.skip_onboarding_label is None:
             self.skip_onboarding_label = Label(I18N_RESOURCES['skip_onboarding_string'][self.current_locale],
                                                font_name='Arial', font_size=self.bottom_bar_height // 5,
@@ -112,6 +106,7 @@ class OnboardingView(View):
         :param screen_resolution:       new screen resolution
         """
         self.on_recalculate_ui_properties(screen_resolution)
+        self.shader_sprite.on_change_screen_resolution(self.screen_resolution)
         self.onboarding_page_control.on_change_screen_resolution(screen_resolution)
         self.skip_onboarding_button.on_size_changed((self.bottom_bar_height, self.bottom_bar_height))
         self.skip_onboarding_button.x_margin = self.screen_resolution[0] - self.bottom_bar_height
@@ -139,26 +134,5 @@ class OnboardingView(View):
         """
         Activates the shader, initializes all shader uniforms, draws shader sprite and deactivates the shader.
         """
-        self.shader.use()
-        self.shader.uniforms.onboarding_opacity = self.opacity
-        is_button_activated = []
-        button_x = []
-        button_y = []
-        button_w = []
-        button_h = []
-        for b in self.buttons:
-            is_button_activated.append(int(b.is_activated))
-            button_x.append(b.position[0])
-            button_y.append(b.position[1])
-            button_w.append(b.button_size[0])
-            button_h.append(b.button_size[1])
-
-        self.shader.uniforms.is_button_activated = is_button_activated
-        self.shader.uniforms.button_x = button_x
-        self.shader.uniforms.button_y = button_y
-        self.shader.uniforms.button_w = button_w
-        self.shader.uniforms.button_h = button_h
-        self.shader.uniforms.number_of_buttons = len(self.buttons)
-        self.shader_sprite.draw(GL_QUADS)
-        self.shader.clear()
+        self.shader_sprite.draw()
         self.onboarding_page_control.on_apply_shaders_and_draw_vertices()

@@ -1,5 +1,4 @@
 from pyglet.text import Label
-from pyglet.gl import GL_QUADS
 
 from i18n import I18N_RESOURCES
 from ui import *
@@ -98,7 +97,6 @@ class PageControl:
         self.previous_page_button = PreviousPageButton(on_click_action=on_navigate_to_previous_page)
         self.next_page_button = NextPageButton(on_click_action=on_navigate_to_next_page)
         self.buttons = [self.previous_page_button, self.next_page_button]
-        self.shader = None
         self.shader_sprite = None
         self.opacity = 0
 
@@ -108,10 +106,8 @@ class PageControl:
         """
         self.is_activated = True
         self.current_page = 0
-        if self.shader_sprite is None:
-            self.shader_sprite\
-                = self.batches['main_frame'].add(4, GL_QUADS, self.groups['main_frame'],
-                                                 ('v2f/static', (-1.0, -1.0, -1.0, 1.0, 1.0, 1.0, 1.0, -1.0)))
+        if self.shader_sprite is not None:
+            self.shader_sprite.create()
 
         if self.current_page_label is None:
             text = I18N_RESOURCES[self.current_page_label_key][self.current_locale]\
@@ -145,6 +141,9 @@ class PageControl:
         :param screen_resolution:       new screen resolution
         """
         self.screen_resolution = screen_resolution
+        if self.shader_sprite is not None:
+            self.shader_sprite.on_change_screen_resolution(self.screen_resolution)
+
         bottom_bar_height = int(72 / 1280 * self.screen_resolution[0])
         self.size = (int(6.875 * bottom_bar_height) * 2 + bottom_bar_height // 4, 19 * bottom_bar_height // 4)
         self.position = ((self.screen_resolution[0] - self.size[0]) // 2,
@@ -211,8 +210,9 @@ class PageControl:
         Applies new opacity value to all sprites and labels.
         """
         if self.opacity <= 0:
-            self.shader_sprite.delete()
-            self.shader_sprite = None
+            if self.shader_sprite is not None:
+                self.shader_sprite.delete()
+
             self.current_page_label.delete()
             self.current_page_label = None
         else:

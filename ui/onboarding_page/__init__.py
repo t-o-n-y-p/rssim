@@ -1,5 +1,4 @@
 from pyglet.text import Label
-from pyglet.gl import GL_QUADS
 
 from ui import *
 from database import USER_DB_CURSOR
@@ -18,8 +17,6 @@ class OnboardingPage:
         self.current_locale = USER_DB_CURSOR.fetchone()[0]
         self.help_text_key = None
         self.help_label = None
-        self.shader = None
-        self.shader_sprite = None
         self.opacity = 0
 
     def on_activate(self):
@@ -37,11 +34,6 @@ class OnboardingPage:
                                     align='center', multiline=True,
                                     batch=self.batches['ui_batch'], group=self.groups['button_text'])
 
-        if self.shader_sprite is None:
-            self.shader_sprite\
-                = self.batches['main_frame'].add(4, GL_QUADS, self.groups['main_frame'],
-                                                 ('v2f/static', (-1.0, -1.0, -1.0, 1.0, 1.0, 1.0, 1.0, -1.0)))
-
     def on_deactivate(self, instant=False):
         """
         Deactivates the page. Removes label and frame from the graphics memory.
@@ -51,8 +43,6 @@ class OnboardingPage:
         self.is_activated = False
         if instant:
             self.opacity = 0
-            self.shader_sprite.delete()
-            self.shader_sprite = None
             self.help_label.delete()
             self.help_label = None
 
@@ -99,8 +89,6 @@ class OnboardingPage:
         Applies new opacity value to all sprites and labels.
         """
         if self.opacity <= 0:
-            self.shader_sprite.delete()
-            self.shader_sprite = None
             self.help_label.delete()
             self.help_label = None
         else:

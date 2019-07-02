@@ -1,12 +1,10 @@
 from logging import getLogger
 
-from pyglet.gl import GL_QUADS
-from pyshaders import from_files_names
-
 from view import *
 from ui.button.create_station_button import CreateStationButton
 from ui.button.back_to_the_station_button import BackToTheStationButton
 from ui.button.open_license_button import OpenLicenseButton
+from ui.shader_sprite.main_menu_view_shader_sprite import MainMenuViewShaderSprite
 
 
 class MainMenuView(View):
@@ -67,7 +65,7 @@ class MainMenuView(View):
         self.back_to_the_station_button = BackToTheStationButton(on_click_action=on_back_to_the_station)
         self.open_license_button = OpenLicenseButton(on_click_action=on_open_license)
         self.buttons = [self.create_station_button, self.back_to_the_station_button, self.open_license_button]
-        self.shader = from_files_names('shaders/shader.vert', 'shaders/main_menu_view/shader.frag')
+        self.shader_sprite = MainMenuViewShaderSprite(view=self)
         self.on_init_graphics()
 
     def on_init_graphics(self):
@@ -93,7 +91,6 @@ class MainMenuView(View):
         """
         if self.opacity <= 0:
             self.shader_sprite.delete()
-            self.shader_sprite = None
 
     @view_is_not_active
     def on_activate(self):
@@ -101,11 +98,7 @@ class MainMenuView(View):
         Activates the view and creates sprites and labels.
         """
         self.is_activated = True
-        if self.shader_sprite is None:
-            self.shader_sprite\
-                = self.batches['main_frame'].add(4, GL_QUADS, self.groups['main_frame'],
-                                                 ('v2f/static', (-1.0, -1.0, -1.0, 1.0, 1.0, 1.0, 1.0, -1.0)))
-
+        self.shader_sprite.create()
         self.user_db_cursor.execute('SELECT onboarding_required FROM game_progress')
         onboarding_required = bool(self.user_db_cursor.fetchone()[0])
         if onboarding_required:
@@ -134,6 +127,7 @@ class MainMenuView(View):
         :param screen_resolution:       new screen resolution
         """
         self.on_recalculate_ui_properties(screen_resolution)
+        self.shader_sprite.on_change_screen_resolution(self.screen_resolution)
         medium_line = self.screen_resolution[1] // 2 + int(72 / 1280 * self.screen_resolution[0]) // 4
         self.open_license_button.on_size_changed((self.bottom_bar_height, self.bottom_bar_height))
         self.create_station_button.on_size_changed((self.bottom_bar_height * 7, self.bottom_bar_height))
@@ -160,25 +154,4 @@ class MainMenuView(View):
         """
         Activates the shader, initializes all shader uniforms, draws shader sprite and deactivates the shader.
         """
-        self.shader.use()
-        self.shader.uniforms.main_menu_opacity = self.opacity
-        is_button_activated = []
-        button_x = []
-        button_y = []
-        button_w = []
-        button_h = []
-        for b in self.buttons:
-            is_button_activated.append(int(b.is_activated))
-            button_x.append(b.position[0])
-            button_y.append(b.position[1])
-            button_w.append(b.button_size[0])
-            button_h.append(b.button_size[1])
-
-        self.shader.uniforms.is_button_activated = is_button_activated
-        self.shader.uniforms.button_x = button_x
-        self.shader.uniforms.button_y = button_y
-        self.shader.uniforms.button_w = button_w
-        self.shader.uniforms.button_h = button_h
-        self.shader.uniforms.number_of_buttons = len(self.buttons)
-        self.shader_sprite.draw(GL_QUADS)
-        self.shader.clear()
+        self.shader_sprite.draw()

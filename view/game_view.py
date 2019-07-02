@@ -1,8 +1,6 @@
 from logging import getLogger
 
 from pyglet.resource import add_font
-from pyglet.gl import GL_QUADS
-from pyshaders import from_files_names
 
 from view import *
 from ui.button import create_two_state_button
@@ -17,6 +15,7 @@ from ui.label.main_clock_label_24h import MainClockLabel24H
 from ui.label.main_clock_label_12h import MainClockLabel12H
 from ui.rectangle_progress_bar.exp_progress_bar import ExpProgressBar
 from ui.rectangle_progress_bar.money_progress_bar import MoneyProgressBar
+from ui.shader_sprite.game_view_shader_sprite import GameViewShaderSprite
 
 
 class GameView(View):
@@ -118,8 +117,7 @@ class GameView(View):
         self.enough_money_notification_enabled = bool(self.enough_money_notification_enabled)
         self.user_db_cursor.execute('SELECT clock_24h FROM i18n')
         self.clock_24h_enabled = bool(self.user_db_cursor.fetchone()[0])
-        self.shader = from_files_names('shaders/shader.vert', 'shaders/game_view/shader.frag')
-        self.game_view_shader_upper_limit = 0.0
+        self.shader_sprite = GameViewShaderSprite(view=self)
         self.on_init_graphics()
 
     def on_update_opacity(self, new_opacity):
@@ -141,7 +139,6 @@ class GameView(View):
         """
         if self.opacity <= 0:
             self.shader_sprite.delete()
-            self.shader_sprite = None
             self.main_clock_label_24h.delete()
             self.main_clock_label_12h.delete()
         else:
@@ -154,12 +151,7 @@ class GameView(View):
         Activates the view and creates all sprites and labels.
         """
         self.is_activated = True
-        if self.shader_sprite is None:
-            self.shader_sprite\
-                = self.batches['main_frame'].add(4, GL_QUADS, self.groups['main_frame'],
-                                                 ('v2f/static', (-1.0, -1.0, -1.0, self.game_view_shader_upper_limit,
-                                                                 1.0, self.game_view_shader_upper_limit, 1.0, -1.0)))
-
+        self.shader_sprite.create()
         if self.clock_24h_enabled:
             self.main_clock_label_24h.create()
         else:
@@ -195,13 +187,9 @@ class GameView(View):
         self.viewport.x2, self.viewport.y2 = self.screen_resolution
         self.exp_progress_bar.on_change_screen_resolution(self.screen_resolution)
         self.money_progress_bar.on_change_screen_resolution(self.screen_resolution)
-        self.game_view_shader_upper_limit = self.bottom_bar_height / self.screen_resolution[1] * 2 - 1
+        self.shader_sprite.on_change_screen_resolution(self.screen_resolution)
         self.main_clock_label_24h.on_change_screen_resolution(self.screen_resolution)
         self.main_clock_label_12h.on_change_screen_resolution(self.screen_resolution)
-        if self.is_activated:
-            self.shader_sprite.vertices = (-1.0, -1.0, -1.0, self.game_view_shader_upper_limit,
-                                           1.0, self.game_view_shader_upper_limit, 1.0, -1.0)
-
         self.open_settings_button.x_margin = self.screen_resolution[0] - self.bottom_bar_height
         self.open_settings_button.y_margin = 0
         self.open_settings_button.on_size_changed((self.bottom_bar_height, self.bottom_bar_height))
@@ -341,12 +329,7 @@ class GameView(View):
         """
         Activates the shader, initializes all shader uniforms, draws shader sprite and deactivates the shader.
         """
-        self.shader.use()
-        self.shader.uniforms.screen_resolution = self.screen_resolution
-        self.shader.uniforms.bottom_bar_height = self.bottom_bar_height
-        self.shader.uniforms.game_frame_opacity = self.opacity
-        self.shader_sprite.draw(GL_QUADS)
-        self.shader.clear()
+        self.shader_sprite.draw()
 
     def on_init_graphics(self):
         """

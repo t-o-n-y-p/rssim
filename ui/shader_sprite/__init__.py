@@ -29,6 +29,7 @@ class ShaderSprite:
         self.top_edge = 1.0
         self.batch = BATCHES['main_frame']
         self.group = GROUPS['main_frame']
+        self.screen_resolution = (1280, 720)
 
     def get_bottom_edge(self):
         pass
@@ -57,7 +58,8 @@ class ShaderSprite:
         self.sprite.draw(GL_QUADS)
         self.shader.clear()
 
-    def on_change_screen_resolution(self):
+    def on_change_screen_resolution(self, screen_resolution):
+        self.screen_resolution = screen_resolution
         self.bottom_edge = self.get_bottom_edge()
         self.top_edge = self.get_top_edge()
         if self.sprite is not None:

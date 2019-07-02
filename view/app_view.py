@@ -1,11 +1,9 @@
 from logging import getLogger
 
 from pyglet.sprite import Sprite
-from pyglet.gl import GL_QUADS
 from win32api import GetCursorPos
 from win32gui import GetActiveWindow, GetWindowRect, SetWindowPos
 from win32con import HWND_TOP, SWP_NOREDRAW
-from pyshaders import from_files_names
 
 from view import *
 from ui.button import create_two_state_button
@@ -210,7 +208,7 @@ class AppView(View):
         self.viewport.x2, self.viewport.y2 = self.screen_resolution
         self.surface.set_size(screen_resolution[0], screen_resolution[1])
         self.title_label.on_change_screen_resolution(self.screen_resolution)
-        self.shader_sprite.on_change_screen_resolution()
+        self.shader_sprite.on_change_screen_resolution(self.screen_resolution)
         if self.is_activated:
             self.flag_us_sprite.position = (self.top_bar_height // 2,
                                             self.screen_resolution[1] - self.top_bar_height // 2)
