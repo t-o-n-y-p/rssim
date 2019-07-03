@@ -1,8 +1,5 @@
 from logging import getLogger
 
-from pyglet.gl import GL_QUADS
-from pyshaders import from_files_names
-
 from view import *
 from ui import Viewport
 from ui.constructor.track_cell import TrackCell
@@ -14,6 +11,7 @@ from notifications.environment_construction_completed_notification import Enviro
 from notifications.track_construction_completed_notification import TrackConstructionCompletedNotification
 from ui.label.no_more_tracks_available_label import NoMoreTracksAvailableLabel
 from ui.label.no_more_environment_available_label import NoMoreEnvironmentAvailableLabel
+from ui.shader_sprite.constructor_view_shader_sprite import ConstructorViewShaderSprite
 
 
 class ConstructorView(View):
@@ -129,9 +127,7 @@ class ConstructorView(View):
         self.user_db_cursor.execute('''SELECT money_target_cell_position FROM constructor WHERE map_id = ?''',
                                     (self.map_id, ))
         self.money_target_cell_position = list(map(int, self.user_db_cursor.fetchone()[0].split(',')))
-        self.shader = from_files_names('shaders/shader.vert', 'shaders/constructor_view/shader.frag')
-        self.constructor_view_shader_bottom_limit = 0.0
-        self.constructor_view_shader_upper_limit = 0.0
+        self.shader_sprite = ConstructorViewShaderSprite(view=self)
         self.no_more_tracks_available_label \
             = NoMoreTracksAvailableLabel(parent_viewport=self.no_more_tracks_available_placeholder_viewport)
         self.no_more_tiers_available_label \
@@ -144,14 +140,7 @@ class ConstructorView(View):
         Activates the view and creates sprites and labels.
         """
         self.is_activated = True
-        if self.shader_sprite is None:
-            self.shader_sprite \
-                = self.batches['main_frame'].add(4, GL_QUADS, self.groups['main_frame'],
-                                                 ('v2f/static', (-1.0, self.constructor_view_shader_bottom_limit,
-                                                                 -1.0, self.constructor_view_shader_upper_limit,
-                                                                 1.0, self.constructor_view_shader_upper_limit,
-                                                                 1.0, self.constructor_view_shader_bottom_limit)))
-
+        self.shader_sprite.create()
         if len(self.construction_state_matrix[TRACKS]) < CONSTRUCTOR_VIEW_TRACK_CELLS:
             self.no_more_tracks_available_label.create()
 
@@ -246,7 +235,6 @@ class ConstructorView(View):
         """
         if self.opacity <= 0:
             self.shader_sprite.delete()
-            self.shader_sprite = None
             self.no_more_tracks_available_label.delete()
             self.no_more_tiers_available_label.delete()
         else:
@@ -260,14 +248,7 @@ class ConstructorView(View):
         :param screen_resolution:       new screen resolution
         """
         self.on_recalculate_ui_properties(screen_resolution)
-        self.constructor_view_shader_bottom_limit = self.bottom_bar_height / self.screen_resolution[1] * 2 - 1
-        self.constructor_view_shader_upper_limit = 1 - self.top_bar_height / self.screen_resolution[1] * 2
-        if self.is_activated:
-            self.shader_sprite.vertices = (-1.0, self.constructor_view_shader_bottom_limit,
-                                           -1.0, self.constructor_view_shader_upper_limit,
-                                           1.0, self.constructor_view_shader_upper_limit,
-                                           1.0, self.constructor_view_shader_bottom_limit)
-
+        self.shader_sprite.on_change_screen_resolution(self.screen_resolution)
         for j in range(CONSTRUCTOR_VIEW_TRACK_CELLS):
             self.constructor_cells[TRACKS][j].on_change_screen_resolution(screen_resolution)
 
@@ -501,56 +482,7 @@ class ConstructorView(View):
         """
         Activates the shader, initializes all shader uniforms, draws shader sprite and deactivates the shader.
         """
-        self.shader.use()
-        self.shader.uniforms.screen_resolution = self.screen_resolution
-        self.shader.uniforms.constructor_opacity = self.opacity
-        cell_x = []
-        cell_y = []
-        cell_w = []
-        cell_h = []
-        cell_unlock_available = []
-        cell_data_length = []
-        for j in range(CONSTRUCTOR_VIEW_TRACK_CELLS):
-            cell_x.append(self.constructor_cells[TRACKS][j].viewport.x1)
-            cell_y.append(self.constructor_cells[TRACKS][j].viewport.y1)
-            cell_w.append(self.constructor_cells[TRACKS][j].viewport.x2 - self.constructor_cells[TRACKS][j].viewport.x1)
-            cell_h.append(self.constructor_cells[TRACKS][j].viewport.y2 - self.constructor_cells[TRACKS][j].viewport.y1)
-            if self.constructor_cells[TRACKS][j].data is not None:
-                if len(self.constructor_cells[TRACKS][j].data) > 0:
-                    cell_unlock_available.append(int(self.constructor_cells[TRACKS][j].data[UNLOCK_AVAILABLE]))
-                else:
-                    cell_unlock_available.append(False)
-            else:
-                cell_unlock_available.append(False)
-
-            cell_data_length.append(len(self.constructor_cells[TRACKS][j].data))
-
-        for j in range(CONSTRUCTOR_VIEW_ENVIRONMENT_CELLS):
-            cell_x.append(self.constructor_cells[ENVIRONMENT][j].viewport.x1)
-            cell_y.append(self.constructor_cells[ENVIRONMENT][j].viewport.y1)
-            cell_w.append(self.constructor_cells[ENVIRONMENT][j].viewport.x2
-                          - self.constructor_cells[ENVIRONMENT][j].viewport.x1)
-            cell_h.append(self.constructor_cells[ENVIRONMENT][j].viewport.y2
-                          - self.constructor_cells[ENVIRONMENT][j].viewport.y1)
-            if self.constructor_cells[ENVIRONMENT][j].data is not None:
-                if len(self.constructor_cells[ENVIRONMENT][j].data) > 0:
-                    cell_unlock_available.append(int(self.constructor_cells[ENVIRONMENT][j].data[UNLOCK_AVAILABLE]))
-                else:
-                    cell_unlock_available.append(False)
-            else:
-                cell_unlock_available.append(False)
-
-            cell_data_length.append(len(self.constructor_cells[ENVIRONMENT][j].data))
-
-        self.shader.uniforms.cell_x = cell_x
-        self.shader.uniforms.cell_y = cell_y
-        self.shader.uniforms.cell_w = cell_w
-        self.shader.uniforms.cell_h = cell_h
-        self.shader.uniforms.cell_unlock_available = cell_unlock_available
-        self.shader.uniforms.number_of_cells = CONSTRUCTOR_VIEW_TRACK_CELLS + CONSTRUCTOR_VIEW_ENVIRONMENT_CELLS
-        self.shader.uniforms.data_length = cell_data_length
-        self.shader_sprite.draw(GL_QUADS)
-        self.shader.clear()
+        self.shader_sprite.draw()
 
     def on_init_graphics(self):
         """

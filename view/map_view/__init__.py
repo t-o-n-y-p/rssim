@@ -3,8 +3,6 @@ from time import perf_counter
 from math import ceil
 
 from pyglet.sprite import Sprite
-from pyglet.gl import GL_QUADS
-from pyshaders import from_files_names
 
 from view import *
 from ui.button import create_two_state_button
@@ -13,6 +11,7 @@ from ui.button.zoom_out_button import ZoomOutButton
 from ui.button.open_schedule_button import OpenScheduleButton
 from ui.button.open_constructor_button import OpenConstructorButton
 from ui.button.open_shop_details_button import OpenShopDetailsButton
+from ui.shader_sprite.map_view_shader_sprite import MapViewShaderSprite
 from textures import get_full_map, get_full_map_e
 
 
@@ -191,9 +190,7 @@ class MapView(View):
         self.on_mouse_press_handlers.append(self.handle_mouse_press)
         self.on_mouse_release_handlers.append(self.handle_mouse_release)
         self.on_mouse_drag_handlers.append(self.handle_mouse_drag)
-        self.shader = from_files_names('shaders/shader.vert', 'shaders/map_view/shader.frag')
-        self.map_view_shader_bottom_limit = 0.0
-        self.map_view_shader_upper_limit = 0.0
+        self.shader_sprite = MapViewShaderSprite(view=self)
         self.on_init_graphics()
 
     def on_update(self):
@@ -236,7 +233,6 @@ class MapView(View):
         """
         if self.opacity <= 0:
             self.shader_sprite.delete()
-            self.shader_sprite = None
             self.main_map_sprite.delete()
             self.main_map_sprite = None
             self.environment_sprite.delete()
@@ -288,13 +284,7 @@ class MapView(View):
         self.on_init_graphics()
         self.is_activated = True
         self.map_move_mode_available = True
-        if self.shader_sprite is None:
-            self.shader_sprite \
-                = self.batches['main_frame'].add(4, GL_QUADS, self.groups['main_frame'],
-                                                 ('v2f/static', (-1.0, self.map_view_shader_bottom_limit,
-                                                                 -1.0, self.map_view_shader_upper_limit,
-                                                                 1.0, self.map_view_shader_upper_limit,
-                                                                 1.0, self.map_view_shader_bottom_limit)))
+        self.shader_sprite.create()
         self.on_change_map_offset()
         if self.main_map_sprite is None:
             self.main_map_sprite = Sprite(self.main_map, x=self.base_offset[0] + self.map_offset[0],
@@ -462,14 +452,7 @@ class MapView(View):
 
         self.check_base_offset_limits()
         self.controller.on_save_and_commit_last_known_base_offset(self.base_offset)
-        self.map_view_shader_bottom_limit = self.bottom_bar_height / self.screen_resolution[1] * 2 - 1
-        self.map_view_shader_upper_limit = 1 - self.top_bar_height / self.screen_resolution[1] * 2
-        if self.is_activated:
-            self.shader_sprite.vertices = (-1.0, self.map_view_shader_bottom_limit,
-                                           -1.0, self.map_view_shader_upper_limit,
-                                           1.0, self.map_view_shader_upper_limit,
-                                           1.0, self.map_view_shader_bottom_limit)
-
+        self.shader_sprite.on_change_screen_resolution(self.screen_resolution)
         self.mini_map_width = self.screen_resolution[0] // 4
         self.mini_map_height = round(self.mini_map_width / 2)
         self.mini_map_position = (self.screen_resolution[0] - self.mini_map_width - 8,
@@ -621,27 +604,7 @@ class MapView(View):
         """
         Activates the shader, initializes all shader uniforms, draws shader sprite and deactivates the shader.
         """
-        self.shader.use()
-        self.shader.uniforms.map_opacity = self.opacity
-        self.shader.uniforms.is_button_activated \
-            = [int(self.zoom_in_button.is_activated or self.zoom_out_button.is_activated), ]
-        self.shader.uniforms.button_x \
-            = [self.zoom_in_button.position[0], ]
-        self.shader.uniforms.button_y \
-            = [self.zoom_in_button.position[1], ]
-        self.shader.uniforms.button_w \
-            = [self.zoom_in_button.button_size[0], ]
-        self.shader.uniforms.button_h \
-            = [self.zoom_in_button.button_size[1], ]
-        self.shader.uniforms.number_of_buttons = 1
-        self.shader.uniforms.mini_map_opacity = self.mini_map_opacity
-        self.shader.uniforms.mini_map_position_size = (self.mini_map_position[0], self.mini_map_position[1],
-                                                       self.mini_map_width, self.mini_map_height)
-        self.shader.uniforms.mini_map_frame_position_size \
-            = (self.mini_map_frame_position[0], self.mini_map_frame_position[1],
-               self.mini_map_frame_width, self.mini_map_frame_height)
-        self.shader_sprite.draw(GL_QUADS)
-        self.shader.clear()
+        self.shader_sprite.draw()
 
     def on_init_graphics(self):
         """
@@ -656,8 +619,6 @@ class MapView(View):
             self.base_offset_upper_right_limit = (self.screen_resolution[0] - MAP_WIDTH,
                                                   self.screen_resolution[1] - MAP_HEIGHT - self.top_bar_height)
 
-        self.map_view_shader_bottom_limit = self.bottom_bar_height / self.screen_resolution[1] * 2 - 1
-        self.map_view_shader_upper_limit = 1 - self.top_bar_height / self.screen_resolution[1] * 2
         self.mini_map_width = self.screen_resolution[0] // 4
         self.mini_map_height = round(self.mini_map_width / 2)
         self.mini_map_position = (self.screen_resolution[0] - self.mini_map_width - 8,

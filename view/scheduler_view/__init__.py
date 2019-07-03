@@ -1,12 +1,11 @@
 from logging import getLogger
 
 from pyglet.text import Label
-from pyglet.gl import GL_QUADS
-from pyshaders import from_files_names
 
 from view import *
 from ui.schedule import ScheduleRow
 from ui.button.close_schedule_button import CloseScheduleButton
+from ui.shader_sprite.scheduler_view_shader_sprite import SchedulerViewShaderSprite
 from i18n import I18N_RESOURCES
 
 
@@ -65,9 +64,7 @@ class SchedulerView(View):
 
             self.schedule_rows.append(column)
 
-        self.shader = from_files_names('shaders/shader.vert', 'shaders/scheduler_view/shader.frag')
-        self.scheduler_view_shader_bottom_limit = 0.0
-        self.scheduler_view_shader_upper_limit = 0.0
+        self.shader_sprite = SchedulerViewShaderSprite(view=self)
         self.on_init_graphics()
 
     @view_is_not_active
@@ -76,14 +73,7 @@ class SchedulerView(View):
         Activates the view and creates sprites and labels.
         """
         self.is_activated = True
-        if self.shader_sprite is None:
-            self.shader_sprite \
-                = self.batches['main_frame'].add(4, GL_QUADS, self.groups['main_frame'],
-                                                 ('v2f/static', (-1.0, self.scheduler_view_shader_bottom_limit,
-                                                                 -1.0, self.scheduler_view_shader_upper_limit,
-                                                                 1.0, self.scheduler_view_shader_upper_limit,
-                                                                 1.0, self.scheduler_view_shader_bottom_limit)))
-
+        self.shader_sprite.create()
         if self.left_schedule_caption_label is None:
             self.left_schedule_caption_label \
                 = Label(I18N_RESOURCES['schedule_caption_string'][self.current_locale],
@@ -153,7 +143,6 @@ class SchedulerView(View):
         """
         if self.opacity <= 0:
             self.shader_sprite.delete()
-            self.shader_sprite = None
             self.left_schedule_caption_label.delete()
             self.left_schedule_caption_label = None
             self.right_schedule_caption_label.delete()
@@ -169,13 +158,7 @@ class SchedulerView(View):
         :param screen_resolution:       new screen resolution
         """
         self.on_recalculate_ui_properties(screen_resolution)
-        self.scheduler_view_shader_bottom_limit = self.bottom_bar_height / self.screen_resolution[1] * 2 - 1
-        self.scheduler_view_shader_upper_limit = 1 - self.top_bar_height / self.screen_resolution[1] * 2
-        if self.is_activated:
-            self.shader_sprite.vertices = (-1.0, self.scheduler_view_shader_bottom_limit,
-                                           -1.0, self.scheduler_view_shader_upper_limit,
-                                           1.0, self.scheduler_view_shader_upper_limit,
-                                           1.0, self.scheduler_view_shader_bottom_limit)
+        self.shader_sprite.on_change_screen_resolution(self.screen_resolution)
         self.on_read_ui_info()
         if self.is_activated:
             self.left_schedule_caption_label.x = self.schedule_left_caption_position[0]
@@ -259,11 +242,7 @@ class SchedulerView(View):
         """
         Activates the shader, initializes all shader uniforms, draws shader sprite and deactivates the shader.
         """
-        self.shader.use()
-        self.shader.uniforms.screen_resolution = self.screen_resolution
-        self.shader.uniforms.schedule_opacity = self.opacity
-        self.shader_sprite.draw(GL_QUADS)
-        self.shader.clear()
+        self.shader_sprite.draw()
 
     def on_init_graphics(self):
         """
