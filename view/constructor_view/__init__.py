@@ -1,7 +1,7 @@
 from logging import getLogger
 
 from view import *
-from ui import Viewport
+from ui import *
 from ui.constructor.track_cell import TrackCell
 from ui.constructor.environment_cell import EnvironmentCell
 from ui.button.close_constructor_button import CloseConstructorButton

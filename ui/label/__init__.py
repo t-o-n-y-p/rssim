@@ -36,6 +36,7 @@ def arguments_have_changed(fn):
 class Label:
     def __init__(self, logger, parent_viewport):
         self.logger = logger
+        self.parent_viewport = parent_viewport
         self.arguments = ()
         self.text_label = None
         self.text = 'Default text'
@@ -47,7 +48,6 @@ class Label:
         self.x = 0
         self.y = 0
         self.width = None
-        self.parent_viewport = parent_viewport
         self.anchor_x = 'center'
         self.anchor_y = 'center'
         self.align = 'left'
@@ -115,7 +115,10 @@ class Label:
     def on_update_opacity(self, new_opacity):
         self.opacity = new_opacity
         if self.text_label is not None:
-            self.text_label.color = (*self.base_color, self.opacity)
+            if self.opacity > 0:
+                self.create()
+            else:
+                self.delete()
 
     @arguments_have_changed
     def on_update_args(self, new_args):

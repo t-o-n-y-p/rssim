@@ -30,6 +30,7 @@ class ShaderSprite:
         self.batch = BATCHES['main_frame']
         self.group = GROUPS['main_frame']
         self.screen_resolution = (1280, 720)
+        self.opacity = 0
 
     def get_bottom_edge(self):
         pass
@@ -65,3 +66,10 @@ class ShaderSprite:
         if self.sprite is not None:
             self.sprite.vertices = (-1.0, self.bottom_edge, -1.0, self.top_edge,
                                     1.0, self.top_edge, 1.0, self.bottom_edge)
+
+    def on_update_opacity(self, new_opacity):
+        self.opacity = new_opacity
+        if self.opacity > 0:
+            self.create()
+        else:
+            self.delete()

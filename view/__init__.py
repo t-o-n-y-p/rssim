@@ -2,17 +2,11 @@ from ctypes import windll
 
 from pyglet.window import mouse
 
-from ui import *
 from database import USER_DB_CURSOR, CONFIG_DB_CURSOR
+from ui import Viewport
 
 
 def view_is_active(fn):
-    """
-    Use this decorator to execute function only if view is active.
-
-    :param fn:                      function to decorate
-    :return:                        decorator function
-    """
     def _handle_if_view_is_activated(*args, **kwargs):
         if args[0].is_activated:
             fn(*args, **kwargs)
@@ -21,12 +15,6 @@ def view_is_active(fn):
 
 
 def view_is_not_active(fn):
-    """
-    Use this decorator to execute function only if view is not active.
-
-    :param fn:                      function to decorate
-    :return:                        decorator function
-    """
     def _handle_if_view_is_not_activated(*args, **kwargs):
         if not args[0].is_activated:
             fn(*args, **kwargs)
@@ -35,12 +23,6 @@ def view_is_not_active(fn):
 
 
 def game_is_not_fullscreen(fn):
-    """
-    Use this decorator within App view to execute function only if fullscreen mode is not activated.
-
-    :param fn:                      function to decorate
-    :return:                        decorator function
-    """
     def _handle_if_game_window_is_not_fullscreen(*args, **kwargs):
         if not args[0].surface.fullscreen:
             fn(*args, **kwargs)
@@ -49,12 +31,6 @@ def game_is_not_fullscreen(fn):
 
 
 def app_window_move_mode_enabled(fn):
-    """
-    Use this decorator within App view to execute function only if user is about to move the app window.
-
-    :param fn:                      function to decorate
-    :return:                        decorator function
-    """
     def _handle_if_app_window_move_mode_enabled(*args, **kwargs):
         if args[0].app_window_move_mode:
             fn(*args, **kwargs)
@@ -63,12 +39,6 @@ def app_window_move_mode_enabled(fn):
 
 
 def left_mouse_button(fn):
-    """
-    Use this decorator to execute function only if left mouse button was used.
-
-    :param fn:                      function to decorate
-    :return:                        decorator function
-    """
     def _handle_mouse_if_left_button_was_clicked(*args, **kwargs):
         if args[3] == mouse.LEFT:
             fn(*args, **kwargs)
@@ -77,13 +47,6 @@ def left_mouse_button(fn):
 
 
 def track_cell_is_created(fn):
-    """
-    Use this decorator within Constructor view to execute function
-    only if the track is displayed on constructor screen.
-
-    :param fn:                      function to decorate
-    :return:                        decorator function
-    """
     def _handle_if_track_is_in_top4(*args, **kwargs):
         if args[2] in args[0].locked_tracks_labels:
             fn(*args, **kwargs)
@@ -92,13 +55,6 @@ def track_cell_is_created(fn):
 
 
 def map_move_mode_available(fn):
-    """
-    Use this decorator within Map view to execute function only if user can move the map
-    (schedule, constructor screen, etc. are not opened).
-
-    :param fn:                      function to decorate
-    :return:                        decorator function
-    """
     def _turn_on_move_mode_if_map_move_mode_available(*args, **kwargs):
         if args[0].map_move_mode_available and not args[0].controller.scheduler.view.is_activated \
                 and not args[0].controller.constructor.view.is_activated:
@@ -108,12 +64,6 @@ def map_move_mode_available(fn):
 
 
 def map_move_mode_enabled(fn):
-    """
-    Use this decorator within Map view to execute function only if user is about to move the map.
-
-    :param fn:                      function to decorate
-    :return:                        decorator function
-    """
     def _turn_on_move_mode_if_map_move_mode_enabled(*args, **kwargs):
         if args[0].map_move_mode:
             fn(*args, **kwargs)
@@ -122,12 +72,6 @@ def map_move_mode_enabled(fn):
 
 
 def cursor_is_on_the_map(fn):
-    """
-    Use this decorator within Map view to execute function only if map is under the mouse cursor.
-
-    :param fn:                      function to decorate
-    :return:                        decorator function
-    """
     def _enable_map_move_mode_if_cursor_is_on_the_map(*args, **kwargs):
         if args[1] in range(0, args[0].screen_resolution[0]) \
                 and args[2] in range(args[0].bottom_bar_height, args[0].screen_resolution[1] - args[0].top_bar_height):
@@ -137,12 +81,6 @@ def cursor_is_on_the_map(fn):
 
 
 def mini_map_is_not_active(fn):
-    """
-    Use this decorator within Map view to execute function only if mini-map is not displayed.
-
-    :param fn:                      function to decorate
-    :return:                        decorator function
-    """
     def _handle_if_mini_map_is_not_activated(*args, **kwargs):
         if not args[0].is_mini_map_activated:
             fn(*args, **kwargs)
@@ -151,12 +89,6 @@ def mini_map_is_not_active(fn):
 
 
 def signal_is_displayed_on_map(fn):
-    """
-    Use this decorator within Signal view to execute function only if player can see this signal on the map.
-
-    :param fn:                      function to decorate
-    :return:                        decorator function
-    """
     def _handle_if_signal_is_displayed_on_map(*args, **kwargs):
         if args[0].signal_sprite is not None:
             fn(*args, **kwargs)
@@ -165,14 +97,6 @@ def signal_is_displayed_on_map(fn):
 
 
 def notifications_available(fn):
-    """
-    Use this decorator to execute function
-    only if system notifications are enabled
-    (if app window is not active).
-
-    :param fn:                      function to decorate
-    :return:                        decorator function
-    """
     def _send_notifications_if_they_are_enabled(*args, **kwargs):
         if args[0].all_notifications_enabled:
             fn(*args, **kwargs)
@@ -181,13 +105,6 @@ def notifications_available(fn):
 
 
 def level_up_notification_enabled(fn):
-    """
-    Use this decorator within Game view to execute function
-    only if level up notifications are enabled in game settings.
-
-    :param fn:                      function to decorate
-    :return:                        decorator function
-    """
     def _send_notification_if_level_up_notification_enabled(*args, **kwargs):
         if args[0].level_up_notification_enabled:
             fn(*args, **kwargs)
@@ -196,13 +113,6 @@ def level_up_notification_enabled(fn):
 
 
 def enough_money_notification_enabled(fn):
-    """
-    Use this decorator within Game view to execute function
-    only if enough money notifications are enabled in game settings.
-
-    :param fn:                      function to decorate
-    :return:                        decorator function
-    """
     def _send_notification_if_enough_money_notification_enabled(*args, **kwargs):
         if args[0].enough_money_notification_enabled:
             fn(*args, **kwargs)
@@ -211,13 +121,6 @@ def enough_money_notification_enabled(fn):
 
 
 def feature_unlocked_notification_enabled(fn):
-    """
-    Use this decorator within Constructor view to execute function
-    only if feature unlocked notifications are enabled in game settings.
-
-    :param fn:                      function to decorate
-    :return:                        decorator function
-    """
     def _send_notification_if_feature_unlocked_notification_enabled(*args, **kwargs):
         if args[0].feature_unlocked_notification_enabled:
             fn(*args, **kwargs)
@@ -226,13 +129,6 @@ def feature_unlocked_notification_enabled(fn):
 
 
 def construction_completed_notification_enabled(fn):
-    """
-    Use this decorator within Constructor view to execute function
-    only if construction completed notifications are enabled in game settings.
-
-    :param fn:                      function to decorate
-    :return:                        decorator function
-    """
     def _send_notification_if_construction_completed_notification_enabled(*args, **kwargs):
         if args[0].construction_completed_notification_enabled:
             fn(*args, **kwargs)
@@ -241,12 +137,6 @@ def construction_completed_notification_enabled(fn):
 
 
 def shader_sprite_exists(fn):
-    """
-    Use this decorator to execute function only if shader sprite property is not None.
-
-    :param fn:                      function to decorate
-    :return:                        decorator function
-    """
     def _handle_if_shader_sprite_exists(*args, **kwargs):
         if args[0].shader_sprite is not None:
             fn(*args, **kwargs)
@@ -258,70 +148,15 @@ def shader_sprite_exists(fn):
 MAP_WIDTH = 8192                                # full-size map width
 MAP_HEIGHT = 4096                               # full-size map height
 MINI_MAP_FADE_OUT_TIMER = 1.0                   # time since user releases mouse button after which mini-map disappears
-# track, environment and shop stage state matrix properties
-LOCKED = 0                                      # property #0 indicates if track/env. is locked
-UNDER_CONSTRUCTION = 1                          # property #1 indicates if track/env. is under construction
-CONSTRUCTION_TIME = 2                           # property #2 indicates construction time left
-UNLOCK_CONDITION_FROM_LEVEL = 3                 # property #3 indicates if unlock condition from level is met
-UNLOCK_CONDITION_FROM_PREVIOUS_TRACK = 4        # property #4 indicates if unlock condition from previous track is met
-UNLOCK_CONDITION_FROM_PREVIOUS_ENVIRONMENT = 4  # property #4 indicates if unlock condition from previous env. is met
-UNLOCK_CONDITION_FROM_PREVIOUS_STAGE = 4        # property #4 indicates if unlock condition from previous stage is met
-UNLOCK_CONDITION_FROM_ENVIRONMENT = 5           # indicates if unlock condition from environment is met (tracks only)
-UNLOCK_AVAILABLE = 6                            # property #6 indicates if all unlock conditions are met
-PRICE = 7                                       # property #7 indicates track/env. price
-LEVEL_REQUIRED = 8                              # property #8 indicates required level for this track/env.
-ENVIRONMENT_REQUIRED = 9                        # property #9 indicates required environment tier (tracks only)
-HOURLY_PROFIT = 10
-STORAGE_CAPACITY = 11
-EXP_BONUS = 12
 # ------------------- END CONSTANTS -------------------
 
 
 class View:
-    """
-    Base class for all views in the app.
-    """
     def __init__(self, logger):
-        """
-        Properties:
-            logger                              telemetry instance
-            user_db_cursor                      user DB cursor (is used to execute user DB queries)
-            config_db_cursor                    configuration DB cursor (is used to execute configuration DB queries)
-            controller                          object controller
-            surface                             surface to draw all UI objects on
-            batches                             batches to group all labels and sprites
-            groups                              defines drawing layers (some labels and sprites behind others)
-            is_activated                        indicates if view is active
-            opacity                             current view opacity value
-            buttons                             list of all buttons on the view
-            on_mouse_motion_handlers            list of on_mouse_motion event handlers to be appended
-            on_mouse_press_handlers             list of on_mouse_press event handlers to be appended
-            on_mouse_release_handlers           list of on_mouse_release event handlers to be appended
-            on_mouse_drag_handlers              list of on_mouse_drag event handlers to be appended
-            on_mouse_leave_handlers             list of on_mouse_leave event handlers to be appended
-            on_mouse_scroll_handlers            list of on_mouse_scroll event handlers to be appended
-            screen_resolution                   current screen resolution
-            bottom_bar_height                   height of the bottom bar with buttons
-            top_bar_height                      height of the top bar
-            base_offset                         current map base offset
-            zoom_out_activated                  indicated if zoom out map mode is activated
-            zoom_factor                         sprite scale factor
-            current_locale                      current locale selected by player
-            all_notifications_enabled           indicates if app can send system notifications
-            shader                              shader for current view red borders
-            shader_sprite                       sprite from view shader
-
-        :param logger:                          telemetry instance
-        """
         self.logger = logger
-        self.user_db_cursor = USER_DB_CURSOR
-        self.config_db_cursor = CONFIG_DB_CURSOR
-        self.controller = None
-        self.surface = SURFACE
-        self.batches = BATCHES
-        self.groups = GROUPS
-        self.viewport = Viewport()
         self.is_activated = False
+        self.controller = None
+        self.viewport = Viewport()
         self.opacity = 0
         self.buttons = []
         self.on_mouse_press_handlers = []
@@ -330,62 +165,52 @@ class View:
         self.on_mouse_drag_handlers = []
         self.on_mouse_leave_handlers = []
         self.on_mouse_scroll_handlers = []
-        self.config_db_cursor.execute('SELECT app_width, app_height FROM screen_resolution_config')
-        screen_resolution_config = self.config_db_cursor.fetchall()
+        CONFIG_DB_CURSOR.execute('SELECT app_width, app_height FROM screen_resolution_config')
+        screen_resolution_config = CONFIG_DB_CURSOR.fetchall()
         monitor_resolution_config = (windll.user32.GetSystemMetrics(0), windll.user32.GetSystemMetrics(1))
-        self.user_db_cursor.execute('SELECT fullscreen FROM graphics')
-        if bool(self.user_db_cursor.fetchone()[0]) and monitor_resolution_config in screen_resolution_config:
+        USER_DB_CURSOR.execute('SELECT fullscreen FROM graphics')
+        if bool(USER_DB_CURSOR.fetchone()[0]) and monitor_resolution_config in screen_resolution_config:
             self.screen_resolution = monitor_resolution_config
         else:
-            self.user_db_cursor.execute('SELECT app_width, app_height FROM graphics')
-            self.screen_resolution = self.user_db_cursor.fetchone()
+            USER_DB_CURSOR.execute('SELECT app_width, app_height FROM graphics')
+            self.screen_resolution = USER_DB_CURSOR.fetchone()
 
-        self.bottom_bar_height, self.top_bar_height = 0, 0
-        self.inner_area_position = (0, 0)
-        self.inner_area_size = (0, 0)
-        self.on_recalculate_ui_properties(self.screen_resolution)
-        self.user_db_cursor.execute('SELECT last_known_base_offset FROM graphics')
-        self.base_offset = tuple(map(int, self.user_db_cursor.fetchone()[0].split(',')))
-        self.user_db_cursor.execute('SELECT zoom_out_activated FROM graphics')
-        self.zoom_out_activated = bool(self.user_db_cursor.fetchone()[0])
+        USER_DB_CURSOR.execute('SELECT last_known_base_offset FROM graphics')
+        self.base_offset = tuple(map(int, USER_DB_CURSOR.fetchone()[0].split(',')))
+        USER_DB_CURSOR.execute('SELECT zoom_out_activated FROM graphics')
+        self.zoom_out_activated = bool(USER_DB_CURSOR.fetchone()[0])
         if self.zoom_out_activated:
             self.zoom_factor = 0.5
         else:
             self.zoom_factor = 1.0
 
-        self.user_db_cursor.execute('SELECT current_locale FROM i18n')
-        self.current_locale = self.user_db_cursor.fetchone()[0]
+        USER_DB_CURSOR.execute('SELECT current_locale FROM i18n')
+        self.current_locale = USER_DB_CURSOR.fetchone()[0]
         self.all_notifications_enabled = False
-        self.shader = None
         self.shader_sprite = None
 
-    def on_update(self):
-        """
-        Updates the view every frame.
-        Usually it is needed for fade-in/fade-out animations
-        or for some views where all sprites are not created at once
-        and remaining sprites are created frame by frame to avoid massive FPS drop.
-        """
-        pass
-
     def on_activate(self):
-        """
-        Activates the view and creates all sprites and labels.
-        """
         pass
 
     def on_deactivate(self):
-        """
-        Deactivates the view and destroys all labels and buttons.
-        """
         pass
 
-    def on_assign_controller(self, controller):
-        """
-        Links the controller to the view and appends view handlers and all buttons handlers to the controller.
+    def on_update(self):
+        pass
 
-        :param controller:                      object controller
-        """
+    def on_update_current_locale(self, new_locale):
+        pass
+
+    def on_update_opacity(self, new_opacity):
+        pass
+
+    def on_disable_notifications(self):
+        self.all_notifications_enabled = False
+
+    def on_enable_notifications(self):
+        self.all_notifications_enabled = True
+
+    def on_assign_controller(self, controller):
         self.controller = controller
         on_mouse_motion_handlers = []
         on_mouse_press_handlers = []
@@ -410,50 +235,3 @@ class View:
                                            on_mouse_press_handlers=on_mouse_press_handlers,
                                            on_mouse_release_handlers=on_mouse_release_handlers,
                                            on_mouse_leave_handlers=on_mouse_leave_handlers)
-
-    def on_recalculate_ui_properties(self, screen_resolution):
-        """
-        Recalculates top and bottom bar height based on new screen resolution.
-
-        :param screen_resolution:               new screen resolution
-        """
-        self.screen_resolution = screen_resolution
-        self.bottom_bar_height = get_bottom_bar_height(self.screen_resolution)
-        self.top_bar_height = get_top_bar_height(self.screen_resolution)
-        inner_area_rect = get_inner_area_rect(self.screen_resolution)
-        self.inner_area_position = inner_area_rect[0:2]
-        self.inner_area_size = inner_area_rect[2:4]
-
-    def on_update_current_locale(self, new_locale):
-        """
-        Updates current locale selected by user and all text labels.
-
-        :param new_locale:                      selected locale
-        """
-        pass
-
-    def on_disable_notifications(self):
-        """
-        Disables sending notifications from this view.
-        """
-        self.all_notifications_enabled = False
-
-    def on_enable_notifications(self):
-        """
-        Enables sending notifications from this view.
-        """
-        self.all_notifications_enabled = True
-
-    def on_update_opacity(self, new_opacity):
-        """
-        Updates view opacity with given value.
-
-        :param new_opacity:                     new opacity value
-        """
-        pass
-
-    def on_update_sprite_opacity(self):
-        """
-        Applies new opacity value to all sprites and labels.
-        """
-        pass
