@@ -1,8 +1,5 @@
 from logging import getLogger
 
-from pyshaders import from_files_names
-from pyglet.gl import GL_QUADS
-
 from view import *
 from ui.button.clear_shop_storage_button import ClearShopStorageButton
 from ui.rectangle_progress_bar.shop_storage_progress_bar import ShopStorageProgressBar
@@ -11,6 +8,7 @@ from ui.label.current_hourly_profit_description_label import CurrentHourlyProfit
 from ui.label.current_exp_bonus_description_label import CurrentExpBonusDescriptionLabel
 from ui.label.current_hourly_profit_value_label import CurrentHourlyProfitValueLabel
 from ui.label.current_exp_bonus_value_label import CurrentExpBonusValueLabel
+from ui.shader_sprite.shop_constructor_view_shader_sprite import ShopConstructorViewShaderSprite
 
 
 class ShopConstructorView(View):
@@ -34,9 +32,7 @@ class ShopConstructorView(View):
         self.viewport.x1, self.viewport.y1 = tuple(map(int, self.user_db_cursor.fetchone()[0].split(',')))
         self.viewport.x2 = self.viewport.x1 + self.inner_area_size[0]
         self.viewport.y2 = self.viewport.y1 + self.inner_area_size[1]
-        self.shader = from_files_names('shaders/shader.vert', 'shaders/shop_constructor_view/shader.frag')
-        self.shop_view_shader_bottom_limit = 0.0
-        self.shop_view_shader_upper_limit = 0.0
+        self.shader_sprite = ShopConstructorViewShaderSprite(view=self)
         self.current_hourly_profit_label = CurrentHourlyProfitDescriptionLabel(parent_viewport=self.viewport)
         self.current_exp_bonus_label = CurrentExpBonusDescriptionLabel(parent_viewport=self.viewport)
         self.hourly_profit_value_label = CurrentHourlyProfitValueLabel(parent_viewport=self.viewport)
@@ -64,14 +60,7 @@ class ShopConstructorView(View):
         Activates the view and creates sprites and labels.
         """
         self.is_activated = True
-        if self.shader_sprite is None:
-            self.shader_sprite \
-                = self.batches['main_frame'].add(4, GL_QUADS, self.groups['main_frame'],
-                                                 ('v2f/static', (-1.0, self.shop_view_shader_bottom_limit,
-                                                                 -1.0, self.shop_view_shader_upper_limit,
-                                                                 1.0, self.shop_view_shader_upper_limit,
-                                                                 1.0, self.shop_view_shader_bottom_limit)))
-
+        self.shader_sprite.create()
         self.current_hourly_profit_label.create()
         self.current_exp_bonus_label.create()
         if self.current_stage == 0:
@@ -119,8 +108,7 @@ class ShopConstructorView(View):
         self.current_exp_bonus_label.on_change_screen_resolution(self.screen_resolution)
         self.hourly_profit_value_label.on_change_screen_resolution(self.screen_resolution)
         self.exp_bonus_value_label.on_change_screen_resolution(self.screen_resolution)
-        self.shop_view_shader_bottom_limit = self.bottom_bar_height / self.screen_resolution[1] * 2 - 1
-        self.shop_view_shader_upper_limit = 1 - self.top_bar_height / self.screen_resolution[1] * 2
+        self.shader_sprite.on_change_screen_resolution(self.screen_resolution)
         self.shop_stages_cells_position = (self.viewport.x1 + self.top_bar_height // 4,
                                            self.viewport.y1 + self.top_bar_height // 4)
         self.shop_stages_cells_size = ((self.viewport.x2 - self.viewport.x1) - self.top_bar_height // 2,
@@ -136,12 +124,6 @@ class ShopConstructorView(View):
                                                   + 3 * self.bottom_bar_height
         for b in self.buttons:
             b.on_position_changed((b.x_margin, b.y_margin))
-
-        if self.is_activated:
-            self.shader_sprite.vertices = (-1.0, self.shop_view_shader_bottom_limit,
-                                           -1.0, self.shop_view_shader_upper_limit,
-                                           1.0, self.shop_view_shader_upper_limit,
-                                           1.0, self.shop_view_shader_bottom_limit)
 
     def on_update_opacity(self, new_opacity):
         """
@@ -164,7 +146,6 @@ class ShopConstructorView(View):
         """
         if self.opacity <= 0:
             self.shader_sprite.delete()
-            self.shader_sprite = None
             self.current_hourly_profit_label.delete()
             self.current_exp_bonus_label.delete()
             self.hourly_profit_value_label.delete()
@@ -193,31 +174,7 @@ class ShopConstructorView(View):
         """
         Activates the shader, initializes all shader uniforms, draws shader sprite and deactivates the shader.
         """
-        self.shader.use()
-        self.shader.uniforms.shop_constructor_opacity = self.opacity
-        self.shader.uniforms.shop_stages_cells_position = self.shop_stages_cells_position
-        self.shader.uniforms.shop_stages_cells_size = self.shop_stages_cells_size
-        self.shader.uniforms.current_stage = self.current_stage
-        is_button_activated = []
-        button_x = []
-        button_y = []
-        button_w = []
-        button_h = []
-        for b in self.buttons:
-            is_button_activated.append(int(b.is_activated))
-            button_x.append(b.position[0])
-            button_y.append(b.position[1])
-            button_w.append(b.button_size[0])
-            button_h.append(b.button_size[1])
-
-        self.shader.uniforms.is_button_activated = is_button_activated
-        self.shader.uniforms.button_x = button_x
-        self.shader.uniforms.button_y = button_y
-        self.shader.uniforms.button_w = button_w
-        self.shader.uniforms.button_h = button_h
-        self.shader.uniforms.number_of_buttons = len(self.buttons)
-        self.shader_sprite.draw(GL_QUADS)
-        self.shader.clear()
+        self.shader_sprite.draw()
 
     def on_update_stage_state(self, stage_number):
         self.shop_stage_cells[stage_number].on_update_state()

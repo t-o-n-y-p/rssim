@@ -1,11 +1,9 @@
 from logging import getLogger
 
-from pyshaders import from_files_names
-from pyglet.gl import GL_QUADS
-
 from view import *
 from ui.button.close_shop_details_button import CloseShopDetailsButton
 from ui.label.shop_title_label import ShopTitleLabel
+from ui.shader_sprite.shop_view_shader_sprite import ShopViewShaderSprite
 
 
 class ShopView(View):
@@ -20,9 +18,7 @@ class ShopView(View):
         self.viewport.x1, self.viewport.y1 = tuple(map(int, self.user_db_cursor.fetchone()[0].split(',')))
         self.viewport.x2 = self.viewport.x1 + self.inner_area_size[0]
         self.viewport.y2 = self.viewport.y1 + self.inner_area_size[1]
-        self.shader = from_files_names('shaders/shader.vert', 'shaders/shop_view/shader.frag')
-        self.shop_view_shader_bottom_limit = 0.0
-        self.shop_view_shader_upper_limit = 0.0
+        self.shader_sprite = ShopViewShaderSprite(view=self)
         self.title_label = ShopTitleLabel(parent_viewport=self.viewport)
         self.title_label.on_update_args((self.shop_id + 1, ))
         self.close_shop_details_button = CloseShopDetailsButton(on_click_action=on_close_shop_details)
@@ -41,14 +37,7 @@ class ShopView(View):
         Activates the view and creates sprites and labels.
         """
         self.is_activated = True
-        if self.shader_sprite is None:
-            self.shader_sprite \
-                = self.batches['main_frame'].add(4, GL_QUADS, self.groups['main_frame'],
-                                                 ('v2f/static', (-1.0, self.shop_view_shader_bottom_limit,
-                                                                 -1.0, self.shop_view_shader_upper_limit,
-                                                                 1.0, self.shop_view_shader_upper_limit,
-                                                                 1.0, self.shop_view_shader_bottom_limit)))
-
+        self.shader_sprite.create()
         self.title_label.create()
         for b in self.buttons:
             if b.to_activate_on_controller_init:
@@ -66,14 +55,7 @@ class ShopView(View):
 
     def on_change_screen_resolution(self, screen_resolution):
         self.on_recalculate_ui_properties(screen_resolution)
-        self.shop_view_shader_bottom_limit = self.bottom_bar_height / self.screen_resolution[1] * 2 - 1
-        self.shop_view_shader_upper_limit = 1 - self.top_bar_height / self.screen_resolution[1] * 2
-        if self.is_activated:
-            self.shader_sprite.vertices = (-1.0, self.shop_view_shader_bottom_limit,
-                                           -1.0, self.shop_view_shader_upper_limit,
-                                           1.0, self.shop_view_shader_upper_limit,
-                                           1.0, self.shop_view_shader_bottom_limit)
-
+        self.shader_sprite.on_change_screen_resolution(self.screen_resolution)
         self.viewport.x1 = self.inner_area_position[0]
         self.viewport.y1 = self.inner_area_position[1]
         self.viewport.x2 = self.viewport.x1 + self.inner_area_size[0]
@@ -90,14 +72,7 @@ class ShopView(View):
         """
         Activates the shader, initializes all shader uniforms, draws shader sprite and deactivates the shader.
         """
-        self.shader.use()
-        self.shader.uniforms.shop_window_opacity = self.opacity
-        self.shader.uniforms.shop_window_position = (self.viewport.x1, self.viewport.y1)
-        self.shader.uniforms.shop_window_size = (self.viewport.x2 - self.viewport.x1,
-                                                 self.viewport.y2 - self.viewport.y1)
-        self.shader.uniforms.top_bar_height = self.top_bar_height
-        self.shader_sprite.draw(GL_QUADS)
-        self.shader.clear()
+        self.shader_sprite.draw()
 
     def on_update_opacity(self, new_opacity):
         """
@@ -116,7 +91,6 @@ class ShopView(View):
         """
         if self.opacity <= 0:
             self.shader_sprite.delete()
-            self.shader_sprite = None
             self.title_label.delete()
         else:
             self.title_label.on_update_opacity(self.opacity)
