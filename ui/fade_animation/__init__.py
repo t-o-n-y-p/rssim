@@ -89,14 +89,15 @@ class FadeAnimation:
         Updates object view with new opacity value based on opacity chart.
         Deactivates animation if it last position of the chart.
         """
-        if self.fade_animations_enabled:
-            self.current_opacity_chart_index += 1
-        else:
-            self.current_opacity_chart_index = len(self.opacity_chart) - 1
-
-        self.animation_object.view.on_update_opacity(self.opacity_chart[self.current_opacity_chart_index])
         if self.current_opacity_chart_index == len(self.opacity_chart) - 1:
             self.on_deactivate()
+        else:
+            if self.fade_animations_enabled:
+                self.current_opacity_chart_index += 1
+            else:
+                self.current_opacity_chart_index = len(self.opacity_chart) - 1
+
+            self.animation_object.view.on_update_opacity(self.opacity_chart[self.current_opacity_chart_index])
 
     def on_update_fade_animation_state(self, new_state):
         """
