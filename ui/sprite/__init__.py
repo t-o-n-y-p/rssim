@@ -95,11 +95,6 @@ class MapSprite(Sprite):
         self.position = self.get_position()
         if self.sprite is not None:
             self.sprite.position = self.position
-            if self.sprite_is_located_outside_viewport():
-                self.delete()
-        else:
-            if not self.sprite_is_located_outside_viewport() and self.opacity > 0:
-                self.create()
 
     def on_change_scale(self, new_scale):
         self.scale = new_scale
