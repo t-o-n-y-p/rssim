@@ -77,9 +77,6 @@ class GameView(View):
 
     @view_is_not_active
     def on_activate(self):
-        """
-        Activates the view and creates all sprites and labels.
-        """
         self.is_activated = True
         self.shader_sprite.create()
         if self.clock_24h_enabled:
@@ -95,9 +92,6 @@ class GameView(View):
 
     @view_is_active
     def on_deactivate(self):
-        """
-        Deactivates the view and destroys all labels and buttons.
-        """
         self.is_activated = False
         self.exp_progress_bar.on_deactivate()
         self.money_progress_bar.on_deactivate()
@@ -106,11 +100,6 @@ class GameView(View):
             b.state = 'normal'
 
     def on_change_screen_resolution(self, screen_resolution):
-        """
-        Updates screen resolution and moves all labels and sprites to its new positions.
-
-        :param screen_resolution:       new screen resolution
-        """
         self.screen_resolution = screen_resolution
         self.viewport.x1 = 0
         self.viewport.y1 = 0
@@ -201,7 +190,6 @@ class GameView(View):
     def on_change_enough_money_notification_state(self, notification_state):
         self.enough_money_notification_enabled = notification_state
 
-    @shader_sprite_exists
     def on_apply_shaders_and_draw_vertices(self):
         self.shader_sprite.draw()
 

@@ -137,14 +137,6 @@ def construction_completed_notification_enabled(fn):
     return _send_notification_if_construction_completed_notification_enabled
 
 
-def shader_sprite_exists(fn):
-    def _handle_if_shader_sprite_exists(*args, **kwargs):
-        if args[0].shader_sprite is not None:
-            fn(*args, **kwargs)
-
-    return _handle_if_shader_sprite_exists
-
-
 def cursor_is_over_the_app_header(fn):
     def _handle_if_cursor_is_over_the_app_header(*args, **kwargs):
         if args[1] in range(args[0].viewport.x1 + get_top_bar_height(args[0].screen_resolution) * 2,

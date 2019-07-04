@@ -12,69 +12,8 @@ from ui.shader_sprite.settings_view_shader_sprite import SettingsViewShaderSprit
 
 
 class SettingsView(View):
-    """
-    Implements Settings view.
-    Settings object is responsible for user-defined settings.
-    """
     def __init__(self):
-        """
-        Settings are located within the grid.
-        Columns indexes are -1 (left part of the screen), 0 (middle) and 1 (right part of the screen).
-        Row indexes start from middle line, distance between rows is top_bar_height * 5/8.
-        All settings inside the same column must use only odd or only even row numbers.
-
-        Button click handlers:
-            on_accept_changes                   on_click handler for accept changes button
-            on_reject_changes                   on_click handler for reject changes button
-
-        Action handlers for controls:
-            on_update_windowed_resolution_state     is activated when player changes screen resolution inside control
-            on_update_display_fps_state             is activated when player turns FPS on/off
-            on_update_fade_animations_state         is activated when player turns fade animations on/off
-            on_update_clock_24h_state               is activated when player turns 24h clock on/off
-            on_update_level_up_notifications_state
-                                            is activated when player turns level up notifications on/off
-            on_update_feature_unlocked_notifications_state
-                                            is activated when player turns feature unlocked notifications on/off
-            on_update_construction_completed_notifications_state
-                                            is activated when player turns construction completed notifications on/off
-            on_update_enough_money_notifications_state
-                                            is activated when player turns enough money notifications on/off
-
-        Properties:
-            temp_windowed_resolution            windowed resolution selected by player
-            temp_display_fps                    display_fps flag value selected by player
-            temp_fade_animations_enabled        fade_animations_enabled flag value selected by player
-            temp_clock_24h_enabled              clock_24h_enabled flag value selected by player
-            display_fps_checkbox                DisplayFPSCheckbox object
-            fade_animations_checkbox            FadeAnimationsEnabledCheckbox object
-            clock_24h_checkbox                  Clock24HCheckbox object
-            temp_level_up_notification_enabled
-                                            level_up_notification_enabled flag value selected by player
-            temp_feature_unlocked_notification_enabled
-                                            feature_unlocked_notification_enabled flag value selected by player
-            temp_construction_completed_notification_enabled
-                                            construction_completed_notification_enabled flag value selected by player
-            temp_enough_money_notification_enabled
-                                            enough_money_notification_enabled flag value selected by player
-            notifications_checkbox_group        NotificationsCheckboxGroup object
-            temp_log_level                      log level selected by player
-            settings_opacity                    general opacity for settings screen
-            available_windowed_resolutions      list of screen resolutions available for windowed mode
-            available_windowed_resolutions_position
-                                            index of screen resolution selected by player
-            screen_resolution_control           ScreenResolutionControl object
-            accept_settings_button              AcceptSettingsButton object
-            reject_settings_button              RejectSettingsButton object
-            buttons                             list of all buttons
-
-        """
         def on_accept_changes(button):
-            """
-            Notifies controller that player accepts changes.
-
-            :param button:                      button that was clicked
-            """
             self.controller.on_save_and_commit_state()
             if self.controller.navigated_from_main_menu:
                 self.controller.navigated_from_main_menu = False
@@ -85,11 +24,6 @@ class SettingsView(View):
                 self.controller.parent_controller.settings_to_game_transition_animation.on_activate()
 
         def on_reject_changes(button):
-            """
-            Notifies controller that player rejects changes.
-
-            :param button:                      button that was clicked
-            """
             if self.controller.navigated_from_main_menu:
                 self.controller.navigated_from_main_menu = False
 
@@ -99,71 +33,27 @@ class SettingsView(View):
                 self.controller.parent_controller.settings_to_game_transition_animation.on_activate()
 
         def on_update_windowed_resolution_state(index):
-            """
-            Updates temp windowed resolution value when player uses value control.
-
-            :param index:                       index from available resolutions list
-            """
             self.on_change_temp_windowed_resolution(self.available_windowed_resolutions[index])
 
         def on_update_display_fps_state(new_state):
-            """
-            Updates temp_display_fps flag value when player uses corresponding checkbox.
-
-            :param new_state:                   new flag value
-            """
             self.temp_display_fps = new_state
 
         def on_update_fade_animations_state(new_state):
-            """
-            Updates temp_fade_animations_enabled flag value when player uses corresponding checkbox.
-
-            :param new_state:                   new flag value
-            """
             self.temp_fade_animations_enabled = new_state
 
         def on_update_clock_24h_state(new_state):
-            """
-            Updates temp_clock_24h_enabled flag value when player uses corresponding checkbox.
-
-            :param new_state:                   new flag value
-            """
             self.temp_clock_24h_enabled = new_state
 
         def on_update_level_up_notifications_state(new_state):
-            """
-            Updates temp_level_up_notification_enabled flag value
-            when player uses corresponding checkbox.
-
-            :param new_state:                   new flag value
-            """
             self.temp_level_up_notification_enabled = new_state
 
         def on_update_feature_unlocked_notifications_state(new_state):
-            """
-            Updates temp_feature_unlocked_notification_enabled flag value
-            when player uses corresponding checkbox.
-
-            :param new_state:                   new flag value
-            """
             self.temp_feature_unlocked_notification_enabled = new_state
 
         def on_update_construction_completed_notifications_state(new_state):
-            """
-            Updates temp_construction_completed_notification_enabled flag value
-            when player uses corresponding checkbox.
-
-            :param new_state:                   new flag value
-            """
             self.temp_construction_completed_notification_enabled = new_state
 
         def on_update_enough_money_notifications_state(new_state):
-            """
-            Updates temp_enough_money_notification_enabled flag value
-            when player uses corresponding checkbox.
-
-            :param new_state:                   new flag value
-            """
             self.temp_enough_money_notification_enabled = new_state
 
         super().__init__(logger=getLogger('root.app.settings.view'))
@@ -172,66 +62,58 @@ class SettingsView(View):
         self.temp_fade_animations_enabled = False
         self.temp_clock_24h_enabled = False
         self.display_fps_checkbox \
-            = DisplayFPSCheckbox(-1, -1, on_update_state_action=on_update_display_fps_state)
+            = DisplayFPSCheckbox(column=-1, row=-1, on_update_state_action=on_update_display_fps_state,
+                                 parent_viewport=self.viewport)
         self.fade_animations_checkbox \
-            = FadeAnimationsEnabledCheckbox(-1, -3, on_update_state_action=on_update_fade_animations_state)
-        self.clock_24h_checkbox = Clock24HCheckbox(-1, -5, on_update_state_action=on_update_clock_24h_state)
+            = FadeAnimationsEnabledCheckbox(column=-1, row=-3, on_update_state_action=on_update_fade_animations_state,
+                                            parent_viewport=self.viewport)
+        self.clock_24h_checkbox = Clock24HCheckbox(column=-1, row=-5, on_update_state_action=on_update_clock_24h_state,
+                                                   parent_viewport=self.viewport)
         self.temp_level_up_notification_enabled = False
         self.temp_feature_unlocked_notification_enabled = False
         self.temp_construction_completed_notification_enabled = False
         self.temp_enough_money_notification_enabled = False
         self.notifications_checkbox_group \
-            = NotificationsCheckboxGroup(1, 4,
+            = NotificationsCheckboxGroup(column=1, row=4,
                                          on_update_state_actions=[on_update_level_up_notifications_state,
                                                                   on_update_feature_unlocked_notifications_state,
                                                                   on_update_construction_completed_notifications_state,
-                                                                  on_update_enough_money_notifications_state])
+                                                                  on_update_enough_money_notifications_state],
+                                         parent_viewport=self.viewport)
         self.temp_log_level = 0
-        self.config_db_cursor.execute('''SELECT app_width, app_height FROM screen_resolution_config 
-                                         WHERE manual_setup = 1 AND app_width <= ?''',
-                                      (windll.user32.GetSystemMetrics(0),))
-        self.available_windowed_resolutions = self.config_db_cursor.fetchall()
+        CONFIG_DB_CURSOR.execute('''SELECT app_width, app_height FROM screen_resolution_config 
+                                    WHERE manual_setup = 1 AND app_width <= ?''',
+                                 (windll.user32.GetSystemMetrics(0),))
+        self.available_windowed_resolutions = CONFIG_DB_CURSOR.fetchall()
         self.available_windowed_resolutions_position = 0
         self.screen_resolution_control \
-            = ScreenResolutionControl(-1, 5, possible_values_list=self.available_windowed_resolutions,
-                                      on_update_state_action=on_update_windowed_resolution_state)
-        self.accept_settings_button = AcceptSettingsButton(on_click_action=on_accept_changes)
-        self.reject_settings_button = RejectSettingsButton(on_click_action=on_reject_changes)
+            = ScreenResolutionControl(column=-1, row=5, possible_values_list=self.available_windowed_resolutions,
+                                      on_update_state_action=on_update_windowed_resolution_state,
+                                      parent_viewport=self.viewport)
+        self.accept_settings_button = AcceptSettingsButton(on_click_action=on_accept_changes,
+                                                           parent_viewport=self.viewport)
+        self.reject_settings_button = RejectSettingsButton(on_click_action=on_reject_changes,
+                                                           parent_viewport=self.viewport)
         self.buttons = [self.accept_settings_button, self.reject_settings_button,
                         *self.screen_resolution_control.buttons, *self.display_fps_checkbox.buttons,
                         *self.fade_animations_checkbox.buttons, *self.clock_24h_checkbox.buttons,
                         *self.notifications_checkbox_group.buttons]
         self.shader_sprite = SettingsViewShaderSprite(view=self)
-        self.on_init_graphics()
+        self.on_init_content()
 
-    def on_update_opacity(self, new_opacity):
-        """
-        Updates view opacity with given value.
-
-        :param new_opacity:                     new opacity value
-        """
-        self.opacity = new_opacity
-        self.on_update_sprite_opacity()
-        self.screen_resolution_control.on_update_opacity(new_opacity)
-        self.display_fps_checkbox.on_update_opacity(new_opacity)
-        self.fade_animations_checkbox.on_update_opacity(new_opacity)
-        self.clock_24h_checkbox.on_update_opacity(new_opacity)
-        self.notifications_checkbox_group.on_update_opacity(new_opacity)
-        for b in self.buttons:
-            b.on_update_opacity(new_opacity)
-
-    def on_update_sprite_opacity(self):
-        """
-        Applies new opacity value to all sprites and labels.
-        """
-        if self.opacity <= 0:
-            self.shader_sprite.delete()
+    def on_init_content(self):
+        CONFIG_DB_CURSOR.execute('SELECT app_width, app_height FROM screen_resolution_config')
+        screen_resolution_config = CONFIG_DB_CURSOR.fetchall()
+        monitor_resolution_config = (windll.user32.GetSystemMetrics(0), windll.user32.GetSystemMetrics(1))
+        USER_DB_CURSOR.execute('SELECT fullscreen FROM graphics')
+        if bool(USER_DB_CURSOR.fetchone()[0]) and monitor_resolution_config in screen_resolution_config:
+            self.on_change_screen_resolution(monitor_resolution_config)
+        else:
+            USER_DB_CURSOR.execute('SELECT app_width, app_height FROM graphics')
+            self.on_change_screen_resolution(USER_DB_CURSOR.fetchone())
 
     @view_is_not_active
     def on_activate(self):
-        """
-        Activates the view and creates sprites and labels.
-        """
         self.is_activated = True
         self.screen_resolution_control.on_activate()
         self.screen_resolution_control.on_init_state(self.available_windowed_resolutions_position)
@@ -253,9 +135,6 @@ class SettingsView(View):
 
     @view_is_active
     def on_deactivate(self):
-        """
-        Deactivates the view and destroys all labels and buttons.
-        """
         self.is_activated = False
         self.screen_resolution_control.on_deactivate()
         self.display_fps_checkbox.on_deactivate()
@@ -267,59 +146,40 @@ class SettingsView(View):
             b.state = 'normal'
 
     def on_change_screen_resolution(self, screen_resolution):
-        """
-        Updates screen resolution and moves all labels and sprites to its new positions.
-
-        :param screen_resolution:       new screen resolution
-        """
-        self.on_recalculate_ui_properties(screen_resolution)
-        self.screen_resolution_control.on_change_screen_resolution(screen_resolution)
-        self.display_fps_checkbox.on_change_screen_resolution(screen_resolution)
-        self.fade_animations_checkbox.on_change_screen_resolution(screen_resolution)
-        self.clock_24h_checkbox.on_change_screen_resolution(screen_resolution)
-        self.notifications_checkbox_group.on_change_screen_resolution(screen_resolution)
-        self.accept_settings_button.x_margin = self.screen_resolution[0] - self.bottom_bar_height * 2 + 2
-        self.accept_settings_button.y_margin = 0
-        self.accept_settings_button.on_size_changed((self.bottom_bar_height, self.bottom_bar_height))
-        self.reject_settings_button.x_margin = self.screen_resolution[0] - self.bottom_bar_height
-        self.reject_settings_button.y_margin = 0
-        self.reject_settings_button.on_size_changed((self.bottom_bar_height, self.bottom_bar_height))
+        self.screen_resolution = screen_resolution
+        self.viewport.x1, self.viewport.y1 = 0, 0
+        self.viewport.x2, self.viewport.y2 = self.screen_resolution
+        self.screen_resolution_control.on_change_screen_resolution(self.screen_resolution)
+        self.display_fps_checkbox.on_change_screen_resolution(self.screen_resolution)
+        self.fade_animations_checkbox.on_change_screen_resolution(self.screen_resolution)
+        self.clock_24h_checkbox.on_change_screen_resolution(self.screen_resolution)
+        self.notifications_checkbox_group.on_change_screen_resolution(self.screen_resolution)
         for b in self.buttons:
-            b.on_position_changed((b.x_margin, b.y_margin))
+            b.on_change_screen_resolution(self.screen_resolution)
+
+    def on_update_current_locale(self, new_locale):
+        self.current_locale = new_locale
+        self.screen_resolution_control.on_update_current_locale(self.current_locale)
+        self.display_fps_checkbox.on_update_current_locale(self.current_locale)
+        self.fade_animations_checkbox.on_update_current_locale(self.current_locale)
+        self.clock_24h_checkbox.on_update_current_locale(self.current_locale)
+        self.notifications_checkbox_group.on_update_current_locale(self.current_locale)
+
+    def on_update_opacity(self, new_opacity):
+        self.opacity = new_opacity
+        self.shader_sprite.on_update_opacity(self.opacity)
+        self.screen_resolution_control.on_update_opacity(self.opacity)
+        self.display_fps_checkbox.on_update_opacity(self.opacity)
+        self.fade_animations_checkbox.on_update_opacity(self.opacity)
+        self.clock_24h_checkbox.on_update_opacity(self.opacity)
+        self.notifications_checkbox_group.on_update_opacity(self.opacity)
+        for b in self.buttons:
+            b.on_update_opacity(self.opacity)
 
     def on_change_temp_windowed_resolution(self, windowed_resolution):
-        """
-        Updates temp windowed resolution and text label for it, windowed resolution position.
-        Activates and deactivates windowed resolution buttons if needed.
-
-        :param windowed_resolution:             selected windowed resolution
-        """
         self.temp_windowed_resolution = windowed_resolution
         self.available_windowed_resolutions_position \
             = self.available_windowed_resolutions.index(self.temp_windowed_resolution)
 
-    def on_update_current_locale(self, new_locale):
-        """
-        Updates current locale selected by user and all text labels.
-
-        :param new_locale:                      selected locale
-        """
-        self.current_locale = new_locale
-        self.screen_resolution_control.on_update_current_locale(new_locale)
-        self.display_fps_checkbox.on_update_current_locale(new_locale)
-        self.fade_animations_checkbox.on_update_current_locale(new_locale)
-        self.clock_24h_checkbox.on_update_current_locale(new_locale)
-        self.notifications_checkbox_group.on_update_current_locale(new_locale)
-
-    @shader_sprite_exists
     def on_apply_shaders_and_draw_vertices(self):
-        """
-        Activates the shader, initializes all shader uniforms, draws shader sprite and deactivates the shader.
-        """
         self.shader_sprite.draw()
-
-    def on_init_graphics(self):
-        """
-        Initializes the view based on saved screen resolution and base offset.
-        """
-        self.on_change_screen_resolution(self.screen_resolution)

@@ -67,6 +67,5 @@ class LicenseView(View):
         for b in self.buttons:
             b.on_update_opacity(self.opacity)
 
-    @shader_sprite_exists
     def on_apply_shaders_and_draw_vertices(self):
         self.shader_sprite.draw()
