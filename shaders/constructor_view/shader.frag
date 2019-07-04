@@ -1,19 +1,3 @@
-/*
-    Fragment shader for constructor view.
-    Input value:
-        vec4 gl_FragCoord - pixel position in 3D homogeneous coordinates (from left bottom point)
-    Output value:
-        color_frag - calculated normalized RGBA color for the pixel
-    Uniforms (all positions are in 2D Cartesian coordinates from the left bottom point):
-        ivec2 screen_resolution - current resolution of the game window
-        int constructor_opacity - opacity of the cell and button edges
-        int cell_x[] - X position of cell with given index
-        int cell_y[] - Y position of cell with given index
-        int cell_w[] - width of cell with given index
-        int cell_h[] - height of cell with given index
-        int cell_unlock_available - indicates if UNLOCK_AVAILABLE flag for given cell is enabled
-        int number_of_cells - number of track+environment cells on the screen
-*/
 #version 330 core
 layout(pixel_center_integer) in vec4 gl_FragCoord;
 out vec4 color_frag;
@@ -28,9 +12,6 @@ uniform int number_of_cells = 8;
 uniform int data_length[8];
 
 bool is_cell_border()
-/*
-    Returns "true" if pixel belongs to any cell border and "false" if it does not.
-*/
 {
     int margin_x, margin_y;
     for(int i = 0; i < number_of_cells; i++)
@@ -54,9 +35,6 @@ bool is_cell_border()
 }
 
 bool is_cell_button_border()
-/*
-    Returns "true" if pixel belongs to any cell button border and "false" if it does not.
-*/
 {
     int margin_x, margin_y;
     for(int i = 0; i < number_of_cells; i++)
@@ -77,10 +55,6 @@ bool is_cell_button_border()
 }
 
 void main()
-/*
-    MAIN SHADER FUNCTION
-    Calculates intermediate color for all possible cases and mixes it
-*/
 {
     float base_opacity = 0.97;
     // cell and button borders are red

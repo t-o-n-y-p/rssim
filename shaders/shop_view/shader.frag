@@ -34,10 +34,6 @@ bool is_inside_shop_window(int margin_x, int margin_y)
 
 
 void main()
-/*
-    MAIN SHADER FUNCTION
-    Calculates intermediate color for all possible cases and mixes it
-*/
 {
     int margin_x = int(gl_FragCoord[0]) - shop_window_position[0];
     int margin_y = int(gl_FragCoord[1]) - shop_window_position[1];

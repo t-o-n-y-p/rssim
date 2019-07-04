@@ -14,9 +14,6 @@ uniform int number_of_buttons = 5;
 
 
 bool is_button_border()
-/*
-    Returns "true" if pixel belongs to any button border and "false" if it does not.
-*/
 {
     int button_margin_x, button_margin_y;
     for(int i = 0; i < number_of_buttons; i++)
@@ -102,10 +99,6 @@ int is_light_blue_horizontal_line(int margin_x, int margin_y, int vertical_line_
 }
 
 void main()
-/*
-    MAIN SHADER FUNCTION
-    Calculates intermediate color for all possible cases and mixes it
-*/
 {
     int margin_x = int(gl_FragCoord[0]) - shop_stages_cells_position[0];
     int margin_y = int(gl_FragCoord[1]) - shop_stages_cells_position[1];

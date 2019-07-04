@@ -71,6 +71,8 @@ class CrossoverView(View):
 
     def on_change_screen_resolution(self, screen_resolution):
         self.screen_resolution = screen_resolution
+        self.viewport.x1, self.viewport.y1 = 0, 0
+        self.viewport.x2, self.viewport.y2 = self.screen_resolution
 
     def on_update_opacity(self, new_opacity):
         self.opacity = new_opacity
