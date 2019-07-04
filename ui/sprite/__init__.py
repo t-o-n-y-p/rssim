@@ -1,8 +1,10 @@
 import pyglet.sprite
 
+from database import USER_DB_CURSOR
 
-SPRITE_VIEWPORT_EDGE_OFFSET_LIMIT_X = 150
-SPRITE_VIEWPORT_EDGE_OFFSET_LIMIT_Y = 100
+
+SPRITE_VIEWPORT_EDGE_OFFSET_LIMIT_X = 20
+SPRITE_VIEWPORT_EDGE_OFFSET_LIMIT_Y = 20
 
 
 def sprite_does_not_exist(fn):
@@ -85,7 +87,14 @@ class MapSprite(Sprite):
     def __init__(self, logger, parent_viewport):
         super().__init__(logger=logger)
         self.parent_viewport = parent_viewport
-        self.base_offset = (0, 0)
+        USER_DB_CURSOR.execute('SELECT last_known_base_offset FROM graphics')
+        self.base_offset = tuple(map(int, USER_DB_CURSOR.fetchone()[0].split(',')))
+        USER_DB_CURSOR.execute('SELECT zoom_out_activated FROM graphics')
+        self.zoom_out_activated = bool(USER_DB_CURSOR.fetchone()[0])
+        if self.zoom_out_activated:
+            self.scale = 0.5
+        else:
+            self.scale = 1.0
 
     def get_position(self):
         pass
@@ -101,7 +110,12 @@ class MapSprite(Sprite):
         if self.sprite is not None:
             self.sprite.scale = self.scale
 
-    def sprite_is_located_outside_viewport(self):
+    def on_update_texture(self, new_texture):
+        self.texture = new_texture
+        if self.sprite is not None:
+            self.sprite.image = self.texture
+
+    def is_located_outside_viewport(self):
         return self.position[0] - self.texture.anchor_x * self.scale - self.parent_viewport.x2 \
                > SPRITE_VIEWPORT_EDGE_OFFSET_LIMIT_X \
                or self.parent_viewport.x1 - (self.position[0] - self.texture.anchor_x*self.scale + self.sprite.width)\

@@ -6,10 +6,6 @@ from ui.label.environment_unlock_available_label import EnvironmentUnlockAvailab
 
 
 class EnvironmentCell(ConstructorCell):
-    """
-    Implements Environment cell class for constructor screen.
-    For properties definition see base ConstructorCell class.
-    """
     def __init__(self, column, row, on_buy_construction_action, on_set_money_target_action,
                  on_reset_money_target_action, parent_viewport):
         super().__init__(column, row, on_buy_construction_action, on_set_money_target_action,
@@ -19,9 +15,6 @@ class EnvironmentCell(ConstructorCell):
         self.unlock_available_label = EnvironmentUnlockAvailableLabel(parent_viewport=self.viewport)
 
     def on_update_description_label(self):
-        """
-        Updates environment cell description based on data.
-        """
         if self.data[UNDER_CONSTRUCTION]:
             self.level_required_label.delete()
             self.previous_entity_required_label.delete()
