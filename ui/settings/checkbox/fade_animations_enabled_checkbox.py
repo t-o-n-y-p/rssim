@@ -1,14 +1,11 @@
 from logging import getLogger
 
 from ui.settings.checkbox import *
+from ui.label.fade_animations_enabled_checkbox_description_label import FadeAnimationsEnabledSCheckboxDescriptionLabel
 
 
 class FadeAnimationsEnabledCheckbox(Checkbox):
-    """
-    Implements checkbox for fade animations state.
-    For properties definition see base Checkbox class.
-    """
-    def __init__(self, column, row, on_update_state_action):
-        super().__init__(column, row, on_update_state_action,
+    def __init__(self, column, row, on_update_state_action, parent_viewport):
+        super().__init__(column, row, on_update_state_action, parent_viewport,
                          logger=getLogger('root.app.settings.view.checkbox.fade_animations_enabled_checkbox'))
-        self.description_key = 'fade_animations_enabled_description_string'
+        self.description_label = FadeAnimationsEnabledSCheckboxDescriptionLabel(parent_viewport=self.viewport)
