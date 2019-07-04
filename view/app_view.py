@@ -51,13 +51,15 @@ class AppView(View):
         self.title_label = AppTitleLabel(parent_viewport=self.viewport)
         self.us_flag_sprite = USFlagSprite(parent_viewport=self.viewport)
         self.ru_flag_sprite = RUFlagSprite(parent_viewport=self.viewport)
-        self.close_game_button = CloseGameButton(on_click_action=on_close_game)
-        self.iconify_button = IconifyButton(on_click_action=on_iconify_game)
+        self.close_game_button = CloseGameButton(on_click_action=on_close_game, parent_viewport=self.viewport)
+        self.iconify_button = IconifyButton(on_click_action=on_iconify_game, parent_viewport=self.viewport)
         self.fullscreen_button, self.restore_button \
-            = create_two_state_button(FullscreenButton(on_click_action=on_app_window_fullscreen),
-                                      RestoreButton(on_click_action=on_app_window_restore))
-        self.en_locale_button = ENLocaleButton(on_click_action=on_set_en_locale)
-        self.ru_locale_button = RULocaleButton(on_click_action=on_set_ru_locale)
+            = create_two_state_button(FullscreenButton(on_click_action=on_app_window_fullscreen,
+                                                       parent_viewport=self.viewport),
+                                      RestoreButton(on_click_action=on_app_window_restore,
+                                                    parent_viewport=self.viewport))
+        self.en_locale_button = ENLocaleButton(on_click_action=on_set_en_locale, parent_viewport=self.viewport)
+        self.ru_locale_button = RULocaleButton(on_click_action=on_set_ru_locale, parent_viewport=self.viewport)
         self.buttons = [self.close_game_button, self.iconify_button, self.fullscreen_button, self.restore_button,
                         self.en_locale_button, self.ru_locale_button]
         self.app_window_move_mode = False
@@ -69,16 +71,18 @@ class AppView(View):
         self.on_mouse_release_handlers.append(self.handle_mouse_release)
         self.on_mouse_drag_handlers.append(self.handle_mouse_drag)
         self.shader_sprite = AppViewShaderSprite(view=self)
-        self.on_init_graphics()
+        self.on_init_content()
 
-    def on_update_opacity(self, new_opacity):
-        self.opacity = new_opacity
-        self.shader_sprite.on_update_opacity(self.opacity)
-        self.title_label.on_update_opacity(self.opacity)
-        self.us_flag_sprite.on_update_opacity(self.opacity)
-        self.ru_flag_sprite.on_update_opacity(self.opacity)
-        for b in self.buttons:
-            b.on_update_opacity(new_opacity)
+    def on_init_content(self):
+        CONFIG_DB_CURSOR.execute('SELECT app_width, app_height FROM screen_resolution_config')
+        screen_resolution_config = CONFIG_DB_CURSOR.fetchall()
+        monitor_resolution_config = (windll.user32.GetSystemMetrics(0), windll.user32.GetSystemMetrics(1))
+        USER_DB_CURSOR.execute('SELECT fullscreen FROM graphics')
+        if bool(USER_DB_CURSOR.fetchone()[0]) and monitor_resolution_config in screen_resolution_config:
+            self.on_change_screen_resolution(monitor_resolution_config)
+        else:
+            USER_DB_CURSOR.execute('SELECT app_width, app_height FROM graphics')
+            self.on_change_screen_resolution(USER_DB_CURSOR.fetchone())
 
     @view_is_not_active
     def on_activate(self):
@@ -104,26 +108,17 @@ class AppView(View):
         self.shader_sprite.on_change_screen_resolution(self.screen_resolution)
         self.us_flag_sprite.on_change_screen_resolution(self.screen_resolution)
         self.ru_flag_sprite.on_change_screen_resolution(self.screen_resolution)
-        self.close_game_button.x_margin = self.viewport.x2 - self.top_bar_height
-        self.close_game_button.y_margin = self.viewport.y2 - self.top_bar_height
-        self.close_game_button.on_size_changed((self.top_bar_height, self.top_bar_height))
-        self.fullscreen_button.x_margin = self.viewport.x2 - self.top_bar_height * 2 + 2
-        self.fullscreen_button.y_margin = self.viewport.y2 - self.top_bar_height
-        self.fullscreen_button.on_size_changed((self.top_bar_height, self.top_bar_height))
-        self.restore_button.x_margin = self.viewport.x2 - self.top_bar_height * 2 + 2
-        self.restore_button.y_margin = self.viewport.y2 - self.top_bar_height
-        self.restore_button.on_size_changed((self.top_bar_height, self.top_bar_height))
-        self.iconify_button.x_margin = self.viewport.x2 - self.top_bar_height * 3 + 4
-        self.iconify_button.y_margin = self.viewport.y2 - self.top_bar_height
-        self.iconify_button.on_size_changed((self.top_bar_height, self.top_bar_height))
-        self.en_locale_button.x_margin = self.viewport.x1
-        self.en_locale_button.y_margin = self.viewport.y2 - self.top_bar_height
-        self.en_locale_button.on_size_changed((self.top_bar_height, self.top_bar_height))
-        self.ru_locale_button.x_margin = self.viewport.x1 + self.top_bar_height - 2
-        self.ru_locale_button.y_margin = self.viewport.y2 - self.top_bar_height
-        self.ru_locale_button.on_size_changed((self.top_bar_height, self.top_bar_height))
         for b in self.buttons:
-            b.on_position_changed((b.x_margin, b.y_margin))
+            b.on_change_screen_resolution(self.screen_resolution)
+
+    def on_update_opacity(self, new_opacity):
+        self.opacity = new_opacity
+        self.shader_sprite.on_update_opacity(self.opacity)
+        self.title_label.on_update_opacity(self.opacity)
+        self.us_flag_sprite.on_update_opacity(self.opacity)
+        self.ru_flag_sprite.on_update_opacity(self.opacity)
+        for b in self.buttons:
+            b.on_update_opacity(new_opacity)
 
     @staticmethod
     def on_fullscreen_mode_turned_on():
@@ -134,14 +129,12 @@ class AppView(View):
         SURFACE.set_fullscreen(fullscreen=False)
 
     @game_is_not_fullscreen
+    @cursor_is_over_the_app_header
     @left_mouse_button
     @view_is_active
     def handle_mouse_press(self, x, y, button, modifiers):
-        if x in range(self.viewport.x1 + get_top_bar_height(self.screen_resolution) * 2,
-                      self.viewport.x2 - get_top_bar_height(self.screen_resolution) * 3) \
-                and y in range(self.viewport.y2 - get_top_bar_height(self.screen_resolution), self.viewport.y2):
-            self.app_window_move_mode = True
-            self.app_window_move_offset = (x, y)
+        self.app_window_move_mode = True
+        self.app_window_move_offset = (x, y)
 
     @left_mouse_button
     def handle_mouse_release(self, x, y, button, modifiers):
@@ -159,6 +152,3 @@ class AppView(View):
 
     def on_apply_shaders_and_draw_vertices(self):
         self.shader_sprite.draw()
-
-    def on_init_graphics(self):
-        self.on_change_screen_resolution(self.screen_resolution)

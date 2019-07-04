@@ -290,7 +290,7 @@ class Button:
 class UIButton(Button):
     def __init__(self, logger, parent_viewport):
         super().__init__(logger=logger)
-        self.parant_viewport = parent_viewport
+        self.parent_viewport = parent_viewport
         self.screen_resolution = (1280, 720)
 
     def get_position(self):

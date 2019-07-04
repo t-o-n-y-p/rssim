@@ -1,6 +1,10 @@
 import pyglet.sprite
 
 
+SPRITE_VIEWPORT_EDGE_OFFSET_LIMIT_X = 150
+SPRITE_VIEWPORT_EDGE_OFFSET_LIMIT_Y = 100
+
+
 def sprite_does_not_exist(fn):
     def _create_sprite_if_it_does_not_exist(*args, **kwargs):
         if args[0].sprite is None:
@@ -45,11 +49,11 @@ class Sprite:
 
     def on_update_opacity(self, new_opacity):
         self.opacity = new_opacity
-        if self.sprite is not None:
-            if self.opacity > 0:
-                self.create()
-            else:
-                self.delete()
+        if self.opacity > 0:
+            self.create()
+            self.sprite.opacity = self.opacity
+        else:
+            self.delete()
 
 
 class UISprite(Sprite):
@@ -78,8 +82,9 @@ class UISprite(Sprite):
 
 
 class MapSprite(Sprite):
-    def __init__(self, logger):
+    def __init__(self, logger, parent_viewport):
         super().__init__(logger=logger)
+        self.parent_viewport = parent_viewport
         self.base_offset = (0, 0)
 
     def get_position(self):
@@ -90,8 +95,23 @@ class MapSprite(Sprite):
         self.position = self.get_position()
         if self.sprite is not None:
             self.sprite.position = self.position
+            if self.sprite_is_located_outside_viewport():
+                self.delete()
+        else:
+            if not self.sprite_is_located_outside_viewport() and self.opacity > 0:
+                self.create()
 
     def on_change_scale(self, new_scale):
         self.scale = new_scale
         if self.sprite is not None:
             self.sprite.scale = self.scale
+
+    def sprite_is_located_outside_viewport(self):
+        return self.position[0] - self.texture.anchor_x * self.scale - self.parent_viewport.x2 \
+               > SPRITE_VIEWPORT_EDGE_OFFSET_LIMIT_X \
+               or self.parent_viewport.x1 - (self.position[0] - self.texture.anchor_x*self.scale + self.sprite.width)\
+               > SPRITE_VIEWPORT_EDGE_OFFSET_LIMIT_X \
+               or self.position[1] - self.texture.anchor_y * self.scale - self.parent_viewport.y2 \
+               > SPRITE_VIEWPORT_EDGE_OFFSET_LIMIT_Y \
+               or self.parent_viewport.y1 - (self.position[1] - self.texture.anchor_y*self.scale + self.sprite.height)\
+               > SPRITE_VIEWPORT_EDGE_OFFSET_LIMIT_Y

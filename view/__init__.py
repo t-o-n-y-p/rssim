@@ -2,6 +2,7 @@ from ctypes import windll
 
 from pyglet.window import mouse
 
+from ui import *
 from database import USER_DB_CURSOR, CONFIG_DB_CURSOR
 from ui import Viewport
 
@@ -144,6 +145,17 @@ def shader_sprite_exists(fn):
     return _handle_if_shader_sprite_exists
 
 
+def cursor_is_over_the_app_header(fn):
+    def _handle_if_cursor_is_over_the_app_header(*args, **kwargs):
+        if args[1] in range(args[0].viewport.x1 + get_top_bar_height(args[0].screen_resolution) * 2,
+                            args[0].viewport.x2 - get_top_bar_height(args[0].screen_resolution) * 3) \
+                and args[2] in range(args[0].viewport.y2 - get_top_bar_height(args[0].screen_resolution),
+                                     args[0].viewport.y2):
+            fn(*args, **kwargs)
+
+    return _handle_if_cursor_is_over_the_app_header
+
+
 # --------------------- CONSTANTS ---------------------
 MAP_WIDTH = 8192                                # full-size map width
 MAP_HEIGHT = 4096                               # full-size map height
@@ -165,16 +177,7 @@ class View:
         self.on_mouse_drag_handlers = []
         self.on_mouse_leave_handlers = []
         self.on_mouse_scroll_handlers = []
-        CONFIG_DB_CURSOR.execute('SELECT app_width, app_height FROM screen_resolution_config')
-        screen_resolution_config = CONFIG_DB_CURSOR.fetchall()
-        monitor_resolution_config = (windll.user32.GetSystemMetrics(0), windll.user32.GetSystemMetrics(1))
-        USER_DB_CURSOR.execute('SELECT fullscreen FROM graphics')
-        if bool(USER_DB_CURSOR.fetchone()[0]) and monitor_resolution_config in screen_resolution_config:
-            self.screen_resolution = monitor_resolution_config
-        else:
-            USER_DB_CURSOR.execute('SELECT app_width, app_height FROM graphics')
-            self.screen_resolution = USER_DB_CURSOR.fetchone()
-
+        self.screen_resolution = (0, 0)
         USER_DB_CURSOR.execute('SELECT last_known_base_offset FROM graphics')
         self.base_offset = tuple(map(int, USER_DB_CURSOR.fetchone()[0].split(',')))
         USER_DB_CURSOR.execute('SELECT zoom_out_activated FROM graphics')
@@ -189,6 +192,9 @@ class View:
         self.all_notifications_enabled = False
         self.shader_sprite = None
 
+    def on_init_content(self):
+        pass
+
     def on_activate(self):
         pass
 
@@ -196,6 +202,9 @@ class View:
         pass
 
     def on_update(self):
+        pass
+
+    def on_change_screen_resolution(self, screen_resolution):
         pass
 
     def on_update_current_locale(self, new_locale):
