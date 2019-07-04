@@ -1,9 +1,11 @@
 from logging import getLogger
 
 from ui.onboarding_page import OnboardingPage
+from ui.label.settings_onboarding_label import SettingsOnboardingLabel
 
 
 class SettingsOnboardingPage(OnboardingPage):
-    def __init__(self):
-        super().__init__(logger=getLogger('root.app.onboarding.settings_onboarding_page'))
-        self.help_text_key = 'settings_onboarding_page_string'
+    def __init__(self, parent_viewport):
+        super().__init__(logger=getLogger('root.app.onboarding.settings_onboarding_page'),
+                         parent_viewport=parent_viewport)
+        self.help_label = SettingsOnboardingLabel(parent_viewport=self.viewport)

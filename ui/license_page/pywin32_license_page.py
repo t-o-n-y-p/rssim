@@ -4,11 +4,9 @@ from ui.license_page import LicensePage
 
 
 class Pywin32LicensePage(LicensePage):
-    """
-    Implements license page for pywin32 license.
-    """
-    def __init__(self):
-        super().__init__(logger=getLogger('root.app.license.view.pywin32_license_page'))
+    def __init__(self, parent_viewport):
+        super().__init__(logger=getLogger('root.app.license.view.pywin32_license_page'),
+                         parent_viewport=parent_viewport)
         self.license_text = '''pywin32
 ================================================
 Unless stated in the specfic source file, this work is

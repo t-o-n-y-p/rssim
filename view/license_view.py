@@ -12,7 +12,7 @@ class LicenseView(View):
             self.controller.parent_controller.on_close_license()
 
         super().__init__(logger=getLogger('root.app.license.view'))
-        self.license_page_control = LicensePageControl()
+        self.license_page_control = LicensePageControl(parent_viewport=self.viewport)
         self.close_license_button = CloseLicenseButton(on_click_action=on_close_license, parent_viewport=self.viewport)
         self.buttons = [*self.license_page_control.buttons, self.close_license_button]
         self.shader_sprite = LicenseViewShaderSprite(view=self)
@@ -52,7 +52,7 @@ class LicenseView(View):
         self.viewport.x1, self.viewport.y1 = 0, 0
         self.viewport.x2, self.viewport.y2 = self.screen_resolution
         self.shader_sprite.on_change_screen_resolution(self.screen_resolution)
-        self.license_page_control.on_change_screen_resolution(screen_resolution)
+        self.license_page_control.on_change_screen_resolution(self.screen_resolution)
         for b in self.buttons:
             b.on_change_screen_resolution(self.screen_resolution)
 
@@ -65,7 +65,7 @@ class LicenseView(View):
         self.shader_sprite.on_update_opacity(self.opacity)
         self.license_page_control.on_update_opacity(self.opacity)
         for b in self.buttons:
-            b.on_update_opacity(new_opacity)
+            b.on_update_opacity(self.opacity)
 
     @shader_sprite_exists
     def on_apply_shaders_and_draw_vertices(self):
