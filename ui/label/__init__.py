@@ -116,7 +116,6 @@ class Label:
         self.opacity = new_opacity
         if self.text_label is not None:
             if self.opacity > 0:
-                self.create()
                 self.text_label.color = (*self.base_color, self.opacity)
             else:
                 self.delete()

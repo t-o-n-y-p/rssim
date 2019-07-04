@@ -87,6 +87,9 @@ class AppView(View):
     @view_is_not_active
     def on_activate(self):
         self.is_activated = True
+        self.title_label.create()
+        self.us_flag_sprite.create()
+        self.ru_flag_sprite.create()
         for b in self.buttons:
             if b.to_activate_on_controller_init:
                 b.on_activate()
@@ -136,6 +139,7 @@ class AppView(View):
         self.app_window_move_mode = True
         self.app_window_move_offset = (x, y)
 
+    @app_window_move_mode_enabled
     @left_mouse_button
     def handle_mouse_release(self, x, y, button, modifiers):
         self.app_window_move_mode = False

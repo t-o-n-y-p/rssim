@@ -49,11 +49,11 @@ class Sprite:
 
     def on_update_opacity(self, new_opacity):
         self.opacity = new_opacity
-        if self.opacity > 0:
-            self.create()
-            self.sprite.opacity = self.opacity
-        else:
-            self.delete()
+        if self.sprite is not None:
+            if self.opacity > 0:
+                self.sprite.opacity = self.opacity
+            else:
+                self.delete()
 
 
 class UISprite(Sprite):

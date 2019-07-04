@@ -69,7 +69,5 @@ class ShaderSprite:
 
     def on_update_opacity(self, new_opacity):
         self.opacity = new_opacity
-        if self.opacity > 0:
-            self.create()
-        else:
+        if self.opacity <= 0:
             self.delete()
