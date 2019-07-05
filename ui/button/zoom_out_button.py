@@ -1,15 +1,12 @@
 from logging import getLogger
 
-from ui.button import Button
+from ui import *
+from ui.button import UIButton
 
 
-class ZoomOutButton(Button):
-    """
-    Implements Zoom out button for game map on main game screen.
-    For properties definition see base Button class.
-    """
-    def __init__(self, on_click_action, on_hover_action, on_leave_action):
-        super().__init__(logger=getLogger('root.button.zoom_out_button'))
+class ZoomOutButton(UIButton):
+    def __init__(self, on_click_action, on_hover_action, on_leave_action, parent_viewport):
+        super().__init__(logger=getLogger('root.button.zoom_out_button'), parent_viewport=parent_viewport)
         self.transparent = False
         self.to_activate_on_controller_init = False
         self.text = '> <'
@@ -19,3 +16,11 @@ class ZoomOutButton(Button):
         self.on_click_action = on_click_action
         self.on_hover_action = on_hover_action
         self.on_leave_action = on_leave_action
+
+    def get_position(self):
+        return (self.parent_viewport.x1,
+                self.parent_viewport.y2 - 3 * get_top_bar_height(self.screen_resolution) + 4)
+
+    def get_size(self):
+        return (2 * get_top_bar_height(self.screen_resolution) - 2,
+                2 * get_top_bar_height(self.screen_resolution) - 2)

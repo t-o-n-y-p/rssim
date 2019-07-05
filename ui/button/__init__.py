@@ -314,8 +314,14 @@ class UIButton(Button):
 class MapButton(Button):
     def __init__(self, logger):
         super().__init__(logger=logger)
-        self.base_offset = (0, 0)
-        self.scale = 1.0
+        USER_DB_CURSOR.execute('SELECT last_known_base_offset FROM graphics')
+        self.base_offset = tuple(map(int, USER_DB_CURSOR.fetchone()[0].split(',')))
+        USER_DB_CURSOR.execute('SELECT zoom_out_activated FROM graphics')
+        self.zoom_out_activated = bool(USER_DB_CURSOR.fetchone()[0])
+        if self.zoom_out_activated:
+            self.scale = 0.5
+        else:
+            self.scale = 1.0
 
     def get_position(self):
         pass
