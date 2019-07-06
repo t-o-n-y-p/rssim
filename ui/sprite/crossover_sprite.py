@@ -16,9 +16,7 @@ class CrossoverSprite(MapSprite):
         self.crossover_offset = CONFIG_DB_CURSOR.fetchone()
         self.batch = BATCHES['main_batch']
         self.group = GROUPS['main_map']
-        self.usage = 'static'
 
     def get_position(self):
         return (self.base_offset[0] + int(self.crossover_offset[0] * self.scale),
                 self.base_offset[1] + int(self.crossover_offset[1] * self.scale))
-

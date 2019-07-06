@@ -37,8 +37,12 @@ class Sprite:
         self.rotation = 0
         self.scale = 1.0
 
+    def get_position(self):
+        pass
+
     @sprite_does_not_exist
     def create(self):
+        self.position = self.get_position()
         self.sprite = pyglet.sprite.Sprite(self.texture, x=self.position[0], y=self.position[1], batch=self.batch,
                                            group=self.group, usage=self.usage, subpixel=self.subpixel)
         self.sprite.opacity = self.opacity
@@ -57,15 +61,22 @@ class Sprite:
             else:
                 self.delete()
 
+    def on_position_changed(self):
+        self.position = self.get_position()
+        if self.sprite is not None:
+            self.sprite.position = self.position
+
+    def on_update_texture(self, new_texture):
+        self.texture = new_texture
+        if self.sprite is not None:
+            self.sprite.image = self.texture
+
 
 class UISprite(Sprite):
     def __init__(self, logger, parent_viewport):
         super().__init__(logger=logger)
         self.parent_viewport = parent_viewport
         self.screen_resolution = (1280, 720)
-
-    def get_position(self):
-        pass
 
     def get_scale(self):
         pass
@@ -76,11 +87,6 @@ class UISprite(Sprite):
         self.scale = self.get_scale()
         if self.sprite is not None:
             self.sprite.update(x=self.position[0], y=self.position[1], scale=self.scale)
-
-    def on_position_changed(self):
-        self.position = self.get_position()
-        if self.sprite is not None:
-            self.sprite.position = self.position
 
 
 class MapSprite(Sprite):
@@ -96,24 +102,14 @@ class MapSprite(Sprite):
         else:
             self.scale = 1.0
 
-    def get_position(self):
-        pass
-
     def on_change_base_offset(self, base_offset):
         self.base_offset = base_offset
-        self.position = self.get_position()
-        if self.sprite is not None:
-            self.sprite.position = self.position
+        self.on_position_changed()
 
     def on_change_scale(self, new_scale):
         self.scale = new_scale
         if self.sprite is not None:
             self.sprite.scale = self.scale
-
-    def on_update_texture(self, new_texture):
-        self.texture = new_texture
-        if self.sprite is not None:
-            self.sprite.image = self.texture
 
     def is_located_outside_viewport(self):
         return self.position[0] - self.texture.anchor_x * self.scale - self.parent_viewport.x2 \

@@ -1,5 +1,7 @@
 from logging import getLogger
+from ctypes import windll
 
+from database import CONFIG_DB_CURSOR
 from view import *
 from ui import *
 from ui.constructor.track_cell import TrackCell

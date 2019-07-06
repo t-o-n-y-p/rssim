@@ -1,9 +1,7 @@
-from ctypes import windll
-
 from pyglet.window import mouse
 
 from ui import *
-from database import USER_DB_CURSOR, CONFIG_DB_CURSOR
+from database import USER_DB_CURSOR
 from ui import Viewport
 
 
@@ -149,8 +147,6 @@ def cursor_is_over_the_app_header(fn):
 
 
 # --------------------- CONSTANTS ---------------------
-MAP_WIDTH = 8192                                # full-size map width
-MAP_HEIGHT = 4096                               # full-size map height
 MINI_MAP_FADE_OUT_TIMER = 1.0                   # time since user releases mouse button after which mini-map disappears
 # ------------------- END CONSTANTS -------------------
 

@@ -1,7 +1,9 @@
 from logging import getLogger
+from ctypes import windll
 
 from pyglet.resource import add_font
 
+from database import CONFIG_DB_CURSOR
 from view import *
 from ui.button import create_two_state_button
 from ui.button.open_settings_game_view_button import OpenSettingsGameViewButton

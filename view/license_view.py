@@ -1,5 +1,7 @@
 from logging import getLogger
+from ctypes import windll
 
+from database import CONFIG_DB_CURSOR
 from view import *
 from ui.page_control.license_page_control import LicensePageControl
 from ui.button.close_license_button import CloseLicenseButton

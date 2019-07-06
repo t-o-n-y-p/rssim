@@ -1,5 +1,7 @@
 from logging import getLogger
+from ctypes import windll
 
+from database import CONFIG_DB_CURSOR
 from view import *
 from ui.button.accept_settings_button import AcceptSettingsButton
 from ui.button.reject_settings_button import RejectSettingsButton

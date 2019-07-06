@@ -1,5 +1,7 @@
 from logging import getLogger
+from ctypes import windll
 
+from database import CONFIG_DB_CURSOR
 from view import *
 from textures import SWITCHES_STRAIGHT, SWITCHES_DIVERGING
 from ui.sprite.crossover_sprite import CrossoverSprite

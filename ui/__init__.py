@@ -2,6 +2,8 @@ from pyglet.window import Window
 from pyglet.graphics import Batch, OrderedGroup
 
 # --------------------- CONSTANTS ---------------------
+MAP_WIDTH = 8192                                # full-size map width
+MAP_HEIGHT = 4096                               # full-size map height
 MIN_RESOLUTION_WIDTH = 1280                     # minimum screen resolution width supported by the app UI
 MIN_RESOLUTION_HEIGHT = 720                     # minimum screen resolution height supported by the app UI
 SCHEDULE_ROWS = 12                              # number of schedule rows on schedule screen
@@ -91,6 +93,19 @@ def get_inner_area_rect(screen_resolution):
                            (screen_resolution[1] - inner_area_size[1] - 3 * bottom_bar_height // 2) // 2
                            + bottom_bar_height)
     return (*inner_area_position, *inner_area_size)
+
+
+def get_mini_map_position(screen_resolution):
+    return (screen_resolution[0] - get_mini_map_width(screen_resolution) - 8,
+            screen_resolution[1] - get_top_bar_height(screen_resolution) - 6 - get_mini_map_height(screen_resolution))
+
+
+def get_mini_map_width(screen_resolution):
+    return screen_resolution[0] // 4
+
+
+def get_mini_map_height(screen_resolution):
+    return round(get_mini_map_width(screen_resolution) / 2)
 
 
 class Viewport:

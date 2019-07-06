@@ -1,5 +1,7 @@
 from logging import getLogger
+from ctypes import windll
 
+from database import CONFIG_DB_CURSOR
 from view import *
 from ui.button.create_station_button import CreateStationButton
 from ui.button.back_to_the_station_button import BackToTheStationButton

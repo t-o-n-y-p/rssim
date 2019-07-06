@@ -1,5 +1,7 @@
 from logging import getLogger
+from ctypes import windll
 
+from database import CONFIG_DB_CURSOR
 from view import *
 from ui.page_control.onboarding_page_control import OnboardingPageControl
 from ui.button.skip_onboarding_button import SkipOnboardingButton

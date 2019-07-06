@@ -1,4 +1,5 @@
 from logging import getLogger
+from ctypes import windll
 
 from win32api import GetCursorPos
 from win32gui import GetActiveWindow, GetWindowRect, SetWindowPos
@@ -6,6 +7,7 @@ from win32con import HWND_TOP, SWP_NOREDRAW
 
 from view import *
 from ui import *
+from database import CONFIG_DB_CURSOR
 from ui.button import create_two_state_button
 from ui.button.close_game_button import CloseGameButton
 from ui.button.iconify_button import IconifyButton
