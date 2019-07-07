@@ -89,6 +89,7 @@ class AppView(View):
     @view_is_not_active
     def on_activate(self):
         self.is_activated = True
+        self.shader_sprite.create()
         self.title_label.create()
         self.us_flag_sprite.create()
         self.ru_flag_sprite.create()

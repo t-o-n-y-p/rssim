@@ -38,6 +38,7 @@ class TrainView(View):
     def on_update(self):
         for i in range(len(self.car_sprites)):
             self.car_sprites[i].on_update_car_position(self.car_position[i])
+            self.boarding_light_sprites[i].on_update_car_position(self.car_position[i])
             if self.car_sprites[i].is_located_outside_viewport():
                 self.car_sprites[i].delete()
                 self.boarding_light_sprites[i].delete()

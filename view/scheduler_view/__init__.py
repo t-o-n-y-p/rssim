@@ -128,3 +128,6 @@ class SchedulerView(View):
         for i in range(SCHEDULE_COLUMNS):
             for j in range(SCHEDULE_ROWS):
                 self.schedule_rows[i][j].on_update_clock_state(clock_24h_enabled)
+
+    def on_update_time(self, game_time):
+        self.game_time = game_time

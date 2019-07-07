@@ -70,7 +70,7 @@ class ScheduleRow:
 
     def on_change_screen_resolution(self, screen_resolution):
         self.screen_resolution = screen_resolution
-        self.viewport.x1 = self.parent_viewport.x1 \
+        self.viewport.x1 = self.parent_viewport.x1 + get_inner_area_rect(self.screen_resolution)[0] \
                            + (int(6.875 * get_bottom_bar_height(self.screen_resolution))
                               + get_bottom_bar_height(self.screen_resolution) // 4) * self.column
         self.viewport.x2 = self.viewport.x1 + int(6.875 * get_bottom_bar_height(self.screen_resolution))
@@ -95,6 +95,7 @@ class ScheduleRow:
         self.main_sprite_12h.on_update_opacity(self.opacity)
         self.arrival_sprite.on_update_opacity(self.opacity)
 
+    @row_is_active
     def on_update_main_sprite_args(self):
         self.main_sprite_24h.on_update_args(
             (

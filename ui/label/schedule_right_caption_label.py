@@ -17,7 +17,8 @@ class ScheduleRightCaptionLabel(LocalizedLabel):
         self.group = GROUPS['button_text']
 
     def get_x(self):
-        return self.parent_viewport.x1 + int(6.875 * get_bottom_bar_height(self.screen_resolution)) \
+        return self.parent_viewport.x1 + get_inner_area_rect(self.screen_resolution)[0] \
+               + int(6.875 * get_bottom_bar_height(self.screen_resolution)) \
                + get_bottom_bar_height(self.screen_resolution) // 4 \
                + int(6.875 * get_bottom_bar_height(self.screen_resolution)) // 2
 

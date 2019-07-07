@@ -74,6 +74,7 @@ class SchedulerModel(Model):
 
         :param game_time:               current in-game time
         """
+        self.view.on_update_time(game_time)
         # new schedule cycle is created if current schedule end is less than schedule cycle length ahead
         if game_time + self.schedule_cycle_length >= self.next_cycle_start_time:
             # trains are added one by one if both direction and new direction are unlocked by user,

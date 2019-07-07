@@ -218,13 +218,12 @@ class MapView(View):
     def on_update_mini_map_opacity(self):
         if self.is_mini_map_activated and self.mini_map_opacity < 255:
             self.mini_map_opacity += 17
-            self.mini_map_sprite.on_update_opacity(self.opacity)
-            self.mini_environment_sprite.on_update_opacity(self.opacity)
 
         if not self.is_mini_map_activated and self.mini_map_opacity > 0:
             self.mini_map_opacity -= 17
-            self.mini_map_sprite.on_update_opacity(self.opacity)
-            self.mini_environment_sprite.on_update_opacity(self.opacity)
+
+        self.mini_map_sprite.on_update_opacity(self.mini_map_opacity)
+        self.mini_environment_sprite.on_update_opacity(self.mini_map_opacity)
 
     def on_unlock_track(self, track):
         self.unlocked_tracks = track
