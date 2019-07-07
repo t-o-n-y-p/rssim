@@ -16,7 +16,7 @@ def shader_sprite_exists(fn):
 class PageControl:
     def __init__(self, logger, parent_viewport):
         def on_navigate_to_previous_page(button):
-            self.pages[self.current_page - 1].opacity = self.pages[self.current_page].opacity
+            self.pages[self.current_page - 1].on_update_opacity(self.pages[self.current_page].opacity)
             self.pages[self.current_page].on_deactivate(instant=True)
             self.current_page -= 1
             self.pages[self.current_page].on_activate()
@@ -24,7 +24,7 @@ class PageControl:
             self.on_update_page_control_buttons()
 
         def on_navigate_to_next_page(button):
-            self.pages[self.current_page + 1].opacity = self.pages[self.current_page].opacity
+            self.pages[self.current_page + 1].on_update_opacity(self.pages[self.current_page].opacity)
             self.pages[self.current_page].on_deactivate(instant=True)
             self.current_page += 1
             self.pages[self.current_page].on_activate()
@@ -55,6 +55,7 @@ class PageControl:
         if self.shader_sprite is not None:
             self.shader_sprite.create()
 
+        self.current_page_label.on_update_args((self.current_page + 1, len(self.pages)))
         self.current_page_label.create()
         self.pages[self.current_page].on_activate()
         self.next_page_button.on_activate()

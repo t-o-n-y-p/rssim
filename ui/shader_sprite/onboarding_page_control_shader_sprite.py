@@ -20,6 +20,10 @@ class OnboardingPageControlShaderSprite(ShaderSprite):
 
     def set_uniforms(self):
         self.shader.uniforms.onboarding_page_control_opacity = self.view.opacity
-        self.shader.uniforms.position = self.view.pages[self.view.current_page].position
-        self.shader.uniforms.size = self.view.pages[self.view.current_page].size
+        self.shader.uniforms.position = (self.view.pages[self.view.current_page].viewport.x1,
+                                         self.view.pages[self.view.current_page].viewport.y1)
+        self.shader.uniforms.size = (self.view.pages[self.view.current_page].viewport.x2
+                                     - self.view.pages[self.view.current_page].viewport.x1,
+                                     self.view.pages[self.view.current_page].viewport.y2
+                                     - self.view.pages[self.view.current_page].viewport.y1)
         self.shader.uniforms.page_number = self.view.current_page
