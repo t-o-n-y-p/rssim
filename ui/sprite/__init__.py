@@ -71,6 +71,11 @@ class Sprite:
         if self.sprite is not None:
             self.sprite.image = self.texture
 
+    def on_rotate(self, angle):
+        self.rotation = angle
+        if self.sprite is not None:
+            self.sprite.rotation = angle
+
 
 class UISprite(Sprite):
     def __init__(self, logger, parent_viewport):

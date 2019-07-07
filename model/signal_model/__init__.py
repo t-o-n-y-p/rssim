@@ -31,7 +31,7 @@ class SignalModel(Model):
         """
         Updates state and locked values and activates the view.
         """
-        self.view.state = self.state
+        self.view.on_change_state(self.state)
         self.view.locked = self.locked
         self.view.on_activate()
 
