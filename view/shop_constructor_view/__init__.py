@@ -1,5 +1,7 @@
 from logging import getLogger
+from ctypes import windll
 
+from database import CONFIG_DB_CURSOR
 from view import *
 from ui.button.clear_shop_storage_button import ClearShopStorageButton
 from ui.rectangle_progress_bar.shop_storage_progress_bar import ShopStorageProgressBar
@@ -23,22 +25,21 @@ class ShopConstructorView(View):
         self.map_id = map_id
         self.shop_id = shop_id
         self.shop_stages_state_matrix = {}
-        self.user_db_cursor.execute('''SELECT current_stage, shop_storage_money
-                                       FROM shops WHERE map_id = ? AND shop_id = ?''', (self.map_id, self.shop_id))
-        self.current_stage, self.shop_storage_money = self.user_db_cursor.fetchone()
+        USER_DB_CURSOR.execute('''SELECT current_stage, shop_storage_money
+                                  FROM shops WHERE map_id = ? AND shop_id = ?''', (self.map_id, self.shop_id))
+        self.current_stage, self.shop_storage_money = USER_DB_CURSOR.fetchone()
         self.shop_stages_cells_position = (0, 0)
         self.shop_stages_cells_size = (0, 0)
-        self.user_db_cursor.execute('''SELECT last_known_shop_window_position FROM graphics''')
-        self.viewport.x1, self.viewport.y1 = tuple(map(int, self.user_db_cursor.fetchone()[0].split(',')))
-        self.viewport.x2 = self.viewport.x1 + self.inner_area_size[0]
-        self.viewport.y2 = self.viewport.y1 + self.inner_area_size[1]
+        USER_DB_CURSOR.execute('''SELECT last_known_shop_window_position FROM graphics''')
+        self.last_known_shop_window_position = tuple(map(int, USER_DB_CURSOR.fetchone()[0].split(',')))
         self.shader_sprite = ShopConstructorViewShaderSprite(view=self)
         self.current_hourly_profit_label = CurrentHourlyProfitDescriptionLabel(parent_viewport=self.viewport)
         self.current_exp_bonus_label = CurrentExpBonusDescriptionLabel(parent_viewport=self.viewport)
         self.hourly_profit_value_label = CurrentHourlyProfitValueLabel(parent_viewport=self.viewport)
         self.exp_bonus_value_label = CurrentExpBonusValueLabel(parent_viewport=self.viewport)
         self.shop_storage_progress_bar = ShopStorageProgressBar(parent_viewport=self.viewport)
-        self.clear_shop_storage_button = ClearShopStorageButton(on_click_action=on_clear_storage)
+        self.clear_shop_storage_button = ClearShopStorageButton(on_click_action=on_clear_storage,
+                                                                parent_viewport=self.viewport)
         self.buttons = [self.clear_shop_storage_button, ]
         self.shop_stage_cells = {}
         for i in range(1, 5):
@@ -46,19 +47,21 @@ class ShopConstructorView(View):
                                                      parent_viewport=self.viewport)
             self.buttons.append(self.shop_stage_cells[i].build_button)
 
-        self.on_init_graphics()
+        self.on_init_content()
 
-    def on_init_graphics(self):
-        """
-        Initializes the view based on saved screen resolution and base offset.
-        """
-        self.on_change_screen_resolution(self.screen_resolution)
+    def on_init_content(self):
+        CONFIG_DB_CURSOR.execute('SELECT app_width, app_height FROM screen_resolution_config')
+        screen_resolution_config = CONFIG_DB_CURSOR.fetchall()
+        monitor_resolution_config = (windll.user32.GetSystemMetrics(0), windll.user32.GetSystemMetrics(1))
+        USER_DB_CURSOR.execute('SELECT fullscreen FROM graphics')
+        if bool(USER_DB_CURSOR.fetchone()[0]) and monitor_resolution_config in screen_resolution_config:
+            self.on_change_screen_resolution(monitor_resolution_config)
+        else:
+            USER_DB_CURSOR.execute('SELECT app_width, app_height FROM graphics')
+            self.on_change_screen_resolution(USER_DB_CURSOR.fetchone())
 
     @view_is_not_active
     def on_activate(self):
-        """
-        Activates the view and creates sprites and labels.
-        """
         self.is_activated = True
         self.shader_sprite.create()
         self.current_hourly_profit_label.create()
@@ -86,9 +89,6 @@ class ShopConstructorView(View):
 
     @view_is_active
     def on_deactivate(self):
-        """
-        Deactivates the view and destroys all labels and buttons.
-        """
         self.is_activated = False
         self.shop_storage_progress_bar.on_deactivate()
         for stage_cell in self.shop_stage_cells:
@@ -99,69 +99,44 @@ class ShopConstructorView(View):
             b.state = 'normal'
 
     def on_change_screen_resolution(self, screen_resolution):
-        self.on_recalculate_ui_properties(screen_resolution)
-        self.viewport.x1 = self.inner_area_position[0]
-        self.viewport.y1 = self.inner_area_position[1]
-        self.viewport.x2 = self.viewport.x1 + self.inner_area_size[0]
-        self.viewport.y2 = self.viewport.y1 + self.inner_area_size[1]
+        self.screen_resolution = screen_resolution
+        self.viewport.x1 = get_inner_area_rect(self.screen_resolution)[0]
+        self.viewport.y1 = get_inner_area_rect(self.screen_resolution)[1]
+        self.viewport.x2 = self.viewport.x1 + get_inner_area_rect(self.screen_resolution)[2]
+        self.viewport.y2 = self.viewport.y1 + get_inner_area_rect(self.screen_resolution)[3]
         self.current_hourly_profit_label.on_change_screen_resolution(self.screen_resolution)
         self.current_exp_bonus_label.on_change_screen_resolution(self.screen_resolution)
         self.hourly_profit_value_label.on_change_screen_resolution(self.screen_resolution)
         self.exp_bonus_value_label.on_change_screen_resolution(self.screen_resolution)
         self.shader_sprite.on_change_screen_resolution(self.screen_resolution)
-        self.shop_stages_cells_position = (self.viewport.x1 + self.top_bar_height // 4,
-                                           self.viewport.y1 + self.top_bar_height // 4)
-        self.shop_stages_cells_size = ((self.viewport.x2 - self.viewport.x1) - self.top_bar_height // 2,
-                                       3 * self.bottom_bar_height - self.bottom_bar_height // 8)
+        self.shop_stages_cells_position = (self.viewport.x1 + get_top_bar_height(self.screen_resolution) // 4,
+                                           self.viewport.y1 + get_top_bar_height(self.screen_resolution) // 4)
+        self.shop_stages_cells_size = ((self.viewport.x2 - self.viewport.x1)
+                                       - get_top_bar_height(self.screen_resolution) // 2,
+                                       3 * get_bottom_bar_height(self.screen_resolution)
+                                       - get_bottom_bar_height(self.screen_resolution) // 8)
         self.shop_storage_progress_bar.on_change_screen_resolution(self.screen_resolution)
         for stage_cell in self.shop_stage_cells:
             self.shop_stage_cells[stage_cell].on_change_screen_resolution(self.screen_resolution)
 
-        self.clear_shop_storage_button.on_size_changed((self.bottom_bar_height, self.bottom_bar_height))
-        self.clear_shop_storage_button.x_margin = self.viewport.x2 \
-                                                  - self.bottom_bar_height // 8 - self.bottom_bar_height
-        self.clear_shop_storage_button.y_margin = self.viewport.y1 + self.bottom_bar_height // 8 \
-                                                  + 3 * self.bottom_bar_height
         for b in self.buttons:
-            b.on_position_changed((b.x_margin, b.y_margin))
+            b.on_change_screen_resolution(self.screen_resolution)
 
     def on_update_opacity(self, new_opacity):
-        """
-        Updates view opacity with given value.
-
-        :param new_opacity:                     new opacity value
-        """
         self.opacity = new_opacity
         self.shop_storage_progress_bar.on_update_opacity(new_opacity)
         for stage_cell in self.shop_stage_cells:
             self.shop_stage_cells[stage_cell].on_update_opacity(new_opacity)
 
-        self.on_update_sprite_opacity()
+        self.shader_sprite.on_update_opacity(self.opacity)
+        self.current_hourly_profit_label.on_update_opacity(self.opacity)
+        self.current_exp_bonus_label.on_update_opacity(self.opacity)
+        self.hourly_profit_value_label.on_update_opacity(self.opacity)
+        self.exp_bonus_value_label.on_update_opacity(self.opacity)
         for b in self.buttons:
             b.on_update_opacity(new_opacity)
 
-    def on_update_sprite_opacity(self):
-        """
-        Applies new opacity value to all sprites and labels.
-        """
-        if self.opacity <= 0:
-            self.shader_sprite.delete()
-            self.current_hourly_profit_label.delete()
-            self.current_exp_bonus_label.delete()
-            self.hourly_profit_value_label.delete()
-            self.exp_bonus_value_label.delete()
-        else:
-            self.current_hourly_profit_label.on_update_opacity(self.opacity)
-            self.current_exp_bonus_label.on_update_opacity(self.opacity)
-            self.hourly_profit_value_label.on_update_opacity(self.opacity)
-            self.exp_bonus_value_label.on_update_opacity(self.opacity)
-
     def on_update_current_locale(self, new_locale):
-        """
-        Updates current locale selected by user and all text labels.
-
-        :param new_locale:                      selected locale
-        """
         self.current_locale = new_locale
         self.current_hourly_profit_label.on_update_current_locale(self.current_locale)
         self.current_exp_bonus_label.on_update_current_locale(self.current_locale)
@@ -169,11 +144,7 @@ class ShopConstructorView(View):
         for stage_cell in self.shop_stage_cells:
             self.shop_stage_cells[stage_cell].on_update_current_locale(new_locale)
 
-    @shader_sprite_exists
     def on_apply_shaders_and_draw_vertices(self):
-        """
-        Activates the shader, initializes all shader uniforms, draws shader sprite and deactivates the shader.
-        """
         self.shader_sprite.draw()
 
     def on_update_stage_state(self, stage_number):

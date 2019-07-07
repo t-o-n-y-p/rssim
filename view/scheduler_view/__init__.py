@@ -77,17 +77,6 @@ class SchedulerView(View):
                 self.schedule_rows[i // SCHEDULE_ROWS][i % SCHEDULE_ROWS].on_assign_data(self.base_schedule[i])
                 return
 
-    def on_update_opacity(self, new_opacity):
-        self.opacity = new_opacity
-        self.left_schedule_caption_label.on_update_opacity(self.opacity)
-        self.right_schedule_caption_label.on_update_opacity(self.opacity)
-        for b in self.buttons:
-            b.on_update_opacity(self.opacity)
-
-        for i in range(SCHEDULE_COLUMNS):
-            for j in range(SCHEDULE_ROWS):
-                self.schedule_rows[i][j].on_update_opacity(self.opacity)
-
     def on_change_screen_resolution(self, screen_resolution):
         self.screen_resolution = screen_resolution
         self.viewport.x1, self.viewport.y1 = 0, 0
@@ -101,6 +90,18 @@ class SchedulerView(View):
 
         for b in self.buttons:
             b.on_change_screen_resolution(self.screen_resolution)
+
+    def on_update_opacity(self, new_opacity):
+        self.opacity = new_opacity
+        self.shader_sprite.on_update_opacity(self.opacity)
+        self.left_schedule_caption_label.on_update_opacity(self.opacity)
+        self.right_schedule_caption_label.on_update_opacity(self.opacity)
+        for b in self.buttons:
+            b.on_update_opacity(self.opacity)
+
+        for i in range(SCHEDULE_COLUMNS):
+            for j in range(SCHEDULE_ROWS):
+                self.schedule_rows[i][j].on_update_opacity(self.opacity)
 
     @view_is_active
     def on_release_train(self, index):

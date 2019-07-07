@@ -203,6 +203,7 @@ class MapView(View):
 
     def on_update_opacity(self, new_opacity):
         self.opacity = new_opacity
+        self.shader_sprite.on_update_opacity(self.opacity)
         self.main_map_sprite.on_update_opacity(self.opacity)
         self.environment_sprite.on_update_opacity(self.opacity)
         for b in self.buttons:

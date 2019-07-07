@@ -49,7 +49,6 @@ class ShopStageCell:
         self.logger = getLogger(f'root.app.game.map.shop.view.cell.{stage_number}')
         self.is_activated = False
         self.stage_number = stage_number
-        self.surface, self.batches, self.groups = SURFACE, BATCHES, GROUPS
         USER_DB_CURSOR.execute('SELECT current_locale FROM i18n')
         self.current_locale = USER_DB_CURSOR.fetchone()[0]
         self.on_buy_stage_action = on_buy_stage_action
@@ -69,7 +68,7 @@ class ShopStageCell:
         self.exp_bonus_value_label = ShopStageExpBonusValueLabel(parent_viewport=self.viewport)
         self.price_label = ShopStagePriceLabel(parent_viewport=self.viewport)
         self.under_construction_label = ShopStageUnderConstructionLabel(parent_viewport=self.viewport)
-        self.build_button = BuildShopStageButton(on_click_action=on_buy_shop_stage)
+        self.build_button = BuildShopStageButton(on_click_action=on_buy_shop_stage, parent_viewport=self.viewport)
         self.buttons = [self.build_button, ]
         self.money = 0
         self.opacity = 0
@@ -141,11 +140,6 @@ class ShopStageCell:
             self.price_label.delete()
 
     def on_update_money(self, money):
-        """
-        Updates cell state based on available money.
-
-        :param money:                   amount of money the player can operate
-        """
         self.money = money
         self.on_update_build_button_state()
 
@@ -160,16 +154,10 @@ class ShopStageCell:
 
     @cell_is_not_active
     def on_activate(self):
-        """
-        Activates the cell.
-        """
         self.is_activated = True
 
     @cell_is_active
     def on_deactivate(self):
-        """
-        Deactivates the cell and all buttons, clears the data.
-        """
         self.is_activated = False
         for b in self.buttons:
             b.on_deactivate()
@@ -194,17 +182,8 @@ class ShopStageCell:
         self.exp_bonus_description_label.on_change_screen_resolution(self.screen_resolution)
         self.exp_bonus_value_label.on_change_screen_resolution(self.screen_resolution)
         self.price_label.on_change_screen_resolution(self.screen_resolution)
-        self.build_button.on_size_changed((get_top_bar_height(self.screen_resolution),
-                                           get_top_bar_height(self.screen_resolution)))
-        self.build_button.x_margin = self.viewport.x2 - 3 * get_top_bar_height(self.screen_resolution) // 2
-        self.build_button.y_margin = self.viewport.y1 + 9 * get_top_bar_height(self.screen_resolution) // 8
 
     def on_update_current_locale(self, new_locale):
-        """
-        Updates current locale selected by user and all text labels.
-
-        :param new_locale:                      selected locale
-        """
         self.current_locale = new_locale
         self.level_placeholder_label.on_update_current_locale(self.current_locale)
         self.previous_stage_placeholder_label.on_update_current_locale(self.current_locale)
@@ -215,39 +194,15 @@ class ShopStageCell:
         self.exp_bonus_value_label.on_update_current_locale(self.current_locale)
 
     def on_update_opacity(self, new_opacity):
-        """
-        Updates cell opacity with given value.
-
-        :param new_opacity:                     new opacity value
-        """
         self.opacity = new_opacity
-        self.on_update_sprite_opacity()
-
-    def on_update_sprite_opacity(self):
-        """
-        Applies new opacity value to all sprites and labels.
-        """
-        if self.opacity <= 0:
-            self.locked_label.delete()
-            self.level_placeholder_label.delete()
-            self.previous_stage_placeholder_label.delete()
-            self.under_construction_label.delete()
-            self.hourly_profit_description_label.delete()
-            self.hourly_profit_value_label.delete()
-            self.storage_capacity_description_label.delete()
-            self.storage_capacity_value_label.delete()
-            self.exp_bonus_description_label.delete()
-            self.exp_bonus_value_label.delete()
-            self.price_label.delete()
-        else:
-            self.locked_label.on_update_opacity(self.opacity)
-            self.level_placeholder_label.on_update_opacity(self.opacity)
-            self.previous_stage_placeholder_label.on_update_opacity(self.opacity)
-            self.under_construction_label.on_update_opacity(self.opacity)
-            self.hourly_profit_description_label.on_update_opacity(self.opacity)
-            self.hourly_profit_value_label.on_update_opacity(self.opacity)
-            self.storage_capacity_description_label.on_update_opacity(self.opacity)
-            self.storage_capacity_value_label.on_update_opacity(self.opacity)
-            self.exp_bonus_description_label.on_update_opacity(self.opacity)
-            self.exp_bonus_value_label.on_update_opacity(self.opacity)
-            self.price_label.on_update_opacity(self.opacity)
+        self.locked_label.on_update_opacity(self.opacity)
+        self.level_placeholder_label.on_update_opacity(self.opacity)
+        self.previous_stage_placeholder_label.on_update_opacity(self.opacity)
+        self.under_construction_label.on_update_opacity(self.opacity)
+        self.hourly_profit_description_label.on_update_opacity(self.opacity)
+        self.hourly_profit_value_label.on_update_opacity(self.opacity)
+        self.storage_capacity_description_label.on_update_opacity(self.opacity)
+        self.storage_capacity_value_label.on_update_opacity(self.opacity)
+        self.exp_bonus_description_label.on_update_opacity(self.opacity)
+        self.exp_bonus_value_label.on_update_opacity(self.opacity)
+        self.price_label.on_update_opacity(self.opacity)
