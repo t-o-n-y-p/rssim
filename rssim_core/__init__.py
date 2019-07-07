@@ -111,19 +111,6 @@ LOG_LEVEL_DEBUG = 10                # integer log level which includes all possi
 
 
 def create_app(loader):
-    """
-    Creates controller, model and view for App object.
-    It is responsible for high-level properties, UI and events.
-    Child objects:
-        main_menu                   MainMenu object
-        license                     License object
-        game                        Game object
-        settings                    Settings object
-        fps                         FPS object
-
-    :param loader:                  RSSim class pointer
-    :return:                        App object controller
-    """
     controller = AppController(loader)
     controller.fade_in_animation = AppFadeInAnimation(controller)
     controller.fade_out_animation = AppFadeOutAnimation(controller)
@@ -180,15 +167,6 @@ def create_app(loader):
 
 
 def _create_game(app):
-    """
-    Creates controller, model and view for Game object.
-    It is responsible for properties, UI and events related to the game process.
-    Child objects:
-        maps                        Map objects
-
-    :param app:                     App controller pointer
-    :return:                        Game object controller
-    """
     controller = GameController(app)
     controller.fade_in_animation = GameFadeInAnimation(controller)
     controller.fade_out_animation = GameFadeOutAnimation(controller)
@@ -208,22 +186,6 @@ def _create_game(app):
 
 
 def _create_passenger_map(game):
-    """
-    Creates controller, model and view for Map object.
-    It is responsible for properties, UI and events related to the map.
-    Child objects:
-        scheduler                   Scheduler object
-        dispatcher                  Dispatcher object
-        constructor                 Constructor object
-        trains                      Train objects
-        signals                     Signal objects
-        train_routes                TrainRoute objects
-        switches                    RailroadSwitch objects
-        crossovers                  Crossover objects
-
-    :param game:                    Game controller pointer
-    :return:                        Map object controller
-    """
     controller = PassengerMapController(game)
     controller.fade_in_animation = MapFadeInAnimation(controller)
     controller.fade_out_animation = MapFadeOutAnimation(controller)
@@ -299,7 +261,7 @@ def _create_passenger_map(game):
     CONFIG_DB_CURSOR.execute('''SELECT COUNT(*) FROM shops_config WHERE map_id = 0''')
     number_of_shops = CONFIG_DB_CURSOR.fetchone()[0]
     for i in range(number_of_shops):
-        controller.shops.append(_create_shop(controller, i))
+        controller.shops.append(_create_passenger_map_shop(controller, i))
 
     model = PassengerMapModel()
     view = PassengerMapView()
@@ -342,13 +304,6 @@ def _create_passenger_map(game):
 
 
 def _create_settings(app):
-    """
-    Creates controller, model and view for Settings object.
-    It is responsible for user-defined settings.
-
-    :param app:                     App controller pointer
-    :return:                        Settings object controller
-    """
     controller = SettingsController(app)
     controller.fade_in_animation = SettingsFadeInAnimation(controller)
     controller.fade_out_animation = SettingsFadeOutAnimation(controller)
@@ -363,13 +318,6 @@ def _create_settings(app):
 
 
 def _create_fps(app):
-    """
-    Creates controller, model and view for FPS object.
-    It is responsible for real-time FPS calculation.
-
-    :param app:                     App controller pointer
-    :return:                        FPS object controller
-    """
     controller = FPSController(app)
     controller.fade_in_animation = FPSFadeInAnimation(controller)
     controller.fade_out_animation = FPSFadeOutAnimation(controller)
@@ -384,13 +332,6 @@ def _create_fps(app):
 
 
 def _create_passenger_map_scheduler(map_controller):
-    """
-    Creates controller, model and view for Scheduler object.
-    It is responsible for properties, UI and events related to the train schedule.
-
-    :param map_controller:          Map controller pointer
-    :return:                        Scheduler object controller
-    """
     controller = PassengerMapSchedulerController(map_controller)
     controller.fade_in_animation = SchedulerFadeInAnimation(controller)
     controller.fade_out_animation = SchedulerFadeOutAnimation(controller)
@@ -401,19 +342,11 @@ def _create_passenger_map_scheduler(map_controller):
     controller.view = view
     view.on_assign_controller(controller)
     model.view = view
+    view.base_schedule = model.base_schedule
     return controller
 
 
 def _create_passenger_map_signal(map_controller, track, base_route):
-    """
-    Creates controller, model and view for Signal object.
-    It is responsible for properties, UI and events related to the signal state.
-
-    :param map_controller:          Map controller pointer
-    :param track:                   signal track number
-    :param base_route:              base route (train route part) which signal belongs to
-    :return:                        Signal object controller
-    """
     controller = PassengerMapSignalController(map_controller, track, base_route)
     controller.fade_in_animation = SignalFadeInAnimation(controller)
     controller.fade_out_animation = SignalFadeOutAnimation(controller)
@@ -428,15 +361,6 @@ def _create_passenger_map_signal(map_controller, track, base_route):
 
 
 def _create_passenger_train_route(map_controller, track, train_route):
-    """
-    Creates controller, model and view for TrainRoute object.
-    It is responsible for properties, UI and events related to the train route.
-
-    :param map_controller:          Map controller pointer
-    :param track:                   train route track number
-    :param train_route:             train route type
-    :return:                        TrainRoute object controller
-    """
     controller = PassengerTrainRouteController(map_controller, track, train_route)
     controller.fade_in_animation = TrainRouteFadeInAnimation(controller)
     controller.fade_out_animation = TrainRouteFadeOutAnimation(controller)
@@ -454,16 +378,6 @@ def _create_passenger_train_route(map_controller, track, train_route):
 
 
 def _create_passenger_map_railroad_switch(map_controller, track_param_1, track_param_2, switch_type):
-    """
-    Creates controller, model and view for RailroadSwitch object.
-    It is responsible for properties, UI and events related to the railroad switch.
-
-    :param map_controller:          Map controller pointer
-    :param track_param_1:           straight track number
-    :param track_param_2:           diverging track number
-    :param switch_type:             switch location: left/right side of the map
-    :return:                        RailroadSwitch object controller
-    """
     controller = PassengerMapRailroadSwitchController(map_controller, track_param_1, track_param_2, switch_type)
     controller.fade_in_animation = RailroadSwitchFadeInAnimation(controller)
     controller.fade_out_animation = RailroadSwitchFadeOutAnimation(controller)
@@ -478,16 +392,6 @@ def _create_passenger_map_railroad_switch(map_controller, track_param_1, track_p
 
 
 def _create_passenger_map_crossover(map_controller, track_param_1, track_param_2, crossover_type):
-    """
-    Creates controller, model and view for Crossover object.
-    It is responsible for properties, UI and events related to the crossover.
-
-    :param map_controller:          Map controller pointer
-    :param track_param_1:           first straight track number
-    :param track_param_2:           second straight track number
-    :param crossover_type:          crossover location: left/right side of the map
-    :return:                        Crossover object controller
-    """
     controller = PassengerMapCrossoverController(map_controller, track_param_1, track_param_2, crossover_type)
     controller.fade_in_animation = CrossoverFadeInAnimation(controller)
     controller.fade_out_animation = CrossoverFadeOutAnimation(controller)
@@ -502,14 +406,6 @@ def _create_passenger_map_crossover(map_controller, track_param_1, track_param_2
 
 
 def _create_passenger_train(map_controller, train_id):
-    """
-    Creates controller, model and view for Train object from the database.
-    It is responsible for properties, UI and events related to the train.
-
-    :param map_controller:          Map controller pointer
-    :param train_id:                train identification number
-    :return:                        Train object controller
-    """
     controller = PassengerTrainController(map_controller, train_id)
     controller.fade_in_animation = TrainFadeInAnimation(controller)
     controller.fade_out_animation = TrainFadeOutAnimation(controller)
@@ -525,13 +421,6 @@ def _create_passenger_train(map_controller, train_id):
 
 
 def _create_passenger_map_dispatcher(map_controller):
-    """
-    Creates controller, model and view for Dispatcher object.
-    It is responsible for assigning routes to approaching trains.
-
-    :param map_controller:          Map controller pointer
-    :return:                        Dispatcher object controller
-    """
     controller = PassengerMapDispatcherController(map_controller)
     controller.fade_in_animation = DispatcherFadeInAnimation(controller)
     controller.fade_out_animation = DispatcherFadeOutAnimation(controller)
@@ -546,13 +435,6 @@ def _create_passenger_map_dispatcher(map_controller):
 
 
 def _create_passenger_map_constructor(map_controller):
-    """
-    Creates controller, model and view for Constructor object.
-    It is responsible for building new tracks and station environment.
-
-    :param map_controller:          Map controller pointer
-    :return:                        Constructor object controller
-    """
     controller = PassengerMapConstructorController(map_controller)
     controller.fade_in_animation = ConstructorFadeInAnimation(controller)
     controller.fade_out_animation = ConstructorFadeOutAnimation(controller)
@@ -568,13 +450,6 @@ def _create_passenger_map_constructor(map_controller):
 
 
 def _create_main_menu(app):
-    """
-    Creates controller, model and view for MainMenu object.
-    It is responsible for main menu screen.
-
-    :param app:                     App controller pointer
-    :return:                        MainMenu object controller
-    """
     controller = MainMenuController(app)
     controller.fade_in_animation = MainMenuFadeInAnimation(controller)
     controller.fade_out_animation = MainMenuFadeOutAnimation(controller)
@@ -589,13 +464,6 @@ def _create_main_menu(app):
 
 
 def _create_license(app):
-    """
-    Creates controller, model and view for License object.
-    It is responsible for license screen.
-
-    :param app:                     App controller pointer
-    :return:                        License object controller
-    """
     controller = LicenseController(app)
     controller.fade_in_animation = LicenseFadeInAnimation(controller)
     controller.fade_out_animation = LicenseFadeOutAnimation(controller)
@@ -610,13 +478,6 @@ def _create_license(app):
 
 
 def _create_onboarding(app):
-    """
-    Creates controller, model and view for Onboarding object.
-    It is responsible for onboarding screen.
-
-    :param app:                     App controller pointer
-    :return:                        Onboarding object controller
-    """
     controller = OnboardingController(app)
     controller.fade_in_animation = OnboardingFadeInAnimation(controller)
     controller.fade_out_animation = OnboardingFadeOutAnimation(controller)
@@ -630,12 +491,12 @@ def _create_onboarding(app):
     return controller
 
 
-def _create_shop(map_controller, shop_id):
+def _create_passenger_map_shop(map_controller, shop_id):
     controller = PassengerMapShopController(map_controller, shop_id)
     controller.fade_in_animation = ShopFadeInAnimation(controller)
     controller.fade_out_animation = ShopFadeOutAnimation(controller)
-    controller.placeholder = _create_shop_placeholder(controller, shop_id)
-    controller.shop_constructor = _create_shop_constructor(controller, shop_id)
+    controller.placeholder = _create_passenger_map_shop_placeholder(controller, shop_id)
+    controller.shop_constructor = _create_passenger_map_shop_constructor(controller, shop_id)
     controller.placeholder_to_shop_constructor_transition_animation \
         = TransitionAnimation(fade_out_animation=controller.placeholder.fade_out_animation,
                               fade_in_animation=controller.shop_constructor.fade_in_animation)
@@ -653,7 +514,7 @@ def _create_shop(map_controller, shop_id):
     return controller
 
 
-def _create_shop_placeholder(shop_controller, shop_id):
+def _create_passenger_map_shop_placeholder(shop_controller, shop_id):
     controller = PassengerMapShopPlaceholderController(shop_controller, shop_id)
     controller.fade_in_animation = ShopPlaceholderFadeInAnimation(controller)
     controller.fade_out_animation = ShopPlaceholderFadeOutAnimation(controller)
@@ -667,7 +528,7 @@ def _create_shop_placeholder(shop_controller, shop_id):
     return controller
 
 
-def _create_shop_constructor(shop_controller, shop_id):
+def _create_passenger_map_shop_constructor(shop_controller, shop_id):
     controller = PassengerMapShopConstructorController(shop_controller, shop_id)
     controller.fade_in_animation = ShopConstructorFadeInAnimation(controller)
     controller.fade_out_animation = ShopConstructorFadeOutAnimation(controller)

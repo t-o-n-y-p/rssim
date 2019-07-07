@@ -92,13 +92,6 @@ class SchedulerModel(Model):
             self.next_cycle_start_time += self.schedule_cycle_length
             self.base_schedule = sorted(self.base_schedule, key=itemgetter(ARRIVAL_TIME))
 
-        # notify the view about both base_schedule and/or game_time update
-        base_schedule_hour = []
-        for row in self.base_schedule:
-            if row[ARRIVAL_TIME] <= game_time + FRAMES_IN_ONE_HOUR:
-                base_schedule_hour.append(row)
-
-        self.view.on_update_live_schedule(base_schedule_hour)
         # notify Map controller about new train available if arrival time is less or equal than current time
         # and corresponding entry is not busy; only one train at a time is created
         for i in self.base_schedule:
