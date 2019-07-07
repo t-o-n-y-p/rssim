@@ -34,6 +34,7 @@ class RailroadSwitchView(View):
         self.locked = bool(USER_DB_CURSOR.fetchone()[0])
         self.sprite = RailroadSwitchSprite(map_id, track_param_1, track_param_2, switch_type,
                                            parent_viewport=self.viewport)
+        self.sprite.on_update_texture(self.images[self.current_position])
         self.on_init_content()
 
     def on_init_content(self):

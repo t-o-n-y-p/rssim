@@ -19,5 +19,5 @@ class GameViewShaderSprite(ShaderSprite):
 
     def set_uniforms(self):
         self.shader.uniforms.screen_resolution = self.view.screen_resolution
-        self.shader.uniforms.bottom_bar_height = self.view.bottom_bar_height
+        self.shader.uniforms.bottom_bar_height = get_bottom_bar_height(self.view.screen_resolution)
         self.shader.uniforms.game_frame_opacity = self.view.opacity

@@ -2,6 +2,7 @@ from logging import getLogger
 
 from pyshaders import from_files_names
 
+from ui import *
 from ui.shader_sprite import ShaderSprite
 
 
@@ -18,5 +19,5 @@ class AppViewShaderSprite(ShaderSprite):
 
     def set_uniforms(self):
         self.shader.uniforms.screen_resolution = self.view.screen_resolution
-        self.shader.uniforms.top_bar_height = self.view.top_bar_height
+        self.shader.uniforms.top_bar_height = get_top_bar_height(self.view.screen_resolution)
         self.shader.uniforms.opacity = self.view.opacity

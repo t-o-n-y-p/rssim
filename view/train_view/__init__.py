@@ -36,7 +36,8 @@ class TrainView(View):
             self.on_change_screen_resolution(USER_DB_CURSOR.fetchone())
 
     def on_update(self):
-        for i in range(len(self.car_position)):
+        for i in range(len(self.car_sprites)):
+            self.car_sprites[i].on_update_car_position(self.car_position[i])
             if self.car_sprites[i].is_located_outside_viewport():
                 self.car_sprites[i].delete()
                 self.boarding_light_sprites[i].delete()
@@ -99,7 +100,7 @@ class TrainView(View):
 
     def on_update_direction(self, new_direction):
         self.direction = new_direction
-        for i in range(len(self.car_position)):
+        for i in range(len(self.car_sprites)):
             if i == 0:
                 self.car_sprites[i].on_update_texture(self.car_head_image[self.car_image_collection][self.direction])
             elif i == len(self.car_position) - 1:
@@ -115,5 +116,3 @@ class TrainView(View):
 
     def on_update_car_position(self, car_positions):
         self.car_position = car_positions
-        for i in range(len(self.car_position)):
-            self.car_sprites[i].on_update_car_position(self.car_position[i])

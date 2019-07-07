@@ -3,8 +3,8 @@ import pyglet.sprite
 from database import USER_DB_CURSOR
 
 
-SPRITE_VIEWPORT_EDGE_OFFSET_LIMIT_X = 20
-SPRITE_VIEWPORT_EDGE_OFFSET_LIMIT_Y = 20
+SPRITE_VIEWPORT_EDGE_OFFSET_LIMIT_X = 150
+SPRITE_VIEWPORT_EDGE_OFFSET_LIMIT_Y = 100
 
 
 def sprite_does_not_exist(fn):
@@ -117,11 +117,7 @@ class MapSprite(Sprite):
             self.sprite.scale = self.scale
 
     def is_located_outside_viewport(self):
-        return self.position[0] - self.texture.anchor_x * self.scale - self.parent_viewport.x2 \
-               > SPRITE_VIEWPORT_EDGE_OFFSET_LIMIT_X \
-               or self.parent_viewport.x1 - (self.position[0] - self.texture.anchor_x*self.scale + self.sprite.width)\
-               > SPRITE_VIEWPORT_EDGE_OFFSET_LIMIT_X \
-               or self.position[1] - self.texture.anchor_y * self.scale - self.parent_viewport.y2 \
-               > SPRITE_VIEWPORT_EDGE_OFFSET_LIMIT_Y \
-               or self.parent_viewport.y1 - (self.position[1] - self.texture.anchor_y*self.scale + self.sprite.height)\
-               > SPRITE_VIEWPORT_EDGE_OFFSET_LIMIT_Y
+        return self.parent_viewport.x1 - self.position[0] > SPRITE_VIEWPORT_EDGE_OFFSET_LIMIT_X \
+               or self.position[0] - self.parent_viewport.x2 > SPRITE_VIEWPORT_EDGE_OFFSET_LIMIT_X \
+               or self.parent_viewport.y1 - self.position[1] > SPRITE_VIEWPORT_EDGE_OFFSET_LIMIT_Y \
+               or self.position[1] - self.parent_viewport.y2 > SPRITE_VIEWPORT_EDGE_OFFSET_LIMIT_Y
