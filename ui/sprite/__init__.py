@@ -117,7 +117,12 @@ class MapSprite(Sprite):
             self.sprite.scale = self.scale
 
     def is_located_outside_viewport(self):
-        return self.parent_viewport.x1 - self.position[0] > SPRITE_VIEWPORT_EDGE_OFFSET_LIMIT_X \
-               or self.position[0] - self.parent_viewport.x2 > SPRITE_VIEWPORT_EDGE_OFFSET_LIMIT_X \
-               or self.parent_viewport.y1 - self.position[1] > SPRITE_VIEWPORT_EDGE_OFFSET_LIMIT_Y \
-               or self.position[1] - self.parent_viewport.y2 > SPRITE_VIEWPORT_EDGE_OFFSET_LIMIT_Y
+        return self.parent_viewport.x1 - (self.position[0] + (self.texture.width - self.texture.anchor_x) * self.scale)\
+               > SPRITE_VIEWPORT_EDGE_OFFSET_LIMIT_X \
+               or (self.position[0] - self.texture.anchor_x * self.scale) - self.parent_viewport.x2 \
+               > SPRITE_VIEWPORT_EDGE_OFFSET_LIMIT_X \
+               or self.parent_viewport.y1 \
+               - (self.position[1] + (self.texture.height - self.texture.anchor_y) * self.scale) \
+               > SPRITE_VIEWPORT_EDGE_OFFSET_LIMIT_Y \
+               or (self.position[1] - self.texture.anchor_y * self.scale) - self.parent_viewport.y2 \
+               > SPRITE_VIEWPORT_EDGE_OFFSET_LIMIT_Y

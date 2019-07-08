@@ -149,6 +149,7 @@ class CrossoverModel(Model):
                 self.on_busy_notify(k[0], k[1], train_id)
 
         self.current_position_1, self.current_position_2 = positions
+        self.view.on_change_current_position(self.current_position_1, self.current_position_2)
 
     def on_force_busy_off(self, positions):
         """
