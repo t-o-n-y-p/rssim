@@ -135,6 +135,7 @@ class MapView(View):
         self.open_constructor_button.on_change_screen_resolution(self.screen_resolution)
         for b in self.shop_buttons:
             b.on_change_base_offset(self.base_offset)
+            b.on_change_scale(self.zoom_factor)
 
     @view_is_not_active
     def on_activate(self):
@@ -242,10 +243,15 @@ class MapView(View):
         self.base_offset_upper_right_limit = (self.viewport.x2 - MAP_WIDTH // round(1 / self.zoom_factor),
                                               self.viewport.y2 - MAP_HEIGHT // round(1 / self.zoom_factor)
                                               - get_top_bar_height(self.screen_resolution))
-        self.base_offset = (self.base_offset[0] // 2
-                            + (self.viewport.x2 - self.viewport.x1) // round(2 / self.zoom_factor),
-                            self.base_offset[1] // 2
-                            + (self.viewport.y2 - self.viewport.y1) // round(2 / self.zoom_factor))
+        if self.zoom_out_activated:
+            self.base_offset = (self.base_offset[0] // 2
+                                + (self.viewport.x2 - self.viewport.x1) // 4,
+                                self.base_offset[1] // 2
+                                + (self.viewport.y2 - self.viewport.y1) // 4)
+        else:
+            self.base_offset = (2 * self.base_offset[0] - (self.viewport.x2 - self.viewport.x1) // 2,
+                                2 * self.base_offset[1] - (self.viewport.y2 - self.viewport.y1) // 2)
+
         self.check_base_offset_limits()
         self.mini_map_frame_width = self.get_mini_map_frame_width()
         self.mini_map_frame_height = self.get_mini_map_frame_height()

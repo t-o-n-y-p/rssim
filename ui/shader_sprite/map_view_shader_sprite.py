@@ -31,9 +31,9 @@ class MapViewShaderSprite(ShaderSprite):
             = [self.view.zoom_in_button.button_size[1], ]
         self.shader.uniforms.number_of_buttons = 1
         self.shader.uniforms.mini_map_opacity = self.view.mini_map_opacity
-        self.shader.uniforms.mini_map_position_size = (*get_mini_map_position(self.screen_resolution),
-                                                       get_mini_map_width(self.screen_resolution),
-                                                       get_mini_map_height(self.screen_resolution))
+        self.shader.uniforms.mini_map_position_size = (*get_mini_map_position(self.view.screen_resolution),
+                                                       get_mini_map_width(self.view.screen_resolution),
+                                                       get_mini_map_height(self.view.screen_resolution))
         self.shader.uniforms.mini_map_frame_position_size \
             = (self.view.mini_map_frame_position[0], self.view.mini_map_frame_position[1],
                self.view.mini_map_frame_width, self.view.mini_map_frame_height)
