@@ -79,22 +79,8 @@ SWITCHES_DIVERGING = _resource.texture('switches_diverging.dds')
 
 
 def get_full_map(map_id, tracks):
-    """
-    Provides map texture for given map and number of tracks unlocked.
-
-    :param map_id:                              ID of the given map
-    :param tracks:                              number of tracks unlocked
-    :return:                                    map texture
-    """
     return _resource.texture(f'full_map_{tracks}_{map_id}.dds')
 
 
 def get_full_map_e(map_id, tiers):
-    """
-    Provides environment texture for given map and number of tiers unlocked.
-
-    :param map_id:                              ID of the given map
-    :param tiers:                               number of tiers unlocked
-    :return:                                    environment texture
-    """
     return _resource.texture(f'full_map_e_{tiers}_{map_id}.dds')

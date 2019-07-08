@@ -15,20 +15,7 @@ _wnd_class_instance = RegisterClass(_wnd_class)
 
 
 class Notification:
-    """
-    Implements base class system notification which is displayed if triggered by some in-game event.
-    """
     def __init__(self, logger):
-        """
-        Properties:
-            logger                              telemetry instance
-            caption_key                         i18n resource key for system notification caption
-            message_key                         i18n resource key for system notification message
-            handler                             system window handler for the notification
-            icon_handler                        system handler for application icon
-
-        :param logger:                          telemetry instance
-        """
         self.logger = logger
         self.caption_key = None
         self.message_key = None
@@ -37,14 +24,6 @@ class Notification:
                                       LR_LOADFROMFILE | LR_DEFAULTSIZE)
 
     def send(self, current_locale, caption_args=(), message_args=()):
-        """
-        Creates system notification with predefined caption and message using appropriate locale
-        if app window is not active.
-
-        :param current_locale:                  currently selected locale
-        :param caption_args:                    arguments for caption string in case they are required
-        :param message_args:                    arguments for message string in case they are required
-        """
         self.handler = CreateWindow(_wnd_class_instance, "Taskbar", WS_OVERLAPPED | WS_SYSMENU,
                                     0, 0, CW_USEDEFAULT, CW_USEDEFAULT,
                                     0, 0, _wnd_class.hInstance, None)
@@ -57,9 +36,6 @@ class Notification:
                                       I18N_RESOURCES[self.caption_key][current_locale].format(*caption_args)))
 
     def destroy(self):
-        """
-        Destroys system notification when app window becomes active.
-        """
         Shell_NotifyIcon(NIM_DELETE, (self.handler, 0, NIF_ICON | NIF_MESSAGE | NIF_TIP, WM_USER + 20,
                                       self.icon_handler))
         DestroyWindow(self.handler)

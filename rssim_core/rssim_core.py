@@ -13,16 +13,7 @@ from database import USER_DB_CURSOR, USER_DB_CONNECTION
 
 
 class RSSim:
-    """
-    Makes game ready to play: creates app instance, checks for updates and implements main game loop.
-    """
     def __init__(self):
-        """
-        Properties:
-              logger                    main game logger
-              app                       App object, is responsible for high-level properties, UI and events
-              notifications             list of all active system notifications
-        """
         # determine if video adapter supports all game textures, if not - raise specific exception
         max_texture_size = c_long(0)
         gl.glGetIntegerv(gl.GL_MAX_TEXTURE_SIZE, max_texture_size)
@@ -70,10 +61,6 @@ class RSSim:
 
         @SURFACE.event
         def on_draw():
-            """
-            Implements on_draw event handler for surface. Handler is attached using @surface.event decoration.
-            This handler clears surface and calls draw() function for all batches (inserts shaders if required)
-            """
             # clear surface
             SURFACE.clear()
             # draw main batch: environment, main map, signals, trains
@@ -87,11 +74,6 @@ class RSSim:
 
         @SURFACE.event
         def on_activate():
-            """
-            Implements on_activate event handler for surface. Handler is attached using @surface.event decoration.
-            This handler notifies the app that it cannot send system notifications.
-            Clears all queued notifications.
-            """
             self.app.on_disable_notifications()
             for h in self.notifications:
                 h.destroy()
@@ -100,11 +82,6 @@ class RSSim:
 
         @SURFACE.event
         def on_show():
-            """
-            Implements on_show event handler for surface. Handler is attached using @surface.event decoration.
-            This handler notifies the app that it cannot send system notifications.
-            Clears all queued notifications.
-            """
             self.app.on_disable_notifications()
             for h in self.notifications:
                 h.destroy()
@@ -113,117 +90,43 @@ class RSSim:
 
         @SURFACE.event
         def on_deactivate():
-            """
-            Implements on_deactivate event handler for surface. Handler is attached using @surface.event decoration.
-            This handler notifies the app that it can send system notifications.
-            """
             self.app.on_enable_notifications()
 
         @SURFACE.event
         def on_hide():
-            """
-            Implements on_hide event handler for surface. Handler is attached using @surface.event decoration.
-            This handler notifies the app that it can send system notifications.
-            """
             self.app.on_enable_notifications()
 
         @SURFACE.event
         def on_mouse_press(x, y, button, modifiers):
-            """
-            Implements on_mouse_press event handler for surface. Handler is attached using @surface.event decoration.
-            Event is fired when user presses any mouse button.
-            This handler simply triggers all existing on_mouse_press handlers
-            (from buttons, map move, or app window move).
-
-            :param x:               mouse cursor X position inside the app window
-            :param y:               mouse cursor Y position inside the app window
-            :param button:          determines which mouse button was pressed
-            :param modifiers:       determines if some modifier key is held down (at the moment we don't use it)
-            """
             for h in self.app.on_mouse_press_handlers:
                 h(x, y, button, modifiers)
 
         @SURFACE.event
         def on_mouse_release(x, y, button, modifiers):
-            """
-            Implements on_mouse_release event handler for surface. Handler is attached using @surface.event decoration.
-            Event is fired when user releases any mouse button.
-            This handler simply triggers all existing on_mouse_release handlers
-            (from buttons, map move, or app window move).
-
-            :param x:               mouse cursor X position inside the app window
-            :param y:               mouse cursor Y position inside the app window
-            :param button:          determines which mouse button was pressed
-            :param modifiers:       determines if some modifier key is held down (at the moment we don't use it)
-            """
             for h in self.app.on_mouse_release_handlers:
                 h(x, y, button, modifiers)
 
         @SURFACE.event
         def on_mouse_motion(x, y, dx, dy):
-            """
-            Implements on_mouse_motion event handler for surface. Handler is attached using @surface.event decoration.
-            Event is fired when user moves the mouse cursor.
-            This handler simply triggers all existing on_mouse_motion handlers
-            (from buttons, map move, or app window move).
-
-            :param x:               mouse cursor X position inside the app window
-            :param y:               mouse cursor Y position inside the app window
-            :param dx:              relative X position from the previous mouse position
-            :param dy:              relative Y position from the previous mouse position
-            """
             for h in self.app.on_mouse_motion_handlers:
                 h(x, y, dx, dy)
 
         @SURFACE.event
         def on_mouse_drag(x, y, dx, dy, buttons, modifiers):
-            """
-            Implements on_mouse_drag event handler for surface. Handler is attached using @surface.event decoration.
-            Event is fired when user moves the mouse cursor with any mouse button being held down.
-            This handler simply triggers all existing on_mouse_drag handlers (from map move or app window move).
-
-            :param x:               mouse cursor X position inside the app window
-            :param y:               mouse cursor Y position inside the app window
-            :param dx:              relative X position from the previous mouse position
-            :param dy:              relative Y position from the previous mouse position
-            :param buttons:         determines which mouse button was pressed
-            :param modifiers:       determines if some modifier key is held down (at the moment we don't use it)
-            """
             for h in self.app.on_mouse_drag_handlers:
                 h(x, y, dx, dy, buttons, modifiers)
 
         @SURFACE.event
         def on_mouse_leave(x, y):
-            """
-            Implements on_mouse_leave event handler for surface. Handler is attached using @surface.event decoration.
-            Event is fired when user moves the mouse cursor and it leaves the app window.
-            This handler simply triggers all existing on_mouse_leave handlers (from buttons).
-
-            :param x:               mouse cursor X position
-            :param y:               mouse cursor Y position
-            """
             for h in self.app.on_mouse_leave_handlers:
                 h(x, y)
 
         @SURFACE.event
         def on_mouse_scroll(x, y, scroll_x, scroll_y):
-            """
-            Implements on_mouse_scroll event handler for surface. Handler is attached using @surface.event decoration.
-            Event is fired when user scrolls the mouse wheel.
-            This handler simply triggers all existing on_mouse_scroll handlers.
-
-            :param x:               mouse cursor X position
-            :param y:               mouse cursor Y position
-            :param scroll_x:        number of “clicks” the horizontal wheel moved
-            :param scroll_y:        number of “clicks” the vertical wheel moved
-            """
             for h in self.app.on_mouse_scroll_handlers:
                 h(x, y, scroll_x, scroll_y)
 
     def run(self):
-        """
-        Implements main game loop.
-        """
         # fps_timer is used to determine if it's time to recalculate FPS
         fps_timer = 0.0
         while True:
@@ -246,11 +149,6 @@ class RSSim:
 
     @staticmethod
     def on_check_for_updates():
-        """
-        Checks user database version. If it is lower than current game version, it means user has just updated the app.
-        All migration DB scripts need to be executed in chain, from earliest to latest, step by step.
-        Results can be viewed in special ".update_log" file in logs directory.
-        """
         # create logs directory if it does not exist
         if not path.exists('logs'):
             mkdir('logs')

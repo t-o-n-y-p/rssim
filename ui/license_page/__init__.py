@@ -89,6 +89,7 @@ class LicensePage:
             self.license_layout.delete()
             self.license_layout = None
         else:
-            self.document.set_style(0, len(self.document.text), {
-                'color': (*WHITE_RGB, self.opacity)
-            })
+            if self.document is not None:
+                self.document.set_style(0, len(self.document.text), {
+                    'color': (*WHITE_RGB, self.opacity)
+                })
