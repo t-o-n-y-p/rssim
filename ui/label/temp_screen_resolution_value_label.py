@@ -19,7 +19,7 @@ class TempScreenResolutionValueLabel(Label):
         return (self.parent_viewport.x1 + self.parent_viewport.x2) // 2
 
     def get_y(self):
-        self.parent_viewport.y1 + get_top_bar_height(self.screen_resolution) // 2
+        return self.parent_viewport.y1 + get_top_bar_height(self.screen_resolution) // 2
 
     def get_font_size(self):
         return get_bottom_bar_height(self.screen_resolution) // 5

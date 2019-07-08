@@ -49,8 +49,6 @@ class TrainView(View):
                 else:
                     self.boarding_light_sprites[i].delete()
 
-                break
-
     def on_update_opacity(self, new_opacity):
         self.opacity = new_opacity
         for i in range(len(self.car_sprites)):

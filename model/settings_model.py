@@ -1,6 +1,7 @@
 from logging import getLogger
 
 from model import *
+from ui import SURFACE
 
 
 class SettingsModel(Model):
@@ -65,7 +66,7 @@ class SettingsModel(Model):
         # because on_update_clock_state() method is called by settings controller via app controller
         self.controller.parent_controller.on_update_clock_state(self.view.temp_clock_24h_enabled)
         self.windowed_resolution = self.view.temp_windowed_resolution
-        if not self.view.surface.fullscreen:
+        if not SURFACE.fullscreen:
             self.controller.parent_controller.on_change_screen_resolution(self.windowed_resolution)
 
         self.level_up_notification_enabled = self.view.temp_level_up_notification_enabled

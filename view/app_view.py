@@ -140,7 +140,7 @@ class AppView(View):
     @view_is_active
     def handle_mouse_press(self, x, y, button, modifiers):
         self.app_window_move_mode = True
-        self.app_window_move_offset = (x, y)
+        self.app_window_move_offset = (x, self.viewport.y2 - y)
 
     @app_window_move_mode_enabled
     @left_mouse_button
