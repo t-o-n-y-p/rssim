@@ -4,42 +4,7 @@ from model import *
 
 
 class TrainModel(Model):
-    """
-    Implements Train model.
-    Train object is responsible for properties, UI and events related to the train.
-    """
     def __init__(self, map_id, train_id):
-        """
-        Properties:
-            map_id                              ID of the map which this train belongs to
-            train_maximum_speed                 maximum speed the train can achieve
-            speed_factor_position_limit         maximum position on acceleration chart
-            cars                                number of cars in the train
-            track                               track number (0 for regular entry and 100 for side entry)
-            train_route                         train route type (left/right approaching or side_approaching)
-            state                               train state: approaching or approaching_pass_through
-            direction                           train arrival direction
-            new_direction                       train departure direction
-            current_direction                   train current direction
-            speed                               current train speed
-            speed_state                         indicates if train accelerates, decelerates, just moves or is still
-            speed_factor_position               acceleration chart position
-            priority                            train priority in the queue
-            boarding_time                       amount of boarding time left for this train
-            exp                                 exp gained when boarding finishes
-            money                               money gained when boarding finishes
-            cars_position                       list of trail point ID for each car (empty if boarding is in progress)
-            cars_position_abs                   list of 2D Cartesian positions for each car
-                                                (used when boarding is in progress)
-            stop_point                          indicates where to stop the train if signal is at danger
-            destination_point                   when train reaches destination point, route is completed
-            trail_points_v2                     list of train route trail points in 2D Cartesian coordinates
-                                                plus rotation angle
-            car_image_collection                number of car collection used for this train
-
-        :param map_id:                          ID of the map which this train belongs to
-        :param train_id:                        train identification number
-        """
         super().__init__(logger=getLogger(f'root.app.game.map.{map_id}.train.{train_id}.model'))
         self.map_id = map_id
         self.train_maximum_speed = None
@@ -66,11 +31,6 @@ class TrainModel(Model):
         self.car_image_collection = 0
 
     def on_train_setup(self, train_id):
-        """
-        This method is used when train is created from saved database entry when user launches the game.
-
-        :param train_id:                        train identification number
-        """
         self.user_db_cursor.execute('''SELECT train_id, cars, train_route_track_number, train_route_type, 
                                        state, direction, new_direction, current_direction, speed, speed_state, 
                                        speed_factor_position, priority, boarding_time, exp, money, 
@@ -94,22 +54,6 @@ class TrainModel(Model):
 
     def on_train_init(self, cars, track, train_route, state, direction, new_direction, current_direction,
                       priority, boarding_time, exp, money, car_image_collection):
-        """
-        This method is used when train is created from schedule during the game.
-
-        :param cars:                            number of cars in the train
-        :param track:                           track number (0 for regular entry and 100 for side entry)
-        :param train_route:                     train route type (left/right approaching or side_approaching)
-        :param state:                           train state: approaching or approaching_pass_through
-        :param direction:                       train arrival direction
-        :param new_direction:                   train departure direction
-        :param current_direction:               train current direction
-        :param priority:                        train priority in the queue
-        :param boarding_time:                   amount of boarding time left for this train
-        :param exp:                             exp gained when boarding finishes
-        :param money:                           money gained when boarding finishes
-        :param car_image_collection:            number of car collection used for this train
-        """
         self.cars, self.track, self.train_route, self.state, self.direction, self.new_direction, \
             self.current_direction, self.priority, self.boarding_time, \
             self.exp, self.money, self.car_image_collection \
@@ -120,42 +64,18 @@ class TrainModel(Model):
         self.speed_factor_position = self.speed_factor_position_limit
 
     def on_set_train_start_point(self, first_car_start_point):
-        """
-        Updates train initial position on train route.
-
-        :param first_car_start_point:           data
-        """
         pass
 
     def on_set_train_stop_point(self, first_car_stop_point):
-        """
-        Updates the trail point where to stop the train if signal is at danger.
-
-        :param first_car_stop_point:            data
-        """
         self.stop_point = first_car_stop_point
 
     def on_set_train_destination_point(self, first_car_destination_point):
-        """
-        Updates the trail point destination point.
-        When train reaches destination point, route is completed.
-
-        :param first_car_destination_point:     data
-        """
         self.destination_point = first_car_destination_point
 
     def on_set_trail_points(self, trail_points_v2):
-        """
-        Updates trail points.
-
-        :param trail_points_v2:                 data
-        """
         self.trail_points_v2 = trail_points_v2
 
     def on_activate_view(self):
-        """
-        Updates car positions, direction, image collection ID, state and activates the view.
-        """
         car_position_view = []
         if len(self.cars_position) > 0:
             for i in self.cars_position:
@@ -171,9 +91,6 @@ class TrainModel(Model):
         self.view.on_activate()
 
     def on_save_state(self):
-        """
-        Saves train state to user progress database.
-        """
         cars_position_string = None
         if len(self.cars_position) > 0:
             cars_position_string = ','.join(list(map(str, self.cars_position)))
@@ -195,11 +112,6 @@ class TrainModel(Model):
                                      self.stop_point, self.destination_point, self.car_image_collection))
 
     def on_update_time(self, game_time):
-        """
-        Updates train properties every frame, including speed, state, priority, etc.
-
-        :param game_time:               current in-game time
-        """
         # shorter trains gain more priority because they arrive more frequently
         if self.cars < 9:
             self.priority += 5
@@ -307,9 +219,6 @@ class TrainModel(Model):
                 self.controller.parent_controller.parent_controller.on_add_money(self.money)
 
     def on_convert_trail_points(self):
-        """
-        Converts relative route trail points to 2D Cartesian positions.
-        """
         self.cars_position_abs = []
         for i in self.cars_position:
             dot = self.trail_points_v2[i]
@@ -318,9 +227,6 @@ class TrainModel(Model):
         self.cars_position.clear()
 
     def on_reconvert_trail_points(self):
-        """
-        Converts 2D Cartesian car positions to relative route trail points.
-        """
         self.cars_position = []
         for i in self.cars_position_abs:
             self.cars_position.append(abs(i[0] - self.trail_points_v2[0][0]))
@@ -328,7 +234,4 @@ class TrainModel(Model):
         self.cars_position_abs.clear()
 
     def on_switch_direction(self):
-        """
-        Reverts cars order.
-        """
         self.cars_position_abs = list(reversed(self.cars_position_abs))

@@ -5,35 +5,7 @@ from controller import *
 
 
 class MapController(Controller):
-    """
-    Implements Map controller.
-    Map object is responsible for properties, UI and events related to the map.
-    """
     def __init__(self, map_id, parent_controller):
-        """
-        Properties:
-            map_id                              ID of the map
-            scheduler                           Scheduler object controller
-            constructor                         Constructor object controller
-            dispatcher                          Dispatcher object controller
-            signals                             2-level dictionary of Signal object controllers
-            signals_list                        list of Signal object controllers
-            train_routes                        2-level dictionary of Train route object controllers
-            train_routes_sorted_list            list of Train route object controllers
-            switches                            3-level dictionary of Railroad switch object controllers
-            switches_list                       list of Railroad switch object controllers
-            crossovers                          3-level dictionary of Crossover object controllers
-            crossovers_list                     list of Crossover object controllers
-            trains                              dictionary of Train object controllers
-            trains_list                         list of Train object controllers
-            constructor_to_scheduler_transition_animation
-                                                navigation animation from constructor screen to scheduler screen
-            scheduler_to_constructor_transition_animation
-                                                navigation animation from scheduler screen to constructor screen
-
-        :param map_id:                          ID of the map
-        :param parent_controller:               Game controller subclass
-        """
         super().__init__(parent_controller=parent_controller,
                          logger=getLogger(f'root.app.game.map.{map_id}.controller'))
         self.scheduler = None
@@ -53,11 +25,6 @@ class MapController(Controller):
         self.map_id = map_id
 
     def on_update_view(self):
-        """
-        Notifies the view, all child views, fade-in/fade-out animations, transition animations
-        and create sprites if some are missing.
-        Not all sprites are created at once, they are created one by one to avoid massive FPS drop.
-        """
         self.view.on_update()
         self.fade_in_animation.on_update()
         self.fade_out_animation.on_update()
@@ -83,13 +50,6 @@ class MapController(Controller):
             shop.on_update_view()
 
     def on_change_screen_resolution(self, screen_resolution):
-        """
-        Notifies the view and all child controllers about screen resolution update.
-        Note that adjusting base offset is made by on_change_base_offset handler,
-        which is called after screen resolution is updated.
-
-        :param screen_resolution:       new screen resolution
-        """
         self.view.on_change_screen_resolution(screen_resolution)
         self.scheduler.on_change_screen_resolution(screen_resolution)
         self.dispatcher.on_change_screen_resolution(screen_resolution)
@@ -115,11 +75,6 @@ class MapController(Controller):
         self.on_change_base_offset(self.view.base_offset)
 
     def on_change_base_offset(self, new_base_offset):
-        """
-        Notifies the view and child controllers about base offset update.
-
-        :param new_base_offset:         new base offset
-        """
         self.view.on_change_base_offset(new_base_offset)
         for signal in self.signals_list:
             signal.on_change_base_offset(new_base_offset)
@@ -137,12 +92,6 @@ class MapController(Controller):
             train.on_change_base_offset(new_base_offset)
 
     def on_unlock_track(self, track):
-        """
-        Notifies the model, the Scheduler, Dispatcher controllers
-        and the corresponding Signal controllers the track is unlocked.
-
-        :param track:                   track number
-        """
         self.model.on_unlock_track(track)
         self.scheduler.on_unlock_track(track)
         self.dispatcher.on_unlock_track(track)
@@ -160,18 +109,9 @@ class MapController(Controller):
                 self.view.shop_buttons[shop_id[0]].on_activate()
 
     def on_unlock_environment(self, tier):
-        """
-        Notifies the model that given environment tier is unlocked.
-
-        :param tier:                    environment tier number
-        """
         self.model.on_unlock_environment(tier)
 
     def on_activate_view(self):
-        """
-        Activates the view and all Signal, Train route, Railroad switch, Crossover, Train views
-        if user opened game screen in the app.
-        """
         self.view.on_activate()
         for signal in self.signals_list:
             signal.on_activate_view()
@@ -189,9 +129,6 @@ class MapController(Controller):
             train.on_activate_view()
 
     def on_deactivate_view(self):
-        """
-        Deactivates the view and child views if user either closed game screen or opened settings screen.
-        """
         self.view.on_deactivate()
         self.scheduler.on_deactivate_view()
         self.constructor.on_deactivate_view()
@@ -215,11 +152,6 @@ class MapController(Controller):
             shop.on_deactivate_view()
 
     def on_zoom_in(self):
-        """
-        Notifies the view and all Signal, Train route, Railroad switch, Crossover, Train views to zoom in all sprites.
-        Note that adjusting base offset is made by on_change_base_offset handler
-        which is called after scale factor is updated.
-        """
         self.model.on_save_and_commit_zoom_out_activated(False)
         self.view.on_change_zoom_factor(ZOOM_IN_SCALE_FACTOR, zoom_out_activated=False)
         for signal in self.signals_list:
@@ -240,11 +172,6 @@ class MapController(Controller):
         self.on_change_base_offset(self.view.base_offset)
 
     def on_zoom_out(self):
-        """
-        Notifies the view and all Signal, Train route, Railroad switch, Crossover, Train views to zoom out all sprites.
-        Note that adjusting base offset is made by on_change_base_offset handler
-        which is called after scale factor is updated.
-        """
         self.model.on_save_and_commit_zoom_out_activated(True)
         self.view.on_change_zoom_factor(ZOOM_OUT_SCALE_FACTOR, zoom_out_activated=True)
         for signal in self.signals_list:
@@ -265,9 +192,6 @@ class MapController(Controller):
         self.on_change_base_offset(self.view.base_offset)
 
     def on_save_state(self):
-        """
-        Notifies the model and all child controllers to save state to user progress database.
-        """
         self.model.on_save_state()
         self.scheduler.on_save_state()
         self.dispatcher.on_save_state()
@@ -294,12 +218,6 @@ class MapController(Controller):
             shop.on_save_state()
 
     def on_update_time(self, game_time):
-        """
-        Notifies all Train route controllers sorted by priority, Train controllers,
-        Scheduler, Dispatcher, Constructor controllers about in-game time update.
-
-        :param game_time:               current in-game time
-        """
         # train routes are sorted by priority to implement some kind of queue
         self.train_routes_sorted_list = sorted(self.train_routes_sorted_list,
                                                key=attrgetter('model.priority'), reverse=True)
@@ -327,21 +245,12 @@ class MapController(Controller):
             shop.on_update_time(game_time)
 
     def on_level_up(self, level):
-        """
-        Notifies the model, the Scheduler and Constructor controllers about level update.
-
-        :param level:                   new level value
-        """
         self.scheduler.on_level_up(level)
         self.constructor.on_level_up(level)
         for shop in self.shops:
             shop.on_level_up(level)
 
     def on_open_schedule(self):
-        """
-        Activates Scheduler view to open Scheduler screen for player.
-        Deactivates Constructor view if it is activated.
-        """
         # Constructor and Scheduler views cannot be activated at the same time;
         # when user opens schedule screen it means constructor screen has to be closed
         # before schedule screen is opened
@@ -360,10 +269,6 @@ class MapController(Controller):
         self.view.is_mini_map_activated = False
 
     def on_open_constructor(self):
-        """
-        Activates Constructor view to open Scheduler screen for player.
-        Deactivates Scheduler view if it is activated.
-        """
         # Constructor and Scheduler views cannot be activated at the same time;
         # when user opens constructor screen it means schedule screen has to be closed
         # before constructor screen is opened
@@ -383,59 +288,26 @@ class MapController(Controller):
 
     @map_view_is_active
     def on_close_schedule(self):
-        """
-        Activates back all buttons which are hidden when Scheduler view is active:
-        zoom in/out buttons and open schedule button.
-        """
         self.view.on_activate_zoom_buttons()
         self.view.on_activate_shop_buttons()
         self.view.open_schedule_button.on_activate(instant=True)
 
     @map_view_is_active
     def on_close_constructor(self):
-        """
-        Activates back all buttons which are hidden when Constructor view is active:
-        zoom in/out buttons and open constructor button.
-        """
         self.view.on_activate_zoom_buttons()
         self.view.on_activate_shop_buttons()
         self.view.open_constructor_button.on_activate(instant=True)
 
     def on_switch_signal_to_green(self, signal_track, signal_base_route):
-        """
-        Notifies particular Signal controller about state change to green.
-
-        :param signal_track:                    signal track code from base route system
-        :param signal_base_route:               signal base route type
-        """
         self.signals[signal_track][signal_base_route].on_switch_to_green()
 
     def on_switch_signal_to_red(self, signal_track, signal_base_route):
-        """
-        Notifies particular Signal controller about state change to red.
-
-        :param signal_track:                    signal track code from base route system
-        :param signal_base_route:               signal base route type
-        """
         self.signals[signal_track][signal_base_route].on_switch_to_red()
 
     def on_update_train_route_sections(self, track, train_route, last_car_position):
-        """
-        Notifies Train route controller about last train car position update.
-
-        :param track:                           train route track number
-        :param train_route:                     train route type
-        :param last_car_position:               train last car position on the route
-        """
         self.train_routes[track][train_route].on_update_train_route_sections(last_car_position)
 
     def on_update_train_route_section_status(self, train_route_data, status):
-        """
-        Notifies Train route controller about particular section status update.
-
-        :param train_route_data:                list of train route track number, type and section number
-        :param status:                          new status
-        """
         self.train_routes[
             train_route_data[TRAIN_ROUTE_DATA_TRACK_NUMBER]
         ][
@@ -443,13 +315,6 @@ class MapController(Controller):
         ].on_update_section_status(train_route_data[TRAIN_ROUTE_DATA_SECTION_NUMBER], status)
 
     def on_train_route_section_force_busy_on(self, section, positions, train_id):
-        """
-        Notifies Railroad switch or Crossover controller about force_busy state change to True.
-
-        :param section:                         Railroad switch or Crossover object info: track numbers and type
-        :param positions:                       indicates which direction is about to be forced busy
-        :param train_id:                        id of the train which is about to pass through
-        """
         if section[SECTION_TYPE] in ('left_railroad_switch', 'right_railroad_switch'):
             self.switches[
                 section[SECTION_TRACK_NUMBER_1]
@@ -469,12 +334,6 @@ class MapController(Controller):
             ].on_force_busy_on(positions, train_id)
 
     def on_train_route_section_force_busy_off(self, section, positions):
-        """
-        Notifies Railroad switch or Crossover controller about force_busy state change to False.
-
-        :param section:                         Railroad switch or Crossover object info: track numbers and type
-        :param positions:                       indicates which direction is about to be left
-        """
         if section[SECTION_TYPE] in ('left_railroad_switch', 'right_railroad_switch'):
             self.switches[
                 section[SECTION_TRACK_NUMBER_1]
@@ -494,107 +353,34 @@ class MapController(Controller):
             ].on_force_busy_off(positions)
 
     def on_leave_entry(self, entry_id):
-        """
-        Notifies Scheduler controller that entry is ready for new trains approaching.
-
-        :param entry_id:                        entry identification number from 0 to 3
-        """
         self.scheduler.on_leave_entry(entry_id)
 
     def on_leave_track(self, track):
-        """
-        Notifies the Dispatcher controller the track is clear for any of the next trains.
-
-        :param track:                           track number
-        """
         self.dispatcher.on_leave_track(track)
 
     def on_update_train_route_priority(self, track, train_route, priority):
-        """
-        Notifies Train route controller about priority update.
-
-        :param track:                           train rout track number
-        :param train_route:                     train route type
-        :param priority:                        new priority value
-        """
         self.train_routes[track][train_route].on_update_priority(priority)
 
     def on_set_trail_points(self, train_id, trail_points_v2):
-        """
-        Notifies Train controller about trail points update.
-
-        :param train_id:                        ID of the train to update trail points
-        :param trail_points_v2:                 data
-        """
         self.trains[train_id].on_set_trail_points(trail_points_v2)
 
     def on_set_train_start_point(self, train_id, first_car_start_point):
-        """
-        Notifies Train controller about initial position update.
-
-        :param train_id:                        ID of the train to update initial position
-        :param first_car_start_point:           data
-        """
         self.trains[train_id].on_set_train_start_point(first_car_start_point)
 
     def on_set_train_stop_point(self, train_id, first_car_stop_point):
-        """
-        Notifies Train controller where to stop the train if signal is at danger.
-
-        :param train_id:                        ID of the train to update stop point
-        :param first_car_stop_point:            data
-        """
         self.trains[train_id].on_set_train_stop_point(first_car_stop_point)
 
     def on_set_train_destination_point(self, train_id, first_car_destination_point):
-        """
-        Notifies Train controller about destination point update.
-        When train reaches destination point, route is completed.
-
-        :param train_id:                        ID of the train to update destination point
-        :param first_car_destination_point:     data
-        """
         self.trains[train_id].on_set_train_destination_point(first_car_destination_point)
 
     def on_open_train_route(self, track, train_route, train_id, cars):
-        """
-        Notifies Train route controller to open train route.
-
-        :param track:                           train route track number
-        :param train_route:                     train route type
-        :param train_id:                        ID of the train which opens the train route
-        :param cars:                            number of cars in the train
-        """
         self.train_routes[track][train_route].on_open_train_route(train_id, cars)
 
     def on_close_train_route(self, track, train_route):
-        """
-        Notifies Train route controller to close train route.
-
-        :param track:                           train route track number
-        :param train_route:                     train route type
-        """
         self.train_routes[track][train_route].on_close_train_route()
 
     def on_create_train(self, train_id, cars, track, train_route, state, direction, new_direction,
                         current_direction, priority, boarding_time, exp, money):
-        """
-        Notifies the model to create new train, adds new train to the dictionary, list
-        and notifies Dispatcher controller to add new train.
-
-        :param train_id:                        train identification number
-        :param cars:                            number of cars in the train
-        :param track:                           track number (0 for regular entry and 100 for side entry)
-        :param train_route:                     train route type (left/right approaching or side_approaching)
-        :param state:                           train state: approaching or approaching_pass_through
-        :param direction:                       train arrival direction
-        :param new_direction:                   train departure direction
-        :param current_direction:               train current direction
-        :param priority:                        train priority in the queue
-        :param boarding_time:                   amount of boarding time left for this train
-        :param exp:                             exp gained when boarding finishes
-        :param money:                           money gained when boarding finishes
-        """
         train = self.model.on_create_train(train_id, cars, track, train_route, state, direction, new_direction,
                                            current_direction, priority, boarding_time, exp, money)
         train.view.on_change_base_offset(self.view.base_offset)
@@ -612,31 +398,16 @@ class MapController(Controller):
             train.fade_out_animation.on_activate()
 
     def on_add_money(self, money):
-        """
-        Notifies Constructor controller about bank account state change when user gains money.
-
-        :param money:                   amount of money gained
-        """
         self.constructor.on_add_money(money)
         for shop in self.shops:
             shop.on_add_money(money)
 
     def on_pay_money(self, money):
-        """
-        Notifies the model and Map controller about bank account state change when user pays money.
-
-        :param money:                   amount of money spent
-        """
         self.constructor.on_pay_money(money)
         for shop in self.shops:
             shop.on_pay_money(money)
 
     def on_update_current_locale(self, new_locale):
-        """
-        Notifies the view and child controllers (if any) about current locale value update.
-
-        :param new_locale:                      selected locale
-        """
         self.view.on_update_current_locale(new_locale)
         self.scheduler.on_update_current_locale(new_locale)
         self.dispatcher.on_update_current_locale(new_locale)
@@ -660,9 +431,6 @@ class MapController(Controller):
             shop.on_update_current_locale(new_locale)
 
     def on_disable_notifications(self):
-        """
-        Disables system notifications for the view and all child controllers.
-        """
         self.view.on_disable_notifications()
         self.scheduler.on_disable_notifications()
         self.dispatcher.on_disable_notifications()
@@ -686,9 +454,6 @@ class MapController(Controller):
             shop.on_disable_notifications()
 
     def on_enable_notifications(self):
-        """
-        Enables system notifications for the view and all child controllers.
-        """
         self.view.on_enable_notifications()
         self.scheduler.on_enable_notifications()
         self.dispatcher.on_enable_notifications()
@@ -712,25 +477,12 @@ class MapController(Controller):
             shop.on_enable_notifications()
 
     def on_change_feature_unlocked_notification_state(self, notification_state):
-        """
-        Notifies the Constructor controller about feature unlocked notification state update.
-
-        :param notification_state:              new notification state defined by player
-        """
         self.constructor.on_change_feature_unlocked_notification_state(notification_state)
 
     def on_change_construction_completed_notification_state(self, notification_state):
-        """
-        Notifies the Constructor controller about construction completed notification state update.
-
-        :param notification_state:              new notification state defined by player
-        """
         self.constructor.on_change_construction_completed_notification_state(notification_state)
 
     def on_apply_shaders_and_draw_vertices(self):
-        """
-        Notifies the view and child controllers to draw all sprites with shaders.
-        """
         self.view.on_apply_shaders_and_draw_vertices()
         self.constructor.on_apply_shaders_and_draw_vertices()
         self.scheduler.on_apply_shaders_and_draw_vertices()
@@ -738,19 +490,9 @@ class MapController(Controller):
             shop.on_apply_shaders_and_draw_vertices()
 
     def on_save_and_commit_last_known_base_offset(self, base_offset):
-        """
-        Notifies the model to save last known base offset to the database.
-
-        :param base_offset:                     last known base offset
-        """
         self.model.on_save_and_commit_last_known_base_offset(base_offset)
 
     def on_update_fade_animation_state(self, new_state):
-        """
-        Notifies fade-in/fade-out animations about state update.
-
-        :param new_state:                       indicates if fade animations were enabled or disabled
-        """
         self.fade_in_animation.on_update_fade_animation_state(new_state)
         self.fade_out_animation.on_update_fade_animation_state(new_state)
         self.scheduler.on_update_fade_animation_state(new_state)
@@ -772,11 +514,6 @@ class MapController(Controller):
             shop.on_update_fade_animation_state(new_state)
 
     def on_update_clock_state(self, clock_24h_enabled):
-        """
-        Notifies child controllers (if any) about clock state update.
-
-        :param clock_24h_enabled:               indicates if 24h clock is enabled
-        """
         self.scheduler.on_update_clock_state(clock_24h_enabled)
 
     def on_open_shop_details(self, shop_id):

@@ -4,26 +4,7 @@ from model import *
 
 
 class RailroadSwitchModel(Model):
-    """
-    Implements Railroad switch model.
-    Railroad switch object is responsible for properties, UI and events related to the railroad switch.
-    """
     def __init__(self, map_id, track_param_1, track_param_2, switch_type):
-        """
-        Properties:
-            map_id                              ID of the map which this switch belongs to
-            busy                                indicates if any switch direction is busy
-            force_busy                          indicates if any switch direction is force_busy
-            last_entered_by                     train ID which made the switch direction force_busy last time
-            state_change_listeners              train route sections which share this switch
-            current_position                    current switch position
-            locked                              indicates if switch is available for player
-
-        :param map_id:                          ID of the map which this switch belongs to
-        :param track_param_1:                   number of the straight track
-        :param track_param_2:                   number of the diverging track
-        :param switch_type:                     railroad switch location: left/right side of the map
-        """
         super().__init__(
             logger=getLogger(
                 f'root.app.game.map.{map_id}.railroad_switch.{track_param_1}.{track_param_2}.{switch_type}.model'
@@ -52,15 +33,9 @@ class RailroadSwitchModel(Model):
         self.locked = bool(self.user_db_cursor.fetchone()[0])
 
     def on_activate_view(self):
-        """
-        Activates the Railroad switch view.
-        """
         self.view.on_activate()
 
     def on_save_state(self):
-        """
-        Saves railroad switch state to user progress database.
-        """
         track_param_1 = self.controller.track_param_1
         track_param_2 = self.controller.track_param_2
         switch_type = self.controller.switch_type
@@ -72,12 +47,6 @@ class RailroadSwitchModel(Model):
                                      int(self.locked), track_param_1, track_param_2, switch_type, self.map_id))
 
     def on_force_busy_on(self, positions, train_id):
-        """
-        Locks switch in required position since the train is approaching.
-
-        :param positions:               direction the train is about to proceed to
-        :param train_id:                ID of the train which is about to pass through the switch
-        """
         self.force_busy = True
         self.busy = True
         self.last_entered_by = train_id
@@ -87,17 +56,11 @@ class RailroadSwitchModel(Model):
             self.controller.parent_controller.on_update_train_route_section_status(listener, status=True)
 
     def on_force_busy_off(self):
-        """
-        Unlocks switch position after the train has passed it.
-        """
         self.force_busy = False
         self.busy = False
         for listener in self.state_change_listeners:
             self.controller.parent_controller.on_update_train_route_section_status(listener, status=False)
 
     def on_unlock(self):
-        """
-        Updates switch lock state. Notifies the view about lock state update.
-        """
         self.locked = False
         self.view.on_unlock()

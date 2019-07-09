@@ -4,23 +4,7 @@ from model import *
 
 
 class ConstructorModel(Model):
-    """
-    Implements Constructor model.
-    Constructor object is responsible for building new tracks and station environment.
-    """
     def __init__(self, map_id):
-        """
-        Properties:
-            map_id                              ID of the map which this constructor belongs to
-            construction_state_matrix           tracks and environment state storage
-            cached_unlocked_tracks              list of tracks which were unlocked since last DB commit
-            cached_unlocked_tiers               list of environment tiers which were unlocked since last DB commit
-            money                               current amount of money
-            money_target_activated              indicates if money target for any construction is activated
-            money_target_cell_position          column and row of constructor view cell the target was last activated
-
-        :param map_id:                          ID of the map which this constructor belongs to
-        """
         super().__init__(logger=getLogger(f'root.app.game.map.{map_id}.constructor.model'))
         self.map_id = map_id
         self.construction_state_matrix = [{}, {}]
@@ -59,9 +43,6 @@ class ConstructorModel(Model):
         self.money_target_cell_position = list(map(int, self.user_db_cursor.fetchone()[0].split(',')))
 
     def on_activate_view(self):
-        """
-        Updates constructor cell state, bank account state and activates the Constructor view.
-        """
         remaining_tracks = sorted(list(self.construction_state_matrix[TRACKS].keys()))
         for j in range(min(len(remaining_tracks), CONSTRUCTOR_VIEW_TRACK_CELLS)):
             self.view.on_update_construction_state(TRACKS, remaining_tracks[j])
@@ -74,12 +55,6 @@ class ConstructorModel(Model):
         self.view.on_activate()
 
     def on_update_time(self, game_time):
-        """
-        Decreases construction time for all tracks and environment tiers under construction.
-        When construction time reaches 0, track/tier is unlocked.
-
-        :param game_time:               current in-game time
-        """
         # unlocked_track stores track number if some track was unlocked and 0 otherwise
         unlocked_track = 0
         for track in self.construction_state_matrix[TRACKS]:
@@ -148,9 +123,6 @@ class ConstructorModel(Model):
                 self.money_target_cell_position[1] -= 1
 
     def on_save_state(self):
-        """
-        Saves track state matrix and money target flags to user progress database.
-        """
         self.user_db_cursor.execute('''UPDATE constructor SET money_target_activated = ?, money_target_cell_position = ? 
                                        WHERE map_id = ?''',
                                     (int(self.money_target_activated),
@@ -217,12 +189,6 @@ class ConstructorModel(Model):
                                         )
 
     def on_level_up(self, level):
-        """
-        Checks if there are some tracks or tiers to be unlocked
-        when player hits new level and adjusts its state properly.
-
-        :param level:                   new level value
-        """
         # determines if some tracks require level which was just hit
         self.config_db_cursor.execute('SELECT track_number FROM track_config WHERE level = ? AND map_id = ?',
                                       (level, self.map_id))
@@ -252,14 +218,6 @@ class ConstructorModel(Model):
             self.view.on_update_construction_state(ENVIRONMENT, tier)
 
     def on_put_under_construction(self, construction_type, entity_number):
-        """
-        Puts construction with given type and number under construction.
-        Notifies the view about construction state update.
-        Notifies Game controller the user has payed for the construction.
-
-        :param construction_type:       type of construction: track or environment
-        :param entity_number:           number of track or environment tier
-        """
         self.construction_state_matrix[construction_type][entity_number][UNLOCK_AVAILABLE] = False
         self.construction_state_matrix[construction_type][entity_number][UNDER_CONSTRUCTION] = True
         self.view.on_update_construction_state(construction_type, entity_number)
@@ -268,11 +226,6 @@ class ConstructorModel(Model):
 
     @maximum_money_not_reached
     def on_add_money(self, money):
-        """
-        Updates bank account state change when user gains money. Notifies the view about state change.
-
-        :param money:                   amount of money gained
-        """
         self.money += money
         if self.money > MONEY_LIMIT:
             self.money = MONEY_LIMIT
@@ -280,21 +233,10 @@ class ConstructorModel(Model):
         self.view.on_update_money(self.money)
 
     def on_pay_money(self, money):
-        """
-        Updates bank account state change when user spends money. Notifies the view about state change.
-
-        :param money:                   amount of money spent
-        """
         self.money -= money
         self.view.on_update_money(self.money)
 
     def on_check_track_unlock_conditions(self, track):
-        """
-        Checks if all 3 unlock conditions are met.
-        If so, unlocks the track and notifies the view to send notification.
-
-        :param track:                           track number to check
-        """
         if self.construction_state_matrix[TRACKS][track][UNLOCK_CONDITION_FROM_PREVIOUS_TRACK] \
                 and self.construction_state_matrix[TRACKS][track][UNLOCK_CONDITION_FROM_ENVIRONMENT] \
                 and self.construction_state_matrix[TRACKS][track][UNLOCK_CONDITION_FROM_LEVEL]:
@@ -305,12 +247,6 @@ class ConstructorModel(Model):
             self.view.on_send_track_unlocked_notification(track)
 
     def on_check_environment_unlock_conditions(self, tier):
-        """
-        Checks if all 2 unlock conditions are met.
-        If so, unlocks the tier and notifies the view to send notification.
-
-        :param tier:                            environment tier to check
-        """
         if self.construction_state_matrix[ENVIRONMENT][tier][UNLOCK_CONDITION_FROM_PREVIOUS_ENVIRONMENT] \
                 and self.construction_state_matrix[ENVIRONMENT][tier][UNLOCK_CONDITION_FROM_LEVEL]:
             self.construction_state_matrix[ENVIRONMENT][tier][UNLOCK_CONDITION_FROM_PREVIOUS_ENVIRONMENT] = False
@@ -319,21 +255,10 @@ class ConstructorModel(Model):
             self.view.on_send_environment_unlocked_notification(tier)
 
     def on_activate_money_target(self, construction_type, row):
-        """
-        Updates track_money_target_activated flag value.
-        Notifies view that track money target was activated.
-
-        :param construction_type:               column to activate money target: tracks or environment
-        :param row:                             number of cell in a given column
-        """
         self.money_target_activated = True
         self.money_target_cell_position = [construction_type, row]
         self.view.on_activate_money_target(construction_type, row)
 
     def on_deactivate_money_target(self):
-        """
-        Updates track_money_target_activated flag value.
-        Notifies view that track money target was deactivated.
-        """
         self.money_target_activated = False
         self.view.on_deactivate_money_target()

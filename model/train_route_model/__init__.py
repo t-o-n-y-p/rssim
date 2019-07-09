@@ -4,42 +4,8 @@ from model import *
 
 
 class TrainRouteModel(Model):
-    """
-    Implements Train route model.
-    Train route object is responsible for properties, UI and events related to the train route.
-    """
     def __init__(self, map_id, track, train_route):
-        """
-        Properties:
-            map_id                              ID of the map which this train route belongs to
-            opened                              indicates if train route is opened
-            last_opened_by                      train ID which opened train route last time
-            current_checkpoint                  last force_busy train route section checkpoint
-            priority                            train route priority
-            cars                                number of cars for train which opened train route last time
-            train_route_sections                switch and crossover matrix
-            train_route_section_busy_state      indicates if switches and crossovers are busy
-            train_route_section_positions       indicates correct switches and crossovers positions for thi train route
-            signal_track                        number of track for the signal located on the train route
-            signal_base_route                   base route code for the signal located on the train route
-            start_point_v2                      list of start points for trains depending on number of cars
-            stop_point_v2                       list of stop points for trains depending on number of cars
-            destination_point_v2                list of destination points for trains depending on number of cars
-            checkpoints_v2                      list of checkpoint numbers
-            trail_points_v2                     list of train route points in 2D Cartesian coordinates
-                                                plus rotation angle
-
-        :param map_id:                          ID of the map which this train route belongs to
-        :param track:                           route track number
-        :param train_route:                     route type (e.g. left/right entry/exit)
-        """
         def sgn(x):
-            """
-            Returns 1 if x is positive, -1 if x is negative and 0 if x == 0.
-            x must be integer.
-
-            :param x:                           argument
-            """
             if type(x) is not int:
                 raise ValueError
             elif x == 0:
@@ -139,15 +105,9 @@ class TrainRouteModel(Model):
         self.train_route_section_positions = self.config_db_cursor.fetchall()
 
     def on_activate_view(self):
-        """
-        Activates the view.
-        """
         self.view.on_activate()
 
     def on_save_state(self):
-        """
-        Saves train route state to user progress database.
-        """
         self.user_db_cursor.execute('''UPDATE train_routes SET opened = ?, last_opened_by = ?, current_checkpoint = ?,
                                        priority = ?, cars = ? WHERE track = ? AND train_route = ? AND map_id = ?''',
                                     (int(self.opened), self.last_opened_by, self.current_checkpoint, self.priority,
@@ -159,12 +119,6 @@ class TrainRouteModel(Model):
                                      self.map_id))
 
     def on_open_train_route(self, train_id, cars):
-        """
-        Opens train route.
-
-        :param train_id:                        ID of the train which opens the train route
-        :param cars:                            number of cars in the train
-        """
         self.opened = True
         self.last_opened_by = train_id
         self.cars = cars
@@ -178,9 +132,6 @@ class TrainRouteModel(Model):
         self.train_route_section_busy_state[0] = True
 
     def on_close_train_route(self):
-        """
-        Closes train route.
-        """
         self.opened = False
         self.current_checkpoint = 0
         self.train_route_section_busy_state[-1] = False
@@ -188,11 +139,6 @@ class TrainRouteModel(Model):
 
     @train_has_passed_train_route_section
     def on_update_train_route_sections(self, last_car_position):
-        """
-        Updates train route section state based on last car position.
-
-        :param last_car_position:               train last car position on the route
-        """
         self.controller.parent_controller.on_train_route_section_force_busy_off(
             self.train_route_sections[self.current_checkpoint],
             self.train_route_section_positions[self.current_checkpoint])
@@ -218,12 +164,6 @@ class TrainRouteModel(Model):
     @train_route_is_opened
     @not_approaching_route
     def on_update_time(self, game_time):
-        """
-        Every frame this method checks if there is a train waiting at signal at danger
-        and if all other sections are not busy. If so, updates signal state and lets train go.
-
-        :param game_time:               current in-game time
-        """
         train_route_busy = False
         for i in range(1, len(self.train_route_sections)):
             train_route_busy = train_route_busy or self.train_route_section_busy_state[i]
@@ -242,18 +182,7 @@ class TrainRouteModel(Model):
             self.train_route_section_busy_state[-1] = True
 
     def on_update_priority(self, priority):
-        """
-        Updates train route priority value.
-
-        :param priority:                        new priority value
-        """
         self.priority = priority
 
     def on_update_section_status(self, section, status):
-        """
-        Updates train route section status.
-
-        :param section:                         train route section number
-        :param status:                          new status
-        """
         self.train_route_section_busy_state[section] = status

@@ -6,32 +6,7 @@ from model import *
 
 
 class SchedulerModel(Model):
-    """
-    Implements Scheduler model.
-    Scheduler object is responsible for properties, UI and events related to the train schedule.
-    """
     def __init__(self, map_id):
-        """
-        Properties:
-            map_id                              ID of the map which this scheduler belongs to
-            level                               current player level
-            unlocked_tracks                     indicates how much tracks are available at the moment
-            supported_cars_min                  indicates minimum number of cars all track can handle
-                                                (except 1st and 2nd)
-            schedule_options                    matrix with info about schedule cycles at current level
-            base_schedule                       generated train queue sorted by arrival time
-            train_counter                       ID for next train
-            entry_busy_state                    indicates if train entries (ID based on direction) are busy
-            next_cycle_start_time               in-game timestamp for next schedule cycle beginning
-            schedule_cycle_length               length of schedule cycle at current level in frames
-            frame_per_car                       property to calculate boarding time for train
-                                                based on level and number of cars
-            exp_to_money                        coefficient to calculate gained money
-                                                based on gained exp and current level
-            entry_locked_state                  indicates if train entries (ID based on direction) are locked
-
-        :param map_id:                          ID of the map which this scheduler belongs to
-        """
         super().__init__(logger=getLogger(f'root.app.game.map.{map_id}.scheduler.model'))
         self.map_id = map_id
         self.user_db_cursor.execute('SELECT level FROM game_progress')
@@ -61,19 +36,9 @@ class SchedulerModel(Model):
         self.entry_locked_state = list(map(bool, list(map(int, self.user_db_cursor.fetchone()[0].split(',')))))
 
     def on_activate_view(self):
-        """
-        Activates the Scheduler view.
-        """
         self.view.on_activate()
 
     def on_update_time(self, game_time):
-        """
-        Creates one more schedule cycle is necessary.
-        Notifies Map controller to create train if arrival time is less or equal to current time
-        and corresponding entry is not busy.
-
-        :param game_time:               current in-game time
-        """
         self.view.on_update_time(game_time)
         # new schedule cycle is created if current schedule end is less than schedule cycle length ahead
         if game_time + self.schedule_cycle_length >= self.next_cycle_start_time:
@@ -124,9 +89,6 @@ class SchedulerModel(Model):
                 break
 
     def on_save_state(self):
-        """
-        Saves schedule matrix and map progress to user progress database.
-        """
         self.user_db_cursor.execute('''UPDATE scheduler SET train_counter = ?, next_cycle_start_time = ?, 
                                        entry_busy_state = ? WHERE map_id = ?''',
                                     (self.train_counter, self.next_cycle_start_time,
@@ -142,11 +104,6 @@ class SchedulerModel(Model):
                                     (self.supported_cars_min, self.map_id))
 
     def on_level_up(self, level):
-        """
-        Reads new level-dependent data when user hits new level.
-
-        :param level:                   new level value
-        """
         self.level = level
         self.config_db_cursor.execute('''SELECT arrival_time_min, arrival_time_max, direction, new_direction, 
                                          cars_min, cars_max FROM schedule_options 
@@ -160,11 +117,6 @@ class SchedulerModel(Model):
             = self.config_db_cursor.fetchone()
 
     def on_unlock_track(self, track):
-        """
-        Updates number of unlocked tracks and supported cars.
-
-        :param track:                   track number
-        """
         self.unlocked_tracks = track
         self.on_unlock_entry()
         self.config_db_cursor.execute('''SELECT supported_cars_min FROM track_config 
@@ -173,17 +125,9 @@ class SchedulerModel(Model):
         self.supported_cars_min = self.config_db_cursor.fetchone()[0]
 
     def on_leave_entry(self, entry_id):
-        """
-        Updates entry state.
-
-        :param entry_id:                        entry identification number
-        """
         self.entry_busy_state[entry_id] = False
 
     def on_unlock_entry(self):
-        """
-        Unlocks entry when first track based on this entry is unlocked.
-        """
         if self.unlocked_tracks == LEFT_SIDE_ENTRY_FIRST_TRACK:
             self.entry_locked_state[DIRECTION_FROM_LEFT_TO_RIGHT_SIDE] = False
 

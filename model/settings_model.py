@@ -5,27 +5,7 @@ from ui import SURFACE
 
 
 class SettingsModel(Model):
-    """
-    Implements Settings model.
-    Settings object is responsible for user-defined settings.
-    """
     def __init__(self):
-        """
-        Properties:
-            display_fps                         indicates if FPS value is displayed in game
-            windowed_resolution                 screen resolution in windowed mode
-            fade_animations_enabled             indicates if fade animations are turned on
-            clock_24h_enabled                   indicates if 24h clock is enabled
-            level_up_notification_enabled
-                                indicates if level up notifications are enabled by user in game settings
-            feature_unlocked_notification_enabled
-                                indicates if feature unlocked notifications are enabled by user in game settings
-            construction_completed_notification_enabled
-                                indicates if construction completed notifications are enabled by user in game settings
-            enough_money_notification_enabled
-                                indicates if enough money notifications are enabled by user in game settings
-
-        """
         super().__init__(logger=getLogger('root.app.settings.model'))
         self.user_db_cursor.execute('SELECT app_width, app_height FROM graphics')
         self.windowed_resolution = self.user_db_cursor.fetchone()
@@ -39,10 +19,6 @@ class SettingsModel(Model):
             = tuple(map(bool, self.user_db_cursor.fetchone()))
 
     def on_activate_view(self):
-        """
-        Activates the Settings view, updates temp values for fade animations, windowed resolution
-        and updates available windowed resolutions.
-        """
         self.view.temp_display_fps = self.display_fps
         self.view.temp_fade_animations_enabled = self.fade_animations_enabled
         self.view.temp_clock_24h_enabled = self.clock_24h_enabled
@@ -54,10 +30,6 @@ class SettingsModel(Model):
         self.view.on_activate()
 
     def on_save_and_commit_state(self):
-        """
-        Notifies the app controller about user-defined settings update.
-        Saves user-defined settings to user progress database and makes commit.
-        """
         self.display_fps = self.view.temp_display_fps
         self.controller.parent_controller.fps.on_update_display_fps(self.display_fps)
         self.fade_animations_enabled = self.view.temp_fade_animations_enabled
@@ -97,9 +69,4 @@ class SettingsModel(Model):
         self.user_db_connection.commit()
 
     def on_update_clock_state(self, clock_24h_enabled):
-        """
-        Updates clock state.
-
-        :param clock_24h_enabled:               indicates if 24h clock is enabled
-        """
         self.clock_24h_enabled = clock_24h_enabled

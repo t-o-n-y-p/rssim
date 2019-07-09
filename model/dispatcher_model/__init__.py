@@ -4,22 +4,7 @@ from model import *
 
 
 class DispatcherModel(Model):
-    """
-    Implements Dispatcher model.
-    Dispatcher object is responsible for assigning routes to approaching trains.
-    """
     def __init__(self, map_id):
-        """
-        Properties:
-            map_id                              ID of the map which this dispatcher belongs to
-            trains                              list of trains still to be dispatched
-            supported_cars                      trains with this number of cars can stop, others must pass through
-            unlocked_tracks                     indicates how much tracks are available at the moment
-            track_busy_status                   indicates which tracks are busy and which are not
-            supported_cars_by_track             indicates number of cars each track can handle
-
-        :param map_id:                          ID of the map which this dispatcher belongs to
-        """
         super().__init__(logger=getLogger(f'root.app.game.map.{map_id}.dispatcher.model'))
         self.map_id = map_id
         self.trains = []
@@ -42,11 +27,6 @@ class DispatcherModel(Model):
         self.view.on_activate()
 
     def on_update_time(self, game_time):
-        """
-        Tries to dispatch all trains in queue.
-
-        :param game_time:               current in-game time
-        """
         for t in self.trains:
             # get track priority list based on train state, direction and new direction
             track_priority_list = []
@@ -70,34 +50,15 @@ class DispatcherModel(Model):
                     break
 
     def on_save_state(self):
-        """
-        Saves dispatcher state to user progress database.
-        """
         for i in range(1, len(self.track_busy_status)):
             self.user_db_cursor.execute('''UPDATE tracks SET busy = ? WHERE track_number = ? AND map_id = ?''',
                                         (int(self.track_busy_status[i]), i, self.map_id))
 
     def on_unlock_track(self, track):
-        """
-        Updates number of unlocked tracks after new track was unlocked.
-
-        :param track:                   track number
-        """
         self.unlocked_tracks = track
 
     def on_add_train(self, train_controller):
-        """
-        Adds approaching train to the queue.
-        After train is created, it needs to be dispatched to the most suitable track.
-
-        :param train_controller:        controller of the train to be added
-        """
         self.trains.append(train_controller)
 
     def on_leave_track(self, track):
-        """
-        Clears the track for any of the next trains.
-
-        :param track:                   track number
-        """
         self.track_busy_status[track] = False

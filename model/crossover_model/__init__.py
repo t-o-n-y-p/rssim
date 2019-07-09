@@ -4,27 +4,7 @@ from model import *
 
 
 class CrossoverModel(Model):
-    """
-    Implements Crossover model.
-    Crossover object is responsible for properties, UI and events related to the crossover.
-    """
     def __init__(self, map_id, track_param_1, track_param_2, crossover_type):
-        """
-        Properties:
-            map_id                              ID of the map which this crossover belongs to
-            busy                                indicates which crossover direction is busy
-            force_busy                          indicates which crossover direction is force_busy
-            last_entered_by                     train ID which made the crossover direction force_busy last time
-            state_change_listeners              train route sections which share this crossover
-            current_position_1                  current position crossover is switched to: track 1
-            current_position_2                  current position crossover is switched to: track 2
-            locked                              indicates if crossover is available for player
-
-        :param map_id:                          ID of the map which this crossover belongs to
-        :param track_param_1:                   number of the first track of two being connected by the crossover
-        :param track_param_2:                   number of the second track of two being connected by the crossover
-        :param crossover_type:                  crossover location: left/right side of the map
-        """
         super().__init__(
             logger=getLogger(
                 f'root.app.game.map.{map_id}.crossover.{track_param_1}.{track_param_2}.{crossover_type}.model'
@@ -85,15 +65,9 @@ class CrossoverModel(Model):
         self.locked = bool(self.user_db_cursor.fetchone()[0])
 
     def on_activate_view(self):
-        """
-        Activates the Crossover view.
-        """
         self.view.on_activate()
 
     def on_save_state(self):
-        """
-        Saves crossover state to user progress database.
-        """
         track_param_1 = self.controller.track_param_1
         track_param_2 = self.controller.track_param_2
         crossover_type = self.controller.crossover_type
@@ -120,12 +94,6 @@ class CrossoverModel(Model):
                                      track_param_1, track_param_2, crossover_type, self.map_id))
 
     def on_force_busy_on(self, positions, train_id):
-        """
-        Locks crossover in required position since the train is approaching.
-
-        :param positions:               direction the train is about to proceed through
-        :param train_id:                ID of the train which is about to pass through the crossover
-        """
         self.force_busy[positions[0]][positions[1]] = True
         # if second position is not equal to first, no other train can fit inside,
         # so all 4 possible crossover routes are busy
@@ -152,11 +120,6 @@ class CrossoverModel(Model):
         self.view.on_change_current_position(self.current_position_1, self.current_position_2)
 
     def on_force_busy_off(self, positions):
-        """
-        Unlocks crossover position after the train has passed it.
-
-        :param positions:               direction that was previously locked for train
-        """
         self.force_busy[positions[0]][positions[1]] = False
         # if second position is not equal to first, no other train can fit inside,
         # so all 4 possible crossover routes are not busy now
@@ -182,32 +145,16 @@ class CrossoverModel(Model):
                     self.on_leave_notify(k[0], k[1])
 
     def on_busy_notify(self, position_1, position_2, train_id):
-        """
-        Notifies all listeners about crossover positions state change.
-
-        :param position_1:                      direction the train is about to proceed from
-        :param position_2:                      direction the train is about to proceed to
-        :param train_id:                        ID of the train which is about to pass through the crossover
-        """
         self.busy[position_1][position_2] = True
         self.last_entered_by[position_1][position_2] = train_id
         for listener in self.state_change_listeners[position_1][position_2]:
             self.controller.parent_controller.on_update_train_route_section_status(listener, status=True)
 
     def on_leave_notify(self, position_1, position_2):
-        """
-        Notifies all listeners about crossover positions state change.
-
-        :param position_1:                      direction the train has proceed from
-        :param position_2:                      direction the train has proceed to
-        """
         self.busy[position_1][position_2] = False
         for listener in self.state_change_listeners[position_1][position_2]:
             self.controller.parent_controller.on_update_train_route_section_status(listener, status=False)
 
     def on_unlock(self):
-        """
-        Updates crossover lock state. Notifies the view about lock state update.
-        """
         self.locked = False
         self.view.on_unlock()

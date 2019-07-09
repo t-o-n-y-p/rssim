@@ -9,31 +9,11 @@ from ui.fade_animation.fade_out_animation.train_fade_out_animation import TrainF
 
 
 class PassengerMapModel(MapModel):
-    """
-    Implements Map model for passenger map (map_id = 0).
-    """
     def __init__(self):
         super().__init__(map_id=0)
 
     def on_create_train(self, train_id, cars, track, train_route, state, direction, new_direction,
                         current_direction, priority, boarding_time, exp, money):
-        """
-        Creates new train similar to _create_train function.
-
-        :param train_id:                        train identification number
-        :param cars:                            number of cars in the train
-        :param track:                           track number (0 for regular entry and 100 for side entry)
-        :param train_route:                     train route type (left/right approaching or side_approaching)
-        :param state:                           train state: approaching or approaching_pass_through
-        :param direction:                       train arrival direction
-        :param new_direction:                   train departure direction
-        :param current_direction:               train current direction
-        :param priority:                        train priority in the queue
-        :param boarding_time:                   amount of boarding time left for this train
-        :param exp:                             exp gained when boarding finishes
-        :param money:                           money gained when boarding finishes
-        :return:                                Train object controller
-        """
         controller = PassengerTrainController(self.controller, train_id)
         controller.fade_in_animation = TrainFadeInAnimation(controller)
         controller.fade_out_animation = TrainFadeOutAnimation(controller)

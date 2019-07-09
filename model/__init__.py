@@ -2,12 +2,6 @@ from database import USER_DB_CONNECTION, USER_DB_CURSOR, CONFIG_DB_CURSOR
 
 
 def fullscreen_mode_available(fn):
-    """
-    Use this decorator within App model to execute function only if fullscreen mode is enabled.
-
-    :param fn:                      function to decorate
-    :return:                        decorator function
-    """
     def _turn_fullscreen_mode_on_if_available(*args, **kwargs):
         if args[0].fullscreen_mode_available:
             fn(*args, **kwargs)
@@ -16,13 +10,6 @@ def fullscreen_mode_available(fn):
 
 
 def maximum_money_not_reached(fn):
-    """
-    Use this decorator within Game or Constructor model to execute function
-    only if money limit is not reached.
-
-    :param fn:                      function to decorate
-    :return:                        decorator function
-    """
     def _add_money_if_maximum_money_is_not_reached(*args, **kwargs):
         if args[0].money < MONEY_LIMIT:
             fn(*args, **kwargs)
@@ -31,13 +18,6 @@ def maximum_money_not_reached(fn):
 
 
 def maximum_level_not_reached(fn):
-    """
-    Use this decorator within Game model to execute function
-    only if maximum level is not reached.
-
-    :param fn:                      function to decorate
-    :return:                        decorator function
-    """
     def _add_exp_if_max_level_not_reached(*args, **kwargs):
         if args[0].level < MAXIMUM_LEVEL:
             fn(*args, **kwargs)
@@ -46,12 +26,6 @@ def maximum_level_not_reached(fn):
 
 
 def money_target_exists(fn):
-    """
-    Reserved for future use.
-
-    :param fn:                      function to decorate
-    :return:                        decorator function
-    """
     def _update_money_progress_if_money_target_exists(*args, **kwargs):
         if args[0].money_target > 0:
             fn(*args, **kwargs)
@@ -60,13 +34,6 @@ def money_target_exists(fn):
 
 
 def train_has_passed_train_route_section(fn):
-    """
-    Use this decorator within Train route model to execute function
-    only if train has just passed railroad switch, crossover or signal.
-
-    :param fn:                      function to decorate
-    :return:                        decorator function
-    """
     def _allow_other_trains_to_pass_if_train_has_passed_train_route_section(*args, **kwargs):
         if args[1] >= args[0].checkpoints_v2[args[0].current_checkpoint]:
             fn(*args, **kwargs)
@@ -75,13 +42,6 @@ def train_has_passed_train_route_section(fn):
 
 
 def train_route_is_opened(fn):
-    """
-    Use this decorator within Train route model to execute function
-    only if train route is opened.
-
-    :param fn:                      function to decorate
-    :return:                        decorator function
-    """
     def _handle_if_train_route_is_opened(*args, **kwargs):
         if args[0].opened:
             fn(*args, **kwargs)
@@ -90,13 +50,6 @@ def train_route_is_opened(fn):
 
 
 def not_approaching_route(fn):
-    """
-    Use this decorator within Train route model to execute function
-    only if route type is not "approaching".
-
-    :param fn:                      function to decorate
-    :return:                        decorator function
-    """
     def _handle_if_train_route_is_not_approaching_route(*args, **kwargs):
         if len(args[0].train_route_sections) > 1:
             fn(*args, **kwargs)
@@ -105,13 +58,6 @@ def not_approaching_route(fn):
 
 
 def display_fps_enabled(fn):
-    """
-    Use this decorator within FPS model to execute function
-    only if display_fps flag is enabled.
-
-    :param fn:                      function to decorate
-    :return:                        decorator function
-    """
     def _execute_if_display_fps_enabled(*args, **kwargs):
         if args[0].display_fps:
             fn(*args, **kwargs)
@@ -231,22 +177,7 @@ CONSTRUCTOR_VIEW_ENVIRONMENT_CELLS = 4          # number of cells for environmen
 
 
 class Model:
-    """
-    Base class for all models in the app.
-    """
     def __init__(self, logger):
-        """
-        Properties:
-            logger                              telemetry instance
-            view                                object view
-            controller                          object controller
-            is_activated                        indicates if model is active
-            user_db_connection                  connection to the user DB (stores game state and user-defined settings)
-            user_db_cursor                      user DB cursor (is used to execute user DB queries)
-            config_db_cursor                    configuration DB cursor (is used to execute configuration DB queries)
-
-        :param logger:                          telemetry instance
-        """
         self.logger = logger
         self.view = None
         self.controller = None
@@ -259,7 +190,4 @@ class Model:
         pass
 
     def on_save_state(self):
-        """
-        Saves model state to user progress database.
-        """
         pass
