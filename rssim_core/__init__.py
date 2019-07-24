@@ -199,6 +199,9 @@ def _create_passenger_map(game):
         for i in train_ids:
             controller.trains[i[0]] = _create_passenger_train(controller, i[0])
             controller.trains_list.append(controller.trains[i[0]])
+            if controller.trains[i[0]].model.state in ('approaching', 'approaching_pass_through'):
+                controller.dispatcher.on_add_train(controller.trains[i[0]])
+
     # read signal tracks and base routes from database, create signals and append them to both dictionary and list
     CONFIG_DB_CURSOR.execute('''SELECT DISTINCT track FROM signal_config WHERE map_id = 0''')
     signal_index = CONFIG_DB_CURSOR.fetchall()
