@@ -102,7 +102,7 @@ class TrainView(View):
         for i in range(len(self.car_sprites)):
             if i == 0:
                 self.car_sprites[i].on_update_texture(self.car_head_image[self.car_image_collection][self.direction])
-            elif i == len(self.car_position) - 1:
+            elif i == len(self.car_sprites) - 1:
                 self.car_sprites[i].on_update_texture(self.car_tail_image[self.car_image_collection][self.direction])
             else:
                 self.car_sprites[i].on_update_texture(self.car_mid_image[self.car_image_collection][self.direction])

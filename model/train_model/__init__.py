@@ -204,6 +204,7 @@ class TrainModel(Model):
             if self.boarding_time == FRAMES_IN_ONE_MINUTE:
                 self.current_direction = self.new_direction
                 self.train_route = EXIT_TRAIN_ROUTE[self.current_direction]
+                self.view.on_update_direction(self.current_direction)
                 if self.direction % 2 != self.new_direction % 2:
                     self.on_switch_direction()
 
@@ -235,3 +236,8 @@ class TrainModel(Model):
 
     def on_switch_direction(self):
         self.cars_position_abs = list(reversed(self.cars_position_abs))
+        car_position_view = []
+        for i in self.cars_position_abs:
+            car_position_view.append((i[0], i[1], 0.0))
+
+        self.view.on_update_car_position(car_position_view)
