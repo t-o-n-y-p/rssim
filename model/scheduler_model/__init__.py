@@ -56,6 +56,7 @@ class SchedulerModel(Model):
 
             self.next_cycle_start_time += self.schedule_cycle_length
             self.base_schedule = sorted(self.base_schedule, key=itemgetter(ARRIVAL_TIME))
+            self.view.base_schedule = self.base_schedule
 
         # notify Map controller about new train available if arrival time is less or equal than current time
         # and corresponding entry is not busy; only one train at a time is created
