@@ -201,7 +201,7 @@ class TrainModel(Model):
             # if boarding is in progress, decrease boarding time
             self.boarding_time -= 1
             # after one minute left, assign exit rain route depending on new direction
-            if self.boarding_time == FRAMES_IN_ONE_MINUTE:
+            if self.boarding_time == FRAMES_IN_ONE_MINUTE // 2:
                 self.current_direction = self.new_direction
                 self.train_route = EXIT_TRAIN_ROUTE[self.current_direction]
                 self.view.on_update_direction(self.current_direction)

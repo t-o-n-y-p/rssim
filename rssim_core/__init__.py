@@ -101,7 +101,7 @@ from database import CONFIG_DB_CURSOR, USER_DB_CURSOR
 
 
 # --------------------- CONSTANTS ---------------------
-CURRENT_VERSION = (0, 9, 6)         # current app version
+CURRENT_VERSION = (0, 9, 7)         # current app version
 REQUIRED_TEXTURE_SIZE = 8192        # maximum texture resolution presented in the app
 FPS_INTERVAL = 0.2                  # interval between FPS update
 LOG_LEVEL_OFF = 30                  # integer log level high enough to cut off all logs

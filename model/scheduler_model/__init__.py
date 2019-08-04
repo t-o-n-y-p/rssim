@@ -28,9 +28,9 @@ class SchedulerModel(Model):
         self.train_counter, self.next_cycle_start_time = self.user_db_cursor.fetchone()
         self.user_db_cursor.execute('''SELECT entry_busy_state FROM scheduler WHERE map_id = ?''', (self.map_id, ))
         self.entry_busy_state = list(map(bool, list(map(int, self.user_db_cursor.fetchone()[0].split(',')))))
-        self.config_db_cursor.execute('''SELECT schedule_cycle_length, frame_per_car, exp_to_money 
-                                      FROM player_progress_config WHERE level = ?''', (self.level, ))
-        self.schedule_cycle_length, self.frame_per_car, self.exp_to_money \
+        self.config_db_cursor.execute('''SELECT schedule_cycle_length, frame_per_car, exp_per_car, money_per_car 
+                                      FROM map_config WHERE level = ? AND map_id = ?''', (self.level, self.map_id))
+        self.schedule_cycle_length, self.frame_per_car, self.exp_per_car, self.money_per_car \
             = self.config_db_cursor.fetchone()
         self.user_db_cursor.execute('''SELECT entry_locked_state FROM map_progress WHERE map_id = ?''', (self.map_id, ))
         self.entry_locked_state = list(map(bool, list(map(int, self.user_db_cursor.fetchone()[0].split(',')))))
@@ -50,8 +50,7 @@ class SchedulerModel(Model):
                     train_options = (self.train_counter, self.next_cycle_start_time
                                      + choice(list(range(i[ARRIVAL_TIME_MIN], i[ARRIVAL_TIME_MAX]))),
                                      i[DIRECTION], i[NEW_DIRECTION], cars, self.frame_per_car * cars,
-                                     self.frame_per_car * cars / 8,
-                                     self.frame_per_car * cars / 8 * self.exp_to_money)
+                                     self.exp_per_car * cars, self.money_per_car * cars)
                     self.base_schedule.append(train_options)
                     self.train_counter = (self.train_counter + 1) % TRAIN_ID_LIMIT
 
@@ -110,10 +109,9 @@ class SchedulerModel(Model):
                                          WHERE min_level <= ? AND max_level >= ? AND map_id = ?''',
                                       (self.level, self.level, self.map_id))
         self.schedule_options = self.config_db_cursor.fetchall()
-        self.config_db_cursor.execute('''SELECT schedule_cycle_length, frame_per_car, exp_to_money 
-                                         FROM player_progress_config WHERE level = ?''',
-                                      (self.level, ))
-        self.schedule_cycle_length, self.frame_per_car, self.exp_to_money \
+        self.config_db_cursor.execute('''SELECT schedule_cycle_length, frame_per_car, exp_per_car, money_per_car 
+                                      FROM map_config WHERE level = ? AND map_id = ?''', (self.level, self.map_id))
+        self.schedule_cycle_length, self.frame_per_car, self.exp_per_car, self.money_per_car \
             = self.config_db_cursor.fetchone()
 
     def on_unlock_track(self, track):
