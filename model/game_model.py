@@ -9,8 +9,10 @@ class GameModel(Model):
         self.game_paused = True
         self.user_db_cursor.execute('SELECT game_time FROM epoch_timestamp')
         self.game_time = self.user_db_cursor.fetchone()[0]
-        self.user_db_cursor.execute('SELECT level, exp, money, money_target, exp_multiplier FROM game_progress')
-        self.level, self.exp, self.money, self.money_target, self.exp_multiplier = self.user_db_cursor.fetchone()
+        self.user_db_cursor.execute('''SELECT level, exp, money, money_target, exp_multiplier,
+                                       exp_bonus_multiplier, money_bonus_multiplier FROM game_progress''')
+        self.level, self.exp, self.money, self.money_target, self.exp_multiplier, \
+            self.exp_bonus_multiplier, self.money_bonus_multiplier = self.user_db_cursor.fetchone()
         self.config_db_cursor.execute('''SELECT player_progress FROM player_progress_config 
                                          WHERE level = ?''', (self.level, ))
         self.player_progress = self.config_db_cursor.fetchone()[0]
@@ -48,7 +50,7 @@ class GameModel(Model):
 
     @maximum_level_not_reached
     def on_add_exp(self, exp):
-        self.exp += exp * self.exp_multiplier
+        self.exp += exp * self.exp_multiplier * self.exp_bonus_multiplier
         while self.exp >= self.player_progress and self.level < MAXIMUM_LEVEL:
             self.controller.on_level_up()
 
@@ -68,7 +70,7 @@ class GameModel(Model):
 
     @maximum_money_not_reached
     def on_add_money(self, money):
-        if self.money_target > 0 and self.money < self.money_target <= self.money + money:
+        if self.money_target > 0 and self.money < self.money_target <= self.money + money * self.money_bonus_multiplier:
             for map_ in self.controller.maps:
                 if map_.constructor.model.money_target_activated:
                     if map_.constructor.model.money_target_cell_position[0] == TRACKS:
@@ -76,7 +78,7 @@ class GameModel(Model):
                     elif map_.constructor.model.money_target_cell_position[0] == ENVIRONMENT:
                         self.view.on_send_enough_money_environment_notification()
 
-        self.money += money
+        self.money += money * self.money_bonus_multiplier
         if self.money > MONEY_LIMIT:
             self.money = MONEY_LIMIT
 
