@@ -2,21 +2,20 @@ from sys import exit, exc_info
 from os import path, mkdir
 from datetime import datetime
 from traceback import print_tb
+from ctypes import windll
 
-from win32api import MessageBoxEx
-import win32con
-
-from exceptions import VideoAdapterNotSupportedException, MonitorNotSupportedException, UpdateIncompatibleException
+from exceptions import *
 from rssim_core.rssim_core import RSSim
+from ui import SURFACE
 
 
 def main():
     try:
         RSSim().run()
-    except (VideoAdapterNotSupportedException, MonitorNotSupportedException, UpdateIncompatibleException) as e:
-        MessageBoxEx(win32con.NULL, e.text, e.caption,
-                     win32con.MB_OK | win32con.MB_ICONERROR | win32con.MB_DEFBUTTON1
-                     | win32con.MB_SYSTEMMODAL | win32con.MB_SETFOREGROUND, 0)
+    except (VideoAdapterNotSupportedException, MonitorNotSupportedException,
+            UpdateIncompatibleException, HackingDetectedException) as e:
+        SURFACE.close()
+        windll.user32.MessageBoxW(None, e.text, e.caption, 0x1000)
     except Exception:
         if not path.exists('logs'):
             mkdir('logs')

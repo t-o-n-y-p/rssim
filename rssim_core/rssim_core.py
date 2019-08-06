@@ -3,10 +3,11 @@ from time import perf_counter
 from os import path, mkdir
 from logging import FileHandler, Formatter, getLogger
 from datetime import datetime
+from hashlib import sha512
 
 from pyglet import gl
 
-from exceptions import VideoAdapterNotSupportedException, MonitorNotSupportedException, UpdateIncompatibleException
+from exceptions import *
 from rssim_core import *
 from ui import SURFACE, BATCHES, MIN_RESOLUTION_WIDTH, MIN_RESOLUTION_HEIGHT
 from database import USER_DB_CURSOR, USER_DB_CONNECTION
@@ -25,6 +26,19 @@ class RSSim:
                 or windll.user32.GetSystemMetrics(1) < MIN_RESOLUTION_HEIGHT:
             raise MonitorNotSupportedException
 
+        with open('db/config.db', 'rb') as f:
+            data = f.read()
+
+        if sha512(data).hexdigest() != CONFIG_DATABASE_SHA512:
+            raise HackingDetectedException
+
+        with open('db/default.db', 'rb') as f:
+            data = f.read()
+
+        if sha512(data).hexdigest() != DEFAULT_DATABASE_SHA512:
+            raise HackingDetectedException
+
+        data = None
         # check if game was updated from previous version (0.9.0 and higher are supported)
         self.on_check_for_updates()
         # set up the main logger; if logs are turned on, create log file
