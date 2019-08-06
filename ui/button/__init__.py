@@ -177,21 +177,21 @@ class Button:
         else:
             self.text_label.color = (*GREY_RGB, self.opacity)
 
+    @button_is_activated_or_disabled
     def on_move(self):
-        if self.is_activated or self.disabled_state:
-            if self.vertex_list is not None:
-                # move the button background to the new position
-                # 2 pixels are left for red button border,
-                # that's why background position starts from (button_position + 2)
-                self.vertex_list.vertices = (self.position[0] + 2, self.position[1] + 2,
-                                             self.position[0] + self.button_size[0] - 2, self.position[1] + 2,
-                                             self.position[0] + self.button_size[0] - 2,
-                                             self.position[1] + self.button_size[1] - 2,
-                                             self.position[0] + 2, self.position[1] + self.button_size[1] - 2)
-            # move the text label to the center of the button
-            if self.text_label is not None:
-                self.text_label.x = self.position[0] + self.button_size[0] // 2
-                self.text_label.y = self.position[1] + self.button_size[1] // 2
+        if self.vertex_list is not None:
+            # move the button background to the new position
+            # 2 pixels are left for red button border,
+            # that's why background position starts from (button_position + 2)
+            self.vertex_list.vertices = (self.position[0] + 2, self.position[1] + 2,
+                                         self.position[0] + self.button_size[0] - 2, self.position[1] + 2,
+                                         self.position[0] + self.button_size[0] - 2,
+                                         self.position[1] + self.button_size[1] - 2,
+                                         self.position[0] + 2, self.position[1] + self.button_size[1] - 2)
+        # move the text label to the center of the button
+        if self.text_label is not None:
+            self.text_label.x = self.position[0] + self.button_size[0] // 2
+            self.text_label.y = self.position[1] + self.button_size[1] // 2
 
     def on_resize(self):
         self.font_size = int(self.base_font_size_property * min(self.button_size))

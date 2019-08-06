@@ -9,7 +9,7 @@ class OpenShopDetailsButton(MapButton):
         super().__init__(logger=getLogger('root.button.open_shop_details_button'))
         self.to_activate_on_controller_init = False
         self.invisible = True
-        self.text = ' '
+        self.text = ''
         self.font_name = 'Arial'
         self.base_font_size_property = 29 / 80
         self.on_click_action = on_click_action
