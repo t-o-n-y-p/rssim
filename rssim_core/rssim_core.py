@@ -26,19 +26,10 @@ class RSSim:
                 or windll.user32.GetSystemMetrics(1) < MIN_RESOLUTION_HEIGHT:
             raise MonitorNotSupportedException
 
-        with open('db/config.db', 'rb') as f:
-            data = f.read()
+        with open('db/config.db', 'rb') as f1, open('db/default.db', 'rb') as f2:
+            if sha512(f1.read() + f2.read()).hexdigest() != DATABASE_SHA512:
+                raise HackingDetectedException
 
-        if sha512(data).hexdigest() != CONFIG_DATABASE_SHA512:
-            raise HackingDetectedException
-
-        with open('db/default.db', 'rb') as f:
-            data = f.read()
-
-        if sha512(data).hexdigest() != DEFAULT_DATABASE_SHA512:
-            raise HackingDetectedException
-
-        data = None
         # check if game was updated from previous version (0.9.0 and higher are supported)
         self.on_check_for_updates()
         # set up the main logger; if logs are turned on, create log file

@@ -107,9 +107,8 @@ FPS_INTERVAL = 0.2                  # interval between FPS update
 LOG_LEVEL_OFF = 30                  # integer log level high enough to cut off all logs
 LOG_LEVEL_INFO = 20                 # integer log level which includes basic logs
 LOG_LEVEL_DEBUG = 10                # integer log level which includes all possible logs
-# database hashes
-CONFIG_DATABASE_SHA512 = '72846d047da03bdf100f251c572aa82ef4050f17ca6da9f6978de04f05f9ee5aa458c81472459461dff917a0290af4a3f30a5a64f6a6fea22d5cf255afda9e42'
-DEFAULT_DATABASE_SHA512 = '90cd76ec13ea5f2711bbb1c4b3ccef76d7ef897edf0617d29aaa9b53fc16448b4dbc664e60ede645f110d17a5765ca48977e479ad1ceeb0ec00dc2cb4a11bf62'
+# database hash
+DATABASE_SHA512 = 'fcfbde547811ccff8f462a0bda00821dc4cf759b0596bda691f1cf449bf8df23fc042ecf85205527b04db0b971006cee0f80d09558d33aa63e8926f25482b4f0'
 # ------------------- END CONSTANTS -------------------
 
 
