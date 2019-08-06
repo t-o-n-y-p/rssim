@@ -103,6 +103,7 @@ class ConstructorModel(Model):
                         if self.construction_state_matrix[TRACKS][track][ENVIRONMENT_REQUIRED] == tier:
                             self.construction_state_matrix[TRACKS][track][UNLOCK_CONDITION_FROM_ENVIRONMENT] = True
                             self.on_check_track_unlock_conditions(track)
+                            self.view.on_update_construction_state(TRACKS, track)
 
                     # if there are more tiers to unlock, unlock condition for the next tier is met
                     if tier < MAXIMUM_ENVIRONMENT_TIER:
