@@ -121,6 +121,7 @@ def create_app(loader):
     controller.view = view
     view.on_assign_controller(controller)
     model.view = view
+    view.on_init_content()
     controller.main_menu = _create_main_menu(controller)
     controller.license = _create_license(controller)
     controller.onboarding = _create_onboarding(controller)
@@ -177,6 +178,7 @@ def _create_game(app):
     controller.view = view
     view.on_assign_controller(controller)
     model.view = view
+    view.on_init_content()
     controller.maps.append(_create_passenger_map(controller))
     for map_ in controller.maps:
         controller.fade_in_animation.map_fade_in_animations.append(map_.fade_in_animation)
@@ -273,6 +275,7 @@ def _create_passenger_map(game):
     controller.view = view
     view.on_assign_controller(controller)
     model.view = view
+    view.on_init_content()
     controller.fade_in_animation.constructor_fade_in_animation = controller.constructor.fade_in_animation
     controller.fade_in_animation.scheduler_fade_in_animation = controller.scheduler.fade_in_animation
     controller.fade_in_animation.dispatcher_fade_in_animation = controller.dispatcher.fade_in_animation
@@ -317,6 +320,7 @@ def _create_settings(app):
     controller.view = view
     view.on_assign_controller(controller)
     model.view = view
+    view.on_init_content()
     return controller
 
 
@@ -331,6 +335,7 @@ def _create_fps(app):
     controller.view = view
     view.on_assign_controller(controller)
     model.view = view
+    view.on_init_content()
     return controller
 
 
@@ -346,6 +351,7 @@ def _create_passenger_map_scheduler(map_controller):
     view.on_assign_controller(controller)
     model.view = view
     view.base_schedule = model.base_schedule
+    view.on_init_content()
     return controller
 
 
@@ -360,6 +366,7 @@ def _create_passenger_map_signal(map_controller, track, base_route):
     controller.view = view
     view.on_assign_controller(controller)
     model.view = view
+    view.on_init_content()
     return controller
 
 
@@ -377,6 +384,7 @@ def _create_passenger_train_route(map_controller, track, train_route):
     controller.view = view
     view.on_assign_controller(controller)
     model.view = view
+    view.on_init_content()
     return controller
 
 
@@ -391,6 +399,7 @@ def _create_passenger_map_railroad_switch(map_controller, track_param_1, track_p
     controller.view = view
     view.on_assign_controller(controller)
     model.view = view
+    view.on_init_content()
     return controller
 
 
@@ -405,6 +414,7 @@ def _create_passenger_map_crossover(map_controller, track_param_1, track_param_2
     controller.view = view
     view.on_assign_controller(controller)
     model.view = view
+    view.on_init_content()
     return controller
 
 
@@ -420,6 +430,7 @@ def _create_passenger_train(map_controller, train_id):
     controller.view = view
     view.on_assign_controller(controller)
     model.view = view
+    view.on_init_content()
     return controller
 
 
@@ -434,6 +445,7 @@ def _create_passenger_map_dispatcher(map_controller):
     controller.view = view
     view.on_assign_controller(controller)
     model.view = view
+    view.on_init_content()
     return controller
 
 
@@ -449,6 +461,7 @@ def _create_passenger_map_constructor(map_controller):
     view.on_assign_controller(controller)
     model.view = view
     view.construction_state_matrix = model.construction_state_matrix
+    view.on_init_content()
     return controller
 
 
@@ -463,6 +476,7 @@ def _create_main_menu(app):
     controller.view = view
     view.on_assign_controller(controller)
     model.view = view
+    view.on_init_content()
     return controller
 
 
@@ -477,6 +491,7 @@ def _create_license(app):
     controller.view = view
     view.on_assign_controller(controller)
     model.view = view
+    view.on_init_content()
     return controller
 
 
@@ -491,6 +506,7 @@ def _create_onboarding(app):
     controller.view = view
     view.on_assign_controller(controller)
     model.view = view
+    view.on_init_content()
     return controller
 
 
@@ -510,6 +526,7 @@ def _create_passenger_map_shop(map_controller, shop_id):
     controller.view = view
     view.on_assign_controller(controller)
     model.view = view
+    view.on_init_content()
     controller.fade_in_animation.shop_placeholder_fade_in_animation = controller.placeholder.fade_in_animation
     controller.fade_in_animation.shop_constructor_fade_in_animation = controller.shop_constructor.fade_in_animation
     controller.fade_out_animation.shop_placeholder_fade_out_animation = controller.placeholder.fade_out_animation
@@ -528,6 +545,7 @@ def _create_passenger_map_shop_placeholder(shop_controller, shop_id):
     controller.view = view
     view.on_assign_controller(controller)
     model.view = view
+    view.on_init_content()
     return controller
 
 
@@ -546,4 +564,5 @@ def _create_passenger_map_shop_constructor(shop_controller, shop_id):
     for i in range(1, 5):
         view.shop_stage_cells[i].data = view.shop_stages_state_matrix[i]
 
+    view.on_init_content()
     return controller

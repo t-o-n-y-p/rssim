@@ -9,7 +9,6 @@ class DispatcherView(View):
     def __init__(self, map_id):
         super().__init__(logger=getLogger(f'root.app.game.map.{map_id}.dispatcher.view'))
         self.map_id = map_id
-        self.on_init_content()
 
     def on_init_content(self):
         CONFIG_DB_CURSOR.execute('SELECT app_width, app_height FROM screen_resolution_config')

@@ -24,7 +24,6 @@ class ShopView(View):
         self.close_shop_details_button = CloseShopDetailsButton(on_click_action=on_close_shop_details,
                                                                 parent_viewport=self.viewport)
         self.buttons = [self.close_shop_details_button, ]
-        self.on_init_content()
 
     def on_init_content(self):
         CONFIG_DB_CURSOR.execute('SELECT app_width, app_height FROM screen_resolution_config')

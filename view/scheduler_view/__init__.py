@@ -33,7 +33,6 @@ class SchedulerView(View):
             self.schedule_rows.append(column)
 
         self.shader_sprite = SchedulerViewShaderSprite(view=self)
-        self.on_init_content()
 
     def on_init_content(self):
         CONFIG_DB_CURSOR.execute('SELECT app_width, app_height FROM screen_resolution_config')

@@ -22,7 +22,6 @@ class OnboardingView(View):
         self.buttons = [*self.onboarding_page_control.buttons, self.skip_onboarding_button]
         self.shader_sprite = OnboardingViewShaderSprite(view=self)
         self.skip_onboarding_label = SkipOnboardingLabel(parent_viewport=self.viewport)
-        self.on_init_content()
 
     def on_init_content(self):
         CONFIG_DB_CURSOR.execute('SELECT app_width, app_height FROM screen_resolution_config')

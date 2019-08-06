@@ -10,7 +10,6 @@ class FPSView(View):
     def __init__(self):
         super().__init__(logger=getLogger('root.app.fps.view'))
         self.fps_label = FPSLabel(parent_viewport=self.viewport)
-        self.on_init_content()
 
     def on_init_content(self):
         CONFIG_DB_CURSOR.execute('SELECT app_width, app_height FROM screen_resolution_config')

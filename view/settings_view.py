@@ -101,7 +101,6 @@ class SettingsView(View):
                         *self.fade_animations_checkbox.buttons, *self.clock_24h_checkbox.buttons,
                         *self.notifications_checkbox_group.buttons]
         self.shader_sprite = SettingsViewShaderSprite(view=self)
-        self.on_init_content()
 
     def on_init_content(self):
         CONFIG_DB_CURSOR.execute('SELECT app_width, app_height FROM screen_resolution_config')

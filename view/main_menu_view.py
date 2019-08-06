@@ -37,7 +37,6 @@ class MainMenuView(View):
                                                      parent_viewport=self.viewport)
         self.buttons = [self.create_station_button, self.back_to_the_station_button, self.open_license_button]
         self.shader_sprite = MainMenuViewShaderSprite(view=self)
-        self.on_init_content()
 
     def on_init_content(self):
         CONFIG_DB_CURSOR.execute('SELECT app_width, app_height FROM screen_resolution_config')

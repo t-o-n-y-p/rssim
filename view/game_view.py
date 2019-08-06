@@ -64,7 +64,6 @@ class GameView(View):
         USER_DB_CURSOR.execute('SELECT clock_24h FROM i18n')
         self.clock_24h_enabled = bool(USER_DB_CURSOR.fetchone()[0])
         self.shader_sprite = GameViewShaderSprite(view=self)
-        self.on_init_content()
 
     def on_init_content(self):
         CONFIG_DB_CURSOR.execute('SELECT app_width, app_height FROM screen_resolution_config')

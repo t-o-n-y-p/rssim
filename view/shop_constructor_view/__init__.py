@@ -47,8 +47,6 @@ class ShopConstructorView(View):
                                                      parent_viewport=self.viewport)
             self.buttons.append(self.shop_stage_cells[i].build_button)
 
-        self.on_init_content()
-
     def on_init_content(self):
         CONFIG_DB_CURSOR.execute('SELECT app_width, app_height FROM screen_resolution_config')
         screen_resolution_config = CONFIG_DB_CURSOR.fetchall()

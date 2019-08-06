@@ -19,7 +19,6 @@ class LicenseView(View):
         self.buttons = [*self.license_page_control.buttons, self.close_license_button]
         self.shader_sprite = LicenseViewShaderSprite(view=self)
         self.on_mouse_scroll_handlers = self.license_page_control.on_mouse_scroll_handlers
-        self.on_init_content()
 
     def on_init_content(self):
         CONFIG_DB_CURSOR.execute('SELECT app_width, app_height FROM screen_resolution_config')

@@ -20,7 +20,6 @@ class ShopPlaceholderView(View):
                                     WHERE map_id = ? AND shop_id = ?''', (self.map_id, self.shop_id))
         self.level_required = CONFIG_DB_CURSOR.fetchone()[0]
         self.description_label.on_update_args((self.level_required, ))
-        self.on_init_content()
 
     def on_init_content(self):
         CONFIG_DB_CURSOR.execute('SELECT app_width, app_height FROM screen_resolution_config')

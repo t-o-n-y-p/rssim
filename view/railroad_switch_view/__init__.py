@@ -35,7 +35,6 @@ class RailroadSwitchView(View):
         self.sprite = RailroadSwitchSprite(map_id, track_param_1, track_param_2, switch_type,
                                            parent_viewport=self.viewport)
         self.sprite.on_update_texture(self.images[self.current_position])
-        self.on_init_content()
 
     def on_init_content(self):
         CONFIG_DB_CURSOR.execute('SELECT app_width, app_height FROM screen_resolution_config')

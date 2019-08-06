@@ -78,7 +78,6 @@ class ConstructorView(View):
             = NoMoreTracksAvailableLabel(parent_viewport=self.no_more_tracks_available_placeholder_viewport)
         self.no_more_tiers_available_label \
             = NoMoreEnvironmentAvailableLabel(parent_viewport=self.no_more_tiers_available_placeholder_viewport)
-        self.on_init_content()
 
     def on_init_content(self):
         CONFIG_DB_CURSOR.execute('SELECT app_width, app_height FROM screen_resolution_config')

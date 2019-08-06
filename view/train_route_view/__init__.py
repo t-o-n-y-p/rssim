@@ -9,7 +9,6 @@ class TrainRouteView(View):
     def __init__(self, map_id, track, train_route):
         super().__init__(logger=getLogger(f'root.app.game.map.{map_id}.train_route.{track}.{train_route}.view'))
         self.map_id = map_id
-        self.on_init_content()
 
     def on_init_content(self):
         CONFIG_DB_CURSOR.execute('SELECT app_width, app_height FROM screen_resolution_config')

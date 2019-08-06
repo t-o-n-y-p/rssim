@@ -13,7 +13,6 @@ class SignalView(View):
         self.signal_sprite = SignalSprite(self.map_id, track, base_route, parent_viewport=self.viewport)
         self.state = None
         self.locked = None
-        self.on_init_content()
 
     def on_init_content(self):
         CONFIG_DB_CURSOR.execute('SELECT app_width, app_height FROM screen_resolution_config')
