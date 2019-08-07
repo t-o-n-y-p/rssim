@@ -11,8 +11,8 @@ class SignalView(View):
         super().__init__(logger=getLogger(f'root.app.game.map.{map_id}.signal.{track}.{base_route}.view'))
         self.map_id = map_id
         self.signal_sprite = SignalSprite(self.map_id, track, base_route, parent_viewport=self.viewport)
-        self.state = None
-        self.locked = None
+        self.state = 'red_signal'
+        self.locked = True
 
     def on_init_content(self):
         CONFIG_DB_CURSOR.execute('SELECT app_width, app_height FROM screen_resolution_config')
