@@ -22,6 +22,8 @@ class AppController(Controller):
         self.game_to_settings_transition_animation = None
         self.settings_to_game_transition_animation = None
         self.onboarding_to_game_transition_animation = None
+        self.main_menu_to_settings_transition_animation = None
+        self.settings_to_main_menu_transition_animation = None
 
     def on_update_view(self):
         self.view.on_update()

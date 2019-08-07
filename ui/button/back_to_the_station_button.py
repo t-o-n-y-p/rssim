@@ -28,6 +28,7 @@ class BackToTheStationButton(UIButton):
                 - 7 * get_bottom_bar_height(self.screen_resolution) // 2,
                 (self.parent_viewport.y1 + get_bottom_bar_height(self.screen_resolution)
                  + self.parent_viewport.y2 - get_top_bar_height(self.screen_resolution)) // 2
+                + 5 * get_bottom_bar_height(self.screen_resolution) // 8
                 - get_bottom_bar_height(self.screen_resolution) // 2)
 
     def get_size(self):

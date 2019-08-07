@@ -154,6 +154,12 @@ def create_app(loader):
     controller.onboarding_to_game_transition_animation \
         = TransitionAnimation(fade_out_animation=controller.onboarding.fade_out_animation,
                               fade_in_animation=controller.game.fade_in_animation)
+    controller.main_menu_to_settings_transition_animation \
+        = TransitionAnimation(fade_out_animation=controller.main_menu.fade_out_animation,
+                              fade_in_animation=controller.settings.fade_in_animation)
+    controller.settings_to_main_menu_transition_animation \
+        = TransitionAnimation(fade_out_animation=controller.settings.fade_out_animation,
+                              fade_in_animation=controller.main_menu.fade_in_animation)
     controller.fade_in_animation.main_menu_fade_in_animation = controller.main_menu.fade_in_animation
     controller.fade_in_animation.license_fade_in_animation = controller.license.fade_in_animation
     controller.fade_in_animation.onboarding_fade_in_animation = controller.onboarding.fade_in_animation

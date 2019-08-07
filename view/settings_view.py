@@ -19,6 +19,8 @@ class SettingsView(View):
             self.controller.on_save_and_commit_state()
             if self.controller.navigated_from_main_menu:
                 self.controller.navigated_from_main_menu = False
+                self.controller.parent_controller.main_menu_to_settings_transition_animation.on_deactivate()
+                self.controller.parent_controller.settings_to_main_menu_transition_animation.on_activate()
 
             if self.controller.navigated_from_game:
                 self.controller.navigated_from_game = False
@@ -28,6 +30,8 @@ class SettingsView(View):
         def on_reject_changes(button):
             if self.controller.navigated_from_main_menu:
                 self.controller.navigated_from_main_menu = False
+                self.controller.parent_controller.main_menu_to_settings_transition_animation.on_deactivate()
+                self.controller.parent_controller.settings_to_main_menu_transition_animation.on_activate()
 
             if self.controller.navigated_from_game:
                 self.controller.navigated_from_game = False

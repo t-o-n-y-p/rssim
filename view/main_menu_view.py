@@ -6,6 +6,7 @@ from view import *
 from ui.button.create_station_button import CreateStationButton
 from ui.button.back_to_the_station_button import BackToTheStationButton
 from ui.button.open_license_button import OpenLicenseButton
+from ui.button.open_settings_main_menu_view_button import OpenSettingsMainMenuViewButton
 from ui.shader_sprite.main_menu_view_shader_sprite import MainMenuViewShaderSprite
 
 
@@ -28,6 +29,12 @@ class MainMenuView(View):
             button.on_deactivate()
             self.controller.parent_controller.on_open_license()
 
+        def on_open_settings(button):
+            button.on_deactivate()
+            self.controller.parent_controller.settings_to_main_menu_transition_animation.on_deactivate()
+            self.controller.parent_controller.main_menu_to_settings_transition_animation.on_activate()
+            self.controller.parent_controller.settings.navigated_from_main_menu = True
+
         super().__init__(logger=getLogger('root.app.main_menu.view'))
         self.create_station_button = CreateStationButton(on_click_action=on_create_station,
                                                          parent_viewport=self.viewport)
@@ -35,7 +42,10 @@ class MainMenuView(View):
                                                                  parent_viewport=self.viewport)
         self.open_license_button = OpenLicenseButton(on_click_action=on_open_license,
                                                      parent_viewport=self.viewport)
-        self.buttons = [self.create_station_button, self.back_to_the_station_button, self.open_license_button]
+        self.open_settings_button = OpenSettingsMainMenuViewButton(on_click_action=on_open_settings,
+                                                                   parent_viewport=self.viewport)
+        self.buttons = [self.create_station_button, self.back_to_the_station_button, self.open_license_button,
+                        self.open_settings_button]
         self.shader_sprite = MainMenuViewShaderSprite(view=self)
 
     def on_init_content(self):
@@ -83,6 +93,7 @@ class MainMenuView(View):
         self.current_locale = new_locale
         self.create_station_button.on_update_current_locale(self.current_locale)
         self.back_to_the_station_button.on_update_current_locale(self.current_locale)
+        self.open_settings_button.on_update_current_locale(self.current_locale)
 
     def on_update_opacity(self, new_opacity):
         self.opacity = new_opacity

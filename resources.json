@@ -187,6 +187,10 @@
 		"en": "Back to the station",
 		"ru": "Вернуться на станцию"
 	},
+	"settings_label_string": {
+		"en": "Settings",
+		"ru": "Настройки"
+	},
 	"page_control_label_string": {
 		"en": "{0} of {1}",
 		"ru": "{0} из {1}"
