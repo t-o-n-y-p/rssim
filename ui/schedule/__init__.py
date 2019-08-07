@@ -114,9 +114,10 @@ class ScheduleRow:
 
     def on_update_clock_state(self, clock_24h_enabled):
         self.clock_24h_enabled = clock_24h_enabled
-        if self.clock_24h_enabled:
-            self.main_sprite_24h.create()
-            self.main_sprite_12h.delete()
-        else:
-            self.main_sprite_12h.create()
-            self.main_sprite_24h.delete()
+        if self.is_activated:
+            if self.clock_24h_enabled:
+                self.main_sprite_24h.create()
+                self.main_sprite_12h.delete()
+            else:
+                self.main_sprite_12h.create()
+                self.main_sprite_24h.delete()
