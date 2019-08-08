@@ -282,5 +282,9 @@
 	"exp_bonus_value_string": {
 		"en": "{1:.0f}.{0:.0%}",
 		"ru": "{1:.0f},{0:.0%}"
+	},
+	"bonus_code_placeholder_string": {
+		"en": "Enter your bonus code",
+		"ru": "Введите ваш бонусный код"
 	}
 }

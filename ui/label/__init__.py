@@ -169,6 +169,8 @@ class InteractiveLabel:
         self.placeholder_label = None
         self.text = ''
         self.placeholder_text_i18n_resources_key = None
+        USER_DB_CURSOR.execute('SELECT current_locale FROM i18n')
+        self.current_locale = USER_DB_CURSOR.fetchone()[0]
         self.font_name = 'Arial'
         self.bold = False
         self.font_size = 20
@@ -297,5 +299,10 @@ class InteractiveLabel:
     @arguments_have_changed
     def on_update_args(self, new_args):
         self.arguments = new_args
+        if self.placeholder_label is not None:
+            self.placeholder_label.text = self.get_formatted_placeholder_text()
+
+    def on_update_current_locale(self, new_locale):
+        self.current_locale = new_locale
         if self.placeholder_label is not None:
             self.placeholder_label.text = self.get_formatted_placeholder_text()
