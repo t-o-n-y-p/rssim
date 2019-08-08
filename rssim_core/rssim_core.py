@@ -131,6 +131,16 @@ class RSSim:
             for h in self.app.on_mouse_scroll_handlers:
                 h(x, y, scroll_x, scroll_y)
 
+        @SURFACE.event
+        def on_key_press(symbol, modifiers):
+            for h in self.app.on_key_press_handlers:
+                h(symbol, modifiers)
+
+        @SURFACE.event
+        def on_text(text):
+            for h in self.app.on_text_handlers:
+                h(text)
+
     def run(self):
         # fps_timer is used to determine if it's time to recalculate FPS
         fps_timer = 0.0

@@ -56,6 +56,8 @@ class Controller:
         self.on_mouse_drag_handlers = []
         self.on_mouse_leave_handlers = []
         self.on_mouse_scroll_handlers = []
+        self.on_key_press_handlers = []
+        self.on_text_handlers = []
         self.fade_in_animation = None
         self.fade_out_animation = None
 
@@ -64,7 +66,8 @@ class Controller:
 
     def on_append_handlers(self, on_mouse_motion_handlers=None, on_mouse_press_handlers=None,
                            on_mouse_release_handlers=None, on_mouse_drag_handlers=None,
-                           on_mouse_leave_handlers=None, on_mouse_scroll_handlers=None):
+                           on_mouse_leave_handlers=None, on_mouse_scroll_handlers=None,
+                           on_key_press_handlers=None, on_text_handlers=None):
         if on_mouse_motion_handlers is not None:
             self.on_mouse_motion_handlers.extend(on_mouse_motion_handlers)
 
@@ -83,6 +86,12 @@ class Controller:
         if on_mouse_scroll_handlers is not None:
             self.on_mouse_scroll_handlers.extend(on_mouse_scroll_handlers)
 
+        if on_key_press_handlers is not None:
+            self.on_key_press_handlers.extend(on_key_press_handlers)
+
+        if on_text_handlers is not None:
+            self.on_text_handlers.extend(on_text_handlers)
+
         # little recursive pattern there: it stops as soon as reaches
         # App object controller (App object does not have parent objects)
         if self.parent_controller is not None:
@@ -91,11 +100,14 @@ class Controller:
                                                       on_mouse_release_handlers=on_mouse_release_handlers,
                                                       on_mouse_drag_handlers=on_mouse_drag_handlers,
                                                       on_mouse_leave_handlers=on_mouse_leave_handlers,
-                                                      on_mouse_scroll_handlers=on_mouse_scroll_handlers)
+                                                      on_mouse_scroll_handlers=on_mouse_scroll_handlers,
+                                                      on_key_press_handlers=on_key_press_handlers,
+                                                      on_text_handlers=on_text_handlers)
 
     def on_detach_handlers(self, on_mouse_motion_handlers=None, on_mouse_press_handlers=None,
                            on_mouse_release_handlers=None, on_mouse_drag_handlers=None,
-                           on_mouse_leave_handlers=None, on_mouse_scroll_handlers=None):
+                           on_mouse_leave_handlers=None, on_mouse_scroll_handlers=None,
+                           on_key_press_handlers=None, on_text_handlers=None):
         if on_mouse_motion_handlers is not None:
             for handler in on_mouse_motion_handlers:
                 self.on_mouse_motion_handlers.remove(handler)
@@ -120,6 +132,14 @@ class Controller:
             for handler in on_mouse_scroll_handlers:
                 self.on_mouse_scroll_handlers.remove(handler)
 
+        if on_key_press_handlers is not None:
+            for handler in on_key_press_handlers:
+                self.on_key_press_handlers.remove(handler)
+
+        if on_text_handlers is not None:
+            for handler in on_text_handlers:
+                self.on_text_handlers.remove(handler)
+
         # little recursive pattern there: it stops as soon as reaches
         # App object controller (App object does not have parent objects)
         if self.parent_controller is not None:
@@ -128,7 +148,9 @@ class Controller:
                                                       on_mouse_release_handlers=on_mouse_release_handlers,
                                                       on_mouse_drag_handlers=on_mouse_drag_handlers,
                                                       on_mouse_leave_handlers=on_mouse_leave_handlers,
-                                                      on_mouse_scroll_handlers=on_mouse_scroll_handlers)
+                                                      on_mouse_scroll_handlers=on_mouse_scroll_handlers,
+                                                      on_key_press_handlers=on_key_press_handlers,
+                                                      on_text_handlers=on_text_handlers)
 
     def on_update_current_locale(self, new_locale):
         pass

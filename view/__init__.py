@@ -166,6 +166,8 @@ class View:
         self.on_mouse_drag_handlers = []
         self.on_mouse_leave_handlers = []
         self.on_mouse_scroll_handlers = []
+        self.on_key_press_handlers = []
+        self.on_text_handlers = []
         self.screen_resolution = (0, 0)
         USER_DB_CURSOR.execute('SELECT last_known_base_offset FROM graphics')
         self.base_offset = tuple(map(int, USER_DB_CURSOR.fetchone()[0].split(',')))
@@ -227,7 +229,9 @@ class View:
                                            on_mouse_release_handlers=self.on_mouse_release_handlers,
                                            on_mouse_drag_handlers=self.on_mouse_drag_handlers,
                                            on_mouse_leave_handlers=self.on_mouse_leave_handlers,
-                                           on_mouse_scroll_handlers=self.on_mouse_scroll_handlers)
+                                           on_mouse_scroll_handlers=self.on_mouse_scroll_handlers,
+                                           on_key_press_handlers=self.on_key_press_handlers,
+                                           on_text_handlers=self.on_text_handlers)
         # appends button handlers
         self.controller.on_append_handlers(on_mouse_motion_handlers=on_mouse_motion_handlers,
                                            on_mouse_press_handlers=on_mouse_press_handlers,
