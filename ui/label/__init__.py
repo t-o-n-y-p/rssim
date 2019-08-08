@@ -1,4 +1,6 @@
 import pyglet.text
+from win32clipboard import OpenClipboard, CloseClipboard, GetClipboardData
+from pyglet.window.key import BACKSPACE, V, MOD_CTRL
 
 from i18n import I18N_RESOURCES
 from database import USER_DB_CURSOR
@@ -19,6 +21,22 @@ def text_label_exists(fn):
             fn(*args, **kwargs)
 
     return _delete_text_label_if_it_exists
+
+
+def interactive_label_does_not_exist(fn):
+    def _handle_if_interactive_label_does_not_exist(*args, **kwargs):
+        if args[0].text_label is None and args[0].placeholder_label is None:
+            fn(*args, **kwargs)
+
+    return _handle_if_interactive_label_does_not_exist
+
+
+def interactive_label_exists(fn):
+    def _handle_if_interactive_label_exists(*args, **kwargs):
+        if args[0].text_label is not None or args[0].placeholder_label is not None:
+            fn(*args, **kwargs)
+
+    return _handle_if_interactive_label_exists
 
 
 def arguments_have_changed(fn):
@@ -140,3 +158,144 @@ class LocalizedLabel(Label):
         self.text = I18N_RESOURCES[self.i18n_resources_key][self.current_locale]
         if self.text_label is not None:
             self.text_label.text = self.get_formatted_text()
+
+
+class InteractiveLabel:
+    def __init__(self, logger, parent_viewport):
+        self.logger = logger
+        self.parent_viewport = parent_viewport
+        self.arguments = ()
+        self.text_label = None
+        self.placeholder_label = None
+        self.text = ''
+        self.placeholder_text_i18n_resources_key = None
+        self.font_name = 'Arial'
+        self.bold = False
+        self.font_size = 20
+        self.base_color = WHITE_RGB
+        self.opacity = 0
+        self.x = 0
+        self.y = 0
+        self.width = None
+        self.anchor_x = 'center'
+        self.anchor_y = 'center'
+        self.align = 'left'
+        self.multiline = False
+        self.batch = None
+        self.group = None
+        self.screen_resolution = (1280, 720)
+        self.text_length_limit = 20
+
+    def get_x(self):
+        pass
+
+    def get_y(self):
+        pass
+
+    def get_font_size(self):
+        pass
+
+    def get_width(self):
+        pass
+
+    def get_formatted_placeholder_text(self):
+        pass
+
+    @interactive_label_does_not_exist
+    def create(self):
+        self.placeholder_label = pyglet.text.Label(self.get_formatted_placeholder_text(),
+                                                   font_name=self.font_name, bold=self.bold, font_size=self.font_size,
+                                                   color=(*(int(i * 112 / 255) for i in self.base_color), self.opacity),
+                                                   x=self.x, y=self.y, width=self.width,
+                                                   anchor_x=self.anchor_x, anchor_y=self.anchor_y,
+                                                   align=self.align, multiline=self.multiline,
+                                                   batch=self.batch, group=self.group)
+
+    @interactive_label_exists
+    def delete(self):
+        self.text = ''
+        if self.text_label is not None:
+            self.text_label.delete()
+            self.text_label = None
+        else:
+            self.placeholder_label.delete()
+            self.placeholder_label = None
+
+    def on_text(self, text):
+        if len(self.text) == 0:
+            self.placeholder_label.delete()
+            self.placeholder_label = None
+            self.text = text[:self.text_length_limit]
+            self.text_label = pyglet.text.Label(self.text, font_name=self.font_name, bold=self.bold,
+                                                font_size=self.font_size, color=(*self.base_color, self.opacity),
+                                                x=self.x, y=self.y, width=self.width,
+                                                anchor_x=self.anchor_x, anchor_y=self.anchor_y, align=self.align,
+                                                multiline=self.multiline, batch=self.batch, group=self.group)
+        else:
+            self.text = (self.text + text)[:self.text_length_limit]
+            self.text_label.text = self.text
+
+    def on_key_press(self, symbol, modifiers):
+        if symbol == BACKSPACE:
+            if len(self.text) == 1:
+                self.text_label.delete()
+                self.text_label = None
+                self.text = ''
+                self.placeholder_label = pyglet.text.Label(self.get_formatted_placeholder_text(),
+                                                           font_name=self.font_name, bold=self.bold,
+                                                           font_size=self.font_size,
+                                                           color=(*(int(i * 112 / 255) for i in self.base_color),
+                                                                  self.opacity),
+                                                           x=self.x, y=self.y, width=self.width,
+                                                           anchor_x=self.anchor_x, anchor_y=self.anchor_y,
+                                                           align=self.align, multiline=self.multiline,
+                                                           batch=self.batch, group=self.group)
+            elif len(self.text) > 1:
+                self.text = self.text[:-1]
+                self.text_label.text = self.text
+
+        elif modifiers & MOD_CTRL and symbol == V:
+            OpenClipboard()
+            try:
+                self.on_text(GetClipboardData())
+            except TypeError:
+                pass
+
+            CloseClipboard()
+
+    def on_change_screen_resolution(self, screen_resolution):
+        self.screen_resolution = screen_resolution
+        self.x = self.get_x()
+        self.y = self.get_y()
+        self.font_size = self.get_font_size()
+        self.width = self.get_width()
+        if self.text_label is not None:
+            self.text_label.begin_update()
+            self.text_label.x = self.x
+            self.text_label.y = self.y
+            self.text_label.font_size = self.font_size
+            self.text_label.width = self.width
+            self.text_label.end_update()
+        else:
+            self.placeholder_label.begin_update()
+            self.placeholder_label.x = self.x
+            self.placeholder_label.y = self.y
+            self.placeholder_label.font_size = self.font_size
+            self.placeholder_label.width = self.width
+            self.placeholder_label.end_update()
+
+    def on_update_opacity(self, new_opacity):
+        self.opacity = new_opacity
+        if self.opacity > 0:
+            if self.text_label is not None:
+                self.text_label.color = (*self.base_color, self.opacity)
+            else:
+                self.placeholder_label.color = (*(int(i * 112 / 255) for i in self.base_color), self.opacity)
+        else:
+            self.delete()
+
+    @arguments_have_changed
+    def on_update_args(self, new_args):
+        self.arguments = new_args
+        if self.placeholder_label is not None:
+            self.placeholder_label.text = self.get_formatted_placeholder_text()
