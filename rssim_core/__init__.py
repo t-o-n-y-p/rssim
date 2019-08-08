@@ -108,7 +108,7 @@ LOG_LEVEL_OFF = 30                  # integer log level high enough to cut off a
 LOG_LEVEL_INFO = 20                 # integer log level which includes basic logs
 LOG_LEVEL_DEBUG = 10                # integer log level which includes all possible logs
 # database hash
-DATABASE_SHA512 = 'c2f15c946457480740aa1bfc47212186771e4654b49e123dd410ae1e72ed78f1ff43e3b15be56a162e329ce755de134dd2c9314877ae99ddc8d37db8f7e5bcd4'
+DATABASE_SHA512 = '548c3d7f9fb70f2cde26f0c2a18bc185ffe4694a77d9fb74e2570ad2bc68529740ba41e1d462374e0637e5dce2cf376dcd427359bb98cc8b304249fdd62013ae'
 # ------------------- END CONSTANTS -------------------
 
 

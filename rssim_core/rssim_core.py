@@ -27,7 +27,7 @@ class RSSim:
             raise MonitorNotSupportedException
 
         with open('db/config.db', 'rb') as f1, open('db/default.db', 'rb') as f2:
-            if sha512(f1.read() + f2.read()).hexdigest() != DATABASE_SHA512:
+            if sha512((f1.read() + f2.read())[::-1]).hexdigest() != DATABASE_SHA512:
                 raise HackingDetectedException
 
         # check if game was updated from previous version (0.9.0 and higher are supported)
