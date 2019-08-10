@@ -170,6 +170,15 @@ TRACKS = 0                                      # matrix #0 stores tracks state
 ENVIRONMENT = 1                                 # matrix #1 stores environment tiers state
 CONSTRUCTOR_VIEW_TRACK_CELLS = 4                # number of cells for tracks on constructor screen
 CONSTRUCTOR_VIEW_ENVIRONMENT_CELLS = 4          # number of cells for environment tiers on constructor screen
+# bonus code matrix properties
+CODE_TYPE = 0
+BONUS_VALUE = 1
+REQUIRED_LEVEL = 2
+MAXIMUM_BONUS_TIME = 3
+ACTIVATION_AVAILABLE = 4
+ACTIVATIONS_LEFT = 5
+IS_ACTIVATED = 6
+BONUS_TIME = 7
 # ------------------- END CONSTANTS -------------------
 
 

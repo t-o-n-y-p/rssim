@@ -46,8 +46,10 @@ class GameModel(Model):
     def on_save_state(self):
         USER_DB_CURSOR.execute('UPDATE epoch_timestamp SET game_time = ?', (self.game_time, ))
         USER_DB_CURSOR.execute('''UPDATE game_progress SET level = ?, exp = ?, money = ?, 
-                                       money_target = ?, exp_multiplier = ?''',
-                               (self.level, self.exp, self.money, self.money_target, self.exp_multiplier))
+                                  money_target = ?, exp_multiplier = ?, exp_bonus_multiplier = ?, 
+                                  money_bonus_multiplier = ?''',
+                               (self.level, self.exp, self.money, self.money_target, self.exp_multiplier,
+                                self.exp_bonus_multiplier, self.money_bonus_multiplier))
 
     @maximum_level_not_reached
     def on_add_exp(self, exp):
@@ -98,5 +100,17 @@ class GameModel(Model):
         USER_DB_CURSOR.execute('SELECT map_id FROM graphics')
         return USER_DB_CURSOR.fetchone()[0]
 
-    def on_add_exp_bonus(self, exp_bonus):
-        self.exp_multiplier += exp_bonus
+    def on_add_exp_bonus(self, value):
+        self.exp_multiplier = round(self.exp_multiplier + value, 2)
+
+    def on_activate_exp_bonus_code(self, value):
+        self.exp_bonus_multiplier = round(self.exp_bonus_multiplier + value, 2)
+
+    def on_deactivate_exp_bonus_code(self, value):
+        self.exp_bonus_multiplier = round(self.exp_bonus_multiplier - value, 2)
+
+    def on_activate_money_bonus_code(self, value):
+        self.money_bonus_multiplier = round(self.money_bonus_multiplier + value, 2)
+
+    def on_deactivate_money_bonus_code(self, value):
+        self.money_bonus_multiplier = round(self.money_bonus_multiplier - value, 2)

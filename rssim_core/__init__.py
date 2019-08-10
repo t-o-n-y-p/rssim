@@ -20,6 +20,7 @@ from controller.shop_placeholder_controller.passenger_map_shop_placeholder_contr
     import PassengerMapShopPlaceholderController
 from controller.shop_constructor_controller.passenger_map_constructor_controller \
     import PassengerMapShopConstructorController
+from controller.bonus_code_controller import BonusCodeController
 from model.app_model import AppModel
 from model.main_menu_model import MainMenuModel
 from model.license_model import LicenseModel
@@ -39,6 +40,7 @@ from model.constructor_model.passenger_map_constructor_model import PassengerMap
 from model.shop_model.passenger_map_shop_model import PassengerMapShopModel
 from model.shop_placeholder_model.passenger_map_shop_placeholder_model import PassengerMapShopPlaceholderModel
 from model.shop_constructor_model.passenger_map_shop_constructor_model import PassengerMapShopConstructorModel
+from model.bonus_code_model import BonusCodeModel
 from view.app_view import AppView
 from view.main_menu_view import MainMenuView
 from view.license_view import LicenseView
@@ -58,6 +60,7 @@ from view.constructor_view.passenger_map_constructor_view import PassengerMapCon
 from view.shop_view.passenger_map_shop_view import PassengerMapShopView
 from view.shop_placeholder_view.passenger_map_shop_placeholder_view import PassengerMapShopPlaceholderView
 from view.shop_constructor_view.passenger_map_shop_constructor_view import PassengerMapShopConstructorView
+from view.bonus_code_view import BonusCodeView
 from ui.transition_animation import TransitionAnimation
 from ui.fade_animation.fade_in_animation.app_fade_in_animation import AppFadeInAnimation
 from ui.fade_animation.fade_in_animation.constructor_fade_in_animation import ConstructorFadeInAnimation
@@ -78,6 +81,7 @@ from ui.fade_animation.fade_in_animation.train_route_fade_in_animation import Tr
 from ui.fade_animation.fade_in_animation.shop_fade_in_animation import ShopFadeInAnimation
 from ui.fade_animation.fade_in_animation.shop_placeholder_fade_in_animation import ShopPlaceholderFadeInAnimation
 from ui.fade_animation.fade_in_animation.shop_constructor_fade_in_animation import ShopConstructorFadeInAnimation
+from ui.fade_animation.fade_in_animation.bonus_code_fade_in_animation import BonusCodeFadeInAnimation
 from ui.fade_animation.fade_out_animation.app_fade_out_animation import AppFadeOutAnimation
 from ui.fade_animation.fade_out_animation.constructor_fade_out_animation import ConstructorFadeOutAnimation
 from ui.fade_animation.fade_out_animation.crossover_fade_out_animation import CrossoverFadeOutAnimation
@@ -97,6 +101,7 @@ from ui.fade_animation.fade_out_animation.train_route_fade_out_animation import 
 from ui.fade_animation.fade_out_animation.shop_fade_out_animation import ShopFadeOutAnimation
 from ui.fade_animation.fade_out_animation.shop_placeholder_fade_out_animation import ShopPlaceholderFadeOutAnimation
 from ui.fade_animation.fade_out_animation.shop_constructor_fade_out_animation import ShopConstructorFadeOutAnimation
+from ui.fade_animation.fade_out_animation.bonus_code_fade_out_animation import BonusCodeFadeOutAnimation
 from database import CONFIG_DB_CURSOR, USER_DB_CURSOR
 
 
@@ -128,6 +133,7 @@ def create_app(loader):
     controller.game = _create_game(controller)
     controller.settings = _create_settings(controller)
     controller.fps = _create_fps(controller)
+    controller.bonus_code = _create_bonus_code(controller)
     controller.main_menu_to_game_transition_animation \
         = TransitionAnimation(fade_out_animation=controller.main_menu.fade_out_animation,
                               fade_in_animation=controller.game.fade_in_animation)
@@ -157,6 +163,12 @@ def create_app(loader):
                               fade_in_animation=controller.settings.fade_in_animation)
     controller.settings_to_main_menu_transition_animation \
         = TransitionAnimation(fade_out_animation=controller.settings.fade_out_animation,
+                              fade_in_animation=controller.main_menu.fade_in_animation)
+    controller.main_menu_to_bonus_code_transition_animation \
+        = TransitionAnimation(fade_out_animation=controller.main_menu.fade_out_animation,
+                              fade_in_animation=controller.bonus_code.fade_in_animation)
+    controller.bonus_code_to_main_menu_transition_animation \
+        = TransitionAnimation(fade_out_animation=controller.bonus_code.fade_out_animation,
                               fade_in_animation=controller.main_menu.fade_in_animation)
     controller.fade_in_animation.main_menu_fade_in_animation = controller.main_menu.fade_in_animation
     controller.fade_in_animation.license_fade_in_animation = controller.license.fade_in_animation
@@ -570,5 +582,21 @@ def _create_passenger_map_shop_constructor(shop_controller, shop_id):
     for i in range(1, 5):
         view.shop_stage_cells[i].data = view.shop_stages_state_matrix[i]
 
+    view.on_init_content()
+    return controller
+
+
+def _create_bonus_code(app):
+    controller = BonusCodeController(app)
+    controller.fade_in_animation = BonusCodeFadeInAnimation(controller)
+    controller.fade_out_animation = BonusCodeFadeOutAnimation(controller)
+    model = BonusCodeModel()
+    view = BonusCodeView()
+    controller.model = model
+    model.controller = controller
+    controller.view = view
+    view.on_assign_controller(controller)
+    model.view = view
+    view.bonus_code_matrix = model.bonus_code_matrix
     view.on_init_content()
     return controller

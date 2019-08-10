@@ -1,13 +1,13 @@
 #version 330 core
 layout(pixel_center_integer) in vec4 gl_FragCoord;
 out vec4 color_frag;
-uniform int main_menu_opacity = 0;
-uniform int is_button_activated[5];
-uniform int button_x[5];
-uniform int button_y[5];
-uniform int button_w[5];
-uniform int button_h[5];
-uniform int number_of_buttons = 5;
+uniform int bonus_code_opacity = 0;
+uniform int is_button_activated[2];
+uniform int button_x[2];
+uniform int button_y[2];
+uniform int button_w[2];
+uniform int button_h[2];
+uniform int number_of_buttons = 2;
 
 bool is_button_border()
 {
@@ -36,7 +36,7 @@ void main()
 {
     // button borders are filled with red
     if (is_button_border())
-        color_frag = vec4(1.0, 0.0, 0.0, float(main_menu_opacity) / 255.0);
+        color_frag = vec4(1.0, 0.0, 0.0, float(bonus_code_opacity) / 255.0);
     // all other pixels are transparent
     else
         color_frag = vec4(0.0);

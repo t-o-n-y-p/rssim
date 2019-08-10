@@ -191,6 +191,10 @@
 		"en": "Settings",
 		"ru": "Настройки"
 	},
+	"enter_code_label_string": {
+		"en": "Enter code",
+		"ru": "Ввести код"
+	},
 	"page_control_label_string": {
 		"en": "{0} of {1}",
 		"ru": "{0} из {1}"

@@ -39,6 +39,7 @@ class GameController(Controller):
 
     @game_is_not_paused
     def on_update_time(self):
+        self.parent_controller.bonus_code.on_update_time(self.model.game_time)
         for map_ in self.maps:
             map_.on_update_time(self.model.game_time)
 
@@ -48,6 +49,7 @@ class GameController(Controller):
 
     def on_save_and_commit_state(self):
         self.model.on_save_state()
+        self.parent_controller.bonus_code.on_save_state()
         for map_ in self.maps:
             map_.on_save_state()
 
@@ -55,6 +57,7 @@ class GameController(Controller):
 
     def on_level_up(self):
         self.model.on_level_up()
+        self.parent_controller.bonus_code.on_level_up(self.model.level)
         for map_ in self.maps:
             map_.on_level_up(self.model.level)
 
@@ -126,3 +129,15 @@ class GameController(Controller):
 
     def on_add_exp_bonus(self, exp_bonus):
         self.model.on_add_exp_bonus(exp_bonus)
+
+    def on_activate_exp_bonus_code(self, value):
+        self.model.on_activate_exp_bonus_code(value)
+
+    def on_deactivate_exp_bonus_code(self, value):
+        self.model.on_deactivate_exp_bonus_code(value)
+
+    def on_activate_money_bonus_code(self, value):
+        self.model.on_activate_money_bonus_code(value)
+
+    def on_deactivate_money_bonus_code(self, value):
+        self.model.on_deactivate_money_bonus_code(value)

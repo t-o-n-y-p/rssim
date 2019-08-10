@@ -51,6 +51,15 @@ CARS = 4                                        # property #4 indicates number o
 STOP_TIME = 5                                   # property #5 indicates how much stop time left
 EXP = 6                                         # property #6 indicates how much exp the train gives
 MONEY = 7                                       # property #7 indicates how much money the train gives
+# bonus code matrix properties
+CODE_TYPE = 0
+BONUS_VALUE = 1
+REQUIRED_LEVEL = 2
+MAXIMUM_BONUS_TIME = 3
+ACTIVATION_AVAILABLE = 4
+ACTIVATIONS_LEFT = 5
+IS_ACTIVATED = 6
+BONUS_TIME = 7
 # main surface which harbors all the app
 SURFACE = Window(width=MIN_RESOLUTION_WIDTH, height=MIN_RESOLUTION_HEIGHT,
                  caption='Railway Station Simulator', style='borderless', fullscreen=False, vsync=False)

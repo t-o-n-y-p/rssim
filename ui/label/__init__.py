@@ -278,7 +278,8 @@ class InteractiveLabel:
             self.text_label.font_size = self.font_size
             self.text_label.width = self.width
             self.text_label.end_update()
-        else:
+
+        if self.placeholder_label is not None:
             self.placeholder_label.begin_update()
             self.placeholder_label.x = self.x
             self.placeholder_label.y = self.y
@@ -291,7 +292,8 @@ class InteractiveLabel:
         if self.opacity > 0:
             if self.text_label is not None:
                 self.text_label.color = (*self.base_color, self.opacity)
-            else:
+
+            if self.placeholder_label is not None:
                 self.placeholder_label.color = (*(int(i * 112 / 255) for i in self.base_color), self.opacity)
         else:
             self.delete()

@@ -8,6 +8,7 @@ from ui.button.back_to_the_station_button import BackToTheStationButton
 from ui.button.open_license_button import OpenLicenseButton
 from ui.button.open_settings_main_menu_view_button import OpenSettingsMainMenuViewButton
 from ui.label.open_license_label import OpenLicenseLabel
+from ui.button.enter_code_button import EnterCodeButton
 from ui.shader_sprite.main_menu_view_shader_sprite import MainMenuViewShaderSprite
 
 
@@ -36,17 +37,21 @@ class MainMenuView(View):
             self.controller.parent_controller.main_menu_to_settings_transition_animation.on_activate()
             self.controller.parent_controller.settings.navigated_from_main_menu = True
 
+        def on_open_bonus_code(button):
+            button.on_deactivate()
+            self.controller.parent_controller.on_open_bonus_code()
+
         super().__init__(logger=getLogger('root.app.main_menu.view'))
         self.create_station_button = CreateStationButton(on_click_action=on_create_station,
                                                          parent_viewport=self.viewport)
         self.back_to_the_station_button = BackToTheStationButton(on_click_action=on_back_to_the_station,
                                                                  parent_viewport=self.viewport)
-        self.open_license_button = OpenLicenseButton(on_click_action=on_open_license,
-                                                     parent_viewport=self.viewport)
+        self.open_license_button = OpenLicenseButton(on_click_action=on_open_license, parent_viewport=self.viewport)
         self.open_settings_button = OpenSettingsMainMenuViewButton(on_click_action=on_open_settings,
                                                                    parent_viewport=self.viewport)
+        self.enter_code_button = EnterCodeButton(on_click_action=on_open_bonus_code, parent_viewport=self.viewport)
         self.buttons = [self.create_station_button, self.back_to_the_station_button, self.open_license_button,
-                        self.open_settings_button]
+                        self.open_settings_button, self.enter_code_button]
         self.open_license_label = OpenLicenseLabel(parent_viewport=self.viewport)
         self.shader_sprite = MainMenuViewShaderSprite(view=self)
 
@@ -99,6 +104,7 @@ class MainMenuView(View):
         self.back_to_the_station_button.on_update_current_locale(self.current_locale)
         self.open_settings_button.on_update_current_locale(self.current_locale)
         self.open_license_label.on_update_current_locale(self.current_locale)
+        self.enter_code_button.on_update_current_locale(self.current_locale)
 
     def on_update_opacity(self, new_opacity):
         self.opacity = new_opacity
