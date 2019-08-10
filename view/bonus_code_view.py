@@ -2,8 +2,6 @@ from logging import getLogger
 from ctypes import windll
 from hashlib import sha512
 
-from pyglet.window.key import BACKSPACE
-
 from database import CONFIG_DB_CURSOR
 from view import *
 from ui.label.bonus_code_interactive_label import BonusCodeInteractiveLabel
@@ -98,8 +96,7 @@ class BonusCodeView(View):
     @view_is_active
     def on_key_press(self, symbol, modifiers):
         self.bonus_code_interactive_label.on_key_press(symbol, modifiers)
-        if symbol == BACKSPACE:
-            self.on_check_bonus_code_availability()
+        self.on_check_bonus_code_availability()
 
     def on_check_bonus_code_availability(self):
         user_input_hash = sha512(self.bonus_code_interactive_label.text.encode('utf-8')).hexdigest()
