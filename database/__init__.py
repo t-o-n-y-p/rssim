@@ -4,14 +4,26 @@ from shutil import copyfile
 from hashlib import sha512
 
 from keyring import set_password, delete_password
+from keyring.errors import PasswordDeleteError
 
 # determine if user launches app for the first time, if yes - create game DB
 if not path.exists('db/user.db'):
+    try:
+        delete_password(sha512('config_db'.encode('utf-8')).hexdigest(),
+                        sha512('config_db'.encode('utf-8')).hexdigest())
+    except PasswordDeleteError:
+        pass
+
     with open('db/config.db', 'rb') as f1, open('db/default.db', 'rb') as f2:
         set_password(sha512('config_db'.encode('utf-8')).hexdigest(), sha512('config_db'.encode('utf-8')).hexdigest(),
                      sha512((f1.read() + f2.read())[::-1]).hexdigest())
 
     copyfile('db/default.db', 'db/user.db')
+    try:
+        delete_password(sha512('user_db'.encode('utf-8')).hexdigest(), sha512('user_db'.encode('utf-8')).hexdigest())
+    except PasswordDeleteError:
+        pass
+
     with open('db/user.db', 'rb') as f1:
         set_password(sha512('user_db'.encode('utf-8')).hexdigest(), sha512('user_db'.encode('utf-8')).hexdigest(),
                      sha512(f1.read()[::-1]).hexdigest())
