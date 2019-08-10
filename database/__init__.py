@@ -3,9 +3,12 @@ from os import path
 from shutil import copyfile
 from hashlib import sha512
 
-from keyring import set_password, delete_password
+from keyring import set_password, delete_password, set_keyring
 from keyring.errors import PasswordDeleteError
+from keyring.backends import Windows
 
+
+set_keyring(Windows.WinVaultKeyring())
 # determine if user launches app for the first time, if yes - create game DB
 if not path.exists('db/user.db'):
     try:
