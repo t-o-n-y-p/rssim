@@ -1,6 +1,7 @@
 from logging import getLogger
 
 from model import *
+from database import USER_DB_CURSOR, CONFIG_DB_CURSOR
 
 
 class TrainRouteModel(Model):
@@ -17,25 +18,25 @@ class TrainRouteModel(Model):
 
         super().__init__(logger=getLogger(f'root.app.game.map.{map_id}.train_route.{track}.{train_route}.model'))
         self.map_id = map_id
-        self.user_db_cursor.execute('''SELECT opened, last_opened_by, current_checkpoint, priority, cars 
-                                       FROM train_routes WHERE track = ? AND train_route = ? AND map_id = ?''',
-                                    (track, train_route, self.map_id))
+        USER_DB_CURSOR.execute('''SELECT opened, last_opened_by, current_checkpoint, priority, cars 
+                                  FROM train_routes WHERE track = ? AND train_route = ? AND map_id = ?''',
+                               (track, train_route, self.map_id))
         self.opened, self.last_opened_by, self.current_checkpoint, self.priority, self.cars \
-            = self.user_db_cursor.fetchone()
+            = USER_DB_CURSOR.fetchone()
         self.opened = bool(self.opened)
-        self.user_db_cursor.execute('''SELECT train_route_section_busy_state FROM train_routes
-                                       WHERE track = ? AND train_route = ? AND map_id = ?''',
-                                    (track, train_route, self.map_id))
+        USER_DB_CURSOR.execute('''SELECT train_route_section_busy_state FROM train_routes
+                                  WHERE track = ? AND train_route = ? AND map_id = ?''',
+                               (track, train_route, self.map_id))
         self.train_route_section_busy_state \
-            = list(map(bool, list(map(int, self.user_db_cursor.fetchone()[0].split(',')))))
-        self.config_db_cursor.execute('''SELECT signal_track, signal_base_route FROM train_route_config
-                                         WHERE track = ? AND train_route = ? AND map_id = ?''',
-                                      (track, train_route, self.map_id))
-        self.signal_track, self.signal_base_route = self.config_db_cursor.fetchone()
-        self.config_db_cursor.execute('''SELECT start_point_v2, stop_point_v2, destination_point_v2, checkpoints_v2 
-                                         FROM train_route_config WHERE track = ? AND train_route = ? AND map_id = ?''',
-                                      (track, train_route, self.map_id))
-        fetched_data = list(self.config_db_cursor.fetchone())
+            = list(map(bool, list(map(int, USER_DB_CURSOR.fetchone()[0].split(',')))))
+        CONFIG_DB_CURSOR.execute('''SELECT signal_track, signal_base_route FROM train_route_config
+                                    WHERE track = ? AND train_route = ? AND map_id = ?''',
+                                 (track, train_route, self.map_id))
+        self.signal_track, self.signal_base_route = CONFIG_DB_CURSOR.fetchone()
+        CONFIG_DB_CURSOR.execute('''SELECT start_point_v2, stop_point_v2, destination_point_v2, checkpoints_v2 
+                                    FROM train_route_config WHERE track = ? AND train_route = ? AND map_id = ?''',
+                                 (track, train_route, self.map_id))
+        fetched_data = list(CONFIG_DB_CURSOR.fetchone())
         for i in range(len(fetched_data)):
             if fetched_data[i] is not None:
                 fetched_data[i] = tuple(map(int, fetched_data[i].split(',')))
@@ -46,13 +47,13 @@ class TrainRouteModel(Model):
         # second part is defined by list of trail points (can be null),
         # third part is straight too and is defined by start point and end point (can be null)
         self.trail_points_v2 = []
-        self.config_db_cursor.execute('''SELECT trail_points_v2_part_1_start, trail_points_v2_part_1_end, 
-                                         trail_points_v2_part_2, trail_points_v2_part_3_start, 
-                                         trail_points_v2_part_3_end FROM train_route_config 
-                                         WHERE track = ? AND train_route = ? AND map_id = ?''',
-                                      (track, train_route, self.map_id))
+        CONFIG_DB_CURSOR.execute('''SELECT trail_points_v2_part_1_start, trail_points_v2_part_1_end, 
+                                    trail_points_v2_part_2, trail_points_v2_part_3_start, 
+                                    trail_points_v2_part_3_end FROM train_route_config 
+                                    WHERE track = ? AND train_route = ? AND map_id = ?''',
+                                 (track, train_route, self.map_id))
         trail_points_v2_part_1_start, trail_points_v2_part_1_end, trail_points_v2_part_2, \
-            trail_points_v2_part_3_start, trail_points_v2_part_3_end = self.config_db_cursor.fetchone()
+            trail_points_v2_part_3_start, trail_points_v2_part_3_end = CONFIG_DB_CURSOR.fetchone()
         # parse start and end points for first part, append all points in between
         trail_points_v2_part_1_start_parsed = trail_points_v2_part_1_start.split(',')
         trail_points_v2_part_1_start_parsed[0] = int(trail_points_v2_part_1_start_parsed[0])
@@ -93,30 +94,27 @@ class TrainRouteModel(Model):
                 self.trail_points_v2.append((i, trail_points_v2_part_3_start_parsed[1],
                                              trail_points_v2_part_3_start_parsed[2]))
 
-        self.config_db_cursor.execute('''SELECT section_type, track_param_1, track_param_2 
-                                         FROM train_route_sections WHERE track = ? and train_route = ? 
-                                         AND map_id = ?''',
-                                      (track, train_route, self.map_id))
-        self.train_route_sections = self.config_db_cursor.fetchall()
-        self.config_db_cursor.execute('''SELECT position_1, position_2 
-                                         FROM train_route_sections WHERE track = ? and train_route = ? 
-                                         AND map_id = ?''',
-                                      (track, train_route, self.map_id))
-        self.train_route_section_positions = self.config_db_cursor.fetchall()
+        CONFIG_DB_CURSOR.execute('''SELECT section_type, track_param_1, track_param_2 
+                                    FROM train_route_sections WHERE track = ? and train_route = ? AND map_id = ?''',
+                                 (track, train_route, self.map_id))
+        self.train_route_sections = CONFIG_DB_CURSOR.fetchall()
+        CONFIG_DB_CURSOR.execute('''SELECT position_1, position_2 
+                                    FROM train_route_sections WHERE track = ? and train_route = ? AND map_id = ?''',
+                                 (track, train_route, self.map_id))
+        self.train_route_section_positions = CONFIG_DB_CURSOR.fetchall()
 
     def on_activate_view(self):
         self.view.on_activate()
 
     def on_save_state(self):
-        self.user_db_cursor.execute('''UPDATE train_routes SET opened = ?, last_opened_by = ?, current_checkpoint = ?,
-                                       priority = ?, cars = ? WHERE track = ? AND train_route = ? AND map_id = ?''',
-                                    (int(self.opened), self.last_opened_by, self.current_checkpoint, self.priority,
-                                     self.cars, self.controller.track, self.controller.train_route, self.map_id))
+        USER_DB_CURSOR.execute('''UPDATE train_routes SET opened = ?, last_opened_by = ?, current_checkpoint = ?,
+                                  priority = ?, cars = ? WHERE track = ? AND train_route = ? AND map_id = ?''',
+                               (int(self.opened), self.last_opened_by, self.current_checkpoint, self.priority,
+                                self.cars, self.controller.track, self.controller.train_route, self.map_id))
         busy_state_string = ','.join(list(map(str, list(map(int, self.train_route_section_busy_state)))))
-        self.user_db_cursor.execute('''UPDATE train_routes SET train_route_section_busy_state = ? 
-                                       WHERE track = ? AND train_route = ? AND map_id = ?''',
-                                    (busy_state_string, self.controller.track, self.controller.train_route,
-                                     self.map_id))
+        USER_DB_CURSOR.execute('''UPDATE train_routes SET train_route_section_busy_state = ? 
+                                  WHERE track = ? AND train_route = ? AND map_id = ?''',
+                               (busy_state_string, self.controller.track, self.controller.train_route, self.map_id))
 
     def on_open_train_route(self, train_id, cars):
         self.opened = True

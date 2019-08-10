@@ -1,16 +1,17 @@
 from logging import getLogger
 
 from model import *
+from database import USER_DB_CURSOR
 
 
 class SignalModel(Model):
     def __init__(self, map_id, track, base_route):
         super().__init__(logger=getLogger(f'root.app.game.map.{map_id}.signal.{track}.{base_route}.model'))
         self.map_id = map_id
-        self.user_db_cursor.execute('''SELECT state, locked FROM signals 
-                                       WHERE track = ? AND base_route = ? AND map_id = ?''',
-                                    (track, base_route, self.map_id))
-        self.state, self.locked = self.user_db_cursor.fetchone()
+        USER_DB_CURSOR.execute('''SELECT state, locked FROM signals 
+                                  WHERE track = ? AND base_route = ? AND map_id = ?''',
+                               (track, base_route, self.map_id))
+        self.state, self.locked = USER_DB_CURSOR.fetchone()
         self.locked = bool(self.locked)
 
     def on_activate_view(self):
@@ -19,10 +20,10 @@ class SignalModel(Model):
         self.view.on_activate()
 
     def on_save_state(self):
-        self.user_db_cursor.execute('''UPDATE signals SET state = ?, locked = ? 
-                                       WHERE track = ? AND base_route = ? AND map_id = ?''',
-                                    (self.state, int(self.locked), self.controller.track, self.controller.base_route,
-                                     self.map_id))
+        USER_DB_CURSOR.execute('''UPDATE signals SET state = ?, locked = ? 
+                                  WHERE track = ? AND base_route = ? AND map_id = ?''',
+                               (self.state, int(self.locked), self.controller.track, self.controller.base_route,
+                                self.map_id))
 
     def on_unlock(self):
         self.locked = False

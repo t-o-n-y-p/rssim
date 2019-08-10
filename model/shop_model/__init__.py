@@ -1,6 +1,7 @@
 from logging import getLogger
 
 from model import *
+from database import USER_DB_CURSOR, CONFIG_DB_CURSOR
 
 
 class ShopModel(Model):
@@ -8,11 +9,11 @@ class ShopModel(Model):
         super().__init__(logger=getLogger(f'root.app.game.map.{map_id}.shop.{shop_id}.model'))
         self.map_id = map_id
         self.shop_id = shop_id
-        self.user_db_cursor.execute('SELECT level FROM game_progress')
-        self.level = self.user_db_cursor.fetchone()[0]
-        self.config_db_cursor.execute('''SELECT level_required FROM shops_config
-                                         WHERE map_id = ? AND shop_id = ?''', (self.map_id, self.shop_id))
-        self.level_required = self.config_db_cursor.fetchone()[0]
+        USER_DB_CURSOR.execute('SELECT level FROM game_progress')
+        self.level = USER_DB_CURSOR.fetchone()[0]
+        CONFIG_DB_CURSOR.execute('''SELECT level_required FROM shops_config
+                                    WHERE map_id = ? AND shop_id = ?''', (self.map_id, self.shop_id))
+        self.level_required = CONFIG_DB_CURSOR.fetchone()[0]
 
     def on_activate_view(self):
         self.view.on_activate()

@@ -1,6 +1,7 @@
 from logging import getLogger
 
 from model import *
+from database import USER_DB_CURSOR, CONFIG_DB_CURSOR
 
 
 class DispatcherModel(Model):
@@ -9,19 +10,19 @@ class DispatcherModel(Model):
         self.map_id = map_id
         self.trains = []
         self.supported_cars = [0, 0]
-        self.user_db_cursor.execute('''SELECT unlocked_tracks, supported_cars_min, supported_cars_max 
-                                       FROM map_progress WHERE map_id = ?''', (self.map_id, ))
-        self.unlocked_tracks, self.supported_cars[0], self.supported_cars[1] = self.user_db_cursor.fetchone()
-        self.user_db_cursor.execute('SELECT busy FROM tracks WHERE map_id = ?', (self.map_id, ))
+        USER_DB_CURSOR.execute('''SELECT unlocked_tracks, supported_cars_min, supported_cars_max 
+                                  FROM map_progress WHERE map_id = ?''', (self.map_id, ))
+        self.unlocked_tracks, self.supported_cars[0], self.supported_cars[1] = USER_DB_CURSOR.fetchone()
+        USER_DB_CURSOR.execute('SELECT busy FROM tracks WHERE map_id = ?', (self.map_id, ))
         self.track_busy_status = [True, ]
-        busy_status_parsed = self.user_db_cursor.fetchall()
+        busy_status_parsed = USER_DB_CURSOR.fetchall()
         for i in busy_status_parsed:
             self.track_busy_status.append(bool(i[0]))
 
         self.supported_cars_by_track = [(0, 20), ]
-        self.config_db_cursor.execute('''SELECT supported_cars_min, supported_cars_max 
-                                         FROM track_config WHERE map_id = ?''', (self.map_id, ))
-        self.supported_cars_by_track.extend(self.config_db_cursor.fetchall())
+        CONFIG_DB_CURSOR.execute('''SELECT supported_cars_min, supported_cars_max 
+                                    FROM track_config WHERE map_id = ?''', (self.map_id, ))
+        self.supported_cars_by_track.extend(CONFIG_DB_CURSOR.fetchall())
 
     def on_activate_view(self):
         self.view.on_activate()
@@ -51,8 +52,8 @@ class DispatcherModel(Model):
 
     def on_save_state(self):
         for i in range(1, len(self.track_busy_status)):
-            self.user_db_cursor.execute('''UPDATE tracks SET busy = ? WHERE track_number = ? AND map_id = ?''',
-                                        (int(self.track_busy_status[i]), i, self.map_id))
+            USER_DB_CURSOR.execute('UPDATE tracks SET busy = ? WHERE track_number = ? AND map_id = ?',
+                                   (int(self.track_busy_status[i]), i, self.map_id))
 
     def on_unlock_track(self, track):
         self.unlocked_tracks = track

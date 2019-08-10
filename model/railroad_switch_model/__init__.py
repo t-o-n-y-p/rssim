@@ -1,6 +1,7 @@
 from logging import getLogger
 
 from model import *
+from database import USER_DB_CURSOR, CONFIG_DB_CURSOR
 
 
 class RailroadSwitchModel(Model):
@@ -11,26 +12,22 @@ class RailroadSwitchModel(Model):
             )
         )
         self.map_id = map_id
-        self.user_db_cursor.execute('''SELECT busy, force_busy FROM switches 
-                                       WHERE track_param_1 = ? AND track_param_2 = ? AND switch_type = ? 
-                                       AND map_id = ?''',
-                                    (track_param_1, track_param_2, switch_type, self.map_id))
-        self.busy, self.force_busy = list(map(bool, self.user_db_cursor.fetchone()))
-        self.user_db_cursor.execute('''SELECT last_entered_by, current_position FROM switches 
-                                       WHERE track_param_1 = ? AND track_param_2 = ? AND switch_type = ?
-                                       AND map_id = ?''',
-                                    (track_param_1, track_param_2, switch_type, self.map_id))
-        self.last_entered_by, self.current_position = self.user_db_cursor.fetchone()
-        self.config_db_cursor.execute('''SELECT track, train_route, section_number FROM train_route_sections
-                                         WHERE track_param_1 = ? AND track_param_2 = ? AND section_type = ? 
-                                         AND map_id = ?''',
-                                      (track_param_1, track_param_2, switch_type, self.map_id))
-        self.state_change_listeners = self.config_db_cursor.fetchall()
-        self.user_db_cursor.execute('''SELECT locked FROM switches 
-                                       WHERE track_param_1 = ? AND track_param_2 = ? AND switch_type = ? 
-                                       AND map_id = ?''',
-                                    (track_param_1, track_param_2, switch_type, self.map_id))
-        self.locked = bool(self.user_db_cursor.fetchone()[0])
+        USER_DB_CURSOR.execute('''SELECT busy, force_busy FROM switches 
+                                  WHERE track_param_1 = ? AND track_param_2 = ? AND switch_type = ? AND map_id = ?''',
+                               (track_param_1, track_param_2, switch_type, self.map_id))
+        self.busy, self.force_busy = list(map(bool, USER_DB_CURSOR.fetchone()))
+        USER_DB_CURSOR.execute('''SELECT last_entered_by, current_position FROM switches 
+                                  WHERE track_param_1 = ? AND track_param_2 = ? AND switch_type = ? AND map_id = ?''',
+                               (track_param_1, track_param_2, switch_type, self.map_id))
+        self.last_entered_by, self.current_position = USER_DB_CURSOR.fetchone()
+        CONFIG_DB_CURSOR.execute('''SELECT track, train_route, section_number FROM train_route_sections
+                                    WHERE track_param_1 = ? AND track_param_2 = ? AND section_type = ? 
+                                    AND map_id = ?''', (track_param_1, track_param_2, switch_type, self.map_id))
+        self.state_change_listeners = CONFIG_DB_CURSOR.fetchall()
+        USER_DB_CURSOR.execute('''SELECT locked FROM switches 
+                                  WHERE track_param_1 = ? AND track_param_2 = ? AND switch_type = ? AND map_id = ?''',
+                               (track_param_1, track_param_2, switch_type, self.map_id))
+        self.locked = bool(USER_DB_CURSOR.fetchone()[0])
 
     def on_activate_view(self):
         self.view.on_activate()
@@ -39,12 +36,11 @@ class RailroadSwitchModel(Model):
         track_param_1 = self.controller.track_param_1
         track_param_2 = self.controller.track_param_2
         switch_type = self.controller.switch_type
-        self.user_db_cursor.execute('''UPDATE switches SET busy = ?, force_busy = ?, 
-                                       last_entered_by = ?, current_position = ?, locked = ? 
-                                       WHERE track_param_1 = ? AND track_param_2 = ? AND switch_type = ? 
-                                       AND map_id = ?''',
-                                    (int(self.busy), int(self.force_busy), self.last_entered_by, self.current_position,
-                                     int(self.locked), track_param_1, track_param_2, switch_type, self.map_id))
+        USER_DB_CURSOR.execute('''UPDATE switches SET busy = ?, force_busy = ?, 
+                                  last_entered_by = ?, current_position = ?, locked = ? 
+                                  WHERE track_param_1 = ? AND track_param_2 = ? AND switch_type = ? AND map_id = ?''',
+                               (int(self.busy), int(self.force_busy), self.last_entered_by, self.current_position,
+                                int(self.locked), track_param_1, track_param_2, switch_type, self.map_id))
 
     def on_force_busy_on(self, positions, train_id):
         self.force_busy = True

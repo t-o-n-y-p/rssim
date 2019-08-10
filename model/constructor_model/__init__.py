@@ -1,6 +1,7 @@
 from logging import getLogger
 
 from model import *
+from database import USER_DB_CURSOR, CONFIG_DB_CURSOR
 
 
 class ConstructorModel(Model):
@@ -10,37 +11,37 @@ class ConstructorModel(Model):
         self.construction_state_matrix = [{}, {}]
         self.cached_unlocked_tracks = []
         self.cached_unlocked_tiers = []
-        self.user_db_cursor.execute('''SELECT track_number, locked, under_construction, construction_time, 
-                                       unlock_condition_from_level, unlock_condition_from_previous_track, 
-                                       unlock_condition_from_environment, unlock_available FROM tracks 
-                                       WHERE locked = 1 AND map_id = ?''', (self.map_id, ))
-        track_info_fetched = self.user_db_cursor.fetchall()
+        USER_DB_CURSOR.execute('''SELECT track_number, locked, under_construction, construction_time, 
+                                  unlock_condition_from_level, unlock_condition_from_previous_track, 
+                                  unlock_condition_from_environment, unlock_available FROM tracks 
+                                  WHERE locked = 1 AND map_id = ?''', (self.map_id, ))
+        track_info_fetched = USER_DB_CURSOR.fetchall()
         for info in track_info_fetched:
             self.construction_state_matrix[TRACKS][info[0]] = [bool(info[1]), bool(info[2]), info[3], bool(info[4]),
                                                                bool(info[5]), bool(info[6]), bool(info[7])]
-            self.config_db_cursor.execute('''SELECT price, level, environment_tier FROM track_config 
-                                             WHERE track_number = ? AND map_id = ?''', (info[0], self.map_id))
-            self.construction_state_matrix[TRACKS][info[0]].extend(self.config_db_cursor.fetchone())
+            CONFIG_DB_CURSOR.execute('''SELECT price, level, environment_tier FROM track_config 
+                                        WHERE track_number = ? AND map_id = ?''', (info[0], self.map_id))
+            self.construction_state_matrix[TRACKS][info[0]].extend(CONFIG_DB_CURSOR.fetchone())
 
-        self.user_db_cursor.execute('''SELECT tier, locked, under_construction, construction_time, 
-                                       unlock_condition_from_level, unlock_condition_from_previous_environment,
-                                       unlock_available FROM environment WHERE locked = 1 AND map_id = ?''',
-                                    (self.map_id, ))
-        environment_info_fetched = self.user_db_cursor.fetchall()
+        USER_DB_CURSOR.execute('''SELECT tier, locked, under_construction, construction_time, 
+                                  unlock_condition_from_level, unlock_condition_from_previous_environment,
+                                  unlock_available FROM environment WHERE locked = 1 AND map_id = ?''',
+                               (self.map_id, ))
+        environment_info_fetched = USER_DB_CURSOR.fetchall()
         for info in environment_info_fetched:
             self.construction_state_matrix[ENVIRONMENT][info[0]] = [bool(info[1]), bool(info[2]), info[3],
                                                                     bool(info[4]), bool(info[5]), 1, bool(info[6])]
-            self.config_db_cursor.execute('SELECT price, level FROM environment_config WHERE tier = ? AND map_id = ?',
-                                          (info[0], self.map_id))
-            self.construction_state_matrix[ENVIRONMENT][info[0]].extend(self.config_db_cursor.fetchone())
+            CONFIG_DB_CURSOR.execute('SELECT price, level FROM environment_config WHERE tier = ? AND map_id = ?',
+                                     (info[0], self.map_id))
+            self.construction_state_matrix[ENVIRONMENT][info[0]].extend(CONFIG_DB_CURSOR.fetchone())
 
-        self.user_db_cursor.execute('SELECT money FROM game_progress')
-        self.money = self.user_db_cursor.fetchone()[0]
-        self.user_db_cursor.execute('SELECT money_target_activated FROM constructor WHERE map_id = ?', (self.map_id, ))
-        self.money_target_activated = bool(self.user_db_cursor.fetchone()[0])
-        self.user_db_cursor.execute('SELECT money_target_cell_position FROM constructor WHERE map_id = ?',
-                                    (self.map_id, ))
-        self.money_target_cell_position = list(map(int, self.user_db_cursor.fetchone()[0].split(',')))
+        USER_DB_CURSOR.execute('SELECT money FROM game_progress')
+        self.money = USER_DB_CURSOR.fetchone()[0]
+        USER_DB_CURSOR.execute('SELECT money_target_activated FROM constructor WHERE map_id = ?', (self.map_id, ))
+        self.money_target_activated = bool(USER_DB_CURSOR.fetchone()[0])
+        USER_DB_CURSOR.execute('SELECT money_target_cell_position FROM constructor WHERE map_id = ?',
+                               (self.map_id, ))
+        self.money_target_cell_position = list(map(int, USER_DB_CURSOR.fetchone()[0].split(',')))
 
     def on_activate_view(self):
         remaining_tracks = sorted(list(self.construction_state_matrix[TRACKS].keys()))
@@ -124,76 +125,76 @@ class ConstructorModel(Model):
                 self.money_target_cell_position[1] -= 1
 
     def on_save_state(self):
-        self.user_db_cursor.execute('''UPDATE constructor SET money_target_activated = ?, money_target_cell_position = ? 
-                                       WHERE map_id = ?''',
-                                    (int(self.money_target_activated),
-                                     ','.join(list(map(str, self.money_target_cell_position))), self.map_id))
+        USER_DB_CURSOR.execute('''UPDATE constructor SET money_target_activated = ?, money_target_cell_position = ? 
+                                  WHERE map_id = ?''',
+                               (int(self.money_target_activated),
+                                ','.join(list(map(str, self.money_target_cell_position))), self.map_id))
         # if some tracks were unlocked since last time the game progress was saved,
         # they are not listed in track state matrix anymore, so their state is updated separately
         for track in self.cached_unlocked_tracks:
-            self.user_db_cursor.execute('''UPDATE tracks SET locked = 0, under_construction = 0, 
-                                           construction_time = 0, unlock_condition_from_level = 0, 
-                                           unlock_condition_from_previous_track = 0, 
-                                           unlock_condition_from_environment = 0, unlock_available = 0 
-                                           WHERE track_number = ? AND map_id = ?''', (track, self.map_id))
+            USER_DB_CURSOR.execute('''UPDATE tracks SET locked = 0, under_construction = 0, 
+                                      construction_time = 0, unlock_condition_from_level = 0, 
+                                      unlock_condition_from_previous_track = 0, 
+                                      unlock_condition_from_environment = 0, unlock_available = 0 
+                                      WHERE track_number = ? AND map_id = ?''', (track, self.map_id))
 
         self.cached_unlocked_tracks = []
         # locked tracks state is saved from track_state_matrix the same way it was read
         for track in self.construction_state_matrix[TRACKS]:
-            self.user_db_cursor.execute('''UPDATE tracks SET locked = ?, under_construction = ?, construction_time = ?, 
-                                           unlock_condition_from_level = ?, unlock_condition_from_previous_track = ?, 
-                                           unlock_condition_from_environment = ?, unlock_available = ? 
-                                           WHERE track_number = ? AND map_id = ?''',
-                                        tuple(
-                                            map(int,
-                                                (self.construction_state_matrix[TRACKS][track][LOCKED],
-                                                 self.construction_state_matrix[TRACKS][track][UNDER_CONSTRUCTION],
-                                                 self.construction_state_matrix[TRACKS][track][CONSTRUCTION_TIME],
-                                                 self.construction_state_matrix[TRACKS][track][
+            USER_DB_CURSOR.execute('''UPDATE tracks SET locked = ?, under_construction = ?, construction_time = ?, 
+                                      unlock_condition_from_level = ?, unlock_condition_from_previous_track = ?, 
+                                      unlock_condition_from_environment = ?, unlock_available = ? 
+                                      WHERE track_number = ? AND map_id = ?''',
+                                   tuple(
+                                       map(int,
+                                           (self.construction_state_matrix[TRACKS][track][LOCKED],
+                                            self.construction_state_matrix[TRACKS][track][UNDER_CONSTRUCTION],
+                                            self.construction_state_matrix[TRACKS][track][CONSTRUCTION_TIME],
+                                            self.construction_state_matrix[TRACKS][track][
                                                      UNLOCK_CONDITION_FROM_LEVEL],
-                                                 self.construction_state_matrix[TRACKS][track][
+                                            self.construction_state_matrix[TRACKS][track][
                                                      UNLOCK_CONDITION_FROM_PREVIOUS_TRACK],
-                                                 self.construction_state_matrix[TRACKS][track][
+                                            self.construction_state_matrix[TRACKS][track][
                                                      UNLOCK_CONDITION_FROM_ENVIRONMENT],
-                                                 self.construction_state_matrix[TRACKS][track][UNLOCK_AVAILABLE],
-                                                 track, self.map_id)
-                                                )
-                                            )
+                                            self.construction_state_matrix[TRACKS][track][UNLOCK_AVAILABLE],
+                                            track, self.map_id)
+                                           )
                                         )
+                                   )
 
         # same for environment
         for tier in self.cached_unlocked_tiers:
-            self.user_db_cursor.execute('''UPDATE environment SET locked = 0, under_construction = 0, 
-                                           construction_time = 0, unlock_condition_from_level = 0, 
-                                           unlock_condition_from_previous_environment = 0, 
-                                           unlock_available = 0 WHERE tier = ? AND map_id = ?''', (tier, self.map_id))
+            USER_DB_CURSOR.execute('''UPDATE environment SET locked = 0, under_construction = 0, 
+                                      construction_time = 0, unlock_condition_from_level = 0, 
+                                      unlock_condition_from_previous_environment = 0, 
+                                      unlock_available = 0 WHERE tier = ? AND map_id = ?''', (tier, self.map_id))
 
         self.cached_unlocked_tiers = []
         for tier in self.construction_state_matrix[ENVIRONMENT]:
-            self.user_db_cursor.execute('''UPDATE environment SET locked = ?, under_construction = ?, 
-                                           construction_time = ?, unlock_condition_from_level = ?, 
-                                           unlock_condition_from_previous_environment = ?, 
-                                           unlock_available = ? WHERE tier = ? AND map_id = ?''',
-                                        tuple(
-                                            map(int,
-                                                (self.construction_state_matrix[ENVIRONMENT][tier][LOCKED],
-                                                 self.construction_state_matrix[ENVIRONMENT][tier][UNDER_CONSTRUCTION],
-                                                 self.construction_state_matrix[ENVIRONMENT][tier][CONSTRUCTION_TIME],
-                                                 self.construction_state_matrix[ENVIRONMENT][tier][
+            USER_DB_CURSOR.execute('''UPDATE environment SET locked = ?, under_construction = ?, 
+                                      construction_time = ?, unlock_condition_from_level = ?, 
+                                      unlock_condition_from_previous_environment = ?, 
+                                      unlock_available = ? WHERE tier = ? AND map_id = ?''',
+                                   tuple(
+                                       map(int,
+                                           (self.construction_state_matrix[ENVIRONMENT][tier][LOCKED],
+                                            self.construction_state_matrix[ENVIRONMENT][tier][UNDER_CONSTRUCTION],
+                                            self.construction_state_matrix[ENVIRONMENT][tier][CONSTRUCTION_TIME],
+                                            self.construction_state_matrix[ENVIRONMENT][tier][
                                                      UNLOCK_CONDITION_FROM_LEVEL],
-                                                 self.construction_state_matrix[ENVIRONMENT][tier][
+                                            self.construction_state_matrix[ENVIRONMENT][tier][
                                                      UNLOCK_CONDITION_FROM_PREVIOUS_ENVIRONMENT],
-                                                 self.construction_state_matrix[ENVIRONMENT][tier][UNLOCK_AVAILABLE],
-                                                 tier, self.map_id)
-                                                )
-                                            )
+                                            self.construction_state_matrix[ENVIRONMENT][tier][UNLOCK_AVAILABLE],
+                                            tier, self.map_id)
+                                           )
                                         )
+                                   )
 
     def on_level_up(self, level):
         # determines if some tracks require level which was just hit
-        self.config_db_cursor.execute('SELECT track_number FROM track_config WHERE level = ? AND map_id = ?',
-                                      (level, self.map_id))
-        raw_tracks = self.config_db_cursor.fetchall()
+        CONFIG_DB_CURSOR.execute('SELECT track_number FROM track_config WHERE level = ? AND map_id = ?',
+                                 (level, self.map_id))
+        raw_tracks = CONFIG_DB_CURSOR.fetchall()
         tracks_parsed = []
         for i in raw_tracks:
             tracks_parsed.append(i[0])
@@ -206,9 +207,9 @@ class ConstructorModel(Model):
             self.view.on_update_construction_state(TRACKS, track)
 
         # same for environment
-        self.config_db_cursor.execute('SELECT tier FROM environment_config WHERE level = ? AND map_id = ?',
-                                      (level, self.map_id))
-        raw_tiers = self.config_db_cursor.fetchall()
+        CONFIG_DB_CURSOR.execute('SELECT tier FROM environment_config WHERE level = ? AND map_id = ?',
+                                 (level, self.map_id))
+        raw_tiers = CONFIG_DB_CURSOR.fetchall()
         tiers_parsed = []
         for i in raw_tiers:
             tiers_parsed.append(i[0])

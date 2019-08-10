@@ -1,6 +1,3 @@
-from database import USER_DB_CONNECTION, USER_DB_CURSOR, CONFIG_DB_CURSOR
-
-
 def fullscreen_mode_available(fn):
     def _turn_fullscreen_mode_on_if_available(*args, **kwargs):
         if args[0].fullscreen_mode_available:
@@ -182,9 +179,6 @@ class Model:
         self.view = None
         self.controller = None
         self.is_activated = False
-        self.user_db_connection = USER_DB_CONNECTION
-        self.user_db_cursor = USER_DB_CURSOR
-        self.config_db_cursor = CONFIG_DB_CURSOR
 
     def on_activate_view(self):
         pass

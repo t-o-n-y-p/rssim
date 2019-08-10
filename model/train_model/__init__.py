@@ -1,6 +1,7 @@
 from logging import getLogger
 
 from model import *
+from database import USER_DB_CURSOR
 
 
 class TrainModel(Model):
@@ -31,17 +32,17 @@ class TrainModel(Model):
         self.car_image_collection = 0
 
     def on_train_setup(self, train_id):
-        self.user_db_cursor.execute('''SELECT train_id, cars, train_route_track_number, train_route_type, 
-                                       state, direction, new_direction, current_direction, speed, speed_state, 
-                                       speed_factor_position, priority, boarding_time, exp, money, 
-                                       cars_position, cars_position_abs, stop_point, destination_point, 
-                                       car_image_collection FROM trains WHERE train_id = ? AND map_id = ?''',
-                                    (train_id, self.map_id))
+        USER_DB_CURSOR.execute('''SELECT train_id, cars, train_route_track_number, train_route_type, 
+                                  state, direction, new_direction, current_direction, speed, speed_state, 
+                                  speed_factor_position, priority, boarding_time, exp, money, 
+                                  cars_position, cars_position_abs, stop_point, destination_point, 
+                                  car_image_collection FROM trains WHERE train_id = ? AND map_id = ?''',
+                               (train_id, self.map_id))
         train_id, self.cars, self.track, self.train_route, self.state, self.direction, self.new_direction, \
             self.current_direction, self.speed, self.speed_state, self.speed_factor_position, self.priority, \
             self.boarding_time, self.exp, self.money, cars_position_parsed, cars_position_abs_parsed, \
             self.stop_point, self.destination_point, self.car_image_collection \
-            = self.user_db_cursor.fetchone()
+            = USER_DB_CURSOR.fetchone()
         if cars_position_parsed is not None:
             self.cars_position = list(map(int, cars_position_parsed.split(',')))
 
@@ -103,13 +104,13 @@ class TrainModel(Model):
 
             cars_position_abs_string = '|'.join(list(map(str, cars_position_abs_strings_list)))
 
-        self.user_db_cursor.execute('''INSERT INTO trains VALUES 
-                                       (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)''',
-                                    (self.map_id, self.controller.train_id, self.cars, self.track, self.train_route,
-                                     self.state, self.direction, self.new_direction, self.current_direction, self.speed,
-                                     self.speed_state, self.speed_factor_position, self.priority, self.boarding_time,
-                                     self.exp, self.money, cars_position_string, cars_position_abs_string,
-                                     self.stop_point, self.destination_point, self.car_image_collection))
+        USER_DB_CURSOR.execute('''INSERT INTO trains VALUES 
+                                  (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)''',
+                               (self.map_id, self.controller.train_id, self.cars, self.track, self.train_route,
+                                self.state, self.direction, self.new_direction, self.current_direction, self.speed,
+                                self.speed_state, self.speed_factor_position, self.priority, self.boarding_time,
+                                self.exp, self.money, cars_position_string, cars_position_abs_string,
+                                self.stop_point, self.destination_point, self.car_image_collection))
 
     def on_update_time(self, game_time):
         # shorter trains gain more priority because they arrive more frequently

@@ -2,15 +2,16 @@ from ctypes import windll
 from logging import getLogger
 
 from model import *
+from database import USER_DB_CURSOR, CONFIG_DB_CURSOR, on_commit
 
 
 class AppModel(Model):
     def __init__(self):
         super().__init__(logger=getLogger('root.app.model'))
-        self.user_db_cursor.execute('SELECT fullscreen FROM graphics')
-        self.fullscreen_mode = bool(self.user_db_cursor.fetchone()[0])
-        self.config_db_cursor.execute('SELECT app_width, app_height FROM screen_resolution_config')
-        self.screen_resolution_config = self.config_db_cursor.fetchall()
+        USER_DB_CURSOR.execute('SELECT fullscreen FROM graphics')
+        self.fullscreen_mode = bool(USER_DB_CURSOR.fetchone()[0])
+        CONFIG_DB_CURSOR.execute('SELECT app_width, app_height FROM screen_resolution_config')
+        self.screen_resolution_config = CONFIG_DB_CURSOR.fetchall()
         monitor_resolution_config = (windll.user32.GetSystemMetrics(0), windll.user32.GetSystemMetrics(1))
         if monitor_resolution_config in self.screen_resolution_config:
             self.fullscreen_mode_available = True
@@ -36,13 +37,15 @@ class AppModel(Model):
 
     def on_save_and_commit_state(self, fullscreen_mode):
         self.fullscreen_mode = bool(fullscreen_mode)
-        self.user_db_cursor.execute('UPDATE graphics SET fullscreen = ?', (fullscreen_mode, ))
-        self.user_db_connection.commit()
+        USER_DB_CURSOR.execute('UPDATE graphics SET fullscreen = ?', (fullscreen_mode, ))
+        on_commit()
 
-    def on_save_and_commit_locale(self, new_locale):
-        self.user_db_cursor.execute('UPDATE i18n SET current_locale = ?', (new_locale, ))
-        self.user_db_connection.commit()
+    @staticmethod
+    def on_save_and_commit_locale(new_locale):
+        USER_DB_CURSOR.execute('UPDATE i18n SET current_locale = ?', (new_locale, ))
+        on_commit()
 
-    def on_save_and_commit_clock_state(self, clock_24h_enabled):
-        self.user_db_cursor.execute('UPDATE i18n SET clock_24h = ?', (int(clock_24h_enabled), ))
-        self.user_db_connection.commit()
+    @staticmethod
+    def on_save_and_commit_clock_state(clock_24h_enabled):
+        USER_DB_CURSOR.execute('UPDATE i18n SET clock_24h = ?', (int(clock_24h_enabled), ))
+        on_commit()

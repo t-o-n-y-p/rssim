@@ -2,3 +2,4 @@ pyglet==1.4.1
 pywin32==224
 pyshaders==1.4.1
 cx_Freeze==5.1.1
+keyring=19.0.2

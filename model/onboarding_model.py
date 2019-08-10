@@ -1,6 +1,7 @@
 from logging import getLogger
 
 from model import *
+from database import USER_DB_CURSOR, on_commit
 
 
 class OnboardingModel(Model):
@@ -10,6 +11,7 @@ class OnboardingModel(Model):
     def on_activate_view(self):
         self.view.on_activate()
 
-    def on_save_and_commit_onboarding_state(self):
-        self.user_db_cursor.execute('UPDATE game_progress SET onboarding_required = 0')
-        self.user_db_connection.commit()
+    @staticmethod
+    def on_save_and_commit_onboarding_state():
+        USER_DB_CURSOR.execute('UPDATE game_progress SET onboarding_required = 0')
+        on_commit()

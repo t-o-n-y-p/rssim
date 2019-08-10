@@ -1,6 +1,7 @@
 from logging import getLogger
 
 from controller import *
+from database import on_commit
 
 
 class GameController(Controller):
@@ -50,7 +51,7 @@ class GameController(Controller):
         for map_ in self.maps:
             map_.on_save_state()
 
-        self.model.user_db_connection.commit()
+        on_commit()
 
     def on_level_up(self):
         self.model.on_level_up()

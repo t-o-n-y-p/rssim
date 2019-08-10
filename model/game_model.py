@@ -1,21 +1,22 @@
 from logging import getLogger
 
 from model import *
+from database import USER_DB_CURSOR, CONFIG_DB_CURSOR
 
 
 class GameModel(Model):
     def __init__(self):
         super().__init__(logger=getLogger('root.app.game.model'))
         self.game_paused = True
-        self.user_db_cursor.execute('SELECT game_time FROM epoch_timestamp')
-        self.game_time = self.user_db_cursor.fetchone()[0]
-        self.user_db_cursor.execute('''SELECT level, exp, money, money_target, exp_multiplier,
-                                       exp_bonus_multiplier, money_bonus_multiplier FROM game_progress''')
+        USER_DB_CURSOR.execute('SELECT game_time FROM epoch_timestamp')
+        self.game_time = USER_DB_CURSOR.fetchone()[0]
+        USER_DB_CURSOR.execute('''SELECT level, exp, money, money_target, exp_multiplier,
+                                  exp_bonus_multiplier, money_bonus_multiplier FROM game_progress''')
         self.level, self.exp, self.money, self.money_target, self.exp_multiplier, \
-            self.exp_bonus_multiplier, self.money_bonus_multiplier = self.user_db_cursor.fetchone()
-        self.config_db_cursor.execute('''SELECT player_progress FROM player_progress_config 
-                                         WHERE level = ?''', (self.level, ))
-        self.player_progress = self.config_db_cursor.fetchone()[0]
+            self.exp_bonus_multiplier, self.money_bonus_multiplier = USER_DB_CURSOR.fetchone()
+        CONFIG_DB_CURSOR.execute('''SELECT player_progress FROM player_progress_config 
+                                    WHERE level = ?''', (self.level, ))
+        self.player_progress = CONFIG_DB_CURSOR.fetchone()[0]
 
     def on_activate_view(self):
         self.view.on_activate()
@@ -43,10 +44,10 @@ class GameModel(Model):
         self.game_time += 1
 
     def on_save_state(self):
-        self.user_db_cursor.execute('UPDATE epoch_timestamp SET game_time = ?', (self.game_time, ))
-        self.user_db_cursor.execute('''UPDATE game_progress SET level = ?, exp = ?, money = ?, 
+        USER_DB_CURSOR.execute('UPDATE epoch_timestamp SET game_time = ?', (self.game_time, ))
+        USER_DB_CURSOR.execute('''UPDATE game_progress SET level = ?, exp = ?, money = ?, 
                                        money_target = ?, exp_multiplier = ?''',
-                                    (self.level, self.exp, self.money, self.money_target, self.exp_multiplier))
+                               (self.level, self.exp, self.money, self.money_target, self.exp_multiplier))
 
     @maximum_level_not_reached
     def on_add_exp(self, exp):
@@ -62,9 +63,9 @@ class GameModel(Model):
         if self.level == MAXIMUM_LEVEL:
             self.exp = 0.0
 
-        self.config_db_cursor.execute('''SELECT player_progress FROM player_progress_config 
-                                      WHERE level = ?''', (self.level, ))
-        self.player_progress = self.config_db_cursor.fetchone()[0]
+        CONFIG_DB_CURSOR.execute('''SELECT player_progress FROM player_progress_config 
+                                    WHERE level = ?''', (self.level, ))
+        self.player_progress = CONFIG_DB_CURSOR.fetchone()[0]
         self.view.on_update_level(self.level)
         self.view.on_send_level_up_notification(self.level)
 
@@ -92,9 +93,10 @@ class GameModel(Model):
         self.money_target = money_target
         self.view.on_update_money(self.money, self.money_target)
 
-    def get_active_map(self):
-        self.user_db_cursor.execute('SELECT map_id FROM graphics')
-        return self.user_db_cursor.fetchone()[0]
+    @staticmethod
+    def get_active_map():
+        USER_DB_CURSOR.execute('SELECT map_id FROM graphics')
+        return USER_DB_CURSOR.fetchone()[0]
 
     def on_add_exp_bonus(self, exp_bonus):
         self.exp_multiplier += exp_bonus
