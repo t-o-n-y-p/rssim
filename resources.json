@@ -296,7 +296,23 @@
 		"ru": "{1:.0f},{0:.0%}"
 	},
 	"bonus_code_placeholder_string": {
-		"en": "Enter your bonus code",
-		"ru": "Введите ваш бонусный код"
+		"en": "Enter or paste your bonus code",
+		"ru": "Введите или вставьте ваш бонусный код"
+	},
+	"bonus_title_label_string": {
+		"en": "Bonus:",
+		"ru": "Бонус:"
+	},
+	"exp_bonus_value_label_string": {
+		"en": "Exp +{0}%",
+		"ru": "Опыт +{0}%"
+	},
+	"money_bonus_value_label_string": {
+		"en": "Money +{0}%",
+		"ru": "Деньги +{0}%"
+	},
+	"activations_title_label_string": {
+		"en": "Activations left:",
+		"ru": "Осталось активаций:"
 	}
 }

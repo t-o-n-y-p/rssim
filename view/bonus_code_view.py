@@ -8,6 +8,7 @@ from ui.label.bonus_code_interactive_label import BonusCodeInteractiveLabel
 from ui.button.activate_bonus_code_button import ActivateBonusCodeButton
 from ui.button.cancel_bonus_code_activation_button import CancelBonusCodeActivationButton
 from ui.shader_sprite.bonus_code_view_shader_sprite import BonusCodeViewShaderSprite
+from ui.bonus_code_info import BonusCodeInfoCell
 
 
 class BonusCodeView(View):
@@ -32,6 +33,7 @@ class BonusCodeView(View):
         self.buttons = [self.activate_bonus_code_button, self.cancel_bonus_code_activation_button]
         self.shader_sprite = BonusCodeViewShaderSprite(view=self)
         self.bonus_code_matrix = None
+        self.bonus_code_info_cell = BonusCodeInfoCell(parent_viewport=self.viewport)
         self.on_text_handlers = [self.on_text, ]
         self.on_key_press_handlers = [self.on_key_press, ]
 
@@ -59,6 +61,7 @@ class BonusCodeView(View):
     @view_is_active
     def on_deactivate(self):
         self.is_activated = False
+        self.bonus_code_info_cell.on_deactivate()
         for b in self.buttons:
             b.on_deactivate()
             b.state = 'normal'
@@ -68,17 +71,20 @@ class BonusCodeView(View):
         self.viewport.x1, self.viewport.y1 = 0, 0
         self.viewport.x2, self.viewport.y2 = self.screen_resolution
         self.bonus_code_interactive_label.on_change_screen_resolution(self.screen_resolution)
+        self.bonus_code_info_cell.on_change_screen_resolution(self.screen_resolution)
         for b in self.buttons:
             b.on_change_screen_resolution(self.screen_resolution)
 
     def on_update_current_locale(self, new_locale):
         self.current_locale = new_locale
         self.bonus_code_interactive_label.on_update_current_locale(self.current_locale)
+        self.bonus_code_info_cell.on_update_current_locale(self.current_locale)
 
     def on_update_opacity(self, new_opacity):
         self.opacity = new_opacity
         self.shader_sprite.on_update_opacity(self.opacity)
         self.bonus_code_interactive_label.on_update_opacity(self.opacity)
+        self.bonus_code_info_cell.on_update_opacity(self.opacity)
         for b in self.buttons:
             b.on_update_opacity(self.opacity)
 
@@ -110,5 +116,14 @@ class BonusCodeView(View):
                     and self.bonus_code_matrix[user_input_hash][REQUIRED_LEVEL] <= self.level \
                     and self.bonus_code_matrix[user_input_hash][ACTIVATION_AVAILABLE] and activated_bonus_counter == 0:
                 self.activate_bonus_code_button.on_activate()
+                self.bonus_code_info_cell.on_activate()
+                self.bonus_code_info_cell.on_assign_data(self.bonus_code_matrix[user_input_hash][CODE_TYPE],
+                                                         self.bonus_code_matrix[user_input_hash][BONUS_VALUE] - 1,
+                                                         self.bonus_code_matrix[user_input_hash][ACTIVATIONS_LEFT])
             else:
                 self.activate_bonus_code_button.on_disable()
+                self.bonus_code_info_cell.on_deactivate(instant=True)
+
+        else:
+            self.activate_bonus_code_button.on_disable()
+            self.bonus_code_info_cell.on_deactivate(instant=True)
