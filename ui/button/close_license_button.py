@@ -8,9 +8,9 @@ class CloseLicenseButton(UIButton):
     def __init__(self, on_click_action, parent_viewport):
         super().__init__(logger=getLogger('root.button.close_license_button'), parent_viewport=parent_viewport)
         self.to_activate_on_controller_init = True
-        self.text = ''
+        self.text = ''
         self.font_name = 'Webdings'
-        self.base_font_size_property = 24 / 80
+        self.base_font_size_property = 40 / 80
         self.on_click_action = on_click_action
 
     def get_position(self):

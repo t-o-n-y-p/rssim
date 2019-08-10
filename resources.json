@@ -203,6 +203,14 @@
 		"en": "Skip onboarding and move on to the map",
 		"ru": "Пропустить обучение и перейти на карту"
 	},
+	"license_placeholder_string": {
+		"en": "License",
+		"ru": "Лицензии"
+	},
+	"back_to_the_main_menu_placeholder_string": {
+		"en": "Back to the main menu",
+		"ru": "Вернуться в главное меню"
+	},
 	"clock_onboarding_page_string": {
 		"en": "In-game time is displayed in the bottom bar to the right from pause/resume button. \n\n12- and 24-hour formats are available.",
 		"ru": "Внутриигровое время отображается в нижней панели справа от кнопки паузы/возобновления. \n\nДоступны 12- и 24-часовой формат времени."

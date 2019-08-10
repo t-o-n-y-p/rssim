@@ -7,6 +7,7 @@ from ui.button.create_station_button import CreateStationButton
 from ui.button.back_to_the_station_button import BackToTheStationButton
 from ui.button.open_license_button import OpenLicenseButton
 from ui.button.open_settings_main_menu_view_button import OpenSettingsMainMenuViewButton
+from ui.label.open_license_label import OpenLicenseLabel
 from ui.shader_sprite.main_menu_view_shader_sprite import MainMenuViewShaderSprite
 
 
@@ -46,6 +47,7 @@ class MainMenuView(View):
                                                                    parent_viewport=self.viewport)
         self.buttons = [self.create_station_button, self.back_to_the_station_button, self.open_license_button,
                         self.open_settings_button]
+        self.open_license_label = OpenLicenseLabel(parent_viewport=self.viewport)
         self.shader_sprite = MainMenuViewShaderSprite(view=self)
 
     def on_init_content(self):
@@ -63,6 +65,7 @@ class MainMenuView(View):
     def on_activate(self):
         self.is_activated = True
         self.shader_sprite.create()
+        self.open_license_label.create()
         USER_DB_CURSOR.execute('SELECT onboarding_required FROM game_progress')
         onboarding_required = bool(USER_DB_CURSOR.fetchone()[0])
         if onboarding_required:
@@ -86,6 +89,7 @@ class MainMenuView(View):
         self.viewport.x1, self.viewport.y1 = 0, 0
         self.viewport.x2, self.viewport.y2 = self.screen_resolution
         self.shader_sprite.on_change_screen_resolution(self.screen_resolution)
+        self.open_license_label.on_change_screen_resolution(self.screen_resolution)
         for b in self.buttons:
             b.on_change_screen_resolution(self.screen_resolution)
 
@@ -94,10 +98,12 @@ class MainMenuView(View):
         self.create_station_button.on_update_current_locale(self.current_locale)
         self.back_to_the_station_button.on_update_current_locale(self.current_locale)
         self.open_settings_button.on_update_current_locale(self.current_locale)
+        self.open_license_label.on_update_current_locale(self.current_locale)
 
     def on_update_opacity(self, new_opacity):
         self.opacity = new_opacity
         self.shader_sprite.on_update_opacity(self.opacity)
+        self.open_license_label.on_update_opacity(self.opacity)
         for b in self.buttons:
             b.on_update_opacity(self.opacity)
 

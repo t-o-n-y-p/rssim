@@ -5,6 +5,7 @@ from database import CONFIG_DB_CURSOR
 from view import *
 from ui.page_control.license_page_control import LicensePageControl
 from ui.button.close_license_button import CloseLicenseButton
+from ui.label.close_license_label import CloseLicenseLabel
 from ui.shader_sprite.license_view_shader_sprite import LicenseViewShaderSprite
 
 
@@ -17,6 +18,7 @@ class LicenseView(View):
         self.license_page_control = LicensePageControl(parent_viewport=self.viewport)
         self.close_license_button = CloseLicenseButton(on_click_action=on_close_license, parent_viewport=self.viewport)
         self.buttons = [*self.license_page_control.buttons, self.close_license_button]
+        self.close_license_label = CloseLicenseLabel(parent_viewport=self.viewport)
         self.shader_sprite = LicenseViewShaderSprite(view=self)
         self.on_mouse_scroll_handlers = self.license_page_control.on_mouse_scroll_handlers
 
@@ -35,6 +37,7 @@ class LicenseView(View):
     def on_activate(self):
         self.is_activated = True
         self.shader_sprite.create()
+        self.close_license_label.create()
         self.license_page_control.on_activate()
         for b in self.buttons:
             if b.to_activate_on_controller_init:
@@ -53,17 +56,20 @@ class LicenseView(View):
         self.viewport.x1, self.viewport.y1 = 0, 0
         self.viewport.x2, self.viewport.y2 = self.screen_resolution
         self.shader_sprite.on_change_screen_resolution(self.screen_resolution)
+        self.close_license_label.on_change_screen_resolution(self.screen_resolution)
         self.license_page_control.on_change_screen_resolution(self.screen_resolution)
         for b in self.buttons:
             b.on_change_screen_resolution(self.screen_resolution)
 
     def on_update_current_locale(self, new_locale):
         self.current_locale = new_locale
+        self.close_license_label.on_update_current_locale(self.current_locale)
         self.license_page_control.on_update_current_locale(self.current_locale)
 
     def on_update_opacity(self, new_opacity):
         self.opacity = new_opacity
         self.shader_sprite.on_update_opacity(self.opacity)
+        self.close_license_label.on_update_opacity(self.opacity)
         self.license_page_control.on_update_opacity(self.opacity)
         for b in self.buttons:
             b.on_update_opacity(self.opacity)
