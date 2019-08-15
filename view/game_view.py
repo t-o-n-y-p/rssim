@@ -20,6 +20,8 @@ from ui.rectangle_progress_bar.money_progress_bar import MoneyProgressBar
 from ui.shader_sprite.game_view_shader_sprite import GameViewShaderSprite
 from ui.label.money_bonus_value_percent_label import MoneyBonusValuePercentLabel
 from ui.label.exp_bonus_value_percent_label import ExpBonusValuePercentLabel
+from notifications.exp_bonus_expired_notification import ExpBonusExpiredNotification
+from notifications.money_bonus_expired_notification import MoneyBonusExpiredNotification
 
 
 class GameView(View):
@@ -202,6 +204,18 @@ class GameView(View):
         enough_money_environment_notification = EnoughMoneyEnvironmentNotification()
         enough_money_environment_notification.send(self.current_locale)
         self.controller.parent_controller.on_append_notification(enough_money_environment_notification)
+
+    @notifications_available
+    def on_send_exp_bonus_expired_notification(self):
+        exp_bonus_expired_notification = ExpBonusExpiredNotification()
+        exp_bonus_expired_notification.send(self.current_locale)
+        self.controller.parent_controller.on_append_notification(exp_bonus_expired_notification)
+
+    @notifications_available
+    def on_send_money_bonus_expired_notification(self):
+        money_bonus_expired_notification = MoneyBonusExpiredNotification()
+        money_bonus_expired_notification.send(self.current_locale)
+        self.controller.parent_controller.on_append_notification(money_bonus_expired_notification)
 
     def on_change_level_up_notification_state(self, notification_state):
         self.level_up_notification_enabled = notification_state

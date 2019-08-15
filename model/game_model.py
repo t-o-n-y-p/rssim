@@ -110,6 +110,7 @@ class GameModel(Model):
     def on_deactivate_exp_bonus_code(self):
         self.exp_bonus_multiplier = 1.0
         self.view.on_deactivate_exp_bonus_code()
+        self.view.on_send_exp_bonus_expired_notification()
 
     def on_activate_money_bonus_code(self, value):
         self.money_bonus_multiplier = round(1.0 + value, 2)
@@ -118,3 +119,4 @@ class GameModel(Model):
     def on_deactivate_money_bonus_code(self):
         self.money_bonus_multiplier = 1.0
         self.view.on_deactivate_money_bonus_code()
+        self.view.on_send_money_bonus_expired_notification()

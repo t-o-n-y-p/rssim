@@ -179,6 +179,22 @@
 		"en": "Return to the game and buy new environment for your station.",
 		"ru": "Вернись в игру и купи новое окружение для твоего вокзала."
 	},
+	"exp_bonus_expired_notification_caption_string": {
+		"en": "Exp bonus turned off",
+		"ru": "Бонус к опыту выключен"
+	},
+	"exp_bonus_expired_notification_message_string": {
+		"en": "Exp bonus time has expired.",
+		"ru": "Время действия бонуса к опыту истекло."
+	},
+	"money_bonus_expired_notification_caption_string": {
+		"en": "Money bonus turned off",
+		"ru": "Бонус к деньгам выключен"
+	},
+	"money_bonus_expired_notification_message_string": {
+		"en": "Money bonus time has expired.",
+		"ru": "Время действия бонуса к деньгам истекло."
+	},
 	"create_station_label_string": {
 		"en": "Create new station",
 		"ru": "Создать новую станцию"
