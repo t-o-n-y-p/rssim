@@ -133,11 +133,11 @@ class GameController(Controller):
     def on_activate_exp_bonus_code(self, value):
         self.model.on_activate_exp_bonus_code(value)
 
-    def on_deactivate_exp_bonus_code(self, value):
-        self.model.on_deactivate_exp_bonus_code(value)
+    def on_deactivate_exp_bonus_code(self):
+        self.model.on_deactivate_exp_bonus_code()
 
     def on_activate_money_bonus_code(self, value):
         self.model.on_activate_money_bonus_code(value)
 
-    def on_deactivate_money_bonus_code(self, value):
-        self.model.on_deactivate_money_bonus_code(value)
+    def on_deactivate_money_bonus_code(self):
+        self.model.on_deactivate_money_bonus_code()

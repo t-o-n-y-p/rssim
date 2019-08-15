@@ -4,13 +4,13 @@ from ui.label import LocalizedLabel
 from ui import *
 
 
-class MoneyBonusValueLabel(LocalizedLabel):
+class BonusInfoCellExpBonusValueLabel(LocalizedLabel):
     def __init__(self, parent_viewport):
-        super().__init__(logger=getLogger('root.money_bonus_value_label'),
-                         i18n_resources_key='money_bonus_value_label_string', parent_viewport=parent_viewport)
+        super().__init__(logger=getLogger('root.exp_bonus_value_label'),
+                         i18n_resources_key='exp_bonus_value_label_string', parent_viewport=parent_viewport)
         self.arguments = (0, )
         self.font_name = 'Arial'
-        self.base_color = GREEN_RGB
+        self.base_color = ORANGE_RGB
         self.anchor_x = 'right'
         self.batch = BATCHES['ui_batch']
         self.group = GROUPS['button_text']

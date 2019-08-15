@@ -18,6 +18,8 @@ from ui.label.main_clock_label_12h import MainClockLabel12H
 from ui.rectangle_progress_bar.exp_progress_bar import ExpProgressBar
 from ui.rectangle_progress_bar.money_progress_bar import MoneyProgressBar
 from ui.shader_sprite.game_view_shader_sprite import GameViewShaderSprite
+from ui.label.money_bonus_value_percent_label import MoneyBonusValuePercentLabel
+from ui.label.exp_bonus_value_percent_label import ExpBonusValuePercentLabel
 
 
 class GameView(View):
@@ -64,6 +66,10 @@ class GameView(View):
         USER_DB_CURSOR.execute('SELECT clock_24h FROM i18n')
         self.clock_24h_enabled = bool(USER_DB_CURSOR.fetchone()[0])
         self.shader_sprite = GameViewShaderSprite(view=self)
+        USER_DB_CURSOR.execute('SELECT exp_bonus_multiplier, money_bonus_multiplier FROM game_progress')
+        self.exp_bonus_multiplier, self.money_bonus_multiplier = USER_DB_CURSOR.fetchone()
+        self.exp_bonus_percent_label = ExpBonusValuePercentLabel(parent_viewport=self.viewport)
+        self.money_bonus_percent_label = MoneyBonusValuePercentLabel(parent_viewport=self.viewport)
 
     def on_init_content(self):
         CONFIG_DB_CURSOR.execute('SELECT app_width, app_height FROM screen_resolution_config')
@@ -87,6 +93,14 @@ class GameView(View):
 
         self.exp_progress_bar.on_activate()
         self.money_progress_bar.on_activate()
+        if self.exp_bonus_multiplier > 1.0:
+            self.exp_bonus_percent_label.on_update_args((round(self.exp_bonus_multiplier * 100 - 100), ))
+            self.exp_bonus_percent_label.create()
+
+        if self.money_bonus_multiplier > 1.0:
+            self.money_bonus_percent_label.on_update_args((round(self.money_bonus_multiplier * 100 - 100), ))
+            self.money_bonus_percent_label.create()
+
         for b in self.buttons:
             if b.to_activate_on_controller_init:
                 b.on_activate()
@@ -110,6 +124,8 @@ class GameView(View):
         self.shader_sprite.on_change_screen_resolution(self.screen_resolution)
         self.main_clock_label_24h.on_change_screen_resolution(self.screen_resolution)
         self.main_clock_label_12h.on_change_screen_resolution(self.screen_resolution)
+        self.exp_bonus_percent_label.on_change_screen_resolution(self.screen_resolution)
+        self.money_bonus_percent_label.on_change_screen_resolution(self.screen_resolution)
         for b in self.buttons:
             b.on_change_screen_resolution(self.screen_resolution)
 
@@ -126,6 +142,8 @@ class GameView(View):
         self.shader_sprite.on_update_opacity(self.opacity)
         self.main_clock_label_24h.on_update_opacity(self.opacity)
         self.main_clock_label_12h.on_update_opacity(self.opacity)
+        self.exp_bonus_percent_label.on_update_opacity(self.opacity)
+        self.money_bonus_percent_label.on_update_opacity(self.opacity)
         for b in self.buttons:
             b.on_update_opacity(new_opacity)
 
@@ -202,3 +220,23 @@ class GameView(View):
         else:
             self.main_clock_label_24h.delete()
             self.main_clock_label_12h.create()
+
+    def on_activate_exp_bonus_code(self, value):
+        self.exp_bonus_multiplier = round(1.0 + value, 2)
+        if self.is_activated:
+            self.exp_bonus_percent_label.on_update_args((round(self.exp_bonus_multiplier * 100 - 100), ))
+            self.exp_bonus_percent_label.create()
+
+    def on_deactivate_exp_bonus_code(self):
+        self.exp_bonus_multiplier = 1.0
+        self.exp_bonus_percent_label.delete()
+
+    def on_activate_money_bonus_code(self, value):
+        self.money_bonus_multiplier = round(1.0 + value, 2)
+        if self.is_activated:
+            self.money_bonus_percent_label.on_update_args((round(self.money_bonus_multiplier * 100 - 100), ))
+            self.money_bonus_percent_label.create()
+
+    def on_deactivate_money_bonus_code(self):
+        self.money_bonus_multiplier = 1.0
+        self.money_bonus_percent_label.delete()

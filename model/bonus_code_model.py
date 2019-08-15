@@ -49,8 +49,6 @@ class BonusCodeModel(Model):
                 if self.bonus_code_matrix[code][BONUS_TIME] == 0:
                     self.bonus_code_matrix[code][IS_ACTIVATED] = False
                     if self.bonus_code_matrix[code][CODE_TYPE] == 'exp_bonus':
-                        self.controller.parent_controller \
-                            .on_deactivate_exp_bonus_code(self.bonus_code_matrix[code][BONUS_VALUE] - 1)
+                        self.controller.parent_controller.on_deactivate_exp_bonus_code()
                     elif self.bonus_code_matrix[code][CODE_TYPE] == 'money_bonus':
-                        self.controller.parent_controller \
-                            .on_deactivate_money_bonus_code(self.bonus_code_matrix[code][BONUS_VALUE] - 1)
+                        self.controller.parent_controller.on_deactivate_money_bonus_code()

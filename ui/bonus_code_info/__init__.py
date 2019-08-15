@@ -4,8 +4,8 @@ from ui import *
 from database import USER_DB_CURSOR
 from ui.label.bonus_title_label import BonusTitleLabel
 from ui.label.activations_title_label import ActivationsTitleLabel
-from ui.label.exp_bonus_value_label import ExpBonusValueLabel
-from ui.label.money_bonus_value_label import MoneyBonusValueLabel
+from ui.label.bonus_info_cell_exp_bonus_value_label import BonusInfoCellExpBonusValueLabel
+from ui.label.bonus_info_cell_money_bonus_value_label import BonusInfoCellMoneyBonusValueLabel
 from ui.label.activations_value_label import ActivationsValueLabel
 
 
@@ -36,8 +36,8 @@ class BonusCodeInfoCell:
         self.bonus_value = None
         self.activations_left = None
         self.bonus_title_label = BonusTitleLabel(parent_viewport=self.viewport)
-        self.exp_bonus_value_label = ExpBonusValueLabel(parent_viewport=self.viewport)
-        self.money_bonus_value_label = MoneyBonusValueLabel(parent_viewport=self.viewport)
+        self.exp_bonus_value_label = BonusInfoCellExpBonusValueLabel(parent_viewport=self.viewport)
+        self.money_bonus_value_label = BonusInfoCellMoneyBonusValueLabel(parent_viewport=self.viewport)
         self.activations_title_label = ActivationsTitleLabel(parent_viewport=self.viewport)
         self.activations_value_label = ActivationsValueLabel(parent_viewport=self.viewport)
         self.screen_resolution = (1280, 720)
