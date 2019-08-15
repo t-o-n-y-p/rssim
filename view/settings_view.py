@@ -62,6 +62,9 @@ class SettingsView(View):
         def on_update_enough_money_notifications_state(new_state):
             self.temp_enough_money_notification_enabled = new_state
 
+        def on_update_bonus_expired_notifications_state(new_state):
+            self.temp_bonus_expired_notification_enabled = new_state
+
         super().__init__(logger=getLogger('root.app.settings.view'))
         self.temp_windowed_resolution = (0, 0)
         self.temp_display_fps = False
@@ -79,12 +82,14 @@ class SettingsView(View):
         self.temp_feature_unlocked_notification_enabled = False
         self.temp_construction_completed_notification_enabled = False
         self.temp_enough_money_notification_enabled = False
+        self.temp_bonus_expired_notification_enabled = False
         self.notifications_checkbox_group \
-            = NotificationsCheckboxGroup(column=1, row=4,
+            = NotificationsCheckboxGroup(column=1, row=5,
                                          on_update_state_actions=[on_update_level_up_notifications_state,
                                                                   on_update_feature_unlocked_notifications_state,
                                                                   on_update_construction_completed_notifications_state,
-                                                                  on_update_enough_money_notifications_state],
+                                                                  on_update_enough_money_notifications_state,
+                                                                  on_update_bonus_expired_notifications_state],
                                          parent_viewport=self.viewport)
         self.temp_log_level = 0
         CONFIG_DB_CURSOR.execute('''SELECT app_width, app_height FROM screen_resolution_config 
@@ -132,7 +137,8 @@ class SettingsView(View):
         self.notifications_checkbox_group.on_init_state([self.temp_level_up_notification_enabled,
                                                          self.temp_feature_unlocked_notification_enabled,
                                                          self.temp_construction_completed_notification_enabled,
-                                                         self.temp_enough_money_notification_enabled])
+                                                         self.temp_enough_money_notification_enabled,
+                                                         self.temp_bonus_expired_notification_enabled])
         self.shader_sprite.create()
         for b in self.buttons:
             if b.to_activate_on_controller_init:

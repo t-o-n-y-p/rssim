@@ -111,6 +111,10 @@
 		"en": "there is enough money to start next construction",
 		"ru": "накопились деньги на новое строительство"
 	},
+	"bonus_expired_notification_description_string": {
+		"en": "exp or money bonus is expired",
+		"ru": "бонус к опыту или деньгам заканчивается"
+	},
 	"display_fps_description_string": {
 		"en": "FPS monitor",
 		"ru": "Счетчик FPS"

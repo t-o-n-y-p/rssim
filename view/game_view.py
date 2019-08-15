@@ -60,11 +60,10 @@ class GameView(View):
         self.exp_percent = 0
         self.money_percent = 0
         self.level = 0
-        USER_DB_CURSOR.execute('''SELECT level_up_notification_enabled, enough_money_notification_enabled
-                                       FROM notification_settings''')
-        self.level_up_notification_enabled, self.enough_money_notification_enabled = USER_DB_CURSOR.fetchone()
-        self.level_up_notification_enabled = bool(self.level_up_notification_enabled)
-        self.enough_money_notification_enabled = bool(self.enough_money_notification_enabled)
+        USER_DB_CURSOR.execute('''SELECT level_up_notification_enabled, enough_money_notification_enabled,
+                                  bonus_expired_notification_enabled FROM notification_settings''')
+        self.level_up_notification_enabled, self.enough_money_notification_enabled, \
+            self.bonus_expired_notification_enabled = map(bool, USER_DB_CURSOR.fetchone())
         USER_DB_CURSOR.execute('SELECT clock_24h FROM i18n')
         self.clock_24h_enabled = bool(USER_DB_CURSOR.fetchone()[0])
         self.shader_sprite = GameViewShaderSprite(view=self)
@@ -206,12 +205,14 @@ class GameView(View):
         self.controller.parent_controller.on_append_notification(enough_money_environment_notification)
 
     @notifications_available
+    @bonus_expired_notification_enabled
     def on_send_exp_bonus_expired_notification(self):
         exp_bonus_expired_notification = ExpBonusExpiredNotification()
         exp_bonus_expired_notification.send(self.current_locale)
         self.controller.parent_controller.on_append_notification(exp_bonus_expired_notification)
 
     @notifications_available
+    @bonus_expired_notification_enabled
     def on_send_money_bonus_expired_notification(self):
         money_bonus_expired_notification = MoneyBonusExpiredNotification()
         money_bonus_expired_notification.send(self.current_locale)
@@ -222,6 +223,9 @@ class GameView(View):
 
     def on_change_enough_money_notification_state(self, notification_state):
         self.enough_money_notification_enabled = notification_state
+
+    def on_change_bonus_expired_notification_state(self, notification_state):
+        self.bonus_expired_notification_enabled = notification_state
 
     def on_apply_shaders_and_draw_vertices(self):
         self.shader_sprite.draw()

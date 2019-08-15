@@ -120,6 +120,14 @@ def enough_money_notification_enabled(fn):
     return _send_notification_if_enough_money_notification_enabled
 
 
+def bonus_expired_notification_enabled(fn):
+    def _send_notification_if_bonus_expired_notification_enabled(*args, **kwargs):
+        if args[0].bonus_expired_notification_enabled:
+            fn(*args, **kwargs)
+
+    return _send_notification_if_bonus_expired_notification_enabled
+
+
 def feature_unlocked_notification_enabled(fn):
     def _send_notification_if_feature_unlocked_notification_enabled(*args, **kwargs):
         if args[0].feature_unlocked_notification_enabled:

@@ -16,8 +16,8 @@ class SettingsModel(Model):
         self.clock_24h_enabled = bool(USER_DB_CURSOR.fetchone()[0])
         USER_DB_CURSOR.execute('SELECT * FROM notification_settings')
         self.level_up_notification_enabled, self.feature_unlocked_notification_enabled, \
-            self.construction_completed_notification_enabled, self.enough_money_notification_enabled \
-            = tuple(map(bool, USER_DB_CURSOR.fetchone()))
+            self.construction_completed_notification_enabled, self.enough_money_notification_enabled, \
+            self.bonus_expired_notification_enabled = tuple(map(bool, USER_DB_CURSOR.fetchone()))
 
     def on_activate_view(self):
         self.view.temp_display_fps = self.display_fps
@@ -28,6 +28,7 @@ class SettingsModel(Model):
         self.view.temp_feature_unlocked_notification_enabled = self.feature_unlocked_notification_enabled
         self.view.temp_construction_completed_notification_enabled = self.construction_completed_notification_enabled
         self.view.temp_enough_money_notification_enabled = self.enough_money_notification_enabled
+        self.view.temp_bonus_expired_notification_enabled = self.bonus_expired_notification_enabled
         self.view.on_activate()
 
     def on_save_and_commit_state(self):
@@ -46,6 +47,7 @@ class SettingsModel(Model):
         self.feature_unlocked_notification_enabled = self.view.temp_feature_unlocked_notification_enabled
         self.construction_completed_notification_enabled = self.view.temp_construction_completed_notification_enabled
         self.enough_money_notification_enabled = self.view.temp_enough_money_notification_enabled
+        self.bonus_expired_notification_enabled = self.view.temp_bonus_expired_notification_enabled
         self.controller.parent_controller.on_change_level_up_notification_state(self.level_up_notification_enabled)
         self.controller.parent_controller\
             .on_change_feature_unlocked_notification_state(self.feature_unlocked_notification_enabled)
@@ -53,6 +55,8 @@ class SettingsModel(Model):
             .on_change_construction_completed_notification_state(self.construction_completed_notification_enabled)
         self.controller.parent_controller\
             .on_change_enough_money_notification_state(self.enough_money_notification_enabled)
+        self.controller.parent_controller\
+            .on_change_bonus_expired_notification_state(self.bonus_expired_notification_enabled)
 
         USER_DB_CURSOR.execute('''UPDATE graphics SET app_width = ?, app_height = ?, display_fps = ?, 
                                   fade_animations_enabled = ?''',
@@ -61,11 +65,12 @@ class SettingsModel(Model):
         USER_DB_CURSOR.execute('''UPDATE notification_settings SET level_up_notification_enabled = ?, 
                                   feature_unlocked_notification_enabled = ?, 
                                   construction_completed_notification_enabled = ?, 
-                                  enough_money_notification_enabled = ?''',
+                                  enough_money_notification_enabled = ?, bonus_expired_notification_enabled = ?''',
                                tuple(map(int, (self.level_up_notification_enabled,
                                                self.feature_unlocked_notification_enabled,
                                                self.construction_completed_notification_enabled,
-                                               self.enough_money_notification_enabled))))
+                                               self.enough_money_notification_enabled,
+                                               self.bonus_expired_notification_enabled))))
         USER_DB_CURSOR.execute('UPDATE i18n SET clock_24h = ?', (int(self.clock_24h_enabled), ))
         on_commit()
 
