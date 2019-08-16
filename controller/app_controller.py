@@ -146,6 +146,9 @@ class AppController(Controller):
     def on_change_enough_money_notification_state(self, notification_state):
         self.game.on_change_enough_money_notification_state(notification_state)
 
+    def on_change_bonus_expired_notification_state(self, notification_state):
+        self.game.on_change_bonus_expired_notification_state(notification_state)
+
     def on_resume_game(self):
         self.game.on_resume_game()
 
@@ -194,11 +197,11 @@ class AppController(Controller):
     def on_activate_exp_bonus_code(self, value):
         self.game.on_activate_exp_bonus_code(value)
 
-    def on_deactivate_exp_bonus_code(self, value):
-        self.game.on_deactivate_exp_bonus_code(value)
+    def on_deactivate_exp_bonus_code(self):
+        self.game.on_deactivate_exp_bonus_code()
 
     def on_activate_money_bonus_code(self, value):
         self.game.on_activate_money_bonus_code(value)
 
-    def on_deactivate_money_bonus_code(self, value):
-        self.game.on_deactivate_money_bonus_code(value)
+    def on_deactivate_money_bonus_code(self):
+        self.game.on_deactivate_money_bonus_code()

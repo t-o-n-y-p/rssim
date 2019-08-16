@@ -11,7 +11,7 @@ from keyring import get_password
 from exceptions import *
 from rssim_core import *
 from ui import SURFACE, BATCHES, MIN_RESOLUTION_WIDTH, MIN_RESOLUTION_HEIGHT
-from database import USER_DB_CURSOR, USER_DB_CONNECTION, on_commit, on_recalculate_config_db
+from database import USER_DB_CURSOR, USER_DB_CONNECTION, on_commit
 
 
 class RSSim:
@@ -28,13 +28,13 @@ class RSSim:
             raise MonitorNotSupportedException
 
         with open('db/config.db', 'rb') as f1, open('db/default.db', 'rb') as f2:
-            if sha512((f1.read() + f2.read())[::-1]).hexdigest() \
-                    != get_password(sha512('config_db'.encode('utf-8')).hexdigest(),
-                                    sha512('config_db'.encode('utf-8')).hexdigest()):
+            data = (f2.read() + f1.read())[::-1]
+            if sha512(data[::3] + data[1::3] + data[2::3]).hexdigest() != DATABASE_SHA512:
                 raise HackingDetectedException
 
-        with open('db/user.db', 'rb') as f1:
-            if sha512(f1.read()[::-1]).hexdigest() \
+        with open('db/user.db', 'rb') as f:
+            data = f.read()[::-1]
+            if sha512(data[::3] + data[1::3] + data[2::3]).hexdigest() \
                     != get_password(sha512('user_db'.encode('utf-8')).hexdigest(),
                                     sha512('user_db'.encode('utf-8')).hexdigest()):
                 raise HackingDetectedException
@@ -218,11 +218,9 @@ class RSSim:
                             USER_DB_CURSOR.execute(line)
                             logger.debug(f'executed request: {line}')
 
-                    USER_DB_CONNECTION.commit()
+                    on_commit()
                     logger.debug(f'0.9.{patch} migration complete')
 
-                on_recalculate_config_db()
-                on_commit()
             # update from versions < 0.9.7 is not supported
             else:
                 raise UpdateIncompatibleException

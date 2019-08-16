@@ -18,7 +18,7 @@ class MoneyBonusValuePercentLabel(Label):
 
     def get_x(self):
         return self.parent_viewport.x2 - 6 * get_bottom_bar_height(self.screen_resolution) + 2 \
-               - get_bottom_bar_height(self.screen_resolution) // 8 \
+               - 3 * get_bottom_bar_height(self.screen_resolution) // 16 \
                - int(0.675 * get_bottom_bar_height(self.screen_resolution))
 
     def get_y(self):
