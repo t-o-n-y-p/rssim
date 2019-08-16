@@ -60,8 +60,6 @@ class RSSim:
         # set blending mode; this is required to correctly draw transparent textures
         gl.glEnable(gl.GL_BLEND)
         gl.glBlendFunc(gl.GL_SRC_ALPHA, gl.GL_ONE_MINUS_SRC_ALPHA)
-        # flip the surface so user knows game has launched and is loading now
-        SURFACE.flip()
         # create App object
         self.app = create_app(loader=self)
         # initially app is created using default minimal screen resolution; now we change it to user resolution

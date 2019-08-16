@@ -4,7 +4,7 @@ from pyglet.window.key import BACKSPACE, V, MOD_CTRL
 
 from i18n import I18N_RESOURCES
 from database import USER_DB_CURSOR
-from ui import WHITE_RGB
+from ui import WHITE_RGB, GREY_RGB
 
 
 def text_label_does_not_exist(fn):
@@ -175,6 +175,7 @@ class InteractiveLabel:
         self.bold = False
         self.font_size = 20
         self.base_color = WHITE_RGB
+        self.placeholder_color = GREY_RGB
         self.opacity = 0
         self.x = 0
         self.y = 0
@@ -207,7 +208,7 @@ class InteractiveLabel:
     def create(self):
         self.placeholder_label = pyglet.text.Label(self.get_formatted_placeholder_text(),
                                                    font_name=self.font_name, bold=self.bold, font_size=self.font_size,
-                                                   color=(*(int(i * 112 / 255) for i in self.base_color), self.opacity),
+                                                   color=(*self.placeholder_color, self.opacity),
                                                    x=self.x, y=self.y, width=self.width,
                                                    anchor_x=self.anchor_x, anchor_y=self.anchor_y,
                                                    align=self.align, multiline=self.multiline,
@@ -246,8 +247,7 @@ class InteractiveLabel:
                 self.placeholder_label = pyglet.text.Label(self.get_formatted_placeholder_text(),
                                                            font_name=self.font_name, bold=self.bold,
                                                            font_size=self.font_size,
-                                                           color=(*(int(i * 112 / 255) for i in self.base_color),
-                                                                  self.opacity),
+                                                           color=(*self.placeholder_color, self.opacity),
                                                            x=self.x, y=self.y, width=self.width,
                                                            anchor_x=self.anchor_x, anchor_y=self.anchor_y,
                                                            align=self.align, multiline=self.multiline,
@@ -294,7 +294,7 @@ class InteractiveLabel:
                 self.text_label.color = (*self.base_color, self.opacity)
 
             if self.placeholder_label is not None:
-                self.placeholder_label.color = (*(int(i * 112 / 255) for i in self.base_color), self.opacity)
+                self.placeholder_label.color = (*self.placeholder_color, self.opacity)
         else:
             self.delete()
 

@@ -29,11 +29,14 @@ HOURLY_PROFIT = 10
 STORAGE_CAPACITY = 11
 EXP_BONUS = 12
 # colors
-GREY_RGB = (112, 112, 112)                      # grey UI color
 ORANGE_RGB = (255, 127, 0)                      # orange UI color
+ORANGE_GREY_RGB = (112, 56, 0)
 GREEN_RGB = (0, 192, 0)                         # green UI color
+GREEN_GREY_RGB = (0, 84, 0)
 RED_RGB = (255, 0, 0)                           # red UI color
+RED_GREY_RGB = (112, 0, 0)
 WHITE_RGB = (255, 255, 255)                     # white UI color
+GREY_RGB = (112, 112, 112)                      # grey UI color
 # time
 FRAMES_IN_ONE_DAY = 345600                      # indicates how many frames fit in one in-game day
 FRAMES_IN_ONE_HOUR = 14400                      # indicates how many frames fit in one in-game hour
@@ -63,6 +66,8 @@ BONUS_TIME = 7
 # main surface which harbors all the app
 SURFACE = Window(width=MIN_RESOLUTION_WIDTH, height=MIN_RESOLUTION_HEIGHT,
                  caption='Railway Station Simulator', style='borderless', fullscreen=False, vsync=False)
+# flip the surface so user knows game has launched and is loading now
+SURFACE.flip()
 # large portions of sprites which can be drawn together
 BATCHES = {'main_batch': Batch(),
            'mini_map_batch': Batch(),
