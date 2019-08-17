@@ -482,6 +482,10 @@ class MapController(Controller):
     def on_change_construction_completed_notification_state(self, notification_state):
         self.constructor.on_change_construction_completed_notification_state(notification_state)
 
+    def on_change_shop_storage_notification_state(self, notification_state):
+        for shop in self.shops:
+            shop.on_change_shop_storage_notification_state(notification_state)
+
     def on_apply_shaders_and_draw_vertices(self):
         self.view.on_apply_shaders_and_draw_vertices()
         self.constructor.on_apply_shaders_and_draw_vertices()

@@ -109,6 +109,10 @@ class GameController(Controller):
     def on_change_bonus_expired_notification_state(self, notification_state):
         self.view.on_change_bonus_expired_notification_state(notification_state)
 
+    def on_change_shop_storage_notification_state(self, notification_state):
+        for map_ in self.maps:
+            map_.on_change_shop_storage_notification_state(notification_state)
+
     def on_apply_shaders_and_draw_vertices(self):
         self.view.on_apply_shaders_and_draw_vertices()
         for map_ in self.maps:

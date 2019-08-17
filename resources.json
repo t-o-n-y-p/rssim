@@ -115,6 +115,10 @@
 		"en": "exp or money bonus is expired",
 		"ru": "бонус к опыту или деньгам заканчивается"
 	},
+	"shop_storage_notification_description_string": {
+		"en": "shop storage is (almost) full",
+		"ru": "хранилище магазина (почти) заполнено"
+	},
 	"display_fps_description_string": {
 		"en": "FPS monitor",
 		"ru": "Счетчик FPS"
@@ -198,6 +202,22 @@
 	"money_bonus_expired_notification_message_string": {
 		"en": "Money bonus time has expired.",
 		"ru": "Время действия бонуса к деньгам истекло."
+	},
+	"shop_storage_almost_full_notification_caption_string": {
+		"en": "Storage almost full",
+		"ru": "Хранилище почти заполнено"
+	},
+	"shop_storage_almost_full_notification_message_string": {
+		"en": "Shop #{0} storage is almost full. Grab the money until it is full.",
+		"ru": "Хранилище магазина №{0} почти заполнено. Забери деньги, пока оно не заполнилось."
+	},
+	"shop_storage_full_notification_caption_string": {
+		"en": "Storage full",
+		"ru": "Хранилище заполнено"
+	},
+	"shop_storage_full_notification_message_string": {
+		"en": "Shop #{0} storage is full. Service is paused until you grab money.",
+		"ru": "Хранилище магазина №{0} заполнено. Магазин не работает, пока не заберешь деньги."
 	},
 	"create_station_label_string": {
 		"en": "Create new station",

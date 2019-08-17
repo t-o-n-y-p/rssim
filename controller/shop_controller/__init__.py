@@ -76,3 +76,6 @@ class ShopController(Controller):
 
     def on_pay_money(self, money):
         self.shop_constructor.on_pay_money(money)
+
+    def on_change_shop_storage_notification_state(self, notification_state):
+        self.shop_constructor.on_change_shop_storage_notification_state(notification_state)

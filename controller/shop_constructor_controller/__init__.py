@@ -62,3 +62,6 @@ class ShopConstructorController(Controller):
 
     def on_put_stage_under_construction(self, stage_number):
         self.model.on_put_stage_under_construction(stage_number)
+
+    def on_change_shop_storage_notification_state(self, notification_state):
+        self.view.on_change_shop_storage_notification_state(notification_state)

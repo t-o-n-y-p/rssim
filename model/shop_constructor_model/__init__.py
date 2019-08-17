@@ -47,6 +47,15 @@ class ShopConstructorModel(Model):
                 and self.shop_storage_money < self.shop_stages_state_matrix[self.current_stage][STORAGE_CAPACITY]:
             self.internal_shop_time += 1
             if self.internal_shop_time % FRAMES_IN_ONE_HOUR == 0:
+                if self.shop_storage_money \
+                        < round(0.9 * self.shop_stages_state_matrix[self.current_stage][STORAGE_CAPACITY]) \
+                        <= self.shop_storage_money + self.shop_stages_state_matrix[self.current_stage][HOURLY_PROFIT]:
+                    self.view.on_send_shop_storage_almost_full_notification()
+                elif self.shop_storage_money \
+                        < self.shop_stages_state_matrix[self.current_stage][STORAGE_CAPACITY] \
+                        <= self.shop_storage_money + self.shop_stages_state_matrix[self.current_stage][HOURLY_PROFIT]:
+                    self.view.on_send_shop_storage_full_notification()
+
                 self.shop_storage_money += min(self.shop_stages_state_matrix[self.current_stage][HOURLY_PROFIT],
                                                self.shop_stages_state_matrix[self.current_stage][STORAGE_CAPACITY]
                                                - self.shop_storage_money)

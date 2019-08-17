@@ -149,6 +149,9 @@ class AppController(Controller):
     def on_change_bonus_expired_notification_state(self, notification_state):
         self.game.on_change_bonus_expired_notification_state(notification_state)
 
+    def on_change_shop_storage_notification_state(self, notification_state):
+        self.game.on_change_shop_storage_notification_state(notification_state)
+
     def on_resume_game(self):
         self.game.on_resume_game()
 

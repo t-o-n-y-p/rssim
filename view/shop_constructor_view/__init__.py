@@ -11,6 +11,8 @@ from ui.label.current_exp_bonus_description_label import CurrentExpBonusDescript
 from ui.label.current_hourly_profit_value_label import CurrentHourlyProfitValueLabel
 from ui.label.current_exp_bonus_value_label import CurrentExpBonusValueLabel
 from ui.shader_sprite.shop_constructor_view_shader_sprite import ShopConstructorViewShaderSprite
+from notifications.shop_storage_almost_full_notification import ShopStorageAlmostFullNotification
+from notifications.shop_storage_full_notification import ShopStorageFullNotification
 
 
 class ShopConstructorView(View):
@@ -28,6 +30,8 @@ class ShopConstructorView(View):
         USER_DB_CURSOR.execute('''SELECT current_stage, shop_storage_money
                                   FROM shops WHERE map_id = ? AND shop_id = ?''', (self.map_id, self.shop_id))
         self.current_stage, self.shop_storage_money = USER_DB_CURSOR.fetchone()
+        USER_DB_CURSOR.execute('''SELECT shop_storage_notification_enabled FROM notification_settings''')
+        self.shop_storage_notification_enabled = bool(USER_DB_CURSOR.fetchone()[0])
         self.shop_stages_cells_position = (0, 0)
         self.shop_stages_cells_size = (0, 0)
         USER_DB_CURSOR.execute('''SELECT last_known_shop_window_position FROM graphics''')
@@ -176,3 +180,20 @@ class ShopConstructorView(View):
         self.shop_storage_progress_bar \
             .on_update_progress_bar_state(self.shop_storage_money,
                                           self.shop_stages_state_matrix[self.current_stage][STORAGE_CAPACITY])
+
+    def on_change_shop_storage_notification_state(self, notification_state):
+        self.shop_storage_notification_enabled = notification_state
+
+    @notifications_available
+    @shop_storage_notification_enabled
+    def on_send_shop_storage_almost_full_notification(self):
+        shop_storage_almost_full_notification = ShopStorageAlmostFullNotification()
+        shop_storage_almost_full_notification.send(self.current_locale, message_args=(self.shop_id, ))
+        self.controller.parent_controller.on_append_notification(shop_storage_almost_full_notification)
+
+    @notifications_available
+    @shop_storage_notification_enabled
+    def on_send_shop_storage_full_notification(self):
+        shop_storage_full_notification = ShopStorageFullNotification()
+        shop_storage_full_notification.send(self.current_locale, message_args=(self.shop_id, ))
+        self.controller.parent_controller.on_append_notification(shop_storage_full_notification)

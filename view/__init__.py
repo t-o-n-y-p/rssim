@@ -144,6 +144,14 @@ def construction_completed_notification_enabled(fn):
     return _send_notification_if_construction_completed_notification_enabled
 
 
+def shop_storage_notification_enabled(fn):
+    def _send_notification_if_shop_storage_notification_enabled(*args, **kwargs):
+        if args[0].shop_storage_notification_enabled:
+            fn(*args, **kwargs)
+
+    return _send_notification_if_shop_storage_notification_enabled
+
+
 def cursor_is_over_the_app_header(fn):
     def _handle_if_cursor_is_over_the_app_header(*args, **kwargs):
         if args[1] in range(args[0].viewport.x1 + get_top_bar_height(args[0].screen_resolution) * 2,
