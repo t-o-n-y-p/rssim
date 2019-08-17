@@ -68,9 +68,9 @@ class GameController(Controller):
         self.model.on_add_exp(exp)
 
     def on_add_money(self, money):
-        self.model.on_add_money(money)
+        profit = self.model.on_add_money(money)
         for map_ in self.maps:
-            map_.on_add_money(money)
+            map_.on_add_money(profit)
 
     def on_pay_money(self, money):
         self.model.on_pay_money(money)

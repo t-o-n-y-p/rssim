@@ -226,12 +226,8 @@ class ConstructorModel(Model):
         self.controller.parent_controller.parent_controller\
             .on_pay_money(self.construction_state_matrix[construction_type][entity_number][PRICE])
 
-    @maximum_money_not_reached
     def on_add_money(self, money):
         self.money += money
-        if self.money > MONEY_LIMIT:
-            self.money = MONEY_LIMIT
-
         self.view.on_update_money(self.money)
 
     def on_pay_money(self, money):
