@@ -179,6 +179,8 @@ ACTIVATION_AVAILABLE = 4
 ACTIVATIONS_LEFT = 5
 IS_ACTIVATED = 6
 BONUS_TIME = 7
+# threshold for shop storage notification
+SHOP_STORAGE_ALMOST_FULL_THRESHOLD = 0.9
 # ------------------- END CONSTANTS -------------------
 
 
