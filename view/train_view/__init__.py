@@ -57,10 +57,6 @@ class TrainView(View):
             self.boarding_light_sprites[i].on_update_opacity(self.opacity)
 
         if self.opacity <= 0:
-            for i in range(len(self.car_sprites)):
-                self.car_sprites[i] = None
-                self.boarding_light_sprites[i] = None
-
             self.car_sprites = []
             self.boarding_light_sprites = []
 

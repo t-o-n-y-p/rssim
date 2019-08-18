@@ -107,10 +107,5 @@ class RectangleProgressBar:
         self.active_sprite.image = image_region
 
     def on_update_current_locale(self, new_locale):
-        """
-        Updates current locale selected by user and all text labels.
-
-        :param new_locale:                      selected locale
-        """
         self.current_locale = new_locale
         self.text_label.on_update_current_locale(self.current_locale)

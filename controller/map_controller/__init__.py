@@ -234,6 +234,7 @@ class MapController(Controller):
 
         for train_id in successful_departure_state:
             self.trains[train_id].on_deactivate_view()
+            self.trains[train_id].view.on_update_opacity(0)
             self.fade_in_animation.train_fade_in_animations.remove(self.trains[train_id].fade_in_animation)
             self.fade_out_animation.train_fade_out_animations.remove(self.trains[train_id].fade_out_animation)
             self.trains_list.remove(self.trains.pop(train_id))
