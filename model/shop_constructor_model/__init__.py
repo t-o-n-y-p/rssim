@@ -72,11 +72,11 @@ class ShopConstructorModel(Model):
                     self.view.on_unlock_stage(stage)
                     if stage == 1:
                         self.controller.parent_controller.parent_controller.parent_controller\
-                            .on_add_exp_bonus(round(self.shop_stages_state_matrix[stage][EXP_BONUS], 2))
+                            .on_add_exp_bonus(round(self.shop_stages_state_matrix[stage][EXP_BONUS] / 100, 4))
                     else:
                         self.controller.parent_controller.parent_controller.parent_controller\
-                            .on_add_exp_bonus(round(self.shop_stages_state_matrix[stage][EXP_BONUS]
-                                                    - self.shop_stages_state_matrix[stage - 1][EXP_BONUS], 2))
+                            .on_add_exp_bonus(round((self.shop_stages_state_matrix[stage][EXP_BONUS]
+                                                     - self.shop_stages_state_matrix[stage - 1][EXP_BONUS]) / 100, 4))
 
                     if stage < 4:
                         self.shop_stages_state_matrix[stage + 1][UNLOCK_CONDITION_FROM_PREVIOUS_STAGE] = True

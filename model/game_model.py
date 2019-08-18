@@ -99,7 +99,7 @@ class GameModel(Model):
         return USER_DB_CURSOR.fetchone()[0]
 
     def on_add_exp_bonus(self, value):
-        self.exp_multiplier = round(self.exp_multiplier + value, 2)
+        self.exp_multiplier = round(self.exp_multiplier + value, 4)
 
     def on_activate_exp_bonus_code(self, value):
         self.exp_bonus_multiplier = round(1.0 + value, 2)
