@@ -12,6 +12,7 @@ class CarSprite(MapSprite):
         self.batch = BATCHES['main_batch']
         self.group = GROUPS['train']
         self.usage = 'stream'
+        self.on_position_changed()
 
     def get_position(self):
         return (self.base_offset[0] + int(self.car_offset[0] * self.scale),

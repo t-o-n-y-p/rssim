@@ -22,6 +22,7 @@ class SignalSprite(MapSprite):
 
         self.batch = BATCHES['main_batch']
         self.group = GROUPS['signal']
+        self.on_position_changed()
 
     def get_position(self):
         return (self.base_offset[0] + int(self.signal_offset[0] * self.scale),

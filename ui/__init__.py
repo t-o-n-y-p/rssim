@@ -78,16 +78,15 @@ GROUPS = {'environment': OrderedGroup(0),
           'main_map': OrderedGroup(1),
           'signal': OrderedGroup(2),
           'train': OrderedGroup(2),
-          'boarding_light': OrderedGroup(3),
-          'environment_2': OrderedGroup(4),
-          'twilight': OrderedGroup(5),
-          'mini_environment': OrderedGroup(6),
-          'mini_map': OrderedGroup(7),
-          'mini_environment_2': OrderedGroup(8),
-          'main_frame': OrderedGroup(9),
-          'button_background': OrderedGroup(10),
-          'exp_money_time': OrderedGroup(10),
-          'button_text': OrderedGroup(11)}
+          'environment_2': OrderedGroup(3),
+          'twilight': OrderedGroup(4),
+          'mini_environment': OrderedGroup(5),
+          'mini_map': OrderedGroup(6),
+          'mini_environment_2': OrderedGroup(7),
+          'main_frame': OrderedGroup(8),
+          'button_background': OrderedGroup(9),
+          'exp_money_time': OrderedGroup(9),
+          'button_text': OrderedGroup(10)}
 # ------------------- END CONSTANTS -------------------
 
 

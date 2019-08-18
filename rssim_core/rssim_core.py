@@ -75,6 +75,9 @@ class RSSim:
         def on_draw():
             # clear surface
             SURFACE.clear()
+            for batch in BATCHES:
+                BATCHES[batch].invalidate()
+
             # draw main batch: environment, main map, signals, trains
             BATCHES['main_batch'].draw()
             # draw mini map batch: mini map

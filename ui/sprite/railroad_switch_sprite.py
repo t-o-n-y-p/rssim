@@ -16,6 +16,7 @@ class RailroadSwitchSprite(MapSprite):
         self.railroad_switch_offset = CONFIG_DB_CURSOR.fetchone()
         self.batch = BATCHES['main_batch']
         self.group = GROUPS['main_map']
+        self.on_position_changed()
 
     def get_position(self):
         return (self.base_offset[0] + int(self.railroad_switch_offset[0] * self.scale),

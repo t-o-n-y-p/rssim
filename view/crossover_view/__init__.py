@@ -55,7 +55,7 @@ class CrossoverView(View):
     @view_is_not_active
     def on_activate(self):
         self.is_activated = True
-        if not self.locked:
+        if not self.sprite.is_located_outside_viewport() and not self.locked:
             self.sprite.create()
 
     @view_is_active

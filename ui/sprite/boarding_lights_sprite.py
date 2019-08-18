@@ -10,7 +10,9 @@ class BoardingLightsSprite(MapSprite):
                          parent_viewport=parent_viewport)
         self.car_offset = (0, 0)
         self.batch = BATCHES['main_batch']
-        self.group = GROUPS['boarding_light']
+        self.group = GROUPS['train']
+        self.usage = 'stream'
+        self.on_position_changed()
 
     def get_position(self):
         return (self.base_offset[0] + int(self.car_offset[0] * self.scale),
