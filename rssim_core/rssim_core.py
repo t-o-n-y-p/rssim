@@ -86,9 +86,6 @@ class RSSim:
             self.app.on_apply_shaders_and_draw_vertices()
             # draw ui batch: text labels, buttons
             BATCHES['ui_batch'].draw()
-            self.logger.debug(f'main_batch: {len(BATCHES["main_batch"]._draw_list)}')
-            self.logger.debug(f'mini_map_batch: {len(BATCHES["mini_map_batch"]._draw_list)}')
-            self.logger.debug(f'ui_batch: {len(BATCHES["ui_batch"]._draw_list)}')
 
         @SURFACE.event
         def on_activate():
