@@ -1,5 +1,6 @@
 from logging import getLogger
 from ctypes import windll
+from random import seed, choice
 
 from view import *
 from database import CONFIG_DB_CURSOR
@@ -42,11 +43,12 @@ class TrainView(View):
                 self.car_sprites[i].delete()
                 self.boarding_light_sprites[i].delete()
             else:
-                self.car_sprites[i].create()
                 if i not in (0, len(self.car_position) - 1) and self.state == 'boarding_in_progress':
+                    self.car_sprites[i].delete()
                     self.boarding_light_sprites[i].create()
                 else:
                     self.boarding_light_sprites[i].delete()
+                    self.car_sprites[i].create()
 
     def on_update_opacity(self, new_opacity):
         self.opacity = new_opacity
@@ -55,12 +57,17 @@ class TrainView(View):
             self.boarding_light_sprites[i].on_update_opacity(self.opacity)
 
         if self.opacity <= 0:
+            for i in range(len(self.car_sprites)):
+                self.car_sprites[i] = None
+                self.boarding_light_sprites[i] = None
+
             self.car_sprites = []
             self.boarding_light_sprites = []
 
     @view_is_not_active
     def on_activate(self):
         self.is_activated = True
+        seed()
         for i in range(len(self.car_position)):
             self.car_sprites.append(CarSprite(self.map_id, self.train_id, parent_viewport=self.viewport))
             if i == 0:
@@ -68,7 +75,7 @@ class TrainView(View):
             elif i == len(self.car_position) - 1:
                 self.car_sprites[i].on_update_texture(self.car_tail_image[self.car_image_collection][self.direction])
             else:
-                self.car_sprites[i].on_update_texture(self.car_mid_image[self.car_image_collection][self.direction])
+                self.car_sprites[i].on_update_texture(choice(self.car_mid_image[self.car_image_collection]))
 
             self.boarding_light_sprites.append(BoardingLightsSprite(self.map_id, self.train_id,
                                                                     parent_viewport=self.viewport))
@@ -103,8 +110,6 @@ class TrainView(View):
                 self.car_sprites[i].on_update_texture(self.car_head_image[self.car_image_collection][self.direction])
             elif i == len(self.car_sprites) - 1:
                 self.car_sprites[i].on_update_texture(self.car_tail_image[self.car_image_collection][self.direction])
-            else:
-                self.car_sprites[i].on_update_texture(self.car_mid_image[self.car_image_collection][self.direction])
 
     def on_update_car_image_collection(self, car_image_collection):
         self.car_image_collection = car_image_collection
