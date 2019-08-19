@@ -70,22 +70,29 @@ class RSSim:
         # activate app after it is created
         self.app.fade_in_animation.on_activate()
         self.notifications = []
+        self.on_mouse_motion_event_counter = 0
+        self.on_mouse_motion_cached_movement = [0, 0]
+        self.on_mouse_drag_event_counter = 0
+        self.on_mouse_drag_cached_movement = [0, 0]
+        self.on_draw_event_counter = 0
 
         @SURFACE.event
         def on_draw():
-            # clear surface
-            SURFACE.clear()
-            for batch in BATCHES:
-                BATCHES[batch].invalidate()
+            if self.on_draw_event_counter == 0:
+                self.on_draw_event_counter += 1
+                # clear surface
+                SURFACE.clear()
+                for batch in BATCHES:
+                    BATCHES[batch].invalidate()
 
-            # draw main batch: environment, main map, signals, trains
-            BATCHES['main_batch'].draw()
-            # draw mini map batch: mini map
-            BATCHES['mini_map_batch'].draw()
-            # draw all vertices with shaders
-            self.app.on_apply_shaders_and_draw_vertices()
-            # draw ui batch: text labels, buttons
-            BATCHES['ui_batch'].draw()
+                # draw main batch: environment, main map, signals, trains
+                BATCHES['main_batch'].draw()
+                # draw mini map batch: mini map
+                BATCHES['mini_map_batch'].draw()
+                # draw all vertices with shaders
+                self.app.on_apply_shaders_and_draw_vertices()
+                # draw ui batch: text labels, buttons
+                BATCHES['ui_batch'].draw()
 
         @SURFACE.event
         def on_activate():
@@ -123,13 +130,31 @@ class RSSim:
 
         @SURFACE.event
         def on_mouse_motion(x, y, dx, dy):
-            for h in self.app.on_mouse_motion_handlers:
-                h(x, y, dx, dy)
+            if self.on_mouse_motion_event_counter == 0:
+                self.on_mouse_motion_event_counter += 1
+                dx += self.on_mouse_motion_cached_movement[0]
+                dy += self.on_mouse_motion_cached_movement[1]
+                self.on_mouse_motion_cached_movement = [0, 0]
+                for h in self.app.on_mouse_motion_handlers:
+                    h(x, y, dx, dy)
+
+            else:
+                self.on_mouse_motion_cached_movement[0] += dx
+                self.on_mouse_motion_cached_movement[1] += dy
 
         @SURFACE.event
         def on_mouse_drag(x, y, dx, dy, buttons, modifiers):
-            for h in self.app.on_mouse_drag_handlers:
-                h(x, y, dx, dy, buttons, modifiers)
+            if self.on_mouse_drag_event_counter == 0:
+                self.on_mouse_drag_event_counter += 1
+                dx += self.on_mouse_drag_cached_movement[0]
+                dy += self.on_mouse_drag_cached_movement[1]
+                self.on_mouse_drag_cached_movement = [0, 0]
+                for h in self.app.on_mouse_drag_handlers:
+                    h(x, y, dx, dy, buttons, modifiers)
+
+            else:
+                self.on_mouse_drag_cached_movement[0] += dx
+                self.on_mouse_drag_cached_movement[1] += dy
 
         @SURFACE.event
         def on_mouse_leave(x, y):
@@ -166,6 +191,9 @@ class RSSim:
             SURFACE.dispatch_event('on_draw')
             # flip the surface so user can see all the game content
             SURFACE.flip()
+            self.on_mouse_motion_event_counter = 0
+            self.on_mouse_drag_event_counter = 0
+            self.on_draw_event_counter = 0
             time_4 = perf_counter()
             # FPS is recalculated every FPS_INTERVAL seconds
             if perf_counter() - fps_timer > FPS_INTERVAL:
