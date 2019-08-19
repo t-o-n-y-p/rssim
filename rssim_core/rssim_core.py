@@ -130,7 +130,7 @@ class RSSim:
 
         @SURFACE.event
         def on_mouse_motion(x, y, dx, dy):
-            if self.on_mouse_motion_event_counter == 0:
+            if self.on_mouse_motion_event_counter < MAXIMUM_MOUSE_MOTION_EVENTS_PER_FRAME:
                 self.on_mouse_motion_event_counter += 1
                 dx += self.on_mouse_motion_cached_movement[0]
                 dy += self.on_mouse_motion_cached_movement[1]
@@ -144,7 +144,7 @@ class RSSim:
 
         @SURFACE.event
         def on_mouse_drag(x, y, dx, dy, buttons, modifiers):
-            if self.on_mouse_drag_event_counter == 0:
+            if self.on_mouse_drag_event_counter < MAXIMUM_MOUSE_DRAG_EVENTS_PER_FRAME:
                 self.on_mouse_drag_event_counter += 1
                 dx += self.on_mouse_drag_cached_movement[0]
                 dy += self.on_mouse_drag_cached_movement[1]
