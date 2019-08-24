@@ -112,6 +112,10 @@ class SchedulerView(View):
                 self.schedule_rows[i // SCHEDULE_ROWS][i % SCHEDULE_ROWS].on_deactivate(instant=True)
                 break
 
+        if self.schedule_rows[SCHEDULE_COLUMNS - 1][SCHEDULE_ROWS - 1].is_activated:
+            self.schedule_rows[SCHEDULE_COLUMNS - 1][SCHEDULE_ROWS - 1]\
+                .on_assign_data(self.base_schedule[SCHEDULE_ROWS * SCHEDULE_COLUMNS])
+
     def on_update_current_locale(self, new_locale):
         self.current_locale = new_locale
         self.left_schedule_caption_label.on_update_current_locale(self.current_locale)
