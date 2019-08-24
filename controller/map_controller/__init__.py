@@ -108,8 +108,11 @@ class MapController(Controller):
             for shop_id in self.model.get_shops_to_unlock_with_track(track):
                 self.view.shop_buttons[shop_id[0]].on_activate()
 
+        self.view.on_unlock_construction()
+
     def on_unlock_environment(self, tier):
         self.model.on_unlock_environment(tier)
+        self.view.on_unlock_construction()
 
     def on_activate_view(self):
         self.view.on_activate()
@@ -297,7 +300,7 @@ class MapController(Controller):
     def on_close_constructor(self):
         self.view.on_activate_zoom_buttons()
         self.view.on_activate_shop_buttons()
-        self.view.open_constructor_button.on_activate(instant=True)
+        self.view.on_activate_open_constructor_button(instant=True)
 
     def on_switch_signal_to_green(self, signal_track, signal_base_route):
         self.signals[signal_track][signal_base_route].on_switch_to_green()

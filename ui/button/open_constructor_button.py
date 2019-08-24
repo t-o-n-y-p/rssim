@@ -7,7 +7,7 @@ from ui.button import UIButton
 class OpenConstructorButton(UIButton):
     def __init__(self, on_click_action, parent_viewport):
         super().__init__(logger=getLogger('root.button.open_constructor_button'), parent_viewport=parent_viewport)
-        self.to_activate_on_controller_init = True
+        self.to_activate_on_controller_init = False
         self.text = ''
         self.font_name = 'Webdings'
         self.base_font_size_property = 32 / 80

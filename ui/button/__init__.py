@@ -159,9 +159,12 @@ class Button:
                 self.text_label.delete()
                 self.text_label = None
 
-    def on_disable(self):
+    def on_disable(self, instant=False):
         self.on_deactivate()
         self.disabled_state = True
+        if instant:
+            self.opacity = 255
+
         if self.vertex_list is not None:
             self.vertex_list.delete()
             self.vertex_list = None

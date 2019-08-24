@@ -104,6 +104,14 @@ class MapView(View):
         self.on_mouse_release_handlers.append(self.handle_mouse_release)
         self.on_mouse_drag_handlers.append(self.handle_mouse_drag)
         self.shader_sprite = MapViewShaderSprite(view=self)
+        USER_DB_CURSOR.execute('''SELECT SUM(t.constructions_locked) FROM
+                                  (SELECT COUNT(track_number) AS constructions_locked FROM tracks 
+                                   WHERE locked = 1 AND map_id = ?
+                                   UNION
+                                   SELECT COUNT(tier) AS constructions_locked FROM environment 
+                                   WHERE locked = 1 AND map_id = ?
+                                  ) AS t''', (self.map_id, self.map_id))
+        self.constructions_locked = USER_DB_CURSOR.fetchone()[0]
 
     def on_init_content(self):
         CONFIG_DB_CURSOR.execute('SELECT app_width, app_height FROM screen_resolution_config')
@@ -152,6 +160,7 @@ class MapView(View):
         else:
             self.zoom_out_button.on_activate()
 
+        self.on_activate_open_constructor_button()
         self.on_activate_shop_buttons()
 
     @view_is_active
@@ -316,6 +325,15 @@ class MapView(View):
     def on_deactivate_shop_buttons(self):
         for shop_id in range(len(self.shop_buttons)):
             self.shop_buttons[shop_id].on_deactivate()
+
+    def on_activate_open_constructor_button(self, instant=False):
+        if self.constructions_locked > 0:
+            self.open_constructor_button.on_activate(instant=instant)
+        else:
+            self.open_constructor_button.on_disable(instant=instant)
+
+    def on_unlock_construction(self):
+        self.constructions_locked -= 1
 
     def get_mini_map_frame_position(self):
         return (ceil(-self.base_offset[0] / (MAP_WIDTH // round(1 / self.zoom_factor))
