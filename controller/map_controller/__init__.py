@@ -262,7 +262,7 @@ class MapController(Controller):
             shop.fade_out_animation.on_activate()
 
         if self.constructor.view.is_activated:
-            self.on_close_constructor()
+            self.view.on_close_constructor()
             self.constructor.fade_out_animation.on_activate()
 
         self.scheduler.fade_in_animation.on_activate()
@@ -280,7 +280,7 @@ class MapController(Controller):
             shop.fade_out_animation.on_activate()
 
         if self.scheduler.view.is_activated:
-            self.on_close_schedule()
+            self.view.on_close_schedule()
             self.scheduler.fade_out_animation.on_activate()
 
         self.constructor.fade_in_animation.on_activate()
@@ -290,17 +290,11 @@ class MapController(Controller):
         # if mini map is active when user opens constructor screen, it should also be hidden
         self.view.is_mini_map_activated = False
 
-    @map_view_is_active
     def on_close_schedule(self):
-        self.view.on_activate_zoom_buttons()
-        self.view.on_activate_shop_buttons()
-        self.view.open_schedule_button.on_activate(instant=True)
+        self.view.on_close_schedule()
 
-    @map_view_is_active
     def on_close_constructor(self):
-        self.view.on_activate_zoom_buttons()
-        self.view.on_activate_shop_buttons()
-        self.view.on_activate_open_constructor_button(instant=True)
+        self.view.on_close_constructor()
 
     def on_switch_signal_to_green(self, signal_track, signal_base_route):
         self.signals[signal_track][signal_base_route].on_switch_to_green()

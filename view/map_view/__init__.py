@@ -335,6 +335,18 @@ class MapView(View):
     def on_unlock_construction(self):
         self.constructions_locked -= 1
 
+    @view_is_active
+    def on_close_schedule(self):
+        self.on_activate_zoom_buttons()
+        self.on_activate_shop_buttons()
+        self.open_schedule_button.on_activate(instant=True)
+
+    @view_is_active
+    def on_close_constructor(self):
+        self.on_activate_zoom_buttons()
+        self.on_activate_shop_buttons()
+        self.on_activate_open_constructor_button(instant=True)
+
     def get_mini_map_frame_position(self):
         return (ceil(-self.base_offset[0] / (MAP_WIDTH // round(1 / self.zoom_factor))
                      * get_mini_map_width(self.screen_resolution))
