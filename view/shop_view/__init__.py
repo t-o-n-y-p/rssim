@@ -71,7 +71,7 @@ class ShopView(View):
         self.shader_sprite.on_update_opacity(self.opacity)
         self.title_label.on_update_opacity(self.opacity)
         for b in self.buttons:
-            b.on_update_opacity(new_opacity)
+            b.on_update_opacity(self.opacity)
 
     def on_update_current_locale(self, new_locale):
         self.current_locale = new_locale

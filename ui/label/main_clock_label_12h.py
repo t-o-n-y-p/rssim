@@ -17,16 +17,13 @@ class MainClockLabel12H(LocalizedLabel):
         self.group = GROUPS['button_text']
 
     def get_x(self):
-        bottom_bar_height = get_bottom_bar_height(self.screen_resolution)
-        return self.parent_viewport.x2 - int(200 / 80 * bottom_bar_height)
+        return self.parent_viewport.x2 - int(200 / 80 * get_bottom_bar_height(self.screen_resolution))
 
     def get_y(self):
-        bottom_bar_height = get_bottom_bar_height(self.screen_resolution)
-        return self.parent_viewport.y1 + bottom_bar_height // 2
+        return self.parent_viewport.y1 + get_bottom_bar_height(self.screen_resolution) // 2
 
     def get_font_size(self):
-        bottom_bar_height = get_bottom_bar_height(self.screen_resolution)
-        return int(32 / 80 * bottom_bar_height)
+        return int(32 / 80 * get_bottom_bar_height(self.screen_resolution))
 
     def get_width(self):
         return None

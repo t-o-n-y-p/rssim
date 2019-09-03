@@ -42,9 +42,7 @@ class GameView(View):
 
         def on_open_settings(button):
             button.on_deactivate()
-            self.controller.parent_controller.settings_to_game_transition_animation.on_deactivate()
-            self.controller.parent_controller.game_to_settings_transition_animation.on_activate()
-            self.controller.parent_controller.settings.navigated_from_game = True
+            self.controller.parent_controller.on_open_settings_from_game()
 
         super().__init__(logger=getLogger('root.app.game.view'))
         self.exp_progress_bar = ExpProgressBar(parent_viewport=self.viewport)
@@ -162,7 +160,7 @@ class GameView(View):
         self.exp_bonus_placeholder_label.on_update_opacity(self.opacity)
         self.money_bonus_placeholder_label.on_update_opacity(self.opacity)
         for b in self.buttons:
-            b.on_update_opacity(new_opacity)
+            b.on_update_opacity(self.opacity)
 
     @view_is_active
     def on_pause_game(self):

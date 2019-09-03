@@ -123,7 +123,7 @@ class AppView(View):
         self.us_flag_sprite.on_update_opacity(self.opacity)
         self.ru_flag_sprite.on_update_opacity(self.opacity)
         for b in self.buttons:
-            b.on_update_opacity(new_opacity)
+            b.on_update_opacity(self.opacity)
 
     @staticmethod
     def on_fullscreen_mode_turned_on():

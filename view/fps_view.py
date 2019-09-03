@@ -36,7 +36,7 @@ class FPSView(View):
         self.viewport.x1 = 0
         self.viewport.y1 = 0
         self.viewport.x2, self.viewport.y2 = self.screen_resolution
-        self.fps_label.on_change_screen_resolution(screen_resolution)
+        self.fps_label.on_change_screen_resolution(self.screen_resolution)
 
     def on_update_opacity(self, new_opacity):
         self.opacity = new_opacity

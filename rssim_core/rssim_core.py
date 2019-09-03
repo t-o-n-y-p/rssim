@@ -41,9 +41,7 @@ class RSSim:
 
         # check if game was updated from previous version (0.9.0 and higher are supported)
         self.on_check_for_updates()
-        # set up the main logger; if logs are turned on, create log file
-        # USER_DB_CURSOR.execute('SELECT log_level FROM log_options')
-        # self.log_level = USER_DB_CURSOR.fetchone()[0]
+        # set up the main logger, create log file
         self.logger = getLogger('root')
         current_datetime = datetime.now()
         if not path.exists('logs'):
@@ -78,7 +76,7 @@ class RSSim:
 
         @SURFACE.event
         def on_draw():
-            if self.on_draw_event_counter == 0:
+            if self.on_draw_event_counter < MAXIMUM_DRAW_EVENTS_PER_FRAME:
                 self.on_draw_event_counter += 1
                 # clear surface
                 SURFACE.clear()

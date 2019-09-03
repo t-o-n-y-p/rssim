@@ -113,6 +113,7 @@ LOG_LEVEL_OFF = 30                  # integer log level high enough to cut off a
 LOG_LEVEL_INFO = 20                 # integer log level which includes basic logs
 LOG_LEVEL_DEBUG = 10                # integer log level which includes all possible logs
 DATABASE_SHA512 = '7376926f23d9a96376c231bd3a9e18735cf0b0006b0a64fbcec5bb2dc1f9815c56abcd9fde8f65842689259377af545bd0cc942eb70aee3e8b74daaf032fabf2'
+MAXIMUM_DRAW_EVENTS_PER_FRAME = 1
 MAXIMUM_MOUSE_MOTION_EVENTS_PER_FRAME = 1
 MAXIMUM_MOUSE_DRAG_EVENTS_PER_FRAME = 1
 # ------------------- END CONSTANTS -------------------

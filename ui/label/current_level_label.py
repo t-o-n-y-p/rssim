@@ -17,16 +17,13 @@ class CurrentLevelLabel(LocalizedLabel):
         self.group = GROUPS['button_text']
 
     def get_x(self):
-        bottom_bar_height = get_bottom_bar_height(self.screen_resolution)
-        return self.parent_viewport.x1 + 15 * bottom_bar_height // 8
+        return self.parent_viewport.x1 + 15 * get_bottom_bar_height(self.screen_resolution) // 8
 
     def get_y(self):
-        bottom_bar_height = get_bottom_bar_height(self.screen_resolution)
-        return self.parent_viewport.y1 + 3 * bottom_bar_height // 8
+        return self.parent_viewport.y1 + 3 * get_bottom_bar_height(self.screen_resolution) // 8
 
     def get_font_size(self):
-        bottom_bar_height = get_bottom_bar_height(self.screen_resolution)
-        return int(22 / 80 * bottom_bar_height)
+        return int(22 / 80 * get_bottom_bar_height(self.screen_resolution))
 
     def get_width(self):
         return None

@@ -16,16 +16,13 @@ class EnvironmentCellTitleLabel(LocalizedLabel):
         self.group = GROUPS['button_text']
 
     def get_x(self):
-        bottom_bar_height = get_bottom_bar_height(self.screen_resolution)
-        return self.parent_viewport.x1 + bottom_bar_height // 8
+        return self.parent_viewport.x1 + get_bottom_bar_height(self.screen_resolution) // 8
 
     def get_y(self):
-        bottom_bar_height = get_bottom_bar_height(self.screen_resolution)
-        return self.parent_viewport.y1 + int(0.7 * bottom_bar_height)
+        return self.parent_viewport.y1 + int(0.7 * get_bottom_bar_height(self.screen_resolution))
 
     def get_font_size(self):
-        bottom_bar_height = get_bottom_bar_height(self.screen_resolution)
-        return int(0.3 * bottom_bar_height)
+        return int(0.3 * get_bottom_bar_height(self.screen_resolution))
 
     def get_width(self):
         return None

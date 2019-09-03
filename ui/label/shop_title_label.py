@@ -16,16 +16,13 @@ class ShopTitleLabel(LocalizedLabel):
         self.group = GROUPS['button_text']
 
     def get_x(self):
-        top_bar_height = get_top_bar_height(self.screen_resolution)
-        return self.parent_viewport.x1 + top_bar_height // 4
+        return self.parent_viewport.x1 + get_top_bar_height(self.screen_resolution) // 4
 
     def get_y(self):
-        top_bar_height = get_top_bar_height(self.screen_resolution)
-        return self.parent_viewport.y2 - top_bar_height // 2
+        return self.parent_viewport.y2 - get_top_bar_height(self.screen_resolution) // 2
 
     def get_font_size(self):
-        top_bar_height = get_top_bar_height(self.screen_resolution)
-        return int(16 / 40 * top_bar_height)
+        return int(16 / 40 * get_top_bar_height(self.screen_resolution))
 
     def get_width(self):
         return None

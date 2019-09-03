@@ -20,5 +20,4 @@ class ExpProgressBar(RectangleProgressBar):
                 self.parent_viewport.y1 + bottom_bar_height // 8)
 
     def get_scale(self):
-        bottom_bar_height = get_bottom_bar_height(self.screen_resolution)
-        return bottom_bar_height / 80
+        return get_bottom_bar_height(self.screen_resolution) / 80

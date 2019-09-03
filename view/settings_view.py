@@ -17,26 +17,10 @@ class SettingsView(View):
     def __init__(self):
         def on_accept_changes(button):
             self.controller.on_save_and_commit_state()
-            if self.controller.navigated_from_main_menu:
-                self.controller.navigated_from_main_menu = False
-                self.controller.parent_controller.main_menu_to_settings_transition_animation.on_deactivate()
-                self.controller.parent_controller.settings_to_main_menu_transition_animation.on_activate()
-
-            if self.controller.navigated_from_game:
-                self.controller.navigated_from_game = False
-                self.controller.parent_controller.game_to_settings_transition_animation.on_deactivate()
-                self.controller.parent_controller.settings_to_game_transition_animation.on_activate()
+            self.controller.parent_controller.on_close_settings()
 
         def on_reject_changes(button):
-            if self.controller.navigated_from_main_menu:
-                self.controller.navigated_from_main_menu = False
-                self.controller.parent_controller.main_menu_to_settings_transition_animation.on_deactivate()
-                self.controller.parent_controller.settings_to_main_menu_transition_animation.on_activate()
-
-            if self.controller.navigated_from_game:
-                self.controller.navigated_from_game = False
-                self.controller.parent_controller.game_to_settings_transition_animation.on_deactivate()
-                self.controller.parent_controller.settings_to_game_transition_animation.on_activate()
+            self.controller.parent_controller.on_close_settings()
 
         def on_update_windowed_resolution_state(index):
             self.on_change_temp_windowed_resolution(self.available_windowed_resolutions[index])
@@ -96,7 +80,6 @@ class SettingsView(View):
                                                                   on_update_bonus_expired_notifications_state,
                                                                   on_update_shop_storage_notifications_state],
                                          parent_viewport=self.viewport)
-        self.temp_log_level = 0
         CONFIG_DB_CURSOR.execute('''SELECT app_width, app_height FROM screen_resolution_config 
                                     WHERE manual_setup = 1 AND app_width <= ?''',
                                  (windll.user32.GetSystemMetrics(0),))

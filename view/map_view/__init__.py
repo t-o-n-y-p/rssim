@@ -216,7 +216,7 @@ class MapView(View):
         self.main_map_sprite.on_update_opacity(self.opacity)
         self.environment_sprite.on_update_opacity(self.opacity)
         for b in self.buttons:
-            b.on_update_opacity(new_opacity)
+            b.on_update_opacity(self.opacity)
 
     @mini_map_is_not_active
     def on_activate_mini_map(self):

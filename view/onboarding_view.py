@@ -13,7 +13,6 @@ class OnboardingView(View):
     def __init__(self):
         def on_skip_onboarding(button):
             self.controller.parent_controller.on_close_onboarding()
-            self.controller.parent_controller.on_resume_game()
 
         super().__init__(logger=getLogger('root.app.onboarding.view'))
         self.onboarding_page_control = OnboardingPageControl(parent_viewport=self.viewport)
@@ -64,7 +63,7 @@ class OnboardingView(View):
 
     def on_update_current_locale(self, new_locale):
         self.current_locale = new_locale
-        self.onboarding_page_control.on_update_current_locale(new_locale)
+        self.onboarding_page_control.on_update_current_locale(self.current_locale)
         self.skip_onboarding_label.on_update_current_locale(self.current_locale)
 
     def on_update_opacity(self, new_opacity):

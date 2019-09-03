@@ -19,12 +19,11 @@ class ShopLevelPlaceholderLabel(LocalizedLabel):
         return (self.parent_viewport.x1 + self.parent_viewport.x2) // 2
 
     def get_y(self):
-        top_bar_height = get_top_bar_height(self.screen_resolution)
-        return (self.parent_viewport.y1 + self.parent_viewport.y2 - top_bar_height) // 2 - top_bar_height
+        return (self.parent_viewport.y1 + self.parent_viewport.y2 - get_top_bar_height(self.screen_resolution)) // 2 \
+               - get_top_bar_height(self.screen_resolution)
 
     def get_font_size(self):
-        bottom_bar_height = get_bottom_bar_height(self.screen_resolution)
-        return bottom_bar_height // 5
+        return get_bottom_bar_height(self.screen_resolution) // 5
 
     def get_width(self):
         return None

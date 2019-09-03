@@ -18,12 +18,11 @@ class ShopStageLockedLabel(Label):
         return (self.parent_viewport.x1 + self.parent_viewport.x2) // 2
 
     def get_y(self):
-        bottom_bar_height = get_bottom_bar_height(self.screen_resolution)
-        return (self.parent_viewport.y1 + self.parent_viewport.y2) // 2 + bottom_bar_height // 4
+        return (self.parent_viewport.y1 + self.parent_viewport.y2) // 2 \
+               + get_bottom_bar_height(self.screen_resolution) // 4
 
     def get_font_size(self):
-        bottom_bar_height = get_bottom_bar_height(self.screen_resolution)
-        return int(24 / 40 * bottom_bar_height)
+        return int(24 / 40 * get_bottom_bar_height(self.screen_resolution))
 
     def get_width(self):
         return None

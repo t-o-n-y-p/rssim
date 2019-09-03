@@ -15,16 +15,14 @@ class ShopStageStorageCapacityDescriptionLabel(LocalizedLabel):
         self.group = GROUPS['button_text']
 
     def get_x(self):
-        top_bar_height = get_top_bar_height(self.screen_resolution)
-        return self.parent_viewport.x1 + top_bar_height // 2
+        return self.parent_viewport.x1 + get_top_bar_height(self.screen_resolution) // 2
 
     def get_y(self):
-        top_bar_height = get_top_bar_height(self.screen_resolution)
-        return self.parent_viewport.y2 - 13 * top_bar_height // 8 - 4 * top_bar_height // 3
+        return self.parent_viewport.y2 - 13 * get_top_bar_height(self.screen_resolution) // 8 \
+               - 4 * get_top_bar_height(self.screen_resolution) // 3
 
     def get_font_size(self):
-        bottom_bar_height = get_bottom_bar_height(self.screen_resolution)
-        return bottom_bar_height // 5
+        return get_bottom_bar_height(self.screen_resolution) // 5
 
     def get_width(self):
         return None

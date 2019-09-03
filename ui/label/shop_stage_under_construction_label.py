@@ -25,12 +25,10 @@ class ShopStageUnderConstructionLabel(LocalizedLabel):
         return (self.parent_viewport.y1 + self.parent_viewport.y2) // 2
 
     def get_font_size(self):
-        bottom_bar_height = get_bottom_bar_height(self.screen_resolution)
-        return bottom_bar_height // 5
+        return get_bottom_bar_height(self.screen_resolution) // 5
 
     def get_width(self):
-        bottom_bar_height = get_bottom_bar_height(self.screen_resolution)
-        return 4 * bottom_bar_height
+        return 4 * get_bottom_bar_height(self.screen_resolution)
 
     def get_formatted_text(self):
         return self.text.format(*self.arguments)

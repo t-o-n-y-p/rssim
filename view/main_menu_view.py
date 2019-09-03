@@ -15,30 +15,18 @@ from ui.shader_sprite.main_menu_view_shader_sprite import MainMenuViewShaderSpri
 class MainMenuView(View):
     def __init__(self):
         def on_create_station(button):
-            button.on_deactivate()
-            self.controller.parent_controller.license_to_main_menu_transition_animation.on_deactivate()
-            self.controller.parent_controller.game_to_main_menu_transition_animation.on_deactivate()
-            self.controller.parent_controller.main_menu_to_onboarding_transition_animation.on_activate()
+            self.controller.parent_controller.on_open_onboarding()
 
         def on_back_to_the_station(button):
-            button.on_deactivate()
-            self.controller.parent_controller.license_to_main_menu_transition_animation.on_deactivate()
-            self.controller.parent_controller.game_to_main_menu_transition_animation.on_deactivate()
-            self.controller.parent_controller.main_menu_to_game_transition_animation.on_activate()
-            self.controller.parent_controller.on_resume_game()
+            self.controller.parent_controller.on_back_to_the_station()
 
         def on_open_license(button):
-            button.on_deactivate()
             self.controller.parent_controller.on_open_license()
 
         def on_open_settings(button):
-            button.on_deactivate()
-            self.controller.parent_controller.settings_to_main_menu_transition_animation.on_deactivate()
-            self.controller.parent_controller.main_menu_to_settings_transition_animation.on_activate()
-            self.controller.parent_controller.settings.navigated_from_main_menu = True
+            self.controller.parent_controller.on_open_settings_from_main_menu()
 
         def on_open_bonus_code(button):
-            button.on_deactivate()
             self.controller.parent_controller.on_open_bonus_code()
 
         super().__init__(logger=getLogger('root.app.main_menu.view'))

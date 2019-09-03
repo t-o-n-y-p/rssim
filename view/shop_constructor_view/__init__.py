@@ -126,9 +126,9 @@ class ShopConstructorView(View):
 
     def on_update_opacity(self, new_opacity):
         self.opacity = new_opacity
-        self.shop_storage_progress_bar.on_update_opacity(new_opacity)
+        self.shop_storage_progress_bar.on_update_opacity(self.opacity)
         for stage_cell in self.shop_stage_cells:
-            self.shop_stage_cells[stage_cell].on_update_opacity(new_opacity)
+            self.shop_stage_cells[stage_cell].on_update_opacity(self.opacity)
 
         self.shader_sprite.on_update_opacity(self.opacity)
         self.current_hourly_profit_label.on_update_opacity(self.opacity)
@@ -136,7 +136,7 @@ class ShopConstructorView(View):
         self.hourly_profit_value_label.on_update_opacity(self.opacity)
         self.exp_bonus_value_label.on_update_opacity(self.opacity)
         for b in self.buttons:
-            b.on_update_opacity(new_opacity)
+            b.on_update_opacity(self.opacity)
 
     def on_update_current_locale(self, new_locale):
         self.current_locale = new_locale
@@ -144,7 +144,7 @@ class ShopConstructorView(View):
         self.current_exp_bonus_label.on_update_current_locale(self.current_locale)
         self.exp_bonus_value_label.on_update_current_locale(self.current_locale)
         for stage_cell in self.shop_stage_cells:
-            self.shop_stage_cells[stage_cell].on_update_current_locale(new_locale)
+            self.shop_stage_cells[stage_cell].on_update_current_locale(self.current_locale)
 
     def on_apply_shaders_and_draw_vertices(self):
         self.shader_sprite.draw()

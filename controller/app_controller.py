@@ -152,12 +152,10 @@ class AppController(Controller):
     def on_change_shop_storage_notification_state(self, notification_state):
         self.game.on_change_shop_storage_notification_state(notification_state)
 
-    def on_resume_game(self):
-        self.game.on_resume_game()
-
     def on_open_license(self):
         self.game_to_main_menu_transition_animation.on_deactivate()
         self.license_to_main_menu_transition_animation.on_deactivate()
+        self.settings_to_main_menu_transition_animation.on_deactivate()
         self.bonus_code_to_main_menu_transition_animation.on_deactivate()
         self.main_menu_to_license_transition_animation.on_activate()
 
@@ -168,23 +166,58 @@ class AppController(Controller):
     def on_open_onboarding(self):
         self.game_to_main_menu_transition_animation.on_deactivate()
         self.license_to_main_menu_transition_animation.on_deactivate()
+        self.settings_to_main_menu_transition_animation.on_deactivate()
         self.bonus_code_to_main_menu_transition_animation.on_deactivate()
         self.main_menu_to_onboarding_transition_animation.on_activate()
 
     def on_close_onboarding(self):
-        self.settings_to_game_transition_animation.on_deactivate()
-        self.main_menu_to_game_transition_animation.on_deactivate()
+        self.main_menu_to_onboarding_transition_animation.on_deactivate()
         self.onboarding_to_game_transition_animation.on_activate()
+        self.game.on_resume_game()
+
+    def on_back_to_the_station(self):
+        self.game_to_main_menu_transition_animation.on_deactivate()
+        self.license_to_main_menu_transition_animation.on_deactivate()
+        self.settings_to_main_menu_transition_animation.on_deactivate()
+        self.bonus_code_to_main_menu_transition_animation.on_deactivate()
+        self.main_menu_to_game_transition_animation.on_activate()
+        self.game.on_resume_game()
 
     def on_open_bonus_code(self):
         self.game_to_main_menu_transition_animation.on_deactivate()
         self.license_to_main_menu_transition_animation.on_deactivate()
+        self.settings_to_main_menu_transition_animation.on_deactivate()
         self.bonus_code_to_main_menu_transition_animation.on_deactivate()
         self.main_menu_to_bonus_code_transition_animation.on_activate()
 
     def on_close_bonus_code(self):
         self.main_menu_to_bonus_code_transition_animation.on_deactivate()
         self.bonus_code_to_main_menu_transition_animation.on_activate()
+
+    def on_open_settings_from_main_menu(self):
+        self.game_to_main_menu_transition_animation.on_deactivate()
+        self.license_to_main_menu_transition_animation.on_deactivate()
+        self.settings_to_main_menu_transition_animation.on_deactivate()
+        self.bonus_code_to_main_menu_transition_animation.on_deactivate()
+        self.main_menu_to_settings_transition_animation.on_activate()
+        self.settings.navigated_from_main_menu = True
+
+    def on_open_settings_from_game(self):
+        self.main_menu_to_game_transition_animation.on_deactivate()
+        self.settings_to_game_transition_animation.on_deactivate()
+        self.onboarding_to_game_transition_animation.on_deactivate()
+        self.game_to_settings_transition_animation.on_activate()
+        self.settings.navigated_from_game = True
+
+    def on_close_settings(self):
+        if self.settings.navigated_from_main_menu:
+            self.settings.navigated_from_main_menu = False
+            self.main_menu_to_settings_transition_animation.on_deactivate()
+            self.settings_to_main_menu_transition_animation.on_activate()
+        elif self.settings.navigated_from_game:
+            self.settings.navigated_from_game = False
+            self.game_to_settings_transition_animation.on_deactivate()
+            self.settings_to_game_transition_animation.on_activate()
 
     def on_update_fade_animation_state(self, new_state):
         self.fade_in_animation.on_update_fade_animation_state(new_state)

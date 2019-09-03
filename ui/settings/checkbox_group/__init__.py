@@ -21,7 +21,7 @@ class CheckboxGroup:
         self.opacity = new_opacity
         self.description_label.on_update_opacity(self.opacity)
         for checkbox in self.checkboxes:
-            checkbox.on_update_opacity(new_opacity)
+            checkbox.on_update_opacity(self.opacity)
 
     def on_activate(self):
         self.is_activated = True
@@ -51,10 +51,10 @@ class CheckboxGroup:
                            + get_top_bar_height(self.screen_resolution) // 2
         self.description_label.on_change_screen_resolution(self.screen_resolution)
         for checkbox in self.checkboxes:
-            checkbox.on_change_screen_resolution(screen_resolution)
+            checkbox.on_change_screen_resolution(self.screen_resolution)
 
     def on_update_current_locale(self, new_locale):
         self.current_locale = new_locale
         self.description_label.on_update_current_locale(self.current_locale)
         for checkbox in self.checkboxes:
-            checkbox.on_update_current_locale(new_locale)
+            checkbox.on_update_current_locale(self.current_locale)
