@@ -51,7 +51,7 @@ class TrainModel(Model):
         if cars_position_abs_parsed is not None:
             cars_position_abs_parsed = cars_position_abs_parsed.split('|')
             for i in range(len(cars_position_abs_parsed)):
-                cars_position_abs_parsed[i] = list(map(int, cars_position_abs_parsed[i].split(',')))
+                cars_position_abs_parsed[i] = list(map(float, cars_position_abs_parsed[i].split(',')))
 
             self.cars_position_abs = cars_position_abs_parsed
 
