@@ -245,9 +245,10 @@ class TrainModel(Model):
         self.cars_position = []
         for i in range(len(self.cars_position_abs)):
             if i in (0, len(self.cars_position_abs) - 1):
-                self.cars_position.append(abs(self.cars_position_abs[i][0] - self.trail_points_v2_head_tail[0][0]))
+                self.cars_position.append(round(abs(self.cars_position_abs[i][0]
+                                                    - self.trail_points_v2_head_tail[0][0])))
             else:
-                self.cars_position.append(abs(self.cars_position_abs[i][0] - self.trail_points_v2_mid[0][0]))
+                self.cars_position.append(round(abs(self.cars_position_abs[i][0] - self.trail_points_v2_mid[0][0])))
 
         self.cars_position_abs.clear()
 
