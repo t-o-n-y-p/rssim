@@ -8,6 +8,7 @@ class TrainModel(Model):
     def __init__(self, map_id, train_id):
         super().__init__(logger=getLogger(f'root.app.game.map.{map_id}.train.{train_id}.model'))
         self.map_id = map_id
+        self.train_acceleration_factor = None
         self.train_maximum_speed = None
         self.speed_factor_position_limit = None
         self.cars = 0
@@ -143,7 +144,7 @@ class TrainModel(Model):
             # when train needs to stop at stop point and distance is less than braking distance,
             # update state to 'decelerate'
             elif self.stop_point - self.cars_position[0] \
-                    <= PASSENGER_TRAIN_ACCELERATION_FACTOR[self.speed_factor_position]:
+                    <= self.train_acceleration_factor[self.speed_factor_position]:
                 self.speed_state = 'decelerate'
             # when train needs to stop at stop point and distance is more than braking distance,
             # update state to 'accelerate' if train is not at maximum speed already
@@ -184,15 +185,15 @@ class TrainModel(Model):
                     self.speed = self.train_maximum_speed
                 # if not, continue acceleration
                 else:
-                    self.speed = PASSENGER_TRAIN_ACCELERATION_FACTOR[self.speed_factor_position + 1] \
-                                 - PASSENGER_TRAIN_ACCELERATION_FACTOR[self.speed_factor_position]
+                    self.speed = self.train_acceleration_factor[self.speed_factor_position + 1] \
+                                 - self.train_acceleration_factor[self.speed_factor_position]
                     self.speed_factor_position += 1
 
             # if train decelerates, continue deceleration
             if self.speed_state == 'decelerate':
                 self.speed_factor_position -= 1
-                self.speed = PASSENGER_TRAIN_ACCELERATION_FACTOR[self.speed_factor_position + 1] \
-                             - PASSENGER_TRAIN_ACCELERATION_FACTOR[self.speed_factor_position]
+                self.speed = self.train_acceleration_factor[self.speed_factor_position + 1] \
+                             - self.train_acceleration_factor[self.speed_factor_position]
 
             # if train is not stopped, move all cars ahead
             if self.speed_state != 'stop':

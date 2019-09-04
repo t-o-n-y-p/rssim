@@ -19,6 +19,7 @@ class SchedulerView(View):
         self.map_id = map_id
         self.base_schedule = None
         self.game_time = None
+        self.arrival_time_threshold = None
         self.left_schedule_caption_label = ScheduleLeftCaptionLabel(parent_viewport=self.viewport)
         self.right_schedule_caption_label = ScheduleRightCaptionLabel(parent_viewport=self.viewport)
         self.close_schedule_button = CloseScheduleButton(on_click_action=on_close_schedule,
@@ -70,7 +71,7 @@ class SchedulerView(View):
     def on_update(self):
         for i in range(min(len(self.base_schedule), SCHEDULE_ROWS * SCHEDULE_COLUMNS)):
             if not self.schedule_rows[i // SCHEDULE_ROWS][i % SCHEDULE_ROWS].is_activated \
-                    and self.base_schedule[i][ARRIVAL_TIME] <= self.game_time + FRAMES_IN_ONE_HOUR:
+                    and self.base_schedule[i][ARRIVAL_TIME] <= self.game_time + self.arrival_time_threshold:
                 self.schedule_rows[i // SCHEDULE_ROWS][i % SCHEDULE_ROWS].opacity = self.opacity
                 self.schedule_rows[i // SCHEDULE_ROWS][i % SCHEDULE_ROWS].on_activate()
                 self.schedule_rows[i // SCHEDULE_ROWS][i % SCHEDULE_ROWS].on_assign_data(self.base_schedule[i])
