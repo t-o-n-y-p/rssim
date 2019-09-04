@@ -359,8 +359,8 @@ class MapController(Controller):
     def on_update_train_route_priority(self, track, train_route, priority):
         self.train_routes[track][train_route].on_update_priority(priority)
 
-    def on_set_trail_points(self, train_id, trail_points_v2):
-        self.trains[train_id].on_set_trail_points(trail_points_v2)
+    def on_set_trail_points(self, train_id, trail_points_v2_head_tail, trail_points_v2_mid):
+        self.trains[train_id].on_set_trail_points(trail_points_v2_head_tail, trail_points_v2_mid)
 
     def on_set_train_start_point(self, train_id, first_car_start_point):
         self.trains[train_id].on_set_train_start_point(first_car_start_point)

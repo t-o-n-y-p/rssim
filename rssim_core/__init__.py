@@ -112,7 +112,7 @@ FPS_INTERVAL = 0.2                  # interval between FPS update
 LOG_LEVEL_OFF = 30                  # integer log level high enough to cut off all logs
 LOG_LEVEL_INFO = 20                 # integer log level which includes basic logs
 LOG_LEVEL_DEBUG = 10                # integer log level which includes all possible logs
-DATABASE_SHA512 = '7376926f23d9a96376c231bd3a9e18735cf0b0006b0a64fbcec5bb2dc1f9815c56abcd9fde8f65842689259377af545bd0cc942eb70aee3e8b74daaf032fabf2'
+DATABASE_SHA512 = '82e96289be3c5d2598df27eb0868be3a350abc69086f08688f4e7cb43c061ebc83129f9724531e1db9809f29d4e279740031979e4ea56c1b62a270d218e419d1'
 MAXIMUM_DRAW_EVENTS_PER_FRAME = 1
 MAXIMUM_MOUSE_MOTION_EVENTS_PER_FRAME = 1
 MAXIMUM_MOUSE_DRAG_EVENTS_PER_FRAME = 1
@@ -398,7 +398,8 @@ def _create_passenger_train_route(map_controller, track, train_route):
     controller.fade_out_animation = TrainRouteFadeOutAnimation(controller)
     model = PassengerTrainRouteModel(track, train_route)
     if model.opened:
-        controller.parent_controller.on_set_trail_points(model.last_opened_by, model.trail_points_v2)
+        controller.parent_controller.on_set_trail_points(model.last_opened_by,
+                                                         model.trail_points_v2_head_tail, model.trail_points_v2_mid)
 
     view = PassengerTrainRouteView(track, train_route)
     controller.model = model

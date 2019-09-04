@@ -28,7 +28,8 @@ class TrainModel(Model):
         self.cars_position_abs = []
         self.stop_point = 0
         self.destination_point = 0
-        self.trail_points_v2 = []
+        self.trail_points_v2_head_tail = []
+        self.trail_points_v2_mid = []
         self.car_image_collection = 0
 
     def on_train_setup(self, train_id):
@@ -73,14 +74,18 @@ class TrainModel(Model):
     def on_set_train_destination_point(self, first_car_destination_point):
         self.destination_point = first_car_destination_point
 
-    def on_set_trail_points(self, trail_points_v2):
-        self.trail_points_v2 = trail_points_v2
+    def on_set_trail_points(self, trail_points_v2_head_tail, trail_points_v2_mid):
+        self.trail_points_v2_head_tail = trail_points_v2_head_tail
+        self.trail_points_v2_mid = trail_points_v2_mid
 
     def on_activate_view(self):
         car_position_view = []
         if len(self.cars_position) > 0:
-            for i in self.cars_position:
-                car_position_view.append(self.trail_points_v2[i])
+            for i in range(len(self.cars_position)):
+                if i in (0, len(self.cars_position) - 1):
+                    car_position_view.append(self.trail_points_v2_head_tail[self.cars_position[i]])
+                else:
+                    car_position_view.append(self.trail_points_v2_mid[self.cars_position[i]])
         else:
             for i in self.cars_position_abs:
                 car_position_view.append((i[0], i[1], 0.0))
@@ -164,7 +169,8 @@ class TrainModel(Model):
                     self.view.on_update_state(self.state)
                     # when boarding is started, convert trail points to 2D Cartesian
                     self.on_convert_trail_points()
-                    self.trail_points_v2 = None
+                    self.trail_points_v2_head_tail = None
+                    self.trail_points_v2_mid = None
                 # 'boarding_complete' state means train has finished entire process,
                 # update state to 'successful_departure' to delete this train later
                 elif self.state == 'boarding_complete':
@@ -193,7 +199,10 @@ class TrainModel(Model):
                 car_position_view = []
                 for i in range(len(self.cars_position)):
                     self.cars_position[i] += self.speed
-                    car_position_view.append(self.trail_points_v2[self.cars_position[i]])
+                    if i in (0, len(self.cars_position) - 1):
+                        car_position_view.append(self.trail_points_v2_head_tail[self.cars_position[i]])
+                    else:
+                        car_position_view.append(self.trail_points_v2_mid[self.cars_position[i]])
 
                 self.view.on_update_car_position(car_position_view)
                 self.controller.parent_controller\
@@ -222,16 +231,23 @@ class TrainModel(Model):
 
     def on_convert_trail_points(self):
         self.cars_position_abs = []
-        for i in self.cars_position:
-            dot = self.trail_points_v2[i]
+        for i in range(len(self.cars_position)):
+            if i in (0, len(self.cars_position) - 1):
+                dot = self.trail_points_v2_head_tail[self.cars_position[i]]
+            else:
+                dot = self.trail_points_v2_mid[self.cars_position[i]]
+
             self.cars_position_abs.append([dot[0], dot[1]])
 
         self.cars_position.clear()
 
     def on_reconvert_trail_points(self):
         self.cars_position = []
-        for i in self.cars_position_abs:
-            self.cars_position.append(abs(i[0] - self.trail_points_v2[0][0]))
+        for i in range(len(self.cars_position_abs)):
+            if i in (0, len(self.cars_position_abs) - 1):
+                self.cars_position.append(abs(self.cars_position_abs[i][0] - self.trail_points_v2_head_tail[0][0]))
+            else:
+                self.cars_position.append(abs(self.cars_position_abs[i][0] - self.trail_points_v2_mid[0][0]))
 
         self.cars_position_abs.clear()
 

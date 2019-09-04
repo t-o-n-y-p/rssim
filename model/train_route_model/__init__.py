@@ -46,14 +46,16 @@ class TrainRouteModel(Model):
         # first part is straight and is defined by start point and end point (always not null),
         # second part is defined by list of trail points (can be null),
         # third part is straight too and is defined by start point and end point (can be null)
-        self.trail_points_v2 = []
+        self.trail_points_v2_head_tail = []
+        self.trail_points_v2_mid = []
         CONFIG_DB_CURSOR.execute('''SELECT trail_points_v2_part_1_start, trail_points_v2_part_1_end, 
-                                    trail_points_v2_part_2, trail_points_v2_part_3_start, 
-                                    trail_points_v2_part_3_end FROM train_route_config 
+                                    trail_points_v2_part_2_head_tail, trail_points_v2_part_2_mid, 
+                                    trail_points_v2_part_3_start, trail_points_v2_part_3_end FROM train_route_config 
                                     WHERE track = ? AND train_route = ? AND map_id = ?''',
                                  (track, train_route, self.map_id))
-        trail_points_v2_part_1_start, trail_points_v2_part_1_end, trail_points_v2_part_2, \
-            trail_points_v2_part_3_start, trail_points_v2_part_3_end = CONFIG_DB_CURSOR.fetchone()
+        trail_points_v2_part_1_start, trail_points_v2_part_1_end, trail_points_v2_part_2_head_tail, \
+            trail_points_v2_part_2_mid, trail_points_v2_part_3_start, trail_points_v2_part_3_end \
+            = CONFIG_DB_CURSOR.fetchone()
         # parse start and end points for first part, append all points in between
         trail_points_v2_part_1_start_parsed = trail_points_v2_part_1_start.split(',')
         trail_points_v2_part_1_start_parsed[0] = int(trail_points_v2_part_1_start_parsed[0])
@@ -65,19 +67,31 @@ class TrainRouteModel(Model):
         trail_points_v2_part_1_end_parsed[2] = float(trail_points_v2_part_1_end_parsed[2])
         for i in range(trail_points_v2_part_1_start_parsed[0], trail_points_v2_part_1_end_parsed[0],
                        sgn(trail_points_v2_part_1_end_parsed[0] - trail_points_v2_part_1_start_parsed[0])):
-            self.trail_points_v2.append((i, trail_points_v2_part_1_start_parsed[1],
-                                         trail_points_v2_part_1_start_parsed[2]))
+            self.trail_points_v2_head_tail.append((i, trail_points_v2_part_1_start_parsed[1],
+                                                   trail_points_v2_part_1_start_parsed[2]))
+            self.trail_points_v2_mid.append((i, trail_points_v2_part_1_start_parsed[1],
+                                             trail_points_v2_part_1_start_parsed[2]))
 
         # parse second part, append all points
-        if trail_points_v2_part_2 is not None:
-            trail_points_v2_part_2_parsed = trail_points_v2_part_2.split('|')
+        if trail_points_v2_part_2_head_tail is not None:
+            trail_points_v2_part_2_parsed = trail_points_v2_part_2_head_tail.split('|')
             for i in range(len(trail_points_v2_part_2_parsed)):
                 trail_points_v2_part_2_parsed[i] = trail_points_v2_part_2_parsed[i].split(',')
                 trail_points_v2_part_2_parsed[i][0] = int(trail_points_v2_part_2_parsed[i][0])
                 trail_points_v2_part_2_parsed[i][1] = int(trail_points_v2_part_2_parsed[i][1])
                 trail_points_v2_part_2_parsed[i][2] = float(trail_points_v2_part_2_parsed[i][2])
 
-            self.trail_points_v2.extend(trail_points_v2_part_2_parsed)
+            self.trail_points_v2_head_tail.extend(trail_points_v2_part_2_parsed)
+
+        if trail_points_v2_part_2_mid is not None:
+            trail_points_v2_part_2_parsed = trail_points_v2_part_2_mid.split('|')
+            for i in range(len(trail_points_v2_part_2_parsed)):
+                trail_points_v2_part_2_parsed[i] = trail_points_v2_part_2_parsed[i].split(',')
+                trail_points_v2_part_2_parsed[i][0] = int(trail_points_v2_part_2_parsed[i][0])
+                trail_points_v2_part_2_parsed[i][1] = int(trail_points_v2_part_2_parsed[i][1])
+                trail_points_v2_part_2_parsed[i][2] = float(trail_points_v2_part_2_parsed[i][2])
+
+            self.trail_points_v2_mid.extend(trail_points_v2_part_2_parsed)
 
         # parse start and end points for third part, append all points in between
         if trail_points_v2_part_3_start is not None and trail_points_v2_part_3_end is not None:
@@ -91,8 +105,10 @@ class TrainRouteModel(Model):
             trail_points_v2_part_3_end_parsed[2] = float(trail_points_v2_part_3_end_parsed[2])
             for i in range(trail_points_v2_part_3_start_parsed[0], trail_points_v2_part_3_end_parsed[0],
                            sgn(trail_points_v2_part_3_end_parsed[0] - trail_points_v2_part_3_start_parsed[0])):
-                self.trail_points_v2.append((i, trail_points_v2_part_3_start_parsed[1],
-                                             trail_points_v2_part_3_start_parsed[2]))
+                self.trail_points_v2_head_tail.append((i, trail_points_v2_part_3_start_parsed[1],
+                                                       trail_points_v2_part_3_start_parsed[2]))
+                self.trail_points_v2_mid.append((i, trail_points_v2_part_3_start_parsed[1],
+                                                 trail_points_v2_part_3_start_parsed[2]))
 
         CONFIG_DB_CURSOR.execute('''SELECT section_type, track_param_1, track_param_2 
                                     FROM train_route_sections WHERE track = ? and train_route = ? AND map_id = ?''',
@@ -121,7 +137,8 @@ class TrainRouteModel(Model):
         self.last_opened_by = train_id
         self.cars = cars
         self.current_checkpoint = 0
-        self.controller.parent_controller.on_set_trail_points(train_id, self.trail_points_v2)
+        self.controller.parent_controller.on_set_trail_points(train_id, self.trail_points_v2_head_tail,
+                                                              self.trail_points_v2_mid)
         if self.start_point_v2 is not None:
             self.controller.parent_controller.on_set_train_start_point(train_id, self.start_point_v2[cars])
 
