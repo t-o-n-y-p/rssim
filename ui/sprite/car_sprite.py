@@ -16,8 +16,8 @@ class CarSprite(MapSprite):
         self.on_position_changed()
 
     def get_position(self):
-        return (self.base_offset[0] + int(self.car_offset[0] * self.scale),
-                self.base_offset[1] + int(self.car_offset[1] * self.scale))
+        return (self.base_offset[0] + self.car_offset[0] * self.scale,
+                self.base_offset[1] + self.car_offset[1] * self.scale)
 
     def on_update_car_position(self, car_position):
         self.car_offset = car_position[0:2]
