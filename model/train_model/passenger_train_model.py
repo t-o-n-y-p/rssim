@@ -12,4 +12,4 @@ class PassengerTrainModel(TrainModel):
     def on_set_train_start_point(self, first_car_start_point):
         self.cars_position = []
         for i in range(self.cars):
-            self.cars_position.append(first_car_start_point - i * PASSENGER_CAR_LENGTH)
+            self.cars_position.append(float(first_car_start_point - i * PASSENGER_CAR_LENGTH))

@@ -46,7 +46,7 @@ class TrainModel(Model):
             self.stop_point, self.destination_point, self.car_image_collection \
             = USER_DB_CURSOR.fetchone()
         if cars_position_parsed is not None:
-            self.cars_position = list(map(int, cars_position_parsed.split(',')))
+            self.cars_position = list(map(float, cars_position_parsed.split(',')))
 
         if cars_position_abs_parsed is not None:
             cars_position_abs_parsed = cars_position_abs_parsed.split('|')
@@ -83,10 +83,7 @@ class TrainModel(Model):
         car_position_view = []
         if len(self.cars_position) > 0:
             for i in range(len(self.cars_position)):
-                if i in (0, len(self.cars_position) - 1):
-                    car_position_view.append(self.trail_points_v2_head_tail[self.cars_position[i]])
-                else:
-                    car_position_view.append(self.trail_points_v2_mid[self.cars_position[i]])
+                car_position_view.append(self.on_calculate_car_position_view(i))
         else:
             for i in self.cars_position_abs:
                 car_position_view.append((i[0], i[1], 0.0))
@@ -137,13 +134,13 @@ class TrainModel(Model):
         if self.state not in ('boarding_in_progress', 'boarding_in_progress_pass_through'):
             # update speed and speed state
             # when train reaches stop point, update state to 'stop', speed and speed_factor_position to 0
-            if self.cars_position[0] == self.stop_point:
+            if int(self.cars_position[0]) == self.stop_point:
                 self.speed_state = 'stop'
                 self.speed = 0
                 self.speed_factor_position = 0
             # when train needs to stop at stop point and distance is less than braking distance,
             # update state to 'decelerate'
-            elif self.stop_point - self.cars_position[0] \
+            elif round(self.stop_point - self.cars_position[0], 1) \
                     <= self.train_acceleration_factor[self.speed_factor_position]:
                 self.speed_state = 'decelerate'
             # when train needs to stop at stop point and distance is more than braking distance,
@@ -154,7 +151,7 @@ class TrainModel(Model):
 
             # when train reaches destination point, current train route is complete,
             # update state according to previous state
-            if self.cars_position[0] == self.destination_point:
+            if int(self.cars_position[0]) == self.destination_point:
                 # approaching routes are closed by dispatcher, other routes can be closed here
                 if self.state not in ('approaching', 'approaching_pass_through'):
                     self.controller.parent_controller.on_close_train_route(self.track, self.train_route)
@@ -199,11 +196,8 @@ class TrainModel(Model):
             if self.speed_state != 'stop':
                 car_position_view = []
                 for i in range(len(self.cars_position)):
-                    self.cars_position[i] += self.speed
-                    if i in (0, len(self.cars_position) - 1):
-                        car_position_view.append(self.trail_points_v2_head_tail[self.cars_position[i]])
-                    else:
-                        car_position_view.append(self.trail_points_v2_mid[self.cars_position[i]])
+                    self.cars_position[i] = round(self.cars_position[i] + self.speed, 1)
+                    car_position_view.append(self.on_calculate_car_position_view(i))
 
                 self.view.on_update_car_position(car_position_view)
                 self.controller.parent_controller\
@@ -234,9 +228,9 @@ class TrainModel(Model):
         self.cars_position_abs = []
         for i in range(len(self.cars_position)):
             if i in (0, len(self.cars_position) - 1):
-                dot = self.trail_points_v2_head_tail[self.cars_position[i]]
+                dot = self.trail_points_v2_head_tail[round(self.cars_position[i])]
             else:
-                dot = self.trail_points_v2_mid[self.cars_position[i]]
+                dot = self.trail_points_v2_mid[round(self.cars_position[i])]
 
             self.cars_position_abs.append([dot[0], dot[1]])
 
@@ -260,3 +254,29 @@ class TrainModel(Model):
             car_position_view.append((i[0], i[1], 0.0))
 
         self.view.on_update_car_position(car_position_view)
+
+    def on_calculate_car_position_view(self, car_index):
+        if car_index in (0, len(self.cars_position) - 1):
+            if self.cars_position[car_index] % 1 < 0.1:
+                return self.trail_points_v2_head_tail[round(self.cars_position[car_index])]
+            else:
+                return (
+                    (self.trail_points_v2_head_tail[int(self.cars_position[car_index])][0]
+                     + self.trail_points_v2_head_tail[int(self.cars_position[car_index]) + 1][0]) / 2,
+                    (self.trail_points_v2_head_tail[int(self.cars_position[car_index])][1]
+                     + self.trail_points_v2_head_tail[int(self.cars_position[car_index]) + 1][1]) / 2,
+                    (self.trail_points_v2_head_tail[int(self.cars_position[car_index])][2]
+                     + self.trail_points_v2_head_tail[int(self.cars_position[car_index]) + 1][2]) / 2
+                )
+        else:
+            if self.cars_position[car_index] % 1 < 0.1:
+                return self.trail_points_v2_mid[round(self.cars_position[car_index])]
+            else:
+                return (
+                    (self.trail_points_v2_mid[int(self.cars_position[car_index])][0]
+                     + self.trail_points_v2_mid[int(self.cars_position[car_index]) + 1][0]) / 2,
+                    (self.trail_points_v2_mid[int(self.cars_position[car_index])][1]
+                     + self.trail_points_v2_mid[int(self.cars_position[car_index]) + 1][1]) / 2,
+                    (self.trail_points_v2_mid[int(self.cars_position[car_index])][2]
+                     + self.trail_points_v2_mid[int(self.cars_position[car_index]) + 1][2]) / 2
+                )
