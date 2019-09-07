@@ -19,7 +19,7 @@ class ConstructorModel(Model):
         for info in track_info_fetched:
             self.construction_state_matrix[TRACKS][info[0]] = [bool(info[1]), bool(info[2]), info[3], bool(info[4]),
                                                                bool(info[5]), bool(info[6]), bool(info[7])]
-            CONFIG_DB_CURSOR.execute('''SELECT price, level, environment_tier FROM track_config 
+            CONFIG_DB_CURSOR.execute('''SELECT price, max_construction_time, level, environment_tier FROM track_config 
                                         WHERE track_number = ? AND map_id = ?''', (info[0], self.map_id))
             self.construction_state_matrix[TRACKS][info[0]].extend(CONFIG_DB_CURSOR.fetchone())
 
@@ -31,7 +31,8 @@ class ConstructorModel(Model):
         for info in environment_info_fetched:
             self.construction_state_matrix[ENVIRONMENT][info[0]] = [bool(info[1]), bool(info[2]), info[3],
                                                                     bool(info[4]), bool(info[5]), 1, bool(info[6])]
-            CONFIG_DB_CURSOR.execute('SELECT price, level FROM environment_config WHERE tier = ? AND map_id = ?',
+            CONFIG_DB_CURSOR.execute('''SELECT price, max_construction_time, level FROM environment_config 
+                                        WHERE tier = ? AND map_id = ?''',
                                      (info[0], self.map_id))
             self.construction_state_matrix[ENVIRONMENT][info[0]].extend(CONFIG_DB_CURSOR.fetchone())
 
@@ -222,6 +223,8 @@ class ConstructorModel(Model):
     def on_put_under_construction(self, construction_type, entity_number):
         self.construction_state_matrix[construction_type][entity_number][UNLOCK_AVAILABLE] = False
         self.construction_state_matrix[construction_type][entity_number][UNDER_CONSTRUCTION] = True
+        self.construction_state_matrix[construction_type][entity_number][CONSTRUCTION_TIME] \
+            = self.construction_state_matrix[construction_type][entity_number][MAX_CONSTRUCTION_TIME]
         self.view.on_update_construction_state(construction_type, entity_number)
         self.controller.parent_controller.parent_controller\
             .on_pay_money(self.construction_state_matrix[construction_type][entity_number][PRICE])

@@ -23,11 +23,12 @@ UNLOCK_CONDITION_FROM_PREVIOUS_STAGE = 4        # property #4 indicates if unloc
 UNLOCK_CONDITION_FROM_ENVIRONMENT = 5           # indicates if unlock condition from environment is met (tracks only)
 UNLOCK_AVAILABLE = 6                            # property #6 indicates if all unlock conditions are met
 PRICE = 7                                       # property #7 indicates track/env. price
-LEVEL_REQUIRED = 8                              # property #8 indicates required level for this track/env.
-ENVIRONMENT_REQUIRED = 9                        # property #9 indicates required environment tier (tracks only)
-HOURLY_PROFIT = 10
-STORAGE_CAPACITY = 11
-EXP_BONUS = 12
+MAX_CONSTRUCTION_TIME = 8
+LEVEL_REQUIRED = 9                              # property #9 indicates required level for this track/env.
+ENVIRONMENT_REQUIRED = 10                       # property #10 indicates required environment tier (tracks only)
+HOURLY_PROFIT = 11
+STORAGE_CAPACITY = 12
+EXP_BONUS = 13
 # colors
 ORANGE_RGB = (255, 127, 0)                      # orange UI color
 ORANGE_GREY_RGB = (112, 56, 0)

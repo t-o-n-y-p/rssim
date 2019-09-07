@@ -19,13 +19,13 @@ class ShopConstructorModel(Model):
             self.shop_stages_state_matrix[stage_info[0]] = [bool(stage_info[1]), bool(stage_info[2]), stage_info[3],
                                                             bool(stage_info[4]), bool(stage_info[5]), 1,
                                                             bool(stage_info[6])]
-            CONFIG_DB_CURSOR.execute('''SELECT price, level_required, hourly_profit,
+            CONFIG_DB_CURSOR.execute('''SELECT price, max_construction_time, level_required, hourly_profit,
                                         storage_capacity, exp_bonus FROM shop_progress_config
                                         WHERE map_id = ? AND stage_number = ?''',
                                      (self.map_id, stage_info[0]))
             stage_progress_config = CONFIG_DB_CURSOR.fetchone()
-            self.shop_stages_state_matrix[stage_info[0]].extend([stage_progress_config[0], stage_progress_config[1],
-                                                                 0, *stage_progress_config[2::]])
+            self.shop_stages_state_matrix[stage_info[0]].extend([*stage_progress_config[:3],
+                                                                 0, *stage_progress_config[3:]])
 
         USER_DB_CURSOR.execute('SELECT money FROM game_progress')
         self.money = USER_DB_CURSOR.fetchone()[0]
@@ -131,6 +131,8 @@ class ShopConstructorModel(Model):
     def on_put_stage_under_construction(self, stage_number):
         self.shop_stages_state_matrix[stage_number][UNLOCK_AVAILABLE] = False
         self.shop_stages_state_matrix[stage_number][UNDER_CONSTRUCTION] = True
+        self.shop_stages_state_matrix[stage_number][CONSTRUCTION_TIME] \
+            = self.shop_stages_state_matrix[stage_number][MAX_CONSTRUCTION_TIME]
         self.view.on_update_stage_state(stage_number)
         self.controller.parent_controller.parent_controller.parent_controller \
             .on_pay_money(self.shop_stages_state_matrix[stage_number][PRICE])
