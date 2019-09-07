@@ -381,9 +381,7 @@ class MapController(Controller):
                         current_direction, priority, boarding_time, exp, money):
         train = self.model.on_create_train(train_id, cars, track, train_route, state, direction, new_direction,
                                            current_direction, priority, boarding_time, exp, money)
-        train.view.on_change_base_offset(self.view.base_offset)
         train.view.on_change_screen_resolution(self.view.screen_resolution)
-        train.view.on_change_zoom_factor(self.view.zoom_factor, zoom_out_activated=self.view.zoom_out_activated)
         # add new train to the list and dictionary
         self.trains[train.train_id] = train
         self.trains_list.append(train)
@@ -394,6 +392,9 @@ class MapController(Controller):
             train.fade_in_animation.on_activate()
         else:
             train.fade_out_animation.on_activate()
+
+        if self.view.map_move_mode:
+            train.view.on_change_base_offset(self.view.base_offset)
 
     def on_add_money(self, money):
         self.constructor.on_add_money(money)
