@@ -1,5 +1,1 @@
-Don't forget to patch cx_Freeze library 
-if you use python 3.7+ like I do!
-
--------------------------------------------
-
+Develop your station! Unlock and build new tracks, environment, shops and other stuff!
