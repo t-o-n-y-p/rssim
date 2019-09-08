@@ -106,16 +106,21 @@ from database import CONFIG_DB_CURSOR, USER_DB_CURSOR
 
 
 # --------------------- CONSTANTS ---------------------
-CURRENT_VERSION = (0, 9, 7)         # current app version
-REQUIRED_TEXTURE_SIZE = 8192        # maximum texture resolution presented in the app
-FPS_INTERVAL = 0.2                  # interval between FPS update
-LOG_LEVEL_OFF = 30                  # integer log level high enough to cut off all logs
-LOG_LEVEL_INFO = 20                 # integer log level which includes basic logs
-LOG_LEVEL_DEBUG = 10                # integer log level which includes all possible logs
-DATABASE_SHA512 = '51d4b1d63cb0800c12ee9210adef65eac1cecad609ecea119bfdab60607deb2396926e35e376db350fd4fca68281b495276dba07db12f8224f5d2f9c6d533b21'
+CURRENT_VERSION = (0, 9, 8)                     # current app version
+MIN_UPDATE_COMPATIBLE_VERSION = (0, 9, 8)       # game cannot be updated from version earlier than this
+REQUIRED_TEXTURE_SIZE = 8192                    # maximum texture resolution presented in the app
+FPS_INTERVAL = 0.2                              # interval between FPS update
+LOG_LEVEL_OFF = 30                              # integer log level high enough to cut off all logs
+LOG_LEVEL_INFO = 20                             # integer log level which includes basic logs
+LOG_LEVEL_DEBUG = 10                            # integer log level which includes all possible logs
+DATABASE_SHA512 = '3566013efa0d0d9b5597460607fc9f4e1d36068225345cca6bbb88c2afd5a61d5f7fffa42819e11b0604f890dd1ec56f3b31299313d789d041aa233e59983c65'
 MAXIMUM_DRAW_EVENTS_PER_FRAME = 1
 MAXIMUM_MOUSE_MOTION_EVENTS_PER_FRAME = 1
 MAXIMUM_MOUSE_DRAG_EVENTS_PER_FRAME = 1
+# app version tuple members
+MAJOR = 0
+MINOR = 1
+PATCH = 2
 # ------------------- END CONSTANTS -------------------
 
 

@@ -55,7 +55,7 @@ os.environ['TCL_LIBRARY'] = r'{}\tcl\tcl8.6'.format(sys.exec_prefix)
 os.environ['TK_LIBRARY'] = r'{}\tcl\tk8.6'.format(sys.exec_prefix)
 
 setup(name='Railway Station Simulator',
-      version='0.9.7',
+      version='0.9.8',
       description='Railway Station Simulator',
       executables=executables,
       options=options)

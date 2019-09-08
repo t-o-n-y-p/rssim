@@ -195,7 +195,7 @@ class RSSim:
             time_4 = perf_counter()
             # FPS is recalculated every FPS_INTERVAL seconds
             if perf_counter() - fps_timer > FPS_INTERVAL:
-                self.app.on_update_fps(round(float(1/(time_4 - time_1))))
+                self.app.on_update_fps(round(1 / (time_4 - time_1)))
                 fps_timer = perf_counter()
 
     @staticmethod
@@ -234,24 +234,33 @@ class RSSim:
         user_db_version = USER_DB_CURSOR.fetchone()
         logger.debug(f'user DB version: {user_db_version}')
         logger.debug(f'current game version: {CURRENT_VERSION}')
-        if user_db_version < CURRENT_VERSION:
-            if user_db_version >= (0, 9, 7):
-                logger.debug('upgrading database...')
-                for patch in range(user_db_version[2] + 1, CURRENT_VERSION[2] + 1):
-                    logger.debug(f'start 0.9.{patch} migration')
-                    with open(f'db/patch/09{patch}.sql', 'r') as migration:
+        if user_db_version == CURRENT_VERSION:
+            logger.debug('user DB version is up to date')
+        # update from versions < MIN_UPDATE_COMPATIBLE_VERSION is not supported
+        elif user_db_version < MIN_UPDATE_COMPATIBLE_VERSION:
+            raise UpdateIncompatibleException
+        else:
+            logger.debug('upgrading database...')
+            next_app_version = [*user_db_version[MAJOR:PATCH], user_db_version[PATCH] + 1]
+            while next_app_version <= CURRENT_VERSION:
+                if path.exists('db/patch/{}{}{}.sql'.format(*next_app_version)):
+                    logger.debug('start {}.{}.{} migration'.format(*next_app_version))
+                    with open('db/patch/{}{}{}.sql'.format(*next_app_version), 'r') as migration:
                         # simply execute each line in the migration script
                         for line in migration.readlines():
                             USER_DB_CURSOR.execute(line)
                             logger.debug(f'executed request: {line}')
 
                     on_commit()
-                    logger.debug(f'0.9.{patch} migration complete')
+                    logger.debug('{}.{}.{} migration complete'.format(*next_app_version))
+                    next_app_version[PATCH] += 1
+                else:
+                    next_app_version[MINOR] += 1
+                    next_app_version[PATCH] = 0
+                    if not path.exists('db/patch/{}{}{}.sql'.format(*next_app_version)):
+                        next_app_version[MAJOR] += 1
+                        next_app_version[MINOR], next_app_version[PATCH] = 0, 0
 
-            # update from versions < 0.9.7 is not supported
-            else:
-                raise UpdateIncompatibleException
-        else:
             logger.debug('user DB version is up to date')
 
         logger.info('END CHECK_FOR_UPDATES')
