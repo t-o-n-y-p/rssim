@@ -3,7 +3,7 @@ layout(pixel_center_integer) in vec4 gl_FragCoord;
 out vec4 color_frag;
 uniform sampler2D height_map;
 uniform ivec2 base_offset = (0, 0);
-uniform int twilight_opacity = 255;
+uniform int twilight_opacity = 0;
 uniform float sun_phi_radians = 0.0;
 uniform float sun_theta_radians = 0.0;
 uniform float sun_brightness = 1.1;

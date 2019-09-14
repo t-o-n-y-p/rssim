@@ -84,3 +84,7 @@ def get_full_map(map_id, tracks):
 
 def get_full_map_e(map_id, tiers):
     return _resource.texture(f'full_map_e_{tiers}_{map_id}.dds')
+
+
+def get_height_map(map_id, tracks, tiers):
+    return _resource.texture(f'height_map_{tracks}_{tiers}_{map_id}.dds')
