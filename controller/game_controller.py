@@ -148,3 +148,7 @@ class GameController(Controller):
 
     def on_deactivate_money_bonus_code(self):
         self.model.on_deactivate_money_bonus_code()
+
+    def on_draw_twilight_sprite(self):
+        for map_ in self.maps:
+            map_.on_draw_twilight_sprite()

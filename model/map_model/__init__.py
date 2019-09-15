@@ -2,7 +2,6 @@ from random import choice, seed
 from logging import getLogger
 
 from model import *
-from textures import CAR_COLLECTIONS
 from database import USER_DB_CURSOR, CONFIG_DB_CURSOR, on_commit
 
 
@@ -20,6 +19,8 @@ class MapModel(Model):
         self.last_known_base_offset = list(map(int, USER_DB_CURSOR.fetchone()[0].split(',')))
         USER_DB_CURSOR.execute('SELECT zoom_out_activated FROM graphics WHERE map_id = ?', (self.map_id, ))
         self.zoom_out_activated = bool(USER_DB_CURSOR.fetchone()[0])
+        self.car_collection_unlock_track_list = None
+        self.available_car_collections = None
 
     def on_activate_view(self):
         USER_DB_CURSOR.execute('SELECT map_id FROM graphics')
@@ -28,7 +29,7 @@ class MapModel(Model):
 
     def on_unlock_track(self, track):
         self.unlocked_tracks = track
-        if self.unlocked_tracks in PASSENGER_CAR_COLLECTION_UNLOCK_TRACK_LIST:
+        if self.unlocked_tracks in self.car_collection_unlock_track_list:
             self.on_add_new_car_collection()
 
         self.view.on_unlock_track(track)
@@ -42,6 +43,9 @@ class MapModel(Model):
                                   unlocked_car_collections = ? WHERE map_id = ?''',
                                (self.unlocked_tracks, self.unlocked_environment,
                                 ','.join(list(map(str, self.unlocked_car_collections))), self.map_id))
+
+    def on_update_time(self, game_time):
+        self.view.on_update_time(game_time)
 
     def on_save_and_commit_last_known_base_offset(self, base_offset):
         self.last_known_base_offset = base_offset
@@ -63,11 +67,11 @@ class MapModel(Model):
         pass
 
     def on_add_new_car_collection(self):
-        all_collections_set = set(range(CAR_COLLECTIONS))
-        available_car_collections = list(all_collections_set.difference(set(self.unlocked_car_collections)))
-        if len(available_car_collections) > 0:
+        all_collections_set = set(range(self.available_car_collections))
+        locked_car_collections = list(all_collections_set.difference(set(self.unlocked_car_collections)))
+        if len(locked_car_collections) > 0:
             seed()
-            selected_collection = choice(available_car_collections)
+            selected_collection = choice(locked_car_collections)
             self.unlocked_car_collections.append(selected_collection)
 
     def get_signals_to_unlock_with_track(self, track):

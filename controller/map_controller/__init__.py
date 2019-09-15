@@ -221,6 +221,7 @@ class MapController(Controller):
             shop.on_save_state()
 
     def on_update_time(self, game_time):
+        self.model.on_update_time(game_time)
         # train routes are sorted by priority to implement some kind of queue
         self.train_routes_sorted_list = sorted(self.train_routes_sorted_list,
                                                key=attrgetter('model.priority'), reverse=True)
@@ -529,3 +530,6 @@ class MapController(Controller):
         self.shops[shop_id].fade_out_animation.on_activate()
         self.view.on_activate_zoom_buttons()
         self.view.on_activate_shop_buttons()
+
+    def on_draw_twilight_sprite(self):
+        self.view.on_draw_twilight_sprite()

@@ -5,6 +5,7 @@ from time import perf_counter
 from math import ceil
 
 from view import *
+from textures import get_height_map
 from database import CONFIG_DB_CURSOR
 from ui.button import create_two_state_button
 from ui.button.zoom_in_button import ZoomInButton
@@ -13,6 +14,7 @@ from ui.button.open_schedule_button import OpenScheduleButton
 from ui.button.open_constructor_button import OpenConstructorButton
 from ui.button.open_shop_details_button import OpenShopDetailsButton
 from ui.shader_sprite.map_view_shader_sprite import MapViewShaderSprite
+from ui.shader_sprite.twilight_shader_sprite import TwilightShaderSprite
 from ui.sprite.main_map_sprite import MainMapSprite
 from ui.sprite.main_environment_sprite import MainEnvironmentSprite
 from ui.sprite.mini_map_sprite import MiniMapSprite
@@ -54,8 +56,9 @@ class MapView(View):
 
         super().__init__(logger=getLogger(f'root.app.game.map.{map_id}.view'))
         self.map_id = map_id
-        USER_DB_CURSOR.execute('''SELECT unlocked_tracks FROM map_progress WHERE map_id = ?''', (self.map_id, ))
-        self.unlocked_tracks = USER_DB_CURSOR.fetchone()[0]
+        USER_DB_CURSOR.execute('''SELECT unlocked_tracks, unlocked_environment FROM map_progress WHERE map_id = ?''',
+                               (self.map_id, ))
+        self.unlocked_tracks, self.unlocked_environment = USER_DB_CURSOR.fetchone()
         self.mini_map_offset = (0, 0)
         self.main_map_sprite = MainMapSprite(map_id=self.map_id, parent_viewport=self.viewport)
         self.environment_sprite = MainEnvironmentSprite(map_id=self.map_id, parent_viewport=self.viewport)
@@ -104,6 +107,9 @@ class MapView(View):
         self.on_mouse_release_handlers.append(self.handle_mouse_release)
         self.on_mouse_drag_handlers.append(self.handle_mouse_drag)
         self.shader_sprite = MapViewShaderSprite(view=self)
+        self.twilight_sprite = TwilightShaderSprite(view=self)
+        self.height_map = get_height_map(map_id=self.map_id, tracks=self.unlocked_tracks,
+                                         tiers=self.unlocked_environment)
         USER_DB_CURSOR.execute('''SELECT SUM(t.constructions_locked) FROM
                                   (SELECT COUNT(track_number) AS constructions_locked FROM tracks 
                                    WHERE locked = 1 AND map_id = ?
@@ -112,6 +118,11 @@ class MapView(View):
                                    WHERE locked = 1 AND map_id = ?
                                   ) AS t''', (self.map_id, self.map_id))
         self.constructions_locked = USER_DB_CURSOR.fetchone()[0]
+        USER_DB_CURSOR.execute('SELECT game_time FROM epoch_timestamp')
+        self.game_time = USER_DB_CURSOR.fetchone()[0]
+        CONFIG_DB_CURSOR.execute('''SELECT phi, theta, brightness FROM sun_config WHERE minutes_after_midday = ?''',
+                                 ((self.game_time % FRAMES_IN_ONE_DAY) // FRAMES_IN_ONE_MINUTE, ))
+        self.sun_phi, self.sun_theta, self.sun_brightness = CONFIG_DB_CURSOR.fetchone()
 
     def on_init_content(self):
         CONFIG_DB_CURSOR.execute('SELECT app_width, app_height FROM screen_resolution_config')
@@ -133,6 +144,8 @@ class MapView(View):
         self.base_offset_upper_right_limit = (self.viewport.x2 - MAP_WIDTH // round(1 / self.zoom_factor),
                                               self.viewport.y2 - MAP_HEIGHT // round(1 / self.zoom_factor)
                                               - get_top_bar_height(self.screen_resolution))
+        self.shader_sprite.on_change_screen_resolution(self.screen_resolution)
+        self.twilight_sprite.on_change_screen_resolution(self.screen_resolution)
         self.mini_map_frame_width = self.get_mini_map_frame_width()
         self.mini_map_frame_height = self.get_mini_map_frame_height()
         self.mini_map_frame_position = self.get_mini_map_frame_position()
@@ -149,6 +162,7 @@ class MapView(View):
         self.is_activated = True
         self.map_move_mode_available = True
         self.shader_sprite.create()
+        self.twilight_sprite.create()
         self.main_map_sprite.create()
         self.environment_sprite.create()
         for b in self.buttons:
@@ -202,6 +216,7 @@ class MapView(View):
         self.check_base_offset_limits()
         self.controller.on_save_and_commit_last_known_base_offset(self.base_offset)
         self.shader_sprite.on_change_screen_resolution(self.screen_resolution)
+        self.twilight_sprite.on_change_screen_resolution(self.screen_resolution)
         self.mini_map_frame_width = self.get_mini_map_frame_width()
         self.mini_map_frame_height = self.get_mini_map_frame_height()
         self.mini_map_frame_position = self.get_mini_map_frame_position()
@@ -213,10 +228,18 @@ class MapView(View):
     def on_update_opacity(self, new_opacity):
         self.opacity = new_opacity
         self.shader_sprite.on_update_opacity(self.opacity)
+        self.twilight_sprite.on_update_opacity(self.opacity)
         self.main_map_sprite.on_update_opacity(self.opacity)
         self.environment_sprite.on_update_opacity(self.opacity)
         for b in self.buttons:
             b.on_update_opacity(self.opacity)
+
+    def on_update_time(self, game_time):
+        self.game_time = game_time
+        if self.game_time % FRAMES_IN_ONE_MINUTE == 0:
+            CONFIG_DB_CURSOR.execute('''SELECT phi, theta, brightness FROM sun_config WHERE minutes_after_midday = ?''',
+                                     ((self.game_time % FRAMES_IN_ONE_DAY) // FRAMES_IN_ONE_MINUTE,))
+            self.sun_phi, self.sun_theta, self.sun_brightness = CONFIG_DB_CURSOR.fetchone()
 
     @mini_map_is_not_active
     def on_activate_mini_map(self):
@@ -238,10 +261,15 @@ class MapView(View):
         self.unlocked_tracks = track
         self.main_map_sprite.on_unlock_track(self.unlocked_tracks)
         self.mini_map_sprite.on_unlock_track(self.unlocked_tracks)
+        self.height_map = get_height_map(map_id=self.map_id, tracks=self.unlocked_tracks,
+                                         tiers=self.unlocked_environment)
 
     def on_unlock_environment(self, tier):
-        self.environment_sprite.on_unlock_environment(tier)
-        self.mini_environment_sprite.on_unlock_environment(tier)
+        self.unlocked_environment = tier
+        self.environment_sprite.on_unlock_environment(self.unlocked_environment)
+        self.mini_environment_sprite.on_unlock_environment(self.unlocked_environment)
+        self.height_map = get_height_map(map_id=self.map_id, tracks=self.unlocked_tracks,
+                                         tiers=self.unlocked_environment)
 
     def on_change_zoom_factor(self, zoom_factor, zoom_out_activated):
         self.zoom_factor = zoom_factor
@@ -316,6 +344,9 @@ class MapView(View):
 
     def on_apply_shaders_and_draw_vertices(self):
         self.shader_sprite.draw()
+
+    def on_draw_twilight_sprite(self):
+        self.twilight_sprite.draw()
 
     def on_activate_shop_buttons(self):
         for shop_id in range(len(self.shop_buttons)):

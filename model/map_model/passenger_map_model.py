@@ -1,9 +1,11 @@
 from random import choice, seed
 
+from model import PASSENGER_CAR_COLLECTION_UNLOCK_TRACK_LIST
 from model.map_model import MapModel
 from controller.train_controller.passenger_train_controller import PassengerTrainController
 from model.train_model.passenger_train_model import PassengerTrainModel
 from view.train_view.passenger_train_view import PassengerTrainView
+from textures import PASSENGER_CAR_COLLECTIONS
 from ui.fade_animation.fade_in_animation.train_fade_in_animation import TrainFadeInAnimation
 from ui.fade_animation.fade_out_animation.train_fade_out_animation import TrainFadeOutAnimation
 
@@ -11,6 +13,8 @@ from ui.fade_animation.fade_out_animation.train_fade_out_animation import TrainF
 class PassengerMapModel(MapModel):
     def __init__(self):
         super().__init__(map_id=0)
+        self.car_collection_unlock_track_list = PASSENGER_CAR_COLLECTION_UNLOCK_TRACK_LIST
+        self.available_car_collections = PASSENGER_CAR_COLLECTIONS
 
     def on_create_train(self, train_id, cars, track, train_route, state, direction, new_direction,
                         current_direction, priority, boarding_time, exp, money):
