@@ -120,9 +120,9 @@ class MapView(View):
         self.constructions_locked = USER_DB_CURSOR.fetchone()[0]
         USER_DB_CURSOR.execute('SELECT game_time FROM epoch_timestamp')
         self.game_time = USER_DB_CURSOR.fetchone()[0]
-        CONFIG_DB_CURSOR.execute('''SELECT phi, theta, brightness FROM sun_config WHERE minutes_after_midday = ?''',
-                                 ((self.game_time % FRAMES_IN_ONE_DAY) // FRAMES_IN_ONE_MINUTE, ))
-        self.sun_phi, self.sun_theta, self.sun_brightness = CONFIG_DB_CURSOR.fetchone()
+        self.current_sun_phi, self.next_sun_phi, self.current_sun_theta, self.next_sun_theta = None, None, None, None
+        self.current_sun_brightness, self.next_sun_brightness = None, None
+        self.on_fetch_sun_state()
 
     def on_init_content(self):
         CONFIG_DB_CURSOR.execute('SELECT app_width, app_height FROM screen_resolution_config')
@@ -237,9 +237,7 @@ class MapView(View):
     def on_update_time(self, game_time):
         self.game_time = game_time
         if self.game_time % FRAMES_IN_ONE_MINUTE == 0:
-            CONFIG_DB_CURSOR.execute('''SELECT phi, theta, brightness FROM sun_config WHERE minutes_after_midday = ?''',
-                                     ((self.game_time % FRAMES_IN_ONE_DAY) // FRAMES_IN_ONE_MINUTE,))
-            self.sun_phi, self.sun_theta, self.sun_brightness = CONFIG_DB_CURSOR.fetchone()
+            self.on_fetch_sun_state()
 
     @mini_map_is_not_active
     def on_activate_mini_map(self):
@@ -394,3 +392,14 @@ class MapView(View):
     def get_mini_map_frame_width(self):
         return int((self.viewport.x2 - self.viewport.x1) / (MAP_WIDTH // round(1 / self.zoom_factor))
                    * get_mini_map_width(self.screen_resolution))
+
+    def on_fetch_sun_state(self):
+        # TODO add 1440 minutes after midday to the database
+        minutes_after_midday = (self.game_time % FRAMES_IN_ONE_DAY) // FRAMES_IN_ONE_MINUTE
+        CONFIG_DB_CURSOR.execute('''SELECT phi, theta, brightness FROM sun_config 
+                                    WHERE minutes_after_midday IN (?, ?)''',
+                                 (minutes_after_midday, minutes_after_midday + 1)
+                                 )
+        sun_state = CONFIG_DB_CURSOR.fetchall()
+        self.current_sun_phi, self.current_sun_theta, self.current_sun_brightness = sun_state[0]
+        self.next_sun_phi, self.next_sun_theta, self.next_sun_brightness = sun_state[1]
