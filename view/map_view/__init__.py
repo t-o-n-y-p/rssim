@@ -122,6 +122,7 @@ class MapView(View):
         self.game_time = USER_DB_CURSOR.fetchone()[0]
         self.current_sun_phi, self.next_sun_phi, self.current_sun_theta, self.next_sun_theta = None, None, None, None
         self.current_sun_brightness, self.next_sun_brightness = None, None
+        self.current_diffuse_brightness, self.next_diffuse_brightness = None, None
         self.on_fetch_sun_state()
 
     def on_init_content(self):
@@ -394,12 +395,12 @@ class MapView(View):
                    * get_mini_map_width(self.screen_resolution))
 
     def on_fetch_sun_state(self):
-        # TODO add 1440 minutes after midday to the database
         minutes_after_midday = (self.game_time % FRAMES_IN_ONE_DAY) // FRAMES_IN_ONE_MINUTE
-        CONFIG_DB_CURSOR.execute('''SELECT phi, theta, brightness FROM sun_config 
+        CONFIG_DB_CURSOR.execute('''SELECT phi, theta, brightness, diffuse_brightness FROM sun_config 
                                     WHERE minutes_after_midday IN (?, ?)''',
                                  (minutes_after_midday, minutes_after_midday + 1)
                                  )
         sun_state = CONFIG_DB_CURSOR.fetchall()
-        self.current_sun_phi, self.current_sun_theta, self.current_sun_brightness = sun_state[0]
-        self.next_sun_phi, self.next_sun_theta, self.next_sun_brightness = sun_state[1]
+        self.current_sun_phi, self.current_sun_theta, self.current_sun_brightness, \
+            self.current_diffuse_brightness = sun_state[0]
+        self.next_sun_phi, self.next_sun_theta, self.next_sun_brightness, self.next_diffuse_brightness = sun_state[1]
