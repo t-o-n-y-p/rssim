@@ -15,20 +15,21 @@ void main()
     float resultive_sun_brightness = sun_brightness;
     vec3 sunlight_color = vec3(1.0, 1.0, 0.0);
     vec2 map_position = ((-1) * base_offset + vec2(gl_FragCoord[0], gl_FragCoord[1])) * scale;
-    vec4 height_map_readings = texture(height_map, vec2(map_position[0] / 8191, map_position[1] / 4095)) * 255.0;
-    float actual_height_in_pixels = max(height_map_readings.r, height_map_readings.b);
+    vec4 heght_map_readings = texture(height_map, vec2(map_position[0] / 8191, map_position[1] / 4095)) * 255.0;
+    float actual_height_in_pixels = max(heght_map_readings.r, heght_map_readings.b);
+    float height_in_next_map_position;
     vec2 next_map_position;
     float current_ray_height_in_pixels;
     for (int i = 1; i < 100; i++)
     {
         next_map_position = map_position + i * vec2(cos(sun_phi_radians), sin(sun_phi_radians));
-        height_map_readings = texture(height_map,
-                                     vec2(round(next_map_position[0]) / 8191, round(next_map_position[1]) / 4095)
-                                     ) * 255.0;
-        current_ray_height_in_pixels = actual_height_in_pixels + i * tan(sun_theta_radians);
-        if (current_ray_height_in_pixels < height_map_readings.r
-            || (current_ray_height_in_pixels > height_map_readings.g
-                && current_ray_height_in_pixels < height_map_readings.b))
+        heght_map_readings = texture(height_map,
+                                     vec2(next_map_position[0] / 8191, next_map_position[1] / 4095)) * 255.0;
+        current_ray_height_in_pixels = actual_height_in_pixels
+                                       + length(vec2(next_map_position - map_position)) * tan(sun_theta_radians);
+        if (current_ray_height_in_pixels < heght_map_readings.r
+            || (current_ray_height_in_pixels > heght_map_readings.g
+                && current_ray_height_in_pixels < heght_map_readings.b))
             resultive_sun_brightness = 0.0;
             break;
     }
