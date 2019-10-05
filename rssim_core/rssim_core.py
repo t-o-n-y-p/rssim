@@ -85,7 +85,6 @@ class RSSim:
 
                 # draw main batch: environment, main map, signals, trains
                 BATCHES['main_batch'].draw()
-                self.app.on_draw_twilight_sprite()
                 # draw mini map batch: mini map
                 BATCHES['mini_map_batch'].draw()
                 # draw all vertices with shaders

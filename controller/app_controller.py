@@ -241,6 +241,3 @@ class AppController(Controller):
 
     def on_deactivate_money_bonus_code(self):
         self.game.on_deactivate_money_bonus_code()
-
-    def on_draw_twilight_sprite(self):
-        self.game.on_draw_twilight_sprite()
