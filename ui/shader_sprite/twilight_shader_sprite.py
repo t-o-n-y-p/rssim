@@ -28,7 +28,7 @@ class TwilightShaderSprite(ShaderSprite):
         glBindTexture(GL_TEXTURE_2D, self.view.height_map.id)
         self.shader.uniforms.base_offset = self.view.base_offset
         self.shader.uniforms.scale = round(1 / self.view.zoom_factor)
+        self.shader.uniforms.twilight_opacity = self.view.opacity
         self.shader.uniforms.sun_phi_radians = self.view.current_sun_phi
         self.shader.uniforms.sun_theta_radians = self.view.current_sun_theta
         self.shader.uniforms.sun_brightness = self.view.current_sun_brightness
-        self.shader.uniforms.sun_diffuse_brightness = self.view.current_diffuse_brightness
