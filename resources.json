@@ -41,14 +41,14 @@
 	},
 	"under_construction_days_description_string": {
 		"en": {
-			"one": "Under construction. {0} day remaining",
-			"other": "Under construction. {0} days remaining"
+			"one": "Under construction. {0:,} day remaining",
+			"other": "Under construction. {0:,} days remaining"
 		},
 		"ru": {
-			"one": "Идет строительство. Остался {0} день",
-			"few": "Идет строительство. Осталось {0} дня",
-			"many": "Идет строительство. Осталось {0} дней",
-			"other": "Идет строительство. Осталось {0} дня"
+			"one": "Идет строительство. Остался {0:,} день",
+			"few": "Идет строительство. Осталось {0:,} дня",
+			"many": "Идет строительство. Осталось {0:,} дней",
+			"other": "Идет строительство. Осталось {0:,} дня"
 		}
 	},
 	"unlock_condition_from_level_description_string": {

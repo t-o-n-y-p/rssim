@@ -63,8 +63,7 @@ def display_fps_enabled(fn):
 
 
 # --------------------- CONSTANTS ---------------------
-LEFT_SIDE_ENTRY_FIRST_TRACK = 21        # first available track for left side route is 21st
-RIGHT_SIDE_ENTRY_FIRST_TRACK = 22       # first available track for right side route is 22nd
+PASSENGER_MAP_ENTRY_UNLOCK_CONDITIONS = (1, 1, 21, 22)
 # track, environment and shop stage state matrix properties
 LOCKED = 0                                      # property #0 indicates if track/env. is locked
 UNDER_CONSTRUCTION = 1                          # property #1 indicates if track/env. is under construction
@@ -126,7 +125,8 @@ APPROACHING_TRAIN_ROUTE = ('left_approaching',                      # approachin
                            'left_side_approaching',                 # approaching train route types, direction 2
                            'right_side_approaching')                # approaching train route types, direction 3
 MAXIMUM_LEVEL = 200                     # maximum level the player can reach in the game
-ENTRY_TRACK = (0, 0, 100, 100)          # track mask for entry base routes for directions 0-3
+# track mask for entry base routes for all directions
+ENTRY_TRACK_ID = [(0, 0, 100, 100), ]
 # schedule options matrix properties
 ARRIVAL_TIME_MIN = 0                    # property #1 indicates min arrival time offset from the beginning of the cycle
 ARRIVAL_TIME_MAX = 1                    # property #0 indicates max arrival time offset from the beginning of the cycle
@@ -165,15 +165,15 @@ MONEY_LIMIT = 9999999999.0              # max amount of money the player can hav
 TRAIN_ID_LIMIT = 1000000                # train ID is limited to 6 digits, 999999 is followed by 0
 FULLSCREEN_MODE_TURNED_OFF = 0          # database value for fullscreen mode turned on
 FULLSCREEN_MODE_TURNED_ON = 1           # database value for fullscreen mode turned off
-MAXIMUM_TRACK_NUMBER = 32               # player can have maximum of 32 tracks
-MAXIMUM_ENVIRONMENT_TIER = 6            # player can have environment tier 6 at most
+MAXIMUM_TRACK_NUMBER = [32, 16]         # player can have maximum of 32 tracks on map 0 and 16 tracks on map 1
+MAXIMUM_ENVIRONMENT_TIER = [6, 3]       # environment tier 6 is final for map 0, for map 1 we have 3 tiers
 FRAMES_IN_ONE_MINUTE = 240              # indicates how many frames fit in 1 in-game minute
 FRAMES_IN_ONE_HOUR = 14400              # indicates how many frames fit in one in-game hour
 DEFAULT_PRIORITY = 10000000             # default priority for any new train created
 PASS_THROUGH_BOARDING_TIME = 480        # default boarding time for pass-through trains
 PASSENGER_CAR_LENGTH = 251              # length of the passenger car in pixels
 # when any track from this list is unlocked, new car collection is added
-PASSENGER_CAR_COLLECTION_UNLOCK_TRACK_LIST = (6, 10, 14, 18, 21, 22, 26, 30)
+CAR_COLLECTION_UNLOCK_TRACK_LIST = [(6, 10, 14, 18, 21, 22, 26, 30), ]
 TRACKS = 0                                      # matrix #0 stores tracks state
 ENVIRONMENT = 1                                 # matrix #1 stores environment tiers state
 CONSTRUCTOR_VIEW_TRACK_CELLS = 4                # number of cells for tracks on constructor screen

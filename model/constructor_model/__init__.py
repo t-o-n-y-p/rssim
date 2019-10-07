@@ -71,7 +71,7 @@ class ConstructorModel(Model):
                     # track is added to cached_unlocked_tracks list to be then correctly saved in the database
                     self.cached_unlocked_tracks.append(track)
                     # if there are more tracks to unlock, unlock condition for the next track is met
-                    if track < MAXIMUM_TRACK_NUMBER:
+                    if track < MAXIMUM_TRACK_NUMBER[self.map_id]:
                         self.construction_state_matrix[TRACKS][track + 1][UNLOCK_CONDITION_FROM_PREVIOUS_TRACK] = True
                         # if all three conditions are met for the next track, it becomes available for construction
                         self.on_check_track_unlock_conditions(track + 1)
@@ -108,7 +108,7 @@ class ConstructorModel(Model):
                             self.view.on_update_construction_state(TRACKS, track)
 
                     # if there are more tiers to unlock, unlock condition for the next tier is met
-                    if tier < MAXIMUM_ENVIRONMENT_TIER:
+                    if tier < MAXIMUM_ENVIRONMENT_TIER[self.map_id]:
                         self.construction_state_matrix[ENVIRONMENT][tier + 1][
                             UNLOCK_CONDITION_FROM_PREVIOUS_ENVIRONMENT] = True
                         # if all 2 conditions are met for the next tier, it becomes available for construction

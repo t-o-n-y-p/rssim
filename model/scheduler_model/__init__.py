@@ -68,14 +68,14 @@ class SchedulerModel(Model):
                     if i[CARS] < self.supported_cars_min:
                         state = 'approaching_pass_through'
                         self.controller.parent_controller\
-                            .on_create_train(i[TRAIN_ID], i[CARS], ENTRY_TRACK[i[DIRECTION]],
+                            .on_create_train(i[TRAIN_ID], i[CARS], ENTRY_TRACK_ID[self.map_id][i[DIRECTION]],
                                              APPROACHING_TRAIN_ROUTE[i[DIRECTION]], state, i[DIRECTION],
                                              i[DIRECTION], i[DIRECTION], DEFAULT_PRIORITY, PASS_THROUGH_BOARDING_TIME,
                                              0.0, 0.0)
                     else:
                         state = 'approaching'
                         self.controller.parent_controller\
-                            .on_create_train(i[TRAIN_ID], i[CARS], ENTRY_TRACK[i[DIRECTION]],
+                            .on_create_train(i[TRAIN_ID], i[CARS], ENTRY_TRACK_ID[self.map_id][i[DIRECTION]],
                                              APPROACHING_TRAIN_ROUTE[i[DIRECTION]], state, i[DIRECTION],
                                              i[NEW_DIRECTION], i[DIRECTION], DEFAULT_PRIORITY, i[STOP_TIME],
                                              i[EXP], i[MONEY])
@@ -127,8 +127,4 @@ class SchedulerModel(Model):
         self.entry_busy_state[entry_id] = False
 
     def on_unlock_entry(self):
-        if self.unlocked_tracks == LEFT_SIDE_ENTRY_FIRST_TRACK:
-            self.entry_locked_state[DIRECTION_FROM_LEFT_TO_RIGHT_SIDE] = False
-
-        if self.unlocked_tracks == RIGHT_SIDE_ENTRY_FIRST_TRACK:
-            self.entry_locked_state[DIRECTION_FROM_RIGHT_TO_LEFT_SIDE] = False
+        pass

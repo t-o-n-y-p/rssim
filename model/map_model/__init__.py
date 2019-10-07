@@ -2,7 +2,7 @@ from random import choice, seed
 from logging import getLogger
 
 from model import *
-from textures import CAR_COLLECTIONS
+from textures import MAXIMUM_CAR_COLLECTIONS
 from database import USER_DB_CURSOR, CONFIG_DB_CURSOR, on_commit
 
 
@@ -28,7 +28,7 @@ class MapModel(Model):
 
     def on_unlock_track(self, track):
         self.unlocked_tracks = track
-        if self.unlocked_tracks in PASSENGER_CAR_COLLECTION_UNLOCK_TRACK_LIST:
+        if self.unlocked_tracks in CAR_COLLECTION_UNLOCK_TRACK_LIST[self.map_id]:
             self.on_add_new_car_collection()
 
         self.view.on_unlock_track(track)
@@ -63,7 +63,7 @@ class MapModel(Model):
         pass
 
     def on_add_new_car_collection(self):
-        all_collections_set = set(range(CAR_COLLECTIONS))
+        all_collections_set = set(range(MAXIMUM_CAR_COLLECTIONS[self.map_id]))
         available_car_collections = list(all_collections_set.difference(set(self.unlocked_car_collections)))
         if len(available_car_collections) > 0:
             seed()

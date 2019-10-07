@@ -30,4 +30,5 @@ class UnderConstructionDaysLabel(LocalizedLabel):
         return None
 
     def get_formatted_text(self):
-        return self.text[i18n_number_category(self.arguments[0], self.current_locale)].format(*self.arguments)
+        return self.text[i18n_number_category(self.arguments[0], self.current_locale)].format(*self.arguments)\
+            .replace(',', ' ')
