@@ -11,7 +11,7 @@ from keyring import get_password
 from exceptions import *
 from rssim_core import *
 from ui import SURFACE, BATCHES, MIN_RESOLUTION_WIDTH, MIN_RESOLUTION_HEIGHT
-from database import USER_DB_CURSOR, USER_DB_CONNECTION, on_commit
+from database import USER_DB_CURSOR, USER_DB_CONNECTION, USER_DB_LOCATION, on_commit
 
 
 class RSSim:
@@ -32,7 +32,7 @@ class RSSim:
             if sha512(data[::3] + data[1::3] + data[2::3]).hexdigest() != DATABASE_SHA512:
                 raise HackingDetectedException
 
-        with open('db/user.db', 'rb') as f:
+        with open(path.join(USER_DB_LOCATION, 'user.db'), 'rb') as f:
             data = f.read()[::-1]
             if sha512(data[::3] + data[1::3] + data[2::3]).hexdigest() \
                     != get_password(sha512('user_db'.encode('utf-8')).hexdigest(),
