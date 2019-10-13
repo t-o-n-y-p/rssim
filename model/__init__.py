@@ -81,31 +81,26 @@ ENVIRONMENT_REQUIRED = 10                       # property #10 indicates require
 HOURLY_PROFIT = 11
 STORAGE_CAPACITY = 12
 EXP_BONUS = 13
-# train direction codes
-DIRECTION_FROM_LEFT_TO_RIGHT = 0        # train comes from the left entry or goes away through the right exit
-DIRECTION_FROM_RIGHT_TO_LEFT = 1        # train comes from the right entry or goes away through the left exit
-DIRECTION_FROM_LEFT_TO_RIGHT_SIDE = 2   # train comes from the left side entry or goes away through the right side exit
-DIRECTION_FROM_RIGHT_TO_LEFT_SIDE = 3   # train comes from the right side entry or goes away through the left side exit
 # track is selected from this list based on direction and new direction
-MAIN_PRIORITY_TRACKS = (((20, 18, 16, 14, 12, 10, 8, 6, 4),         # 0 -> 0
-                         (20, 18, 16, 14, 12, 10, 8, 6, 4),         # 0 -> 1 (not used)
-                         (32, 30, 28, 26, 24, 22),                  # 0 -> 2
-                         (23, 21)),                                 # 0 -> 3
-                        ((19, 17, 15, 13, 11, 9, 7, 5, 3),          # 1 -> 0 (not used)
-                         (19, 17, 15, 13, 11, 9, 7, 5, 3),          # 1 -> 1
-                         (24, 22),                                  # 1 -> 2
-                         (31, 29, 27, 25, 23, 21)),                 # 1 -> 3
-                        ((31, 29, 27, 25, 23, 21),                  # 2 -> 0
-                         (23, 21),                                  # 2 -> 1
-                         (0,),                                      # 2 -> 2 (impossible)
-                         (31, 29, 27, 25, 23, 21)),                 # 2 -> 3
-                        ((24, 22),                                  # 3 -> 0
-                         (32, 30, 28, 26, 24, 22),                  # 3 -> 1
-                         (32, 30, 28, 26, 24, 22),                  # 3 -> 2
-                         (0,)))                                     # 3 -> 3 (impossible)
+PASSENGER_MAP_MAIN_PRIORITY_TRACKS = (((20, 18, 16, 14, 12, 10, 8, 6, 4),  # 0 -> 0
+                                       (20, 18, 16, 14, 12, 10, 8, 6, 4),  # 0 -> 1 (not used)
+                                       (32, 30, 28, 26, 24, 22),  # 0 -> 2
+                                       (23, 21)),  # 0 -> 3
+                                      ((19, 17, 15, 13, 11, 9, 7, 5, 3),          # 1 -> 0 (not used)
+                                       (19, 17, 15, 13, 11, 9, 7, 5, 3),          # 1 -> 1
+                                       (24, 22),                                  # 1 -> 2
+                                       (31, 29, 27, 25, 23, 21)),  # 1 -> 3
+                                      ((31, 29, 27, 25, 23, 21),                  # 2 -> 0
+                                       (23, 21),                                  # 2 -> 1
+                                       (0,),                                      # 2 -> 2 (impossible)
+                                       (31, 29, 27, 25, 23, 21)),  # 2 -> 3
+                                      ((24, 22),                                  # 3 -> 0
+                                       (32, 30, 28, 26, 24, 22),                  # 3 -> 1
+                                       (32, 30, 28, 26, 24, 22),                  # 3 -> 2
+                                       (0,)))                                     # 3 -> 3 (impossible)
 # track is selected from this list based on direction and new direction
-PASS_THROUGH_PRIORITY_TRACKS = ((2, 1),                             # 0 -> 0
-                                (1, 2))                             # 1 -> 1
+PASSENGER_MAP_PASS_THROUGH_PRIORITY_TRACKS = ((2, 1),                             # 0 -> 0
+                                              (1, 2))                             # 1 -> 1
 # base_schedule matrix properties
 TRAIN_ID = 0                            # property #0 indicates train identification number
 ARRIVAL_TIME = 1                        # property #1 indicates arrival time
@@ -115,15 +110,18 @@ CARS = 4                                # property #4 indicates number of cars
 STOP_TIME = 5                           # property #5 indicates how much stop time left
 EXP = 6                                 # property #6 indicates how much exp the train gives
 MONEY = 7                               # property #7 indicates how much money the train gives
+# base route types
+ENTRY_BASE_ROUTE = [('left_entry_base_route', 'right_entry_base_route',
+                     'left_side_entry_base_route', 'right_side_entry_base_route'), ]
 # train route types
-ENTRY_TRAIN_ROUTE = ('left_entry', 'right_entry',                   # entry train route types, directions 0 and 1
-                     'left_side_entry', 'right_side_entry')         # entry train route types, directions 2 and 3
-EXIT_TRAIN_ROUTE = ('right_exit', 'left_exit',                      # exit train route types, directions 0 and 1
-                    'right_side_exit', 'left_side_exit')            # exit train route types, directions 2 and 3
-APPROACHING_TRAIN_ROUTE = ('left_approaching',                      # approaching train route types, direction 0
-                           'right_approaching',                     # approaching train route types, direction 1
-                           'left_side_approaching',                 # approaching train route types, direction 2
-                           'right_side_approaching')                # approaching train route types, direction 3
+ENTRY_TRAIN_ROUTE = [('left_entry', 'right_entry',                     # entry train route types, dir. 0 and 1, map 0
+                      'left_side_entry', 'right_side_entry'), ]        # entry train route types, dir. 2 and 3, map 0
+EXIT_TRAIN_ROUTE = [('right_exit', 'left_exit',                        # exit train route types, dir. 0 and 1, map 0
+                     'right_side_exit', 'left_side_exit'), ]           # exit train route types, dir. 2 and 3, map 0
+APPROACHING_TRAIN_ROUTE = [('left_approaching',                        # approaching train route types, dir. 0, map 0
+                            'right_approaching',                       # approaching train route types, dir. 1, map 0
+                            'left_side_approaching',                   # approaching train route types, dir. 2, map 0
+                            'right_side_approaching'), ]               # approaching train route types, dir. 3, map 0
 MAXIMUM_LEVEL = 200                     # maximum level the player can reach in the game
 # track mask for entry base routes for all directions
 ENTRY_TRACK_ID = [(0, 0, 100, 100), ]
@@ -197,7 +195,6 @@ class Model:
         self.logger = logger
         self.view = None
         self.controller = None
-        self.is_activated = False
 
     def on_activate_view(self):
         pass

@@ -208,7 +208,7 @@ class TrainModel(Model):
             # after one minute left, assign exit rain route depending on new direction
             if self.boarding_time == FRAMES_IN_ONE_MINUTE // 2:
                 self.current_direction = self.new_direction
-                self.train_route = EXIT_TRAIN_ROUTE[self.current_direction]
+                self.train_route = EXIT_TRAIN_ROUTE[self.map_id][self.current_direction]
                 self.view.on_update_direction(self.current_direction)
                 if self.direction % 2 != self.new_direction % 2:
                     self.on_switch_direction()

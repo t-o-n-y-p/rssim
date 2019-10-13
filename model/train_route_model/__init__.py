@@ -143,14 +143,9 @@ class TrainRouteModel(Model):
         if self.current_checkpoint == 0:
             self.controller.parent_controller.on_switch_signal_to_red(self.signal_track, self.signal_base_route)
             # for entry train route, section 0 is base entry, notify Map controller about entry state update
-            if self.train_route_sections[0][0] == 'left_entry_base_route':
-                self.controller.parent_controller.on_leave_entry(DIRECTION_FROM_LEFT_TO_RIGHT)
-            elif self.train_route_sections[0][0] == 'right_entry_base_route':
-                self.controller.parent_controller.on_leave_entry(DIRECTION_FROM_RIGHT_TO_LEFT)
-            elif self.train_route_sections[0][0] == 'left_side_entry_base_route':
-                self.controller.parent_controller.on_leave_entry(DIRECTION_FROM_LEFT_TO_RIGHT_SIDE)
-            elif self.train_route_sections[0][0] == 'right_side_entry_base_route':
-                self.controller.parent_controller.on_leave_entry(DIRECTION_FROM_RIGHT_TO_LEFT_SIDE)
+            if self.train_route_sections[0][0] in ENTRY_BASE_ROUTE[self.map_id]:
+                self.controller.parent_controller\
+                    .on_leave_entry(ENTRY_BASE_ROUTE[self.map_id].index(self.train_route_sections[0][0]))
             # for exit train route, section 0 is the track itself, notify Map controller about track state update
             elif self.train_route_sections[0][0] in ('left_exit_platform_base_route', 'right_exit_platform_base_route'):
                 self.controller.parent_controller.on_leave_track(self.controller.track)

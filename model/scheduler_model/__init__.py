@@ -69,14 +69,14 @@ class SchedulerModel(Model):
                         state = 'approaching_pass_through'
                         self.controller.parent_controller\
                             .on_create_train(i[TRAIN_ID], i[CARS], ENTRY_TRACK_ID[self.map_id][i[DIRECTION]],
-                                             APPROACHING_TRAIN_ROUTE[i[DIRECTION]], state, i[DIRECTION],
+                                             APPROACHING_TRAIN_ROUTE[self.map_id][i[DIRECTION]], state, i[DIRECTION],
                                              i[DIRECTION], i[DIRECTION], DEFAULT_PRIORITY, PASS_THROUGH_BOARDING_TIME,
                                              0.0, 0.0)
                     else:
                         state = 'approaching'
                         self.controller.parent_controller\
                             .on_create_train(i[TRAIN_ID], i[CARS], ENTRY_TRACK_ID[self.map_id][i[DIRECTION]],
-                                             APPROACHING_TRAIN_ROUTE[i[DIRECTION]], state, i[DIRECTION],
+                                             APPROACHING_TRAIN_ROUTE[self.map_id][i[DIRECTION]], state, i[DIRECTION],
                                              i[NEW_DIRECTION], i[DIRECTION], DEFAULT_PRIORITY, i[STOP_TIME],
                                              i[EXP], i[MONEY])
 
