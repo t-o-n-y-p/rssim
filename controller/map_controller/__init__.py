@@ -112,6 +112,15 @@ class MapController(Controller):
 
     def on_unlock_environment(self, tier):
         self.model.on_unlock_environment(tier)
+        for track_param, base_route in self.model.get_signals_to_unlock_with_environment(tier):
+            self.signals[track_param][base_route].on_unlock()
+
+        for track_param_1, track_param_2, switch_type in self.model.get_switches_to_unlock_with_environment(tier):
+            self.switches[track_param_1][track_param_2][switch_type].on_unlock()
+
+        for track_param_1, track_param_2, crossover_type in self.model.get_crossovers_to_unlock_with_environment(tier):
+            self.crossovers[track_param_1][track_param_2][crossover_type].on_unlock()
+
         self.view.on_unlock_construction()
 
     def on_activate_view(self):

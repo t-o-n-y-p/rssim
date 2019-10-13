@@ -72,23 +72,41 @@ class MapModel(Model):
 
     def get_signals_to_unlock_with_track(self, track):
         CONFIG_DB_CURSOR.execute('''SELECT track, base_route FROM signal_config 
-                                    WHERE track_unlocked_with = ? AND map_id = ?''',
-                                 (track, self.map_id))
+                                    WHERE track_unlocked_with = ? AND environment_unlocked_with <= ? AND map_id = ?''',
+                                 (track, self.unlocked_environment, self.map_id))
         return CONFIG_DB_CURSOR.fetchall()
 
     def get_switches_to_unlock_with_track(self, track):
-        CONFIG_DB_CURSOR.execute('''SELECT track_param_1, track_param_2, switch_type 
-                                    FROM switches_config WHERE track_unlocked_with = ? AND map_id = ?''',
-                                 (track, self.map_id))
+        CONFIG_DB_CURSOR.execute('''SELECT track_param_1, track_param_2, switch_type FROM switches_config 
+                                    WHERE track_unlocked_with = ? AND environment_unlocked_with <= ? AND map_id = ?''',
+                                 (track, self.unlocked_environment, self.map_id))
         return CONFIG_DB_CURSOR.fetchall()
 
     def get_crossovers_to_unlock_with_track(self, track):
-        CONFIG_DB_CURSOR.execute('''SELECT track_param_1, track_param_2, crossover_type 
-                                    FROM crossovers_config WHERE track_unlocked_with = ? AND map_id = ?''',
-                                 (track, self.map_id))
+        CONFIG_DB_CURSOR.execute('''SELECT track_param_1, track_param_2, crossover_type FROM crossovers_config 
+                                    WHERE track_unlocked_with = ? AND environment_unlocked_with <= ? AND map_id = ?''',
+                                 (track, self.unlocked_environment, self.map_id))
         return CONFIG_DB_CURSOR.fetchall()
 
     def get_shops_to_unlock_with_track(self, track):
         CONFIG_DB_CURSOR.execute('''SELECT shop_id FROM shops_config WHERE map_id = ? AND track_required = ?''',
                                  (self.map_id, track))
+        return CONFIG_DB_CURSOR.fetchall()
+
+    def get_signals_to_unlock_with_environment(self, tier):
+        CONFIG_DB_CURSOR.execute('''SELECT track, base_route FROM signal_config 
+                                    WHERE track_unlocked_with <= ? AND environment_unlocked_with = ? AND map_id = ?''',
+                                 (self.unlocked_tracks, tier, self.map_id))
+        return CONFIG_DB_CURSOR.fetchall()
+
+    def get_switches_to_unlock_with_environment(self, tier):
+        CONFIG_DB_CURSOR.execute('''SELECT track_param_1, track_param_2, switch_type FROM switches_config 
+                                    WHERE track_unlocked_with <= ? AND environment_unlocked_with = ? AND map_id = ?''',
+                                 (self.unlocked_tracks, tier, self.map_id))
+        return CONFIG_DB_CURSOR.fetchall()
+
+    def get_crossovers_to_unlock_with_environment(self, tier):
+        CONFIG_DB_CURSOR.execute('''SELECT track_param_1, track_param_2, crossover_type FROM crossovers_config 
+                                    WHERE track_unlocked_with <= ? AND environment_unlocked_with = ? AND map_id = ?''',
+                                 (self.unlocked_tracks, tier, self.map_id))
         return CONFIG_DB_CURSOR.fetchall()
