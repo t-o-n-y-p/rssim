@@ -12,7 +12,7 @@ executables = [Executable('rssim.py',
 include_files = [('db/patch', 'db/patch'), ('db/config.db', 'db/config.db'), ('db/default.db', 'db/default.db'),
                  'img', 'icon.ico', 'font', 'shaders', 'resources.json']
 
-excludes = ['PIL', 'test', 'distutils', 'email', 'html', 'http', 'unittest', 'urllib', 'dbm', 'pydoc_data',
+excludes = ['PIL', 'test', 'email', 'html', 'http', 'unittest', 'urllib', 'dbm', 'pydoc_data',
             'xml', 'xmlrpc', 'jdcal', 'et-xmlfile', 'openpyxl']
 
 includes = ['pyglet',
@@ -39,8 +39,8 @@ includes = ['pyglet',
             'keyring.backends.kwallet', 'keyring.backends.null', 'keyring.backends.OS_X',
             'keyring.backends.SecretService', 'keyring.backends.Windows', 'win32timezone',
             'controller', 'model', 'view', 'textures', 'rssim_core', 'exceptions', 'i18n', 'notifications',
-            'ui', 'ui.button', 'ui.constructor', 'ui.schedule', 'ui.settings', 'ui.settings.checkbox',
-            'ui.settings.checkbox_group', 'ui.settings.enum_value_control', 'database']
+            'ui', 'database', 'ctypes', 'pycparser', 'libfuturize', 'libfuturize.fixes', 'multiprocessing',
+            'past', 'past.translation', 'lib2to3', 'lib2to3.pgen2', 'ctypes']
 
 options = {
     'build_exe': {
