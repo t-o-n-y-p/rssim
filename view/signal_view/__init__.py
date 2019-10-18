@@ -31,13 +31,13 @@ class SignalView(View):
 
     @view_is_not_active
     def on_activate(self):
-        self.is_activated = True
+        super().on_activate()
         if not self.signal_sprite.is_located_outside_viewport() and not self.locked:
             self.signal_sprite.create()
 
     @view_is_active
     def on_deactivate(self):
-        self.is_activated = False
+        super().on_deactivate()
 
     def on_change_base_offset(self, new_base_offset):
         self.base_offset = new_base_offset

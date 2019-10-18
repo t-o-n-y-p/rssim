@@ -56,7 +56,7 @@ class MainMenuView(View):
 
     @view_is_not_active
     def on_activate(self):
-        self.is_activated = True
+        super().on_activate()
         self.shader_sprite.create()
         self.open_license_label.create()
         USER_DB_CURSOR.execute('SELECT onboarding_required FROM game_progress')
@@ -66,16 +66,9 @@ class MainMenuView(View):
         else:
             self.back_to_the_station_button.on_activate()
 
-        for b in self.buttons:
-            if b.to_activate_on_controller_init:
-                b.on_activate()
-
     @view_is_active
     def on_deactivate(self):
-        self.is_activated = False
-        for b in self.buttons:
-            b.on_deactivate()
-            b.state = 'normal'
+        super().on_deactivate()
 
     def on_change_screen_resolution(self, screen_resolution):
         self.screen_resolution = screen_resolution

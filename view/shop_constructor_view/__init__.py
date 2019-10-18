@@ -64,7 +64,7 @@ class ShopConstructorView(View):
 
     @view_is_not_active
     def on_activate(self):
-        self.is_activated = True
+        super().on_activate()
         self.shader_sprite.create()
         self.current_hourly_profit_label.create()
         self.current_exp_bonus_label.create()
@@ -85,20 +85,12 @@ class ShopConstructorView(View):
         for stage_cell in self.shop_stage_cells:
             self.shop_stage_cells[stage_cell].on_activate()
 
-        for b in self.buttons:
-            if b.to_activate_on_controller_init:
-                b.on_activate()
-
     @view_is_active
     def on_deactivate(self):
-        self.is_activated = False
+        super().on_deactivate()
         self.shop_storage_progress_bar.on_deactivate()
         for stage_cell in self.shop_stage_cells:
             self.shop_stage_cells[stage_cell].on_deactivate()
-
-        for b in self.buttons:
-            b.on_deactivate()
-            b.state = 'normal'
 
     def on_change_screen_resolution(self, screen_resolution):
         self.screen_resolution = screen_resolution

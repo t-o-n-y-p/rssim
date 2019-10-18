@@ -48,24 +48,17 @@ class SchedulerView(View):
 
     @view_is_not_active
     def on_activate(self):
-        self.is_activated = True
+        super().on_activate()
         self.shader_sprite.create()
         self.left_schedule_caption_label.create()
         self.right_schedule_caption_label.create()
-        for b in self.buttons:
-            if b.to_activate_on_controller_init:
-                b.on_activate()
 
     @view_is_active
     def on_deactivate(self):
-        self.is_activated = False
+        super().on_deactivate()
         for i in range(SCHEDULE_COLUMNS):
             for j in range(SCHEDULE_ROWS):
                 self.schedule_rows[i][j].on_deactivate()
-
-        for b in self.buttons:
-            b.on_deactivate()
-            b.state = 'normal'
 
     @view_is_active
     def on_update(self):

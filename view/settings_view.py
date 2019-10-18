@@ -112,7 +112,7 @@ class SettingsView(View):
 
     @view_is_not_active
     def on_activate(self):
-        self.is_activated = True
+        super().on_activate()
         self.screen_resolution_control.on_activate()
         self.screen_resolution_control.on_init_state(self.available_windowed_resolutions_position)
         self.display_fps_checkbox.on_activate()
@@ -129,21 +129,15 @@ class SettingsView(View):
                                                          self.temp_bonus_expired_notification_enabled,
                                                          self.temp_shop_storage_notification_enabled])
         self.shader_sprite.create()
-        for b in self.buttons:
-            if b.to_activate_on_controller_init:
-                b.on_activate()
 
     @view_is_active
     def on_deactivate(self):
-        self.is_activated = False
+        super().on_deactivate()
         self.screen_resolution_control.on_deactivate()
         self.display_fps_checkbox.on_deactivate()
         self.fade_animations_checkbox.on_deactivate()
         self.clock_24h_checkbox.on_deactivate()
         self.notifications_checkbox_group.on_deactivate()
-        for b in self.buttons:
-            b.on_deactivate()
-            b.state = 'normal'
 
     def on_change_screen_resolution(self, screen_resolution):
         self.screen_resolution = screen_resolution

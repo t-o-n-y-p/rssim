@@ -35,21 +35,15 @@ class OnboardingView(View):
 
     @view_is_not_active
     def on_activate(self):
-        self.is_activated = True
+        super().on_activate()
         self.shader_sprite.create()
         self.skip_onboarding_label.create()
         self.onboarding_page_control.on_activate()
-        for b in self.buttons:
-            if b.to_activate_on_controller_init:
-                b.on_activate()
 
     @view_is_active
     def on_deactivate(self):
-        self.is_activated = False
+        super().on_deactivate()
         self.onboarding_page_control.on_deactivate()
-        for b in self.buttons:
-            b.on_deactivate()
-            b.state = 'normal'
 
     def on_change_screen_resolution(self, screen_resolution):
         self.screen_resolution = screen_resolution

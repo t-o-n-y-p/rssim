@@ -38,19 +38,13 @@ class ShopView(View):
 
     @view_is_not_active
     def on_activate(self):
-        self.is_activated = True
+        super().on_activate()
         self.shader_sprite.create()
         self.title_label.create()
-        for b in self.buttons:
-            if b.to_activate_on_controller_init:
-                b.on_activate()
 
     @view_is_active
     def on_deactivate(self):
-        self.is_activated = False
-        for b in self.buttons:
-            b.on_deactivate()
-            b.state = 'normal'
+        super().on_deactivate()
 
     def on_change_screen_resolution(self, screen_resolution):
         self.screen_resolution = screen_resolution

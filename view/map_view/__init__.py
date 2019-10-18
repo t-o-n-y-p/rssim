@@ -146,15 +146,11 @@ class MapView(View):
 
     @view_is_not_active
     def on_activate(self):
-        self.is_activated = True
+        super().on_activate()
         self.map_move_mode_available = True
         self.shader_sprite.create()
         self.main_map_sprite.create()
         self.environment_sprite.create()
-        for b in self.buttons:
-            if b.to_activate_on_controller_init:
-                b.on_activate()
-
         if self.zoom_out_activated:
             self.zoom_in_button.on_activate()
         else:
@@ -165,11 +161,8 @@ class MapView(View):
 
     @view_is_active
     def on_deactivate(self):
-        self.is_activated = False
+        super().on_deactivate()
         self.is_mini_map_activated = False
-        for b in self.buttons:
-            b.on_deactivate()
-            b.state = 'normal'
 
     def on_update(self):
         cpu_time = perf_counter()

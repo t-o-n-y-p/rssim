@@ -35,21 +35,15 @@ class LicenseView(View):
 
     @view_is_not_active
     def on_activate(self):
-        self.is_activated = True
+        super().on_activate()
         self.shader_sprite.create()
         self.close_license_label.create()
         self.license_page_control.on_activate()
-        for b in self.buttons:
-            if b.to_activate_on_controller_init:
-                b.on_activate()
 
     @view_is_active
     def on_deactivate(self):
-        self.is_activated = False
+        super().on_deactivate()
         self.license_page_control.on_deactivate()
-        for b in self.buttons:
-            b.on_deactivate()
-            b.state = 'normal'
 
     def on_change_screen_resolution(self, screen_resolution):
         self.screen_resolution = screen_resolution

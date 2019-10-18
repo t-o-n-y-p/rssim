@@ -133,7 +133,7 @@ def create_app(loader):
     controller.model = model
     model.controller = controller
     controller.view = view
-    view.on_assign_controller(controller)
+    view.controller = controller
     model.view = view
     view.on_init_content()
     controller.main_menu = _create_main_menu(controller)
@@ -203,7 +203,7 @@ def _create_game(app):
     controller.model = model
     model.controller = controller
     controller.view = view
-    view.on_assign_controller(controller)
+    view.controller = controller
     model.view = view
     view.on_init_content()
     controller.maps.append(_create_passenger_map(controller))
@@ -300,7 +300,7 @@ def _create_passenger_map(game):
     controller.model = model
     model.controller = controller
     controller.view = view
-    view.on_assign_controller(controller)
+    view.controller = controller
     model.view = view
     view.on_init_content()
     controller.fade_in_animation.constructor_fade_in_animation = controller.constructor.fade_in_animation
@@ -345,7 +345,7 @@ def _create_settings(app):
     controller.model = model
     model.controller = controller
     controller.view = view
-    view.on_assign_controller(controller)
+    view.controller = controller
     model.view = view
     view.on_init_content()
     return controller
@@ -360,7 +360,7 @@ def _create_fps(app):
     controller.model = model
     model.controller = controller
     controller.view = view
-    view.on_assign_controller(controller)
+    view.controller = controller
     model.view = view
     view.on_init_content()
     return controller
@@ -375,7 +375,7 @@ def _create_passenger_map_scheduler(map_controller):
     controller.model = model
     model.controller = controller
     controller.view = view
-    view.on_assign_controller(controller)
+    view.controller = controller
     model.view = view
     view.base_schedule = model.base_schedule
     view.on_init_content()
@@ -391,7 +391,7 @@ def _create_passenger_map_signal(map_controller, track, base_route):
     controller.model = model
     model.controller = controller
     controller.view = view
-    view.on_assign_controller(controller)
+    view.controller = controller
     model.view = view
     view.on_init_content()
     return controller
@@ -410,7 +410,7 @@ def _create_passenger_train_route(map_controller, track, train_route):
     controller.model = model
     model.controller = controller
     controller.view = view
-    view.on_assign_controller(controller)
+    view.controller = controller
     model.view = view
     view.on_init_content()
     return controller
@@ -425,7 +425,7 @@ def _create_passenger_map_railroad_switch(map_controller, track_param_1, track_p
     controller.model = model
     model.controller = controller
     controller.view = view
-    view.on_assign_controller(controller)
+    view.controller = controller
     model.view = view
     view.on_init_content()
     return controller
@@ -440,7 +440,7 @@ def _create_passenger_map_crossover(map_controller, track_param_1, track_param_2
     controller.model = model
     model.controller = controller
     controller.view = view
-    view.on_assign_controller(controller)
+    view.controller = controller
     model.view = view
     view.on_init_content()
     return controller
@@ -456,7 +456,7 @@ def _create_passenger_train(map_controller, train_id):
     controller.model = model
     model.controller = controller
     controller.view = view
-    view.on_assign_controller(controller)
+    view.controller = controller
     model.view = view
     view.on_init_content()
     return controller
@@ -471,7 +471,7 @@ def _create_passenger_map_dispatcher(map_controller):
     controller.model = model
     model.controller = controller
     controller.view = view
-    view.on_assign_controller(controller)
+    view.controller = controller
     model.view = view
     view.on_init_content()
     return controller
@@ -486,7 +486,7 @@ def _create_passenger_map_constructor(map_controller):
     controller.model = model
     model.controller = controller
     controller.view = view
-    view.on_assign_controller(controller)
+    view.controller = controller
     model.view = view
     view.construction_state_matrix = model.construction_state_matrix
     view.on_init_content()
@@ -502,7 +502,7 @@ def _create_main_menu(app):
     controller.model = model
     model.controller = controller
     controller.view = view
-    view.on_assign_controller(controller)
+    view.controller = controller
     model.view = view
     view.on_init_content()
     return controller
@@ -517,7 +517,7 @@ def _create_license(app):
     controller.model = model
     model.controller = controller
     controller.view = view
-    view.on_assign_controller(controller)
+    view.controller = controller
     model.view = view
     view.on_init_content()
     return controller
@@ -532,7 +532,7 @@ def _create_onboarding(app):
     controller.model = model
     model.controller = controller
     controller.view = view
-    view.on_assign_controller(controller)
+    view.controller = controller
     model.view = view
     view.on_init_content()
     return controller
@@ -552,7 +552,7 @@ def _create_passenger_map_shop(map_controller, shop_id):
     controller.model = model
     model.controller = controller
     controller.view = view
-    view.on_assign_controller(controller)
+    view.controller = controller
     model.view = view
     view.on_init_content()
     controller.fade_in_animation.shop_placeholder_fade_in_animation = controller.placeholder.fade_in_animation
@@ -571,7 +571,7 @@ def _create_passenger_map_shop_placeholder(shop_controller, shop_id):
     controller.model = model
     model.controller = controller
     controller.view = view
-    view.on_assign_controller(controller)
+    view.controller = controller
     model.view = view
     view.on_init_content()
     return controller
@@ -586,7 +586,7 @@ def _create_passenger_map_shop_constructor(shop_controller, shop_id):
     controller.model = model
     model.controller = controller
     controller.view = view
-    view.on_assign_controller(controller)
+    view.controller = controller
     model.view = view
     view.shop_stages_state_matrix = model.shop_stages_state_matrix
     for i in range(1, 5):
@@ -605,7 +605,7 @@ def _create_bonus_code(app):
     controller.model = model
     model.controller = controller
     controller.view = view
-    view.on_assign_controller(controller)
+    view.controller = controller
     model.view = view
     view.bonus_code_matrix = model.bonus_code_matrix
     view.on_init_content()

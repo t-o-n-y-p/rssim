@@ -24,12 +24,12 @@ class FPSView(View):
 
     @view_is_not_active
     def on_activate(self):
-        self.is_activated = True
+        super().on_activate()
         self.fps_label.create()
 
     @view_is_active
     def on_deactivate(self):
-        self.is_activated = False
+        super().on_deactivate()
 
     def on_change_screen_resolution(self, screen_resolution):
         self.screen_resolution = screen_resolution

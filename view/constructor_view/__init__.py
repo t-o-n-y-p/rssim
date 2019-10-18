@@ -92,7 +92,7 @@ class ConstructorView(View):
 
     @view_is_not_active
     def on_activate(self):
-        self.is_activated = True
+        super().on_activate()
         self.shader_sprite.create()
         if len(self.construction_state_matrix[TRACKS]) < CONSTRUCTOR_VIEW_TRACK_CELLS:
             self.no_more_tracks_available_label.create()
@@ -100,22 +100,14 @@ class ConstructorView(View):
         if len(self.construction_state_matrix[ENVIRONMENT]) < CONSTRUCTOR_VIEW_ENVIRONMENT_CELLS:
             self.no_more_tiers_available_label.create()
 
-        for b in self.buttons:
-            if b.to_activate_on_controller_init:
-                b.on_activate()
-
     @view_is_active
     def on_deactivate(self):
-        self.is_activated = False
+        super().on_deactivate()
         for j in range(CONSTRUCTOR_VIEW_TRACK_CELLS):
             self.constructor_cells[TRACKS][j].on_deactivate()
 
         for j in range(CONSTRUCTOR_VIEW_ENVIRONMENT_CELLS):
             self.constructor_cells[ENVIRONMENT][j].on_deactivate()
-
-        for b in self.buttons:
-            b.on_deactivate()
-            b.state = 'normal'
 
     @view_is_active
     def on_update(self):

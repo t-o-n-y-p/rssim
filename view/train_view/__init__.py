@@ -62,7 +62,7 @@ class TrainView(View):
 
     @view_is_not_active
     def on_activate(self):
-        self.is_activated = True
+        super().on_activate()
         seed()
         for i in range(len(self.car_position)):
             self.car_sprites.append(CarSprite(self.map_id, self.train_id, parent_viewport=self.viewport))
@@ -79,7 +79,7 @@ class TrainView(View):
 
     @view_is_active
     def on_deactivate(self):
-        self.is_activated = False
+        super().on_deactivate()
 
     def on_change_base_offset(self, new_base_offset):
         self.base_offset = new_base_offset

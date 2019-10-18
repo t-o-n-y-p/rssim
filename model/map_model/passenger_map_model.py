@@ -28,6 +28,6 @@ class PassengerMapModel(MapModel):
         controller.model = model
         model.controller = controller
         controller.view = view
-        view.on_assign_controller(controller)
+        view.controller = controller
         model.view = view
         return controller

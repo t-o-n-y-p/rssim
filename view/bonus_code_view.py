@@ -50,21 +50,15 @@ class BonusCodeView(View):
 
     @view_is_not_active
     def on_activate(self):
-        self.is_activated = True
+        super().on_activate()
         self.shader_sprite.create()
         self.bonus_code_interactive_label.create()
         self.activate_bonus_code_button.on_disable()
-        for b in self.buttons:
-            if b.to_activate_on_controller_init:
-                b.on_activate()
 
     @view_is_active
     def on_deactivate(self):
-        self.is_activated = False
+        super().on_deactivate()
         self.bonus_code_info_cell.on_deactivate()
-        for b in self.buttons:
-            b.on_deactivate()
-            b.state = 'normal'
 
     def on_change_screen_resolution(self, screen_resolution):
         self.screen_resolution = screen_resolution

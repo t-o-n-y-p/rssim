@@ -203,10 +203,18 @@ class View:
         pass
 
     def on_activate(self):
-        pass
+        self.is_activated = True
+        self.on_append_handlers()
+        for b in self.buttons:
+            if b.to_activate_on_controller_init:
+                b.on_activate()
 
     def on_deactivate(self):
-        pass
+        self.is_activated = False
+        self.on_detach_handlers()
+        for b in self.buttons:
+            b.on_deactivate()
+            b.state = 'normal'
 
     def on_update(self):
         pass
@@ -226,19 +234,7 @@ class View:
     def on_enable_notifications(self):
         self.all_notifications_enabled = True
 
-    def on_assign_controller(self, controller):
-        self.controller = controller
-        on_mouse_motion_handlers = []
-        on_mouse_press_handlers = []
-        on_mouse_release_handlers = []
-        on_mouse_leave_handlers = []
-        # collects all handlers from the buttons in four lists
-        for b in self.buttons:
-            on_mouse_motion_handlers.append(b.handle_mouse_motion)
-            on_mouse_press_handlers.append(b.handle_mouse_press)
-            on_mouse_release_handlers.append(b.handle_mouse_release)
-            on_mouse_leave_handlers.append(b.handle_mouse_leave)
-
+    def on_append_handlers(self):
         # appends view handlers
         self.controller.on_append_handlers(on_mouse_motion_handlers=self.on_mouse_motion_handlers,
                                            on_mouse_press_handlers=self.on_mouse_press_handlers,
@@ -249,7 +245,25 @@ class View:
                                            on_key_press_handlers=self.on_key_press_handlers,
                                            on_text_handlers=self.on_text_handlers)
         # appends button handlers
-        self.controller.on_append_handlers(on_mouse_motion_handlers=on_mouse_motion_handlers,
-                                           on_mouse_press_handlers=on_mouse_press_handlers,
-                                           on_mouse_release_handlers=on_mouse_release_handlers,
-                                           on_mouse_leave_handlers=on_mouse_leave_handlers)
+        for b in self.buttons:
+            self.controller.on_append_handlers(on_mouse_motion_handlers=(b.handle_mouse_motion, ),
+                                               on_mouse_press_handlers=(b.handle_mouse_press, ),
+                                               on_mouse_release_handlers=(b.handle_mouse_release, ),
+                                               on_mouse_leave_handlers=(b.handle_mouse_leave, ))
+
+    def on_detach_handlers(self):
+        # detaches view handlers
+        self.controller.on_detach_handlers(on_mouse_motion_handlers=self.on_mouse_motion_handlers,
+                                           on_mouse_press_handlers=self.on_mouse_press_handlers,
+                                           on_mouse_release_handlers=self.on_mouse_release_handlers,
+                                           on_mouse_drag_handlers=self.on_mouse_drag_handlers,
+                                           on_mouse_leave_handlers=self.on_mouse_leave_handlers,
+                                           on_mouse_scroll_handlers=self.on_mouse_scroll_handlers,
+                                           on_key_press_handlers=self.on_key_press_handlers,
+                                           on_text_handlers=self.on_text_handlers)
+        # detaches button handlers
+        for b in self.buttons:
+            self.controller.on_detach_handlers(on_mouse_motion_handlers=(b.handle_mouse_motion, ),
+                                               on_mouse_press_handlers=(b.handle_mouse_press, ),
+                                               on_mouse_release_handlers=(b.handle_mouse_release, ),
+                                               on_mouse_leave_handlers=(b.handle_mouse_leave, ))
