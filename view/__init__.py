@@ -166,7 +166,7 @@ def cursor_is_over_the_app_header(fn):
 
 
 # --------------------- CONSTANTS ---------------------
-MINI_MAP_FADE_OUT_TIMER = 1.0                   # time since user releases mouse button after which mini-map disappears
+MINI_MAP_FADE_OUT_TIMER: Final = 1.0        # time since user releases mouse button after which mini-map disappears
 # ------------------- END CONSTANTS -------------------
 
 

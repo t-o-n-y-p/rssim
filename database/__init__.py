@@ -2,6 +2,7 @@ from sqlite3 import connect
 from os import path, makedirs
 from shutil import copyfile
 from hashlib import sha512
+from typing import Final
 
 from keyring import set_password, delete_password, set_keyring
 from keyring.errors import PasswordDeleteError
@@ -11,7 +12,7 @@ from pyglet.resource import get_settings_path
 
 set_keyring(Windows.WinVaultKeyring())
 # determine if user launches app for the first time, if yes - create game DB
-USER_DB_LOCATION = get_settings_path(sha512('rssim'.encode('utf-8')).hexdigest())
+USER_DB_LOCATION: Final = get_settings_path(sha512('rssim'.encode('utf-8')).hexdigest())
 if not path.exists(USER_DB_LOCATION):
     makedirs(USER_DB_LOCATION)
 
@@ -28,10 +29,10 @@ if not path.exists(path.join(USER_DB_LOCATION, 'user.db')):
                      sha512(data[::3] + data[1::3] + data[2::3]).hexdigest())
 
 # create database connections and cursors
-USER_DB_CONNECTION = connect(path.join(USER_DB_LOCATION, 'user.db'))
-USER_DB_CURSOR = USER_DB_CONNECTION.cursor()
+USER_DB_CONNECTION: Final = connect(path.join(USER_DB_LOCATION, 'user.db'))
+USER_DB_CURSOR: Final = USER_DB_CONNECTION.cursor()
 __config_db_connection = connect('db/config.db')
-CONFIG_DB_CURSOR = __config_db_connection.cursor()
+CONFIG_DB_CURSOR: Final = __config_db_connection.cursor()
 
 
 def on_commit():

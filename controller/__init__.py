@@ -1,3 +1,6 @@
+from typing import Final
+
+
 def view_is_active(fn):
     def _handle_if_view_is_activated(*args, **kwargs):
         if args[0].view.is_activated:
@@ -31,15 +34,15 @@ def map_view_is_active(fn):
 
 
 # --------------------- CONSTANTS ---------------------
-FRAMES_IN_ONE_HOUR = 14400              # number of frames in 1 in-game hour
-ZOOM_OUT_SCALE_FACTOR = 0.5             # how much to scale all sprites when map is zoomed out
-ZOOM_IN_SCALE_FACTOR = 1.0              # how much to scale all sprites when map is zoomed in
-SECTION_TYPE = 0                        # meaning of section[] list's element 0
-SECTION_TRACK_NUMBER_1 = 1              # meaning of section[] list's element 1
-SECTION_TRACK_NUMBER_2 = 2              # meaning of section[] list's element 2
-TRAIN_ROUTE_DATA_TRACK_NUMBER = 0       # meaning of train_route_data[] list's element 0
-TRAIN_ROUTE_DATA_TYPE = 1               # meaning of train_route_data[] list's element 1
-TRAIN_ROUTE_DATA_SECTION_NUMBER = 2     # meaning of train_route_data[] list's element 2
+FRAMES_IN_ONE_HOUR: Final = 14400              # number of frames in 1 in-game hour
+ZOOM_OUT_SCALE_FACTOR: Final = 0.5             # how much to scale all sprites when map is zoomed out
+ZOOM_IN_SCALE_FACTOR: Final = 1.0              # how much to scale all sprites when map is zoomed in
+SECTION_TYPE: Final = 0                        # meaning of section[] list's element 0
+SECTION_TRACK_NUMBER_1: Final = 1              # meaning of section[] list's element 1
+SECTION_TRACK_NUMBER_2: Final = 2              # meaning of section[] list's element 2
+TRAIN_ROUTE_DATA_TRACK_NUMBER: Final = 0       # meaning of train_route_data[] list's element 0
+TRAIN_ROUTE_DATA_TYPE: Final = 1               # meaning of train_route_data[] list's element 1
+TRAIN_ROUTE_DATA_SECTION_NUMBER: Final = 2     # meaning of train_route_data[] list's element 2
 # ------------------- END CONSTANTS -------------------
 
 

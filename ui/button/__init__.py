@@ -1,3 +1,5 @@
+from typing import Final
+
 from pyglet import gl
 from pyglet.text import Label
 from pyglet.window import mouse
@@ -63,13 +65,13 @@ def create_two_state_button(first_button_object, second_button_object):
 
 
 # button background RGB color for non-transparent and transparent button
-BUTTON_BACKGROUND_RGB = {
+BUTTON_BACKGROUND_RGB: Final = {
     'normal': {False: (0.0, 0.0, 0.0), True: (0.0, 0.0, 0.0)},
     'hover': {False: (0.375, 0.0, 0.0), True: (0.5, 0.0, 0.0)},
     'pressed': {False: (0.5625, 0.0, 0.0), True: (0.75, 0.0, 0.0)}
 }
 # button background alpha for non-transparent and transparent button
-BUTTON_BACKGROUND_ALPHA = {
+BUTTON_BACKGROUND_ALPHA: Final = {
     'normal': {False: 1.0, True: 0.0},
     'hover': {False: 1.0, True: 0.75},
     'pressed': {False: 1.0, True: 0.75}

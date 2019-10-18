@@ -1,9 +1,10 @@
 import json
 import codecs
+from typing import Final
 
 # load resource strings from JSON file
 with codecs.open('resources.json', 'r', 'utf-8-sig') as resource_file:
-    I18N_RESOURCES = json.load(resource_file)
+    I18N_RESOURCES: Final = json.load(resource_file)
 
 
 def i18n_number_category(x, locale):

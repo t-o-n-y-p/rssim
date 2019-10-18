@@ -1,10 +1,12 @@
+from typing import Final
+
 import pyglet.sprite
 
 from database import USER_DB_CURSOR
 
 
-SPRITE_VIEWPORT_EDGE_OFFSET_LIMIT_X = 150
-SPRITE_VIEWPORT_EDGE_OFFSET_LIMIT_Y = 100
+SPRITE_VIEWPORT_EDGE_OFFSET_LIMIT_X: Final = 150
+SPRITE_VIEWPORT_EDGE_OFFSET_LIMIT_Y: Final = 100
 
 
 def sprite_does_not_exist(fn):

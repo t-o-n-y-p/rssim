@@ -1,3 +1,5 @@
+from typing import Final
+
 from controller.app_controller import AppController
 from controller.main_menu_controller import MainMenuController
 from controller.license_controller import LicenseController
@@ -106,21 +108,21 @@ from database import CONFIG_DB_CURSOR, USER_DB_CURSOR
 
 
 # --------------------- CONSTANTS ---------------------
-CURRENT_VERSION = (0, 9, 8)                     # current app version
-MIN_UPDATE_COMPATIBLE_VERSION = (0, 9, 8)       # game cannot be updated from version earlier than this
-REQUIRED_TEXTURE_SIZE = 8192                    # maximum texture resolution presented in the app
-FPS_INTERVAL = 0.2                              # interval between FPS update
-LOG_LEVEL_OFF = 30                              # integer log level high enough to cut off all logs
-LOG_LEVEL_INFO = 20                             # integer log level which includes basic logs
-LOG_LEVEL_DEBUG = 10                            # integer log level which includes all possible logs
-DATABASE_SHA512 = '920cd93676e42753bee129487bb1dbf1a713f27f10411d9dd71280a993529e4488df7aa20b32df9ca737961e75e16b53726fba7357c1706febf8f34ea92bc497'
-MAXIMUM_DRAW_EVENTS_PER_FRAME = 1
-MAXIMUM_MOUSE_MOTION_EVENTS_PER_FRAME = 1
-MAXIMUM_MOUSE_DRAG_EVENTS_PER_FRAME = 1
+CURRENT_VERSION: Final = (0, 9, 8)                     # current app version
+MIN_UPDATE_COMPATIBLE_VERSION: Final = (0, 9, 8)       # game cannot be updated from version earlier than this
+REQUIRED_TEXTURE_SIZE: Final = 8192                    # maximum texture resolution presented in the app
+FPS_INTERVAL: Final = 0.2                              # interval between FPS update
+LOG_LEVEL_OFF: Final = 30                              # integer log level high enough to cut off all logs
+LOG_LEVEL_INFO: Final = 20                             # integer log level which includes basic logs
+LOG_LEVEL_DEBUG: Final = 10                            # integer log level which includes all possible logs
+DATABASE_SHA512: Final = '920cd93676e42753bee129487bb1dbf1a713f27f10411d9dd71280a993529e4488df7aa20b32df9ca737961e75e16b53726fba7357c1706febf8f34ea92bc497'
+MAXIMUM_DRAW_EVENTS_PER_FRAME: Final = 1
+MAXIMUM_MOUSE_MOTION_EVENTS_PER_FRAME: Final = 1
+MAXIMUM_MOUSE_DRAG_EVENTS_PER_FRAME: Final = 1
 # app version tuple members
-MAJOR = 0
-MINOR = 1
-PATCH = 2
+MAJOR: Final = 0
+MINOR: Final = 1
+PATCH: Final = 2
 # ------------------- END CONSTANTS -------------------
 
 
