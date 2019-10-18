@@ -1,7 +1,5 @@
 from logging import getLogger
-from ctypes import windll
 
-from database import CONFIG_DB_CURSOR
 from view import *
 from ui.page_control.onboarding_page_control import OnboardingPageControl
 from ui.button.skip_onboarding_button import SkipOnboardingButton
@@ -21,17 +19,6 @@ class OnboardingView(View):
         self.buttons = [*self.onboarding_page_control.buttons, self.skip_onboarding_button]
         self.shader_sprite = OnboardingViewShaderSprite(view=self)
         self.skip_onboarding_label = SkipOnboardingLabel(parent_viewport=self.viewport)
-
-    def on_init_content(self):
-        CONFIG_DB_CURSOR.execute('SELECT app_width, app_height FROM screen_resolution_config')
-        screen_resolution_config = CONFIG_DB_CURSOR.fetchall()
-        monitor_resolution_config = (windll.user32.GetSystemMetrics(0), windll.user32.GetSystemMetrics(1))
-        USER_DB_CURSOR.execute('SELECT fullscreen FROM graphics')
-        if bool(USER_DB_CURSOR.fetchone()[0]) and monitor_resolution_config in screen_resolution_config:
-            self.on_change_screen_resolution(monitor_resolution_config)
-        else:
-            USER_DB_CURSOR.execute('SELECT app_width, app_height FROM graphics')
-            self.on_change_screen_resolution(USER_DB_CURSOR.fetchone())
 
     @view_is_not_active
     def on_activate(self):

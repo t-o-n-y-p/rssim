@@ -1,7 +1,5 @@
 from logging import getLogger
-from ctypes import windll
 
-from database import CONFIG_DB_CURSOR
 from view import *
 from ui import *
 from ui.constructor.track_cell import TrackCell
@@ -78,17 +76,6 @@ class ConstructorView(View):
             = NoMoreTracksAvailableLabel(parent_viewport=self.no_more_tracks_available_placeholder_viewport)
         self.no_more_tiers_available_label \
             = NoMoreEnvironmentAvailableLabel(parent_viewport=self.no_more_tiers_available_placeholder_viewport)
-
-    def on_init_content(self):
-        CONFIG_DB_CURSOR.execute('SELECT app_width, app_height FROM screen_resolution_config')
-        screen_resolution_config = CONFIG_DB_CURSOR.fetchall()
-        monitor_resolution_config = (windll.user32.GetSystemMetrics(0), windll.user32.GetSystemMetrics(1))
-        USER_DB_CURSOR.execute('SELECT fullscreen FROM graphics')
-        if bool(USER_DB_CURSOR.fetchone()[0]) and monitor_resolution_config in screen_resolution_config:
-            self.on_change_screen_resolution(monitor_resolution_config)
-        else:
-            USER_DB_CURSOR.execute('SELECT app_width, app_height FROM graphics')
-            self.on_change_screen_resolution(USER_DB_CURSOR.fetchone())
 
     @view_is_not_active
     def on_activate(self):

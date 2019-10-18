@@ -1,5 +1,3 @@
-from ctypes import windll
-
 from logging import getLogger
 from time import perf_counter
 from math import ceil
@@ -114,32 +112,7 @@ class MapView(View):
         self.constructions_locked = USER_DB_CURSOR.fetchone()[0]
 
     def on_init_content(self):
-        CONFIG_DB_CURSOR.execute('SELECT app_width, app_height FROM screen_resolution_config')
-        screen_resolution_config = CONFIG_DB_CURSOR.fetchall()
-        monitor_resolution_config = (windll.user32.GetSystemMetrics(0), windll.user32.GetSystemMetrics(1))
-        USER_DB_CURSOR.execute('SELECT fullscreen FROM graphics')
-        if bool(USER_DB_CURSOR.fetchone()[0]) and monitor_resolution_config in screen_resolution_config:
-            self.screen_resolution = monitor_resolution_config
-        else:
-            USER_DB_CURSOR.execute('SELECT app_width, app_height FROM graphics')
-            self.screen_resolution = USER_DB_CURSOR.fetchone()
-
-        self.viewport.x1, self.viewport.y1 = 0, 0
-        self.viewport.x2, self.viewport.y2 = self.screen_resolution
-        self.mini_map_sprite.on_change_screen_resolution(self.screen_resolution)
-        self.mini_environment_sprite.on_change_screen_resolution(self.screen_resolution)
-        self.base_offset_lower_left_limit = (self.viewport.x1,
-                                             self.viewport.y1 + get_bottom_bar_height(self.screen_resolution))
-        self.base_offset_upper_right_limit = (self.viewport.x2 - MAP_WIDTH // round(1 / self.zoom_factor),
-                                              self.viewport.y2 - MAP_HEIGHT // round(1 / self.zoom_factor)
-                                              - get_top_bar_height(self.screen_resolution))
-        self.mini_map_frame_width = self.get_mini_map_frame_width()
-        self.mini_map_frame_height = self.get_mini_map_frame_height()
-        self.mini_map_frame_position = self.get_mini_map_frame_position()
-        self.zoom_in_button.on_change_screen_resolution(self.screen_resolution)
-        self.zoom_out_button.on_change_screen_resolution(self.screen_resolution)
-        self.open_schedule_button.on_change_screen_resolution(self.screen_resolution)
-        self.open_constructor_button.on_change_screen_resolution(self.screen_resolution)
+        super().on_init_content()
         for b in self.shop_buttons:
             b.on_change_base_offset(self.base_offset)
             b.on_change_scale(self.zoom_factor)
@@ -180,8 +153,6 @@ class MapView(View):
             b.on_change_base_offset(self.base_offset)
 
     def on_change_screen_resolution(self, screen_resolution):
-        self.base_offset = (self.base_offset[0] + (screen_resolution[0] - self.screen_resolution[0]) // 2,
-                            self.base_offset[1] + (screen_resolution[1] - self.screen_resolution[1]) // 2)
         self.screen_resolution = screen_resolution
         self.viewport.x1, self.viewport.y1 = 0, 0
         self.viewport.x2, self.viewport.y2 = self.screen_resolution
@@ -192,8 +163,6 @@ class MapView(View):
         self.base_offset_upper_right_limit = (self.viewport.x2 - MAP_WIDTH // round(1 / self.zoom_factor),
                                               self.viewport.y2 - MAP_HEIGHT // round(1 / self.zoom_factor)
                                               - get_top_bar_height(self.screen_resolution))
-        self.check_base_offset_limits()
-        self.controller.on_save_and_commit_last_known_base_offset(self.base_offset)
         self.shader_sprite.on_change_screen_resolution(self.screen_resolution)
         self.mini_map_frame_width = self.get_mini_map_frame_width()
         self.mini_map_frame_height = self.get_mini_map_frame_height()
@@ -356,3 +325,7 @@ class MapView(View):
     def get_mini_map_frame_width(self):
         return int((self.viewport.x2 - self.viewport.x1) / (MAP_WIDTH // round(1 / self.zoom_factor))
                    * get_mini_map_width(self.screen_resolution))
+
+    def on_recalculate_base_offset_for_new_screen_resolution(self, screen_resolution):
+        self.base_offset = (self.base_offset[0] + (screen_resolution[0] - self.screen_resolution[0]) // 2,
+                            self.base_offset[1] + (screen_resolution[1] - self.screen_resolution[1]) // 2)

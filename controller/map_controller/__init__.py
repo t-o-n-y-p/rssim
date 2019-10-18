@@ -50,6 +50,7 @@ class MapController(Controller):
             shop.on_update_view()
 
     def on_change_screen_resolution(self, screen_resolution):
+        self.view.on_recalculate_base_offset_for_new_screen_resolution(screen_resolution)
         self.view.on_change_screen_resolution(screen_resolution)
         self.scheduler.on_change_screen_resolution(screen_resolution)
         self.dispatcher.on_change_screen_resolution(screen_resolution)
@@ -72,6 +73,8 @@ class MapController(Controller):
         for shop in self.shops:
             shop.on_change_screen_resolution(screen_resolution)
 
+        self.view.check_base_offset_limits()
+        self.on_save_and_commit_last_known_base_offset(self.view.base_offset)
         self.on_change_base_offset(self.view.base_offset)
 
     def on_change_base_offset(self, new_base_offset):

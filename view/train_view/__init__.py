@@ -1,9 +1,7 @@
 from logging import getLogger
-from ctypes import windll
 from random import seed, choice
 
 from view import *
-from database import CONFIG_DB_CURSOR
 from ui.sprite.car_sprite import CarSprite
 from ui.sprite.boarding_lights_sprite import BoardingLightsSprite
 
@@ -23,17 +21,6 @@ class TrainView(View):
         self.direction = None
         self.car_image_collection = None
         self.state = None
-
-    def on_init_content(self):
-        CONFIG_DB_CURSOR.execute('SELECT app_width, app_height FROM screen_resolution_config')
-        screen_resolution_config = CONFIG_DB_CURSOR.fetchall()
-        monitor_resolution_config = (windll.user32.GetSystemMetrics(0), windll.user32.GetSystemMetrics(1))
-        USER_DB_CURSOR.execute('SELECT fullscreen FROM graphics')
-        if bool(USER_DB_CURSOR.fetchone()[0]) and monitor_resolution_config in screen_resolution_config:
-            self.on_change_screen_resolution(monitor_resolution_config)
-        else:
-            USER_DB_CURSOR.execute('SELECT app_width, app_height FROM graphics')
-            self.on_change_screen_resolution(USER_DB_CURSOR.fetchone())
 
     def on_update(self):
         for i in range(len(self.car_sprites)):

@@ -1,7 +1,9 @@
+from ctypes import windll
+
 from pyglet.window import mouse
 
 from ui import *
-from database import USER_DB_CURSOR
+from database import USER_DB_CURSOR, CONFIG_DB_CURSOR
 from ui import Viewport
 
 
@@ -200,7 +202,15 @@ class View:
         self.shader_sprite = None
 
     def on_init_content(self):
-        pass
+        CONFIG_DB_CURSOR.execute('SELECT app_width, app_height FROM screen_resolution_config')
+        screen_resolution_config = CONFIG_DB_CURSOR.fetchall()
+        monitor_resolution_config = (windll.user32.GetSystemMetrics(0), windll.user32.GetSystemMetrics(1))
+        USER_DB_CURSOR.execute('SELECT fullscreen FROM graphics')
+        if bool(USER_DB_CURSOR.fetchone()[0]) and monitor_resolution_config in screen_resolution_config:
+            self.on_change_screen_resolution(monitor_resolution_config)
+        else:
+            USER_DB_CURSOR.execute('SELECT app_width, app_height FROM graphics')
+            self.on_change_screen_resolution(USER_DB_CURSOR.fetchone())
 
     def on_activate(self):
         self.is_activated = True
