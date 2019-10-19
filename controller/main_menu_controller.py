@@ -3,6 +3,7 @@ from logging import getLogger
 from controller import *
 
 
+@final
 class MainMenuController(Controller):
     def __init__(self, app):
         super().__init__(parent_controller=app, logger=getLogger('root.app.main_menu.controller'))

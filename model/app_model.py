@@ -28,17 +28,15 @@ class AppModel(Model):
 
     @fullscreen_mode_available
     def on_fullscreen_mode_turned_on(self):
+        self.fullscreen_mode = bool(FULLSCREEN_MODE_TURNED_ON)
         self.view.on_fullscreen_mode_turned_on()
-        self.on_save_and_commit_state(FULLSCREEN_MODE_TURNED_ON)
 
     def on_fullscreen_mode_turned_off(self):
+        self.fullscreen_mode = bool(FULLSCREEN_MODE_TURNED_OFF)
         self.view.on_fullscreen_mode_turned_off()
-        self.on_save_and_commit_state(FULLSCREEN_MODE_TURNED_OFF)
 
-    def on_save_and_commit_state(self, fullscreen_mode):
-        self.fullscreen_mode = bool(fullscreen_mode)
-        USER_DB_CURSOR.execute('UPDATE graphics SET fullscreen = ?', (fullscreen_mode, ))
-        on_commit()
+    def on_save_state(self):
+        USER_DB_CURSOR.execute('UPDATE graphics SET fullscreen = ?', (self.fullscreen_mode, ))
 
     @staticmethod
     def on_save_and_commit_locale(new_locale):

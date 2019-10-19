@@ -24,6 +24,7 @@ class MapController(Controller):
         self.shops = []
         self.map_id = map_id
 
+    @final
     def on_update_view(self):
         self.view.on_update()
         self.fade_in_animation.on_update()
@@ -49,6 +50,7 @@ class MapController(Controller):
         for shop in self.shops:
             shop.on_update_view()
 
+    @final
     def on_change_screen_resolution(self, screen_resolution):
         self.view.on_recalculate_base_offset_for_new_screen_resolution(screen_resolution)
         self.view.on_change_screen_resolution(screen_resolution)
@@ -77,6 +79,7 @@ class MapController(Controller):
         self.on_save_and_commit_last_known_base_offset(self.view.base_offset)
         self.on_change_base_offset(self.view.base_offset)
 
+    @final
     def on_change_base_offset(self, new_base_offset):
         self.view.on_change_base_offset(new_base_offset)
         for signal in self.signals_list:
@@ -94,6 +97,7 @@ class MapController(Controller):
         for train in self.trains_list:
             train.on_change_base_offset(new_base_offset)
 
+    @final
     def on_unlock_track(self, track):
         self.model.on_unlock_track(track)
         self.scheduler.on_unlock_track(track)
@@ -113,6 +117,7 @@ class MapController(Controller):
 
         self.view.on_unlock_construction()
 
+    @final
     def on_unlock_environment(self, tier):
         self.model.on_unlock_environment(tier)
         for track_param, base_route in self.model.get_signals_to_unlock_with_environment(tier):
@@ -126,6 +131,7 @@ class MapController(Controller):
 
         self.view.on_unlock_construction()
 
+    @final
     def on_activate_view(self):
         self.view.on_activate()
         for signal in self.signals_list:
@@ -143,6 +149,7 @@ class MapController(Controller):
         for train in self.trains_list:
             train.on_activate_view()
 
+    @final
     def on_deactivate_view(self):
         self.view.on_deactivate()
         self.scheduler.on_deactivate_view()
@@ -166,6 +173,7 @@ class MapController(Controller):
         for shop in self.shops:
             shop.on_deactivate_view()
 
+    @final
     def on_zoom_in(self):
         self.model.on_save_and_commit_zoom_out_activated(False)
         self.view.on_change_zoom_factor(ZOOM_IN_SCALE_FACTOR, zoom_out_activated=False)
@@ -186,6 +194,7 @@ class MapController(Controller):
 
         self.on_change_base_offset(self.view.base_offset)
 
+    @final
     def on_zoom_out(self):
         self.model.on_save_and_commit_zoom_out_activated(True)
         self.view.on_change_zoom_factor(ZOOM_OUT_SCALE_FACTOR, zoom_out_activated=True)
@@ -206,6 +215,7 @@ class MapController(Controller):
 
         self.on_change_base_offset(self.view.base_offset)
 
+    @final
     def on_save_state(self):
         self.model.on_save_state()
         self.scheduler.on_save_state()
@@ -232,6 +242,7 @@ class MapController(Controller):
         for shop in self.shops:
             shop.on_save_state()
 
+    @final
     def on_update_time(self, game_time):
         # train routes are sorted by priority to implement some kind of queue
         self.train_routes_sorted_list = sorted(self.train_routes_sorted_list,
@@ -260,12 +271,14 @@ class MapController(Controller):
         for shop in self.shops:
             shop.on_update_time(game_time)
 
+    @final
     def on_level_up(self, level):
         self.scheduler.on_level_up(level)
         self.constructor.on_level_up(level)
         for shop in self.shops:
             shop.on_level_up(level)
 
+    @final
     def on_open_schedule(self):
         # Constructor and Scheduler views cannot be activated at the same time;
         # when user opens schedule screen it means constructor screen has to be closed
@@ -284,6 +297,7 @@ class MapController(Controller):
         # if mini map is active when user opens schedule screen, it should also be hidden
         self.view.is_mini_map_activated = False
 
+    @final
     def on_open_constructor(self):
         # Constructor and Scheduler views cannot be activated at the same time;
         # when user opens constructor screen it means schedule screen has to be closed
@@ -302,21 +316,27 @@ class MapController(Controller):
         # if mini map is active when user opens constructor screen, it should also be hidden
         self.view.is_mini_map_activated = False
 
+    @final
     def on_close_schedule(self):
         self.view.on_close_schedule()
 
+    @final
     def on_close_constructor(self):
         self.view.on_close_constructor()
 
+    @final
     def on_switch_signal_to_green(self, signal_track, signal_base_route):
         self.signals[signal_track][signal_base_route].on_switch_to_green()
 
+    @final
     def on_switch_signal_to_red(self, signal_track, signal_base_route):
         self.signals[signal_track][signal_base_route].on_switch_to_red()
 
+    @final
     def on_update_train_route_sections(self, track, train_route, last_car_position):
         self.train_routes[track][train_route].on_update_train_route_sections(last_car_position)
 
+    @final
     def on_update_train_route_section_status(self, train_route_data, status):
         self.train_routes[
             train_route_data[TRAIN_ROUTE_DATA_TRACK_NUMBER]
@@ -324,6 +344,7 @@ class MapController(Controller):
             train_route_data[TRAIN_ROUTE_DATA_TYPE]
         ].on_update_section_status(train_route_data[TRAIN_ROUTE_DATA_SECTION_NUMBER], status)
 
+    @final
     def on_train_route_section_force_busy_on(self, section, positions, train_id):
         if section[SECTION_TYPE] in ('left_railroad_switch', 'right_railroad_switch'):
             self.switches[
@@ -343,6 +364,7 @@ class MapController(Controller):
                 section[SECTION_TYPE]
             ].on_force_busy_on(positions, train_id)
 
+    @final
     def on_train_route_section_force_busy_off(self, section, positions):
         if section[SECTION_TYPE] in ('left_railroad_switch', 'right_railroad_switch'):
             self.switches[
@@ -362,33 +384,43 @@ class MapController(Controller):
                 section[SECTION_TYPE]
             ].on_force_busy_off(positions)
 
+    @final
     def on_leave_entry(self, entry_id):
         self.scheduler.on_leave_entry(entry_id)
 
+    @final
     def on_leave_track(self, track):
         self.dispatcher.on_leave_track(track)
 
+    @final
     def on_update_train_route_priority(self, track, train_route, priority):
         self.train_routes[track][train_route].on_update_priority(priority)
 
+    @final
     def on_set_trail_points(self, train_id, trail_points_v2_head_tail, trail_points_v2_mid):
         self.trains[train_id].on_set_trail_points(trail_points_v2_head_tail, trail_points_v2_mid)
 
+    @final
     def on_set_train_start_point(self, train_id, first_car_start_point):
         self.trains[train_id].on_set_train_start_point(first_car_start_point)
 
+    @final
     def on_set_train_stop_point(self, train_id, first_car_stop_point):
         self.trains[train_id].on_set_train_stop_point(first_car_stop_point)
 
+    @final
     def on_set_train_destination_point(self, train_id, first_car_destination_point):
         self.trains[train_id].on_set_train_destination_point(first_car_destination_point)
 
+    @final
     def on_open_train_route(self, track, train_route, train_id, cars):
         self.train_routes[track][train_route].on_open_train_route(train_id, cars)
 
+    @final
     def on_close_train_route(self, track, train_route):
         self.train_routes[track][train_route].on_close_train_route()
 
+    @final
     def on_create_train(self, train_id, cars, track, train_route, state, direction, new_direction,
                         current_direction, priority, boarding_time, exp, money):
         train = self.model.on_create_train(train_id, cars, track, train_route, state, direction, new_direction,
@@ -408,16 +440,19 @@ class MapController(Controller):
         if self.view.map_move_mode:
             train.view.on_change_base_offset(self.view.base_offset)
 
+    @final
     def on_add_money(self, money):
         self.constructor.on_add_money(money)
         for shop in self.shops:
             shop.on_add_money(money)
 
+    @final
     def on_pay_money(self, money):
         self.constructor.on_pay_money(money)
         for shop in self.shops:
             shop.on_pay_money(money)
 
+    @final
     def on_update_current_locale(self, new_locale):
         self.view.on_update_current_locale(new_locale)
         self.scheduler.on_update_current_locale(new_locale)
@@ -441,6 +476,7 @@ class MapController(Controller):
         for shop in self.shops:
             shop.on_update_current_locale(new_locale)
 
+    @final
     def on_disable_notifications(self):
         self.view.on_disable_notifications()
         self.scheduler.on_disable_notifications()
@@ -464,6 +500,7 @@ class MapController(Controller):
         for shop in self.shops:
             shop.on_disable_notifications()
 
+    @final
     def on_enable_notifications(self):
         self.view.on_enable_notifications()
         self.scheduler.on_enable_notifications()
@@ -487,16 +524,20 @@ class MapController(Controller):
         for shop in self.shops:
             shop.on_enable_notifications()
 
+    @final
     def on_change_feature_unlocked_notification_state(self, notification_state):
         self.constructor.on_change_feature_unlocked_notification_state(notification_state)
 
+    @final
     def on_change_construction_completed_notification_state(self, notification_state):
         self.constructor.on_change_construction_completed_notification_state(notification_state)
 
+    @final
     def on_change_shop_storage_notification_state(self, notification_state):
         for shop in self.shops:
             shop.on_change_shop_storage_notification_state(notification_state)
 
+    @final
     def on_apply_shaders_and_draw_vertices(self):
         self.view.on_apply_shaders_and_draw_vertices()
         self.constructor.on_apply_shaders_and_draw_vertices()
@@ -504,9 +545,11 @@ class MapController(Controller):
         for shop in self.shops:
             shop.on_apply_shaders_and_draw_vertices()
 
+    @final
     def on_save_and_commit_last_known_base_offset(self, base_offset):
         self.model.on_save_and_commit_last_known_base_offset(base_offset)
 
+    @final
     def on_update_fade_animation_state(self, new_state):
         self.fade_in_animation.on_update_fade_animation_state(new_state)
         self.fade_out_animation.on_update_fade_animation_state(new_state)
@@ -528,15 +571,18 @@ class MapController(Controller):
         for shop in self.shops:
             shop.on_update_fade_animation_state(new_state)
 
+    @final
     def on_update_clock_state(self, clock_24h_enabled):
         self.scheduler.on_update_clock_state(clock_24h_enabled)
 
+    @final
     def on_open_shop_details(self, shop_id):
         self.shops[shop_id].fade_in_animation.on_activate()
         self.view.on_deactivate_zoom_buttons()
         self.view.on_deactivate_shop_buttons()
         self.view.is_mini_map_activated = False
 
+    @final
     def on_close_shop_details(self, shop_id):
         self.shops[shop_id].fade_out_animation.on_activate()
         self.view.on_activate_zoom_buttons()

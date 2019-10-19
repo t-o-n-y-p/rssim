@@ -2,8 +2,10 @@ from sys import exit
 from logging import getLogger
 
 from controller import *
+from database import on_commit
 
 
+@final
 class AppController(Controller):
     def __init__(self, loader):
         super().__init__(logger=getLogger('root.app.controller'))
@@ -28,10 +30,23 @@ class AppController(Controller):
         self.main_menu_to_bonus_code_transition_animation = None
         self.bonus_code_to_main_menu_transition_animation = None
 
+    def on_activate_view(self):
+        super().on_activate_view()
+        self.main_menu.on_activate_view()
+        self.fps.on_activate_view()
+
+    def on_deactivate_view(self):
+        super().on_deactivate_view()
+        self.main_menu.on_deactivate_view()
+        self.onboarding.on_deactivate_view()
+        self.license.on_deactivate_view()
+        self.game.on_deactivate_view()
+        self.settings.on_deactivate_view()
+        self.fps.on_deactivate_view()
+        self.bonus_code.on_deactivate_view()
+
     def on_update_view(self):
-        self.view.on_update()
-        self.fade_in_animation.on_update()
-        self.fade_out_animation.on_update()
+        super().on_update_view()
         self.license.on_update_view()
         self.main_menu.on_update_view()
         self.onboarding.on_update_view()
@@ -40,20 +55,63 @@ class AppController(Controller):
         self.fps.on_update_view()
         self.bonus_code.on_update_view()
 
-    def on_activate_view(self):
-        self.model.on_activate_view()
-        self.main_menu.on_activate_view()
-        self.fps.on_activate_view()
+    def on_update_current_locale(self, new_locale):
+        super().on_update_current_locale(new_locale)
+        self.model.on_save_and_commit_locale(new_locale)
+        self.main_menu.on_update_current_locale(new_locale)
+        self.onboarding.on_update_current_locale(new_locale)
+        self.license.on_update_current_locale(new_locale)
+        self.game.on_update_current_locale(new_locale)
+        self.settings.on_update_current_locale(new_locale)
+        self.fps.on_update_current_locale(new_locale)
+        self.bonus_code.on_update_current_locale(new_locale)
 
-    def on_deactivate_view(self):
-        self.view.on_deactivate()
-        self.main_menu.on_deactivate_view()
-        self.onboarding.on_deactivate_view()
-        self.license.on_deactivate_view()
-        self.game.on_deactivate_view()
-        self.settings.on_deactivate_view()
-        self.fps.on_deactivate_view()
-        self.bonus_code.on_deactivate_view()
+    def on_change_screen_resolution(self, screen_resolution):
+        super().on_change_screen_resolution(screen_resolution)
+        self.main_menu.on_change_screen_resolution(screen_resolution)
+        self.onboarding.on_change_screen_resolution(screen_resolution)
+        self.license.on_change_screen_resolution(screen_resolution)
+        self.game.on_change_screen_resolution(screen_resolution)
+        self.settings.on_change_screen_resolution(screen_resolution)
+        self.fps.on_change_screen_resolution(screen_resolution)
+        self.bonus_code.on_change_screen_resolution(screen_resolution)
+
+    def on_apply_shaders_and_draw_vertices(self):
+        super().on_apply_shaders_and_draw_vertices()
+        self.main_menu.on_apply_shaders_and_draw_vertices()
+        self.onboarding.on_apply_shaders_and_draw_vertices()
+        self.license.on_apply_shaders_and_draw_vertices()
+        self.settings.on_apply_shaders_and_draw_vertices()
+        self.game.on_apply_shaders_and_draw_vertices()
+        self.bonus_code.on_apply_shaders_and_draw_vertices()
+
+    def on_disable_notifications(self):
+        super().on_disable_notifications()
+        self.game.on_disable_notifications()
+        self.settings.on_disable_notifications()
+        self.fps.on_disable_notifications()
+
+    def on_enable_notifications(self):
+        super().on_enable_notifications()
+        self.game.on_enable_notifications()
+        self.settings.on_enable_notifications()
+        self.fps.on_enable_notifications()
+
+    def on_update_fade_animation_state(self, new_state):
+        super().on_update_fade_animation_state(new_state)
+        self.main_menu.on_update_fade_animation_state(new_state)
+        self.onboarding.on_update_fade_animation_state(new_state)
+        self.license.on_update_fade_animation_state(new_state)
+        self.game.on_update_fade_animation_state(new_state)
+        self.settings.on_update_fade_animation_state(new_state)
+        self.fps.on_update_fade_animation_state(new_state)
+        self.bonus_code.on_update_fade_animation_state(new_state)
+
+    def on_save_state(self):
+        super().on_save_state()
+        self.bonus_code.on_save_state()
+        self.game.on_save_state()
+        on_commit()
 
     def on_fullscreen_button_click(self):
         self.on_change_screen_resolution(self.model.fullscreen_resolution)
@@ -70,19 +128,9 @@ class AppController(Controller):
     def on_fullscreen_mode_turned_off(self):
         self.model.on_fullscreen_mode_turned_off()
 
-    def on_change_screen_resolution(self, screen_resolution):
-        self.view.on_change_screen_resolution(screen_resolution)
-        self.main_menu.on_change_screen_resolution(screen_resolution)
-        self.onboarding.on_change_screen_resolution(screen_resolution)
-        self.license.on_change_screen_resolution(screen_resolution)
-        self.game.on_change_screen_resolution(screen_resolution)
-        self.settings.on_change_screen_resolution(screen_resolution)
-        self.fps.on_change_screen_resolution(screen_resolution)
-        self.bonus_code.on_change_screen_resolution(screen_resolution)
-
     def on_close_game(self):
         self.on_deactivate_view()
-        self.game.on_save_and_commit_state()
+        self.on_save_state()
         exit()
 
     def on_activate_main_menu_view(self):
@@ -94,42 +142,10 @@ class AppController(Controller):
     def on_update_fps(self, fps):
         self.fps.on_update_fps(fps)
 
-    def on_apply_shaders_and_draw_vertices(self):
-        self.view.on_apply_shaders_and_draw_vertices()
-        self.main_menu.on_apply_shaders_and_draw_vertices()
-        self.onboarding.on_apply_shaders_and_draw_vertices()
-        self.license.on_apply_shaders_and_draw_vertices()
-        self.settings.on_apply_shaders_and_draw_vertices()
-        self.game.on_apply_shaders_and_draw_vertices()
-        self.bonus_code.on_apply_shaders_and_draw_vertices()
-
-    def on_update_current_locale(self, new_locale):
-        self.model.on_save_and_commit_locale(new_locale)
-        self.view.on_update_current_locale(new_locale)
-        self.main_menu.on_update_current_locale(new_locale)
-        self.onboarding.on_update_current_locale(new_locale)
-        self.license.on_update_current_locale(new_locale)
-        self.game.on_update_current_locale(new_locale)
-        self.settings.on_update_current_locale(new_locale)
-        self.fps.on_update_current_locale(new_locale)
-        self.bonus_code.on_update_current_locale(new_locale)
-
     def on_update_clock_state(self, clock_24h_enabled):
         self.model.on_save_and_commit_clock_state(clock_24h_enabled)
         self.game.on_update_clock_state(clock_24h_enabled)
         self.settings.on_update_clock_state(clock_24h_enabled)
-
-    def on_disable_notifications(self):
-        self.view.on_disable_notifications()
-        self.game.on_disable_notifications()
-        self.settings.on_disable_notifications()
-        self.fps.on_disable_notifications()
-
-    def on_enable_notifications(self):
-        self.view.on_enable_notifications()
-        self.game.on_enable_notifications()
-        self.settings.on_enable_notifications()
-        self.fps.on_enable_notifications()
 
     def on_append_notification(self, notification):
         self.loader.notifications.append(notification)
@@ -218,17 +234,6 @@ class AppController(Controller):
             self.settings.navigated_from_game = False
             self.game_to_settings_transition_animation.on_deactivate()
             self.settings_to_game_transition_animation.on_activate()
-
-    def on_update_fade_animation_state(self, new_state):
-        self.fade_in_animation.on_update_fade_animation_state(new_state)
-        self.fade_out_animation.on_update_fade_animation_state(new_state)
-        self.main_menu.on_update_fade_animation_state(new_state)
-        self.onboarding.on_update_fade_animation_state(new_state)
-        self.license.on_update_fade_animation_state(new_state)
-        self.game.on_update_fade_animation_state(new_state)
-        self.settings.on_update_fade_animation_state(new_state)
-        self.fps.on_update_fade_animation_state(new_state)
-        self.bonus_code.on_update_fade_animation_state(new_state)
 
     def on_activate_exp_bonus_code(self, value):
         self.game.on_activate_exp_bonus_code(value)

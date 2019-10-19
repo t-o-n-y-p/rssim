@@ -1,6 +1,9 @@
+from typing import final
+
 from controller.crossover_controller import CrossoverController
 
 
+@final
 class PassengerMapCrossoverController(CrossoverController):
     def __init__(self, map_controller, track_param_1, track_param_2, crossover_type):
         super().__init__(map_id=0, parent_controller=map_controller,

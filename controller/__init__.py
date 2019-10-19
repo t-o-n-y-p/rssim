@@ -64,17 +64,38 @@ class Controller:
         self.fade_in_animation = None
         self.fade_out_animation = None
 
-    def on_update_view(self):
-        pass
-
-    def on_update_current_locale(self, new_locale):
-        pass
-
     def on_activate_view(self):
-        pass
+        self.model.on_activate_view()
 
     def on_deactivate_view(self):
-        pass
+        self.view.on_deactivate()
+
+    def on_update_view(self):
+        self.view.on_update()
+        self.fade_in_animation.on_update()
+        self.fade_out_animation.on_update()
+
+    def on_update_current_locale(self, new_locale):
+        self.view.on_update_current_locale(new_locale)
+
+    def on_change_screen_resolution(self, screen_resolution):
+        self.view.on_change_screen_resolution(screen_resolution)
+
+    def on_apply_shaders_and_draw_vertices(self):
+        self.view.on_apply_shaders_and_draw_vertices()
+
+    def on_disable_notifications(self):
+        self.view.on_disable_notifications()
+
+    def on_enable_notifications(self):
+        self.view.on_enable_notifications()
+
+    def on_update_fade_animation_state(self, new_state):
+        self.fade_in_animation.on_update_fade_animation_state(new_state)
+        self.fade_out_animation.on_update_fade_animation_state(new_state)
+
+    def on_save_state(self):
+        self.model.on_save_state()
 
     @final
     def on_append_handlers(self, on_mouse_motion_handlers=None, on_mouse_press_handlers=None,

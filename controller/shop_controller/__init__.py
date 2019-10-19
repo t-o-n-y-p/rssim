@@ -13,6 +13,7 @@ class ShopController(Controller):
         self.shop_constructor = None
         self.placeholder_to_shop_constructor_transition_animation = None
 
+    @final
     def on_update_view(self):
         self.view.on_update()
         self.fade_in_animation.on_update()
@@ -20,17 +21,21 @@ class ShopController(Controller):
         self.placeholder.on_update_view()
         self.shop_constructor.on_update_view()
 
+    @final
     def on_change_screen_resolution(self, screen_resolution):
         self.view.on_change_screen_resolution(screen_resolution)
         self.placeholder.on_change_screen_resolution(screen_resolution)
         self.shop_constructor.on_change_screen_resolution(screen_resolution)
 
+    @final
     def on_save_state(self):
         self.shop_constructor.on_save_state()
 
+    @final
     def on_update_time(self, game_time):
         self.shop_constructor.on_update_time(game_time)
 
+    @final
     def on_level_up(self, level):
         self.model.on_level_up(level)
         if self.model.level >= self.model.level_required and self.placeholder.view.is_activated:
@@ -38,44 +43,54 @@ class ShopController(Controller):
 
         self.shop_constructor.on_level_up(level)
 
+    @final
     def on_activate_view(self):
         self.model.on_activate_view()
 
+    @final
     def on_deactivate_view(self):
         self.view.on_deactivate()
         self.placeholder.on_deactivate_view()
         self.shop_constructor.on_deactivate_view()
 
+    @final
     def on_update_current_locale(self, new_locale):
         self.view.on_update_current_locale(new_locale)
         self.placeholder.on_update_current_locale(new_locale)
         self.shop_constructor.on_update_current_locale(new_locale)
 
+    @final
     def on_disable_notifications(self):
         self.view.on_disable_notifications()
         self.placeholder.on_disable_notifications()
         self.shop_constructor.on_disable_notifications()
 
+    @final
     def on_enable_notifications(self):
         self.view.on_enable_notifications()
         self.placeholder.on_enable_notifications()
         self.shop_constructor.on_enable_notifications()
 
+    @final
     def on_update_fade_animation_state(self, new_state):
         self.fade_in_animation.on_update_fade_animation_state(new_state)
         self.fade_out_animation.on_update_fade_animation_state(new_state)
         self.placeholder.on_update_fade_animation_state(new_state)
         self.shop_constructor.on_update_fade_animation_state(new_state)
 
+    @final
     def on_apply_shaders_and_draw_vertices(self):
         self.view.on_apply_shaders_and_draw_vertices()
         self.shop_constructor.on_apply_shaders_and_draw_vertices()
 
+    @final
     def on_add_money(self, money):
         self.shop_constructor.on_add_money(money)
 
+    @final
     def on_pay_money(self, money):
         self.shop_constructor.on_pay_money(money)
 
+    @final
     def on_change_shop_storage_notification_state(self, notification_state):
         self.shop_constructor.on_change_shop_storage_notification_state(notification_state)
