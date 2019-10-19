@@ -4,6 +4,7 @@ from ui.label import Label
 from ui import *
 
 
+@final
 class MoneyBonusPlaceholderLabel(Label):
     def __init__(self, parent_viewport):
         super().__init__(logger=getLogger('root.money_bonus_placeholder_label'), parent_viewport=parent_viewport)

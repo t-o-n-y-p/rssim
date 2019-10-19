@@ -4,6 +4,7 @@ from ui.label import LocalizedLabel
 from ui import *
 
 
+@final
 class ConstructorLevelPlaceholderLabel(LocalizedLabel):
     def __init__(self, parent_viewport):
         super().__init__(logger=getLogger('root.constructor_level_placeholder_label'),

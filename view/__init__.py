@@ -238,12 +238,15 @@ class View:
     def on_update_opacity(self, new_opacity):
         pass
 
+    @final
     def on_disable_notifications(self):
         self.all_notifications_enabled = False
 
+    @final
     def on_enable_notifications(self):
         self.all_notifications_enabled = True
 
+    @final
     def on_append_handlers(self):
         # appends view handlers
         self.controller.on_append_handlers(on_mouse_motion_handlers=self.on_mouse_motion_handlers,
@@ -261,6 +264,7 @@ class View:
                                                on_mouse_release_handlers=(b.handle_mouse_release, ),
                                                on_mouse_leave_handlers=(b.handle_mouse_leave, ))
 
+    @final
     def on_detach_handlers(self):
         # detaches view handlers
         self.controller.on_detach_handlers(on_mouse_motion_handlers=self.on_mouse_motion_handlers,

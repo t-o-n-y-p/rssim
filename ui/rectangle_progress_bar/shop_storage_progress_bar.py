@@ -7,6 +7,7 @@ from ui import *
 from ui.label.shop_storage_label import ShopStorageLabel
 
 
+@final
 class ShopStorageProgressBar(RectangleProgressBar):
     def __init__(self, parent_viewport):
         super().__init__(logger=getLogger('root.shop_storage_progress_bar'), parent_viewport=parent_viewport)

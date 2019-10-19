@@ -10,6 +10,7 @@ from ui.button.enter_code_button import EnterCodeButton
 from ui.shader_sprite.main_menu_view_shader_sprite import MainMenuViewShaderSprite
 
 
+@final
 class MainMenuView(View):
     def __init__(self):
         def on_create_station(button):

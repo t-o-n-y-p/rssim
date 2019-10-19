@@ -4,6 +4,7 @@ from ui.label import LocalizedLabel
 from ui import *
 
 
+@final
 class BonusInfoCellExpBonusValueLabel(LocalizedLabel):
     def __init__(self, parent_viewport):
         super().__init__(logger=getLogger('root.exp_bonus_value_label'),

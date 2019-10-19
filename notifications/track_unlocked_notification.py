@@ -1,8 +1,10 @@
 from logging import getLogger
+from typing import final
 
 from notifications import Notification
 
 
+@final
 class TrackUnlockedNotification(Notification):
     def __init__(self):
         super().__init__(logger=getLogger('root.notification.track_unlocked_notification'))

@@ -1,4 +1,5 @@
 from logging import getLogger
+from typing import final
 
 from ui.page_control import PageControl
 from ui.license_page.pyglet_licence_page import PygletLicensePage
@@ -8,6 +9,7 @@ from ui.license_page.cx_freeze_license_page import CxFreezeLicensePage
 from ui.license_page.keyring_license_page import KeyringLicensePage
 
 
+@final
 class LicensePageControl(PageControl):
     def __init__(self, parent_viewport):
         super().__init__(logger=getLogger('root.app.license.view.license_page_control'),

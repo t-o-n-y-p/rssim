@@ -5,6 +5,7 @@ from ui import *
 from ui.sprite import MapSprite
 
 
+@final
 class CrossoverSprite(MapSprite):
     def __init__(self, map_id, track_param_1, track_param_2, crossover_type, parent_viewport):
         super().__init__(logger=getLogger(f'root.app.game.map.{map_id}.crossover.{track_param_1}.{track_param_2}.{crossover_type}.crossover_sprite'),

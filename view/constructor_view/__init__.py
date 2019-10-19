@@ -77,6 +77,7 @@ class ConstructorView(View):
         self.no_more_tiers_available_label \
             = NoMoreEnvironmentAvailableLabel(parent_viewport=self.no_more_tiers_available_placeholder_viewport)
 
+    @final
     @view_is_not_active
     def on_activate(self):
         super().on_activate()
@@ -87,6 +88,7 @@ class ConstructorView(View):
         if len(self.construction_state_matrix[ENVIRONMENT]) < CONSTRUCTOR_VIEW_ENVIRONMENT_CELLS:
             self.no_more_tiers_available_label.create()
 
+    @final
     @view_is_active
     def on_deactivate(self):
         super().on_deactivate()
@@ -96,6 +98,7 @@ class ConstructorView(View):
         for j in range(CONSTRUCTOR_VIEW_ENVIRONMENT_CELLS):
             self.constructor_cells[ENVIRONMENT][j].on_deactivate()
 
+    @final
     @view_is_active
     def on_update(self):
         remaining_tracks = sorted(list(self.construction_state_matrix[TRACKS].keys()))
@@ -138,6 +141,7 @@ class ConstructorView(View):
                 self.constructor_cells[ENVIRONMENT][j].on_assign_new_data(0, [])
                 return
 
+    @final
     def on_change_screen_resolution(self, screen_resolution):
         self.screen_resolution = screen_resolution
         self.viewport.x1, self.viewport.y1 = 0, 0
@@ -174,6 +178,7 @@ class ConstructorView(View):
         for b in self.buttons:
             b.on_change_screen_resolution(self.screen_resolution)
 
+    @final
     def on_update_current_locale(self, new_locale):
         self.current_locale = new_locale
         self.no_more_tracks_available_label.on_update_current_locale(self.current_locale)
@@ -184,6 +189,7 @@ class ConstructorView(View):
         for j in range(CONSTRUCTOR_VIEW_ENVIRONMENT_CELLS):
             self.constructor_cells[ENVIRONMENT][j].on_update_current_locale(self.current_locale)
 
+    @final
     def on_update_opacity(self, new_opacity):
         self.opacity = new_opacity
         self.shader_sprite.on_update_opacity(self.opacity)
@@ -198,6 +204,7 @@ class ConstructorView(View):
         for j in range(CONSTRUCTOR_VIEW_ENVIRONMENT_CELLS):
             self.constructor_cells[ENVIRONMENT][j].on_update_opacity(self.opacity)
 
+    @final
     def on_update_money(self, money):
         self.money = money
         for j in range(CONSTRUCTOR_VIEW_TRACK_CELLS):
@@ -206,6 +213,7 @@ class ConstructorView(View):
         for j in range(CONSTRUCTOR_VIEW_ENVIRONMENT_CELLS):
             self.constructor_cells[ENVIRONMENT][j].on_update_money(money)
 
+    @final
     def on_update_construction_state(self, construction_type, entity_number, game_time=0):
         if construction_type == TRACKS:
             remaining_tracks = sorted(list(self.construction_state_matrix[TRACKS].keys()))
@@ -217,6 +225,7 @@ class ConstructorView(View):
             if remaining_tiers.index(entity_number) < CONSTRUCTOR_VIEW_ENVIRONMENT_CELLS:
                 self.constructor_cells[construction_type][remaining_tiers.index(entity_number)].on_update_state()
 
+    @final
     @view_is_active
     def on_unlock_construction(self, construction_type, entity_number):
         if self.money_target_activated and self.money_target_cell_position[0] == construction_type \
@@ -267,6 +276,7 @@ class ConstructorView(View):
                 self.no_more_tiers_available_label.on_position_changed()
                 self.no_more_tiers_available_label.create()
 
+    @final
     def on_activate_money_target(self, construction_type, row):
         self.money_target_activated = True
         self.money_target_cell_position = [construction_type, row]
@@ -277,12 +287,14 @@ class ConstructorView(View):
                 else:
                     self.constructor_cells[i][j].on_deactivate_money_target()
 
+    @final
     def on_deactivate_money_target(self):
         self.money_target_activated = False
         for i in range(len(self.constructor_cells)):
             for j in range(len(self.constructor_cells[i])):
                 self.constructor_cells[i][j].on_deactivate_money_target()
 
+    @final
     @notifications_available
     @feature_unlocked_notification_enabled
     def on_send_track_unlocked_notification(self, track):
@@ -291,6 +303,7 @@ class ConstructorView(View):
         self.controller.parent_controller.parent_controller.parent_controller\
             .on_append_notification(track_unlocked_notification)
 
+    @final
     @notifications_available
     @feature_unlocked_notification_enabled
     def on_send_environment_unlocked_notification(self, tier):
@@ -299,6 +312,7 @@ class ConstructorView(View):
         self.controller.parent_controller.parent_controller.parent_controller\
             .on_append_notification(environment_unlocked_notification)
 
+    @final
     @notifications_available
     @construction_completed_notification_enabled
     def on_send_track_construction_completed_notification(self, track):
@@ -307,6 +321,7 @@ class ConstructorView(View):
         self.controller.parent_controller.parent_controller.parent_controller\
             .on_append_notification(track_construction_completed_notification)
 
+    @final
     @notifications_available
     @construction_completed_notification_enabled
     def on_send_environment_construction_completed_notification(self, tier):
@@ -315,11 +330,14 @@ class ConstructorView(View):
         self.controller.parent_controller.parent_controller.parent_controller\
             .on_append_notification(environment_construction_completed_notification)
 
+    @final
     def on_change_feature_unlocked_notification_state(self, notification_state):
         self.feature_unlocked_notification_enabled = notification_state
 
+    @final
     def on_change_construction_completed_notification_state(self, notification_state):
         self.construction_completed_notification_enabled = notification_state
 
+    @final
     def on_apply_shaders_and_draw_vertices(self):
         self.shader_sprite.draw()

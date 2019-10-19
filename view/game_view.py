@@ -24,6 +24,7 @@ from notifications.exp_bonus_expired_notification import ExpBonusExpiredNotifica
 from notifications.money_bonus_expired_notification import MoneyBonusExpiredNotification
 
 
+@final
 class GameView(View):
     def __init__(self):
         def on_pause_game(button):

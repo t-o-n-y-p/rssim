@@ -2,9 +2,11 @@ from logging import getLogger
 
 from pyshaders import from_files_names
 
+from ui import *
 from ui.shader_sprite import ShaderSprite
 
 
+@final
 class MainMenuViewShaderSprite(ShaderSprite):
     def __init__(self, view):
         super().__init__(logger=getLogger('root.app.main_menu.view.shader_sprite'), view=view)

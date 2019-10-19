@@ -4,6 +4,7 @@ from view import *
 from ui.label.fps_label import FPSLabel
 
 
+@final
 class FPSView(View):
     def __init__(self):
         super().__init__(logger=getLogger('root.app.fps.view'))

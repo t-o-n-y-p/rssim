@@ -1,3 +1,5 @@
+from typing import final
+
 from database import USER_DB_CURSOR
 
 
@@ -42,6 +44,7 @@ class FadeAnimation:
     def on_deactivate(self):
         pass
 
+    @final
     @fade_animation_is_active
     def on_update(self):
         if self.current_opacity_chart_index == len(self.opacity_chart) - 1:
@@ -54,5 +57,6 @@ class FadeAnimation:
 
             self.animation_object.view.on_update_opacity(self.opacity_chart[self.current_opacity_chart_index])
 
+    @final
     def on_update_fade_animation_state(self, new_state):
         self.fade_animations_enabled = new_state

@@ -14,6 +14,7 @@ from ui import SURFACE, BATCHES, MIN_RESOLUTION_WIDTH, MIN_RESOLUTION_HEIGHT
 from database import USER_DB_CURSOR, USER_DB_CONNECTION, USER_DB_LOCATION, on_commit
 
 
+@final
 class RSSim:
     def __init__(self):
         # determine if video adapter supports all game textures, if not - raise specific exception

@@ -4,6 +4,7 @@ from ui.label import LocalizedLabel
 from ui import *
 
 
+@final
 class NoMoreTracksAvailableLabel(LocalizedLabel):
     def __init__(self, parent_viewport):
         super().__init__(logger=getLogger('root.no_more_tracks_available_label'),

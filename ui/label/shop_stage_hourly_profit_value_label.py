@@ -4,6 +4,7 @@ from ui.label import Label
 from ui import *
 
 
+@final
 class ShopStageHourlyProfitValueLabel(Label):
     def __init__(self, parent_viewport):
         super().__init__(logger=getLogger('root.shop_stage_hourly_profit_value_label'), parent_viewport=parent_viewport)

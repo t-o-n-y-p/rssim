@@ -25,6 +25,7 @@ def info_cell_is_not_active(fn):
     return _handle_if_info_cell_is_not_activated
 
 
+@final
 class BonusCodeInfoCell:
     def __init__(self, parent_viewport):
         self.logger = getLogger(f'root.app.bonus_code.view.bonus_code_info_cell')

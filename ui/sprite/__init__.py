@@ -1,4 +1,4 @@
-from typing import Final
+from typing import Final, final
 
 import pyglet.sprite
 
@@ -42,6 +42,7 @@ class Sprite:
     def get_position(self):
         pass
 
+    @final
     @sprite_does_not_exist
     def create(self):
         self.position = self.get_position()
@@ -50,11 +51,13 @@ class Sprite:
         self.sprite.opacity = self.opacity
         self.sprite.update(rotation=self.rotation, scale=self.scale)
 
+    @final
     @sprite_exists
     def delete(self):
         self.sprite.delete()
         self.sprite = None
 
+    @final
     def on_update_opacity(self, new_opacity):
         self.opacity = new_opacity
         if self.sprite is not None:
@@ -63,16 +66,19 @@ class Sprite:
             else:
                 self.delete()
 
+    @final
     def on_position_changed(self):
         self.position = self.get_position()
         if self.sprite is not None:
             self.sprite.position = self.position
 
+    @final
     def on_update_texture(self, new_texture):
         self.texture = new_texture
         if self.sprite is not None:
             self.sprite.image = self.texture
 
+    @final
     def on_rotate(self, angle):
         self.rotation = angle
         if self.sprite is not None:
@@ -88,6 +94,7 @@ class UISprite(Sprite):
     def get_scale(self):
         pass
 
+    @final
     def on_change_screen_resolution(self, screen_resolution):
         self.screen_resolution = screen_resolution
         self.position = self.get_position()
@@ -109,15 +116,18 @@ class MapSprite(Sprite):
         else:
             self.scale = 1.0
 
+    @final
     def on_change_base_offset(self, base_offset):
         self.base_offset = base_offset
         self.on_position_changed()
 
+    @final
     def on_change_scale(self, new_scale):
         self.scale = new_scale
         if self.sprite is not None:
             self.sprite.scale = self.scale
 
+    @final
     def is_located_outside_viewport(self):
         return self.parent_viewport.x1 - (self.position[0] + (self.texture.width - self.texture.anchor_x) * self.scale)\
                > SPRITE_VIEWPORT_EDGE_OFFSET_LIMIT_X \

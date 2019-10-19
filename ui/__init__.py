@@ -90,6 +90,9 @@ GROUPS: Final = {'environment': OrderedGroup(0),
                  'button_background': OrderedGroup(9),
                  'exp_money_time': OrderedGroup(9),
                  'button_text': OrderedGroup(10)}
+# mouse cursor shapes
+HAND_CURSOR: Final = SURFACE.get_system_mouse_cursor(SURFACE.CURSOR_HAND)
+DEFAULT_CURSOR: Final = SURFACE.get_system_mouse_cursor(SURFACE.CURSOR_DEFAULT)
 # ------------------- END CONSTANTS -------------------
 
 

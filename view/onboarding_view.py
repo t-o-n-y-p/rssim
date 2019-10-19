@@ -7,6 +7,7 @@ from ui.shader_sprite.onboarding_view_shader_sprite import OnboardingViewShaderS
 from ui.label.skip_onboarding_label import SkipOnboardingLabel
 
 
+@final
 class OnboardingView(View):
     def __init__(self):
         def on_skip_onboarding(button):

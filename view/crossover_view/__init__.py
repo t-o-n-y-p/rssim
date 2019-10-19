@@ -39,16 +39,19 @@ class CrossoverView(View):
                                       parent_viewport=self.viewport)
         self.sprite.on_update_texture(self.images[self.current_position_1][self.current_position_2])
 
+    @final
     @view_is_not_active
     def on_activate(self):
         super().on_activate()
         if not self.sprite.is_located_outside_viewport() and not self.locked:
             self.sprite.create()
 
+    @final
     @view_is_active
     def on_deactivate(self):
         super().on_deactivate()
 
+    @final
     def on_change_base_offset(self, new_base_offset):
         self.base_offset = new_base_offset
         self.sprite.on_change_base_offset(self.base_offset)
@@ -57,25 +60,30 @@ class CrossoverView(View):
         elif not self.locked:
             self.sprite.create()
 
+    @final
     def on_change_screen_resolution(self, screen_resolution):
         self.screen_resolution = screen_resolution
         self.viewport.x1, self.viewport.y1 = 0, 0
         self.viewport.x2, self.viewport.y2 = self.screen_resolution
 
+    @final
     def on_update_opacity(self, new_opacity):
         self.opacity = new_opacity
         self.sprite.on_update_opacity(self.opacity)
 
+    @final
     def on_change_zoom_factor(self, zoom_factor, zoom_out_activated):
         self.zoom_factor = zoom_factor
         self.zoom_out_activated = zoom_out_activated
         self.sprite.on_change_scale(self.zoom_factor)
 
+    @final
     def on_change_current_position(self, current_position_1, current_position_2):
         self.current_position_1 = current_position_1
         self.current_position_2 = current_position_2
         self.sprite.on_update_texture(self.images[self.current_position_1][self.current_position_2])
 
+    @final
     def on_unlock(self):
         self.locked = False
         # this workaround is needed for crossover to be displayed immediately on the map

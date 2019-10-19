@@ -13,17 +13,18 @@ from pyglet.resource import get_settings_path
 set_keyring(Windows.WinVaultKeyring())
 # determine if user launches app for the first time, if yes - create game DB
 USER_DB_LOCATION: Final = get_settings_path(sha512('rssim'.encode('utf-8')).hexdigest())
+__user_db_full_path = path.join(USER_DB_LOCATION, 'user.db')
 if not path.exists(USER_DB_LOCATION):
     makedirs(USER_DB_LOCATION)
 
-if not path.exists(path.join(USER_DB_LOCATION, 'user.db')):
-    copyfile('db/default.db', path.join(USER_DB_LOCATION, 'user.db'))
+if not path.exists(__user_db_full_path):
+    copyfile('db/default.db', __user_db_full_path)
     try:
         delete_password(sha512('user_db'.encode('utf-8')).hexdigest(), sha512('user_db'.encode('utf-8')).hexdigest())
     except PasswordDeleteError:
         pass
 
-    with open(path.join(USER_DB_LOCATION, 'user.db'), 'rb') as f1:
+    with open(__user_db_full_path, 'rb') as f1:
         data = f1.read()[::-1]
         set_password(sha512('user_db'.encode('utf-8')).hexdigest(), sha512('user_db'.encode('utf-8')).hexdigest(),
                      sha512(data[::3] + data[1::3] + data[2::3]).hexdigest())
@@ -38,7 +39,7 @@ CONFIG_DB_CURSOR: Final = __config_db_connection.cursor()
 def on_commit():
     delete_password(sha512('user_db'.encode('utf-8')).hexdigest(), sha512('user_db'.encode('utf-8')).hexdigest())
     USER_DB_CONNECTION.commit()
-    with open(path.join(USER_DB_LOCATION, 'user.db'), 'rb') as f:
+    with open(__user_db_full_path, 'rb') as f:
         data1 = f.read()[::-1]
         set_password(sha512('user_db'.encode('utf-8')).hexdigest(), sha512('user_db'.encode('utf-8')).hexdigest(),
                      sha512(data1[::3] + data1[1::3] + data1[2::3]).hexdigest())

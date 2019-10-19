@@ -35,6 +35,7 @@ class LicensePage:
         self.license_layout = None
         self.opacity = 0
 
+    @final
     def on_activate(self):
         self.is_activated = True
         if self.document is None:
@@ -55,6 +56,7 @@ class LicensePage:
                                                     group=GROUPS['button_text'])
         self.license_layout.x, self.license_layout.y = self.viewport.x1, self.viewport.y1
 
+    @final
     def on_deactivate(self, instant=False):
         self.is_activated = False
         if instant:
@@ -62,6 +64,7 @@ class LicensePage:
             self.license_layout.delete()
             self.license_layout = None
 
+    @final
     def on_change_screen_resolution(self, screen_resolution):
         self.screen_resolution = screen_resolution
         self.viewport.x1, self.viewport.x2 = self.parent_viewport.x1, self.parent_viewport.x2
@@ -78,11 +81,13 @@ class LicensePage:
     def on_update_current_locale(self, new_locale):
         pass
 
+    @final
     @page_is_active
     @cursor_is_inside_the_text_box
     def handle_mouse_scroll(self, x, y, scroll_x, scroll_y):
         self.license_layout.view_y += scroll_y * self.document.get_style('font_size')
 
+    @final
     def on_update_opacity(self, new_opacity):
         self.opacity = new_opacity
         if self.opacity <= 0:

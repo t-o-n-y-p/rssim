@@ -33,6 +33,7 @@ class SchedulerView(View):
 
         self.shader_sprite = SchedulerViewShaderSprite(view=self)
 
+    @final
     @view_is_not_active
     def on_activate(self):
         super().on_activate()
@@ -40,6 +41,7 @@ class SchedulerView(View):
         self.left_schedule_caption_label.create()
         self.right_schedule_caption_label.create()
 
+    @final
     @view_is_active
     def on_deactivate(self):
         super().on_deactivate()
@@ -47,6 +49,7 @@ class SchedulerView(View):
             for j in range(SCHEDULE_ROWS):
                 self.schedule_rows[i][j].on_deactivate()
 
+    @final
     @view_is_active
     def on_update(self):
         for i in range(min(len(self.base_schedule), SCHEDULE_ROWS * SCHEDULE_COLUMNS)):
@@ -57,6 +60,7 @@ class SchedulerView(View):
                 self.schedule_rows[i // SCHEDULE_ROWS][i % SCHEDULE_ROWS].on_assign_data(self.base_schedule[i])
                 return
 
+    @final
     def on_change_screen_resolution(self, screen_resolution):
         self.screen_resolution = screen_resolution
         self.viewport.x1, self.viewport.y1 = 0, 0
@@ -71,6 +75,7 @@ class SchedulerView(View):
         for b in self.buttons:
             b.on_change_screen_resolution(self.screen_resolution)
 
+    @final
     def on_update_opacity(self, new_opacity):
         self.opacity = new_opacity
         self.shader_sprite.on_update_opacity(self.opacity)
@@ -83,6 +88,7 @@ class SchedulerView(View):
             for j in range(SCHEDULE_ROWS):
                 self.schedule_rows[i][j].on_update_opacity(self.opacity)
 
+    @final
     @view_is_active
     def on_release_train(self, index):
         for i in range(index, SCHEDULE_ROWS * SCHEDULE_COLUMNS - 1):
@@ -97,6 +103,7 @@ class SchedulerView(View):
             self.schedule_rows[SCHEDULE_COLUMNS - 1][SCHEDULE_ROWS - 1]\
                 .on_assign_data(self.base_schedule[SCHEDULE_ROWS * SCHEDULE_COLUMNS])
 
+    @final
     def on_update_current_locale(self, new_locale):
         self.current_locale = new_locale
         self.left_schedule_caption_label.on_update_current_locale(self.current_locale)
@@ -105,13 +112,16 @@ class SchedulerView(View):
             for j in range(SCHEDULE_ROWS):
                 self.schedule_rows[i][j].on_update_current_locale(self.current_locale)
 
+    @final
     def on_apply_shaders_and_draw_vertices(self):
         self.shader_sprite.draw()
 
+    @final
     def on_update_clock_state(self, clock_24h_enabled):
         for i in range(SCHEDULE_COLUMNS):
             for j in range(SCHEDULE_ROWS):
                 self.schedule_rows[i][j].on_update_clock_state(clock_24h_enabled)
 
+    @final
     def on_update_time(self, game_time):
         self.game_time = game_time

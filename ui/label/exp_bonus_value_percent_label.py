@@ -4,6 +4,7 @@ from ui.label import Label
 from ui import *
 
 
+@final
 class ExpBonusValuePercentLabel(Label):
     def __init__(self, parent_viewport):
         super().__init__(logger=getLogger('root.exp_bonus_value_percent_label'), parent_viewport=parent_viewport)

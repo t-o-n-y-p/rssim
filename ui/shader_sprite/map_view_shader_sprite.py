@@ -6,6 +6,7 @@ from ui.shader_sprite import ShaderSprite
 from ui import *
 
 
+@final
 class MapViewShaderSprite(ShaderSprite):
     def __init__(self, view):
         super().__init__(logger=getLogger('root.app.game.map.view.shader_sprite'), view=view)

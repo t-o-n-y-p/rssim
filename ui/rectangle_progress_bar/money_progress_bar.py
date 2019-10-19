@@ -7,6 +7,7 @@ from ui import *
 from ui.label.money_label import MoneyLabel
 
 
+@final
 class MoneyProgressBar(RectangleProgressBar):
     def __init__(self, parent_viewport):
         super().__init__(logger=getLogger('root.money_progress_bar'), parent_viewport=parent_viewport)

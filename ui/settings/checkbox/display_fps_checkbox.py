@@ -4,6 +4,7 @@ from ui.settings.checkbox import *
 from ui.label.display_fps_checkbox_description_label import DisplayFPSCheckboxDescriptionLabel
 
 
+@final
 class DisplayFPSCheckbox(Checkbox):
     def __init__(self, column, row, on_update_state_action, parent_viewport):
         super().__init__(column, row, on_update_state_action, parent_viewport,

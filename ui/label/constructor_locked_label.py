@@ -4,6 +4,7 @@ from ui.label import Label
 from ui import *
 
 
+@final
 class ConstructorLockedLabel(Label):
     def __init__(self, parent_viewport):
         super().__init__(logger=getLogger('root.constructor_locked_label'), parent_viewport=parent_viewport)

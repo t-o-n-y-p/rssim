@@ -40,6 +40,7 @@ def unlock_available(fn):
     return _handle_if_unlock_available
 
 
+@final
 class ShopStageCell:
     def __init__(self, stage_number, on_buy_stage_action, parent_viewport):
         def on_buy_shop_stage(button):

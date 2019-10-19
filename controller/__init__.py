@@ -1,4 +1,4 @@
-from typing import Final
+from typing import Final, final
 
 
 def view_is_active(fn):
@@ -67,6 +67,16 @@ class Controller:
     def on_update_view(self):
         pass
 
+    def on_update_current_locale(self, new_locale):
+        pass
+
+    def on_activate_view(self):
+        pass
+
+    def on_deactivate_view(self):
+        pass
+
+    @final
     def on_append_handlers(self, on_mouse_motion_handlers=None, on_mouse_press_handlers=None,
                            on_mouse_release_handlers=None, on_mouse_drag_handlers=None,
                            on_mouse_leave_handlers=None, on_mouse_scroll_handlers=None,
@@ -107,6 +117,7 @@ class Controller:
                                                       on_key_press_handlers=on_key_press_handlers,
                                                       on_text_handlers=on_text_handlers)
 
+    @final
     def on_detach_handlers(self, on_mouse_motion_handlers=None, on_mouse_press_handlers=None,
                            on_mouse_release_handlers=None, on_mouse_drag_handlers=None,
                            on_mouse_leave_handlers=None, on_mouse_scroll_handlers=None,
@@ -154,12 +165,3 @@ class Controller:
                                                       on_mouse_scroll_handlers=on_mouse_scroll_handlers,
                                                       on_key_press_handlers=on_key_press_handlers,
                                                       on_text_handlers=on_text_handlers)
-
-    def on_update_current_locale(self, new_locale):
-        pass
-
-    def on_activate_view(self):
-        pass
-
-    def on_deactivate_view(self):
-        pass

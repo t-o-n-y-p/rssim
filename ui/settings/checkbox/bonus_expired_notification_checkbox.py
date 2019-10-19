@@ -5,6 +5,7 @@ from ui.label.bonus_expired_notification_checkbox_description_label \
     import BonusExpiredNotificationCheckboxDescriptionLabel
 
 
+@final
 class BonusExpiredNotificationCheckbox(Checkbox):
     def __init__(self, column, row, on_update_state_action, parent_viewport):
         super().__init__(column, row, on_update_state_action, parent_viewport,

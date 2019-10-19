@@ -41,17 +41,20 @@ class ShaderSprite:
     def set_uniforms(self):
         pass
 
+    @final
     @shader_sprite_does_not_exist
     def create(self):
         self.sprite = self.batch.add(4, GL_QUADS, self.group,
                                      ('v2f/static', (-1.0, self.bottom_edge, -1.0, self.top_edge,
                                                      1.0, self.top_edge, 1.0, self.bottom_edge)))
 
+    @final
     @shader_sprite_exists
     def delete(self):
         self.sprite.delete()
         self.sprite = None
 
+    @final
     @shader_sprite_exists
     def draw(self):
         self.shader.use()
@@ -59,6 +62,7 @@ class ShaderSprite:
         self.sprite.draw(GL_QUADS)
         self.shader.clear()
 
+    @final
     def on_change_screen_resolution(self, screen_resolution):
         self.screen_resolution = screen_resolution
         self.bottom_edge = self.get_bottom_edge()
@@ -67,6 +71,7 @@ class ShaderSprite:
             self.sprite.vertices = (-1.0, self.bottom_edge, -1.0, self.top_edge,
                                     1.0, self.top_edge, 1.0, self.bottom_edge)
 
+    @final
     def on_update_opacity(self, new_opacity):
         self.opacity = new_opacity
         if self.opacity <= 0:

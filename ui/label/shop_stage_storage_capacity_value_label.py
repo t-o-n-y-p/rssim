@@ -4,6 +4,7 @@ from ui.label import Label
 from ui import *
 
 
+@final
 class ShopStageStorageCapacityValueLabel(Label):
     def __init__(self, parent_viewport):
         super().__init__(logger=getLogger('root.shop_stage_storage_capacity_value_label'),

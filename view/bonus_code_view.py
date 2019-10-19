@@ -9,6 +9,7 @@ from ui.shader_sprite.bonus_code_view_shader_sprite import BonusCodeViewShaderSp
 from ui.bonus_code_info import BonusCodeInfoCell
 
 
+@final
 class BonusCodeView(View):
     def __init__(self):
         def on_activate_bonus_code(button):

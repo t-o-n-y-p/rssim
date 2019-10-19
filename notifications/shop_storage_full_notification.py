@@ -1,8 +1,10 @@
 from logging import getLogger
+from typing import final
 
 from notifications import Notification
 
 
+@final
 class ShopStorageFullNotification(Notification):
     def __init__(self):
         super().__init__(logger=getLogger('root.notification.shop_storage_full_notification'))

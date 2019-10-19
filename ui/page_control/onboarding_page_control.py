@@ -1,4 +1,5 @@
 from logging import getLogger
+from typing import final
 
 from ui.page_control import *
 from ui.onboarding_page.clock_onboarding_page import ClockOnboardingPage
@@ -12,6 +13,7 @@ from ui.onboarding_page.zoom_onboarding_page import ZoomOnboardingPage
 from ui.shader_sprite.onboarding_page_control_shader_sprite import OnboardingPageControlShaderSprite
 
 
+@final
 class OnboardingPageControl(PageControl):
     def __init__(self, parent_viewport):
         super().__init__(logger=getLogger('root.app.onboarding.view.onboarding_page_control'),

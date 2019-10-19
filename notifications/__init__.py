@@ -1,3 +1,5 @@
+from typing import final
+
 from win32api import GetModuleHandle
 from win32con import CW_USEDEFAULT, IMAGE_ICON, LR_DEFAULTSIZE, LR_LOADFROMFILE, WM_USER, \
     WS_OVERLAPPED, WS_SYSMENU
@@ -23,6 +25,7 @@ class Notification:
         self.icon_handler = LoadImage(_wnd_class.hInstance, 'icon.ico', IMAGE_ICON, 0, 0,
                                       LR_LOADFROMFILE | LR_DEFAULTSIZE)
 
+    @final
     def send(self, current_locale, caption_args=(), message_args=()):
         self.handler = CreateWindow(_wnd_class_instance, "Taskbar", WS_OVERLAPPED | WS_SYSMENU,
                                     0, 0, CW_USEDEFAULT, CW_USEDEFAULT,
@@ -35,6 +38,7 @@ class Notification:
                                       I18N_RESOURCES[self.message_key][current_locale].format(*message_args), 200,
                                       I18N_RESOURCES[self.caption_key][current_locale].format(*caption_args)))
 
+    @final
     def destroy(self):
         Shell_NotifyIcon(NIM_DELETE, (self.handler, 0, NIF_ICON | NIF_MESSAGE | NIF_TIP, WM_USER + 20,
                                       self.icon_handler))

@@ -49,6 +49,7 @@ class PageControl:
         self.shader_sprite = None
         self.opacity = 0
 
+    @final
     def on_activate(self):
         self.is_activated = True
         self.current_page = 0
@@ -60,12 +61,14 @@ class PageControl:
         self.pages[self.current_page].on_activate()
         self.next_page_button.on_activate()
 
+    @final
     def on_deactivate(self):
         self.is_activated = False
         self.pages[self.current_page].on_deactivate()
         for b in self.buttons:
             b.on_deactivate()
 
+    @final
     def on_change_screen_resolution(self, screen_resolution):
         self.screen_resolution = screen_resolution
         if self.shader_sprite is not None:
@@ -78,6 +81,7 @@ class PageControl:
         for p in self.pages:
             p.on_change_screen_resolution(self.screen_resolution)
 
+    @final
     def on_update_page_control_buttons(self):
         if self.current_page == 0:
             self.previous_page_button.on_deactivate(instant=True)
@@ -91,12 +95,14 @@ class PageControl:
         else:
             self.next_page_button.on_activate(instant=True)
 
+    @final
     def on_update_current_locale(self, new_locale):
         self.current_locale = new_locale
         self.current_page_label.on_update_current_locale(self.current_locale)
         for p in self.pages:
             p.on_update_current_locale(self.current_locale)
 
+    @final
     def on_update_opacity(self, new_opacity):
         self.opacity = new_opacity
         if self.shader_sprite is not None:
@@ -105,5 +111,6 @@ class PageControl:
         self.current_page_label.on_update_opacity(self.opacity)
         self.pages[self.current_page].on_update_opacity(self.opacity)
 
+    @final
     def on_apply_shaders_and_draw_vertices(self):
         pass

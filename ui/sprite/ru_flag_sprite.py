@@ -5,6 +5,7 @@ from ui.sprite import UISprite
 from textures import FLAG_RU
 
 
+@final
 class RUFlagSprite(UISprite):
     def __init__(self, parent_viewport):
         super().__init__(logger=getLogger('root.app.view.ru_flag_sprite'), parent_viewport=parent_viewport)

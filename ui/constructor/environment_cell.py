@@ -5,6 +5,7 @@ from ui.label.previous_environment_required_label import PreviousEnvironmentRequ
 from ui.label.environment_unlock_available_label import EnvironmentUnlockAvailableLabel
 
 
+@final
 class EnvironmentCell(ConstructorCell):
     def __init__(self, column, row, on_buy_construction_action, on_set_money_target_action,
                  on_reset_money_target_action, parent_viewport):

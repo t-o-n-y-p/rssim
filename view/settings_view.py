@@ -11,6 +11,7 @@ from ui.settings.checkbox_group.notifications_checkbox_group import Notification
 from ui.shader_sprite.settings_view_shader_sprite import SettingsViewShaderSprite
 
 
+@final
 class SettingsView(View):
     def __init__(self):
         def on_accept_changes(button):

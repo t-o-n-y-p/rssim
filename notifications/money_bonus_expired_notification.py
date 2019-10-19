@@ -1,8 +1,10 @@
 from logging import getLogger
+from typing import final
 
 from notifications import Notification
 
 
+@final
 class MoneyBonusExpiredNotification(Notification):
     def __init__(self):
         super().__init__(logger=getLogger('root.notification.money_bonus_expired_notification'))

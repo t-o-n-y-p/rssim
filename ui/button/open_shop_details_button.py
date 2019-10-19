@@ -1,9 +1,11 @@
 from logging import getLogger
 
+from ui import *
 from database import CONFIG_DB_CURSOR
 from ui.button import MapButton
 
 
+@final
 class OpenShopDetailsButton(MapButton):
     def __init__(self, map_id, shop_id, on_click_action, on_hover_action, on_leave_action):
         super().__init__(logger=getLogger('root.button.open_shop_details_button'))

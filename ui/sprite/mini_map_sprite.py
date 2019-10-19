@@ -6,6 +6,7 @@ from ui.sprite import UISprite
 from textures import get_full_map
 
 
+@final
 class MiniMapSprite(UISprite):
     def __init__(self, map_id, parent_viewport):
         super().__init__(logger=getLogger(f'root.app.game.map.{map_id}.mini_map_sprite'),

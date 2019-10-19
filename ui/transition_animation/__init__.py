@@ -1,4 +1,5 @@
 from logging import getLogger
+from typing import final
 
 
 def transition_animation_is_active(fn):
@@ -17,6 +18,7 @@ def transition_animation_is_not_active(fn):
     return _handle_if_transition_animation_is_not_active
 
 
+@final
 class TransitionAnimation:
     def __init__(self, fade_out_animation, fade_in_animation):
         self.logger = getLogger('root.{}->{}_transition_animation'

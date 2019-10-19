@@ -19,6 +19,7 @@ from ui.sprite.us_flag_sprite import USFlagSprite
 from ui.sprite.ru_flag_sprite import RUFlagSprite
 
 
+@final
 class AppView(View):
     def __init__(self):
         def on_close_game(button):

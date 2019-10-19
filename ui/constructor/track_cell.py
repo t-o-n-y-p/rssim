@@ -6,6 +6,7 @@ from ui.label.environment_required_label import EnvironmentRequiredLabel
 from ui.label.track_unlock_available_label import TrackUnlockAvailableLabel
 
 
+@final
 class TrackCell(ConstructorCell):
     def __init__(self, column, row, on_buy_construction_action, on_set_money_target_action,
                  on_reset_money_target_action, parent_viewport):

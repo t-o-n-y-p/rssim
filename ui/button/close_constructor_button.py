@@ -4,6 +4,7 @@ from ui import *
 from ui.button import UIButton
 
 
+@final
 class CloseConstructorButton(UIButton):
     def __init__(self, on_click_action, parent_viewport):
         super().__init__(logger=getLogger('root.button.close_constructor_button'), parent_viewport=parent_viewport)

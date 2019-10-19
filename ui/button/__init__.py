@@ -1,5 +1,3 @@
-from typing import Final
-
 from pyglet import gl
 from pyglet.text import Label
 from pyglet.window import mouse
@@ -102,13 +100,12 @@ class Button:
         self.on_click_action = None
         self.on_hover_action = None
         self.on_leave_action = None
-        self.hand_cursor = SURFACE.get_system_mouse_cursor(SURFACE.CURSOR_HAND)
-        self.default_cursor = SURFACE.get_system_mouse_cursor(SURFACE.CURSOR_DEFAULT)
         self.opacity = 0
         self.disabled_state = False
         USER_DB_CURSOR.execute('SELECT current_locale FROM i18n')
         self.current_locale = USER_DB_CURSOR.fetchone()[0]
 
+    @final
     @button_is_not_activated
     def on_activate(self, instant=False):
         self.is_activated = True
@@ -147,6 +144,7 @@ class Button:
         else:
             self.text_label.color = (*WHITE_RGB, self.opacity)
 
+    @final
     @button_is_activated_or_disabled
     def on_deactivate(self, instant=False):
         self.is_activated = False
@@ -161,6 +159,7 @@ class Button:
                 self.text_label.delete()
                 self.text_label = None
 
+    @final
     def on_disable(self, instant=False):
         self.on_deactivate()
         self.disabled_state = True
@@ -182,6 +181,7 @@ class Button:
         else:
             self.text_label.color = (*GREY_RGB, self.opacity)
 
+    @final
     @button_is_activated_or_disabled
     def on_move(self):
         if self.vertex_list is not None:
@@ -198,11 +198,13 @@ class Button:
             self.text_label.x = self.position[0] + self.button_size[0] // 2
             self.text_label.y = self.position[1] + self.button_size[1] // 2
 
+    @final
     def on_resize(self):
         self.font_size = int(self.base_font_size_property * min(self.button_size))
         if self.text_label is not None:
             self.text_label.font_size = self.font_size
 
+    @final
     @button_is_activated
     def handle_mouse_motion(self, x, y, dx, dy):
         # if cursor is on the button and button is not pressed, it means cursor was just moved over the button,
@@ -216,7 +218,7 @@ class Button:
                                                BUTTON_BACKGROUND_ALPHA[self.state][self.transparent]
                                                * float(self.opacity) / 255.0) * 4)
 
-                SURFACE.set_mouse_cursor(self.hand_cursor)
+                SURFACE.set_mouse_cursor(HAND_CURSOR)
                 if self.on_hover_action is not None:
                     self.on_hover_action()
         # if cursor is not on the button and button is not normal, it means cursor has just left the button,
@@ -229,10 +231,11 @@ class Button:
                                                BUTTON_BACKGROUND_ALPHA[self.state][self.transparent]
                                                * float(self.opacity) / 255.0) * 4)
 
-                SURFACE.set_mouse_cursor(self.default_cursor)
+                SURFACE.set_mouse_cursor(DEFAULT_CURSOR)
                 if self.on_leave_action is not None:
                     self.on_leave_action()
 
+    @final
     @button_is_activated
     @cursor_is_over_the_button
     @left_mouse_button
@@ -243,6 +246,7 @@ class Button:
                                        BUTTON_BACKGROUND_ALPHA[self.state][self.transparent]
                                        * float(self.opacity) / 255.0) * 4)
 
+    @final
     @button_is_activated
     @cursor_is_over_the_button
     @button_is_pressed
@@ -254,9 +258,10 @@ class Button:
                                        BUTTON_BACKGROUND_ALPHA[self.state][self.transparent]
                                        * float(self.opacity) / 255.0) * 4)
 
-        SURFACE.set_mouse_cursor(self.default_cursor)
+        SURFACE.set_mouse_cursor(DEFAULT_CURSOR)
         self.on_click_action(self)
 
+    @final
     @button_is_activated
     def handle_mouse_leave(self, x, y):
         self.state = 'normal'
@@ -265,10 +270,11 @@ class Button:
                                        BUTTON_BACKGROUND_ALPHA[self.state][self.transparent]
                                        * float(self.opacity) / 255.0) * 4)
 
-        SURFACE.set_mouse_cursor(self.default_cursor)
+        SURFACE.set_mouse_cursor(DEFAULT_CURSOR)
         if self.on_leave_action is not None:
             self.on_leave_action()
 
+    @final
     def on_update_opacity(self, new_opacity):
         self.opacity = new_opacity
         if self.opacity <= 0:
@@ -304,6 +310,7 @@ class UIButton(Button):
     def get_size(self):
         pass
 
+    @final
     def on_change_screen_resolution(self, screen_resolution):
         self.screen_resolution = screen_resolution
         self.position = self.get_position()
@@ -311,6 +318,7 @@ class UIButton(Button):
         self.on_move()
         self.on_resize()
 
+    @final
     def on_position_changed(self):
         self.position = self.get_position()
         self.on_move()
@@ -334,11 +342,13 @@ class MapButton(Button):
     def get_size(self):
         pass
 
+    @final
     def on_change_base_offset(self, base_offset):
         self.base_offset = base_offset
         self.position = self.get_position()
         self.on_move()
 
+    @final
     def on_change_scale(self, new_scale):
         self.scale = new_scale
         self.button_size = self.get_size()

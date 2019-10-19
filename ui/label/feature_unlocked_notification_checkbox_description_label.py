@@ -4,6 +4,7 @@ from ui.label import LocalizedLabel
 from ui import *
 
 
+@final
 class FeatureUnlockedNotificationCheckboxDescriptionLabel(LocalizedLabel):
     def __init__(self, parent_viewport):
         super().__init__(logger=getLogger('root.feature_unlocked_notification_checkbox_description_label'),

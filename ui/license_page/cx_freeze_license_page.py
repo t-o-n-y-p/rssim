@@ -1,8 +1,10 @@
 from logging import getLogger
+from typing import final
 
 from ui.license_page import LicensePage
 
 
+@final
 class CxFreezeLicensePage(LicensePage):
     def __init__(self, parent_viewport):
         super().__init__(logger=getLogger('root.app.license.view.cx_freeze_license_page'),

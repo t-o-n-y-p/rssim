@@ -4,6 +4,7 @@ from ui import *
 from ui.sprite import MapSprite
 
 
+@final
 class BoardingLightsSprite(MapSprite):
     def __init__(self, map_id, train_id, parent_viewport):
         super().__init__(logger=getLogger(f'root.app.game.map.{map_id}.train.{train_id}.boarding_lights_sprite'),

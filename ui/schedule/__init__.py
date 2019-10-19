@@ -24,6 +24,7 @@ def row_is_not_active(fn):
     return _handle_if_row_is_not_activated
 
 
+@final
 class ScheduleRow:
     def __init__(self, column, row, parent_viewport):
         self.logger = getLogger(f'root.app.game.map.scheduler.view.row.{column}.{row}')

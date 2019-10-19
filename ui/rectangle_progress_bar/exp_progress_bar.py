@@ -7,6 +7,7 @@ from ui import *
 from ui.label.current_level_label import CurrentLevelLabel
 
 
+@final
 class ExpProgressBar(RectangleProgressBar):
     def __init__(self, parent_viewport):
         super().__init__(logger=getLogger('root.exp_progress_bar'), parent_viewport=parent_viewport)

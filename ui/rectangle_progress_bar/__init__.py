@@ -35,6 +35,7 @@ class RectangleProgressBar:
     def get_scale(self):
         pass
 
+    @final
     def on_activate(self):
         self.is_activated = True
         self.text_label.create()
@@ -50,9 +51,11 @@ class RectangleProgressBar:
             self.active_sprite.scale = self.get_scale()
             self.active_sprite.opacity = self.opacity
 
+    @final
     def on_deactivate(self):
         self.is_activated = False
 
+    @final
     def on_change_screen_resolution(self, screen_resolution):
         self.screen_resolution = screen_resolution
         self.viewport.x1, self.viewport.y1 = self.get_position()
@@ -67,6 +70,7 @@ class RectangleProgressBar:
             self.active_sprite.position = (self.viewport.x1, self.viewport.y1)
             self.active_sprite.scale = self.get_scale()
 
+    @final
     def on_update_opacity(self, new_opacity):
         self.opacity = new_opacity
         if self.opacity <= 0:
@@ -83,9 +87,11 @@ class RectangleProgressBar:
             if self.active_sprite is not None:
                 self.active_sprite.opacity = self.opacity
 
+    @final
     def on_update_text_label_args(self, new_args):
         self.text_label.on_update_args(new_args)
 
+    @final
     @progress_bar_is_active
     def on_update_progress_bar_state(self, current_value, maximum_value):
         if maximum_value == 0:
@@ -106,6 +112,7 @@ class RectangleProgressBar:
 
         self.active_sprite.image = image_region
 
+    @final
     def on_update_current_locale(self, new_locale):
         self.current_locale = new_locale
         self.text_label.on_update_current_locale(self.current_locale)

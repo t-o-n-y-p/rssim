@@ -17,27 +17,32 @@ class CheckboxGroup:
         self.screen_resolution = (1280, 720)
         self.opacity = 0
 
+    @final
     def on_update_opacity(self, new_opacity):
         self.opacity = new_opacity
         self.description_label.on_update_opacity(self.opacity)
         for checkbox in self.checkboxes:
             checkbox.on_update_opacity(self.opacity)
 
+    @final
     def on_activate(self):
         self.is_activated = True
         self.description_label.create()
         for checkbox in self.checkboxes:
             checkbox.on_activate()
 
+    @final
     def on_init_state(self, checkbox_state_list):
         for i in range(len(self.checkboxes)):
             self.checkboxes[i].on_init_state(checkbox_state_list[i])
 
+    @final
     def on_deactivate(self):
         self.is_activated = False
         for checkbox in self.checkboxes:
             checkbox.on_deactivate()
 
+    @final
     def on_change_screen_resolution(self, screen_resolution):
         self.screen_resolution = screen_resolution
         self.viewport.x1 = self.parent_viewport.x1 \
@@ -53,6 +58,7 @@ class CheckboxGroup:
         for checkbox in self.checkboxes:
             checkbox.on_change_screen_resolution(self.screen_resolution)
 
+    @final
     def on_update_current_locale(self, new_locale):
         self.current_locale = new_locale
         self.description_label.on_update_current_locale(self.current_locale)

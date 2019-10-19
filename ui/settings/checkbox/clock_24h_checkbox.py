@@ -4,6 +4,7 @@ from ui.settings.checkbox import *
 from ui.label.clock_24h_checkbox_description_label import Clock24HCheckboxDescriptionLabel
 
 
+@final
 class Clock24HCheckbox(Checkbox):
     def __init__(self, column, row, on_update_state_action, parent_viewport):
         super().__init__(column, row, on_update_state_action, parent_viewport,

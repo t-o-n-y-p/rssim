@@ -14,16 +14,19 @@ class OnboardingPage:
         self.help_label = None
         self.opacity = 0
 
+    @final
     def on_activate(self):
         self.is_activated = True
         self.help_label.create()
 
+    @final
     def on_deactivate(self, instant=False):
         self.is_activated = False
         if instant:
             self.opacity = 0
             self.help_label.delete()
 
+    @final
     def on_change_screen_resolution(self, screen_resolution):
         self.screen_resolution = screen_resolution
         self.viewport.x1, self.viewport.x2 = self.parent_viewport.x1, self.parent_viewport.x2
@@ -31,10 +34,12 @@ class OnboardingPage:
         self.viewport.y2 = self.parent_viewport.y2
         self.help_label.on_change_screen_resolution(self.screen_resolution)
 
+    @final
     def on_update_current_locale(self, new_locale):
         self.current_locale = new_locale
         self.help_label.on_update_current_locale(self.current_locale)
 
+    @final
     def on_update_opacity(self, new_opacity):
         self.opacity = new_opacity
         self.help_label.on_update_opacity(self.opacity)

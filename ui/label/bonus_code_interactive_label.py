@@ -5,6 +5,7 @@ from ui import *
 from i18n import I18N_RESOURCES
 
 
+@final
 class BonusCodeInteractiveLabel(InteractiveLabel):
     def __init__(self, parent_viewport):
         super().__init__(logger=getLogger('root.bonus_code_interactive_label'), parent_viewport=parent_viewport)

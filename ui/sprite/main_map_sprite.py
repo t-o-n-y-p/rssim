@@ -6,6 +6,7 @@ from ui.sprite import MapSprite
 from textures import get_full_map
 
 
+@final
 class MainMapSprite(MapSprite):
     def __init__(self, map_id, parent_viewport):
         super().__init__(logger=getLogger(f'root.app.game.map.{map_id}.main_map_sprite'),

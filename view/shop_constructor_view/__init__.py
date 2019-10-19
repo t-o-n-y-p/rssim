@@ -49,6 +49,7 @@ class ShopConstructorView(View):
                                                      parent_viewport=self.viewport)
             self.buttons.append(self.shop_stage_cells[i].build_button)
 
+    @final
     @view_is_not_active
     def on_activate(self):
         super().on_activate()
@@ -72,6 +73,7 @@ class ShopConstructorView(View):
         for stage_cell in self.shop_stage_cells:
             self.shop_stage_cells[stage_cell].on_activate()
 
+    @final
     @view_is_active
     def on_deactivate(self):
         super().on_deactivate()
@@ -79,6 +81,7 @@ class ShopConstructorView(View):
         for stage_cell in self.shop_stage_cells:
             self.shop_stage_cells[stage_cell].on_deactivate()
 
+    @final
     def on_change_screen_resolution(self, screen_resolution):
         self.screen_resolution = screen_resolution
         self.viewport.x1 = get_inner_area_rect(self.screen_resolution)[0]
@@ -103,6 +106,7 @@ class ShopConstructorView(View):
         for b in self.buttons:
             b.on_change_screen_resolution(self.screen_resolution)
 
+    @final
     def on_update_opacity(self, new_opacity):
         self.opacity = new_opacity
         self.shop_storage_progress_bar.on_update_opacity(self.opacity)
@@ -117,6 +121,7 @@ class ShopConstructorView(View):
         for b in self.buttons:
             b.on_update_opacity(self.opacity)
 
+    @final
     def on_update_current_locale(self, new_locale):
         self.current_locale = new_locale
         self.current_hourly_profit_label.on_update_current_locale(self.current_locale)
@@ -125,12 +130,15 @@ class ShopConstructorView(View):
         for stage_cell in self.shop_stage_cells:
             self.shop_stage_cells[stage_cell].on_update_current_locale(self.current_locale)
 
+    @final
     def on_apply_shaders_and_draw_vertices(self):
         self.shader_sprite.draw()
 
+    @final
     def on_update_stage_state(self, stage_number):
         self.shop_stage_cells[stage_number].on_update_state()
 
+    @final
     @view_is_active
     def on_update_storage_money(self, storage_money):
         self.shop_storage_money = storage_money
@@ -147,10 +155,12 @@ class ShopConstructorView(View):
         else:
             self.shop_storage_progress_bar.on_update_progress_bar_state(storage_money, 0)
 
+    @final
     def on_update_money(self, money):
         for stage_cell in self.shop_stage_cells:
             self.shop_stage_cells[stage_cell].on_update_money(money)
 
+    @final
     def on_unlock_stage(self, stage):
         self.current_stage = stage
         self.hourly_profit_value_label\
@@ -160,9 +170,11 @@ class ShopConstructorView(View):
             .on_update_progress_bar_state(self.shop_storage_money,
                                           self.shop_stages_state_matrix[self.current_stage][STORAGE_CAPACITY])
 
+    @final
     def on_change_shop_storage_notification_state(self, notification_state):
         self.shop_storage_notification_enabled = notification_state
 
+    @final
     @notifications_available
     @shop_storage_notification_enabled
     def on_send_shop_storage_almost_full_notification(self):
@@ -171,6 +183,7 @@ class ShopConstructorView(View):
         self.controller.parent_controller.parent_controller.parent_controller.parent_controller\
             .on_append_notification(shop_storage_almost_full_notification)
 
+    @final
     @notifications_available
     @shop_storage_notification_enabled
     def on_send_shop_storage_full_notification(self):

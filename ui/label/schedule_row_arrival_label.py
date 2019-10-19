@@ -4,6 +4,7 @@ from ui.label import LocalizedLabel
 from ui import *
 
 
+@final
 class ScheduleRowArrivalLabel(LocalizedLabel):
     def __init__(self, column, row, parent_viewport):
         super().__init__(logger=getLogger('root.schedule_row_arrival_label'),

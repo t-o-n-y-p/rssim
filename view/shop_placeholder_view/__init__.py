@@ -19,16 +19,19 @@ class ShopPlaceholderView(View):
         self.level_required = CONFIG_DB_CURSOR.fetchone()[0]
         self.description_label.on_update_args((self.level_required, ))
 
+    @final
     @view_is_not_active
     def on_activate(self):
         super().on_activate()
         self.lock_label.create()
         self.description_label.create()
 
+    @final
     @view_is_active
     def on_deactivate(self):
         super().on_deactivate()
 
+    @final
     def on_change_screen_resolution(self, screen_resolution):
         self.screen_resolution = screen_resolution
         self.viewport.x1 = get_inner_area_rect(self.screen_resolution)[0]
@@ -38,11 +41,13 @@ class ShopPlaceholderView(View):
         self.lock_label.on_change_screen_resolution(self.screen_resolution)
         self.description_label.on_change_screen_resolution(self.screen_resolution)
 
+    @final
     def on_update_opacity(self, new_opacity):
         self.opacity = new_opacity
         self.lock_label.on_update_opacity(self.opacity)
         self.description_label.on_update_opacity(self.opacity)
 
+    @final
     def on_update_current_locale(self, new_locale):
         self.current_locale = new_locale
         self.description_label.on_update_current_locale(self.current_locale)

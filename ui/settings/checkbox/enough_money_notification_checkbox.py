@@ -5,6 +5,7 @@ from ui.label.enough_money_notification_checkbox_description_label \
     import EnoughMoneyNotificationCheckboxDescriptionLabel
 
 
+@final
 class EnoughMoneyNotificationCheckbox(Checkbox):
     def __init__(self, column, row, on_update_state_action, parent_viewport):
         super().__init__(column, row, on_update_state_action, parent_viewport,

@@ -4,6 +4,7 @@ from ui.label import LocalizedLabel
 from ui import *
 
 
+@final
 class MainClockLabel24H(LocalizedLabel):
     def __init__(self, parent_viewport):
         super().__init__(logger=getLogger('root.main_clock_label_24h'),

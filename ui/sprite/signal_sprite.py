@@ -6,6 +6,7 @@ from ui.sprite import MapSprite
 from textures import RED_SIGNAL_IMAGE, GREEN_SIGNAL_IMAGE
 
 
+@final
 class SignalSprite(MapSprite):
     def __init__(self, map_id, track, base_route, parent_viewport):
         super().__init__(logger=getLogger(f'root.app.game.map.{map_id}.signal.{track}.{base_route}.sprite'),

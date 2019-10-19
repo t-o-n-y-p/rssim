@@ -6,6 +6,7 @@ from ui import *
 from ui.shader_sprite import ShaderSprite
 
 
+@final
 class AppViewShaderSprite(ShaderSprite):
     def __init__(self, view):
         super().__init__(logger=getLogger('root.app.view.shader_sprite'), view=view)

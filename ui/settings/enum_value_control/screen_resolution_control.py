@@ -5,6 +5,7 @@ from ui.label.screen_resolution_control_description_label import ScreenResolutio
 from ui.label.temp_screen_resolution_value_label import TempScreenResolutionValueLabel
 
 
+@final
 class ScreenResolutionControl(EnumValueControl):
     def __init__(self, column, row, possible_values_list, on_update_state_action, parent_viewport):
         super().__init__(column, row, possible_values_list, on_update_state_action, parent_viewport,

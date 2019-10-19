@@ -4,6 +4,7 @@ from ui import *
 from ui.button import UIButton
 
 
+@final
 class ZoomInButton(UIButton):
     def __init__(self, on_click_action, on_hover_action, on_leave_action, parent_viewport):
         super().__init__(logger=getLogger('root.button.zoom_in_button'), parent_viewport=parent_viewport)

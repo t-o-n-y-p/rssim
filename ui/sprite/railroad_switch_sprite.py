@@ -5,6 +5,7 @@ from ui import *
 from ui.sprite import MapSprite
 
 
+@final
 class RailroadSwitchSprite(MapSprite):
     def __init__(self, map_id, track_param_1, track_param_2, switch_type, parent_viewport):
         super().__init__(logger=getLogger(f'root.app.game.map.{map_id}.railroad_switch.{track_param_1}.{track_param_2}.{switch_type}.railroad_switch_sprite'),

@@ -5,6 +5,7 @@ from ui.sprite import UISprite
 from textures import FLAG_US
 
 
+@final
 class USFlagSprite(UISprite):
     def __init__(self, parent_viewport):
         super().__init__(logger=getLogger('root.app.view.us_flag_sprite'), parent_viewport=parent_viewport)

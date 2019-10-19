@@ -5,6 +5,7 @@ from ui.button import UIButton
 from i18n import I18N_RESOURCES
 
 
+@final
 class EnterCodeButton(UIButton):
     def __init__(self, on_click_action, parent_viewport):
         super().__init__(logger=getLogger('root.enter_code_button'),

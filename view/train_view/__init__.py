@@ -22,6 +22,7 @@ class TrainView(View):
         self.car_image_collection = None
         self.state = None
 
+    @final
     def on_update(self):
         for i in range(len(self.car_sprites)):
             self.car_sprites[i].on_update_car_position(self.car_position[i])
@@ -37,6 +38,7 @@ class TrainView(View):
                     self.boarding_light_sprites[i].delete()
                     self.car_sprites[i].create()
 
+    @final
     def on_update_opacity(self, new_opacity):
         self.opacity = new_opacity
         for i in range(len(self.car_sprites)):
@@ -47,6 +49,7 @@ class TrainView(View):
             self.car_sprites = []
             self.boarding_light_sprites = []
 
+    @final
     @view_is_not_active
     def on_activate(self):
         super().on_activate()
@@ -64,21 +67,25 @@ class TrainView(View):
                                                                     parent_viewport=self.viewport))
             self.boarding_light_sprites[i].on_update_texture(self.boarding_light_image[self.car_image_collection])
 
+    @final
     @view_is_active
     def on_deactivate(self):
         super().on_deactivate()
 
+    @final
     def on_change_base_offset(self, new_base_offset):
         self.base_offset = new_base_offset
         for i in range(len(self.car_sprites)):
             self.car_sprites[i].on_change_base_offset(self.base_offset)
             self.boarding_light_sprites[i].on_change_base_offset(self.base_offset)
 
+    @final
     def on_change_screen_resolution(self, screen_resolution):
         self.screen_resolution = screen_resolution
         self.viewport.x1, self.viewport.y1 = 0, 0
         self.viewport.x2, self.viewport.y2 = self.screen_resolution
 
+    @final
     def on_change_zoom_factor(self, zoom_factor, zoom_out_activated):
         self.zoom_factor = zoom_factor
         self.zoom_out_activated = zoom_out_activated
@@ -86,6 +93,7 @@ class TrainView(View):
             self.car_sprites[i].on_change_scale(self.zoom_factor)
             self.boarding_light_sprites[i].on_change_scale(self.zoom_factor)
 
+    @final
     def on_update_direction(self, new_direction):
         self.direction = new_direction
         for i in range(len(self.car_sprites)):
@@ -94,11 +102,14 @@ class TrainView(View):
             elif i == len(self.car_sprites) - 1:
                 self.car_sprites[i].on_update_texture(self.car_tail_image[self.car_image_collection][self.direction])
 
+    @final
     def on_update_car_image_collection(self, car_image_collection):
         self.car_image_collection = car_image_collection
 
+    @final
     def on_update_state(self, state):
         self.state = state
 
+    @final
     def on_update_car_position(self, car_positions):
         self.car_position = car_positions

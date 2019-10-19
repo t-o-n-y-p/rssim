@@ -89,6 +89,7 @@ class ConstructorCell:
         self.money_target_activated = False
         self.opacity = 0
 
+    @final
     @cell_is_active
     def on_assign_new_data(self, entity_number, data):
         self.entity_number = entity_number
@@ -128,6 +129,7 @@ class ConstructorCell:
     def on_update_description_label(self):
         pass
 
+    @final
     @cell_is_active
     def on_update_state(self):
         self.on_update_description_label()
@@ -140,10 +142,12 @@ class ConstructorCell:
                     and not self.disable_money_target_button.is_activated:
                 self.on_deactivate_money_target()
 
+    @final
     def on_update_money(self, money):
         self.money = money
         self.on_update_build_button_state()
 
+    @final
     @cell_is_active
     @unlock_available
     def on_update_build_button_state(self):
@@ -153,10 +157,12 @@ class ConstructorCell:
         else:
             self.build_button.on_disable()
 
+    @final
     @cell_is_not_active
     def on_activate(self):
         self.is_activated = True
 
+    @final
     @cell_is_active
     def on_deactivate(self):
         self.is_activated = False
@@ -164,6 +170,7 @@ class ConstructorCell:
         for b in self.buttons:
             b.on_deactivate()
 
+    @final
     def on_change_screen_resolution(self, screen_resolution):
         self.screen_resolution = screen_resolution
         bottom_bar_height = get_bottom_bar_height(self.screen_resolution)
@@ -192,6 +199,7 @@ class ConstructorCell:
         self.under_construction_days_label.on_change_screen_resolution(self.screen_resolution)
         self.under_construction_hours_minutes_label.on_change_screen_resolution(self.screen_resolution)
 
+    @final
     def on_update_current_locale(self, new_locale):
         self.current_locale = new_locale
         self.title_label.on_update_current_locale(self.current_locale)
@@ -204,6 +212,7 @@ class ConstructorCell:
         self.under_construction_days_label.on_update_current_locale(self.current_locale)
         self.under_construction_hours_minutes_label.on_update_current_locale(self.current_locale)
 
+    @final
     def on_activate_money_target(self):
         self.money_target_activated = True
         if self.is_activated and len(self.data) > 0:
@@ -214,6 +223,7 @@ class ConstructorCell:
             else:
                 self.disable_money_target_button.on_deactivate(instant=True)
 
+    @final
     def on_deactivate_money_target(self):
         self.money_target_activated = False
         if self.is_activated and len(self.data) > 0:
@@ -224,6 +234,7 @@ class ConstructorCell:
             else:
                 self.enable_money_target_button.on_deactivate(instant=True)
 
+    @final
     def on_update_opacity(self, new_opacity):
         self.opacity = new_opacity
         self.locked_label.on_update_opacity(self.opacity)

@@ -1,3 +1,5 @@
+from typing import final
+
 import pyglet.text
 from win32clipboard import OpenClipboard, CloseClipboard, GetClipboardData
 from pyglet.window.key import BACKSPACE, V, MOD_CTRL
@@ -89,6 +91,7 @@ class Label:
     def get_formatted_text(self):
         pass
 
+    @final
     @text_label_does_not_exist
     def create(self):
         self.text_label = pyglet.text.Label(self.get_formatted_text(), font_name=self.font_name, bold=self.bold,
@@ -97,11 +100,13 @@ class Label:
                                             anchor_x=self.anchor_x, anchor_y=self.anchor_y, align=self.align,
                                             multiline=self.multiline, batch=self.batch, group=self.group)
 
+    @final
     @text_label_exists
     def delete(self):
         self.text_label.delete()
         self.text_label = None
 
+    @final
     def on_change_screen_resolution(self, screen_resolution):
         self.screen_resolution = screen_resolution
         self.x = self.get_x()
@@ -116,6 +121,7 @@ class Label:
             self.text_label.width = self.width
             self.text_label.end_update()
 
+    @final
     def on_position_changed(self):
         self.x = self.get_x()
         self.y = self.get_y()
@@ -125,11 +131,13 @@ class Label:
             self.text_label.y = self.y
             self.text_label.end_update()
 
+    @final
     def on_change_base_color(self, new_base_color):
         self.base_color = new_base_color
         if self.text_label is not None:
             self.text_label.color = (*self.base_color, self.opacity)
 
+    @final
     def on_update_opacity(self, new_opacity):
         self.opacity = new_opacity
         if self.text_label is not None:
@@ -138,6 +146,7 @@ class Label:
             else:
                 self.delete()
 
+    @final
     @arguments_have_changed
     def on_update_args(self, new_args):
         self.arguments = new_args
@@ -153,6 +162,7 @@ class LocalizedLabel(Label):
         self.current_locale = USER_DB_CURSOR.fetchone()[0]
         self.text = I18N_RESOURCES[self.i18n_resources_key][self.current_locale]
 
+    @final
     def on_update_current_locale(self, new_locale):
         self.current_locale = new_locale
         self.text = I18N_RESOURCES[self.i18n_resources_key][self.current_locale]
@@ -204,6 +214,7 @@ class InteractiveLabel:
     def get_formatted_placeholder_text(self):
         pass
 
+    @final
     @interactive_label_does_not_exist
     def create(self):
         self.placeholder_label = pyglet.text.Label(self.get_formatted_placeholder_text(),
@@ -214,6 +225,7 @@ class InteractiveLabel:
                                                    align=self.align, multiline=self.multiline,
                                                    batch=self.batch, group=self.group)
 
+    @final
     @interactive_label_exists
     def delete(self):
         self.text = ''
@@ -224,6 +236,7 @@ class InteractiveLabel:
             self.placeholder_label.delete()
             self.placeholder_label = None
 
+    @final
     def on_text(self, text):
         if len(self.text) == 0:
             self.placeholder_label.delete()
@@ -238,6 +251,7 @@ class InteractiveLabel:
             self.text = (self.text + text)[:self.text_length_limit]
             self.text_label.text = self.text
 
+    @final
     def on_key_press(self, symbol, modifiers):
         if symbol == BACKSPACE:
             if len(self.text) == 1:
@@ -265,6 +279,7 @@ class InteractiveLabel:
 
             CloseClipboard()
 
+    @final
     def on_change_screen_resolution(self, screen_resolution):
         self.screen_resolution = screen_resolution
         self.x = self.get_x()
@@ -287,6 +302,7 @@ class InteractiveLabel:
             self.placeholder_label.width = self.width
             self.placeholder_label.end_update()
 
+    @final
     def on_update_opacity(self, new_opacity):
         self.opacity = new_opacity
         if self.opacity > 0:
@@ -298,12 +314,14 @@ class InteractiveLabel:
         else:
             self.delete()
 
+    @final
     @arguments_have_changed
     def on_update_args(self, new_args):
         self.arguments = new_args
         if self.placeholder_label is not None:
             self.placeholder_label.text = self.get_formatted_placeholder_text()
 
+    @final
     def on_update_current_locale(self, new_locale):
         self.current_locale = new_locale
         if self.placeholder_label is not None:

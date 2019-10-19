@@ -10,6 +10,7 @@ from ui.settings.checkbox.shop_storage_notification_checkbox import ShopStorageN
 from ui.label.notifications_checkbox_group_description_label import NotificationsCheckboxGroupDescriptionLabel
 
 
+@final
 class NotificationsCheckboxGroup(CheckboxGroup):
     def __init__(self, column, row, on_update_state_actions, parent_viewport):
         super().__init__(column, row, parent_viewport,
