@@ -238,6 +238,9 @@ class View:
     def on_update_opacity(self, new_opacity):
         pass
 
+    def on_apply_shaders_and_draw_vertices(self):
+        pass
+
     @final
     def on_disable_notifications(self):
         self.all_notifications_enabled = False

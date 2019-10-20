@@ -22,7 +22,9 @@ from controller.shop_placeholder_controller.passenger_map_shop_placeholder_contr
     import PassengerMapShopPlaceholderController
 from controller.shop_constructor_controller.passenger_map_constructor_controller \
     import PassengerMapShopConstructorController
-from controller.bonus_code_controller import BonusCodeController
+from controller.bonus_code_activation_controller import BonusCodeActivationController
+from controller.bonus_code_manager_controller import BonusCodeManagerController
+from model import ACTIVATION_AVAILABLE, IS_ACTIVATED
 from model.app_model import AppModel
 from model.main_menu_model import MainMenuModel
 from model.license_model import LicenseModel
@@ -42,7 +44,8 @@ from model.constructor_model.passenger_map_constructor_model import PassengerMap
 from model.shop_model.passenger_map_shop_model import PassengerMapShopModel
 from model.shop_placeholder_model.passenger_map_shop_placeholder_model import PassengerMapShopPlaceholderModel
 from model.shop_constructor_model.passenger_map_shop_constructor_model import PassengerMapShopConstructorModel
-from model.bonus_code_model import BonusCodeModel
+from model.bonus_code_activation_model import BonusCodeActivationModel
+from model.bonus_code_manager_model import BonusCodeManagerModel
 from view.app_view import AppView
 from view.main_menu_view import MainMenuView
 from view.license_view import LicenseView
@@ -62,7 +65,8 @@ from view.constructor_view.passenger_map_constructor_view import PassengerMapCon
 from view.shop_view.passenger_map_shop_view import PassengerMapShopView
 from view.shop_placeholder_view.passenger_map_shop_placeholder_view import PassengerMapShopPlaceholderView
 from view.shop_constructor_view.passenger_map_shop_constructor_view import PassengerMapShopConstructorView
-from view.bonus_code_view import BonusCodeView
+from view.bonus_code_activation_view import BonusCodeActivationView
+from view.bonus_code_manager_view import BonusCodeManagerView
 from ui.transition_animation import TransitionAnimation
 from ui.fade_animation.fade_in_animation.app_fade_in_animation import AppFadeInAnimation
 from ui.fade_animation.fade_in_animation.constructor_fade_in_animation import ConstructorFadeInAnimation
@@ -83,7 +87,9 @@ from ui.fade_animation.fade_in_animation.train_route_fade_in_animation import Tr
 from ui.fade_animation.fade_in_animation.shop_fade_in_animation import ShopFadeInAnimation
 from ui.fade_animation.fade_in_animation.shop_placeholder_fade_in_animation import ShopPlaceholderFadeInAnimation
 from ui.fade_animation.fade_in_animation.shop_constructor_fade_in_animation import ShopConstructorFadeInAnimation
-from ui.fade_animation.fade_in_animation.bonus_code_fade_in_animation import BonusCodeFadeInAnimation
+from ui.fade_animation.fade_in_animation.bonus_code_activation_fade_in_animation \
+    import BonusCodeActivationFadeInAnimation
+from ui.fade_animation.fade_in_animation.bonus_code_manager_fade_in_animation import BonusCodeManagerFadeInAnimation
 from ui.fade_animation.fade_out_animation.app_fade_out_animation import AppFadeOutAnimation
 from ui.fade_animation.fade_out_animation.constructor_fade_out_animation import ConstructorFadeOutAnimation
 from ui.fade_animation.fade_out_animation.crossover_fade_out_animation import CrossoverFadeOutAnimation
@@ -103,7 +109,9 @@ from ui.fade_animation.fade_out_animation.train_route_fade_out_animation import 
 from ui.fade_animation.fade_out_animation.shop_fade_out_animation import ShopFadeOutAnimation
 from ui.fade_animation.fade_out_animation.shop_placeholder_fade_out_animation import ShopPlaceholderFadeOutAnimation
 from ui.fade_animation.fade_out_animation.shop_constructor_fade_out_animation import ShopConstructorFadeOutAnimation
-from ui.fade_animation.fade_out_animation.bonus_code_fade_out_animation import BonusCodeFadeOutAnimation
+from ui.fade_animation.fade_out_animation.bonus_code_activation_fade_out_animation \
+    import BonusCodeActivationFadeOutAnimation
+from ui.fade_animation.fade_out_animation.bonus_code_manager_fade_out_animation import BonusCodeManagerFadeOutAnimation
 from database import CONFIG_DB_CURSOR, USER_DB_CURSOR
 
 
@@ -124,6 +132,18 @@ MAJOR: Final = 0
 MINOR: Final = 1
 PATCH: Final = 2
 # ------------------- END CONSTANTS -------------------
+# ----------------- BONUS CODE MATRIX -----------------
+bonus_code_matrix = {}
+CONFIG_DB_CURSOR.execute('''SELECT * FROM bonus_codes_config''')
+for line in CONFIG_DB_CURSOR.fetchall():
+    bonus_code_matrix[line[0]] = [*line[1:]]
+    USER_DB_CURSOR.execute('''SELECT activation_available, activations_left, is_activated, bonus_time
+                              FROM bonus_codes WHERE sha512_hash = ?''', (line[0],))
+    bonus_code_matrix[line[0]].extend(USER_DB_CURSOR.fetchone())
+    bonus_code_matrix[line[0]][ACTIVATION_AVAILABLE] \
+        = bool(bonus_code_matrix[line[0]][ACTIVATION_AVAILABLE])
+    bonus_code_matrix[line[0]][IS_ACTIVATED] \
+        = bool(bonus_code_matrix[line[0]][IS_ACTIVATED])
 
 
 def create_app(loader):
@@ -144,7 +164,7 @@ def create_app(loader):
     controller.game = _create_game(controller)
     controller.settings = _create_settings(controller)
     controller.fps = _create_fps(controller)
-    controller.bonus_code = _create_bonus_code(controller)
+    controller.bonus_code_activation = _create_bonus_code_activation(controller)
     controller.main_menu_to_game_transition_animation \
         = TransitionAnimation(fade_out_animation=controller.main_menu.fade_out_animation,
                               fade_in_animation=controller.game.fade_in_animation)
@@ -175,11 +195,11 @@ def create_app(loader):
     controller.settings_to_main_menu_transition_animation \
         = TransitionAnimation(fade_out_animation=controller.settings.fade_out_animation,
                               fade_in_animation=controller.main_menu.fade_in_animation)
-    controller.main_menu_to_bonus_code_transition_animation \
+    controller.main_menu_to_bonus_code_activation_transition_animation \
         = TransitionAnimation(fade_out_animation=controller.main_menu.fade_out_animation,
-                              fade_in_animation=controller.bonus_code.fade_in_animation)
-    controller.bonus_code_to_main_menu_transition_animation \
-        = TransitionAnimation(fade_out_animation=controller.bonus_code.fade_out_animation,
+                              fade_in_animation=controller.bonus_code_activation.fade_in_animation)
+    controller.bonus_code_activation_to_main_menu_transition_animation \
+        = TransitionAnimation(fade_out_animation=controller.bonus_code_activation.fade_out_animation,
                               fade_in_animation=controller.main_menu.fade_in_animation)
     controller.fade_in_animation.main_menu_fade_in_animation = controller.main_menu.fade_in_animation
     controller.fade_in_animation.license_fade_in_animation = controller.license.fade_in_animation
@@ -208,7 +228,11 @@ def _create_game(app):
     view.controller = controller
     model.view = view
     view.on_init_content()
+    controller.bonus_code_manager = _create_bonus_code_manager(controller)
     controller.maps.append(_create_passenger_map(controller))
+    controller.fade_in_animation.bonus_code_manager_fade_in_animation = controller.bonus_code_manager.fade_in_animation
+    controller.fade_out_animation.bonus_code_manager_fade_out_animation \
+        = controller.bonus_code_manager.fade_out_animation
     for map_ in controller.maps:
         controller.fade_in_animation.map_fade_in_animations.append(map_.fade_in_animation)
         controller.fade_out_animation.map_fade_out_animations.append(map_.fade_out_animation)
@@ -598,17 +622,33 @@ def _create_passenger_map_shop_constructor(shop_controller, shop_id):
     return controller
 
 
-def _create_bonus_code(app):
-    controller = BonusCodeController(app)
-    controller.fade_in_animation = BonusCodeFadeInAnimation(controller)
-    controller.fade_out_animation = BonusCodeFadeOutAnimation(controller)
-    model = BonusCodeModel()
-    view = BonusCodeView()
+def _create_bonus_code_activation(app):
+    controller = BonusCodeActivationController(app)
+    controller.fade_in_animation = BonusCodeActivationFadeInAnimation(controller)
+    controller.fade_out_animation = BonusCodeActivationFadeOutAnimation(controller)
+    model = BonusCodeActivationModel()
+    view = BonusCodeActivationView()
     controller.model = model
     model.controller = controller
     controller.view = view
     view.controller = controller
     model.view = view
-    view.bonus_code_matrix = model.bonus_code_matrix
+    view.bonus_code_matrix = bonus_code_matrix
+    view.on_init_content()
+    return controller
+
+
+def _create_bonus_code_manager(game):
+    controller = BonusCodeManagerController(game)
+    controller.fade_in_animation = BonusCodeManagerFadeInAnimation(controller)
+    controller.fade_out_animation = BonusCodeManagerFadeOutAnimation(controller)
+    model = BonusCodeManagerModel()
+    view = BonusCodeManagerView()
+    controller.model = model
+    model.controller = controller
+    controller.view = view
+    view.controller = controller
+    model.view = view
+    model.bonus_code_matrix = bonus_code_matrix
     view.on_init_content()
     return controller

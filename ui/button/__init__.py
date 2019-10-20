@@ -1,7 +1,6 @@
 from pyglet import gl
 from pyglet.text import Label
 from pyglet.window import mouse
-from pyglet.resource import add_font
 
 from ui import *
 from database import USER_DB_CURSOR
@@ -88,7 +87,6 @@ class Button:
         self.vertex_list = None
         self.text_label = None
         self.text = None
-        add_font('perfo-bold.ttf')
         self.font_name = None
         self.is_bold = False
         self.base_font_size_property = 0.5

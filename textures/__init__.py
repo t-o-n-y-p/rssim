@@ -8,6 +8,7 @@ MAXIMUM_CAR_COLLECTIONS: Final = [12, ]
 _resource.path = ['font', 'img', 'img/textures.zip']
 _resource.reindex()
 _cars_texture = _resource.texture('cars_in_one.dds')
+_resource.add_font('perfo-bold.ttf')
 
 # CAR_HEAD_IMAGE includes all textures for leading carriage
 PASSENGER_CAR_HEAD_IMAGE: Final = []

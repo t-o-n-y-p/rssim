@@ -10,17 +10,17 @@ from ui.bonus_code_info import BonusCodeInfoCell
 
 
 @final
-class BonusCodeView(View):
+class BonusCodeActivationView(View):
     def __init__(self):
         def on_activate_bonus_code(button):
-            self.controller.on_activate_new_bonus_code(
+            self.controller.parent_controller.on_activate_new_bonus_code(
                 sha512(self.bonus_code_interactive_label.text.encode('utf-8')).hexdigest())
             self.controller.parent_controller.on_close_bonus_code()
 
         def on_cancel_bonus_code_activation(button):
             self.controller.parent_controller.on_close_bonus_code()
 
-        super().__init__(logger=getLogger('root.app.bonus_code.view'))
+        super().__init__(logger=getLogger('root.app.bonus_code_activation.view'))
         USER_DB_CURSOR.execute('SELECT level FROM game_progress')
         self.level = USER_DB_CURSOR.fetchone()[0]
         self.bonus_code_interactive_label = BonusCodeInteractiveLabel(parent_viewport=self.viewport)
@@ -72,9 +72,6 @@ class BonusCodeView(View):
 
     def on_apply_shaders_and_draw_vertices(self):
         self.shader_sprite.draw()
-
-    def on_level_up(self, level):
-        self.level = level
 
     @view_is_active
     def on_text(self, text):

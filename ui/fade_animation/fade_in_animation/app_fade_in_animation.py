@@ -14,7 +14,7 @@ class AppFadeInAnimation(FadeInAnimation):
         self.game_fade_in_animation = None
         self.settings_fade_in_animation = None
         self.fps_fade_in_animation = None
-        self.bonus_code_fade_in_animation = None
+        self.bonus_code_activation_fade_in_animation = None
 
     @fade_animation_needed
     @fade_animation_is_not_active

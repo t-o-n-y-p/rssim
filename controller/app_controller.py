@@ -16,7 +16,7 @@ class AppController(Controller):
         self.game = None
         self.settings = None
         self.fps = None
-        self.bonus_code = None
+        self.bonus_code_activation = None
         self.main_menu_to_game_transition_animation = None
         self.main_menu_to_onboarding_transition_animation = None
         self.game_to_main_menu_transition_animation = None
@@ -27,8 +27,8 @@ class AppController(Controller):
         self.onboarding_to_game_transition_animation = None
         self.main_menu_to_settings_transition_animation = None
         self.settings_to_main_menu_transition_animation = None
-        self.main_menu_to_bonus_code_transition_animation = None
-        self.bonus_code_to_main_menu_transition_animation = None
+        self.main_menu_to_bonus_code_activation_transition_animation = None
+        self.bonus_code_activation_to_main_menu_transition_animation = None
 
     def on_activate_view(self):
         super().on_activate_view()
@@ -43,7 +43,7 @@ class AppController(Controller):
         self.game.on_deactivate_view()
         self.settings.on_deactivate_view()
         self.fps.on_deactivate_view()
-        self.bonus_code.on_deactivate_view()
+        self.bonus_code_activation.on_deactivate_view()
 
     def on_update_view(self):
         super().on_update_view()
@@ -53,7 +53,7 @@ class AppController(Controller):
         self.game.on_update_view()
         self.settings.on_update_view()
         self.fps.on_update_view()
-        self.bonus_code.on_update_view()
+        self.bonus_code_activation.on_update_view()
 
     def on_update_current_locale(self, new_locale):
         super().on_update_current_locale(new_locale)
@@ -64,7 +64,7 @@ class AppController(Controller):
         self.game.on_update_current_locale(new_locale)
         self.settings.on_update_current_locale(new_locale)
         self.fps.on_update_current_locale(new_locale)
-        self.bonus_code.on_update_current_locale(new_locale)
+        self.bonus_code_activation.on_update_current_locale(new_locale)
 
     def on_change_screen_resolution(self, screen_resolution):
         super().on_change_screen_resolution(screen_resolution)
@@ -74,7 +74,7 @@ class AppController(Controller):
         self.game.on_change_screen_resolution(screen_resolution)
         self.settings.on_change_screen_resolution(screen_resolution)
         self.fps.on_change_screen_resolution(screen_resolution)
-        self.bonus_code.on_change_screen_resolution(screen_resolution)
+        self.bonus_code_activation.on_change_screen_resolution(screen_resolution)
 
     def on_apply_shaders_and_draw_vertices(self):
         super().on_apply_shaders_and_draw_vertices()
@@ -83,7 +83,7 @@ class AppController(Controller):
         self.license.on_apply_shaders_and_draw_vertices()
         self.settings.on_apply_shaders_and_draw_vertices()
         self.game.on_apply_shaders_and_draw_vertices()
-        self.bonus_code.on_apply_shaders_and_draw_vertices()
+        self.bonus_code_activation.on_apply_shaders_and_draw_vertices()
 
     def on_disable_notifications(self):
         super().on_disable_notifications()
@@ -105,11 +105,11 @@ class AppController(Controller):
         self.game.on_update_fade_animation_state(new_state)
         self.settings.on_update_fade_animation_state(new_state)
         self.fps.on_update_fade_animation_state(new_state)
-        self.bonus_code.on_update_fade_animation_state(new_state)
+        self.bonus_code_activation.on_update_fade_animation_state(new_state)
 
     def on_save_state(self):
         super().on_save_state()
-        self.bonus_code.on_save_state()
+        self.bonus_code_activation.on_save_state()
         self.game.on_save_state()
         on_commit()
 
@@ -172,7 +172,7 @@ class AppController(Controller):
         self.game_to_main_menu_transition_animation.on_deactivate()
         self.license_to_main_menu_transition_animation.on_deactivate()
         self.settings_to_main_menu_transition_animation.on_deactivate()
-        self.bonus_code_to_main_menu_transition_animation.on_deactivate()
+        self.bonus_code_activation_to_main_menu_transition_animation.on_deactivate()
         self.main_menu_to_license_transition_animation.on_activate()
 
     def on_close_license(self):
@@ -183,7 +183,7 @@ class AppController(Controller):
         self.game_to_main_menu_transition_animation.on_deactivate()
         self.license_to_main_menu_transition_animation.on_deactivate()
         self.settings_to_main_menu_transition_animation.on_deactivate()
-        self.bonus_code_to_main_menu_transition_animation.on_deactivate()
+        self.bonus_code_activation_to_main_menu_transition_animation.on_deactivate()
         self.main_menu_to_onboarding_transition_animation.on_activate()
 
     def on_close_onboarding(self):
@@ -195,7 +195,7 @@ class AppController(Controller):
         self.game_to_main_menu_transition_animation.on_deactivate()
         self.license_to_main_menu_transition_animation.on_deactivate()
         self.settings_to_main_menu_transition_animation.on_deactivate()
-        self.bonus_code_to_main_menu_transition_animation.on_deactivate()
+        self.bonus_code_activation_to_main_menu_transition_animation.on_deactivate()
         self.main_menu_to_game_transition_animation.on_activate()
         self.game.on_resume_game()
 
@@ -203,18 +203,18 @@ class AppController(Controller):
         self.game_to_main_menu_transition_animation.on_deactivate()
         self.license_to_main_menu_transition_animation.on_deactivate()
         self.settings_to_main_menu_transition_animation.on_deactivate()
-        self.bonus_code_to_main_menu_transition_animation.on_deactivate()
-        self.main_menu_to_bonus_code_transition_animation.on_activate()
+        self.bonus_code_activation_to_main_menu_transition_animation.on_deactivate()
+        self.main_menu_to_bonus_code_activation_transition_animation.on_activate()
 
     def on_close_bonus_code(self):
-        self.main_menu_to_bonus_code_transition_animation.on_deactivate()
-        self.bonus_code_to_main_menu_transition_animation.on_activate()
+        self.main_menu_to_bonus_code_activation_transition_animation.on_deactivate()
+        self.bonus_code_activation_to_main_menu_transition_animation.on_activate()
 
     def on_open_settings_from_main_menu(self):
         self.game_to_main_menu_transition_animation.on_deactivate()
         self.license_to_main_menu_transition_animation.on_deactivate()
         self.settings_to_main_menu_transition_animation.on_deactivate()
-        self.bonus_code_to_main_menu_transition_animation.on_deactivate()
+        self.bonus_code_activation_to_main_menu_transition_animation.on_deactivate()
         self.main_menu_to_settings_transition_animation.on_activate()
         self.settings.navigated_from_main_menu = True
 
@@ -235,14 +235,5 @@ class AppController(Controller):
             self.game_to_settings_transition_animation.on_deactivate()
             self.settings_to_game_transition_animation.on_activate()
 
-    def on_activate_exp_bonus_code(self, value):
-        self.game.on_activate_exp_bonus_code(value)
-
-    def on_deactivate_exp_bonus_code(self):
-        self.game.on_deactivate_exp_bonus_code()
-
-    def on_activate_money_bonus_code(self, value):
-        self.game.on_activate_money_bonus_code(value)
-
-    def on_deactivate_money_bonus_code(self):
-        self.game.on_deactivate_money_bonus_code()
+    def on_activate_new_bonus_code(self, sha512_hash):
+        self.game.on_activate_new_bonus_code(sha512_hash)
