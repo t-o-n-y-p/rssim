@@ -97,6 +97,9 @@ class AppBaseController:
     def on_save_state(self):
         self.model.on_save_state()
 
+    def on_update_clock_state(self, clock_24h_enabled):
+        self.view.on_update_clock_state(clock_24h_enabled)
+
     @final
     def on_append_handlers(self, on_mouse_motion_handlers=None, on_mouse_press_handlers=None,
                            on_mouse_release_handlers=None, on_mouse_drag_handlers=None,
@@ -215,3 +218,21 @@ class GameBaseController:
 
     def on_deactivate_money_bonus_code(self):
         self.model.on_deactivate_money_bonus_code()
+
+
+class MapBaseController:
+    def __init__(self):
+        self.model = None
+        self.view = None
+
+    def on_change_base_offset(self, new_base_offset):
+        self.view.on_change_base_offset(new_base_offset)
+
+    def on_zoom_in(self):
+        self.view.on_change_zoom_factor(ZOOM_IN_SCALE_FACTOR, zoom_out_activated=False)
+
+    def on_zoom_out(self):
+        self.view.on_change_zoom_factor(ZOOM_OUT_SCALE_FACTOR, zoom_out_activated=True)
+
+    def on_unlock(self):
+        self.model.on_unlock()

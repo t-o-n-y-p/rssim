@@ -241,6 +241,9 @@ class View:
     def on_apply_shaders_and_draw_vertices(self):
         pass
 
+    def on_update_clock_state(self, clock_24h_enabled):
+        pass
+
     @final
     def on_disable_notifications(self):
         self.all_notifications_enabled = False

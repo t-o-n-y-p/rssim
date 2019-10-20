@@ -113,6 +113,12 @@ class AppController(AppBaseController):
         self.game.on_save_state()
         on_commit()
 
+    def on_update_clock_state(self, clock_24h_enabled):
+        super().on_update_clock_state(clock_24h_enabled)
+        self.model.on_save_and_commit_clock_state(clock_24h_enabled)
+        self.settings.on_apply_clock_state(clock_24h_enabled)
+        self.game.on_update_clock_state(clock_24h_enabled)
+
     def on_fullscreen_button_click(self):
         self.on_change_screen_resolution(self.model.fullscreen_resolution)
         if self.model.fullscreen_mode_available:
@@ -141,11 +147,6 @@ class AppController(AppBaseController):
 
     def on_update_fps(self, fps):
         self.fps.on_update_fps(fps)
-
-    def on_update_clock_state(self, clock_24h_enabled):
-        self.model.on_save_and_commit_clock_state(clock_24h_enabled)
-        self.game.on_update_clock_state(clock_24h_enabled)
-        self.settings.on_update_clock_state(clock_24h_enabled)
 
     def on_append_notification(self, notification):
         self.loader.notifications.append(notification)

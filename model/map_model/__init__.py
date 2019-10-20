@@ -22,6 +22,8 @@ class MapModel(Model):
         self.zoom_out_activated = bool(USER_DB_CURSOR.fetchone()[0])
         USER_DB_CURSOR.execute('''SELECT exp_bonus_multiplier, money_bonus_multiplier FROM game_progress''')
         self.exp_bonus_multiplier, self.money_bonus_multiplier = USER_DB_CURSOR.fetchone()
+        CONFIG_DB_CURSOR.execute('''SELECT unlocked_tracks_by_default FROM map_progress_config''')
+        self.unlocked_tracks_by_default = CONFIG_DB_CURSOR.fetchone()[0]
 
     def on_activate_view(self):
         USER_DB_CURSOR.execute('SELECT map_id FROM graphics')
@@ -34,10 +36,12 @@ class MapModel(Model):
             self.on_add_new_car_collection()
 
         self.view.on_unlock_track(track)
+        self.view.on_unlock_construction()
 
     def on_unlock_environment(self, tier):
         self.unlocked_environment = tier
         self.view.on_unlock_environment(tier)
+        self.view.on_unlock_construction()
 
     def on_save_state(self):
         USER_DB_CURSOR.execute('''UPDATE map_progress SET unlocked_tracks = ?, unlocked_environment = ?, 
@@ -124,3 +128,7 @@ class MapModel(Model):
 
     def on_deactivate_money_bonus_code(self):
         self.money_bonus_multiplier = 1.0
+
+    def on_unlock(self):
+        for track in range(self.unlocked_tracks_by_default):
+            self.controller.on_unlock_track(track)

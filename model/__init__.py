@@ -68,7 +68,7 @@ def display_fps_enabled(fn):
 
 
 # --------------------- CONSTANTS ---------------------
-PASSENGER_MAP_ENTRY_UNLOCK_CONDITIONS: Final = (1, 1, 21, 22)
+MAP_ENTRY_UNLOCK_CONDITIONS: Final = [((1, 0), (1, 0), (21, 0), (22, 0)), ]
 # track, environment and shop stage state matrix properties
 LOCKED: Final = 0                                      # property #0 indicates if track/env. is locked
 UNDER_CONSTRUCTION: Final = 1                          # property #1 indicates if track/env. is under construction
@@ -225,4 +225,7 @@ class Model:
         pass
 
     def on_deactivate_money_bonus_code(self):
+        pass
+
+    def on_level_up(self):
         pass

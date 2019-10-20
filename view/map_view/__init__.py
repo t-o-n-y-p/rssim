@@ -96,7 +96,7 @@ class MapView(View):
             self.shop_buttons_offsets.append(CONFIG_DB_CURSOR.fetchone())
 
         self.buttons.extend(self.shop_buttons)
-        self.map_move_mode_available = True
+        self.map_move_mode_available = False
         self.map_move_mode = False
         self.on_mouse_press_handlers.append(self.handle_mouse_press)
         self.on_mouse_release_handlers.append(self.handle_mouse_release)

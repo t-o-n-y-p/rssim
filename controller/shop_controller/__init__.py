@@ -14,18 +14,51 @@ class ShopController(AppBaseController, GameBaseController):
         self.placeholder_to_shop_constructor_transition_animation = None
 
     @final
+    def on_deactivate_view(self):
+        super().on_deactivate_view()
+        self.placeholder.on_deactivate_view()
+        self.shop_constructor.on_deactivate_view()
+
+    @final
     def on_update_view(self):
-        self.view.on_update()
-        self.fade_in_animation.on_update()
-        self.fade_out_animation.on_update()
+        super().on_update_view()
         self.placeholder.on_update_view()
         self.shop_constructor.on_update_view()
 
     @final
+    def on_update_current_locale(self, new_locale):
+        super().on_update_current_locale(new_locale)
+        self.placeholder.on_update_current_locale(new_locale)
+        self.shop_constructor.on_update_current_locale(new_locale)
+
+    @final
     def on_change_screen_resolution(self, screen_resolution):
-        self.view.on_change_screen_resolution(screen_resolution)
+        super().on_change_screen_resolution(screen_resolution)
         self.placeholder.on_change_screen_resolution(screen_resolution)
         self.shop_constructor.on_change_screen_resolution(screen_resolution)
+
+    @final
+    def on_apply_shaders_and_draw_vertices(self):
+        super().on_apply_shaders_and_draw_vertices()
+        self.shop_constructor.on_apply_shaders_and_draw_vertices()
+
+    @final
+    def on_disable_notifications(self):
+        super().on_disable_notifications()
+        self.placeholder.on_disable_notifications()
+        self.shop_constructor.on_disable_notifications()
+
+    @final
+    def on_enable_notifications(self):
+        super().on_enable_notifications()
+        self.placeholder.on_enable_notifications()
+        self.shop_constructor.on_enable_notifications()
+
+    @final
+    def on_update_fade_animation_state(self, new_state):
+        super().on_update_fade_animation_state(new_state)
+        self.placeholder.on_update_fade_animation_state(new_state)
+        self.shop_constructor.on_update_fade_animation_state(new_state)
 
     @final
     def on_save_state(self):
@@ -38,51 +71,11 @@ class ShopController(AppBaseController, GameBaseController):
 
     @final
     def on_level_up(self):
-        self.model.on_level_up()
+        super().on_level_up()
         if self.model.level >= self.model.level_required and self.placeholder.view.is_activated:
             self.placeholder_to_shop_constructor_transition_animation.on_activate()
 
         self.shop_constructor.on_level_up()
-
-    @final
-    def on_activate_view(self):
-        self.model.on_activate_view()
-
-    @final
-    def on_deactivate_view(self):
-        self.view.on_deactivate()
-        self.placeholder.on_deactivate_view()
-        self.shop_constructor.on_deactivate_view()
-
-    @final
-    def on_update_current_locale(self, new_locale):
-        self.view.on_update_current_locale(new_locale)
-        self.placeholder.on_update_current_locale(new_locale)
-        self.shop_constructor.on_update_current_locale(new_locale)
-
-    @final
-    def on_disable_notifications(self):
-        self.view.on_disable_notifications()
-        self.placeholder.on_disable_notifications()
-        self.shop_constructor.on_disable_notifications()
-
-    @final
-    def on_enable_notifications(self):
-        self.view.on_enable_notifications()
-        self.placeholder.on_enable_notifications()
-        self.shop_constructor.on_enable_notifications()
-
-    @final
-    def on_update_fade_animation_state(self, new_state):
-        self.fade_in_animation.on_update_fade_animation_state(new_state)
-        self.fade_out_animation.on_update_fade_animation_state(new_state)
-        self.placeholder.on_update_fade_animation_state(new_state)
-        self.shop_constructor.on_update_fade_animation_state(new_state)
-
-    @final
-    def on_apply_shaders_and_draw_vertices(self):
-        self.view.on_apply_shaders_and_draw_vertices()
-        self.shop_constructor.on_apply_shaders_and_draw_vertices()
 
     @final
     def on_add_money(self, money):
@@ -94,10 +87,6 @@ class ShopController(AppBaseController, GameBaseController):
         super().on_pay_money(money)
         self.shop_constructor.on_pay_money(money)
 
-    @final
-    def on_change_shop_storage_notification_state(self, notification_state):
-        self.shop_constructor.on_change_shop_storage_notification_state(notification_state)
-
     def on_activate_money_bonus_code(self, value):
         super().on_activate_money_bonus_code(value)
         self.shop_constructor.on_activate_money_bonus_code(value)
@@ -105,3 +94,7 @@ class ShopController(AppBaseController, GameBaseController):
     def on_deactivate_money_bonus_code(self):
         super().on_deactivate_money_bonus_code()
         self.shop_constructor.on_deactivate_money_bonus_code()
+
+    @final
+    def on_change_shop_storage_notification_state(self, notification_state):
+        self.shop_constructor.on_change_shop_storage_notification_state(notification_state)

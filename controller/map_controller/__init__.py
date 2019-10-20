@@ -4,7 +4,7 @@ from operator import attrgetter
 from controller import *
 
 
-class MapController(AppBaseController, GameBaseController):
+class MapController(AppBaseController, GameBaseController, MapBaseController):
     def __init__(self, map_id, parent_controller):
         super().__init__(parent_controller=parent_controller,
                          logger=getLogger(f'root.app.game.map.{map_id}.controller'))
@@ -25,10 +25,50 @@ class MapController(AppBaseController, GameBaseController):
         self.map_id = map_id
 
     @final
+    def on_activate_view(self):
+        super().on_activate_view()
+        for signal in self.signals_list:
+            signal.on_activate_view()
+
+        for route in self.train_routes_sorted_list:
+            route.on_activate_view()
+
+        for switch in self.switches_list:
+            switch.on_activate_view()
+
+        for crossover in self.crossovers_list:
+            crossover.on_activate_view()
+
+        for train in self.trains_list:
+            train.on_activate_view()
+
+    @final
+    def on_deactivate_view(self):
+        super().on_deactivate_view()
+        self.scheduler.on_deactivate_view()
+        self.constructor.on_deactivate_view()
+        self.dispatcher.on_deactivate_view()
+        for signal in self.signals_list:
+            signal.on_deactivate_view()
+
+        for route in self.train_routes_sorted_list:
+            route.on_deactivate_view()
+
+        for switch in self.switches_list:
+            switch.on_deactivate_view()
+
+        for crossover in self.crossovers_list:
+            crossover.on_deactivate_view()
+
+        for train in self.trains_list:
+            train.on_deactivate_view()
+
+        for shop in self.shops:
+            shop.on_deactivate_view()
+
+    @final
     def on_update_view(self):
-        self.view.on_update()
-        self.fade_in_animation.on_update()
-        self.fade_out_animation.on_update()
+        super().on_update_view()
         self.scheduler.on_update_view()
         self.dispatcher.on_update_view()
         self.constructor.on_update_view()
@@ -51,9 +91,34 @@ class MapController(AppBaseController, GameBaseController):
             shop.on_update_view()
 
     @final
+    def on_update_current_locale(self, new_locale):
+        super().on_update_current_locale(new_locale)
+        self.scheduler.on_update_current_locale(new_locale)
+        self.dispatcher.on_update_current_locale(new_locale)
+        self.constructor.on_update_current_locale(new_locale)
+        for signal in self.signals_list:
+            signal.on_update_current_locale(new_locale)
+
+        for route in self.train_routes_sorted_list:
+            route.on_update_current_locale(new_locale)
+
+        for switch in self.switches_list:
+            switch.on_update_current_locale(new_locale)
+
+        for crossover in self.crossovers_list:
+            crossover.on_update_current_locale(new_locale)
+
+        for train in self.trains_list:
+            train.on_update_current_locale(new_locale)
+
+        for shop in self.shops:
+            shop.on_update_current_locale(new_locale)
+
+    @final
     def on_change_screen_resolution(self, screen_resolution):
+        # recalculating base offset before applying new screen resolution
         self.view.on_recalculate_base_offset_for_new_screen_resolution(screen_resolution)
-        self.view.on_change_screen_resolution(screen_resolution)
+        super().on_change_screen_resolution(screen_resolution)
         self.scheduler.on_change_screen_resolution(screen_resolution)
         self.dispatcher.on_change_screen_resolution(screen_resolution)
         self.constructor.on_change_screen_resolution(screen_resolution)
@@ -80,144 +145,85 @@ class MapController(AppBaseController, GameBaseController):
         self.on_change_base_offset(self.view.base_offset)
 
     @final
-    def on_change_base_offset(self, new_base_offset):
-        self.view.on_change_base_offset(new_base_offset)
+    def on_apply_shaders_and_draw_vertices(self):
+        super().on_apply_shaders_and_draw_vertices()
+        self.constructor.on_apply_shaders_and_draw_vertices()
+        self.scheduler.on_apply_shaders_and_draw_vertices()
+        for shop in self.shops:
+            shop.on_apply_shaders_and_draw_vertices()
+
+    @final
+    def on_disable_notifications(self):
+        super().on_disable_notifications()
+        self.scheduler.on_disable_notifications()
+        self.dispatcher.on_disable_notifications()
+        self.constructor.on_disable_notifications()
         for signal in self.signals_list:
-            signal.on_change_base_offset(new_base_offset)
+            signal.on_disable_notifications()
 
         for route in self.train_routes_sorted_list:
-            route.on_change_base_offset(new_base_offset)
+            route.on_disable_notifications()
 
         for switch in self.switches_list:
-            switch.on_change_base_offset(new_base_offset)
+            switch.on_disable_notifications()
 
         for crossover in self.crossovers_list:
-            crossover.on_change_base_offset(new_base_offset)
+            crossover.on_disable_notifications()
 
         for train in self.trains_list:
-            train.on_change_base_offset(new_base_offset)
-
-    @final
-    def on_unlock_track(self, track):
-        self.model.on_unlock_track(track)
-        self.scheduler.on_unlock_track(track)
-        self.dispatcher.on_unlock_track(track)
-        for track_param, base_route in self.model.get_signals_to_unlock_with_track(track):
-            self.signals[track_param][base_route].on_unlock()
-
-        for track_param_1, track_param_2, switch_type in self.model.get_switches_to_unlock_with_track(track):
-            self.switches[track_param_1][track_param_2][switch_type].on_unlock()
-
-        for track_param_1, track_param_2, crossover_type in self.model.get_crossovers_to_unlock_with_track(track):
-            self.crossovers[track_param_1][track_param_2][crossover_type].on_unlock()
-
-        if self.view.is_activated:
-            for shop_id in self.model.get_shops_to_unlock_with_track(track):
-                self.view.shop_buttons[shop_id[0]].on_activate()
-
-        self.view.on_unlock_construction()
-
-    @final
-    def on_unlock_environment(self, tier):
-        self.model.on_unlock_environment(tier)
-        for track_param, base_route in self.model.get_signals_to_unlock_with_environment(tier):
-            self.signals[track_param][base_route].on_unlock()
-
-        for track_param_1, track_param_2, switch_type in self.model.get_switches_to_unlock_with_environment(tier):
-            self.switches[track_param_1][track_param_2][switch_type].on_unlock()
-
-        for track_param_1, track_param_2, crossover_type in self.model.get_crossovers_to_unlock_with_environment(tier):
-            self.crossovers[track_param_1][track_param_2][crossover_type].on_unlock()
-
-        self.view.on_unlock_construction()
-
-    @final
-    def on_activate_view(self):
-        self.view.on_activate()
-        for signal in self.signals_list:
-            signal.on_activate_view()
-
-        for route in self.train_routes_sorted_list:
-            route.on_activate_view()
-
-        for switch in self.switches_list:
-            switch.on_activate_view()
-
-        for crossover in self.crossovers_list:
-            crossover.on_activate_view()
-
-        for train in self.trains_list:
-            train.on_activate_view()
-
-    @final
-    def on_deactivate_view(self):
-        self.view.on_deactivate()
-        self.scheduler.on_deactivate_view()
-        self.constructor.on_deactivate_view()
-        self.dispatcher.on_deactivate_view()
-        for signal in self.signals_list:
-            signal.on_deactivate_view()
-
-        for route in self.train_routes_sorted_list:
-            route.on_deactivate_view()
-
-        for switch in self.switches_list:
-            switch.on_deactivate_view()
-
-        for crossover in self.crossovers_list:
-            crossover.on_deactivate_view()
-
-        for train in self.trains_list:
-            train.on_deactivate_view()
+            train.on_disable_notifications()
 
         for shop in self.shops:
-            shop.on_deactivate_view()
+            shop.on_disable_notifications()
 
     @final
-    def on_zoom_in(self):
-        self.model.on_save_and_commit_zoom_out_activated(False)
-        self.view.on_change_zoom_factor(ZOOM_IN_SCALE_FACTOR, zoom_out_activated=False)
+    def on_enable_notifications(self):
+        super().on_enable_notifications()
+        self.scheduler.on_enable_notifications()
+        self.dispatcher.on_enable_notifications()
+        self.constructor.on_enable_notifications()
         for signal in self.signals_list:
-            signal.on_zoom_in()
+            signal.on_enable_notifications()
 
         for route in self.train_routes_sorted_list:
-            route.on_zoom_in()
+            route.on_enable_notifications()
 
         for switch in self.switches_list:
-            switch.on_zoom_in()
+            switch.on_enable_notifications()
 
         for crossover in self.crossovers_list:
-            crossover.on_zoom_in()
+            crossover.on_enable_notifications()
 
         for train in self.trains_list:
-            train.on_zoom_in()
+            train.on_enable_notifications()
 
-        self.on_change_base_offset(self.view.base_offset)
+        for shop in self.shops:
+            shop.on_enable_notifications()
 
     @final
-    def on_zoom_out(self):
-        self.model.on_save_and_commit_zoom_out_activated(True)
-        self.view.on_change_zoom_factor(ZOOM_OUT_SCALE_FACTOR, zoom_out_activated=True)
+    def on_update_fade_animation_state(self, new_state):
+        super().on_update_fade_animation_state(new_state)
+        self.scheduler.on_update_fade_animation_state(new_state)
+        self.constructor.on_update_fade_animation_state(new_state)
+        self.dispatcher.on_update_fade_animation_state(new_state)
         for signal in self.signals_list:
-            signal.on_zoom_out()
-
-        for route in self.train_routes_sorted_list:
-            route.on_zoom_out()
+            signal.on_update_fade_animation_state(new_state)
 
         for switch in self.switches_list:
-            switch.on_zoom_out()
+            switch.on_update_fade_animation_state(new_state)
 
         for crossover in self.crossovers_list:
-            crossover.on_zoom_out()
+            crossover.on_update_fade_animation_state(new_state)
 
         for train in self.trains_list:
-            train.on_zoom_out()
+            train.on_update_fade_animation_state(new_state)
 
-        self.on_change_base_offset(self.view.base_offset)
+        for shop in self.shops:
+            shop.on_update_fade_animation_state(new_state)
 
     @final
     def on_save_state(self):
-        self.model.on_save_state()
+        super().on_save_state()
         self.scheduler.on_save_state()
         self.dispatcher.on_save_state()
         self.constructor.on_save_state()
@@ -241,6 +247,11 @@ class MapController(AppBaseController, GameBaseController):
 
         for shop in self.shops:
             shop.on_save_state()
+
+    @final
+    def on_update_clock_state(self, clock_24h_enabled):
+        super().on_update_clock_state(clock_24h_enabled)
+        self.scheduler.on_update_clock_state(clock_24h_enabled)
 
     @final
     def on_update_time(self):
@@ -274,10 +285,142 @@ class MapController(AppBaseController, GameBaseController):
 
     @final
     def on_level_up(self):
+        super().on_level_up()
         self.scheduler.on_level_up()
         self.constructor.on_level_up()
         for shop in self.shops:
             shop.on_level_up()
+
+    @final
+    def on_add_money(self, money):
+        super().on_add_money(money)
+        self.constructor.on_add_money(money)
+        for shop in self.shops:
+            shop.on_add_money(money)
+
+    @final
+    def on_pay_money(self, money):
+        super().on_pay_money(money)
+        self.constructor.on_pay_money(money)
+        for shop in self.shops:
+            shop.on_pay_money(money)
+
+    def on_activate_exp_bonus_code(self, value):
+        super().on_activate_exp_bonus_code(value)
+        for train in self.trains_list:
+            train.on_activate_exp_bonus_code(value)
+
+    def on_activate_money_bonus_code(self, value):
+        super().on_activate_money_bonus_code(value)
+        for train in self.trains_list:
+            train.on_activate_money_bonus_code(value)
+
+        for shop in self.shops:
+            shop.on_activate_money_bonus_code(value)
+
+    def on_deactivate_exp_bonus_code(self):
+        super().on_deactivate_exp_bonus_code()
+        for train in self.trains_list:
+            train.on_deactivate_exp_bonus_code()
+
+    def on_deactivate_money_bonus_code(self):
+        super().on_deactivate_money_bonus_code()
+        for train in self.trains_list:
+            train.on_deactivate_money_bonus_code()
+
+        for shop in self.shops:
+            shop.on_deactivate_money_bonus_code()
+
+    @final
+    def on_change_base_offset(self, new_base_offset):
+        super().on_change_base_offset(new_base_offset)
+        for signal in self.signals_list:
+            signal.on_change_base_offset(new_base_offset)
+
+        for route in self.train_routes_sorted_list:
+            route.on_change_base_offset(new_base_offset)
+
+        for switch in self.switches_list:
+            switch.on_change_base_offset(new_base_offset)
+
+        for crossover in self.crossovers_list:
+            crossover.on_change_base_offset(new_base_offset)
+
+        for train in self.trains_list:
+            train.on_change_base_offset(new_base_offset)
+
+    @final
+    def on_zoom_in(self):
+        super().on_zoom_in()
+        for signal in self.signals_list:
+            signal.on_zoom_in()
+
+        for route in self.train_routes_sorted_list:
+            route.on_zoom_in()
+
+        for switch in self.switches_list:
+            switch.on_zoom_in()
+
+        for crossover in self.crossovers_list:
+            crossover.on_zoom_in()
+
+        for train in self.trains_list:
+            train.on_zoom_in()
+
+        self.on_change_base_offset(self.view.base_offset)
+        self.model.on_save_and_commit_zoom_out_activated(False)
+
+    @final
+    def on_zoom_out(self):
+        super().on_zoom_out()
+        for signal in self.signals_list:
+            signal.on_zoom_out()
+
+        for route in self.train_routes_sorted_list:
+            route.on_zoom_out()
+
+        for switch in self.switches_list:
+            switch.on_zoom_out()
+
+        for crossover in self.crossovers_list:
+            crossover.on_zoom_out()
+
+        for train in self.trains_list:
+            train.on_zoom_out()
+
+        self.on_change_base_offset(self.view.base_offset)
+        self.model.on_save_and_commit_zoom_out_activated(True)
+
+    @final
+    def on_unlock_track(self, track):
+        self.model.on_unlock_track(track)
+        self.scheduler.on_unlock_track(track)
+        self.dispatcher.on_unlock_track(track)
+        for track_param, base_route in self.model.get_signals_to_unlock_with_track(track):
+            self.signals[track_param][base_route].on_unlock()
+
+        for track_param_1, track_param_2, switch_type in self.model.get_switches_to_unlock_with_track(track):
+            self.switches[track_param_1][track_param_2][switch_type].on_unlock()
+
+        for track_param_1, track_param_2, crossover_type in self.model.get_crossovers_to_unlock_with_track(track):
+            self.crossovers[track_param_1][track_param_2][crossover_type].on_unlock()
+
+        if self.view.map_move_mode_available:
+            for shop_id in self.model.get_shops_to_unlock_with_track(track):
+                self.view.shop_buttons[shop_id[0]].on_activate()
+
+    @final
+    def on_unlock_environment(self, tier):
+        self.model.on_unlock_environment(tier)
+        self.scheduler.on_unlock_environment(tier)
+        for track_param, base_route in self.model.get_signals_to_unlock_with_environment(tier):
+            self.signals[track_param][base_route].on_unlock()
+
+        for track_param_1, track_param_2, switch_type in self.model.get_switches_to_unlock_with_environment(tier):
+            self.switches[track_param_1][track_param_2][switch_type].on_unlock()
+
+        for track_param_1, track_param_2, crossover_type in self.model.get_crossovers_to_unlock_with_environment(tier):
+            self.crossovers[track_param_1][track_param_2][crossover_type].on_unlock()
 
     @final
     def on_open_schedule(self):
@@ -442,92 +585,6 @@ class MapController(AppBaseController, GameBaseController):
             train.view.on_change_base_offset(self.view.base_offset)
 
     @final
-    def on_add_money(self, money):
-        super().on_add_money(money)
-        self.constructor.on_add_money(money)
-        for shop in self.shops:
-            shop.on_add_money(money)
-
-    @final
-    def on_pay_money(self, money):
-        super().on_pay_money(money)
-        self.constructor.on_pay_money(money)
-        for shop in self.shops:
-            shop.on_pay_money(money)
-
-    @final
-    def on_update_current_locale(self, new_locale):
-        self.view.on_update_current_locale(new_locale)
-        self.scheduler.on_update_current_locale(new_locale)
-        self.dispatcher.on_update_current_locale(new_locale)
-        self.constructor.on_update_current_locale(new_locale)
-        for signal in self.signals_list:
-            signal.on_update_current_locale(new_locale)
-
-        for route in self.train_routes_sorted_list:
-            route.on_update_current_locale(new_locale)
-
-        for switch in self.switches_list:
-            switch.on_update_current_locale(new_locale)
-
-        for crossover in self.crossovers_list:
-            crossover.on_update_current_locale(new_locale)
-
-        for train in self.trains_list:
-            train.on_update_current_locale(new_locale)
-
-        for shop in self.shops:
-            shop.on_update_current_locale(new_locale)
-
-    @final
-    def on_disable_notifications(self):
-        self.view.on_disable_notifications()
-        self.scheduler.on_disable_notifications()
-        self.dispatcher.on_disable_notifications()
-        self.constructor.on_disable_notifications()
-        for signal in self.signals_list:
-            signal.on_disable_notifications()
-
-        for route in self.train_routes_sorted_list:
-            route.on_disable_notifications()
-
-        for switch in self.switches_list:
-            switch.on_disable_notifications()
-
-        for crossover in self.crossovers_list:
-            crossover.on_disable_notifications()
-
-        for train in self.trains_list:
-            train.on_disable_notifications()
-
-        for shop in self.shops:
-            shop.on_disable_notifications()
-
-    @final
-    def on_enable_notifications(self):
-        self.view.on_enable_notifications()
-        self.scheduler.on_enable_notifications()
-        self.dispatcher.on_enable_notifications()
-        self.constructor.on_enable_notifications()
-        for signal in self.signals_list:
-            signal.on_enable_notifications()
-
-        for route in self.train_routes_sorted_list:
-            route.on_enable_notifications()
-
-        for switch in self.switches_list:
-            switch.on_enable_notifications()
-
-        for crossover in self.crossovers_list:
-            crossover.on_enable_notifications()
-
-        for train in self.trains_list:
-            train.on_enable_notifications()
-
-        for shop in self.shops:
-            shop.on_enable_notifications()
-
-    @final
     def on_change_feature_unlocked_notification_state(self, notification_state):
         self.constructor.on_change_feature_unlocked_notification_state(notification_state)
 
@@ -541,42 +598,8 @@ class MapController(AppBaseController, GameBaseController):
             shop.on_change_shop_storage_notification_state(notification_state)
 
     @final
-    def on_apply_shaders_and_draw_vertices(self):
-        self.view.on_apply_shaders_and_draw_vertices()
-        self.constructor.on_apply_shaders_and_draw_vertices()
-        self.scheduler.on_apply_shaders_and_draw_vertices()
-        for shop in self.shops:
-            shop.on_apply_shaders_and_draw_vertices()
-
-    @final
     def on_save_and_commit_last_known_base_offset(self, base_offset):
         self.model.on_save_and_commit_last_known_base_offset(base_offset)
-
-    @final
-    def on_update_fade_animation_state(self, new_state):
-        self.fade_in_animation.on_update_fade_animation_state(new_state)
-        self.fade_out_animation.on_update_fade_animation_state(new_state)
-        self.scheduler.on_update_fade_animation_state(new_state)
-        self.constructor.on_update_fade_animation_state(new_state)
-        self.dispatcher.on_update_fade_animation_state(new_state)
-        for signal in self.signals_list:
-            signal.on_update_fade_animation_state(new_state)
-
-        for switch in self.switches_list:
-            switch.on_update_fade_animation_state(new_state)
-
-        for crossover in self.crossovers_list:
-            crossover.on_update_fade_animation_state(new_state)
-
-        for train in self.trains_list:
-            train.on_update_fade_animation_state(new_state)
-
-        for shop in self.shops:
-            shop.on_update_fade_animation_state(new_state)
-
-    @final
-    def on_update_clock_state(self, clock_24h_enabled):
-        self.scheduler.on_update_clock_state(clock_24h_enabled)
 
     @final
     def on_open_shop_details(self, shop_id):
@@ -590,29 +613,3 @@ class MapController(AppBaseController, GameBaseController):
         self.shops[shop_id].fade_out_animation.on_activate()
         self.view.on_activate_zoom_buttons()
         self.view.on_activate_shop_buttons()
-
-    def on_activate_exp_bonus_code(self, value):
-        super().on_activate_exp_bonus_code(value)
-        for train in self.trains_list:
-            train.on_activate_exp_bonus_code(value)
-
-    def on_activate_money_bonus_code(self, value):
-        super().on_activate_money_bonus_code(value)
-        for train in self.trains_list:
-            train.on_activate_money_bonus_code(value)
-
-        for shop in self.shops:
-            shop.on_activate_money_bonus_code(value)
-
-    def on_deactivate_exp_bonus_code(self):
-        super().on_deactivate_exp_bonus_code()
-        for train in self.trains_list:
-            train.on_deactivate_exp_bonus_code()
-
-    def on_deactivate_money_bonus_code(self):
-        super().on_deactivate_money_bonus_code()
-        for train in self.trains_list:
-            train.on_deactivate_money_bonus_code()
-
-        for shop in self.shops:
-            shop.on_deactivate_money_bonus_code()

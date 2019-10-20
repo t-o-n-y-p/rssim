@@ -14,9 +14,10 @@ class SchedulerModel(Model):
         self.game_time = USER_DB_CURSOR.fetchone()[0]
         USER_DB_CURSOR.execute('SELECT level FROM game_progress')
         self.level = USER_DB_CURSOR.fetchone()[0]
-        USER_DB_CURSOR.execute('''SELECT unlocked_tracks, supported_cars_min FROM map_progress WHERE map_id = ?''',
+        USER_DB_CURSOR.execute('''SELECT unlocked_tracks, unlocked_environment, supported_cars_min 
+                                  FROM map_progress WHERE map_id = ?''',
                                (self.map_id, ))
-        self.unlocked_tracks, self.supported_cars_min = USER_DB_CURSOR.fetchone()
+        self.unlocked_tracks, self.unlocked_environment, self.supported_cars_min = USER_DB_CURSOR.fetchone()
         CONFIG_DB_CURSOR.execute('''SELECT arrival_time_min, arrival_time_max, direction, new_direction, 
                                     cars_min, cars_max FROM schedule_options 
                                     WHERE min_level <= ? AND max_level >= ? AND map_id = ?''',
@@ -121,13 +122,23 @@ class SchedulerModel(Model):
 
     def on_unlock_track(self, track):
         self.unlocked_tracks = track
-        self.on_unlock_entry()
+        directions_to_unlock = [direction_id for direction_id, (track, environment)
+                                in enumerate(MAP_ENTRY_UNLOCK_CONDITIONS[self.map_id])
+                                if track == self.unlocked_tracks and environment <= self.unlocked_environment]
+        for d in directions_to_unlock:
+            self.entry_locked_state[d] = False
+
         CONFIG_DB_CURSOR.execute('''SELECT supported_cars_min FROM track_config 
                                     WHERE track_number = ? AND map_id = ?''', (track, self.map_id))
         self.supported_cars_min = CONFIG_DB_CURSOR.fetchone()[0]
 
+    def on_unlock_environment(self, tier):
+        self.unlocked_environment = tier
+        directions_to_unlock = [direction_id for direction_id, (track, environment)
+                                in enumerate(MAP_ENTRY_UNLOCK_CONDITIONS[self.map_id])
+                                if track <= self.unlocked_tracks and environment == self.unlocked_environment]
+        for d in directions_to_unlock:
+            self.entry_locked_state[d] = False
+
     def on_leave_entry(self, entry_id):
         self.entry_busy_state[entry_id] = False
-
-    def on_unlock_entry(self):
-        pass

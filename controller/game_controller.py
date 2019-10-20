@@ -70,6 +70,11 @@ class GameController(AppBaseController, GameBaseController):
         for m in self.maps:
             m.on_save_state()
 
+    def on_update_clock_state(self, clock_24h_enabled):
+        super().on_update_clock_state(clock_24h_enabled)
+        for m in self.maps:
+            m.on_update_clock_state(clock_24h_enabled)
+
     @game_is_not_paused
     def on_update_time(self):
         super().on_update_time()
@@ -94,6 +99,28 @@ class GameController(AppBaseController, GameBaseController):
         super().on_pay_money(money)
         for m in self.maps:
             m.on_pay_money(money)
+
+    def on_activate_exp_bonus_code(self, value):
+        super().on_activate_exp_bonus_code(value)
+        for m in self.maps:
+            m.on_activate_exp_bonus_code(value)
+
+    def on_activate_money_bonus_code(self, value):
+        super().on_activate_money_bonus_code(value)
+        for m in self.maps:
+            m.on_activate_money_bonus_code(value)
+
+    def on_deactivate_exp_bonus_code(self):
+        super().on_deactivate_exp_bonus_code()
+        self.bonus_code_manager.on_deactivate_exp_bonus_code()
+        for m in self.maps:
+            m.on_deactivate_exp_bonus_code()
+
+    def on_deactivate_money_bonus_code(self):
+        super().on_deactivate_money_bonus_code()
+        self.bonus_code_manager.on_deactivate_money_bonus_code()
+        for m in self.maps:
+            m.on_deactivate_money_bonus_code()
 
     def on_pause_game(self):
         self.model.on_pause_game()
@@ -133,11 +160,6 @@ class GameController(AppBaseController, GameBaseController):
             if i != active_map_id:
                 self.maps[i].constructor.on_deactivate_money_target()
 
-    def on_update_clock_state(self, clock_24h_enabled):
-        self.view.on_update_clock_state(clock_24h_enabled)
-        for m in self.maps:
-            m.on_update_clock_state(clock_24h_enabled)
-
     def on_add_exp_bonus(self, exp_bonus):
         self.model.on_add_exp_bonus(exp_bonus)
 
@@ -147,25 +169,3 @@ class GameController(AppBaseController, GameBaseController):
             self.on_activate_exp_bonus_code(self.bonus_code_manager.model.get_bonus_code_value(sha512_hash) - 1)
         elif bonus_code_type == 'money_bonus':
             self.on_activate_money_bonus_code(self.bonus_code_manager.model.get_bonus_code_value(sha512_hash) - 1)
-
-    def on_activate_exp_bonus_code(self, value):
-        super().on_activate_exp_bonus_code(value)
-        for m in self.maps:
-            m.on_activate_exp_bonus_code(value)
-
-    def on_activate_money_bonus_code(self, value):
-        super().on_activate_money_bonus_code(value)
-        for m in self.maps:
-            m.on_activate_money_bonus_code(value)
-
-    def on_deactivate_exp_bonus_code(self):
-        super().on_deactivate_exp_bonus_code()
-        self.bonus_code_manager.on_deactivate_exp_bonus_code()
-        for m in self.maps:
-            m.on_deactivate_exp_bonus_code()
-
-    def on_deactivate_money_bonus_code(self):
-        super().on_deactivate_money_bonus_code()
-        self.bonus_code_manager.on_deactivate_money_bonus_code()
-        for m in self.maps:
-            m.on_deactivate_money_bonus_code()

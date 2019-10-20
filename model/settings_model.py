@@ -79,5 +79,5 @@ class SettingsModel(Model):
         USER_DB_CURSOR.execute('UPDATE i18n SET clock_24h = ?', (int(self.clock_24h_enabled), ))
         on_commit()
 
-    def on_update_clock_state(self, clock_24h_enabled):
+    def on_apply_clock_state(self, clock_24h_enabled):
         self.clock_24h_enabled = clock_24h_enabled
