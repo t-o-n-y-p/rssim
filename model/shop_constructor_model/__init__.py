@@ -29,8 +29,8 @@ class ShopConstructorModel(Model):
             self.shop_stages_state_matrix[stage_info[0]].extend([*stage_progress_config[:3],
                                                                  0, *stage_progress_config[3:]])
 
-        USER_DB_CURSOR.execute('SELECT money FROM game_progress')
-        self.money = USER_DB_CURSOR.fetchone()[0]
+        USER_DB_CURSOR.execute('SELECT money,  money_bonus_multiplier FROM game_progress')
+        self.money, self.money_bonus_multiplier = USER_DB_CURSOR.fetchone()
         USER_DB_CURSOR.execute('''SELECT current_stage, shop_storage_money, internal_shop_time
                                   FROM shops WHERE map_id = ? AND shop_id = ?''', (self.map_id, self.shop_id))
         self.current_stage, self.shop_storage_money, self.internal_shop_time = USER_DB_CURSOR.fetchone()
@@ -139,3 +139,9 @@ class ShopConstructorModel(Model):
         self.view.on_update_stage_state(stage_number)
         self.controller.parent_controller.parent_controller.parent_controller \
             .on_pay_money(self.shop_stages_state_matrix[stage_number][PRICE])
+
+    def on_activate_money_bonus_code(self, value):
+        self.money_bonus_multiplier = round(1.0 + value, 2)
+
+    def on_deactivate_money_bonus_code(self):
+        self.money_bonus_multiplier = 1.0

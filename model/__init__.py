@@ -208,3 +208,21 @@ class Model:
 
     def on_update_time(self):
         pass
+
+    def on_add_money(self, money):
+        pass
+
+    def on_pay_money(self, money):
+        pass
+
+    def on_activate_exp_bonus_code(self, value):
+        pass
+
+    def on_activate_money_bonus_code(self, value):
+        pass
+
+    def on_deactivate_exp_bonus_code(self):
+        pass
+
+    def on_deactivate_money_bonus_code(self):
+        pass

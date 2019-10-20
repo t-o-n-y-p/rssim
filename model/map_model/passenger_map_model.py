@@ -23,7 +23,8 @@ class PassengerMapModel(MapModel):
         # car collection is chosen randomly from available options, seed() initializes PRNG
         seed()
         model.on_train_init(cars, track, train_route, state, direction, new_direction, current_direction,
-                            priority, boarding_time, exp, money, choice(self.unlocked_car_collections))
+                            priority, boarding_time, exp, money, choice(self.unlocked_car_collections),
+                            self.exp_bonus_multiplier, self.money_bonus_multiplier)
         view = PassengerTrainView(train_id)
         controller.model = model
         model.controller = controller

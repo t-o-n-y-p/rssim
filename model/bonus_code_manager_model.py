@@ -44,6 +44,14 @@ class BonusCodeManagerModel(Model):
                     elif self.bonus_code_matrix[code][CODE_TYPE] == 'money_bonus':
                         self.controller.parent_controller.on_deactivate_money_bonus_code()
 
+    def on_deactivate_exp_bonus_code(self):
+        self.view.on_deactivate_exp_bonus_code()
+        self.view.on_send_exp_bonus_expired_notification()
+
+    def on_deactivate_money_bonus_code(self):
+        self.view.on_deactivate_money_bonus_code()
+        self.view.on_send_money_bonus_expired_notification()
+
     def get_bonus_code_type(self, sha512_hash):
         return self.bonus_code_matrix[sha512_hash][CODE_TYPE]
 

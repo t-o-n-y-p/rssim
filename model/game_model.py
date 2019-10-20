@@ -51,7 +51,7 @@ class GameModel(Model):
 
     @maximum_level_not_reached
     def on_add_exp(self, exp):
-        self.exp += exp * self.exp_multiplier * self.exp_bonus_multiplier
+        self.exp += exp * self.exp_multiplier
         while self.exp >= self.player_progress and self.level < MAXIMUM_LEVEL:
             self.controller.on_level_up()
 
@@ -70,18 +70,16 @@ class GameModel(Model):
         self.view.on_send_level_up_notification(self.level)
 
     def on_add_money(self, money):
-        if self.money_target > 0 and self.money < self.money_target <= self.money + money * self.money_bonus_multiplier:
-            for map_ in self.controller.maps:
-                if map_.constructor.model.money_target_activated:
-                    if map_.constructor.model.money_target_cell_position[0] == TRACKS:
+        if self.money_target > 0 and self.money < self.money_target <= self.money + money:
+            for m in self.controller.maps:
+                if m.constructor.model.money_target_activated:
+                    if m.constructor.model.money_target_cell_position[0] == TRACKS:
                         self.view.on_send_enough_money_track_notification()
-                    elif map_.constructor.model.money_target_cell_position[0] == ENVIRONMENT:
+                    elif m.constructor.model.money_target_cell_position[0] == ENVIRONMENT:
                         self.view.on_send_enough_money_environment_notification()
 
-        profit = min(MONEY_LIMIT - self.money, money * self.money_bonus_multiplier)
-        self.money += profit
+        self.money += min(MONEY_LIMIT - self.money, money)
         self.view.on_update_money(self.money, self.money_target)
-        return profit
 
     def on_pay_money(self, money):
         self.money -= money

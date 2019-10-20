@@ -32,6 +32,8 @@ class TrainModel(Model):
         self.trail_points_v2_head_tail = []
         self.trail_points_v2_mid = []
         self.car_image_collection = 0
+        self.exp_bonus_multiplier = None
+        self.money_bonus_multiplier = None
 
     def on_train_setup(self, train_id):
         USER_DB_CURSOR.execute('''SELECT train_id, cars, train_route_track_number, train_route_type, 
@@ -45,6 +47,8 @@ class TrainModel(Model):
             self.boarding_time, self.exp, self.money, cars_position_parsed, cars_position_abs_parsed, \
             self.stop_point, self.destination_point, self.car_image_collection \
             = USER_DB_CURSOR.fetchone()
+        USER_DB_CURSOR.execute('''SELECT exp_bonus_multiplier, money_bonus_multiplier FROM game_progress''')
+        self.exp_bonus_multiplier, self.money_bonus_multiplier = USER_DB_CURSOR.fetchone()
         if cars_position_parsed is not None:
             self.cars_position = list(map(float, cars_position_parsed.split(',')))
 
@@ -56,12 +60,13 @@ class TrainModel(Model):
             self.cars_position_abs = cars_position_abs_parsed
 
     def on_train_init(self, cars, track, train_route, state, direction, new_direction, current_direction,
-                      priority, boarding_time, exp, money, car_image_collection):
+                      priority, boarding_time, exp, money, car_image_collection,
+                      exp_bonus_multiplier, money_bonus_multiplier):
         self.cars, self.track, self.train_route, self.state, self.direction, self.new_direction, \
             self.current_direction, self.priority, self.boarding_time, \
-            self.exp, self.money, self.car_image_collection \
+            self.exp, self.money, self.car_image_collection, self.exp_bonus_multiplier, self.money_bonus_multiplier \
             = cars, track, train_route, state, direction, new_direction, current_direction, \
-            priority, boarding_time, exp, money, car_image_collection
+            priority, boarding_time, exp, money, car_image_collection, exp_bonus_multiplier, money_bonus_multiplier
         self.speed = self.train_maximum_speed
         self.speed_state = 'move'
         self.speed_factor_position = self.speed_factor_position_limit
@@ -217,12 +222,13 @@ class TrainModel(Model):
                                                                       self.controller.train_id, self.cars)
                 self.on_reconvert_trail_points()
 
-            # after boarding time is over, update train state and add exp
+            # after boarding time is over, update train state and add exp/money
             if self.boarding_time == 0:
                 self.state = 'boarding_complete'
                 self.view.on_update_state(self.state)
-                self.controller.parent_controller.parent_controller.on_add_exp(self.exp)
-                self.controller.parent_controller.parent_controller.on_add_money(self.money)
+                self.controller.parent_controller.parent_controller.on_add_exp(self.exp * self.exp_bonus_multiplier)
+                self.controller.parent_controller.parent_controller\
+                    .on_add_money(self.money * self.money_bonus_multiplier)
 
     def on_convert_trail_points(self):
         self.cars_position_abs = []
@@ -281,3 +287,15 @@ class TrainModel(Model):
                     (self.trail_points_v2_mid[int(self.cars_position[car_index])][2]
                      + self.trail_points_v2_mid[int(self.cars_position[car_index]) + 1][2]) / 2
                 )
+
+    def on_activate_exp_bonus_code(self, value):
+        self.exp_bonus_multiplier = round(1.0 + value, 2)
+
+    def on_deactivate_exp_bonus_code(self):
+        self.exp_bonus_multiplier = 1.0
+
+    def on_activate_money_bonus_code(self, value):
+        self.money_bonus_multiplier = round(1.0 + value, 2)
+
+    def on_deactivate_money_bonus_code(self):
+        self.money_bonus_multiplier = 1.0

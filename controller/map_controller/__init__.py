@@ -443,12 +443,14 @@ class MapController(AppBaseController, GameBaseController):
 
     @final
     def on_add_money(self, money):
+        super().on_add_money(money)
         self.constructor.on_add_money(money)
         for shop in self.shops:
             shop.on_add_money(money)
 
     @final
     def on_pay_money(self, money):
+        super().on_pay_money(money)
         self.constructor.on_pay_money(money)
         for shop in self.shops:
             shop.on_pay_money(money)
@@ -588,3 +590,29 @@ class MapController(AppBaseController, GameBaseController):
         self.shops[shop_id].fade_out_animation.on_activate()
         self.view.on_activate_zoom_buttons()
         self.view.on_activate_shop_buttons()
+
+    def on_activate_exp_bonus_code(self, value):
+        super().on_activate_exp_bonus_code(value)
+        for train in self.trains_list:
+            train.on_activate_exp_bonus_code(value)
+
+    def on_activate_money_bonus_code(self, value):
+        super().on_activate_money_bonus_code(value)
+        for train in self.trains_list:
+            train.on_activate_money_bonus_code(value)
+
+        for shop in self.shops:
+            shop.on_activate_money_bonus_code(value)
+
+    def on_deactivate_exp_bonus_code(self):
+        super().on_deactivate_exp_bonus_code()
+        for train in self.trains_list:
+            train.on_deactivate_exp_bonus_code()
+
+    def on_deactivate_money_bonus_code(self):
+        super().on_deactivate_money_bonus_code()
+        for train in self.trains_list:
+            train.on_deactivate_money_bonus_code()
+
+        for shop in self.shops:
+            shop.on_deactivate_money_bonus_code()

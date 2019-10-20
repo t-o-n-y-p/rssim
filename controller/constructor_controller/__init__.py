@@ -37,14 +37,6 @@ class ConstructorController(AppBaseController, GameBaseController):
         self.model.on_put_under_construction(construction_type, entity_number)
 
     @final
-    def on_add_money(self, money):
-        self.model.on_add_money(money)
-
-    @final
-    def on_pay_money(self, money):
-        self.model.on_pay_money(money)
-
-    @final
     def on_update_current_locale(self, new_locale):
         self.view.on_update_current_locale(new_locale)
 

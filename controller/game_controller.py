@@ -85,6 +85,16 @@ class GameController(AppBaseController, GameBaseController):
         for m in self.maps:
             m.on_level_up()
 
+    def on_add_money(self, money):
+        super().on_add_money(money)
+        for m in self.maps:
+            m.on_add_money(money)
+
+    def on_pay_money(self, money):
+        super().on_pay_money(money)
+        for m in self.maps:
+            m.on_pay_money(money)
+
     def on_pause_game(self):
         self.model.on_pause_game()
 
@@ -96,16 +106,6 @@ class GameController(AppBaseController, GameBaseController):
 
     def on_add_exp(self, exp):
         self.model.on_add_exp(exp)
-
-    def on_add_money(self, money):
-        profit = self.model.on_add_money(money)
-        for m in self.maps:
-            m.on_add_money(profit)
-
-    def on_pay_money(self, money):
-        self.model.on_pay_money(money)
-        for m in self.maps:
-            m.on_pay_money(money)
 
     def on_change_level_up_notification_state(self, notification_state):
         self.view.on_change_level_up_notification_state(notification_state)
@@ -144,14 +144,28 @@ class GameController(AppBaseController, GameBaseController):
     def on_activate_new_bonus_code(self, sha512_hash):
         self.bonus_code_manager.on_activate_new_bonus_code(sha512_hash)
         if (bonus_code_type := self.bonus_code_manager.model.get_bonus_code_type(sha512_hash)) == 'exp_bonus':
-            self.model.on_activate_exp_bonus_code(self.bonus_code_manager.model.get_bonus_code_value(sha512_hash) - 1)
+            self.on_activate_exp_bonus_code(self.bonus_code_manager.model.get_bonus_code_value(sha512_hash) - 1)
         elif bonus_code_type == 'money_bonus':
-            self.model.on_activate_money_bonus_code(self.bonus_code_manager.model.get_bonus_code_value(sha512_hash) - 1)
+            self.on_activate_money_bonus_code(self.bonus_code_manager.model.get_bonus_code_value(sha512_hash) - 1)
+
+    def on_activate_exp_bonus_code(self, value):
+        super().on_activate_exp_bonus_code(value)
+        for m in self.maps:
+            m.on_activate_exp_bonus_code(value)
+
+    def on_activate_money_bonus_code(self, value):
+        super().on_activate_money_bonus_code(value)
+        for m in self.maps:
+            m.on_activate_money_bonus_code(value)
 
     def on_deactivate_exp_bonus_code(self):
-        self.model.on_deactivate_exp_bonus_code()
+        super().on_deactivate_exp_bonus_code()
         self.bonus_code_manager.on_deactivate_exp_bonus_code()
+        for m in self.maps:
+            m.on_deactivate_exp_bonus_code()
 
     def on_deactivate_money_bonus_code(self):
-        self.model.on_deactivate_money_bonus_code()
+        super().on_deactivate_money_bonus_code()
         self.bonus_code_manager.on_deactivate_money_bonus_code()
+        for m in self.maps:
+            m.on_deactivate_money_bonus_code()

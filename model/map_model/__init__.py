@@ -20,6 +20,8 @@ class MapModel(Model):
         self.last_known_base_offset = list(map(int, USER_DB_CURSOR.fetchone()[0].split(',')))
         USER_DB_CURSOR.execute('SELECT zoom_out_activated FROM graphics WHERE map_id = ?', (self.map_id, ))
         self.zoom_out_activated = bool(USER_DB_CURSOR.fetchone()[0])
+        USER_DB_CURSOR.execute('''SELECT exp_bonus_multiplier, money_bonus_multiplier FROM game_progress''')
+        self.exp_bonus_multiplier, self.money_bonus_multiplier = USER_DB_CURSOR.fetchone()
 
     def on_activate_view(self):
         USER_DB_CURSOR.execute('SELECT map_id FROM graphics')
@@ -110,3 +112,15 @@ class MapModel(Model):
                                     WHERE track_unlocked_with <= ? AND environment_unlocked_with = ? AND map_id = ?''',
                                  (self.unlocked_tracks, tier, self.map_id))
         return CONFIG_DB_CURSOR.fetchall()
+
+    def on_activate_exp_bonus_code(self, value):
+        self.exp_bonus_multiplier = round(1.0 + value, 2)
+
+    def on_deactivate_exp_bonus_code(self):
+        self.exp_bonus_multiplier = 1.0
+
+    def on_activate_money_bonus_code(self, value):
+        self.money_bonus_multiplier = round(1.0 + value, 2)
+
+    def on_deactivate_money_bonus_code(self):
+        self.money_bonus_multiplier = 1.0

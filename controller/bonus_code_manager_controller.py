@@ -13,11 +13,3 @@ class BonusCodeManagerController(AppBaseController, GameBaseController):
 
     def on_change_bonus_expired_notification_state(self, notification_state):
         self.view.on_change_bonus_expired_notification_state(notification_state)
-
-    def on_deactivate_exp_bonus_code(self):
-        self.view.on_deactivate_exp_bonus_code()
-        self.view.on_send_exp_bonus_expired_notification()
-
-    def on_deactivate_money_bonus_code(self):
-        self.view.on_deactivate_money_bonus_code()
-        self.view.on_send_money_bonus_expired_notification()

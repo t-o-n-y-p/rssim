@@ -197,3 +197,21 @@ class GameBaseController:
 
     def on_level_up(self):
         self.model.on_level_up()
+
+    def on_add_money(self, money):
+        self.model.on_add_money(money)
+
+    def on_pay_money(self, money):
+        self.model.on_pay_money(money)
+
+    def on_activate_exp_bonus_code(self, value):
+        self.model.on_activate_exp_bonus_code(value)
+
+    def on_activate_money_bonus_code(self, value):
+        self.model.on_activate_money_bonus_code(value)
+
+    def on_deactivate_exp_bonus_code(self):
+        self.model.on_deactivate_exp_bonus_code()
+
+    def on_deactivate_money_bonus_code(self):
+        self.model.on_deactivate_money_bonus_code()

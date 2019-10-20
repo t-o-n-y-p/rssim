@@ -86,12 +86,22 @@ class ShopController(AppBaseController, GameBaseController):
 
     @final
     def on_add_money(self, money):
+        super().on_add_money(money)
         self.shop_constructor.on_add_money(money)
 
     @final
     def on_pay_money(self, money):
+        super().on_pay_money(money)
         self.shop_constructor.on_pay_money(money)
 
     @final
     def on_change_shop_storage_notification_state(self, notification_state):
         self.shop_constructor.on_change_shop_storage_notification_state(notification_state)
+
+    def on_activate_money_bonus_code(self, value):
+        super().on_activate_money_bonus_code(value)
+        self.shop_constructor.on_activate_money_bonus_code(value)
+
+    def on_deactivate_money_bonus_code(self):
+        super().on_deactivate_money_bonus_code()
+        self.shop_constructor.on_deactivate_money_bonus_code()
