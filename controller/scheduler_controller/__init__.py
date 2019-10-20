@@ -24,10 +24,6 @@ class SchedulerController(AppBaseController, GameBaseController):
         self.model.on_save_state()
 
     @final
-    def on_level_up(self, level):
-        self.model.on_level_up(level)
-
-    @final
     def on_unlock_track(self, track):
         self.model.on_unlock_track(track)
 

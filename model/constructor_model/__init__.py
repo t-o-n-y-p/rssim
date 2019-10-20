@@ -10,6 +10,8 @@ class ConstructorModel(Model):
         self.map_id = map_id
         USER_DB_CURSOR.execute('SELECT game_time FROM epoch_timestamp')
         self.game_time = USER_DB_CURSOR.fetchone()[0]
+        USER_DB_CURSOR.execute('SELECT level FROM game_progress')
+        self.level = USER_DB_CURSOR.fetchone()[0]
         self.construction_state_matrix = [{}, {}]
         self.cached_unlocked_tracks = []
         self.cached_unlocked_tiers = []
@@ -194,10 +196,11 @@ class ConstructorModel(Model):
                                         )
                                    )
 
-    def on_level_up(self, level):
+    def on_level_up(self):
+        self.level += 1
         # determines if some tracks require level which was just hit
         CONFIG_DB_CURSOR.execute('SELECT track_number FROM track_config WHERE level = ? AND map_id = ?',
-                                 (level, self.map_id))
+                                 (self.level, self.map_id))
         raw_tracks = CONFIG_DB_CURSOR.fetchall()
         tracks_parsed = []
         for i in raw_tracks:
@@ -212,7 +215,7 @@ class ConstructorModel(Model):
 
         # same for environment
         CONFIG_DB_CURSOR.execute('SELECT tier FROM environment_config WHERE level = ? AND map_id = ?',
-                                 (level, self.map_id))
+                                 (self.level, self.map_id))
         raw_tiers = CONFIG_DB_CURSOR.fetchall()
         tiers_parsed = []
         for i in raw_tiers:

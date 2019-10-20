@@ -273,11 +273,11 @@ class MapController(AppBaseController, GameBaseController):
             shop.on_update_time()
 
     @final
-    def on_level_up(self, level):
-        self.scheduler.on_level_up(level)
-        self.constructor.on_level_up(level)
+    def on_level_up(self):
+        self.scheduler.on_level_up()
+        self.constructor.on_level_up()
         for shop in self.shops:
-            shop.on_level_up(level)
+            shop.on_level_up()
 
     @final
     def on_open_schedule(self):

@@ -18,5 +18,5 @@ class ShopModel(Model):
     def on_activate_view(self):
         self.view.on_activate()
 
-    def on_level_up(self, level):
-        self.level = level
+    def on_level_up(self):
+        self.level += 1

@@ -107,8 +107,8 @@ class SchedulerModel(Model):
         USER_DB_CURSOR.execute('''UPDATE map_progress SET supported_cars_min = ? WHERE map_id = ?''',
                                (self.supported_cars_min, self.map_id))
 
-    def on_level_up(self, level):
-        self.level = level
+    def on_level_up(self):
+        self.level += 1
         CONFIG_DB_CURSOR.execute('''SELECT arrival_time_min, arrival_time_max, direction, new_direction, 
                                     cars_min, cars_max FROM schedule_options 
                                     WHERE min_level <= ? AND max_level >= ? AND map_id = ?''',

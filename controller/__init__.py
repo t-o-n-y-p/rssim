@@ -194,3 +194,6 @@ class GameBaseController:
 
     def on_update_time(self):
         self.model.on_update_time()
+
+    def on_level_up(self):
+        self.model.on_level_up()

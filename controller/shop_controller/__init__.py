@@ -37,12 +37,12 @@ class ShopController(AppBaseController, GameBaseController):
         self.shop_constructor.on_update_time()
 
     @final
-    def on_level_up(self, level):
-        self.model.on_level_up(level)
+    def on_level_up(self):
+        self.model.on_level_up()
         if self.model.level >= self.model.level_required and self.placeholder.view.is_activated:
             self.placeholder_to_shop_constructor_transition_animation.on_activate()
 
-        self.shop_constructor.on_level_up(level)
+        self.shop_constructor.on_level_up()
 
     @final
     def on_activate_view(self):

@@ -10,6 +10,8 @@ class ShopConstructorModel(Model):
         self.map_id = map_id
         self.shop_id = shop_id
         self.shop_stages_state_matrix = {}
+        USER_DB_CURSOR.execute('SELECT level FROM game_progress')
+        self.level = USER_DB_CURSOR.fetchone()[0]
         USER_DB_CURSOR.execute('''SELECT stage_number, locked, under_construction, construction_time,
                                   unlock_condition_from_level, unlock_condition_from_previous_stage,
                                   unlock_available FROM shop_stages WHERE map_id = ? AND shop_id = ?''',
@@ -114,9 +116,10 @@ class ShopConstructorModel(Model):
         self.money -= money
         self.view.on_update_money(self.money)
 
-    def on_level_up(self, level):
+    def on_level_up(self):
+        self.level += 1
         for stage in self.shop_stages_state_matrix:
-            if self.shop_stages_state_matrix[stage][LEVEL_REQUIRED] == level:
+            if self.shop_stages_state_matrix[stage][LEVEL_REQUIRED] == self.level:
                 self.shop_stages_state_matrix[stage][UNLOCK_CONDITION_FROM_LEVEL] = True
                 self.on_check_shop_stage_unlock_conditions(stage)
                 self.view.on_update_stage_state(stage)

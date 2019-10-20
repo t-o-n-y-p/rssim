@@ -80,16 +80,16 @@ class GameController(AppBaseController, GameBaseController):
         if self.model.game_time % (FRAMES_IN_ONE_HOUR * 2) == 0:
             self.parent_controller.on_save_state()
 
+    def on_level_up(self):
+        super().on_level_up()
+        for m in self.maps:
+            m.on_level_up()
+
     def on_pause_game(self):
         self.model.on_pause_game()
 
     def on_resume_game(self):
         self.model.on_resume_game()
-
-    def on_level_up(self):
-        self.model.on_level_up()
-        for m in self.maps:
-            m.on_level_up(self.model.level)
 
     def on_update_money_target(self, money_target):
         self.model.on_update_money_target(money_target)

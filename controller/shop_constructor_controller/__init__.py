@@ -50,10 +50,6 @@ class ShopConstructorController(AppBaseController, GameBaseController):
         self.view.on_apply_shaders_and_draw_vertices()
 
     @final
-    def on_level_up(self, level):
-        self.model.on_level_up(level)
-
-    @final
     def on_save_state(self):
         self.model.on_save_state()
 

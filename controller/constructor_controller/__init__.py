@@ -33,10 +33,6 @@ class ConstructorController(AppBaseController, GameBaseController):
         self.parent_controller.on_close_constructor()
 
     @final
-    def on_level_up(self, level):
-        self.model.on_level_up(level)
-
-    @final
     def on_put_under_construction(self, construction_type, entity_number):
         self.model.on_put_under_construction(construction_type, entity_number)
 
