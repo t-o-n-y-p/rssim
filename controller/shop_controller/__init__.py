@@ -87,10 +87,12 @@ class ShopController(AppBaseController, GameBaseController):
         super().on_pay_money(money)
         self.shop_constructor.on_pay_money(money)
 
+    @final
     def on_activate_money_bonus_code(self, value):
         super().on_activate_money_bonus_code(value)
         self.shop_constructor.on_activate_money_bonus_code(value)
 
+    @final
     def on_deactivate_money_bonus_code(self):
         super().on_deactivate_money_bonus_code()
         self.shop_constructor.on_deactivate_money_bonus_code()

@@ -1,7 +1,5 @@
 from typing import Final
 
-from database import CONFIG_DB_CURSOR, USER_DB_CURSOR
-
 
 def fullscreen_mode_available(fn):
     def _turn_fullscreen_mode_on_if_available(*args, **kwargs):

@@ -305,11 +305,13 @@ class MapController(AppBaseController, GameBaseController, MapBaseController):
         for shop in self.shops:
             shop.on_pay_money(money)
 
+    @final
     def on_activate_exp_bonus_code(self, value):
         super().on_activate_exp_bonus_code(value)
         for train in self.trains_list:
             train.on_activate_exp_bonus_code(value)
 
+    @final
     def on_activate_money_bonus_code(self, value):
         super().on_activate_money_bonus_code(value)
         for train in self.trains_list:
@@ -318,11 +320,13 @@ class MapController(AppBaseController, GameBaseController, MapBaseController):
         for shop in self.shops:
             shop.on_activate_money_bonus_code(value)
 
+    @final
     def on_deactivate_exp_bonus_code(self):
         super().on_deactivate_exp_bonus_code()
         for train in self.trains_list:
             train.on_deactivate_exp_bonus_code()
 
+    @final
     def on_deactivate_money_bonus_code(self):
         super().on_deactivate_money_bonus_code()
         for train in self.trains_list:
