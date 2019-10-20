@@ -4,7 +4,7 @@ from operator import attrgetter
 from controller import *
 
 
-class MapController(Controller):
+class MapController(AppBaseController, GameBaseController):
     def __init__(self, map_id, parent_controller):
         super().__init__(parent_controller=parent_controller,
                          logger=getLogger(f'root.app.game.map.{map_id}.controller'))
@@ -243,18 +243,19 @@ class MapController(Controller):
             shop.on_save_state()
 
     @final
-    def on_update_time(self, game_time):
+    def on_update_time(self):
+        super().on_update_time()
         # train routes are sorted by priority to implement some kind of queue
         self.train_routes_sorted_list = sorted(self.train_routes_sorted_list,
                                                key=attrgetter('model.priority'), reverse=True)
         for route in self.train_routes_sorted_list:
-            route.on_update_time(game_time)
+            route.on_update_time()
 
         # since dictionary items cannot be removed right inside "for" statement,
         # collect trains which has departed successfully and should be removed from the game
         successful_departure_state = []
         for train in self.trains_list:
-            train.on_update_time(game_time)
+            train.on_update_time()
             if train.model.state == 'successful_departure':
                 successful_departure_state.append(train.train_id)
 
@@ -265,11 +266,11 @@ class MapController(Controller):
             self.fade_out_animation.train_fade_out_animations.remove(self.trains[train_id].fade_out_animation)
             self.trains_list.remove(self.trains.pop(train_id))
 
-        self.scheduler.on_update_time(game_time)
-        self.dispatcher.on_update_time(game_time)
-        self.constructor.on_update_time(game_time)
+        self.scheduler.on_update_time()
+        self.dispatcher.on_update_time()
+        self.constructor.on_update_time()
         for shop in self.shops:
-            shop.on_update_time(game_time)
+            shop.on_update_time()
 
     @final
     def on_level_up(self, level):

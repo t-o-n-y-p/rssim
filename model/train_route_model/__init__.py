@@ -155,7 +155,7 @@ class TrainRouteModel(Model):
 
     @train_route_is_opened
     @not_approaching_route
-    def on_update_time(self, game_time):
+    def on_update_time(self):
         train_route_busy = False
         for i in range(1, len(self.train_route_sections)):
             train_route_busy = train_route_busy or self.train_route_section_busy_state[i]

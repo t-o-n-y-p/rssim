@@ -3,7 +3,7 @@ from logging import getLogger
 from controller import *
 
 
-class ShopConstructorController(Controller):
+class ShopConstructorController(AppBaseController, GameBaseController):
     def __init__(self, map_id, shop_id, parent_controller):
         super().__init__(parent_controller=parent_controller,
                          logger=getLogger(f'root.app.game.map.{map_id}.shop.{shop_id}.constructor.controller'))
@@ -52,10 +52,6 @@ class ShopConstructorController(Controller):
     @final
     def on_level_up(self, level):
         self.model.on_level_up(level)
-
-    @final
-    def on_update_time(self, game_time):
-        self.model.on_update_time(game_time)
 
     @final
     def on_save_state(self):

@@ -46,7 +46,7 @@ TRAIN_ROUTE_DATA_SECTION_NUMBER: Final = 2     # meaning of train_route_data[] l
 # ------------------- END CONSTANTS -------------------
 
 
-class Controller:
+class AppBaseController:
     def __init__(self, parent_controller=None, logger=None):
         self.logger = logger
         self.model = None
@@ -186,3 +186,11 @@ class Controller:
                                                       on_mouse_scroll_handlers=on_mouse_scroll_handlers,
                                                       on_key_press_handlers=on_key_press_handlers,
                                                       on_text_handlers=on_text_handlers)
+
+
+class GameBaseController:
+    def __init__(self):
+        self.model = None
+
+    def on_update_time(self):
+        self.model.on_update_time()

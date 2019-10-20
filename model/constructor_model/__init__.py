@@ -8,6 +8,8 @@ class ConstructorModel(Model):
     def __init__(self, map_id):
         super().__init__(logger=getLogger(f'root.app.game.map.{map_id}.constructor.model'))
         self.map_id = map_id
+        USER_DB_CURSOR.execute('SELECT game_time FROM epoch_timestamp')
+        self.game_time = USER_DB_CURSOR.fetchone()[0]
         self.construction_state_matrix = [{}, {}]
         self.cached_unlocked_tracks = []
         self.cached_unlocked_tiers = []
@@ -56,7 +58,8 @@ class ConstructorModel(Model):
         self.view.on_update_money(self.money)
         self.view.on_activate()
 
-    def on_update_time(self, game_time):
+    def on_update_time(self):
+        self.game_time += 1
         # unlocked_track stores track number if some track was unlocked and 0 otherwise
         unlocked_track = 0
         for track in self.construction_state_matrix[TRACKS]:
@@ -78,7 +81,7 @@ class ConstructorModel(Model):
 
                     self.view.on_unlock_construction(TRACKS, track)
                 else:
-                    self.view.on_update_construction_state(TRACKS, track, game_time)
+                    self.view.on_update_construction_state(TRACKS, track, self.game_time)
 
         if unlocked_track > 0:
             self.construction_state_matrix[TRACKS].pop(unlocked_track)
@@ -116,7 +119,7 @@ class ConstructorModel(Model):
 
                     self.view.on_unlock_construction(ENVIRONMENT, tier)
                 else:
-                    self.view.on_update_construction_state(ENVIRONMENT, tier, game_time)
+                    self.view.on_update_construction_state(ENVIRONMENT, tier, self.game_time)
 
         if unlocked_tier > 0:
             self.construction_state_matrix[ENVIRONMENT].pop(unlocked_tier)

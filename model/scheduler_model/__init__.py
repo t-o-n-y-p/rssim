@@ -10,6 +10,8 @@ class SchedulerModel(Model):
     def __init__(self, map_id):
         super().__init__(logger=getLogger(f'root.app.game.map.{map_id}.scheduler.model'))
         self.map_id = map_id
+        USER_DB_CURSOR.execute('SELECT game_time FROM epoch_timestamp')
+        self.game_time = USER_DB_CURSOR.fetchone()[0]
         USER_DB_CURSOR.execute('SELECT level FROM game_progress')
         self.level = USER_DB_CURSOR.fetchone()[0]
         USER_DB_CURSOR.execute('''SELECT unlocked_tracks, supported_cars_min FROM map_progress WHERE map_id = ?''',
@@ -39,10 +41,11 @@ class SchedulerModel(Model):
     def on_activate_view(self):
         self.view.on_activate()
 
-    def on_update_time(self, game_time):
-        self.view.on_update_time(game_time)
+    def on_update_time(self):
+        self.game_time += 1
+        self.view.on_update_time(self.game_time)
         # new schedule cycle is created if current schedule end is less than schedule cycle length ahead
-        if game_time + self.schedule_cycle_length >= self.next_cycle_start_time:
+        if self.game_time + self.schedule_cycle_length >= self.next_cycle_start_time:
             # trains are added one by one if both direction and new direction are unlocked by user,
             # otherwise train is skipped
             for i in self.schedule_options:
@@ -62,7 +65,7 @@ class SchedulerModel(Model):
         # notify Map controller about new train available if arrival time is less or equal than current time
         # and corresponding entry is not busy; only one train at a time is created
         for i in self.base_schedule:
-            if game_time >= i[ARRIVAL_TIME]:
+            if self.game_time >= i[ARRIVAL_TIME]:
                 if not self.entry_busy_state[i[DIRECTION]]:
                     self.entry_busy_state[i[DIRECTION]] = True
                     if i[CARS] < self.supported_cars_min:

@@ -38,10 +38,8 @@ class GameModel(Model):
         self.view.on_resume_game()
 
     def on_update_time(self):
-        if self.game_time % FRAMES_IN_ONE_MINUTE == 0:
-            self.view.on_update_time(self.game_time)
-
         self.game_time += 1
+        self.view.on_update_time(self.game_time)
 
     def on_save_state(self):
         USER_DB_CURSOR.execute('UPDATE epoch_timestamp SET game_time = ?', (self.game_time, ))

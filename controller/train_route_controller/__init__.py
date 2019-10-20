@@ -3,7 +3,7 @@ from logging import getLogger
 from controller import *
 
 
-class TrainRouteController(Controller):
+class TrainRouteController(AppBaseController, GameBaseController):
     def __init__(self, map_id, parent_controller, track, train_route):
         super().__init__(parent_controller=parent_controller,
                          logger=getLogger(f'root.app.game.map.{map_id}.train_route.{track}.{train_route}.controller'))
@@ -40,10 +40,6 @@ class TrainRouteController(Controller):
     @final
     def on_update_train_route_sections(self, last_car_position):
         self.model.on_update_train_route_sections(last_car_position)
-
-    @final
-    def on_update_time(self, game_time):
-        self.model.on_update_time(game_time)
 
     @final
     def on_update_priority(self, priority):

@@ -3,7 +3,7 @@ from logging import getLogger
 from controller import *
 
 
-class CrossoverController(Controller):
+class CrossoverController(AppBaseController):
     def __init__(self, map_id, parent_controller, track_param_1, track_param_2, crossover_type):
         super().__init__(
             parent_controller=parent_controller,

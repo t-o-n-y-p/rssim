@@ -205,3 +205,6 @@ class Model:
 
     def on_save_state(self):
         pass
+
+    def on_update_time(self):
+        pass

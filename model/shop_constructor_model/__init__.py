@@ -42,7 +42,7 @@ class ShopConstructorModel(Model):
         self.view.on_update_storage_money(self.shop_storage_money)
         self.view.on_update_money(self.money)
 
-    def on_update_time(self, game_time):
+    def on_update_time(self):
         if self.current_stage > 0 \
                 and self.shop_storage_money < self.shop_stages_state_matrix[self.current_stage][STORAGE_CAPACITY]:
             self.internal_shop_time += 1

@@ -115,7 +115,7 @@ class TrainModel(Model):
                                 self.exp, self.money, cars_position_string, cars_position_abs_string,
                                 self.stop_point, self.destination_point, self.car_image_collection))
 
-    def on_update_time(self, game_time):
+    def on_update_time(self):
         # shorter trains gain more priority because they arrive more frequently
         if self.cars < 9:
             self.priority += 5

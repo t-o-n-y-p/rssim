@@ -46,7 +46,6 @@ class GameView(View):
         self.buttons = [self.pause_game_button, self.resume_game_button, self.open_settings_button]
         self.main_clock_label_24h = MainClockLabel24H(parent_viewport=self.viewport)
         self.main_clock_label_12h = MainClockLabel12H(parent_viewport=self.viewport)
-        self.game_time = 0
         self.exp_percent = 0
         self.money_percent = 0
         self.level = 0
@@ -114,16 +113,14 @@ class GameView(View):
         pass
 
     def on_update_time(self, game_time):
-        self.game_time = game_time
-        am_pm_index = ((self.game_time // FRAMES_IN_ONE_HOUR) // 12 + 1) % 2
         self.main_clock_label_24h.on_update_args(
-            ((self.game_time // FRAMES_IN_ONE_HOUR + 12) % HOURS_IN_ONE_DAY,
-             (self.game_time // FRAMES_IN_ONE_MINUTE) % MINUTES_IN_ONE_HOUR)
+            ((game_time // FRAMES_IN_ONE_HOUR + 12) % HOURS_IN_ONE_DAY,
+             (game_time // FRAMES_IN_ONE_MINUTE) % MINUTES_IN_ONE_HOUR)
         )
         self.main_clock_label_12h.on_update_args(
-            ((self.game_time // FRAMES_IN_ONE_HOUR + 11) % 12 + 1,
-             (self.game_time // FRAMES_IN_ONE_MINUTE) % MINUTES_IN_ONE_HOUR,
-             I18N_RESOURCES['am_pm_string'][self.current_locale][am_pm_index])
+            ((game_time // FRAMES_IN_ONE_HOUR + 11) % 12 + 1,
+             (game_time // FRAMES_IN_ONE_MINUTE) % MINUTES_IN_ONE_HOUR,
+             I18N_RESOURCES['am_pm_string'][self.current_locale][((game_time // FRAMES_IN_ONE_HOUR) // 12 + 1) % 2])
         )
 
     @view_is_active

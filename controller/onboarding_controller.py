@@ -4,7 +4,7 @@ from controller import *
 
 
 @final
-class OnboardingController(Controller):
+class OnboardingController(AppBaseController):
     def __init__(self, app):
         super().__init__(parent_controller=app, logger=getLogger('root.app.onboarding.controller'))
 

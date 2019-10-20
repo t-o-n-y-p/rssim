@@ -3,7 +3,7 @@ from logging import getLogger
 from controller import *
 
 
-class ShopPlaceholderController(Controller):
+class ShopPlaceholderController(AppBaseController):
     def __init__(self, map_id, shop_id, parent_controller):
         super().__init__(parent_controller=parent_controller,
                          logger=getLogger(f'root.app.game.map.{map_id}.shop.{shop_id}.placeholder.controller'))

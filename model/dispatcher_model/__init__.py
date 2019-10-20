@@ -27,7 +27,7 @@ class DispatcherModel(Model):
     def on_activate_view(self):
         self.view.on_activate()
 
-    def on_update_time(self, game_time):
+    def on_update_time(self):
         for t in self.trains:
             for track in self.get_track_priority_list(t):
                 if track <= self.unlocked_tracks and not self.track_busy_status[track] \

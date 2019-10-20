@@ -4,7 +4,7 @@ from controller import *
 
 
 @final
-class FPSController(Controller):
+class FPSController(AppBaseController):
     def __init__(self, app_controller):
         super().__init__(parent_controller=app_controller, logger=getLogger('root.app.fps.controller'))
 

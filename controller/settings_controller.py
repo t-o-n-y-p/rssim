@@ -4,7 +4,7 @@ from controller import *
 
 
 @final
-class SettingsController(Controller):
+class SettingsController(AppBaseController):
     def __init__(self, app):
         super().__init__(parent_controller=app, logger=getLogger('root.app.settings.controller'))
         self.navigated_from_main_menu = False

@@ -3,7 +3,7 @@ from logging import getLogger
 from controller import *
 
 
-class TrainController(Controller):
+class TrainController(AppBaseController, GameBaseController):
     def __init__(self, map_id, parent_controller, train_id):
         super().__init__(parent_controller=parent_controller,
                          logger=getLogger(f'root.app.game.map.{map_id}.train.{train_id}.controller'))
@@ -19,10 +19,6 @@ class TrainController(Controller):
     @final
     def on_save_state(self):
         self.model.on_save_state()
-
-    @final
-    def on_update_time(self, game_time):
-        self.model.on_update_time(game_time)
 
     @final
     def on_change_base_offset(self, new_base_offset):

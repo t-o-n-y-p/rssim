@@ -3,7 +3,7 @@ from logging import getLogger
 from controller import *
 
 
-class RailroadSwitchController(Controller):
+class RailroadSwitchController(AppBaseController):
     def __init__(self, map_id, parent_controller, track_param_1, track_param_2, switch_type):
         logger_name \
             = f'root.app.game.map.{map_id}.railroad_switch.{track_param_1}.{track_param_2}.{switch_type}.controller'

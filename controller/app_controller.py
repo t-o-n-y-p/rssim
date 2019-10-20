@@ -6,7 +6,7 @@ from database import on_commit
 
 
 @final
-class AppController(Controller):
+class AppController(AppBaseController):
     def __init__(self, loader):
         super().__init__(logger=getLogger('root.app.controller'))
         self.loader = loader
