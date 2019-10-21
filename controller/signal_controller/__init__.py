@@ -3,7 +3,7 @@ from logging import getLogger
 from controller import *
 
 
-class SignalController(AppBaseController, GameBaseController, MapBaseController):
+class SignalController(MapBaseController):
     def __init__(self, map_id, parent_controller, track, base_route):
         super().__init__(parent_controller=parent_controller,
                          logger=getLogger(f'root.app.game.map.{map_id}.signal.{track}.{base_route}.controller'))

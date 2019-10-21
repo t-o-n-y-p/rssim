@@ -4,7 +4,7 @@ from model import *
 from database import USER_DB_CURSOR, CONFIG_DB_CURSOR
 
 
-class ConstructorModel(Model):
+class ConstructorModel(GameBaseModel):
     def __init__(self, map_id):
         super().__init__(logger=getLogger(f'root.app.game.map.{map_id}.constructor.model'))
         self.map_id = map_id
@@ -48,20 +48,74 @@ class ConstructorModel(Model):
                                (self.map_id, ))
         self.money_target_cell_position = list(map(int, USER_DB_CURSOR.fetchone()[0].split(',')))
 
-    def on_activate_view(self):
-        remaining_tracks = sorted(list(self.construction_state_matrix[TRACKS].keys()))
-        for j in range(min(len(remaining_tracks), CONSTRUCTOR_VIEW_TRACK_CELLS)):
-            self.view.on_update_construction_state(TRACKS, remaining_tracks[j])
+    def on_save_state(self):
+        USER_DB_CURSOR.execute('''UPDATE constructor SET money_target_activated = ?, money_target_cell_position = ? 
+                                  WHERE map_id = ?''',
+                               (int(self.money_target_activated),
+                                ','.join(list(map(str, self.money_target_cell_position))), self.map_id))
+        # if some tracks were unlocked since last time the game progress was saved,
+        # they are not listed in track state matrix anymore, so their state is updated separately
+        for track in self.cached_unlocked_tracks:
+            USER_DB_CURSOR.execute('''UPDATE tracks SET locked = 0, under_construction = 0, 
+                                      construction_time = 0, unlock_condition_from_level = 0, 
+                                      unlock_condition_from_previous_track = 0, 
+                                      unlock_condition_from_environment = 0, unlock_available = 0 
+                                      WHERE track_number = ? AND map_id = ?''', (track, self.map_id))
 
-        remaining_tiers = sorted(list(self.construction_state_matrix[ENVIRONMENT].keys()))
-        for j in range(min(len(remaining_tiers), CONSTRUCTOR_VIEW_ENVIRONMENT_CELLS)):
-            self.view.on_update_construction_state(ENVIRONMENT, remaining_tiers[j])
+        self.cached_unlocked_tracks = []
+        # locked tracks state is saved from track_state_matrix the same way it was read
+        for track in self.construction_state_matrix[TRACKS]:
+            USER_DB_CURSOR.execute('''UPDATE tracks SET locked = ?, under_construction = ?, construction_time = ?, 
+                                      unlock_condition_from_level = ?, unlock_condition_from_previous_track = ?, 
+                                      unlock_condition_from_environment = ?, unlock_available = ? 
+                                      WHERE track_number = ? AND map_id = ?''',
+                                   tuple(
+                                       map(int,
+                                           (self.construction_state_matrix[TRACKS][track][LOCKED],
+                                            self.construction_state_matrix[TRACKS][track][UNDER_CONSTRUCTION],
+                                            self.construction_state_matrix[TRACKS][track][CONSTRUCTION_TIME],
+                                            self.construction_state_matrix[TRACKS][track][
+                                                     UNLOCK_CONDITION_FROM_LEVEL],
+                                            self.construction_state_matrix[TRACKS][track][
+                                                     UNLOCK_CONDITION_FROM_PREVIOUS_TRACK],
+                                            self.construction_state_matrix[TRACKS][track][
+                                                     UNLOCK_CONDITION_FROM_ENVIRONMENT],
+                                            self.construction_state_matrix[TRACKS][track][UNLOCK_AVAILABLE],
+                                            track, self.map_id)
+                                           )
+                                        )
+                                   )
 
-        self.view.on_update_money(self.money)
-        self.view.on_activate()
+        # same for environment
+        for tier in self.cached_unlocked_tiers:
+            USER_DB_CURSOR.execute('''UPDATE environment SET locked = 0, under_construction = 0, 
+                                      construction_time = 0, unlock_condition_from_level = 0, 
+                                      unlock_condition_from_previous_environment = 0, 
+                                      unlock_available = 0 WHERE tier = ? AND map_id = ?''', (tier, self.map_id))
+
+        self.cached_unlocked_tiers = []
+        for tier in self.construction_state_matrix[ENVIRONMENT]:
+            USER_DB_CURSOR.execute('''UPDATE environment SET locked = ?, under_construction = ?, 
+                                      construction_time = ?, unlock_condition_from_level = ?, 
+                                      unlock_condition_from_previous_environment = ?, 
+                                      unlock_available = ? WHERE tier = ? AND map_id = ?''',
+                                   tuple(
+                                       map(int,
+                                           (self.construction_state_matrix[ENVIRONMENT][tier][LOCKED],
+                                            self.construction_state_matrix[ENVIRONMENT][tier][UNDER_CONSTRUCTION],
+                                            self.construction_state_matrix[ENVIRONMENT][tier][CONSTRUCTION_TIME],
+                                            self.construction_state_matrix[ENVIRONMENT][tier][
+                                                     UNLOCK_CONDITION_FROM_LEVEL],
+                                            self.construction_state_matrix[ENVIRONMENT][tier][
+                                                     UNLOCK_CONDITION_FROM_PREVIOUS_ENVIRONMENT],
+                                            self.construction_state_matrix[ENVIRONMENT][tier][UNLOCK_AVAILABLE],
+                                            tier, self.map_id)
+                                           )
+                                        )
+                                   )
 
     def on_update_time(self):
-        self.game_time += 1
+        super().on_update_time()
         # unlocked_track stores track number if some track was unlocked and 0 otherwise
         unlocked_track = 0
         for track in self.construction_state_matrix[TRACKS]:
@@ -130,74 +184,8 @@ class ConstructorModel(Model):
                     and self.money_target_cell_position[1] > 0:
                 self.money_target_cell_position[1] -= 1
 
-    def on_save_state(self):
-        USER_DB_CURSOR.execute('''UPDATE constructor SET money_target_activated = ?, money_target_cell_position = ? 
-                                  WHERE map_id = ?''',
-                               (int(self.money_target_activated),
-                                ','.join(list(map(str, self.money_target_cell_position))), self.map_id))
-        # if some tracks were unlocked since last time the game progress was saved,
-        # they are not listed in track state matrix anymore, so their state is updated separately
-        for track in self.cached_unlocked_tracks:
-            USER_DB_CURSOR.execute('''UPDATE tracks SET locked = 0, under_construction = 0, 
-                                      construction_time = 0, unlock_condition_from_level = 0, 
-                                      unlock_condition_from_previous_track = 0, 
-                                      unlock_condition_from_environment = 0, unlock_available = 0 
-                                      WHERE track_number = ? AND map_id = ?''', (track, self.map_id))
-
-        self.cached_unlocked_tracks = []
-        # locked tracks state is saved from track_state_matrix the same way it was read
-        for track in self.construction_state_matrix[TRACKS]:
-            USER_DB_CURSOR.execute('''UPDATE tracks SET locked = ?, under_construction = ?, construction_time = ?, 
-                                      unlock_condition_from_level = ?, unlock_condition_from_previous_track = ?, 
-                                      unlock_condition_from_environment = ?, unlock_available = ? 
-                                      WHERE track_number = ? AND map_id = ?''',
-                                   tuple(
-                                       map(int,
-                                           (self.construction_state_matrix[TRACKS][track][LOCKED],
-                                            self.construction_state_matrix[TRACKS][track][UNDER_CONSTRUCTION],
-                                            self.construction_state_matrix[TRACKS][track][CONSTRUCTION_TIME],
-                                            self.construction_state_matrix[TRACKS][track][
-                                                     UNLOCK_CONDITION_FROM_LEVEL],
-                                            self.construction_state_matrix[TRACKS][track][
-                                                     UNLOCK_CONDITION_FROM_PREVIOUS_TRACK],
-                                            self.construction_state_matrix[TRACKS][track][
-                                                     UNLOCK_CONDITION_FROM_ENVIRONMENT],
-                                            self.construction_state_matrix[TRACKS][track][UNLOCK_AVAILABLE],
-                                            track, self.map_id)
-                                           )
-                                        )
-                                   )
-
-        # same for environment
-        for tier in self.cached_unlocked_tiers:
-            USER_DB_CURSOR.execute('''UPDATE environment SET locked = 0, under_construction = 0, 
-                                      construction_time = 0, unlock_condition_from_level = 0, 
-                                      unlock_condition_from_previous_environment = 0, 
-                                      unlock_available = 0 WHERE tier = ? AND map_id = ?''', (tier, self.map_id))
-
-        self.cached_unlocked_tiers = []
-        for tier in self.construction_state_matrix[ENVIRONMENT]:
-            USER_DB_CURSOR.execute('''UPDATE environment SET locked = ?, under_construction = ?, 
-                                      construction_time = ?, unlock_condition_from_level = ?, 
-                                      unlock_condition_from_previous_environment = ?, 
-                                      unlock_available = ? WHERE tier = ? AND map_id = ?''',
-                                   tuple(
-                                       map(int,
-                                           (self.construction_state_matrix[ENVIRONMENT][tier][LOCKED],
-                                            self.construction_state_matrix[ENVIRONMENT][tier][UNDER_CONSTRUCTION],
-                                            self.construction_state_matrix[ENVIRONMENT][tier][CONSTRUCTION_TIME],
-                                            self.construction_state_matrix[ENVIRONMENT][tier][
-                                                     UNLOCK_CONDITION_FROM_LEVEL],
-                                            self.construction_state_matrix[ENVIRONMENT][tier][
-                                                     UNLOCK_CONDITION_FROM_PREVIOUS_ENVIRONMENT],
-                                            self.construction_state_matrix[ENVIRONMENT][tier][UNLOCK_AVAILABLE],
-                                            tier, self.map_id)
-                                           )
-                                        )
-                                   )
-
     def on_level_up(self):
-        self.level += 1
+        super().on_level_up()
         # determines if some tracks require level which was just hit
         CONFIG_DB_CURSOR.execute('SELECT track_number FROM track_config WHERE level = ? AND map_id = ?',
                                  (self.level, self.map_id))
@@ -234,14 +222,6 @@ class ConstructorModel(Model):
         self.view.on_update_construction_state(construction_type, entity_number)
         self.controller.parent_controller.parent_controller\
             .on_pay_money(self.construction_state_matrix[construction_type][entity_number][PRICE])
-
-    def on_add_money(self, money):
-        self.money += money
-        self.view.on_update_money(self.money)
-
-    def on_pay_money(self, money):
-        self.money -= money
-        self.view.on_update_money(self.money)
 
     def on_check_track_unlock_conditions(self, track):
         if self.construction_state_matrix[TRACKS][track][UNLOCK_CONDITION_FROM_PREVIOUS_TRACK] \

@@ -191,9 +191,9 @@ class AppBaseController:
                                                       on_text_handlers=on_text_handlers)
 
 
-class GameBaseController:
-    def __init__(self):
-        self.model = None
+class GameBaseController(AppBaseController):
+    def __init__(self, parent_controller=None, logger=None):
+        super().__init__(parent_controller, logger)
 
     def on_update_time(self):
         self.model.on_update_time()
@@ -220,10 +220,9 @@ class GameBaseController:
         self.model.on_deactivate_money_bonus_code()
 
 
-class MapBaseController:
-    def __init__(self):
-        self.model = None
-        self.view = None
+class MapBaseController(GameBaseController):
+    def __init__(self, parent_controller=None, logger=None):
+        super().__init__(parent_controller, logger)
 
     def on_change_base_offset(self, new_base_offset):
         self.view.on_change_base_offset(new_base_offset)

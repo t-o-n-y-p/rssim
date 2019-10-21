@@ -3,7 +3,7 @@ from logging import getLogger
 from controller import *
 
 
-class SchedulerController(AppBaseController, GameBaseController):
+class SchedulerController(GameBaseController):
     def __init__(self, map_id, parent_controller):
         super().__init__(parent_controller=parent_controller,
                          logger=getLogger(f'root.app.game.map.{map_id}.scheduler.controller'))

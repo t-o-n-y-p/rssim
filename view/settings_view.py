@@ -15,7 +15,16 @@ from ui.shader_sprite.settings_view_shader_sprite import SettingsViewShaderSprit
 class SettingsView(View):
     def __init__(self):
         def on_accept_changes(button):
-            self.controller.on_save_and_commit_state()
+            self.controller.parent_controller\
+                .on_accept_changes(self.temp_windowed_resolution, self.temp_display_fps,
+                                   self.temp_fade_animations_enabled, self.temp_clock_24h_enabled,
+                                   self.temp_level_up_notification_enabled,
+                                   self.temp_feature_unlocked_notification_enabled,
+                                   self.temp_construction_completed_notification_enabled,
+                                   self.temp_enough_money_notification_enabled,
+                                   self.temp_bonus_expired_notification_enabled,
+                                   self.temp_shop_storage_notification_enabled)
+            self.controller.on_save_state()
             self.controller.parent_controller.on_close_settings()
 
         def on_reject_changes(button):
@@ -101,14 +110,27 @@ class SettingsView(View):
     @view_is_not_active
     def on_activate(self):
         super().on_activate()
+        USER_DB_CURSOR.execute('SELECT app_width, app_height FROM graphics')
+        self.temp_windowed_resolution = USER_DB_CURSOR.fetchone()
         self.screen_resolution_control.on_activate()
-        self.screen_resolution_control.on_init_state(self.available_windowed_resolutions_position)
+        self.screen_resolution_control.on_init_state(
+            self.available_windowed_resolutions.index(self.temp_windowed_resolution)
+        )
+        USER_DB_CURSOR.execute('SELECT display_fps, fade_animations_enabled FROM graphics')
+        self.temp_display_fps, self.temp_fade_animations_enabled = tuple(map(bool, USER_DB_CURSOR.fetchone()))
         self.display_fps_checkbox.on_activate()
         self.display_fps_checkbox.on_init_state(self.temp_display_fps)
         self.fade_animations_checkbox.on_activate()
         self.fade_animations_checkbox.on_init_state(self.temp_fade_animations_enabled)
+        USER_DB_CURSOR.execute('SELECT clock_24h FROM i18n')
+        self.temp_clock_24h_enabled = bool(USER_DB_CURSOR.fetchone()[0])
         self.clock_24h_checkbox.on_activate()
         self.clock_24h_checkbox.on_init_state(self.temp_clock_24h_enabled)
+        USER_DB_CURSOR.execute('SELECT * FROM notification_settings')
+        self.temp_level_up_notification_enabled, self.temp_feature_unlocked_notification_enabled, \
+            self.temp_construction_completed_notification_enabled, self.temp_enough_money_notification_enabled, \
+            self.temp_bonus_expired_notification_enabled, self.temp_shop_storage_notification_enabled \
+            = tuple(map(bool, USER_DB_CURSOR.fetchone()))
         self.notifications_checkbox_group.on_activate()
         self.notifications_checkbox_group.on_init_state([self.temp_level_up_notification_enabled,
                                                          self.temp_feature_unlocked_notification_enabled,

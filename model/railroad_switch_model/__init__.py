@@ -4,7 +4,7 @@ from model import *
 from database import USER_DB_CURSOR, CONFIG_DB_CURSOR
 
 
-class RailroadSwitchModel(Model):
+class RailroadSwitchModel(MapBaseModel):
     def __init__(self, map_id, track_param_1, track_param_2, switch_type):
         super().__init__(
             logger=getLogger(
@@ -29,9 +29,6 @@ class RailroadSwitchModel(Model):
                                (track_param_1, track_param_2, switch_type, self.map_id))
         self.locked = bool(USER_DB_CURSOR.fetchone()[0])
 
-    def on_activate_view(self):
-        self.view.on_activate()
-
     def on_save_state(self):
         track_param_1 = self.controller.track_param_1
         track_param_2 = self.controller.track_param_2
@@ -41,6 +38,10 @@ class RailroadSwitchModel(Model):
                                   WHERE track_param_1 = ? AND track_param_2 = ? AND switch_type = ? AND map_id = ?''',
                                (int(self.busy), int(self.force_busy), self.last_entered_by, self.current_position,
                                 int(self.locked), track_param_1, track_param_2, switch_type, self.map_id))
+
+    def on_unlock(self):
+        super().on_unlock()
+        self.view.on_unlock()
 
     def on_force_busy_on(self, positions, train_id):
         self.force_busy = True
@@ -56,7 +57,3 @@ class RailroadSwitchModel(Model):
         self.busy = False
         for listener in self.state_change_listeners:
             self.controller.parent_controller.on_update_train_route_section_status(listener, status=False)
-
-    def on_unlock(self):
-        self.locked = False
-        self.view.on_unlock()

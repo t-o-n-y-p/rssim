@@ -4,7 +4,7 @@ from model import *
 from database import USER_DB_CURSOR, CONFIG_DB_CURSOR
 
 
-class DispatcherModel(Model):
+class DispatcherModel(GameBaseModel):
     def __init__(self, map_id):
         super().__init__(logger=getLogger(f'root.app.game.map.{map_id}.dispatcher.model'))
         self.map_id = map_id
@@ -24,8 +24,10 @@ class DispatcherModel(Model):
                                     FROM track_config WHERE map_id = ?''', (self.map_id, ))
         self.supported_cars_by_track.extend(CONFIG_DB_CURSOR.fetchall())
 
-    def on_activate_view(self):
-        self.view.on_activate()
+    def on_save_state(self):
+        for i in range(1, len(self.track_busy_status)):
+            USER_DB_CURSOR.execute('UPDATE tracks SET busy = ? WHERE track_number = ? AND map_id = ?',
+                                   (int(self.track_busy_status[i]), i, self.map_id))
 
     def on_update_time(self):
         for t in self.trains:
@@ -43,11 +45,6 @@ class DispatcherModel(Model):
                                              t.train_id, t.model.cars)
                     self.trains.remove(t)
                     break
-
-    def on_save_state(self):
-        for i in range(1, len(self.track_busy_status)):
-            USER_DB_CURSOR.execute('UPDATE tracks SET busy = ? WHERE track_number = ? AND map_id = ?',
-                                   (int(self.track_busy_status[i]), i, self.map_id))
 
     def on_unlock_track(self, track):
         self.unlocked_tracks = track

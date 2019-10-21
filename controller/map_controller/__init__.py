@@ -4,7 +4,7 @@ from operator import attrgetter
 from controller import *
 
 
-class MapController(AppBaseController, GameBaseController, MapBaseController):
+class MapController(MapBaseController):
     def __init__(self, map_id, parent_controller):
         super().__init__(parent_controller=parent_controller,
                          logger=getLogger(f'root.app.game.map.{map_id}.controller'))

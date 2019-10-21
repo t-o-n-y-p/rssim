@@ -4,7 +4,7 @@ from model import *
 from database import USER_DB_CURSOR, CONFIG_DB_CURSOR
 
 
-class CrossoverModel(Model):
+class CrossoverModel(MapBaseModel):
     def __init__(self, map_id, track_param_1, track_param_2, crossover_type):
         super().__init__(
             logger=getLogger(
@@ -62,9 +62,6 @@ class CrossoverModel(Model):
                                   AND map_id = ?''', (track_param_1, track_param_2, crossover_type, self.map_id))
         self.locked = bool(USER_DB_CURSOR.fetchone()[0])
 
-    def on_activate_view(self):
-        self.view.on_activate()
-
     def on_save_state(self):
         track_param_1 = self.controller.track_param_1
         track_param_2 = self.controller.track_param_2
@@ -89,6 +86,10 @@ class CrossoverModel(Model):
                                 self.last_entered_by[track_param_2][track_param_2],
                                 self.current_position_1, self.current_position_2, int(self.locked),
                                 track_param_1, track_param_2, crossover_type, self.map_id))
+
+    def on_unlock(self):
+        super().on_unlock()
+        self.view.on_unlock()
 
     def on_force_busy_on(self, positions, train_id):
         self.force_busy[positions[0]][positions[1]] = True
@@ -151,7 +152,3 @@ class CrossoverModel(Model):
         self.busy[position_1][position_2] = False
         for listener in self.state_change_listeners[position_1][position_2]:
             self.controller.parent_controller.on_update_train_route_section_status(listener, status=False)
-
-    def on_unlock(self):
-        self.locked = False
-        self.view.on_unlock()
