@@ -3,7 +3,7 @@ from logging import getLogger
 from controller import *
 
 
-class TrainRouteController(AppBaseController, GameBaseController, MapBaseController):
+class TrainRouteController(MapBaseController):
     def __init__(self, map_id, parent_controller, track, train_route):
         super().__init__(parent_controller=parent_controller,
                          logger=getLogger(f'root.app.game.map.{map_id}.train_route.{track}.{train_route}.controller'))
