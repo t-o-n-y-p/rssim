@@ -4,7 +4,7 @@ from model import *
 from database import USER_DB_CURSOR, CONFIG_DB_CURSOR
 
 
-class TrainRouteModel(MapBaseModel):
+class TrainRouteModel(Model):
     def __init__(self, map_id, track, train_route):
         def sgn(x):
             if type(x) is not int:
@@ -100,6 +100,9 @@ class TrainRouteModel(MapBaseModel):
                                     FROM train_route_sections WHERE track = ? and train_route = ? AND map_id = ?''',
                                  (track, train_route, self.map_id))
         self.train_route_section_positions = CONFIG_DB_CURSOR.fetchall()
+
+    def on_activate_view(self):
+        self.view.on_activate()
 
     def on_save_state(self):
         USER_DB_CURSOR.execute('''UPDATE train_routes SET opened = ?, last_opened_by = ?, current_checkpoint = ?,

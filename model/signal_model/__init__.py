@@ -4,7 +4,7 @@ from model import *
 from database import USER_DB_CURSOR
 
 
-class SignalModel(MapBaseModel):
+class SignalModel(Model):
     def __init__(self, map_id, track, base_route):
         super().__init__(logger=getLogger(f'root.app.game.map.{map_id}.signal.{track}.{base_route}.model'))
         self.map_id = map_id
@@ -26,7 +26,7 @@ class SignalModel(MapBaseModel):
                                 self.map_id))
 
     def on_unlock(self):
-        super().on_unlock()
+        self.locked = False
         self.view.on_unlock()
 
     def on_switch_to_green(self):

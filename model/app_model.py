@@ -5,7 +5,7 @@ from model import *
 from database import USER_DB_CURSOR, CONFIG_DB_CURSOR, on_commit
 
 
-class AppModel(AppBaseModel):
+class AppModel(Model):
     def __init__(self):
         super().__init__(logger=getLogger('root.app.model'))
         USER_DB_CURSOR.execute('SELECT fullscreen FROM graphics')
@@ -20,14 +20,11 @@ class AppModel(AppBaseModel):
             self.fullscreen_mode_available = False
 
     def on_activate_view(self):
-        super().on_activate_view()
+        self.view.on_activate()
         if self.fullscreen_mode:
             self.view.restore_button.on_activate()
         elif self.fullscreen_mode_available:
             self.view.fullscreen_button.on_activate()
-
-    def on_save_state(self):
-        USER_DB_CURSOR.execute('UPDATE graphics SET fullscreen = ?', (self.fullscreen_mode, ))
 
     @fullscreen_mode_available
     def on_fullscreen_mode_turned_on(self):
@@ -37,6 +34,9 @@ class AppModel(AppBaseModel):
     def on_fullscreen_mode_turned_off(self):
         self.fullscreen_mode = bool(FULLSCREEN_MODE_TURNED_OFF)
         self.view.on_fullscreen_mode_turned_off()
+
+    def on_save_state(self):
+        USER_DB_CURSOR.execute('UPDATE graphics SET fullscreen = ?', (self.fullscreen_mode, ))
 
     @staticmethod
     def on_save_and_commit_locale(new_locale):

@@ -4,7 +4,7 @@ from controller import *
 
 
 @final
-class GameController(GameBaseController):
+class GameController(AppBaseController, GameBaseController):
     def __init__(self, app):
         super().__init__(parent_controller=app, logger=getLogger('root.app.game.controller'))
         self.bonus_code_manager = None

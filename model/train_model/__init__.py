@@ -4,7 +4,7 @@ from model import *
 from database import USER_DB_CURSOR
 
 
-class TrainModel(MapBaseModel):
+class TrainModel(Model):
     def __init__(self, map_id, train_id):
         super().__init__(logger=getLogger(f'root.app.game.map.{map_id}.train.{train_id}.model'))
         self.map_id = map_id
@@ -121,7 +121,6 @@ class TrainModel(MapBaseModel):
                                 self.stop_point, self.destination_point, self.car_image_collection))
 
     def on_update_time(self):
-        super().on_update_time()
         # shorter trains gain more priority because they arrive more frequently
         if self.cars < 9:
             self.priority += 5
@@ -288,3 +287,15 @@ class TrainModel(MapBaseModel):
                     (self.trail_points_v2_mid[int(self.cars_position[car_index])][2]
                      + self.trail_points_v2_mid[int(self.cars_position[car_index]) + 1][2]) / 2
                 )
+
+    def on_activate_exp_bonus_code(self, value):
+        self.exp_bonus_multiplier = round(1.0 + value, 2)
+
+    def on_deactivate_exp_bonus_code(self):
+        self.exp_bonus_multiplier = 1.0
+
+    def on_activate_money_bonus_code(self, value):
+        self.money_bonus_multiplier = round(1.0 + value, 2)
+
+    def on_deactivate_money_bonus_code(self):
+        self.money_bonus_multiplier = 1.0

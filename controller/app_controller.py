@@ -3,7 +3,6 @@ from logging import getLogger
 
 from controller import *
 from database import on_commit
-from ui import SURFACE
 
 
 @final
@@ -117,6 +116,7 @@ class AppController(AppBaseController):
     def on_update_clock_state(self, clock_24h_enabled):
         super().on_update_clock_state(clock_24h_enabled)
         self.model.on_save_and_commit_clock_state(clock_24h_enabled)
+        self.settings.on_apply_clock_state(clock_24h_enabled)
         self.game.on_update_clock_state(clock_24h_enabled)
 
     def on_fullscreen_button_click(self):
@@ -238,24 +238,3 @@ class AppController(AppBaseController):
 
     def on_activate_new_bonus_code(self, sha512_hash):
         self.game.on_activate_new_bonus_code(sha512_hash)
-
-    def on_accept_changes(self, windowed_resolution, display_fps, fade_animations_enabled, clock_24h_enabled,
-                          level_up_notification_enabled, feature_unlocked_notification_enabled,
-                          construction_completed_notification_enabled, enough_money_notification_enabled,
-                          bonus_expired_notification_enabled, shop_storage_notification_enabled):
-        self.settings.on_accept_changes(windowed_resolution, display_fps, fade_animations_enabled, clock_24h_enabled,
-                                        level_up_notification_enabled, feature_unlocked_notification_enabled,
-                                        construction_completed_notification_enabled, enough_money_notification_enabled,
-                                        bonus_expired_notification_enabled, shop_storage_notification_enabled)
-        if not SURFACE.fullscreen:
-            self.on_change_screen_resolution(windowed_resolution)
-
-        self.fps.on_update_display_fps(display_fps)
-        self.on_update_fade_animation_state(fade_animations_enabled)
-        self.on_update_clock_state(clock_24h_enabled)
-        self.on_change_level_up_notification_state(level_up_notification_enabled)
-        self.on_change_feature_unlocked_notification_state(feature_unlocked_notification_enabled)
-        self.on_change_construction_completed_notification_state(construction_completed_notification_enabled)
-        self.on_change_enough_money_notification_state(enough_money_notification_enabled)
-        self.on_change_bonus_expired_notification_state(bonus_expired_notification_enabled)
-        self.on_change_shop_storage_notification_state(shop_storage_notification_enabled)

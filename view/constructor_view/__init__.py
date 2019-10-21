@@ -40,6 +40,7 @@ class ConstructorView(View):
         self.no_more_tracks_available_placeholder_viewport = Viewport()
         self.no_more_tiers_available_placeholder_viewport = Viewport()
         self.construction_state_matrix = [{}, {}]
+        self.money = 0
         self.close_constructor_button = CloseConstructorButton(on_click_action=on_close_constructor,
                                                                parent_viewport=self.viewport)
         self.buttons = [self.close_constructor_button, ]
@@ -75,20 +76,12 @@ class ConstructorView(View):
             = NoMoreTracksAvailableLabel(parent_viewport=self.no_more_tracks_available_placeholder_viewport)
         self.no_more_tiers_available_label \
             = NoMoreEnvironmentAvailableLabel(parent_viewport=self.no_more_tiers_available_placeholder_viewport)
-        USER_DB_CURSOR.execute('SELECT money FROM game_progress')
-        self.money = USER_DB_CURSOR.fetchone()
 
     @final
     @view_is_not_active
     def on_activate(self):
         super().on_activate()
         self.shader_sprite.create()
-        for j in range(CONSTRUCTOR_VIEW_TRACK_CELLS):
-            self.constructor_cells[TRACKS][j].on_update_money(self.money)
-
-        for j in range(CONSTRUCTOR_VIEW_ENVIRONMENT_CELLS):
-            self.constructor_cells[ENVIRONMENT][j].on_update_money(self.money)
-
         if len(self.construction_state_matrix[TRACKS]) < CONSTRUCTOR_VIEW_TRACK_CELLS:
             self.no_more_tracks_available_label.create()
 

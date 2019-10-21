@@ -1,9 +1,6 @@
 from typing import Final
 
 
-from database import USER_DB_CURSOR
-
-
 def fullscreen_mode_available(fn):
     def _turn_fullscreen_mode_on_if_available(*args, **kwargs):
         if args[0].fullscreen_mode_available:
@@ -195,58 +192,38 @@ SHOP_STORAGE_ALMOST_FULL_THRESHOLD: Final = 0.9
 # ------------------- END CONSTANTS -------------------
 
 
-class AppBaseModel:
+class Model:
     def __init__(self, logger):
         self.logger = logger
         self.view = None
         self.controller = None
 
     def on_activate_view(self):
-        self.view.on_activate()
+        pass
 
     def on_save_state(self):
         pass
 
-
-class GameBaseModel(AppBaseModel):
-    def __init__(self, logger):
-        super().__init__(logger)
-        USER_DB_CURSOR.execute('SELECT game_time FROM epoch_timestamp')
-        self.game_time = USER_DB_CURSOR.fetchone()[0]
-        USER_DB_CURSOR.execute('SELECT level, money, exp_bonus_multiplier, money_bonus_multiplier FROM game_progress')
-        self.level, self.money, self.exp_bonus_multiplier, self.money_bonus_multiplier = USER_DB_CURSOR.fetchone()
-
     def on_update_time(self):
-        self.game_time += 1
-
-    def on_level_up(self):
-        self.level += 1
+        pass
 
     def on_add_money(self, money):
-        self.money += min(MONEY_LIMIT - self.money, money)
-        self.view.on_update_money(self.money)
+        pass
 
     def on_pay_money(self, money):
-        self.money -= money
-        self.view.on_update_money(self.money)
+        pass
 
     def on_activate_exp_bonus_code(self, value):
-        self.exp_bonus_multiplier = round(1.0 + value, 2)
-
-    def on_deactivate_exp_bonus_code(self):
-        self.exp_bonus_multiplier = 1.0
+        pass
 
     def on_activate_money_bonus_code(self, value):
-        self.money_bonus_multiplier = round(1.0 + value, 2)
+        pass
+
+    def on_deactivate_exp_bonus_code(self):
+        pass
 
     def on_deactivate_money_bonus_code(self):
-        self.money_bonus_multiplier = 1.0
+        pass
 
-
-class MapBaseModel(GameBaseModel):
-    def __init__(self, logger):
-        super().__init__(logger)
-        self.locked = True
-
-    def on_unlock(self):
-        self.locked = False
+    def on_level_up(self):
+        pass
