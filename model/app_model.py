@@ -12,19 +12,23 @@ class AppModel(Model):
         self.fullscreen_mode = bool(USER_DB_CURSOR.fetchone()[0])
         CONFIG_DB_CURSOR.execute('SELECT app_width, app_height FROM screen_resolution_config')
         self.screen_resolution_config = CONFIG_DB_CURSOR.fetchall()
-        monitor_resolution_config = (windll.user32.GetSystemMetrics(0), windll.user32.GetSystemMetrics(1))
-        if monitor_resolution_config in self.screen_resolution_config:
+        if (monitor_resolution_config := (windll.user32.GetSystemMetrics(0), windll.user32.GetSystemMetrics(1))) \
+                in self.screen_resolution_config:
             self.fullscreen_mode_available = True
-            self.fullscreen_resolution = (windll.user32.GetSystemMetrics(0), windll.user32.GetSystemMetrics(1))
+            self.fullscreen_resolution = monitor_resolution_config
         else:
             self.fullscreen_mode_available = False
 
     def on_activate_view(self):
         self.view.on_activate()
-        if self.fullscreen_mode:
-            self.view.restore_button.on_activate()
-        elif self.fullscreen_mode_available:
-            self.view.fullscreen_button.on_activate()
+        if self.fullscreen_mode_available:
+            if self.fullscreen_mode:
+                self.view.restore_button.on_activate()
+            else:
+                self.view.fullscreen_button.on_activate()
+
+        else:
+            self.view.fullscreen_button.on_disable()
 
     @fullscreen_mode_available
     def on_fullscreen_mode_turned_on(self):
