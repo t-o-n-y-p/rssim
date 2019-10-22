@@ -96,6 +96,10 @@ class MapView(View):
             self.shop_buttons_offsets.append(CONFIG_DB_CURSOR.fetchone())
 
         self.buttons.extend(self.shop_buttons)
+        for b in self.shop_buttons:
+            b.on_change_base_offset(self.base_offset)
+            b.on_change_scale(self.zoom_factor)
+
         self.map_move_mode_available = False
         self.map_move_mode = False
         self.on_mouse_press_handlers.append(self.handle_mouse_press)
@@ -110,13 +114,6 @@ class MapView(View):
                                    WHERE locked = 1 AND map_id = ?
                                   ) AS t''', (self.map_id, self.map_id))
         self.constructions_locked = USER_DB_CURSOR.fetchone()[0]
-
-    @final
-    def on_init_content(self):
-        super().on_init_content()
-        for b in self.shop_buttons:
-            b.on_change_base_offset(self.base_offset)
-            b.on_change_scale(self.zoom_factor)
 
     @final
     @view_is_not_active

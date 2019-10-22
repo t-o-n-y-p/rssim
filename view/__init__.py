@@ -201,17 +201,6 @@ class View:
         self.all_notifications_enabled = False
         self.shader_sprite = None
 
-    def on_init_content(self):
-        CONFIG_DB_CURSOR.execute('SELECT app_width, app_height FROM screen_resolution_config')
-        screen_resolution_config = CONFIG_DB_CURSOR.fetchall()
-        monitor_resolution_config = (windll.user32.GetSystemMetrics(0), windll.user32.GetSystemMetrics(1))
-        USER_DB_CURSOR.execute('SELECT fullscreen FROM graphics')
-        if bool(USER_DB_CURSOR.fetchone()[0]) and monitor_resolution_config in screen_resolution_config:
-            self.on_change_screen_resolution(monitor_resolution_config)
-        else:
-            USER_DB_CURSOR.execute('SELECT app_width, app_height FROM graphics')
-            self.on_change_screen_resolution(USER_DB_CURSOR.fetchone())
-
     def on_activate(self):
         self.is_activated = True
         self.on_append_handlers()
@@ -243,6 +232,18 @@ class View:
 
     def on_update_clock_state(self, clock_24h_enabled):
         pass
+
+    @final
+    def on_init_content(self):
+        CONFIG_DB_CURSOR.execute('SELECT app_width, app_height FROM screen_resolution_config')
+        screen_resolution_config = CONFIG_DB_CURSOR.fetchall()
+        monitor_resolution_config = (windll.user32.GetSystemMetrics(0), windll.user32.GetSystemMetrics(1))
+        USER_DB_CURSOR.execute('SELECT fullscreen FROM graphics')
+        if bool(USER_DB_CURSOR.fetchone()[0]) and monitor_resolution_config in screen_resolution_config:
+            self.on_change_screen_resolution(monitor_resolution_config)
+        else:
+            USER_DB_CURSOR.execute('SELECT app_width, app_height FROM graphics')
+            self.on_change_screen_resolution(USER_DB_CURSOR.fetchone())
 
     @final
     def on_disable_notifications(self):
