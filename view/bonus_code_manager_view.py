@@ -10,7 +10,7 @@ from notifications.money_bonus_expired_notification import MoneyBonusExpiredNoti
 
 
 @final
-class BonusCodeManagerView(View):
+class BonusCodeManagerView(GameBaseView):
     def __init__(self):
         super().__init__(logger=getLogger('root.app.bonus_code_manager.view'))
         USER_DB_CURSOR.execute('SELECT exp_bonus_multiplier, money_bonus_multiplier FROM game_progress')

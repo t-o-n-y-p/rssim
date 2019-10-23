@@ -17,7 +17,7 @@ from ui.sprite.mini_map_sprite import MiniMapSprite
 from ui.sprite.mini_environment_sprite import MiniEnvironmentSprite
 
 
-class MapView(View):
+class MapView(MapBaseView):
     def __init__(self, map_id):
         def on_click_zoom_in_button(button):
             button.paired_button.opacity = button.opacity

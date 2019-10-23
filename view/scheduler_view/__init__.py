@@ -8,7 +8,7 @@ from ui.label.schedule_left_caption_label import ScheduleLeftCaptionLabel
 from ui.label.schedule_right_caption_label import ScheduleRightCaptionLabel
 
 
-class SchedulerView(View):
+class SchedulerView(GameBaseView):
     def __init__(self, map_id):
         def on_close_schedule(button):
             self.controller.fade_out_animation.on_activate()

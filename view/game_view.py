@@ -17,7 +17,7 @@ from ui.shader_sprite.game_view_shader_sprite import GameViewShaderSprite
 
 
 @final
-class GameView(View):
+class GameView(GameBaseView):
     def __init__(self):
         def on_pause_game(button):
             button.paired_button.opacity = button.opacity

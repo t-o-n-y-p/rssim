@@ -11,7 +11,7 @@ from ui.shader_sprite.main_menu_view_shader_sprite import MainMenuViewShaderSpri
 
 
 @final
-class MainMenuView(View):
+class MainMenuView(AppBaseView):
     def __init__(self):
         def on_create_station(button):
             self.controller.parent_controller.on_open_onboarding()

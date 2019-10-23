@@ -170,7 +170,7 @@ MINI_MAP_FADE_OUT_TIMER: Final = 1.0        # time since user releases mouse but
 # ------------------- END CONSTANTS -------------------
 
 
-class View:
+class AppBaseView:
     def __init__(self, logger):
         self.logger = logger
         self.is_activated = False
@@ -218,13 +218,10 @@ class View:
     def on_update(self):
         pass
 
-    def on_change_screen_resolution(self, screen_resolution):
-        pass
-
     def on_update_current_locale(self, new_locale):
         pass
 
-    def on_update_opacity(self, new_opacity):
+    def on_change_screen_resolution(self, screen_resolution):
         pass
 
     def on_apply_shaders_and_draw_vertices(self):
@@ -233,7 +230,7 @@ class View:
     def on_update_clock_state(self, clock_24h_enabled):
         pass
 
-    def on_update_money(self, money):
+    def on_update_opacity(self, new_opacity):
         pass
 
     @final
@@ -291,3 +288,43 @@ class View:
                                                on_mouse_press_handlers=(b.handle_mouse_press, ),
                                                on_mouse_release_handlers=(b.handle_mouse_release, ),
                                                on_mouse_leave_handlers=(b.handle_mouse_leave, ))
+
+
+class GameBaseView(AppBaseView):
+    def __init__(self, logger):
+        super().__init__(logger)
+
+    def on_update_time(self):
+        pass
+
+    def on_level_up(self):
+        pass
+
+    def on_update_money(self, money):
+        pass
+
+    def on_activate_exp_bonus_code(self, value):
+        pass
+
+    def on_deactivate_exp_bonus_code(self):
+        pass
+
+    def on_activate_money_bonus_code(self, value):
+        pass
+
+    def on_deactivate_money_bonus_code(self):
+        pass
+
+
+class MapBaseView(GameBaseView):
+    def __init__(self, logger):
+        super().__init__(logger)
+
+    def on_change_base_offset(self, new_base_offset):
+        pass
+
+    def on_change_zoom_factor(self, scale_factor, zoom_out_activated):
+        pass
+
+    def on_unlock(self):
+        pass

@@ -12,7 +12,7 @@ from ui.shader_sprite.settings_view_shader_sprite import SettingsViewShaderSprit
 
 
 @final
-class SettingsView(View):
+class SettingsView(AppBaseView):
     def __init__(self):
         def on_accept_changes(button):
             self.controller.parent_controller\

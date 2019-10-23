@@ -8,7 +8,7 @@ from ui.label.skip_onboarding_label import SkipOnboardingLabel
 
 
 @final
-class OnboardingView(View):
+class OnboardingView(AppBaseView):
     def __init__(self):
         def on_skip_onboarding(button):
             self.controller.parent_controller.on_close_onboarding()

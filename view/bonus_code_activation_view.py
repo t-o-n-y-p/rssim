@@ -10,7 +10,7 @@ from ui.bonus_code_info import BonusCodeInfoCell
 
 
 @final
-class BonusCodeActivationView(View):
+class BonusCodeActivationView(AppBaseView):
     def __init__(self):
         def on_activate_bonus_code(button):
             self.controller.parent_controller.on_activate_new_bonus_code(

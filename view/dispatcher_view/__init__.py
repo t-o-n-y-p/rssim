@@ -3,7 +3,7 @@ from logging import getLogger
 from view import *
 
 
-class DispatcherView(View):
+class DispatcherView(GameBaseView):
     def __init__(self, map_id):
         super().__init__(logger=getLogger(f'root.app.game.map.{map_id}.dispatcher.view'))
         self.map_id = map_id

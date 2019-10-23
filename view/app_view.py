@@ -20,7 +20,7 @@ from ui.sprite.ru_flag_sprite import RUFlagSprite
 
 
 @final
-class AppView(View):
+class AppView(AppBaseView):
     def __init__(self):
         def on_close_game(button):
             self.controller.on_close_game()

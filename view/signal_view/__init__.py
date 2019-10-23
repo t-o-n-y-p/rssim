@@ -4,7 +4,7 @@ from view import *
 from ui.sprite.signal_sprite import SignalSprite
 
 
-class SignalView(View):
+class SignalView(MapBaseView):
     def __init__(self, map_id, track, base_route):
         super().__init__(logger=getLogger(f'root.app.game.map.{map_id}.signal.{track}.{base_route}.view'))
         self.map_id = map_id

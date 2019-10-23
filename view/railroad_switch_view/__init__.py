@@ -5,7 +5,7 @@ from textures import SWITCHES_STRAIGHT, SWITCHES_DIVERGING
 from ui.sprite.railroad_switch_sprite import RailroadSwitchSprite
 
 
-class RailroadSwitchView(View):
+class RailroadSwitchView(MapBaseView):
     def __init__(self, map_id, track_param_1, track_param_2, switch_type):
         super().__init__(
             logger=getLogger(

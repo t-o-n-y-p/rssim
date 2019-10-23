@@ -8,7 +8,7 @@ from ui.shader_sprite.license_view_shader_sprite import LicenseViewShaderSprite
 
 
 @final
-class LicenseView(View):
+class LicenseView(AppBaseView):
     def __init__(self):
         def on_close_license(button):
             self.controller.parent_controller.on_close_license()
