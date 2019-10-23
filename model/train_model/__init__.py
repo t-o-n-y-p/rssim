@@ -72,18 +72,14 @@ class TrainModel(MapBaseModel):
         self.speed_factor_position = self.speed_factor_position_limit
 
     def on_activate_view(self):
-        car_position_view = []
+        self.view.car_position = []
         if len(self.cars_position) > 0:
             for i in range(len(self.cars_position)):
-                car_position_view.append(self.on_calculate_car_position_view(i))
+                self.view.car_position.append(self.on_calculate_car_position_view(i))
         else:
             for i in self.cars_position_abs:
-                car_position_view.append((i[0], i[1], 0.0))
+                self.view.car_position.append((i[0], i[1], 0.0))
 
-        self.view.on_update_car_position(car_position_view)
-        self.view.on_update_direction(self.current_direction)
-        self.view.on_update_car_image_collection(self.car_image_collection)
-        self.view.on_update_state(self.state)
         self.view.on_activate()
 
     def on_save_state(self):
@@ -157,7 +153,7 @@ class TrainModel(MapBaseModel):
                     else:
                         self.state = 'boarding_in_progress'
 
-                    self.view.on_update_state(self.state)
+                    self.view.state = self.state
                     # when boarding is started, convert trail points to 2D Cartesian
                     self.on_convert_trail_points()
                     self.trail_points_v2_head_tail = None
@@ -187,12 +183,11 @@ class TrainModel(MapBaseModel):
 
             # if train is not stopped, move all cars ahead
             if self.speed_state != 'stop':
-                car_position_view = []
+                self.view.car_position = []
                 for i in range(len(self.cars_position)):
                     self.cars_position[i] = round(self.cars_position[i] + self.speed, 1)
-                    car_position_view.append(self.on_calculate_car_position_view(i))
+                    self.view.car_position.append(self.on_calculate_car_position_view(i))
 
-                self.view.on_update_car_position(car_position_view)
                 self.controller.parent_controller\
                     .on_update_train_route_sections(self.track, self.train_route, self.cars_position[-1])
         else:
@@ -213,7 +208,7 @@ class TrainModel(MapBaseModel):
             # after boarding time is over, update train state and add exp/money
             if self.boarding_time == 0:
                 self.state = 'boarding_complete'
-                self.view.on_update_state(self.state)
+                self.view.state = self.state
                 self.controller.parent_controller.parent_controller.on_add_exp(self.exp * self.exp_bonus_multiplier)
                 self.controller.parent_controller.parent_controller\
                     .on_add_money(self.money * self.money_bonus_multiplier)
@@ -257,11 +252,9 @@ class TrainModel(MapBaseModel):
 
     def on_switch_direction(self):
         self.cars_position_abs = list(reversed(self.cars_position_abs))
-        car_position_view = []
+        self.view.car_position = []
         for i in self.cars_position_abs:
-            car_position_view.append((i[0], i[1], 0.0))
-
-        self.view.on_update_car_position(car_position_view)
+            self.view.car_position.append((i[0], i[1], 0.0))
 
     def on_calculate_car_position_view(self, car_index):
         if car_index in (0, len(self.cars_position) - 1):

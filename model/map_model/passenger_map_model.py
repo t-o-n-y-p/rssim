@@ -31,4 +31,7 @@ class PassengerMapModel(MapModel):
         controller.view = view
         view.controller = controller
         model.view = view
+        view.direction = model.direction
+        view.car_image_collection = model.car_image_collection
+        view.state = model.state
         return controller

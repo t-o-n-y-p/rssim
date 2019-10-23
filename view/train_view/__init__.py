@@ -101,15 +101,3 @@ class TrainView(View):
                 self.car_sprites[i].on_update_texture(self.car_head_image[self.car_image_collection][self.direction])
             elif i == len(self.car_sprites) - 1:
                 self.car_sprites[i].on_update_texture(self.car_tail_image[self.car_image_collection][self.direction])
-
-    @final
-    def on_update_car_image_collection(self, car_image_collection):
-        self.car_image_collection = car_image_collection
-
-    @final
-    def on_update_state(self, state):
-        self.state = state
-
-    @final
-    def on_update_car_position(self, car_positions):
-        self.car_position = car_positions

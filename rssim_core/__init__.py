@@ -484,6 +484,9 @@ def _create_passenger_train(map_controller, train_id):
     controller.view = view
     view.controller = controller
     model.view = view
+    view.direction = model.direction
+    view.car_image_collection = model.car_image_collection
+    view.state = model.state
     view.on_init_content()
     return controller
 
