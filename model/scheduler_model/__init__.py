@@ -39,6 +39,21 @@ class SchedulerModel(GameBaseModel):
         USER_DB_CURSOR.execute('''SELECT entry_locked_state FROM map_progress WHERE map_id = ?''', (self.map_id, ))
         self.entry_locked_state = list(map(bool, list(map(int, USER_DB_CURSOR.fetchone()[0].split(',')))))
 
+    def on_save_state(self):
+        USER_DB_CURSOR.execute('''UPDATE scheduler SET train_counter = ?, next_cycle_start_time = ?, 
+                                  entry_busy_state = ? WHERE map_id = ?''',
+                               (self.train_counter, self.next_cycle_start_time,
+                                ','.join(list(map(str, list(map(int, self.entry_busy_state))))), self.map_id))
+        USER_DB_CURSOR.execute('''UPDATE map_progress SET entry_locked_state = ? WHERE map_id = ?''',
+                               (','.join(list(map(str, list(map(int, self.entry_locked_state))))), self.map_id))
+        USER_DB_CURSOR.execute('''DELETE FROM base_schedule WHERE map_id = ?''', (self.map_id, ))
+        for train in self.base_schedule:
+            USER_DB_CURSOR.execute('INSERT INTO base_schedule VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)',
+                                   (self.map_id, *train))
+
+        USER_DB_CURSOR.execute('''UPDATE map_progress SET supported_cars_min = ? WHERE map_id = ?''',
+                               (self.supported_cars_min, self.map_id))
+
     def on_update_time(self):
         super().on_update_time()
         self.view.on_update_time(self.game_time)
@@ -89,21 +104,6 @@ class SchedulerModel(GameBaseModel):
                 # no more trains can be created because schedule is sorted by arrival time,
                 # and arrival time for all following trans will be greater than current time
                 break
-
-    def on_save_state(self):
-        USER_DB_CURSOR.execute('''UPDATE scheduler SET train_counter = ?, next_cycle_start_time = ?, 
-                                  entry_busy_state = ? WHERE map_id = ?''',
-                               (self.train_counter, self.next_cycle_start_time,
-                                ','.join(list(map(str, list(map(int, self.entry_busy_state))))), self.map_id))
-        USER_DB_CURSOR.execute('''UPDATE map_progress SET entry_locked_state = ? WHERE map_id = ?''',
-                               (','.join(list(map(str, list(map(int, self.entry_locked_state))))), self.map_id))
-        USER_DB_CURSOR.execute('''DELETE FROM base_schedule WHERE map_id = ?''', (self.map_id, ))
-        for train in self.base_schedule:
-            USER_DB_CURSOR.execute('INSERT INTO base_schedule VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)',
-                                   (self.map_id, *train))
-
-        USER_DB_CURSOR.execute('''UPDATE map_progress SET supported_cars_min = ? WHERE map_id = ?''',
-                               (self.supported_cars_min, self.map_id))
 
     def on_level_up(self):
         super().on_level_up()

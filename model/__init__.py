@@ -43,22 +43,6 @@ def train_has_passed_train_route_section(fn):
     return _allow_other_trains_to_pass_if_train_has_passed_train_route_section
 
 
-def train_route_is_opened(fn):
-    def _handle_if_train_route_is_opened(*args, **kwargs):
-        if args[0].opened:
-            fn(*args, **kwargs)
-
-    return _handle_if_train_route_is_opened
-
-
-def not_approaching_route(fn):
-    def _handle_if_train_route_is_not_approaching_route(*args, **kwargs):
-        if len(args[0].train_route_sections) > 1:
-            fn(*args, **kwargs)
-
-    return _handle_if_train_route_is_not_approaching_route
-
-
 def display_fps_enabled(fn):
     def _execute_if_display_fps_enabled(*args, **kwargs):
         if args[0].display_fps:
@@ -231,21 +215,22 @@ class GameBaseModel(AppBaseModel):
         self.view.on_update_money(self.money)
 
     def on_activate_exp_bonus_code(self, value):
-        pass
-
-    def on_activate_money_bonus_code(self, value):
-        pass
+        self.exp_bonus_multiplier = round(1.0 + value, 2)
 
     def on_deactivate_exp_bonus_code(self):
-        pass
+        self.exp_bonus_multiplier = 1.0
+
+    def on_activate_money_bonus_code(self, value):
+        self.money_bonus_multiplier = round(1.0 + value, 2)
 
     def on_deactivate_money_bonus_code(self):
-        pass
+        self.money_bonus_multiplier = 1.0
 
 
 class MapBaseModel(GameBaseModel):
     def __init__(self, logger):
         super().__init__(logger)
+        self.locked = True
 
     def on_unlock(self):
-        pass
+        self.locked = False

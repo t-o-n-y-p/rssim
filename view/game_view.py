@@ -170,9 +170,9 @@ class GameView(View):
 
     @notifications_available
     @level_up_notification_enabled
-    def on_send_level_up_notification(self, level):
+    def on_send_level_up_notification(self):
         level_up_notification = LevelUpNotification()
-        level_up_notification.send(self.current_locale, message_args=(level,))
+        level_up_notification.send(self.current_locale, message_args=(self.level,))
         self.controller.parent_controller.on_append_notification(level_up_notification)
 
     @notifications_available

@@ -26,7 +26,7 @@ class SignalModel(MapBaseModel):
                                 self.map_id))
 
     def on_unlock(self):
-        self.locked = False
+        super().on_unlock()
         self.view.on_unlock()
 
     def on_switch_to_green(self):

@@ -20,13 +20,20 @@ class MapModel(MapBaseModel):
         self.last_known_base_offset = list(map(int, USER_DB_CURSOR.fetchone()[0].split(',')))
         USER_DB_CURSOR.execute('SELECT zoom_out_activated FROM graphics WHERE map_id = ?', (self.map_id, ))
         self.zoom_out_activated = bool(USER_DB_CURSOR.fetchone()[0])
-        CONFIG_DB_CURSOR.execute('''SELECT unlocked_tracks_by_default FROM map_progress_config''')
-        self.unlocked_tracks_by_default = CONFIG_DB_CURSOR.fetchone()[0]
+        CONFIG_DB_CURSOR.execute('''SELECT locked, unlocked_tracks_by_default FROM map_progress_config''')
+        self.locked, self.unlocked_tracks_by_default = CONFIG_DB_CURSOR.fetchone()[0]
+        self.locked = bool(self.locked)
 
-    def on_activate_view(self):
-        USER_DB_CURSOR.execute('SELECT map_id FROM graphics')
-        if self.map_id == USER_DB_CURSOR.fetchone()[0]:
-            self.view.on_activate()
+    def on_save_state(self):
+        USER_DB_CURSOR.execute('''UPDATE map_progress SET locked = ?, unlocked_tracks = ?, unlocked_environment = ?, 
+                                  unlocked_car_collections = ? WHERE map_id = ?''',
+                               (int(self.locked), self.unlocked_tracks, self.unlocked_environment,
+                                ','.join(list(map(str, self.unlocked_car_collections))), self.map_id))
+
+    def on_unlock(self):
+        super().on_unlock()
+        for track in range(self.unlocked_tracks_by_default):
+            self.controller.on_unlock_track(track)
 
     def on_unlock_track(self, track):
         self.unlocked_tracks = track
@@ -40,12 +47,6 @@ class MapModel(MapBaseModel):
         self.unlocked_environment = tier
         self.view.on_unlock_environment(tier)
         self.view.on_unlock_construction()
-
-    def on_save_state(self):
-        USER_DB_CURSOR.execute('''UPDATE map_progress SET unlocked_tracks = ?, unlocked_environment = ?, 
-                                  unlocked_car_collections = ? WHERE map_id = ?''',
-                               (self.unlocked_tracks, self.unlocked_environment,
-                                ','.join(list(map(str, self.unlocked_car_collections))), self.map_id))
 
     def on_save_and_commit_last_known_base_offset(self, base_offset):
         self.last_known_base_offset = base_offset
@@ -114,19 +115,3 @@ class MapModel(MapBaseModel):
                                     WHERE track_unlocked_with <= ? AND environment_unlocked_with = ? AND map_id = ?''',
                                  (self.unlocked_tracks, tier, self.map_id))
         return CONFIG_DB_CURSOR.fetchall()
-
-    def on_activate_exp_bonus_code(self, value):
-        self.exp_bonus_multiplier = round(1.0 + value, 2)
-
-    def on_deactivate_exp_bonus_code(self):
-        self.exp_bonus_multiplier = 1.0
-
-    def on_activate_money_bonus_code(self, value):
-        self.money_bonus_multiplier = round(1.0 + value, 2)
-
-    def on_deactivate_money_bonus_code(self):
-        self.money_bonus_multiplier = 1.0
-
-    def on_unlock(self):
-        for track in range(self.unlocked_tracks_by_default):
-            self.controller.on_unlock_track(track)

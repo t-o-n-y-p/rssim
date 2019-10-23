@@ -40,6 +40,27 @@ class ShopConstructorModel(GameBaseModel):
         self.view.on_update_storage_money(self.shop_storage_money)
         self.view.on_update_money(self.money)
 
+    def on_save_state(self):
+        USER_DB_CURSOR.execute('''UPDATE shops SET current_stage = ?, shop_storage_money = ?, 
+                                  internal_shop_time = ? WHERE map_id = ? AND shop_id = ?''',
+                               (self.current_stage, self.shop_storage_money, self.internal_shop_time,
+                                self.map_id, self.shop_id))
+        for stage_number in self.shop_stages_state_matrix:
+            USER_DB_CURSOR.execute('''UPDATE shop_stages SET locked = ?, under_construction = ?, 
+                                      construction_time = ?, unlock_condition_from_level = ?, 
+                                      unlock_condition_from_previous_stage = ?, unlock_available = ?
+                                      WHERE map_id = ? AND shop_id = ? AND stage_number = ?''',
+                                   tuple(map(int,
+                                             (self.shop_stages_state_matrix[stage_number][LOCKED],
+                                              self.shop_stages_state_matrix[stage_number][UNDER_CONSTRUCTION],
+                                              self.shop_stages_state_matrix[stage_number][CONSTRUCTION_TIME],
+                                              self.shop_stages_state_matrix[stage_number][UNLOCK_CONDITION_FROM_LEVEL],
+                                              self.shop_stages_state_matrix[stage_number][
+                                                                            UNLOCK_CONDITION_FROM_PREVIOUS_STAGE],
+                                              self.shop_stages_state_matrix[stage_number][UNLOCK_AVAILABLE],
+                                              self.map_id, self.shop_id, stage_number
+                                              ))))
+
     def on_update_time(self):
         super().on_update_time()
         if self.current_stage > 0 \
@@ -84,27 +105,6 @@ class ShopConstructorModel(GameBaseModel):
 
                 self.view.on_update_stage_state(stage)
 
-    def on_save_state(self):
-        USER_DB_CURSOR.execute('''UPDATE shops SET current_stage = ?, shop_storage_money = ?, 
-                                  internal_shop_time = ? WHERE map_id = ? AND shop_id = ?''',
-                               (self.current_stage, self.shop_storage_money, self.internal_shop_time,
-                                self.map_id, self.shop_id))
-        for stage_number in self.shop_stages_state_matrix:
-            USER_DB_CURSOR.execute('''UPDATE shop_stages SET locked = ?, under_construction = ?, 
-                                      construction_time = ?, unlock_condition_from_level = ?, 
-                                      unlock_condition_from_previous_stage = ?, unlock_available = ?
-                                      WHERE map_id = ? AND shop_id = ? AND stage_number = ?''',
-                                   tuple(map(int,
-                                             (self.shop_stages_state_matrix[stage_number][LOCKED],
-                                              self.shop_stages_state_matrix[stage_number][UNDER_CONSTRUCTION],
-                                              self.shop_stages_state_matrix[stage_number][CONSTRUCTION_TIME],
-                                              self.shop_stages_state_matrix[stage_number][UNLOCK_CONDITION_FROM_LEVEL],
-                                              self.shop_stages_state_matrix[stage_number][
-                                                                            UNLOCK_CONDITION_FROM_PREVIOUS_STAGE],
-                                              self.shop_stages_state_matrix[stage_number][UNLOCK_AVAILABLE],
-                                              self.map_id, self.shop_id, stage_number
-                                              ))))
-
     def on_level_up(self):
         super().on_level_up()
         for stage in self.shop_stages_state_matrix:
@@ -128,9 +128,3 @@ class ShopConstructorModel(GameBaseModel):
         self.view.on_update_stage_state(stage_number)
         self.controller.parent_controller.parent_controller.parent_controller \
             .on_pay_money(self.shop_stages_state_matrix[stage_number][PRICE])
-
-    def on_activate_money_bonus_code(self, value):
-        self.money_bonus_multiplier = round(1.0 + value, 2)
-
-    def on_deactivate_money_bonus_code(self):
-        self.money_bonus_multiplier = 1.0

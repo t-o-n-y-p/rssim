@@ -111,6 +111,26 @@ class TrainRouteModel(MapBaseModel):
                                   WHERE track = ? AND train_route = ? AND map_id = ?''',
                                (busy_state_string, self.controller.track, self.controller.train_route, self.map_id))
 
+    def on_update_time(self):
+        super().on_update_time()
+        if self.opened and len(self.train_route_sections) > 1:
+            train_route_busy = False
+            for i in range(1, len(self.train_route_sections)):
+                train_route_busy = train_route_busy or self.train_route_section_busy_state[i]
+
+            if self.train_route_section_busy_state[0] and not train_route_busy:
+                self.controller.parent_controller.on_switch_signal_to_green(self.signal_track, self.signal_base_route)
+                self.controller.parent_controller.on_set_train_stop_point(self.last_opened_by,
+                                                                          self.destination_point_v2[self.cars])
+                for i in range(1, len(self.train_route_sections) - 1):
+                    self.controller.parent_controller.on_train_route_section_force_busy_on(
+                        self.train_route_sections[i],
+                        self.train_route_section_positions[i],
+                        self.last_opened_by)
+                    self.train_route_section_busy_state[i] = True
+
+                self.train_route_section_busy_state[-1] = True
+
     def on_open_train_route(self, train_id, cars):
         self.opened = True
         self.last_opened_by = train_id
@@ -149,27 +169,6 @@ class TrainRouteModel(MapBaseModel):
 
         # moving to the next section
         self.current_checkpoint += 1
-
-    @train_route_is_opened
-    @not_approaching_route
-    def on_update_time(self):
-        super().on_update_time()
-        train_route_busy = False
-        for i in range(1, len(self.train_route_sections)):
-            train_route_busy = train_route_busy or self.train_route_section_busy_state[i]
-
-        if self.train_route_section_busy_state[0] and not train_route_busy:
-            self.controller.parent_controller.on_switch_signal_to_green(self.signal_track, self.signal_base_route)
-            self.controller.parent_controller.on_set_train_stop_point(self.last_opened_by,
-                                                                      self.destination_point_v2[self.cars])
-            for i in range(1, len(self.train_route_sections) - 1):
-                self.controller.parent_controller.on_train_route_section_force_busy_on(
-                    self.train_route_sections[i],
-                    self.train_route_section_positions[i],
-                    self.last_opened_by)
-                self.train_route_section_busy_state[i] = True
-
-            self.train_route_section_busy_state[-1] = True
 
     def on_update_priority(self, priority):
         self.priority = priority

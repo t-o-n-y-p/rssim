@@ -21,18 +21,6 @@ class GameModel(GameBaseModel):
         else:
             self.view.pause_game_button.on_activate()
 
-    def on_pause_game(self):
-        self.game_paused = True
-        self.view.on_pause_game()
-
-    def on_resume_game(self):
-        self.game_paused = False
-        self.view.on_resume_game()
-
-    def on_update_time(self):
-        super().on_update_time()
-        self.view.on_update_time()
-
     def on_save_state(self):
         USER_DB_CURSOR.execute('UPDATE epoch_timestamp SET game_time = ?', (self.game_time, ))
         USER_DB_CURSOR.execute('''UPDATE game_progress SET level = ?, exp = ?, money = ?, 
@@ -41,13 +29,9 @@ class GameModel(GameBaseModel):
                                (self.level, self.exp, self.money, self.money_target, self.exp_multiplier,
                                 self.exp_bonus_multiplier, self.money_bonus_multiplier))
 
-    @maximum_level_not_reached
-    def on_add_exp(self, exp):
-        self.exp += exp * self.exp_multiplier
-        while self.exp >= self.player_progress and self.level < MAXIMUM_LEVEL:
-            self.controller.on_level_up()
-
-        self.view.on_update_exp(self.exp)
+    def on_update_time(self):
+        super().on_update_time()
+        self.view.on_update_time()
 
     def on_level_up(self):
         super().on_level_up()
@@ -59,7 +43,7 @@ class GameModel(GameBaseModel):
                                     WHERE level = ?''', (self.level, ))
         self.player_progress = CONFIG_DB_CURSOR.fetchone()[0]
         self.view.on_level_up()
-        self.view.on_send_level_up_notification(self.level)
+        self.view.on_send_level_up_notification()
 
     def on_add_money(self, money):
         if self.money_target > 0 and self.money < self.money_target <= self.money + money:
@@ -72,6 +56,22 @@ class GameModel(GameBaseModel):
 
         super().on_add_money(money)
 
+    def on_pause_game(self):
+        self.game_paused = True
+        self.view.on_pause_game()
+
+    def on_resume_game(self):
+        self.game_paused = False
+        self.view.on_resume_game()
+
+    @maximum_level_not_reached
+    def on_add_exp(self, exp):
+        self.exp += exp * self.exp_multiplier
+        while self.exp >= self.player_progress and self.level < MAXIMUM_LEVEL:
+            self.controller.on_level_up()
+
+        self.view.on_update_exp(self.exp)
+
     def on_update_money_target(self, money_target):
         self.money_target = money_target
         self.view.on_update_money_target(self.money_target)
@@ -83,15 +83,3 @@ class GameModel(GameBaseModel):
 
     def on_add_exp_bonus(self, value):
         self.exp_multiplier = round(self.exp_multiplier + value, 4)
-
-    def on_activate_exp_bonus_code(self, value):
-        self.exp_bonus_multiplier = round(1.0 + value, 2)
-
-    def on_deactivate_exp_bonus_code(self):
-        self.exp_bonus_multiplier = 1.0
-
-    def on_activate_money_bonus_code(self, value):
-        self.money_bonus_multiplier = round(1.0 + value, 2)
-
-    def on_deactivate_money_bonus_code(self):
-        self.money_bonus_multiplier = 1.0

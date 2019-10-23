@@ -71,19 +71,6 @@ class TrainModel(MapBaseModel):
         self.speed_state = 'move'
         self.speed_factor_position = self.speed_factor_position_limit
 
-    def on_set_train_start_point(self, first_car_start_point):
-        pass
-
-    def on_set_train_stop_point(self, first_car_stop_point):
-        self.stop_point = first_car_stop_point
-
-    def on_set_train_destination_point(self, first_car_destination_point):
-        self.destination_point = first_car_destination_point
-
-    def on_set_trail_points(self, trail_points_v2_head_tail, trail_points_v2_mid):
-        self.trail_points_v2_head_tail = trail_points_v2_head_tail
-        self.trail_points_v2_mid = trail_points_v2_mid
-
     def on_activate_view(self):
         car_position_view = []
         if len(self.cars_position) > 0:
@@ -231,6 +218,19 @@ class TrainModel(MapBaseModel):
                 self.controller.parent_controller.parent_controller\
                     .on_add_money(self.money * self.money_bonus_multiplier)
 
+    def on_set_train_start_point(self, first_car_start_point):
+        pass
+
+    def on_set_train_stop_point(self, first_car_stop_point):
+        self.stop_point = first_car_stop_point
+
+    def on_set_train_destination_point(self, first_car_destination_point):
+        self.destination_point = first_car_destination_point
+
+    def on_set_trail_points(self, trail_points_v2_head_tail, trail_points_v2_mid):
+        self.trail_points_v2_head_tail = trail_points_v2_head_tail
+        self.trail_points_v2_mid = trail_points_v2_mid
+
     def on_convert_trail_points(self):
         self.cars_position_abs = []
         for i in range(len(self.cars_position)):
@@ -288,15 +288,3 @@ class TrainModel(MapBaseModel):
                     (self.trail_points_v2_mid[int(self.cars_position[car_index])][2]
                      + self.trail_points_v2_mid[int(self.cars_position[car_index]) + 1][2]) / 2
                 )
-
-    def on_activate_exp_bonus_code(self, value):
-        self.exp_bonus_multiplier = round(1.0 + value, 2)
-
-    def on_deactivate_exp_bonus_code(self):
-        self.exp_bonus_multiplier = 1.0
-
-    def on_activate_money_bonus_code(self, value):
-        self.money_bonus_multiplier = round(1.0 + value, 2)
-
-    def on_deactivate_money_bonus_code(self):
-        self.money_bonus_multiplier = 1.0
