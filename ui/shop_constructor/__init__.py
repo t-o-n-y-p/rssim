@@ -71,7 +71,8 @@ class ShopStageCell:
         self.under_construction_label = ShopStageUnderConstructionLabel(parent_viewport=self.viewport)
         self.build_button = BuildShopStageButton(on_click_action=on_buy_shop_stage, parent_viewport=self.viewport)
         self.buttons = [self.build_button, ]
-        self.money = 0
+        USER_DB_CURSOR.execute('''SELECT money FROM game_progress''')
+        self.money = USER_DB_CURSOR.fetchone()[0]
         self.opacity = 0
 
     @cell_is_active
@@ -156,6 +157,7 @@ class ShopStageCell:
     @cell_is_not_active
     def on_activate(self):
         self.is_activated = True
+        self.on_update_build_button_state()
 
     @cell_is_active
     def on_deactivate(self):

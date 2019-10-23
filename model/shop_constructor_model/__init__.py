@@ -31,15 +31,6 @@ class ShopConstructorModel(GameBaseModel):
                                   FROM shops WHERE map_id = ? AND shop_id = ?''', (self.map_id, self.shop_id))
         self.current_stage, self.shop_storage_money, self.internal_shop_time = USER_DB_CURSOR.fetchone()
 
-    def on_activate_view(self):
-        self.view.current_stage = self.current_stage
-        self.view.on_activate()
-        for stage_number in range(1, 5):
-            self.view.on_update_stage_state(stage_number)
-
-        self.view.on_update_storage_money(self.shop_storage_money)
-        self.view.on_update_money(self.money)
-
     def on_save_state(self):
         USER_DB_CURSOR.execute('''UPDATE shops SET current_stage = ?, shop_storage_money = ?, 
                                   internal_shop_time = ? WHERE map_id = ? AND shop_id = ?''',

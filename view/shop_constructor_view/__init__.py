@@ -25,6 +25,8 @@ class ShopConstructorView(View):
         self.map_id = map_id
         self.shop_id = shop_id
         self.shop_stages_state_matrix = {}
+        USER_DB_CURSOR.execute('''SELECT money FROM game_progress''')
+        self.money = USER_DB_CURSOR.fetchone()[0]
         USER_DB_CURSOR.execute('''SELECT current_stage, shop_storage_money
                                   FROM shops WHERE map_id = ? AND shop_id = ?''', (self.map_id, self.shop_id))
         self.current_stage, self.shop_storage_money = USER_DB_CURSOR.fetchone()
@@ -56,22 +58,30 @@ class ShopConstructorView(View):
         self.shader_sprite.create()
         self.current_hourly_profit_label.create()
         self.current_exp_bonus_label.create()
+        self.shop_storage_progress_bar.on_update_text_label_args((self.shop_storage_money,))
+        self.shop_storage_progress_bar.on_activate()
         if self.current_stage == 0:
+            self.exp_bonus_value_label.on_update_args((0.0,))
             self.hourly_profit_value_label.on_update_args((0, ))
-        else:
-            self.hourly_profit_value_label\
-                .on_update_args((self.shop_stages_state_matrix[self.current_stage][HOURLY_PROFIT], ))
-
-        self.hourly_profit_value_label.create()
-        if self.current_stage == 0:
-            self.exp_bonus_value_label.on_update_args((0.0, ))
+            self.shop_storage_progress_bar.on_update_progress_bar_state(self.shop_storage_money, 0)
         else:
             self.exp_bonus_value_label.on_update_args((self.shop_stages_state_matrix[self.current_stage][EXP_BONUS],))
+            self.hourly_profit_value_label\
+                .on_update_args((self.shop_stages_state_matrix[self.current_stage][HOURLY_PROFIT], ))
+            self.shop_storage_progress_bar\
+                .on_update_progress_bar_state(self.shop_storage_money,
+                                              self.shop_stages_state_matrix[self.current_stage][STORAGE_CAPACITY])
 
+        self.hourly_profit_value_label.create()
         self.exp_bonus_value_label.create()
-        self.shop_storage_progress_bar.on_activate()
         for stage_cell in self.shop_stage_cells:
             self.shop_stage_cells[stage_cell].on_activate()
+            self.shop_stage_cells[stage_cell].on_update_state()
+
+        if self.current_stage > 0 and self.shop_storage_money > 0:
+            self.clear_shop_storage_button.on_activate()
+        else:
+            self.clear_shop_storage_button.on_disable()
 
     @final
     @view_is_active
@@ -139,26 +149,27 @@ class ShopConstructorView(View):
         self.shop_stage_cells[stage_number].on_update_state()
 
     @final
-    @view_is_active
     def on_update_storage_money(self, storage_money):
         self.shop_storage_money = storage_money
-        if self.shop_storage_money > 0:
-            self.clear_shop_storage_button.on_activate()
-        else:
-            self.clear_shop_storage_button.on_disable()
+        if self.is_activated:
+            self.shop_storage_progress_bar.on_update_text_label_args((self.shop_storage_money, ))
+            if self.current_stage > 0:
+                self.shop_storage_progress_bar\
+                    .on_update_progress_bar_state(self.shop_storage_money,
+                                                  self.shop_stages_state_matrix[self.current_stage][STORAGE_CAPACITY])
+            else:
+                self.shop_storage_progress_bar.on_update_progress_bar_state(self.shop_storage_money, 0)
 
-        self.shop_storage_progress_bar.on_update_text_label_args((storage_money, ))
-        if self.current_stage > 0:
-            self.shop_storage_progress_bar\
-                .on_update_progress_bar_state(storage_money,
-                                              self.shop_stages_state_matrix[self.current_stage][STORAGE_CAPACITY])
-        else:
-            self.shop_storage_progress_bar.on_update_progress_bar_state(storage_money, 0)
+            if self.current_stage > 0 and self.shop_storage_money > 0:
+                self.clear_shop_storage_button.on_activate()
+            else:
+                self.clear_shop_storage_button.on_disable()
 
     @final
     def on_update_money(self, money):
+        self.money = money
         for stage_cell in self.shop_stage_cells:
-            self.shop_stage_cells[stage_cell].on_update_money(money)
+            self.shop_stage_cells[stage_cell].on_update_money(self.money)
 
     @final
     def on_unlock_stage(self, stage):
