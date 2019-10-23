@@ -233,6 +233,9 @@ class View:
     def on_update_clock_state(self, clock_24h_enabled):
         pass
 
+    def on_update_money(self, money):
+        pass
+
     @final
     def on_init_content(self):
         CONFIG_DB_CURSOR.execute('SELECT app_width, app_height FROM screen_resolution_config')

@@ -30,6 +30,9 @@ class AppModel(AppBaseModel):
         else:
             self.view.fullscreen_button.on_disable()
 
+    def on_save_state(self):
+        USER_DB_CURSOR.execute('UPDATE graphics SET fullscreen = ?', (self.fullscreen_mode, ))
+
     @fullscreen_mode_available
     def on_fullscreen_mode_turned_on(self):
         self.fullscreen_mode = bool(FULLSCREEN_MODE_TURNED_ON)
@@ -38,9 +41,6 @@ class AppModel(AppBaseModel):
     def on_fullscreen_mode_turned_off(self):
         self.fullscreen_mode = bool(FULLSCREEN_MODE_TURNED_OFF)
         self.view.on_fullscreen_mode_turned_off()
-
-    def on_save_state(self):
-        USER_DB_CURSOR.execute('UPDATE graphics SET fullscreen = ?', (self.fullscreen_mode, ))
 
     @staticmethod
     def on_save_and_commit_locale(new_locale):

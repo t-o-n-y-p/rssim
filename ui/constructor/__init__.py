@@ -85,7 +85,8 @@ class ConstructorCell:
                                                              parent_viewport=self.viewport))
         self.build_button = BuildConstructionButton(on_click_action=on_buy_construction, parent_viewport=self.viewport)
         self.buttons = [self.enable_money_target_button, self.disable_money_target_button, self.build_button]
-        self.money = 0
+        USER_DB_CURSOR.execute('''SELECT money FROM game_progress''')
+        self.money = USER_DB_CURSOR.fetchone()[0]
         self.money_target_activated = False
         self.opacity = 0
 
