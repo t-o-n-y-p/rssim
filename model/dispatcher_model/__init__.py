@@ -24,10 +24,8 @@ class DispatcherModel(GameBaseModel):
                                     FROM track_config WHERE map_id = ?''', (self.map_id, ))
         self.supported_cars_by_track.extend(CONFIG_DB_CURSOR.fetchall())
 
-    def on_activate_view(self):
-        self.view.on_activate()
-
     def on_update_time(self):
+        super().on_update_time()
         for t in self.trains:
             for track in self.get_track_priority_list(t):
                 if track <= self.unlocked_tracks and not self.track_busy_status[track] \

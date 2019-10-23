@@ -8,8 +8,6 @@ class BonusCodeManagerModel(GameBaseModel):
     def __init__(self):
         super().__init__(logger=getLogger('root.app.bonus_code_manager.model'))
         self.bonus_code_matrix = None
-        USER_DB_CURSOR.execute('SELECT game_time FROM epoch_timestamp')
-        self.game_time = USER_DB_CURSOR.fetchone()[0]
 
     def on_save_state(self):
         for code in self.bonus_code_matrix:
@@ -30,7 +28,7 @@ class BonusCodeManagerModel(GameBaseModel):
             self.view.on_activate_money_bonus_code(self.bonus_code_matrix[sha512_hash][BONUS_VALUE] - 1)
 
     def on_update_time(self):
-        self.game_time += 1
+        super().on_update_time()
         for code in self.bonus_code_matrix:
             if self.bonus_code_matrix[code][IS_ACTIVATED]:
                 self.bonus_code_matrix[code][BONUS_TIME] -= 1

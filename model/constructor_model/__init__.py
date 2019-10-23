@@ -8,10 +8,6 @@ class ConstructorModel(GameBaseModel):
     def __init__(self, map_id):
         super().__init__(logger=getLogger(f'root.app.game.map.{map_id}.constructor.model'))
         self.map_id = map_id
-        USER_DB_CURSOR.execute('SELECT game_time FROM epoch_timestamp')
-        self.game_time = USER_DB_CURSOR.fetchone()[0]
-        USER_DB_CURSOR.execute('SELECT level FROM game_progress')
-        self.level = USER_DB_CURSOR.fetchone()[0]
         self.construction_state_matrix = [{}, {}]
         self.cached_unlocked_tracks = []
         self.cached_unlocked_tiers = []
@@ -58,10 +54,10 @@ class ConstructorModel(GameBaseModel):
             self.view.on_update_construction_state(ENVIRONMENT, remaining_tiers[j])
 
         self.view.on_update_money(self.money)
-        self.view.on_activate()
+        super().on_activate_view()
 
     def on_update_time(self):
-        self.game_time += 1
+        super().on_update_time()
         # unlocked_track stores track number if some track was unlocked and 0 otherwise
         unlocked_track = 0
         for track in self.construction_state_matrix[TRACKS]:
@@ -197,7 +193,7 @@ class ConstructorModel(GameBaseModel):
                                    )
 
     def on_level_up(self):
-        self.level += 1
+        super().on_level_up()
         # determines if some tracks require level which was just hit
         CONFIG_DB_CURSOR.execute('SELECT track_number FROM track_config WHERE level = ? AND map_id = ?',
                                  (self.level, self.map_id))
@@ -234,14 +230,6 @@ class ConstructorModel(GameBaseModel):
         self.view.on_update_construction_state(construction_type, entity_number)
         self.controller.parent_controller.parent_controller\
             .on_pay_money(self.construction_state_matrix[construction_type][entity_number][PRICE])
-
-    def on_add_money(self, money):
-        self.money += money
-        self.view.on_update_money(self.money)
-
-    def on_pay_money(self, money):
-        self.money -= money
-        self.view.on_update_money(self.money)
 
     def on_check_track_unlock_conditions(self, track):
         if self.construction_state_matrix[TRACKS][track][UNLOCK_CONDITION_FROM_PREVIOUS_TRACK] \

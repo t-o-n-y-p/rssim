@@ -8,12 +8,8 @@ class GameModel(GameBaseModel):
     def __init__(self):
         super().__init__(logger=getLogger('root.app.game.model'))
         self.game_paused = True
-        USER_DB_CURSOR.execute('SELECT game_time FROM epoch_timestamp')
-        self.game_time = USER_DB_CURSOR.fetchone()[0]
-        USER_DB_CURSOR.execute('''SELECT level, exp, money, money_target, exp_multiplier,
-                                  exp_bonus_multiplier, money_bonus_multiplier FROM game_progress''')
-        self.level, self.exp, self.money, self.money_target, self.exp_multiplier, \
-            self.exp_bonus_multiplier, self.money_bonus_multiplier = USER_DB_CURSOR.fetchone()
+        USER_DB_CURSOR.execute('''SELECT exp, money_target, exp_multiplier FROM game_progress''')
+        self.exp, self.money_target, self.exp_multiplier = USER_DB_CURSOR.fetchone()
         CONFIG_DB_CURSOR.execute('''SELECT player_progress FROM player_progress_config 
                                     WHERE level = ?''', (self.level, ))
         self.player_progress = CONFIG_DB_CURSOR.fetchone()[0]
@@ -38,7 +34,7 @@ class GameModel(GameBaseModel):
         self.view.on_resume_game()
 
     def on_update_time(self):
-        self.game_time += 1
+        super().on_update_time()
         self.view.on_update_time(self.game_time)
 
     def on_save_state(self):

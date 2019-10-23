@@ -101,9 +101,6 @@ class TrainRouteModel(MapBaseModel):
                                  (track, train_route, self.map_id))
         self.train_route_section_positions = CONFIG_DB_CURSOR.fetchall()
 
-    def on_activate_view(self):
-        self.view.on_activate()
-
     def on_save_state(self):
         USER_DB_CURSOR.execute('''UPDATE train_routes SET opened = ?, last_opened_by = ?, current_checkpoint = ?,
                                   priority = ?, cars = ? WHERE track = ? AND train_route = ? AND map_id = ?''',
@@ -156,6 +153,7 @@ class TrainRouteModel(MapBaseModel):
     @train_route_is_opened
     @not_approaching_route
     def on_update_time(self):
+        super().on_update_time()
         train_route_busy = False
         for i in range(1, len(self.train_route_sections)):
             train_route_busy = train_route_busy or self.train_route_section_busy_state[i]

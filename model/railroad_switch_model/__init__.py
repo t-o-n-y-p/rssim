@@ -29,9 +29,6 @@ class RailroadSwitchModel(MapBaseModel):
                                (track_param_1, track_param_2, switch_type, self.map_id))
         self.locked = bool(USER_DB_CURSOR.fetchone()[0])
 
-    def on_activate_view(self):
-        self.view.on_activate()
-
     def on_save_state(self):
         track_param_1 = self.controller.track_param_1
         track_param_2 = self.controller.track_param_2

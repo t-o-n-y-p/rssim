@@ -121,6 +121,7 @@ class TrainModel(MapBaseModel):
                                 self.stop_point, self.destination_point, self.car_image_collection))
 
     def on_update_time(self):
+        super().on_update_time()
         # shorter trains gain more priority because they arrive more frequently
         if self.cars < 9:
             self.priority += 5

@@ -10,8 +10,6 @@ class ShopConstructorModel(GameBaseModel):
         self.map_id = map_id
         self.shop_id = shop_id
         self.shop_stages_state_matrix = {}
-        USER_DB_CURSOR.execute('SELECT level FROM game_progress')
-        self.level = USER_DB_CURSOR.fetchone()[0]
         USER_DB_CURSOR.execute('''SELECT stage_number, locked, under_construction, construction_time,
                                   unlock_condition_from_level, unlock_condition_from_previous_stage,
                                   unlock_available FROM shop_stages WHERE map_id = ? AND shop_id = ?''',
@@ -29,8 +27,6 @@ class ShopConstructorModel(GameBaseModel):
             self.shop_stages_state_matrix[stage_info[0]].extend([*stage_progress_config[:3],
                                                                  0, *stage_progress_config[3:]])
 
-        USER_DB_CURSOR.execute('SELECT money,  money_bonus_multiplier FROM game_progress')
-        self.money, self.money_bonus_multiplier = USER_DB_CURSOR.fetchone()
         USER_DB_CURSOR.execute('''SELECT current_stage, shop_storage_money, internal_shop_time
                                   FROM shops WHERE map_id = ? AND shop_id = ?''', (self.map_id, self.shop_id))
         self.current_stage, self.shop_storage_money, self.internal_shop_time = USER_DB_CURSOR.fetchone()
@@ -45,6 +41,7 @@ class ShopConstructorModel(GameBaseModel):
         self.view.on_update_money(self.money)
 
     def on_update_time(self):
+        super().on_update_time()
         if self.current_stage > 0 \
                 and self.shop_storage_money < self.shop_stages_state_matrix[self.current_stage][STORAGE_CAPACITY]:
             self.internal_shop_time += 1
@@ -108,16 +105,8 @@ class ShopConstructorModel(GameBaseModel):
                                               self.map_id, self.shop_id, stage_number
                                               ))))
 
-    def on_add_money(self, money):
-        self.money += money
-        self.view.on_update_money(self.money)
-
-    def on_pay_money(self, money):
-        self.money -= money
-        self.view.on_update_money(self.money)
-
     def on_level_up(self):
-        self.level += 1
+        super().on_level_up()
         for stage in self.shop_stages_state_matrix:
             if self.shop_stages_state_matrix[stage][LEVEL_REQUIRED] == self.level:
                 self.shop_stages_state_matrix[stage][UNLOCK_CONDITION_FROM_LEVEL] = True

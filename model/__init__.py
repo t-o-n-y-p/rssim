@@ -1,5 +1,7 @@
 from typing import Final
 
+from database import USER_DB_CURSOR
+
 
 def fullscreen_mode_available(fn):
     def _turn_fullscreen_mode_on_if_available(*args, **kwargs):
@@ -208,18 +210,25 @@ class AppBaseModel:
 class GameBaseModel(AppBaseModel):
     def __init__(self, logger):
         super().__init__(logger)
+        USER_DB_CURSOR.execute('SELECT game_time FROM epoch_timestamp')
+        self.game_time = USER_DB_CURSOR.fetchone()[0]
+        USER_DB_CURSOR.execute('''SELECT level, money, exp_bonus_multiplier, money_bonus_multiplier 
+                                  FROM game_progress''')
+        self.level, self.money, self.exp_bonus_multiplier, self.money_bonus_multiplier = USER_DB_CURSOR.fetchone()
 
     def on_update_time(self):
-        pass
+        self.game_time += 1
 
     def on_level_up(self):
-        pass
+        self.level += 1
 
     def on_add_money(self, money):
-        pass
+        self.money += min(MONEY_LIMIT - self.money, money)
+        self.view.on_update_money(self.money)
 
     def on_pay_money(self, money):
-        pass
+        self.money -= money
+        self.view.on_update_money(self.money)
 
     def on_activate_exp_bonus_code(self, value):
         pass

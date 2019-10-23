@@ -39,11 +39,8 @@ class SchedulerModel(GameBaseModel):
         USER_DB_CURSOR.execute('''SELECT entry_locked_state FROM map_progress WHERE map_id = ?''', (self.map_id, ))
         self.entry_locked_state = list(map(bool, list(map(int, USER_DB_CURSOR.fetchone()[0].split(',')))))
 
-    def on_activate_view(self):
-        self.view.on_activate()
-
     def on_update_time(self):
-        self.game_time += 1
+        super().on_update_time()
         self.view.on_update_time(self.game_time)
         # new schedule cycle is created if current schedule end is less than schedule cycle length ahead
         if self.game_time + self.schedule_cycle_length >= self.next_cycle_start_time:
@@ -109,7 +106,7 @@ class SchedulerModel(GameBaseModel):
                                (self.supported_cars_min, self.map_id))
 
     def on_level_up(self):
-        self.level += 1
+        super().on_level_up()
         CONFIG_DB_CURSOR.execute('''SELECT arrival_time_min, arrival_time_max, direction, new_direction, 
                                     cars_min, cars_max FROM schedule_options 
                                     WHERE min_level <= ? AND max_level >= ? AND map_id = ?''',
