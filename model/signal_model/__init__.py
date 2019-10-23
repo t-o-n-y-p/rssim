@@ -14,11 +14,6 @@ class SignalModel(MapBaseModel):
         self.state, self.locked = USER_DB_CURSOR.fetchone()
         self.locked = bool(self.locked)
 
-    def on_activate_view(self):
-        self.view.on_change_state(self.state)
-        self.view.locked = self.locked
-        self.view.on_activate()
-
     def on_save_state(self):
         USER_DB_CURSOR.execute('''UPDATE signals SET state = ?, locked = ? 
                                   WHERE track = ? AND base_route = ? AND map_id = ?''',

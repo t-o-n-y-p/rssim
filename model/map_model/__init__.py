@@ -10,9 +10,10 @@ class MapModel(MapBaseModel):
     def __init__(self, map_id):
         super().__init__(logger=getLogger(f'root.app.game.map.{map_id}.model'))
         self.map_id = map_id
-        USER_DB_CURSOR.execute('''SELECT unlocked_tracks, unlocked_environment 
+        USER_DB_CURSOR.execute('''SELECT locked, unlocked_tracks, unlocked_environment 
                                   FROM map_progress WHERE map_id = ?''', (self.map_id, ))
-        self.unlocked_tracks, self.unlocked_environment = USER_DB_CURSOR.fetchone()
+        self.locked, self.unlocked_tracks, self.unlocked_environment = USER_DB_CURSOR.fetchone()
+        self.locked = bool(self.locked)
         USER_DB_CURSOR.execute('''SELECT unlocked_car_collections FROM map_progress WHERE map_id = ?''',
                                (self.map_id, ))
         self.unlocked_car_collections = list(map(int, USER_DB_CURSOR.fetchone()[0].split(',')))
@@ -20,9 +21,8 @@ class MapModel(MapBaseModel):
         self.last_known_base_offset = list(map(int, USER_DB_CURSOR.fetchone()[0].split(',')))
         USER_DB_CURSOR.execute('SELECT zoom_out_activated FROM graphics WHERE map_id = ?', (self.map_id, ))
         self.zoom_out_activated = bool(USER_DB_CURSOR.fetchone()[0])
-        CONFIG_DB_CURSOR.execute('''SELECT locked, unlocked_tracks_by_default FROM map_progress_config''')
-        self.locked, self.unlocked_tracks_by_default = CONFIG_DB_CURSOR.fetchone()[0]
-        self.locked = bool(self.locked)
+        CONFIG_DB_CURSOR.execute('''SELECT unlocked_tracks_by_default FROM map_progress_config''')
+        self.unlocked_tracks_by_default = CONFIG_DB_CURSOR.fetchone()[0]
 
     def on_save_state(self):
         USER_DB_CURSOR.execute('''UPDATE map_progress SET locked = ?, unlocked_tracks = ?, unlocked_environment = ?, 

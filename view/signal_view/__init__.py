@@ -9,8 +9,11 @@ class SignalView(View):
         super().__init__(logger=getLogger(f'root.app.game.map.{map_id}.signal.{track}.{base_route}.view'))
         self.map_id = map_id
         self.signal_sprite = SignalSprite(self.map_id, track, base_route, parent_viewport=self.viewport)
-        self.state = 'red_signal'
-        self.locked = True
+        USER_DB_CURSOR.execute('''SELECT state, locked FROM signals 
+                                  WHERE track = ? AND base_route = ? AND map_id = ?''',
+                               (track, base_route, self.map_id))
+        self.state, self.locked = USER_DB_CURSOR.fetchone()
+        self.locked = bool(self.locked)
 
     @final
     def on_update_opacity(self, new_opacity):
