@@ -184,9 +184,6 @@ class AppBaseModel:
         self.view = None
         self.controller = None
 
-    def on_activate_view(self):
-        self.view.on_activate()
-
     def on_save_state(self):
         pass
 

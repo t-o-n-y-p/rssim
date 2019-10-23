@@ -14,13 +14,6 @@ class GameModel(GameBaseModel):
                                     WHERE level = ?''', (self.level, ))
         self.player_progress = CONFIG_DB_CURSOR.fetchone()[0]
 
-    def on_activate_view(self):
-        super().on_activate_view()
-        if self.game_paused:
-            self.view.resume_game_button.on_activate()
-        else:
-            self.view.pause_game_button.on_activate()
-
     def on_save_state(self):
         USER_DB_CURSOR.execute('UPDATE epoch_timestamp SET game_time = ?', (self.game_time, ))
         USER_DB_CURSOR.execute('''UPDATE game_progress SET level = ?, exp = ?, money = ?, 

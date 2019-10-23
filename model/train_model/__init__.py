@@ -71,17 +71,6 @@ class TrainModel(MapBaseModel):
         self.speed_state = 'move'
         self.speed_factor_position = self.speed_factor_position_limit
 
-    def on_activate_view(self):
-        self.view.car_position = []
-        if len(self.cars_position) > 0:
-            for i in range(len(self.cars_position)):
-                self.view.car_position.append(self.on_calculate_car_position_view(i))
-        else:
-            for i in self.cars_position_abs:
-                self.view.car_position.append((i[0], i[1], 0.0))
-
-        self.view.on_activate()
-
     def on_save_state(self):
         cars_position_string = None
         if len(self.cars_position) > 0:

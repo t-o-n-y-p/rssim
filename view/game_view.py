@@ -36,6 +36,7 @@ class GameView(View):
             self.controller.parent_controller.on_open_settings_from_game()
 
         super().__init__(logger=getLogger('root.app.game.view'))
+        self.game_paused = True
         USER_DB_CURSOR.execute('SELECT game_time FROM epoch_timestamp')
         self.game_time = USER_DB_CURSOR.fetchone()[0]
         self.exp_progress_bar = ExpProgressBar(parent_viewport=self.viewport)
@@ -90,6 +91,10 @@ class GameView(View):
         self.money_progress_bar.on_update_text_label_args((int(self.money),))
         self.money_progress_bar.on_activate()
         self.money_progress_bar.on_update_progress_bar_state(self.money, self.money_target)
+        if self.game_paused:
+            self.resume_game_button.on_activate()
+        else:
+            self.pause_game_button.on_activate()
 
     @view_is_active
     def on_deactivate(self):
@@ -126,13 +131,11 @@ class GameView(View):
         for b in self.buttons:
             b.on_update_opacity(self.opacity)
 
-    @view_is_active
     def on_pause_game(self):
-        pass
+        self.game_paused = True
 
-    @view_is_active
     def on_resume_game(self):
-        pass
+        self.game_paused = False
 
     def on_update_time(self):
         self.game_time += 1

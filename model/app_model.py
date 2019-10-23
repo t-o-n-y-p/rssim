@@ -19,17 +19,6 @@ class AppModel(AppBaseModel):
         else:
             self.fullscreen_mode_available = False
 
-    def on_activate_view(self):
-        super().on_activate_view()
-        if self.fullscreen_mode_available:
-            if self.fullscreen_mode:
-                self.view.restore_button.on_activate()
-            else:
-                self.view.fullscreen_button.on_activate()
-
-        else:
-            self.view.fullscreen_button.on_disable()
-
     def on_save_state(self):
         USER_DB_CURSOR.execute('UPDATE graphics SET fullscreen = ?', (self.fullscreen_mode, ))
 

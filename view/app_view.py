@@ -72,6 +72,13 @@ class AppView(View):
         self.on_mouse_release_handlers.append(self.handle_mouse_release)
         self.on_mouse_drag_handlers.append(self.handle_mouse_drag)
         self.shader_sprite = AppViewShaderSprite(view=self)
+        USER_DB_CURSOR.execute('SELECT fullscreen FROM graphics')
+        self.fullscreen_mode = bool(USER_DB_CURSOR.fetchone()[0])
+        self.fullscreen_mode_available = False
+        CONFIG_DB_CURSOR.execute('SELECT app_width, app_height FROM screen_resolution_config')
+        self.screen_resolution_config = CONFIG_DB_CURSOR.fetchall()
+        if (windll.user32.GetSystemMetrics(0), windll.user32.GetSystemMetrics(1)) in self.screen_resolution_config:
+            self.fullscreen_mode_available = True
 
     @view_is_not_active
     def on_activate(self):
@@ -80,6 +87,14 @@ class AppView(View):
         self.title_label.create()
         self.us_flag_sprite.create()
         self.ru_flag_sprite.create()
+        if self.fullscreen_mode_available:
+            if self.fullscreen_mode:
+                self.restore_button.on_activate()
+            else:
+                self.fullscreen_button.on_activate()
+
+        else:
+            self.fullscreen_button.on_disable()
 
     @view_is_active
     def on_deactivate(self):
@@ -107,13 +122,13 @@ class AppView(View):
         for b in self.buttons:
             b.on_update_opacity(self.opacity)
 
-    @staticmethod
-    def on_fullscreen_mode_turned_on():
-        SURFACE.set_fullscreen(fullscreen=True)
+    def on_fullscreen_mode_turned_on(self):
+        self.fullscreen_mode = True
+        SURFACE.set_fullscreen(fullscreen=self.fullscreen_mode)
 
-    @staticmethod
-    def on_fullscreen_mode_turned_off():
-        SURFACE.set_fullscreen(fullscreen=False)
+    def on_fullscreen_mode_turned_off(self):
+        self.fullscreen_mode = False
+        SURFACE.set_fullscreen(fullscreen=self.fullscreen_mode)
 
     @game_is_not_fullscreen
     @cursor_is_over_the_app_header

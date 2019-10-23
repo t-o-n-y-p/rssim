@@ -65,7 +65,7 @@ class AppBaseController:
         self.fade_out_animation = None
 
     def on_activate_view(self):
-        self.model.on_activate_view()
+        self.view.on_activate()
 
     def on_deactivate_view(self):
         self.view.on_deactivate()
