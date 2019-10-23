@@ -19,7 +19,8 @@ class GameModel(GameBaseModel):
         self.view.on_update_time(self.game_time)
         self.view.on_update_level(self.level)
         self.view.on_update_exp(self.exp, self.player_progress)
-        self.view.on_update_money(self.money, self.money_target)
+        self.view.on_update_money(self.money)
+        self.view.on_update_money_target(self.money_target)
         if self.game_paused:
             self.view.resume_game_button.on_activate()
         else:
@@ -54,8 +55,8 @@ class GameModel(GameBaseModel):
         self.view.on_update_exp(self.exp, self.player_progress)
 
     def on_level_up(self):
+        super().on_level_up()
         self.exp -= self.player_progress
-        self.level += 1
         if self.level == MAXIMUM_LEVEL:
             self.exp = 0.0
 
@@ -74,16 +75,11 @@ class GameModel(GameBaseModel):
                     elif m.constructor.model.money_target_cell_position[0] == ENVIRONMENT:
                         self.view.on_send_enough_money_environment_notification()
 
-        self.money += min(MONEY_LIMIT - self.money, money)
-        self.view.on_update_money(self.money, self.money_target)
-
-    def on_pay_money(self, money):
-        self.money -= money
-        self.view.on_update_money(self.money, self.money_target)
+        super().on_add_money(money)
 
     def on_update_money_target(self, money_target):
         self.money_target = money_target
-        self.view.on_update_money(self.money, self.money_target)
+        self.view.on_update_money_target(self.money_target)
 
     @staticmethod
     def get_active_map():

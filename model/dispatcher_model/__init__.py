@@ -24,6 +24,11 @@ class DispatcherModel(GameBaseModel):
                                     FROM track_config WHERE map_id = ?''', (self.map_id, ))
         self.supported_cars_by_track.extend(CONFIG_DB_CURSOR.fetchall())
 
+    def on_save_state(self):
+        for i in range(1, len(self.track_busy_status)):
+            USER_DB_CURSOR.execute('UPDATE tracks SET busy = ? WHERE track_number = ? AND map_id = ?',
+                                   (int(self.track_busy_status[i]), i, self.map_id))
+
     def on_update_time(self):
         super().on_update_time()
         for t in self.trains:
@@ -41,11 +46,6 @@ class DispatcherModel(GameBaseModel):
                                              t.train_id, t.model.cars)
                     self.trains.remove(t)
                     break
-
-    def on_save_state(self):
-        for i in range(1, len(self.track_busy_status)):
-            USER_DB_CURSOR.execute('UPDATE tracks SET busy = ? WHERE track_number = ? AND map_id = ?',
-                                   (int(self.track_busy_status[i]), i, self.map_id))
 
     def on_unlock_track(self, track):
         self.unlocked_tracks = track

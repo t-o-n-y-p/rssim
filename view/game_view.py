@@ -56,6 +56,8 @@ class GameView(View):
         USER_DB_CURSOR.execute('SELECT clock_24h FROM i18n')
         self.clock_24h_enabled = bool(USER_DB_CURSOR.fetchone()[0])
         self.shader_sprite = GameViewShaderSprite(view=self)
+        USER_DB_CURSOR.execute('''SELECT money, money_target FROM game_progress''')
+        self.money, self.money_target = USER_DB_CURSOR.fetchone()
 
     @view_is_not_active
     def on_activate(self):
@@ -133,9 +135,15 @@ class GameView(View):
         self.exp_progress_bar.on_update_text_label_args((self.level, ))
 
     @view_is_active
-    def on_update_money(self, money, money_target):
-        self.money_progress_bar.on_update_text_label_args((int(money), ))
-        self.money_progress_bar.on_update_progress_bar_state(money, money_target)
+    def on_update_money(self, money):
+        self.money = money
+        self.money_progress_bar.on_update_text_label_args((int(self.money), ))
+        self.money_progress_bar.on_update_progress_bar_state(self.money, self.money_target)
+
+    @view_is_active
+    def on_update_money_target(self, money_target):
+        self.money_target = money_target
+        self.money_progress_bar.on_update_progress_bar_state(self.money, self.money_target)
 
     @notifications_available
     @level_up_notification_enabled
