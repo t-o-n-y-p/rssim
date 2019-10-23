@@ -16,11 +16,6 @@ class GameModel(GameBaseModel):
 
     def on_activate_view(self):
         super().on_activate_view()
-        self.view.on_update_time(self.game_time)
-        self.view.on_update_level(self.level)
-        self.view.on_update_exp(self.exp, self.player_progress)
-        self.view.on_update_money(self.money)
-        self.view.on_update_money_target(self.money_target)
         if self.game_paused:
             self.view.resume_game_button.on_activate()
         else:
@@ -36,7 +31,7 @@ class GameModel(GameBaseModel):
 
     def on_update_time(self):
         super().on_update_time()
-        self.view.on_update_time(self.game_time)
+        self.view.on_update_time()
 
     def on_save_state(self):
         USER_DB_CURSOR.execute('UPDATE epoch_timestamp SET game_time = ?', (self.game_time, ))
@@ -52,7 +47,7 @@ class GameModel(GameBaseModel):
         while self.exp >= self.player_progress and self.level < MAXIMUM_LEVEL:
             self.controller.on_level_up()
 
-        self.view.on_update_exp(self.exp, self.player_progress)
+        self.view.on_update_exp(self.exp)
 
     def on_level_up(self):
         super().on_level_up()
@@ -63,7 +58,7 @@ class GameModel(GameBaseModel):
         CONFIG_DB_CURSOR.execute('''SELECT player_progress FROM player_progress_config 
                                     WHERE level = ?''', (self.level, ))
         self.player_progress = CONFIG_DB_CURSOR.fetchone()[0]
-        self.view.on_update_level(self.level)
+        self.view.on_level_up()
         self.view.on_send_level_up_notification(self.level)
 
     def on_add_money(self, money):
