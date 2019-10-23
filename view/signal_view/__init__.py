@@ -54,12 +54,6 @@ class SignalView(MapBaseView):
         self.signal_sprite.on_change_scale(self.zoom_factor)
 
     @final
-    def on_unlock(self):
-        self.locked = False
-        # this workaround is needed for signal to be displayed immediately on the map
-        self.on_change_base_offset(self.base_offset)
-
-    @final
     def on_change_state(self, state):
         self.state = state
         self.signal_sprite.on_change_state(self.state)

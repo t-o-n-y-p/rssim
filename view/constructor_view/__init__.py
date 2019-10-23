@@ -181,7 +181,7 @@ class ConstructorView(GameBaseView):
 
     @final
     def on_update_current_locale(self, new_locale):
-        self.current_locale = new_locale
+        super().on_update_current_locale(new_locale)
         self.no_more_tracks_available_label.on_update_current_locale(self.current_locale)
         self.no_more_tiers_available_label.on_update_current_locale(self.current_locale)
         for j in range(CONSTRUCTOR_VIEW_TRACK_CELLS):
@@ -207,7 +207,7 @@ class ConstructorView(GameBaseView):
 
     @final
     def on_update_money(self, money):
-        self.money = money
+        super().on_update_money(money)
         for j in range(CONSTRUCTOR_VIEW_TRACK_CELLS):
             self.constructor_cells[TRACKS][j].on_update_money(money)
 

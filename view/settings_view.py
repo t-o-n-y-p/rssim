@@ -162,7 +162,7 @@ class SettingsView(AppBaseView):
             b.on_change_screen_resolution(self.screen_resolution)
 
     def on_update_current_locale(self, new_locale):
-        self.current_locale = new_locale
+        super().on_update_current_locale(new_locale)
         self.screen_resolution_control.on_update_current_locale(self.current_locale)
         self.display_fps_checkbox.on_update_current_locale(self.current_locale)
         self.fade_animations_checkbox.on_update_current_locale(self.current_locale)

@@ -171,8 +171,9 @@ MINI_MAP_FADE_OUT_TIMER: Final = 1.0        # time since user releases mouse but
 
 
 class AppBaseView:
-    def __init__(self, logger):
+    def __init__(self, logger, child_window=False):
         self.logger = logger
+        self.child_window = child_window
         self.is_activated = False
         self.controller = None
         self.viewport = Viewport()
@@ -187,15 +188,6 @@ class AppBaseView:
         self.on_key_press_handlers = []
         self.on_text_handlers = []
         self.screen_resolution = (0, 0)
-        USER_DB_CURSOR.execute('SELECT last_known_base_offset FROM graphics')
-        self.base_offset = tuple(map(int, USER_DB_CURSOR.fetchone()[0].split(',')))
-        USER_DB_CURSOR.execute('SELECT zoom_out_activated FROM graphics')
-        self.zoom_out_activated = bool(USER_DB_CURSOR.fetchone()[0])
-        if self.zoom_out_activated:
-            self.zoom_factor = 0.5
-        else:
-            self.zoom_factor = 1.0
-
         USER_DB_CURSOR.execute('SELECT current_locale FROM i18n')
         self.current_locale = USER_DB_CURSOR.fetchone()[0]
         self.all_notifications_enabled = False
@@ -219,7 +211,7 @@ class AppBaseView:
         pass
 
     def on_update_current_locale(self, new_locale):
-        pass
+        self.current_locale = new_locale
 
     def on_change_screen_resolution(self, screen_resolution):
         pass
@@ -293,32 +285,46 @@ class AppBaseView:
 class GameBaseView(AppBaseView):
     def __init__(self, logger):
         super().__init__(logger)
+        USER_DB_CURSOR.execute('SELECT game_time FROM epoch_timestamp')
+        self.game_time = USER_DB_CURSOR.fetchone()[0]
+        USER_DB_CURSOR.execute('''SELECT level, money, exp_bonus_multiplier, money_bonus_multiplier 
+                                  FROM game_progress''')
+        self.level, self.money, self.exp_bonus_multiplier, self.money_bonus_multiplier = USER_DB_CURSOR.fetchone()
 
     def on_update_time(self):
-        pass
+        self.game_time += 1
 
     def on_level_up(self):
-        pass
+        self.level += 1
 
     def on_update_money(self, money):
-        pass
+        self.money = money
 
     def on_activate_exp_bonus_code(self, value):
-        pass
+        self.exp_bonus_multiplier = round(1.0 + value, 2)
 
     def on_deactivate_exp_bonus_code(self):
-        pass
+        self.exp_bonus_multiplier = 1.0
 
     def on_activate_money_bonus_code(self, value):
-        pass
+        self.money_bonus_multiplier = round(1.0 + value, 2)
 
     def on_deactivate_money_bonus_code(self):
-        pass
+        self.money_bonus_multiplier = 1.0
 
 
 class MapBaseView(GameBaseView):
     def __init__(self, logger):
         super().__init__(logger)
+        self.locked = True
+        USER_DB_CURSOR.execute('SELECT last_known_base_offset FROM graphics')
+        self.base_offset = tuple(map(int, USER_DB_CURSOR.fetchone()[0].split(',')))
+        USER_DB_CURSOR.execute('SELECT zoom_out_activated FROM graphics')
+        self.zoom_out_activated = bool(USER_DB_CURSOR.fetchone()[0])
+        if self.zoom_out_activated:
+            self.zoom_factor = 0.5
+        else:
+            self.zoom_factor = 1.0
 
     def on_change_base_offset(self, new_base_offset):
         pass
@@ -326,5 +332,8 @@ class MapBaseView(GameBaseView):
     def on_change_zoom_factor(self, scale_factor, zoom_out_activated):
         pass
 
+    @final
     def on_unlock(self):
-        pass
+        self.locked = False
+        # this workaround is needed for the object to be displayed immediately on the map
+        self.on_change_base_offset(self.base_offset)

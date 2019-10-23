@@ -16,7 +16,6 @@ class SchedulerView(GameBaseView):
         super().__init__(logger=getLogger(f'root.app.game.map.{map_id}.scheduler.view'))
         self.map_id = map_id
         self.base_schedule = None
-        self.game_time = None
         self.arrival_time_threshold = None
         self.left_schedule_caption_label = ScheduleLeftCaptionLabel(parent_viewport=self.viewport)
         self.right_schedule_caption_label = ScheduleRightCaptionLabel(parent_viewport=self.viewport)
@@ -105,7 +104,7 @@ class SchedulerView(GameBaseView):
 
     @final
     def on_update_current_locale(self, new_locale):
-        self.current_locale = new_locale
+        super().on_update_current_locale(new_locale)
         self.left_schedule_caption_label.on_update_current_locale(self.current_locale)
         self.right_schedule_caption_label.on_update_current_locale(self.current_locale)
         for i in range(SCHEDULE_COLUMNS):
@@ -121,7 +120,3 @@ class SchedulerView(GameBaseView):
         for i in range(SCHEDULE_COLUMNS):
             for j in range(SCHEDULE_ROWS):
                 self.schedule_rows[i][j].on_update_clock_state(clock_24h_enabled)
-
-    @final
-    def on_update_time(self, game_time):
-        self.game_time = game_time

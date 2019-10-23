@@ -63,27 +63,27 @@ class BonusCodeManagerView(GameBaseView):
         self.money_bonus_placeholder_label.on_update_opacity(self.opacity)
 
     def on_activate_exp_bonus_code(self, value):
-        self.exp_bonus_multiplier = round(1.0 + value, 2)
+        super().on_activate_exp_bonus_code(value)
         if self.is_activated:
             self.exp_bonus_placeholder_label.delete()
             self.exp_bonus_percent_label.on_update_args((round(self.exp_bonus_multiplier * 100 - 100), ))
             self.exp_bonus_percent_label.create()
 
     def on_deactivate_exp_bonus_code(self):
-        self.exp_bonus_multiplier = 1.0
+        super().on_deactivate_exp_bonus_code()
         if self.is_activated:
             self.exp_bonus_percent_label.delete()
             self.exp_bonus_placeholder_label.create()
 
     def on_activate_money_bonus_code(self, value):
-        self.money_bonus_multiplier = round(1.0 + value, 2)
+        super().on_activate_money_bonus_code(value)
         if self.is_activated:
             self.money_bonus_placeholder_label.delete()
             self.money_bonus_percent_label.on_update_args((round(self.money_bonus_multiplier * 100 - 100), ))
             self.money_bonus_percent_label.create()
 
     def on_deactivate_money_bonus_code(self):
-        self.money_bonus_multiplier = 1.0
+        super().on_deactivate_money_bonus_code()
         if self.is_activated:
             self.money_bonus_percent_label.delete()
             self.money_bonus_placeholder_label.create()

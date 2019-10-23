@@ -199,9 +199,11 @@ class GameBaseModel(AppBaseModel):
 
     def on_update_time(self):
         self.game_time += 1
+        self.view.on_update_time()
 
     def on_level_up(self):
         self.level += 1
+        self.view.on_level_up()
 
     def on_add_money(self, money):
         self.money += min(MONEY_LIMIT - self.money, money)
@@ -213,15 +215,19 @@ class GameBaseModel(AppBaseModel):
 
     def on_activate_exp_bonus_code(self, value):
         self.exp_bonus_multiplier = round(1.0 + value, 2)
+        self.view.on_activate_exp_bonus_code(value)
 
     def on_deactivate_exp_bonus_code(self):
         self.exp_bonus_multiplier = 1.0
+        self.view.on_deactivate_exp_bonus_code()
 
     def on_activate_money_bonus_code(self, value):
         self.money_bonus_multiplier = round(1.0 + value, 2)
+        self.view.on_activate_money_bonus_code(value)
 
     def on_deactivate_money_bonus_code(self):
         self.money_bonus_multiplier = 1.0
+        self.view.on_deactivate_money_bonus_code()
 
 
 class MapBaseModel(GameBaseModel):
@@ -231,3 +237,4 @@ class MapBaseModel(GameBaseModel):
 
     def on_unlock(self):
         self.locked = False
+        self.view.on_unlock()

@@ -39,10 +39,6 @@ class RailroadSwitchModel(MapBaseModel):
                                (int(self.busy), int(self.force_busy), self.last_entered_by, self.current_position,
                                 int(self.locked), track_param_1, track_param_2, switch_type, self.map_id))
 
-    def on_unlock(self):
-        super().on_unlock()
-        self.view.on_unlock()
-
     def on_force_busy_on(self, positions, train_id):
         self.force_busy = True
         self.busy = True

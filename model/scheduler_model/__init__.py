@@ -56,7 +56,6 @@ class SchedulerModel(GameBaseModel):
 
     def on_update_time(self):
         super().on_update_time()
-        self.view.on_update_time(self.game_time)
         # new schedule cycle is created if current schedule end is less than schedule cycle length ahead
         if self.game_time + self.schedule_cycle_length >= self.next_cycle_start_time:
             # trains are added one by one if both direction and new direction are unlocked by user,

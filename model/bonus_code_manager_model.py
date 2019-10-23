@@ -30,22 +30,12 @@ class BonusCodeManagerModel(GameBaseModel):
                     elif self.bonus_code_matrix[code][CODE_TYPE] == 'money_bonus':
                         self.controller.parent_controller.on_deactivate_money_bonus_code()
 
-    def on_activate_exp_bonus_code(self, value):
-        super().on_activate_exp_bonus_code(value)
-        self.view.on_activate_exp_bonus_code(value)
-
-    def on_activate_money_bonus_code(self, value):
-        super().on_activate_money_bonus_code(value)
-        self.view.on_activate_money_bonus_code(value)
-
     def on_deactivate_exp_bonus_code(self):
         super().on_deactivate_exp_bonus_code()
-        self.view.on_deactivate_exp_bonus_code()
         self.view.on_send_exp_bonus_expired_notification()
 
     def on_deactivate_money_bonus_code(self):
         super().on_deactivate_money_bonus_code()
-        self.view.on_deactivate_money_bonus_code()
         self.view.on_send_money_bonus_expired_notification()
 
     def on_activate_new_bonus_code(self, sha512_hash):

@@ -82,9 +82,3 @@ class CrossoverView(MapBaseView):
         self.current_position_1 = current_position_1
         self.current_position_2 = current_position_2
         self.sprite.on_update_texture(self.images[self.current_position_1][self.current_position_2])
-
-    @final
-    def on_unlock(self):
-        self.locked = False
-        # this workaround is needed for crossover to be displayed immediately on the map
-        self.on_change_base_offset(self.base_offset)

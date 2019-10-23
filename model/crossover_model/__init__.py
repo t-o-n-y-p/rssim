@@ -87,10 +87,6 @@ class CrossoverModel(MapBaseModel):
                                 self.current_position_1, self.current_position_2, int(self.locked),
                                 track_param_1, track_param_2, crossover_type, self.map_id))
 
-    def on_unlock(self):
-        super().on_unlock()
-        self.view.on_unlock()
-
     def on_force_busy_on(self, positions, train_id):
         self.force_busy[positions[0]][positions[1]] = True
         # if second position is not equal to first, no other train can fit inside,

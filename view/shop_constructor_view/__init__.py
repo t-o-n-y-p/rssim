@@ -34,8 +34,6 @@ class ShopConstructorView(GameBaseView):
         self.shop_storage_notification_enabled = bool(USER_DB_CURSOR.fetchone()[0])
         self.shop_stages_cells_position = (0, 0)
         self.shop_stages_cells_size = (0, 0)
-        USER_DB_CURSOR.execute('''SELECT last_known_shop_window_position FROM graphics''')
-        self.last_known_shop_window_position = tuple(map(int, USER_DB_CURSOR.fetchone()[0].split(',')))
         self.shader_sprite = ShopConstructorViewShaderSprite(view=self)
         self.current_hourly_profit_label = CurrentHourlyProfitDescriptionLabel(parent_viewport=self.viewport)
         self.current_exp_bonus_label = CurrentExpBonusDescriptionLabel(parent_viewport=self.viewport)
@@ -133,7 +131,7 @@ class ShopConstructorView(GameBaseView):
 
     @final
     def on_update_current_locale(self, new_locale):
-        self.current_locale = new_locale
+        super().on_update_current_locale(new_locale)
         self.current_hourly_profit_label.on_update_current_locale(self.current_locale)
         self.current_exp_bonus_label.on_update_current_locale(self.current_locale)
         self.exp_bonus_value_label.on_update_current_locale(self.current_locale)
@@ -167,7 +165,7 @@ class ShopConstructorView(GameBaseView):
 
     @final
     def on_update_money(self, money):
-        self.money = money
+        super().on_update_money(money)
         for stage_cell in self.shop_stage_cells:
             self.shop_stage_cells[stage_cell].on_update_money(self.money)
 

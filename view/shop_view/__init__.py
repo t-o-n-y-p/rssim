@@ -14,8 +14,6 @@ class ShopView(GameBaseView):
         super().__init__(logger=getLogger(f'root.app.game.map.{map_id}.shop.{shop_id}.view'))
         self.map_id = map_id
         self.shop_id = shop_id
-        USER_DB_CURSOR.execute('''SELECT last_known_shop_window_position FROM graphics''')
-        self.last_known_shop_window_position = tuple(map(int, USER_DB_CURSOR.fetchone()[0].split(',')))
         self.shader_sprite = ShopViewShaderSprite(view=self)
         self.title_label = ShopTitleLabel(parent_viewport=self.viewport)
         self.title_label.on_update_args((self.shop_id + 1, ))
@@ -61,5 +59,5 @@ class ShopView(GameBaseView):
 
     @final
     def on_update_current_locale(self, new_locale):
-        self.current_locale = new_locale
+        super().on_update_current_locale(new_locale)
         self.title_label.on_update_current_locale(self.current_locale)

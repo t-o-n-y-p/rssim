@@ -22,10 +22,6 @@ class GameModel(GameBaseModel):
                                (self.level, self.exp, self.money, self.money_target, self.exp_multiplier,
                                 self.exp_bonus_multiplier, self.money_bonus_multiplier))
 
-    def on_update_time(self):
-        super().on_update_time()
-        self.view.on_update_time()
-
     def on_level_up(self):
         super().on_level_up()
         self.exp -= self.player_progress
@@ -35,7 +31,6 @@ class GameModel(GameBaseModel):
         CONFIG_DB_CURSOR.execute('''SELECT player_progress FROM player_progress_config 
                                     WHERE level = ?''', (self.level, ))
         self.player_progress = CONFIG_DB_CURSOR.fetchone()[0]
-        self.view.on_level_up()
         self.view.on_send_level_up_notification()
 
     def on_add_money(self, money):

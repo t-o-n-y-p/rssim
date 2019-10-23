@@ -76,9 +76,3 @@ class RailroadSwitchView(MapBaseView):
     def on_change_current_position(self, current_position):
         self.current_position = current_position
         self.sprite.on_update_texture(self.images[self.current_position])
-
-    @final
-    def on_unlock(self):
-        self.locked = False
-        # this workaround is needed for switch to be displayed immediately on the map
-        self.on_change_base_offset(self.base_offset)

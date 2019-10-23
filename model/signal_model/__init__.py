@@ -20,10 +20,6 @@ class SignalModel(MapBaseModel):
                                (self.state, int(self.locked), self.controller.track, self.controller.base_route,
                                 self.map_id))
 
-    def on_unlock(self):
-        super().on_unlock()
-        self.view.on_unlock()
-
     def on_switch_to_green(self):
         self.state = 'green_signal'
         self.view.on_change_state(self.state)

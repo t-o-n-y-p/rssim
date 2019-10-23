@@ -116,7 +116,7 @@ class GameView(GameBaseView):
             b.on_change_screen_resolution(self.screen_resolution)
 
     def on_update_current_locale(self, new_locale):
-        self.current_locale = new_locale
+        super().on_update_current_locale(new_locale)
         self.main_clock_label_24h.on_update_current_locale(self.current_locale)
         self.main_clock_label_12h.on_update_current_locale(self.current_locale)
         self.exp_progress_bar.on_update_current_locale(self.current_locale)
@@ -138,7 +138,7 @@ class GameView(GameBaseView):
         self.game_paused = False
 
     def on_update_time(self):
-        self.game_time += 1
+        super().on_update_time()
         self.main_clock_label_24h.on_update_args(
             ((self.game_time // FRAMES_IN_ONE_HOUR + 12) % HOURS_IN_ONE_DAY,
              (self.game_time // FRAMES_IN_ONE_MINUTE) % MINUTES_IN_ONE_HOUR)
@@ -163,7 +163,7 @@ class GameView(GameBaseView):
         self.player_progress = CONFIG_DB_CURSOR.fetchone()[0]
 
     def on_update_money(self, money):
-        self.money = money
+        super().on_update_money(money)
         self.money_progress_bar.on_update_text_label_args((int(self.money), ))
         self.money_progress_bar.on_update_progress_bar_state(self.money, self.money_target)
 

@@ -68,7 +68,7 @@ class MainMenuView(AppBaseView):
             b.on_change_screen_resolution(self.screen_resolution)
 
     def on_update_current_locale(self, new_locale):
-        self.current_locale = new_locale
+        super().on_update_current_locale(new_locale)
         self.create_station_button.on_update_current_locale(self.current_locale)
         self.back_to_the_station_button.on_update_current_locale(self.current_locale)
         self.open_settings_button.on_update_current_locale(self.current_locale)
