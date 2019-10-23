@@ -6,7 +6,7 @@ from textures import MAXIMUM_CAR_COLLECTIONS
 from database import USER_DB_CURSOR, CONFIG_DB_CURSOR, on_commit
 
 
-class MapModel(Model):
+class MapModel(MapBaseModel):
     def __init__(self, map_id):
         super().__init__(logger=getLogger(f'root.app.game.map.{map_id}.model'))
         self.map_id = map_id

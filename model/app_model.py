@@ -5,7 +5,7 @@ from model import *
 from database import USER_DB_CURSOR, CONFIG_DB_CURSOR, on_commit
 
 
-class AppModel(Model):
+class AppModel(AppBaseModel):
     def __init__(self):
         super().__init__(logger=getLogger('root.app.model'))
         USER_DB_CURSOR.execute('SELECT fullscreen FROM graphics')
@@ -20,7 +20,7 @@ class AppModel(Model):
             self.fullscreen_mode_available = False
 
     def on_activate_view(self):
-        self.view.on_activate()
+        super().on_activate_view()
         if self.fullscreen_mode_available:
             if self.fullscreen_mode:
                 self.view.restore_button.on_activate()

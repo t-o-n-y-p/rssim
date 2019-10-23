@@ -6,7 +6,7 @@ from model import *
 from database import USER_DB_CURSOR, CONFIG_DB_CURSOR
 
 
-class SchedulerModel(Model):
+class SchedulerModel(GameBaseModel):
     def __init__(self, map_id):
         super().__init__(logger=getLogger(f'root.app.game.map.{map_id}.scheduler.model'))
         self.map_id = map_id

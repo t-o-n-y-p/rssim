@@ -4,7 +4,7 @@ from model import *
 from database import USER_DB_CURSOR, CONFIG_DB_CURSOR
 
 
-class TrainRouteModel(Model):
+class TrainRouteModel(MapBaseModel):
     def __init__(self, map_id, track, train_route):
         def sgn(x):
             if type(x) is not int:

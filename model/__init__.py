@@ -192,19 +192,27 @@ SHOP_STORAGE_ALMOST_FULL_THRESHOLD: Final = 0.9
 # ------------------- END CONSTANTS -------------------
 
 
-class Model:
+class AppBaseModel:
     def __init__(self, logger):
         self.logger = logger
         self.view = None
         self.controller = None
 
     def on_activate_view(self):
-        pass
+        self.view.on_activate()
 
     def on_save_state(self):
         pass
 
+
+class GameBaseModel(AppBaseModel):
+    def __init__(self, logger):
+        super().__init__(logger)
+
     def on_update_time(self):
+        pass
+
+    def on_level_up(self):
         pass
 
     def on_add_money(self, money):
@@ -225,5 +233,10 @@ class Model:
     def on_deactivate_money_bonus_code(self):
         pass
 
-    def on_level_up(self):
+
+class MapBaseModel(GameBaseModel):
+    def __init__(self, logger):
+        super().__init__(logger)
+
+    def on_unlock(self):
         pass

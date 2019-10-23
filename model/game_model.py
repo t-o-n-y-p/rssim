@@ -4,7 +4,7 @@ from model import *
 from database import USER_DB_CURSOR, CONFIG_DB_CURSOR
 
 
-class GameModel(Model):
+class GameModel(GameBaseModel):
     def __init__(self):
         super().__init__(logger=getLogger('root.app.game.model'))
         self.game_paused = True
@@ -19,7 +19,7 @@ class GameModel(Model):
         self.player_progress = CONFIG_DB_CURSOR.fetchone()[0]
 
     def on_activate_view(self):
-        self.view.on_activate()
+        super().on_activate_view()
         self.view.on_update_time(self.game_time)
         self.view.on_update_level(self.level)
         self.view.on_update_exp(self.exp, self.player_progress)

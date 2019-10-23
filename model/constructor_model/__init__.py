@@ -4,7 +4,7 @@ from model import *
 from database import USER_DB_CURSOR, CONFIG_DB_CURSOR
 
 
-class ConstructorModel(Model):
+class ConstructorModel(GameBaseModel):
     def __init__(self, map_id):
         super().__init__(logger=getLogger(f'root.app.game.map.{map_id}.constructor.model'))
         self.map_id = map_id

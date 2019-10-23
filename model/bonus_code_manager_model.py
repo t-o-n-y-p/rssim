@@ -4,15 +4,12 @@ from model import *
 from database import USER_DB_CURSOR
 
 
-class BonusCodeManagerModel(Model):
+class BonusCodeManagerModel(GameBaseModel):
     def __init__(self):
         super().__init__(logger=getLogger('root.app.bonus_code_manager.model'))
         self.bonus_code_matrix = None
         USER_DB_CURSOR.execute('SELECT game_time FROM epoch_timestamp')
         self.game_time = USER_DB_CURSOR.fetchone()[0]
-
-    def on_activate_view(self):
-        self.view.on_activate()
 
     def on_save_state(self):
         for code in self.bonus_code_matrix:

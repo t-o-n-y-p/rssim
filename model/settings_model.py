@@ -4,7 +4,7 @@ from model import *
 from database import USER_DB_CURSOR, on_commit
 
 
-class SettingsModel(Model):
+class SettingsModel(AppBaseModel):
     def __init__(self):
         super().__init__(logger=getLogger('root.app.settings.model'))
         USER_DB_CURSOR.execute('SELECT app_width, app_height FROM graphics')
@@ -18,9 +18,6 @@ class SettingsModel(Model):
             self.construction_completed_notification_enabled, self.enough_money_notification_enabled, \
             self.bonus_expired_notification_enabled, self.shop_storage_notification_enabled \
             = tuple(map(bool, USER_DB_CURSOR.fetchone()))
-
-    def on_activate_view(self):
-        self.view.on_activate()
 
     def on_save_state(self):
         USER_DB_CURSOR.execute('''UPDATE graphics SET app_width = ?, app_height = ?, display_fps = ?, 
