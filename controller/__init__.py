@@ -35,8 +35,6 @@ def map_view_is_active(fn):
 
 # --------------------- CONSTANTS ---------------------
 FRAMES_IN_ONE_HOUR: Final = 14400              # number of frames in 1 in-game hour
-ZOOM_OUT_SCALE_FACTOR: Final = 0.5             # how much to scale all sprites when map is zoomed out
-ZOOM_IN_SCALE_FACTOR: Final = 1.0              # how much to scale all sprites when map is zoomed in
 SECTION_TYPE: Final = 0                        # meaning of section[] list's element 0
 SECTION_TRACK_NUMBER_1: Final = 1              # meaning of section[] list's element 1
 SECTION_TRACK_NUMBER_2: Final = 2              # meaning of section[] list's element 2
@@ -228,10 +226,10 @@ class MapBaseController(GameBaseController):
         self.view.on_change_base_offset(new_base_offset)
 
     def on_zoom_in(self):
-        self.view.on_change_zoom_factor(ZOOM_IN_SCALE_FACTOR, zoom_out_activated=False)
+        self.view.on_zoom_in()
 
     def on_zoom_out(self):
-        self.view.on_change_zoom_factor(ZOOM_OUT_SCALE_FACTOR, zoom_out_activated=True)
+        self.view.on_zoom_out()
 
     def on_unlock(self):
         self.model.on_unlock()

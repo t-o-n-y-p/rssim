@@ -4,6 +4,8 @@ from pyglet.window import Window
 from pyglet.graphics import Batch, OrderedGroup
 
 # --------------------- CONSTANTS ---------------------
+ZOOM_OUT_SCALE_FACTOR: Final = 0.5                     # how much to scale all sprites when map is zoomed out
+ZOOM_IN_SCALE_FACTOR: Final = 1.0                      # how much to scale all sprites when map is zoomed in
 MAP_WIDTH: Final = 8192                                # full-size map width
 MAP_HEIGHT: Final = 4096                               # full-size map height
 MIN_RESOLUTION_WIDTH: Final = 1280                     # minimum screen resolution width supported by the app UI

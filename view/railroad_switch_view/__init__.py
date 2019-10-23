@@ -61,8 +61,8 @@ class RailroadSwitchView(MapBaseView):
         self.sprite.on_update_opacity(self.opacity)
 
     @final
-    def on_change_zoom_factor(self, zoom_factor, zoom_out_activated):
-        super().on_change_zoom_factor(zoom_factor, zoom_out_activated)
+    def on_change_scale(self, zoom_factor):
+        super().on_change_scale(zoom_factor)
         self.sprite.on_change_scale(self.zoom_factor)
 
     @final

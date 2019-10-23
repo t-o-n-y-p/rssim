@@ -210,8 +210,8 @@ class MapView(MapBaseView):
         self.mini_environment_sprite.on_unlock_environment(tier)
 
     @final
-    def on_change_zoom_factor(self, zoom_factor, zoom_out_activated):
-        super().on_change_zoom_factor(zoom_factor, zoom_out_activated)
+    def on_change_scale(self, zoom_factor):
+        super().on_change_scale(zoom_factor)
         self.main_map_sprite.on_change_scale(self.zoom_factor)
         self.environment_sprite.on_change_scale(self.zoom_factor)
         self.base_offset_upper_right_limit = (self.viewport.x2 - MAP_WIDTH // round(1 / self.zoom_factor),

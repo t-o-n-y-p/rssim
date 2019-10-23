@@ -80,8 +80,8 @@ class TrainView(MapBaseView):
             self.boarding_light_sprites[i].on_change_base_offset(self.base_offset)
 
     @final
-    def on_change_zoom_factor(self, zoom_factor, zoom_out_activated):
-        super().on_change_zoom_factor(zoom_factor, zoom_out_activated)
+    def on_change_scale(self, zoom_factor):
+        super().on_change_scale(zoom_factor)
         for i in range(len(self.car_sprites)):
             self.car_sprites[i].on_change_scale(self.zoom_factor)
             self.boarding_light_sprites[i].on_change_scale(self.zoom_factor)

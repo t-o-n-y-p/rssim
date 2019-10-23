@@ -350,9 +350,18 @@ class MapBaseView(GameBaseView):
     def on_change_base_offset(self, new_base_offset):
         self.base_offset = new_base_offset
 
-    def on_change_zoom_factor(self, zoom_factor, zoom_out_activated):
+    def on_change_scale(self, zoom_factor):
         self.zoom_factor = zoom_factor
-        self.zoom_out_activated = zoom_out_activated
+
+    @final
+    def on_zoom_in(self):
+        self.zoom_out_activated = False
+        self.on_change_scale(ZOOM_IN_SCALE_FACTOR)
+
+    @final
+    def on_zoom_out(self):
+        self.zoom_out_activated = True
+        self.on_change_scale(ZOOM_OUT_SCALE_FACTOR)
 
     @final
     def on_unlock(self):
