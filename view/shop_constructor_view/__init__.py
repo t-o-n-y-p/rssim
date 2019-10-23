@@ -25,8 +25,6 @@ class ShopConstructorView(GameBaseView):
         self.map_id = map_id
         self.shop_id = shop_id
         self.shop_stages_state_matrix = {}
-        USER_DB_CURSOR.execute('''SELECT money FROM game_progress''')
-        self.money = USER_DB_CURSOR.fetchone()[0]
         USER_DB_CURSOR.execute('''SELECT current_stage, shop_storage_money
                                   FROM shops WHERE map_id = ? AND shop_id = ?''', (self.map_id, self.shop_id))
         self.current_stage, self.shop_storage_money = USER_DB_CURSOR.fetchone()

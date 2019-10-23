@@ -75,8 +75,6 @@ class ConstructorView(GameBaseView):
             = NoMoreTracksAvailableLabel(parent_viewport=self.no_more_tracks_available_placeholder_viewport)
         self.no_more_tiers_available_label \
             = NoMoreEnvironmentAvailableLabel(parent_viewport=self.no_more_tiers_available_placeholder_viewport)
-        USER_DB_CURSOR.execute('''SELECT money FROM game_progress''')
-        self.money = USER_DB_CURSOR.fetchone()[0]
 
     @final
     @view_is_not_active

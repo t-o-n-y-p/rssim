@@ -37,8 +37,6 @@ class GameView(GameBaseView):
 
         super().__init__(logger=getLogger('root.app.game.view'))
         self.game_paused = True
-        USER_DB_CURSOR.execute('SELECT game_time FROM epoch_timestamp')
-        self.game_time = USER_DB_CURSOR.fetchone()[0]
         self.exp_progress_bar = ExpProgressBar(parent_viewport=self.viewport)
         self.money_progress_bar = MoneyProgressBar(parent_viewport=self.viewport)
         self.pause_game_button, self.resume_game_button \
@@ -56,11 +54,9 @@ class GameView(GameBaseView):
                                   FROM notification_settings''')
         self.level_up_notification_enabled, self.enough_money_notification_enabled \
             = map(bool, USER_DB_CURSOR.fetchone())
-        USER_DB_CURSOR.execute('SELECT clock_24h FROM i18n')
-        self.clock_24h_enabled = bool(USER_DB_CURSOR.fetchone()[0])
         self.shader_sprite = GameViewShaderSprite(view=self)
-        USER_DB_CURSOR.execute('''SELECT level, exp, money, money_target FROM game_progress''')
-        self.level, self.exp, self.money, self.money_target = USER_DB_CURSOR.fetchone()
+        USER_DB_CURSOR.execute('''SELECT exp, money_target FROM game_progress''')
+        self.exp, self.money_target = USER_DB_CURSOR.fetchone()
         CONFIG_DB_CURSOR.execute('''SELECT player_progress FROM player_progress_config 
                                     WHERE level = ?''', (self.level, ))
         self.player_progress = CONFIG_DB_CURSOR.fetchone()[0]

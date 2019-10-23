@@ -190,6 +190,8 @@ class AppBaseView:
         self.screen_resolution = (0, 0)
         USER_DB_CURSOR.execute('SELECT current_locale FROM i18n')
         self.current_locale = USER_DB_CURSOR.fetchone()[0]
+        USER_DB_CURSOR.execute('SELECT clock_24h FROM i18n')
+        self.clock_24h_enabled = bool(USER_DB_CURSOR.fetchone()[0])
         self.all_notifications_enabled = False
         self.shader_sprite = None
 
