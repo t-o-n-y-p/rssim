@@ -40,7 +40,7 @@ class TrainView(MapBaseView):
 
     @final
     def on_update_opacity(self, new_opacity):
-        self.opacity = new_opacity
+        super().on_update_opacity(new_opacity)
         for i in range(len(self.car_sprites)):
             self.car_sprites[i].on_update_opacity(self.opacity)
             self.boarding_light_sprites[i].on_update_opacity(self.opacity)
@@ -74,21 +74,14 @@ class TrainView(MapBaseView):
 
     @final
     def on_change_base_offset(self, new_base_offset):
-        self.base_offset = new_base_offset
+        super().on_change_base_offset(new_base_offset)
         for i in range(len(self.car_sprites)):
             self.car_sprites[i].on_change_base_offset(self.base_offset)
             self.boarding_light_sprites[i].on_change_base_offset(self.base_offset)
 
     @final
-    def on_change_screen_resolution(self, screen_resolution):
-        self.screen_resolution = screen_resolution
-        self.viewport.x1, self.viewport.y1 = 0, 0
-        self.viewport.x2, self.viewport.y2 = self.screen_resolution
-
-    @final
     def on_change_zoom_factor(self, zoom_factor, zoom_out_activated):
-        self.zoom_factor = zoom_factor
-        self.zoom_out_activated = zoom_out_activated
+        super().on_change_zoom_factor(zoom_factor, zoom_out_activated)
         for i in range(len(self.car_sprites)):
             self.car_sprites[i].on_change_scale(self.zoom_factor)
             self.boarding_light_sprites[i].on_change_scale(self.zoom_factor)

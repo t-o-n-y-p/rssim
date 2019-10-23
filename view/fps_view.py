@@ -20,14 +20,11 @@ class FPSView(AppBaseView):
         super().on_deactivate()
 
     def on_change_screen_resolution(self, screen_resolution):
-        self.screen_resolution = screen_resolution
-        self.viewport.x1 = 0
-        self.viewport.y1 = 0
-        self.viewport.x2, self.viewport.y2 = self.screen_resolution
+        super().on_change_screen_resolution(screen_resolution)
         self.fps_label.on_change_screen_resolution(self.screen_resolution)
 
     def on_update_opacity(self, new_opacity):
-        self.opacity = new_opacity
+        super().on_update_opacity(new_opacity)
         self.fps_label.on_update_opacity(self.opacity)
 
     @view_is_active

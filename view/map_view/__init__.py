@@ -148,7 +148,7 @@ class MapView(MapBaseView):
 
     @final
     def on_change_base_offset(self, new_base_offset):
-        self.base_offset = new_base_offset
+        super().on_change_base_offset(new_base_offset)
         self.main_map_sprite.on_change_base_offset(self.base_offset)
         self.environment_sprite.on_change_base_offset(self.base_offset)
         for b in self.shop_buttons:
@@ -156,9 +156,7 @@ class MapView(MapBaseView):
 
     @final
     def on_change_screen_resolution(self, screen_resolution):
-        self.screen_resolution = screen_resolution
-        self.viewport.x1, self.viewport.y1 = 0, 0
-        self.viewport.x2, self.viewport.y2 = self.screen_resolution
+        super().on_change_screen_resolution(screen_resolution)
         self.mini_map_sprite.on_change_screen_resolution(self.screen_resolution)
         self.mini_environment_sprite.on_change_screen_resolution(self.screen_resolution)
         self.base_offset_lower_left_limit = (self.viewport.x1,
@@ -177,12 +175,10 @@ class MapView(MapBaseView):
 
     @final
     def on_update_opacity(self, new_opacity):
-        self.opacity = new_opacity
+        super().on_update_opacity(new_opacity)
         self.shader_sprite.on_update_opacity(self.opacity)
         self.main_map_sprite.on_update_opacity(self.opacity)
         self.environment_sprite.on_update_opacity(self.opacity)
-        for b in self.buttons:
-            b.on_update_opacity(self.opacity)
 
     @final
     @mini_map_is_not_active
@@ -215,8 +211,7 @@ class MapView(MapBaseView):
 
     @final
     def on_change_zoom_factor(self, zoom_factor, zoom_out_activated):
-        self.zoom_factor = zoom_factor
-        self.zoom_out_activated = zoom_out_activated
+        super().on_change_zoom_factor(zoom_factor, zoom_out_activated)
         self.main_map_sprite.on_change_scale(self.zoom_factor)
         self.environment_sprite.on_change_scale(self.zoom_factor)
         self.base_offset_upper_right_limit = (self.viewport.x2 - MAP_WIDTH // round(1 / self.zoom_factor),
@@ -290,10 +285,6 @@ class MapView(MapBaseView):
 
         if self.base_offset[1] < self.base_offset_upper_right_limit[1]:
             self.base_offset = (self.base_offset[0], self.base_offset_upper_right_limit[1])
-
-    @final
-    def on_apply_shaders_and_draw_vertices(self):
-        self.shader_sprite.draw()
 
     @final
     def on_activate_shop_buttons(self):

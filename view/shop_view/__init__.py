@@ -11,7 +11,7 @@ class ShopView(GameBaseView):
         def on_close_shop_details(button):
             self.controller.parent_controller.on_close_shop_details(self.shop_id)
 
-        super().__init__(logger=getLogger(f'root.app.game.map.{map_id}.shop.{shop_id}.view'))
+        super().__init__(logger=getLogger(f'root.app.game.map.{map_id}.shop.{shop_id}.view'), child_window=True)
         self.map_id = map_id
         self.shop_id = shop_id
         self.shader_sprite = ShopViewShaderSprite(view=self)
@@ -35,27 +35,17 @@ class ShopView(GameBaseView):
 
     @final
     def on_change_screen_resolution(self, screen_resolution):
-        self.screen_resolution = screen_resolution
-        self.viewport.x1 = get_inner_area_rect(self.screen_resolution)[0]
-        self.viewport.y1 = get_inner_area_rect(self.screen_resolution)[1]
-        self.viewport.x2 = self.viewport.x1 + get_inner_area_rect(self.screen_resolution)[2]
-        self.viewport.y2 = self.viewport.y1 + get_inner_area_rect(self.screen_resolution)[3]
+        super().on_change_screen_resolution(screen_resolution)
         self.shader_sprite.on_change_screen_resolution(self.screen_resolution)
         self.title_label.on_change_screen_resolution(self.screen_resolution)
         for b in self.buttons:
             b.on_change_screen_resolution(self.screen_resolution)
 
     @final
-    def on_apply_shaders_and_draw_vertices(self):
-        self.shader_sprite.draw()
-
-    @final
     def on_update_opacity(self, new_opacity):
-        self.opacity = new_opacity
+        super().on_update_opacity(new_opacity)
         self.shader_sprite.on_update_opacity(self.opacity)
         self.title_label.on_update_opacity(self.opacity)
-        for b in self.buttons:
-            b.on_update_opacity(self.opacity)
 
     @final
     def on_update_current_locale(self, new_locale):

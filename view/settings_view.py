@@ -150,9 +150,7 @@ class SettingsView(AppBaseView):
         self.notifications_checkbox_group.on_deactivate()
 
     def on_change_screen_resolution(self, screen_resolution):
-        self.screen_resolution = screen_resolution
-        self.viewport.x1, self.viewport.y1 = 0, 0
-        self.viewport.x2, self.viewport.y2 = self.screen_resolution
+        super().on_change_screen_resolution(screen_resolution)
         self.screen_resolution_control.on_change_screen_resolution(self.screen_resolution)
         self.display_fps_checkbox.on_change_screen_resolution(self.screen_resolution)
         self.fade_animations_checkbox.on_change_screen_resolution(self.screen_resolution)
@@ -170,20 +168,15 @@ class SettingsView(AppBaseView):
         self.notifications_checkbox_group.on_update_current_locale(self.current_locale)
 
     def on_update_opacity(self, new_opacity):
-        self.opacity = new_opacity
+        super().on_update_opacity(new_opacity)
         self.shader_sprite.on_update_opacity(self.opacity)
         self.screen_resolution_control.on_update_opacity(self.opacity)
         self.display_fps_checkbox.on_update_opacity(self.opacity)
         self.fade_animations_checkbox.on_update_opacity(self.opacity)
         self.clock_24h_checkbox.on_update_opacity(self.opacity)
         self.notifications_checkbox_group.on_update_opacity(self.opacity)
-        for b in self.buttons:
-            b.on_update_opacity(self.opacity)
 
     def on_change_temp_windowed_resolution(self, windowed_resolution):
         self.temp_windowed_resolution = windowed_resolution
         self.available_windowed_resolutions_position \
             = self.available_windowed_resolutions.index(self.temp_windowed_resolution)
-
-    def on_apply_shaders_and_draw_vertices(self):
-        self.shader_sprite.draw()

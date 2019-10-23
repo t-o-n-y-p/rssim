@@ -49,9 +49,7 @@ class BonusCodeActivationView(AppBaseView):
         self.bonus_code_info_cell.on_deactivate()
 
     def on_change_screen_resolution(self, screen_resolution):
-        self.screen_resolution = screen_resolution
-        self.viewport.x1, self.viewport.y1 = 0, 0
-        self.viewport.x2, self.viewport.y2 = self.screen_resolution
+        super().on_change_screen_resolution(screen_resolution)
         self.bonus_code_interactive_label.on_change_screen_resolution(self.screen_resolution)
         self.bonus_code_info_cell.on_change_screen_resolution(self.screen_resolution)
         for b in self.buttons:
@@ -63,15 +61,10 @@ class BonusCodeActivationView(AppBaseView):
         self.bonus_code_info_cell.on_update_current_locale(self.current_locale)
 
     def on_update_opacity(self, new_opacity):
-        self.opacity = new_opacity
+        super().on_update_opacity(new_opacity)
         self.shader_sprite.on_update_opacity(self.opacity)
         self.bonus_code_interactive_label.on_update_opacity(self.opacity)
         self.bonus_code_info_cell.on_update_opacity(self.opacity)
-        for b in self.buttons:
-            b.on_update_opacity(self.opacity)
-
-    def on_apply_shaders_and_draw_vertices(self):
-        self.shader_sprite.draw()
 
     @view_is_active
     def on_text(self, text):

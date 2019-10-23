@@ -295,6 +295,9 @@ class Button:
     def on_update_current_locale(self, new_locale):
         pass
 
+    def on_change_screen_resolution(self, screen_resolution):
+        pass
+
 
 class UIButton(Button):
     def __init__(self, logger, parent_viewport):

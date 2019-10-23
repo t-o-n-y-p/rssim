@@ -7,7 +7,8 @@ from ui.label.shop_level_placeholder_label import ShopLevelPlaceholderLabel
 
 class ShopPlaceholderView(GameBaseView):
     def __init__(self, map_id, shop_id):
-        super().__init__(logger=getLogger(f'root.app.game.map.{map_id}.shop.{shop_id}.placeholder.view'))
+        super().__init__(logger=getLogger(f'root.app.game.map.{map_id}.shop.{shop_id}.placeholder.view'),
+                         child_window=True)
         self.map_id = map_id
         self.shop_id = shop_id
         self.lock_label = ShopLockedLabel(parent_viewport=self.viewport)
@@ -31,17 +32,13 @@ class ShopPlaceholderView(GameBaseView):
 
     @final
     def on_change_screen_resolution(self, screen_resolution):
-        self.screen_resolution = screen_resolution
-        self.viewport.x1 = get_inner_area_rect(self.screen_resolution)[0]
-        self.viewport.y1 = get_inner_area_rect(self.screen_resolution)[1]
-        self.viewport.x2 = self.viewport.x1 + get_inner_area_rect(self.screen_resolution)[2]
-        self.viewport.y2 = self.viewport.y1 + get_inner_area_rect(self.screen_resolution)[3]
+        super().on_change_screen_resolution(screen_resolution)
         self.lock_label.on_change_screen_resolution(self.screen_resolution)
         self.description_label.on_change_screen_resolution(self.screen_resolution)
 
     @final
     def on_update_opacity(self, new_opacity):
-        self.opacity = new_opacity
+        super().on_update_opacity(new_opacity)
         self.lock_label.on_update_opacity(self.opacity)
         self.description_label.on_update_opacity(self.opacity)
 

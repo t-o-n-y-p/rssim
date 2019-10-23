@@ -165,6 +165,14 @@ def cursor_is_over_the_app_header(fn):
     return _handle_if_cursor_is_over_the_app_header
 
 
+def shader_sprite_exists(fn):
+    def _delete_shader_sprite_if_it_exists(*args, **kwargs):
+        if args[0].shader_sprite is not None:
+            fn(*args, **kwargs)
+
+    return _delete_shader_sprite_if_it_exists
+
+
 # --------------------- CONSTANTS ---------------------
 MINI_MAP_FADE_OUT_TIMER: Final = 1.0        # time since user releases mouse button after which mini-map disappears
 # ------------------- END CONSTANTS -------------------
@@ -216,16 +224,27 @@ class AppBaseView:
         self.current_locale = new_locale
 
     def on_change_screen_resolution(self, screen_resolution):
-        pass
+        self.screen_resolution = screen_resolution
+        if self.child_window:
+            inner_area_rect = get_inner_area_rect(self.screen_resolution)
+            self.viewport.x1, self.viewport.y1 = inner_area_rect[:2]
+            self.viewport.x2 = self.viewport.x1 + inner_area_rect[2]
+            self.viewport.y2 = self.viewport.y1 + inner_area_rect[3]
+        else:
+            self.viewport.x1, self.viewport.y1 = 0, 0
+            self.viewport.x2, self.viewport.y2 = self.screen_resolution
 
+    @shader_sprite_exists
     def on_apply_shaders_and_draw_vertices(self):
-        pass
+        self.shader_sprite.draw()
 
     def on_update_clock_state(self, clock_24h_enabled):
-        pass
+        self.clock_24h_enabled = clock_24h_enabled
 
     def on_update_opacity(self, new_opacity):
-        pass
+        self.opacity = new_opacity
+        for b in self.buttons:
+            b.on_update_opacity(self.opacity)
 
     @final
     def on_init_content(self):
@@ -285,8 +304,8 @@ class AppBaseView:
 
 
 class GameBaseView(AppBaseView):
-    def __init__(self, logger):
-        super().__init__(logger)
+    def __init__(self, logger, child_window=False):
+        super().__init__(logger, child_window)
         USER_DB_CURSOR.execute('SELECT game_time FROM epoch_timestamp')
         self.game_time = USER_DB_CURSOR.fetchone()[0]
         USER_DB_CURSOR.execute('''SELECT level, money, exp_bonus_multiplier, money_bonus_multiplier 
@@ -329,10 +348,11 @@ class MapBaseView(GameBaseView):
             self.zoom_factor = 1.0
 
     def on_change_base_offset(self, new_base_offset):
-        pass
+        self.base_offset = new_base_offset
 
-    def on_change_zoom_factor(self, scale_factor, zoom_out_activated):
-        pass
+    def on_change_zoom_factor(self, zoom_factor, zoom_out_activated):
+        self.zoom_factor = zoom_factor
+        self.zoom_out_activated = zoom_out_activated
 
     @final
     def on_unlock(self):

@@ -21,7 +21,8 @@ class ShopConstructorView(GameBaseView):
         def on_buy_stage_action(stage_number):
             self.controller.on_put_stage_under_construction(stage_number)
 
-        super().__init__(logger=getLogger(f'root.app.game.map.{map_id}.shop.{shop_id}.constructor.view'))
+        super().__init__(logger=getLogger(f'root.app.game.map.{map_id}.shop.{shop_id}.constructor.view'),
+                         child_window=True)
         self.map_id = map_id
         self.shop_id = shop_id
         self.shop_stages_state_matrix = {}
@@ -89,11 +90,7 @@ class ShopConstructorView(GameBaseView):
 
     @final
     def on_change_screen_resolution(self, screen_resolution):
-        self.screen_resolution = screen_resolution
-        self.viewport.x1 = get_inner_area_rect(self.screen_resolution)[0]
-        self.viewport.y1 = get_inner_area_rect(self.screen_resolution)[1]
-        self.viewport.x2 = self.viewport.x1 + get_inner_area_rect(self.screen_resolution)[2]
-        self.viewport.y2 = self.viewport.y1 + get_inner_area_rect(self.screen_resolution)[3]
+        super().on_change_screen_resolution(screen_resolution)
         self.current_hourly_profit_label.on_change_screen_resolution(self.screen_resolution)
         self.current_exp_bonus_label.on_change_screen_resolution(self.screen_resolution)
         self.hourly_profit_value_label.on_change_screen_resolution(self.screen_resolution)
@@ -114,7 +111,7 @@ class ShopConstructorView(GameBaseView):
 
     @final
     def on_update_opacity(self, new_opacity):
-        self.opacity = new_opacity
+        super().on_update_opacity(new_opacity)
         self.shop_storage_progress_bar.on_update_opacity(self.opacity)
         for stage_cell in self.shop_stage_cells:
             self.shop_stage_cells[stage_cell].on_update_opacity(self.opacity)
@@ -124,8 +121,6 @@ class ShopConstructorView(GameBaseView):
         self.current_exp_bonus_label.on_update_opacity(self.opacity)
         self.hourly_profit_value_label.on_update_opacity(self.opacity)
         self.exp_bonus_value_label.on_update_opacity(self.opacity)
-        for b in self.buttons:
-            b.on_update_opacity(self.opacity)
 
     @final
     def on_update_current_locale(self, new_locale):
@@ -135,10 +130,6 @@ class ShopConstructorView(GameBaseView):
         self.exp_bonus_value_label.on_update_current_locale(self.current_locale)
         for stage_cell in self.shop_stage_cells:
             self.shop_stage_cells[stage_cell].on_update_current_locale(self.current_locale)
-
-    @final
-    def on_apply_shaders_and_draw_vertices(self):
-        self.shader_sprite.draw()
 
     @final
     def on_update_stage_state(self, stage_number):

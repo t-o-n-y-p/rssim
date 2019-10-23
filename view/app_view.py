@@ -101,10 +101,7 @@ class AppView(AppBaseView):
         super().on_deactivate()
 
     def on_change_screen_resolution(self, screen_resolution):
-        self.screen_resolution = screen_resolution
-        self.viewport.x1 = 0
-        self.viewport.y1 = 0
-        self.viewport.x2, self.viewport.y2 = self.screen_resolution
+        super().on_change_screen_resolution(screen_resolution)
         SURFACE.set_size(screen_resolution[0], screen_resolution[1])
         self.title_label.on_change_screen_resolution(self.screen_resolution)
         self.shader_sprite.on_change_screen_resolution(self.screen_resolution)
@@ -114,13 +111,11 @@ class AppView(AppBaseView):
             b.on_change_screen_resolution(self.screen_resolution)
 
     def on_update_opacity(self, new_opacity):
-        self.opacity = new_opacity
+        super().on_update_opacity(new_opacity)
         self.shader_sprite.on_update_opacity(self.opacity)
         self.title_label.on_update_opacity(self.opacity)
         self.us_flag_sprite.on_update_opacity(self.opacity)
         self.ru_flag_sprite.on_update_opacity(self.opacity)
-        for b in self.buttons:
-            b.on_update_opacity(self.opacity)
 
     def on_fullscreen_mode_turned_on(self):
         self.fullscreen_mode = True
@@ -152,6 +147,3 @@ class AppView(AppBaseView):
                      self.absolute_mouse_pos[1] - self.app_window_move_offset[1],
                      self.game_window_position[2] - self.game_window_position[0],
                      self.game_window_position[3] - self.game_window_position[1], SWP_NOREDRAW)
-
-    def on_apply_shaders_and_draw_vertices(self):
-        self.shader_sprite.draw()

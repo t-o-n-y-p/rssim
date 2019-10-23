@@ -61,9 +61,7 @@ class SchedulerView(GameBaseView):
 
     @final
     def on_change_screen_resolution(self, screen_resolution):
-        self.screen_resolution = screen_resolution
-        self.viewport.x1, self.viewport.y1 = 0, 0
-        self.viewport.x2, self.viewport.y2 = self.screen_resolution
+        super().on_change_screen_resolution(screen_resolution)
         self.shader_sprite.on_change_screen_resolution(self.screen_resolution)
         self.left_schedule_caption_label.on_change_screen_resolution(self.screen_resolution)
         self.right_schedule_caption_label.on_change_screen_resolution(self.screen_resolution)
@@ -76,13 +74,10 @@ class SchedulerView(GameBaseView):
 
     @final
     def on_update_opacity(self, new_opacity):
-        self.opacity = new_opacity
+        super().on_update_opacity(new_opacity)
         self.shader_sprite.on_update_opacity(self.opacity)
         self.left_schedule_caption_label.on_update_opacity(self.opacity)
         self.right_schedule_caption_label.on_update_opacity(self.opacity)
-        for b in self.buttons:
-            b.on_update_opacity(self.opacity)
-
         for i in range(SCHEDULE_COLUMNS):
             for j in range(SCHEDULE_ROWS):
                 self.schedule_rows[i][j].on_update_opacity(self.opacity)
@@ -112,11 +107,8 @@ class SchedulerView(GameBaseView):
                 self.schedule_rows[i][j].on_update_current_locale(self.current_locale)
 
     @final
-    def on_apply_shaders_and_draw_vertices(self):
-        self.shader_sprite.draw()
-
-    @final
     def on_update_clock_state(self, clock_24h_enabled):
+        super().on_update_clock_state(clock_24h_enabled)
         for i in range(SCHEDULE_COLUMNS):
             for j in range(SCHEDULE_ROWS):
                 self.schedule_rows[i][j].on_update_clock_state(clock_24h_enabled)

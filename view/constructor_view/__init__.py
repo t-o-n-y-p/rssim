@@ -142,9 +142,7 @@ class ConstructorView(GameBaseView):
 
     @final
     def on_change_screen_resolution(self, screen_resolution):
-        self.screen_resolution = screen_resolution
-        self.viewport.x1, self.viewport.y1 = 0, 0
-        self.viewport.x2, self.viewport.y2 = self.screen_resolution
+        super().on_change_screen_resolution(screen_resolution)
         self.shader_sprite.on_change_screen_resolution(self.screen_resolution)
         for j in range(CONSTRUCTOR_VIEW_TRACK_CELLS):
             self.constructor_cells[TRACKS][j].on_change_screen_resolution(screen_resolution)
@@ -190,13 +188,10 @@ class ConstructorView(GameBaseView):
 
     @final
     def on_update_opacity(self, new_opacity):
-        self.opacity = new_opacity
+        super().on_update_opacity(new_opacity)
         self.shader_sprite.on_update_opacity(self.opacity)
         self.no_more_tracks_available_label.on_update_opacity(self.opacity)
         self.no_more_tiers_available_label.on_update_opacity(self.opacity)
-        for b in self.buttons:
-            b.on_update_opacity(self.opacity)
-
         for j in range(CONSTRUCTOR_VIEW_TRACK_CELLS):
             self.constructor_cells[TRACKS][j].on_update_opacity(self.opacity)
 
@@ -336,7 +331,3 @@ class ConstructorView(GameBaseView):
     @final
     def on_change_construction_completed_notification_state(self, notification_state):
         self.construction_completed_notification_enabled = notification_state
-
-    @final
-    def on_apply_shaders_and_draw_vertices(self):
-        self.shader_sprite.draw()

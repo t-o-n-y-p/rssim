@@ -49,7 +49,6 @@ class GameView(GameBaseView):
         self.main_clock_label_12h = MainClockLabel12H(parent_viewport=self.viewport)
         self.exp_percent = 0
         self.money_percent = 0
-        self.level = 0
         USER_DB_CURSOR.execute('''SELECT level_up_notification_enabled, enough_money_notification_enabled
                                   FROM notification_settings''')
         self.level_up_notification_enabled, self.enough_money_notification_enabled \
@@ -99,10 +98,7 @@ class GameView(GameBaseView):
         self.money_progress_bar.on_deactivate()
 
     def on_change_screen_resolution(self, screen_resolution):
-        self.screen_resolution = screen_resolution
-        self.viewport.x1 = 0
-        self.viewport.y1 = 0
-        self.viewport.x2, self.viewport.y2 = self.screen_resolution
+        super().on_change_screen_resolution(screen_resolution)
         self.exp_progress_bar.on_change_screen_resolution(self.screen_resolution)
         self.money_progress_bar.on_change_screen_resolution(self.screen_resolution)
         self.shader_sprite.on_change_screen_resolution(self.screen_resolution)
@@ -118,14 +114,12 @@ class GameView(GameBaseView):
         self.exp_progress_bar.on_update_current_locale(self.current_locale)
 
     def on_update_opacity(self, new_opacity):
-        self.opacity = new_opacity
+        super().on_update_opacity(new_opacity)
         self.exp_progress_bar.on_update_opacity(self.opacity)
         self.money_progress_bar.on_update_opacity(self.opacity)
         self.shader_sprite.on_update_opacity(self.opacity)
         self.main_clock_label_24h.on_update_opacity(self.opacity)
         self.main_clock_label_12h.on_update_opacity(self.opacity)
-        for b in self.buttons:
-            b.on_update_opacity(self.opacity)
 
     def on_pause_game(self):
         self.game_paused = True
@@ -194,11 +188,8 @@ class GameView(GameBaseView):
     def on_change_enough_money_notification_state(self, notification_state):
         self.enough_money_notification_enabled = notification_state
 
-    def on_apply_shaders_and_draw_vertices(self):
-        self.shader_sprite.draw()
-
     def on_update_clock_state(self, clock_24h_enabled):
-        self.clock_24h_enabled = clock_24h_enabled
+        super().on_update_clock_state(clock_24h_enabled)
         if self.clock_24h_enabled:
             self.main_clock_label_12h.delete()
             self.main_clock_label_24h.create()
