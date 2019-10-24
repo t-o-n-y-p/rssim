@@ -33,6 +33,11 @@ class OnboardingView(AppBaseView):
         super().on_deactivate()
         self.onboarding_page_control.on_deactivate()
 
+    def on_update_current_locale(self, new_locale):
+        super().on_update_current_locale(new_locale)
+        self.onboarding_page_control.on_update_current_locale(self.current_locale)
+        self.skip_onboarding_label.on_update_current_locale(self.current_locale)
+
     def on_change_screen_resolution(self, screen_resolution):
         super().on_change_screen_resolution(screen_resolution)
         self.shader_sprite.on_change_screen_resolution(self.screen_resolution)
@@ -41,17 +46,12 @@ class OnboardingView(AppBaseView):
         for b in self.buttons:
             b.on_change_screen_resolution(self.screen_resolution)
 
-    def on_update_current_locale(self, new_locale):
-        super().on_update_current_locale(new_locale)
-        self.onboarding_page_control.on_update_current_locale(self.current_locale)
-        self.skip_onboarding_label.on_update_current_locale(self.current_locale)
+    def on_apply_shaders_and_draw_vertices(self):
+        super().on_apply_shaders_and_draw_vertices()
+        self.onboarding_page_control.on_apply_shaders_and_draw_vertices()
 
     def on_update_opacity(self, new_opacity):
         super().on_update_opacity(new_opacity)
         self.shader_sprite.on_update_opacity(self.opacity)
         self.skip_onboarding_label.on_update_opacity(self.opacity)
         self.onboarding_page_control.on_update_opacity(self.opacity)
-
-    def on_apply_shaders_and_draw_vertices(self):
-        super().on_apply_shaders_and_draw_vertices()
-        self.onboarding_page_control.on_apply_shaders_and_draw_vertices()

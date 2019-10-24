@@ -31,6 +31,11 @@ class ShopPlaceholderView(GameBaseView):
         super().on_deactivate()
 
     @final
+    def on_update_current_locale(self, new_locale):
+        super().on_update_current_locale(new_locale)
+        self.description_label.on_update_current_locale(self.current_locale)
+
+    @final
     def on_change_screen_resolution(self, screen_resolution):
         super().on_change_screen_resolution(screen_resolution)
         self.lock_label.on_change_screen_resolution(self.screen_resolution)
@@ -41,8 +46,3 @@ class ShopPlaceholderView(GameBaseView):
         super().on_update_opacity(new_opacity)
         self.lock_label.on_update_opacity(self.opacity)
         self.description_label.on_update_opacity(self.opacity)
-
-    @final
-    def on_update_current_locale(self, new_locale):
-        super().on_update_current_locale(new_locale)
-        self.description_label.on_update_current_locale(self.current_locale)

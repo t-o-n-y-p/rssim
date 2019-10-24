@@ -89,6 +89,15 @@ class ShopConstructorView(GameBaseView):
             self.shop_stage_cells[stage_cell].on_deactivate()
 
     @final
+    def on_update_current_locale(self, new_locale):
+        super().on_update_current_locale(new_locale)
+        self.current_hourly_profit_label.on_update_current_locale(self.current_locale)
+        self.current_exp_bonus_label.on_update_current_locale(self.current_locale)
+        self.exp_bonus_value_label.on_update_current_locale(self.current_locale)
+        for stage_cell in self.shop_stage_cells:
+            self.shop_stage_cells[stage_cell].on_update_current_locale(self.current_locale)
+
+    @final
     def on_change_screen_resolution(self, screen_resolution):
         super().on_change_screen_resolution(screen_resolution)
         self.current_hourly_profit_label.on_change_screen_resolution(self.screen_resolution)
@@ -123,13 +132,10 @@ class ShopConstructorView(GameBaseView):
         self.exp_bonus_value_label.on_update_opacity(self.opacity)
 
     @final
-    def on_update_current_locale(self, new_locale):
-        super().on_update_current_locale(new_locale)
-        self.current_hourly_profit_label.on_update_current_locale(self.current_locale)
-        self.current_exp_bonus_label.on_update_current_locale(self.current_locale)
-        self.exp_bonus_value_label.on_update_current_locale(self.current_locale)
+    def on_update_money(self, money):
+        super().on_update_money(money)
         for stage_cell in self.shop_stage_cells:
-            self.shop_stage_cells[stage_cell].on_update_current_locale(self.current_locale)
+            self.shop_stage_cells[stage_cell].on_update_money(self.money)
 
     @final
     def on_update_stage_state(self, stage_number):
@@ -151,12 +157,6 @@ class ShopConstructorView(GameBaseView):
                 self.clear_shop_storage_button.on_activate()
             else:
                 self.clear_shop_storage_button.on_disable()
-
-    @final
-    def on_update_money(self, money):
-        super().on_update_money(money)
-        for stage_cell in self.shop_stage_cells:
-            self.shop_stage_cells[stage_cell].on_update_money(self.money)
 
     @final
     def on_unlock_stage(self, stage):

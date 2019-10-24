@@ -58,13 +58,6 @@ class MainMenuView(AppBaseView):
     def on_deactivate(self):
         super().on_deactivate()
 
-    def on_change_screen_resolution(self, screen_resolution):
-        super().on_change_screen_resolution(screen_resolution)
-        self.shader_sprite.on_change_screen_resolution(self.screen_resolution)
-        self.open_license_label.on_change_screen_resolution(self.screen_resolution)
-        for b in self.buttons:
-            b.on_change_screen_resolution(self.screen_resolution)
-
     def on_update_current_locale(self, new_locale):
         super().on_update_current_locale(new_locale)
         self.create_station_button.on_update_current_locale(self.current_locale)
@@ -72,6 +65,13 @@ class MainMenuView(AppBaseView):
         self.open_settings_button.on_update_current_locale(self.current_locale)
         self.open_license_label.on_update_current_locale(self.current_locale)
         self.enter_code_button.on_update_current_locale(self.current_locale)
+
+    def on_change_screen_resolution(self, screen_resolution):
+        super().on_change_screen_resolution(screen_resolution)
+        self.shader_sprite.on_change_screen_resolution(self.screen_resolution)
+        self.open_license_label.on_change_screen_resolution(self.screen_resolution)
+        for b in self.buttons:
+            b.on_change_screen_resolution(self.screen_resolution)
 
     def on_update_opacity(self, new_opacity):
         super().on_update_opacity(new_opacity)

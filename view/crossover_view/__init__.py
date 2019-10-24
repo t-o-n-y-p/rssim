@@ -52,6 +52,11 @@ class CrossoverView(MapBaseView):
         super().on_deactivate()
 
     @final
+    def on_update_opacity(self, new_opacity):
+        super().on_update_opacity(new_opacity)
+        self.sprite.on_update_opacity(self.opacity)
+
+    @final
     def on_change_base_offset(self, new_base_offset):
         super().on_change_base_offset(new_base_offset)
         self.sprite.on_change_base_offset(self.base_offset)
@@ -59,11 +64,6 @@ class CrossoverView(MapBaseView):
             self.sprite.delete()
         elif not self.locked:
             self.sprite.create()
-
-    @final
-    def on_update_opacity(self, new_opacity):
-        super().on_update_opacity(new_opacity)
-        self.sprite.on_update_opacity(self.opacity)
 
     @final
     def on_change_scale(self, zoom_factor):

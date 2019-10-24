@@ -147,14 +147,6 @@ class MapView(MapBaseView):
         self.on_update_mini_map_opacity()
 
     @final
-    def on_change_base_offset(self, new_base_offset):
-        super().on_change_base_offset(new_base_offset)
-        self.main_map_sprite.on_change_base_offset(self.base_offset)
-        self.environment_sprite.on_change_base_offset(self.base_offset)
-        for b in self.shop_buttons:
-            b.on_change_base_offset(self.base_offset)
-
-    @final
     def on_change_screen_resolution(self, screen_resolution):
         super().on_change_screen_resolution(screen_resolution)
         self.mini_map_sprite.on_change_screen_resolution(self.screen_resolution)
@@ -179,6 +171,40 @@ class MapView(MapBaseView):
         self.shader_sprite.on_update_opacity(self.opacity)
         self.main_map_sprite.on_update_opacity(self.opacity)
         self.environment_sprite.on_update_opacity(self.opacity)
+
+    @final
+    def on_change_base_offset(self, new_base_offset):
+        super().on_change_base_offset(new_base_offset)
+        self.main_map_sprite.on_change_base_offset(self.base_offset)
+        self.environment_sprite.on_change_base_offset(self.base_offset)
+        for b in self.shop_buttons:
+            b.on_change_base_offset(self.base_offset)
+
+    @final
+    def on_change_scale(self, zoom_factor):
+        super().on_change_scale(zoom_factor)
+        self.main_map_sprite.on_change_scale(self.zoom_factor)
+        self.environment_sprite.on_change_scale(self.zoom_factor)
+        self.base_offset_upper_right_limit = (self.viewport.x2 - MAP_WIDTH // round(1 / self.zoom_factor),
+                                              self.viewport.y2 - MAP_HEIGHT // round(1 / self.zoom_factor)
+                                              - get_top_bar_height(self.screen_resolution))
+        if self.zoom_out_activated:
+            self.base_offset = (self.base_offset[0] // 2
+                                + (self.viewport.x2 - self.viewport.x1) // 4,
+                                self.base_offset[1] // 2
+                                + (self.viewport.y2 - self.viewport.y1) // 4)
+        else:
+            self.base_offset = (2 * self.base_offset[0] - (self.viewport.x2 - self.viewport.x1) // 2,
+                                2 * self.base_offset[1] - (self.viewport.y2 - self.viewport.y1) // 2)
+
+        self.check_base_offset_limits()
+        self.mini_map_frame_width = self.get_mini_map_frame_width()
+        self.mini_map_frame_height = self.get_mini_map_frame_height()
+        self.mini_map_frame_position = self.get_mini_map_frame_position()
+        for b in self.shop_buttons:
+            b.on_change_scale(self.zoom_factor)
+
+        self.controller.on_save_and_commit_last_known_base_offset(self.base_offset)
 
     @final
     @mini_map_is_not_active
@@ -208,32 +234,6 @@ class MapView(MapBaseView):
     def on_unlock_environment(self, tier):
         self.environment_sprite.on_unlock_environment(tier)
         self.mini_environment_sprite.on_unlock_environment(tier)
-
-    @final
-    def on_change_scale(self, zoom_factor):
-        super().on_change_scale(zoom_factor)
-        self.main_map_sprite.on_change_scale(self.zoom_factor)
-        self.environment_sprite.on_change_scale(self.zoom_factor)
-        self.base_offset_upper_right_limit = (self.viewport.x2 - MAP_WIDTH // round(1 / self.zoom_factor),
-                                              self.viewport.y2 - MAP_HEIGHT // round(1 / self.zoom_factor)
-                                              - get_top_bar_height(self.screen_resolution))
-        if self.zoom_out_activated:
-            self.base_offset = (self.base_offset[0] // 2
-                                + (self.viewport.x2 - self.viewport.x1) // 4,
-                                self.base_offset[1] // 2
-                                + (self.viewport.y2 - self.viewport.y1) // 4)
-        else:
-            self.base_offset = (2 * self.base_offset[0] - (self.viewport.x2 - self.viewport.x1) // 2,
-                                2 * self.base_offset[1] - (self.viewport.y2 - self.viewport.y1) // 2)
-
-        self.check_base_offset_limits()
-        self.mini_map_frame_width = self.get_mini_map_frame_width()
-        self.mini_map_frame_height = self.get_mini_map_frame_height()
-        self.mini_map_frame_position = self.get_mini_map_frame_position()
-        for b in self.shop_buttons:
-            b.on_change_scale(self.zoom_factor)
-
-        self.controller.on_save_and_commit_last_known_base_offset(self.base_offset)
 
     @final
     def on_deactivate_zoom_buttons(self):

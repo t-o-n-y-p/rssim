@@ -149,6 +149,14 @@ class SettingsView(AppBaseView):
         self.clock_24h_checkbox.on_deactivate()
         self.notifications_checkbox_group.on_deactivate()
 
+    def on_update_current_locale(self, new_locale):
+        super().on_update_current_locale(new_locale)
+        self.screen_resolution_control.on_update_current_locale(self.current_locale)
+        self.display_fps_checkbox.on_update_current_locale(self.current_locale)
+        self.fade_animations_checkbox.on_update_current_locale(self.current_locale)
+        self.clock_24h_checkbox.on_update_current_locale(self.current_locale)
+        self.notifications_checkbox_group.on_update_current_locale(self.current_locale)
+
     def on_change_screen_resolution(self, screen_resolution):
         super().on_change_screen_resolution(screen_resolution)
         self.screen_resolution_control.on_change_screen_resolution(self.screen_resolution)
@@ -158,14 +166,6 @@ class SettingsView(AppBaseView):
         self.notifications_checkbox_group.on_change_screen_resolution(self.screen_resolution)
         for b in self.buttons:
             b.on_change_screen_resolution(self.screen_resolution)
-
-    def on_update_current_locale(self, new_locale):
-        super().on_update_current_locale(new_locale)
-        self.screen_resolution_control.on_update_current_locale(self.current_locale)
-        self.display_fps_checkbox.on_update_current_locale(self.current_locale)
-        self.fade_animations_checkbox.on_update_current_locale(self.current_locale)
-        self.clock_24h_checkbox.on_update_current_locale(self.current_locale)
-        self.notifications_checkbox_group.on_update_current_locale(self.current_locale)
 
     def on_update_opacity(self, new_opacity):
         super().on_update_opacity(new_opacity)

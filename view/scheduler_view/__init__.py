@@ -60,6 +60,15 @@ class SchedulerView(GameBaseView):
                 return
 
     @final
+    def on_update_current_locale(self, new_locale):
+        super().on_update_current_locale(new_locale)
+        self.left_schedule_caption_label.on_update_current_locale(self.current_locale)
+        self.right_schedule_caption_label.on_update_current_locale(self.current_locale)
+        for i in range(SCHEDULE_COLUMNS):
+            for j in range(SCHEDULE_ROWS):
+                self.schedule_rows[i][j].on_update_current_locale(self.current_locale)
+
+    @final
     def on_change_screen_resolution(self, screen_resolution):
         super().on_change_screen_resolution(screen_resolution)
         self.shader_sprite.on_change_screen_resolution(self.screen_resolution)
@@ -71,6 +80,13 @@ class SchedulerView(GameBaseView):
 
         for b in self.buttons:
             b.on_change_screen_resolution(self.screen_resolution)
+
+    @final
+    def on_update_clock_state(self, clock_24h_enabled):
+        super().on_update_clock_state(clock_24h_enabled)
+        for i in range(SCHEDULE_COLUMNS):
+            for j in range(SCHEDULE_ROWS):
+                self.schedule_rows[i][j].on_update_clock_state(clock_24h_enabled)
 
     @final
     def on_update_opacity(self, new_opacity):
@@ -96,19 +112,3 @@ class SchedulerView(GameBaseView):
         if self.schedule_rows[SCHEDULE_COLUMNS - 1][SCHEDULE_ROWS - 1].is_activated:
             self.schedule_rows[SCHEDULE_COLUMNS - 1][SCHEDULE_ROWS - 1]\
                 .on_assign_data(self.base_schedule[SCHEDULE_ROWS * SCHEDULE_COLUMNS])
-
-    @final
-    def on_update_current_locale(self, new_locale):
-        super().on_update_current_locale(new_locale)
-        self.left_schedule_caption_label.on_update_current_locale(self.current_locale)
-        self.right_schedule_caption_label.on_update_current_locale(self.current_locale)
-        for i in range(SCHEDULE_COLUMNS):
-            for j in range(SCHEDULE_ROWS):
-                self.schedule_rows[i][j].on_update_current_locale(self.current_locale)
-
-    @final
-    def on_update_clock_state(self, clock_24h_enabled):
-        super().on_update_clock_state(clock_24h_enabled)
-        for i in range(SCHEDULE_COLUMNS):
-            for j in range(SCHEDULE_ROWS):
-                self.schedule_rows[i][j].on_update_clock_state(clock_24h_enabled)

@@ -131,7 +131,7 @@ class ConstructorModel(GameBaseModel):
 
                     self.view.on_unlock_construction(TRACKS, track)
                 else:
-                    self.view.on_update_construction_state(TRACKS, track, self.game_time)
+                    self.view.on_update_construction_state(TRACKS, track)
 
         if unlocked_track > 0:
             self.construction_state_matrix[TRACKS].pop(unlocked_track)
@@ -169,7 +169,7 @@ class ConstructorModel(GameBaseModel):
 
                     self.view.on_unlock_construction(ENVIRONMENT, tier)
                 else:
-                    self.view.on_update_construction_state(ENVIRONMENT, tier, self.game_time)
+                    self.view.on_update_construction_state(ENVIRONMENT, tier)
 
         if unlocked_tier > 0:
             self.construction_state_matrix[ENVIRONMENT].pop(unlocked_tier)

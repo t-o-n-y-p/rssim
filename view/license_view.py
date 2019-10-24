@@ -33,6 +33,11 @@ class LicenseView(AppBaseView):
         super().on_deactivate()
         self.license_page_control.on_deactivate()
 
+    def on_update_current_locale(self, new_locale):
+        super().on_update_current_locale(new_locale)
+        self.close_license_label.on_update_current_locale(self.current_locale)
+        self.license_page_control.on_update_current_locale(self.current_locale)
+
     def on_change_screen_resolution(self, screen_resolution):
         super().on_change_screen_resolution(screen_resolution)
         self.shader_sprite.on_change_screen_resolution(self.screen_resolution)
@@ -40,11 +45,6 @@ class LicenseView(AppBaseView):
         self.license_page_control.on_change_screen_resolution(self.screen_resolution)
         for b in self.buttons:
             b.on_change_screen_resolution(self.screen_resolution)
-
-    def on_update_current_locale(self, new_locale):
-        super().on_update_current_locale(new_locale)
-        self.close_license_label.on_update_current_locale(self.current_locale)
-        self.license_page_control.on_update_current_locale(self.current_locale)
 
     def on_update_opacity(self, new_opacity):
         super().on_update_opacity(new_opacity)

@@ -141,6 +141,17 @@ class ConstructorView(GameBaseView):
                 return
 
     @final
+    def on_update_current_locale(self, new_locale):
+        super().on_update_current_locale(new_locale)
+        self.no_more_tracks_available_label.on_update_current_locale(self.current_locale)
+        self.no_more_tiers_available_label.on_update_current_locale(self.current_locale)
+        for j in range(CONSTRUCTOR_VIEW_TRACK_CELLS):
+            self.constructor_cells[TRACKS][j].on_update_current_locale(self.current_locale)
+
+        for j in range(CONSTRUCTOR_VIEW_ENVIRONMENT_CELLS):
+            self.constructor_cells[ENVIRONMENT][j].on_update_current_locale(self.current_locale)
+
+    @final
     def on_change_screen_resolution(self, screen_resolution):
         super().on_change_screen_resolution(screen_resolution)
         self.shader_sprite.on_change_screen_resolution(self.screen_resolution)
@@ -176,17 +187,6 @@ class ConstructorView(GameBaseView):
             b.on_change_screen_resolution(self.screen_resolution)
 
     @final
-    def on_update_current_locale(self, new_locale):
-        super().on_update_current_locale(new_locale)
-        self.no_more_tracks_available_label.on_update_current_locale(self.current_locale)
-        self.no_more_tiers_available_label.on_update_current_locale(self.current_locale)
-        for j in range(CONSTRUCTOR_VIEW_TRACK_CELLS):
-            self.constructor_cells[TRACKS][j].on_update_current_locale(self.current_locale)
-
-        for j in range(CONSTRUCTOR_VIEW_ENVIRONMENT_CELLS):
-            self.constructor_cells[ENVIRONMENT][j].on_update_current_locale(self.current_locale)
-
-    @final
     def on_update_opacity(self, new_opacity):
         super().on_update_opacity(new_opacity)
         self.shader_sprite.on_update_opacity(self.opacity)
@@ -208,7 +208,7 @@ class ConstructorView(GameBaseView):
             self.constructor_cells[ENVIRONMENT][j].on_update_money(money)
 
     @final
-    def on_update_construction_state(self, construction_type, entity_number, game_time=0):
+    def on_update_construction_state(self, construction_type, entity_number):
         if construction_type == TRACKS:
             remaining_tracks = sorted(list(self.construction_state_matrix[TRACKS].keys()))
             if remaining_tracks.index(entity_number) < CONSTRUCTOR_VIEW_TRACK_CELLS:

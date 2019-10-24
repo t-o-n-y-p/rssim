@@ -16,11 +16,6 @@ class SignalView(MapBaseView):
         self.locked = bool(self.locked)
 
     @final
-    def on_update_opacity(self, new_opacity):
-        super().on_update_opacity(new_opacity)
-        self.signal_sprite.on_update_opacity(self.opacity)
-
-    @final
     @view_is_not_active
     def on_activate(self):
         super().on_activate()
@@ -31,6 +26,11 @@ class SignalView(MapBaseView):
     @view_is_active
     def on_deactivate(self):
         super().on_deactivate()
+
+    @final
+    def on_update_opacity(self, new_opacity):
+        super().on_update_opacity(new_opacity)
+        self.signal_sprite.on_update_opacity(self.opacity)
 
     @final
     def on_change_base_offset(self, new_base_offset):

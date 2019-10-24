@@ -48,17 +48,17 @@ class BonusCodeActivationView(AppBaseView):
         super().on_deactivate()
         self.bonus_code_info_cell.on_deactivate()
 
+    def on_update_current_locale(self, new_locale):
+        super().on_update_current_locale(new_locale)
+        self.bonus_code_interactive_label.on_update_current_locale(self.current_locale)
+        self.bonus_code_info_cell.on_update_current_locale(self.current_locale)
+
     def on_change_screen_resolution(self, screen_resolution):
         super().on_change_screen_resolution(screen_resolution)
         self.bonus_code_interactive_label.on_change_screen_resolution(self.screen_resolution)
         self.bonus_code_info_cell.on_change_screen_resolution(self.screen_resolution)
         for b in self.buttons:
             b.on_change_screen_resolution(self.screen_resolution)
-
-    def on_update_current_locale(self, new_locale):
-        super().on_update_current_locale(new_locale)
-        self.bonus_code_interactive_label.on_update_current_locale(self.current_locale)
-        self.bonus_code_info_cell.on_update_current_locale(self.current_locale)
 
     def on_update_opacity(self, new_opacity):
         super().on_update_opacity(new_opacity)

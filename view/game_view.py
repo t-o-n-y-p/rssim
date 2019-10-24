@@ -97,6 +97,12 @@ class GameView(GameBaseView):
         self.exp_progress_bar.on_deactivate()
         self.money_progress_bar.on_deactivate()
 
+    def on_update_current_locale(self, new_locale):
+        super().on_update_current_locale(new_locale)
+        self.main_clock_label_24h.on_update_current_locale(self.current_locale)
+        self.main_clock_label_12h.on_update_current_locale(self.current_locale)
+        self.exp_progress_bar.on_update_current_locale(self.current_locale)
+
     def on_change_screen_resolution(self, screen_resolution):
         super().on_change_screen_resolution(screen_resolution)
         self.exp_progress_bar.on_change_screen_resolution(self.screen_resolution)
@@ -107,11 +113,14 @@ class GameView(GameBaseView):
         for b in self.buttons:
             b.on_change_screen_resolution(self.screen_resolution)
 
-    def on_update_current_locale(self, new_locale):
-        super().on_update_current_locale(new_locale)
-        self.main_clock_label_24h.on_update_current_locale(self.current_locale)
-        self.main_clock_label_12h.on_update_current_locale(self.current_locale)
-        self.exp_progress_bar.on_update_current_locale(self.current_locale)
+    def on_update_clock_state(self, clock_24h_enabled):
+        super().on_update_clock_state(clock_24h_enabled)
+        if self.clock_24h_enabled:
+            self.main_clock_label_12h.delete()
+            self.main_clock_label_24h.create()
+        else:
+            self.main_clock_label_24h.delete()
+            self.main_clock_label_12h.create()
 
     def on_update_opacity(self, new_opacity):
         super().on_update_opacity(new_opacity)
@@ -120,12 +129,6 @@ class GameView(GameBaseView):
         self.shader_sprite.on_update_opacity(self.opacity)
         self.main_clock_label_24h.on_update_opacity(self.opacity)
         self.main_clock_label_12h.on_update_opacity(self.opacity)
-
-    def on_pause_game(self):
-        self.game_paused = True
-
-    def on_resume_game(self):
-        self.game_paused = False
 
     def on_update_time(self):
         super().on_update_time()
@@ -141,10 +144,6 @@ class GameView(GameBaseView):
              ])
         )
 
-    def on_update_exp(self, exp):
-        self.exp = exp
-        self.exp_progress_bar.on_update_progress_bar_state(self.exp, self.player_progress)
-
     def on_level_up(self):
         self.level += 1
         self.exp_progress_bar.on_update_text_label_args((self.level, ))
@@ -156,6 +155,16 @@ class GameView(GameBaseView):
         super().on_update_money(money)
         self.money_progress_bar.on_update_text_label_args((int(self.money), ))
         self.money_progress_bar.on_update_progress_bar_state(self.money, self.money_target)
+
+    def on_pause_game(self):
+        self.game_paused = True
+
+    def on_resume_game(self):
+        self.game_paused = False
+
+    def on_update_exp(self, exp):
+        self.exp = exp
+        self.exp_progress_bar.on_update_progress_bar_state(self.exp, self.player_progress)
 
     def on_update_money_target(self, money_target):
         self.money_target = money_target
@@ -187,12 +196,3 @@ class GameView(GameBaseView):
 
     def on_change_enough_money_notification_state(self, notification_state):
         self.enough_money_notification_enabled = notification_state
-
-    def on_update_clock_state(self, clock_24h_enabled):
-        super().on_update_clock_state(clock_24h_enabled)
-        if self.clock_24h_enabled:
-            self.main_clock_label_12h.delete()
-            self.main_clock_label_24h.create()
-        else:
-            self.main_clock_label_24h.delete()
-            self.main_clock_label_12h.create()

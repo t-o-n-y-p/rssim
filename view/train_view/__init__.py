@@ -23,6 +23,29 @@ class TrainView(MapBaseView):
         self.state = None
 
     @final
+    @view_is_not_active
+    def on_activate(self):
+        super().on_activate()
+        seed()
+        for i in range(len(self.car_position)):
+            self.car_sprites.append(CarSprite(self.map_id, self.train_id, parent_viewport=self.viewport))
+            if i == 0:
+                self.car_sprites[i].on_update_texture(self.car_head_image[self.car_image_collection][self.direction])
+            elif i == len(self.car_position) - 1:
+                self.car_sprites[i].on_update_texture(self.car_tail_image[self.car_image_collection][self.direction])
+            else:
+                self.car_sprites[i].on_update_texture(choice(self.car_mid_image[self.car_image_collection]))
+
+            self.boarding_light_sprites.append(BoardingLightsSprite(self.map_id, self.train_id,
+                                                                    parent_viewport=self.viewport))
+            self.boarding_light_sprites[i].on_update_texture(self.boarding_light_image[self.car_image_collection])
+
+    @final
+    @view_is_active
+    def on_deactivate(self):
+        super().on_deactivate()
+
+    @final
     def on_update(self):
         for i in range(len(self.car_sprites)):
             self.car_sprites[i].on_update_car_position(self.car_position[i])
@@ -48,29 +71,6 @@ class TrainView(MapBaseView):
         if self.opacity <= 0:
             self.car_sprites = []
             self.boarding_light_sprites = []
-
-    @final
-    @view_is_not_active
-    def on_activate(self):
-        super().on_activate()
-        seed()
-        for i in range(len(self.car_position)):
-            self.car_sprites.append(CarSprite(self.map_id, self.train_id, parent_viewport=self.viewport))
-            if i == 0:
-                self.car_sprites[i].on_update_texture(self.car_head_image[self.car_image_collection][self.direction])
-            elif i == len(self.car_position) - 1:
-                self.car_sprites[i].on_update_texture(self.car_tail_image[self.car_image_collection][self.direction])
-            else:
-                self.car_sprites[i].on_update_texture(choice(self.car_mid_image[self.car_image_collection]))
-
-            self.boarding_light_sprites.append(BoardingLightsSprite(self.map_id, self.train_id,
-                                                                    parent_viewport=self.viewport))
-            self.boarding_light_sprites[i].on_update_texture(self.boarding_light_image[self.car_image_collection])
-
-    @final
-    @view_is_active
-    def on_deactivate(self):
-        super().on_deactivate()
 
     @final
     def on_change_base_offset(self, new_base_offset):
