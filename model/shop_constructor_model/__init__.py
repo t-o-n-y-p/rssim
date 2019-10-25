@@ -77,7 +77,7 @@ class ShopConstructorModel(GameBaseModel):
         for stage in self.shop_stages_state_matrix:
             if self.shop_stages_state_matrix[stage][UNDER_CONSTRUCTION]:
                 self.shop_stages_state_matrix[stage][CONSTRUCTION_TIME] -= 1
-                if self.shop_stages_state_matrix[stage][CONSTRUCTION_TIME] == 0:
+                if self.shop_stages_state_matrix[stage][CONSTRUCTION_TIME] <= 0:
                     self.shop_stages_state_matrix[stage][UNDER_CONSTRUCTION] = False
                     self.shop_stages_state_matrix[stage][LOCKED] = False
                     self.current_stage = stage
@@ -116,7 +116,8 @@ class ShopConstructorModel(GameBaseModel):
         self.shop_stages_state_matrix[stage_number][UNLOCK_AVAILABLE] = False
         self.shop_stages_state_matrix[stage_number][UNDER_CONSTRUCTION] = True
         self.shop_stages_state_matrix[stage_number][CONSTRUCTION_TIME] \
-            = self.shop_stages_state_matrix[stage_number][MAX_CONSTRUCTION_TIME]
+            = int(self.shop_stages_state_matrix[stage_number][MAX_CONSTRUCTION_TIME]
+                  * self.construction_time_bonus_multiplier)
         self.view.on_update_stage_state(stage_number)
         self.controller.parent_controller.parent_controller.parent_controller \
             .on_pay_money(self.shop_stages_state_matrix[stage_number][PRICE])

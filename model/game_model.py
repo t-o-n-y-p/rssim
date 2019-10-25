@@ -18,9 +18,10 @@ class GameModel(GameBaseModel):
         USER_DB_CURSOR.execute('UPDATE epoch_timestamp SET game_time = ?', (self.game_time, ))
         USER_DB_CURSOR.execute('''UPDATE game_progress SET level = ?, exp = ?, money = ?, 
                                   money_target = ?, exp_multiplier = ?, exp_bonus_multiplier = ?, 
-                                  money_bonus_multiplier = ?''',
+                                  money_bonus_multiplier = ?, construction_time_bonus_multiplier = ?''',
                                (self.level, self.exp, self.money, self.money_target, self.exp_multiplier,
-                                self.exp_bonus_multiplier, self.money_bonus_multiplier))
+                                self.exp_bonus_multiplier, self.money_bonus_multiplier,
+                                self.construction_time_bonus_multiplier))
 
     def on_level_up(self):
         super().on_level_up()

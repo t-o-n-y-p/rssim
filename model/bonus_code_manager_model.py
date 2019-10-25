@@ -23,12 +23,14 @@ class BonusCodeManagerModel(GameBaseModel):
         for code in self.bonus_code_matrix:
             if self.bonus_code_matrix[code][IS_ACTIVATED]:
                 self.bonus_code_matrix[code][BONUS_TIME] -= 1
-                if self.bonus_code_matrix[code][BONUS_TIME] == 0:
+                if self.bonus_code_matrix[code][BONUS_TIME] <= 0:
                     self.bonus_code_matrix[code][IS_ACTIVATED] = False
                     if self.bonus_code_matrix[code][CODE_TYPE] == 'exp_bonus':
                         self.controller.parent_controller.on_deactivate_exp_bonus_code()
                     elif self.bonus_code_matrix[code][CODE_TYPE] == 'money_bonus':
                         self.controller.parent_controller.on_deactivate_money_bonus_code()
+                    elif self.bonus_code_matrix[code][CODE_TYPE] == 'construction_time_bonus':
+                        self.controller.parent_controller.on_deactivate_construction_time_bonus_code()
 
     def on_deactivate_exp_bonus_code(self):
         super().on_deactivate_exp_bonus_code()
@@ -38,6 +40,10 @@ class BonusCodeManagerModel(GameBaseModel):
         super().on_deactivate_money_bonus_code()
         self.view.on_send_money_bonus_expired_notification()
 
+    def on_deactivate_construction_time_bonus_code(self):
+        super().on_deactivate_construction_time_bonus_code()
+        self.view.on_send_construction_time_bonus_expired_notification()
+
     def on_activate_new_bonus_code(self, sha512_hash):
         self.bonus_code_matrix[sha512_hash][ACTIVATIONS_LEFT] -= 1
         self.bonus_code_matrix[sha512_hash][IS_ACTIVATED] = True
@@ -46,6 +52,8 @@ class BonusCodeManagerModel(GameBaseModel):
             self.on_activate_exp_bonus_code(self.bonus_code_matrix[sha512_hash][BONUS_VALUE] - 1)
         elif self.bonus_code_matrix[sha512_hash][CODE_TYPE] == 'money_bonus':
             self.on_activate_money_bonus_code(self.bonus_code_matrix[sha512_hash][BONUS_VALUE] - 1)
+        elif self.bonus_code_matrix[sha512_hash][CODE_TYPE] == 'construction_time_bonus':
+            self.on_activate_construction_time_bonus_code(self.bonus_code_matrix[sha512_hash][BONUS_VALUE] - 1)
 
     def get_bonus_code_type(self, sha512_hash):
         return self.bonus_code_matrix[sha512_hash][CODE_TYPE]

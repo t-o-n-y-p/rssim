@@ -81,3 +81,7 @@ class GameController(GameBaseController):
             self.on_activate_exp_bonus_code(self.bonus_code_manager.model.get_bonus_code_value(sha512_hash) - 1)
         elif bonus_code_type == 'money_bonus':
             self.on_activate_money_bonus_code(self.bonus_code_manager.model.get_bonus_code_value(sha512_hash) - 1)
+        elif bonus_code_type == 'construction_time_bonus':
+            self.on_activate_construction_time_bonus_code(
+                self.bonus_code_manager.model.get_bonus_code_value(sha512_hash) - 1
+            )

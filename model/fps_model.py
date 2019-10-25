@@ -20,4 +20,4 @@ class FPSModel(AppBaseModel):
         if not self.display_fps:
             self.view.on_deactivate()
         else:
-            self.on_activate_view()
+            self.view.on_activate()

@@ -112,8 +112,8 @@
 		"ru": "накопились деньги на новое строительство"
 	},
 	"bonus_expired_notification_description_string": {
-		"en": "exp or money bonus is expired",
-		"ru": "бонус к опыту или деньгам заканчивается"
+		"en": "bonus time has expired",
+		"ru": "время бонуса истекает"
 	},
 	"shop_storage_notification_description_string": {
 		"en": "shop storage is (almost) full",
@@ -202,6 +202,14 @@
 	"money_bonus_expired_notification_message_string": {
 		"en": "Money bonus time has expired.",
 		"ru": "Время действия бонуса к деньгам истекло."
+	},
+	"construction_time_bonus_expired_notification_caption_string": {
+		"en": "Construction time bonus turned off",
+		"ru": "Бонус к времени строительства выключен"
+	},
+	"construction_time_bonus_expired_notification_message_string": {
+		"en": "Construction time bonus time has expired.",
+		"ru": "Время действия бонуса к времени строительства истекло."
 	},
 	"shop_storage_almost_full_notification_caption_string": {
 		"en": "Storage almost full",

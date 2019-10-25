@@ -90,7 +90,7 @@ class ConstructorModel(GameBaseModel):
         for track in self.construction_state_matrix[TRACKS]:
             if self.construction_state_matrix[TRACKS][track][UNDER_CONSTRUCTION]:
                 self.construction_state_matrix[TRACKS][track][CONSTRUCTION_TIME] -= 1
-                if self.construction_state_matrix[TRACKS][track][CONSTRUCTION_TIME] == 0:
+                if self.construction_state_matrix[TRACKS][track][CONSTRUCTION_TIME] <= 0:
                     unlocked_track = track
                     self.construction_state_matrix[TRACKS][track][UNDER_CONSTRUCTION] = False
                     self.construction_state_matrix[TRACKS][track][LOCKED] = False
@@ -120,7 +120,7 @@ class ConstructorModel(GameBaseModel):
         for tier in self.construction_state_matrix[ENVIRONMENT]:
             if self.construction_state_matrix[ENVIRONMENT][tier][UNDER_CONSTRUCTION]:
                 self.construction_state_matrix[ENVIRONMENT][tier][CONSTRUCTION_TIME] -= 1
-                if self.construction_state_matrix[ENVIRONMENT][tier][CONSTRUCTION_TIME] == 0:
+                if self.construction_state_matrix[ENVIRONMENT][tier][CONSTRUCTION_TIME] <= 0:
                     unlocked_tier = tier
                     self.construction_state_matrix[ENVIRONMENT][tier][UNDER_CONSTRUCTION] = False
                     self.construction_state_matrix[ENVIRONMENT][tier][LOCKED] = False
@@ -187,7 +187,8 @@ class ConstructorModel(GameBaseModel):
         self.construction_state_matrix[construction_type][entity_number][UNLOCK_AVAILABLE] = False
         self.construction_state_matrix[construction_type][entity_number][UNDER_CONSTRUCTION] = True
         self.construction_state_matrix[construction_type][entity_number][CONSTRUCTION_TIME] \
-            = self.construction_state_matrix[construction_type][entity_number][MAX_CONSTRUCTION_TIME]
+            = int(self.construction_state_matrix[construction_type][entity_number][MAX_CONSTRUCTION_TIME]
+                  * self.construction_time_bonus_multiplier)
         self.view.on_update_construction_state(construction_type, entity_number)
         self.controller.parent_controller.parent_controller\
             .on_pay_money(self.construction_state_matrix[construction_type][entity_number][PRICE])

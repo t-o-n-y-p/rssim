@@ -308,9 +308,10 @@ class GameBaseView(AppBaseView):
         super().__init__(controller, logger, child_window)
         USER_DB_CURSOR.execute('SELECT game_time FROM epoch_timestamp')
         self.game_time = USER_DB_CURSOR.fetchone()[0]
-        USER_DB_CURSOR.execute('''SELECT level, money, exp_bonus_multiplier, money_bonus_multiplier 
-                                  FROM game_progress''')
-        self.level, self.money, self.exp_bonus_multiplier, self.money_bonus_multiplier = USER_DB_CURSOR.fetchone()
+        USER_DB_CURSOR.execute('''SELECT level, money, exp_bonus_multiplier, money_bonus_multiplier,  
+                                  construction_time_bonus_multiplier FROM game_progress''')
+        self.level, self.money, self.exp_bonus_multiplier, self.money_bonus_multiplier, \
+            self.construction_time_bonus_multiplier = USER_DB_CURSOR.fetchone()
 
     def on_update_time(self):
         self.game_time += 1
@@ -332,6 +333,12 @@ class GameBaseView(AppBaseView):
 
     def on_deactivate_money_bonus_code(self):
         self.money_bonus_multiplier = 1.0
+
+    def on_activate_construction_time_bonus_code(self, value):
+        self.construction_time_bonus_multiplier = round(1.0 + value, 2)
+
+    def on_deactivate_construction_time_bonus_code(self):
+        self.construction_time_bonus_multiplier = 1.0
 
 
 class MapBaseView(GameBaseView):

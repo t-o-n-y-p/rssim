@@ -7,6 +7,7 @@ from ui.label.exp_bonus_placeholder_label import ExpBonusPlaceholderLabel
 from ui.label.money_bonus_placeholder_label import MoneyBonusPlaceholderLabel
 from notifications.exp_bonus_expired_notification import ExpBonusExpiredNotification
 from notifications.money_bonus_expired_notification import MoneyBonusExpiredNotification
+from notifications.construction_time_bonus_expired_notification import ConstructionTimeBonusExpiredNotification
 
 
 @final
@@ -99,3 +100,11 @@ class BonusCodeManagerView(GameBaseView):
         money_bonus_expired_notification = MoneyBonusExpiredNotification()
         money_bonus_expired_notification.send(self.current_locale)
         self.controller.parent_controller.parent_controller.on_append_notification(money_bonus_expired_notification)
+
+    @notifications_available
+    @bonus_expired_notification_enabled
+    def on_send_construction_time_bonus_expired_notification(self):
+        construction_time_bonus_expired_notification = ConstructionTimeBonusExpiredNotification()
+        construction_time_bonus_expired_notification.send(self.current_locale)
+        self.controller.parent_controller.parent_controller\
+            .on_append_notification(construction_time_bonus_expired_notification)

@@ -78,8 +78,8 @@ class BonusCodeActivationView(AppBaseView):
         self.on_check_bonus_code_availability()
 
     def on_check_bonus_code_availability(self):
-        user_input_hash = sha512(self.bonus_code_interactive_label.text.encode('utf-8')).hexdigest()
-        if user_input_hash in self.bonus_code_matrix:
+        if (user_input_hash := sha512(self.bonus_code_interactive_label.text.encode('utf-8')).hexdigest()) \
+                in self.bonus_code_matrix:
             activated_bonus_counter = 0
             for code in self.bonus_code_matrix:
                 if self.bonus_code_matrix[code][CODE_TYPE] == self.bonus_code_matrix[user_input_hash][CODE_TYPE]:
@@ -91,7 +91,7 @@ class BonusCodeActivationView(AppBaseView):
                 self.activate_bonus_code_button.on_activate()
                 self.bonus_code_info_cell.on_activate()
                 self.bonus_code_info_cell.on_assign_data(self.bonus_code_matrix[user_input_hash][CODE_TYPE],
-                                                         self.bonus_code_matrix[user_input_hash][BONUS_VALUE] - 1,
+                                                         abs(self.bonus_code_matrix[user_input_hash][BONUS_VALUE] - 1),
                                                          self.bonus_code_matrix[user_input_hash][ACTIVATIONS_LEFT])
             else:
                 self.activate_bonus_code_button.on_disable()
