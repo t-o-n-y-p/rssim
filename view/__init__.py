@@ -173,8 +173,17 @@ def shader_sprite_exists(fn):
     return _delete_shader_sprite_if_it_exists
 
 
+def bonus_code_abuse_detected(fn):
+    def _lock_bonus_codes_if_abuse_detected(*args, **kwargs):
+        if args[0].bonus_code_input_characters > ALLOWED_BONUS_CODE_INPUT:
+            fn(*args, **kwargs)
+
+    return _lock_bonus_codes_if_abuse_detected
+
+
 # --------------------- CONSTANTS ---------------------
 MINI_MAP_FADE_OUT_TIMER: Final = 1.0        # time since user releases mouse button after which mini-map disappears
+ALLOWED_BONUS_CODE_INPUT = 50
 # ------------------- END CONSTANTS -------------------
 
 

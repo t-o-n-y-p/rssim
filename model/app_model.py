@@ -40,3 +40,8 @@ class AppModel(AppBaseModel):
     def on_save_and_commit_clock_state(clock_24h_enabled):
         USER_DB_CURSOR.execute('UPDATE i18n SET clock_24h = ?', (int(clock_24h_enabled), ))
         on_commit()
+
+    @staticmethod
+    def on_save_and_commit_bonus_code_abuse():
+        USER_DB_CURSOR.execute('UPDATE game_progress SET bonus_codes_locked = 1')
+        on_commit()

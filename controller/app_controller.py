@@ -242,3 +242,6 @@ class AppController(AppBaseController):
         self.on_change_enough_money_notification_state(enough_money_notification_enabled)
         self.on_change_bonus_expired_notification_state(bonus_expired_notification_enabled)
         self.on_change_shop_storage_notification_state(shop_storage_notification_enabled)
+
+    def on_save_and_commit_bonus_code_abuse(self):
+        self.model.on_save_and_commit_bonus_code_abuse()

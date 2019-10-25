@@ -11,7 +11,7 @@ class EnterCodeButton(UIButton):
         super().__init__(logger=getLogger('root.enter_code_button'),
                          parent_viewport=parent_viewport)
         self.transparent = True
-        self.to_activate_on_controller_init = True
+        self.to_activate_on_controller_init = False
         self.text = I18N_RESOURCES['enter_code_label_string'][self.current_locale]
         self.font_name = 'Perfo'
         self.is_bold = True
