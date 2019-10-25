@@ -197,7 +197,7 @@ class InteractiveLabel:
         self.batch = None
         self.group = None
         self.screen_resolution = (1280, 720)
-        self.text_length_limit = 20
+        self.text_length_limit = 25
 
     def get_x(self):
         pass

@@ -12,8 +12,8 @@
 		"ru": "Больше нет доступных путей"
 	},
 	"no_more_tiers_available_placeholder_string": {
-		"en": "No more tiers available",
-		"ru": "Больше нет доступных этапов"
+		"en": "No more environment available",
+		"ru": "Больше нет доступного окружения"
 	},
 	"title_track_string": {
 		"en": "Station: Track {0}",
@@ -64,8 +64,8 @@
 		"ru": "Требуется Окружение: Этап {0}"
 	},
 	"unlock_condition_from_previous_track_track_description_string": {
-		"en": "Requires Track {0}",
-		"ru": "Требуется Путь {0}"
+		"en": "Requires Station: Track {0}",
+		"ru": "Требуется Станция: Путь {0}"
 	},
 	"unlock_condition_from_previous_environment_environment_description_string": {
 		"en": "Requires Environment: Tier {0}",
@@ -350,6 +350,10 @@
 	"money_bonus_value_label_string": {
 		"en": "Money +{0}%",
 		"ru": "Деньги +{0}%"
+	},
+	"construction_time_bonus_value_label_string": {
+		"en": "Construction time -{0}%",
+		"ru": "Время строительства -{0}%"
 	},
 	"activations_title_label_string": {
 		"en": "Activations left:",
