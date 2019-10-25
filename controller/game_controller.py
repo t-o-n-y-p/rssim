@@ -26,116 +26,13 @@ class GameController(GameBaseController):
             self.fade_in_animation.map_fade_in_animations.append(m.fade_in_animation)
             self.fade_out_animation.map_fade_out_animations.append(m.fade_out_animation)
 
-    def on_activate_view(self):
-        super().on_activate_view()
-        self.bonus_code_manager.on_activate_view()
-        self.maps[self.model.get_active_map()].on_activate_view()
-
-    def on_deactivate_view(self):
-        super().on_deactivate_view()
-        self.bonus_code_manager.on_deactivate_view()
-        for m in self.maps:
-            m.on_deactivate_view()
-
-    def on_update_view(self):
-        super().on_update_view()
-        self.bonus_code_manager.on_update_view()
-        for m in self.maps:
-            m.on_update_view()
-
-    def on_update_current_locale(self, new_locale):
-        super().on_update_current_locale(new_locale)
-        self.bonus_code_manager.on_update_current_locale(new_locale)
-        for m in self.maps:
-            m.on_update_current_locale(new_locale)
-
-    def on_change_screen_resolution(self, screen_resolution):
-        super().on_change_screen_resolution(screen_resolution)
-        self.bonus_code_manager.on_change_screen_resolution(screen_resolution)
-        for m in self.maps:
-            m.on_change_screen_resolution(screen_resolution)
-
-    def on_apply_shaders_and_draw_vertices(self):
-        super().on_apply_shaders_and_draw_vertices()
-        self.bonus_code_manager.on_apply_shaders_and_draw_vertices()
-        for m in self.maps:
-            m.on_apply_shaders_and_draw_vertices()
-
-    def on_disable_notifications(self):
-        super().on_disable_notifications()
-        self.bonus_code_manager.on_disable_notifications()
-        for m in self.maps:
-            m.on_disable_notifications()
-
-    def on_enable_notifications(self):
-        super().on_enable_notifications()
-        self.bonus_code_manager.on_enable_notifications()
-        for m in self.maps:
-            m.on_enable_notifications()
-
-    def on_update_fade_animation_state(self, new_state):
-        super().on_update_fade_animation_state(new_state)
-        self.bonus_code_manager.on_update_fade_animation_state(new_state)
-        for m in self.maps:
-            m.on_update_fade_animation_state(new_state)
-
-    def on_save_state(self):
-        super().on_save_state()
-        self.bonus_code_manager.on_save_state()
-        for m in self.maps:
-            m.on_save_state()
-
-    def on_update_clock_state(self, clock_24h_enabled):
-        super().on_update_clock_state(clock_24h_enabled)
-        for m in self.maps:
-            m.on_update_clock_state(clock_24h_enabled)
+        self.child_controllers = [self.bonus_code_manager, *self.maps]
 
     @game_is_not_paused
     def on_update_time(self):
         super().on_update_time()
-        self.bonus_code_manager.on_update_time()
-        for m in self.maps:
-            m.on_update_time()
-
         if self.model.game_time % (FRAMES_IN_ONE_HOUR * 2) == 0:
             self.parent_controller.on_save_state()
-
-    def on_level_up(self):
-        super().on_level_up()
-        for m in self.maps:
-            m.on_level_up()
-
-    def on_add_money(self, money):
-        super().on_add_money(money)
-        for m in self.maps:
-            m.on_add_money(money)
-
-    def on_pay_money(self, money):
-        super().on_pay_money(money)
-        for m in self.maps:
-            m.on_pay_money(money)
-
-    def on_activate_exp_bonus_code(self, value):
-        super().on_activate_exp_bonus_code(value)
-        for m in self.maps:
-            m.on_activate_exp_bonus_code(value)
-
-    def on_activate_money_bonus_code(self, value):
-        super().on_activate_money_bonus_code(value)
-        for m in self.maps:
-            m.on_activate_money_bonus_code(value)
-
-    def on_deactivate_exp_bonus_code(self):
-        super().on_deactivate_exp_bonus_code()
-        self.bonus_code_manager.on_deactivate_exp_bonus_code()
-        for m in self.maps:
-            m.on_deactivate_exp_bonus_code()
-
-    def on_deactivate_money_bonus_code(self):
-        super().on_deactivate_money_bonus_code()
-        self.bonus_code_manager.on_deactivate_money_bonus_code()
-        for m in self.maps:
-            m.on_deactivate_money_bonus_code()
 
     def on_pause_game(self):
         self.model.on_pause_game()

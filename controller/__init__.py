@@ -61,42 +61,63 @@ class AppBaseController:
         self.on_text_handlers = []
         self.fade_in_animation = None
         self.fade_out_animation = None
+        self.child_controllers = []
 
     def on_activate_view(self):
         self.view.on_activate()
 
     def on_deactivate_view(self):
         self.view.on_deactivate()
+        for controller in self.child_controllers:
+            controller.on_deactivate_view()
 
     def on_update_view(self):
         self.view.on_update()
         self.fade_in_animation.on_update()
         self.fade_out_animation.on_update()
+        for controller in self.child_controllers:
+            controller.on_update_view()
 
     def on_update_current_locale(self, new_locale):
         self.view.on_update_current_locale(new_locale)
+        for controller in self.child_controllers:
+            controller.on_update_current_locale(new_locale)
 
     def on_change_screen_resolution(self, screen_resolution):
         self.view.on_change_screen_resolution(screen_resolution)
+        for controller in self.child_controllers:
+            controller.on_change_screen_resolution(screen_resolution)
 
     def on_apply_shaders_and_draw_vertices(self):
         self.view.on_apply_shaders_and_draw_vertices()
+        for controller in self.child_controllers:
+            controller.on_apply_shaders_and_draw_vertices()
 
     def on_disable_notifications(self):
         self.view.on_disable_notifications()
+        for controller in self.child_controllers:
+            controller.on_disable_notifications()
 
     def on_enable_notifications(self):
         self.view.on_enable_notifications()
+        for controller in self.child_controllers:
+            controller.on_enable_notifications()
 
     def on_update_fade_animation_state(self, new_state):
         self.fade_in_animation.on_update_fade_animation_state(new_state)
         self.fade_out_animation.on_update_fade_animation_state(new_state)
+        for controller in self.child_controllers:
+            controller.on_update_fade_animation_state(new_state)
 
     def on_save_state(self):
         self.model.on_save_state()
+        for controller in self.child_controllers:
+            controller.on_save_state()
 
     def on_update_clock_state(self, clock_24h_enabled):
         self.view.on_update_clock_state(clock_24h_enabled)
+        for controller in self.child_controllers:
+            controller.on_update_clock_state(clock_24h_enabled)
 
     @final
     def on_append_handlers(self, on_mouse_motion_handlers=None, on_mouse_press_handlers=None,
@@ -195,41 +216,64 @@ class GameBaseController(AppBaseController):
 
     def on_update_time(self):
         self.model.on_update_time()
+        for controller in self.child_controllers:
+            controller.on_update_time()
 
     def on_level_up(self):
         self.model.on_level_up()
+        for controller in self.child_controllers:
+            controller.on_level_up()
 
     def on_add_money(self, money):
         self.model.on_add_money(money)
+        for controller in self.child_controllers:
+            controller.on_add_money(money)
 
     def on_pay_money(self, money):
         self.model.on_pay_money(money)
+        for controller in self.child_controllers:
+            controller.on_pay_money(money)
 
     def on_activate_exp_bonus_code(self, value):
         self.model.on_activate_exp_bonus_code(value)
+        for controller in self.child_controllers:
+            controller.on_activate_exp_bonus_code(value)
 
     def on_activate_money_bonus_code(self, value):
         self.model.on_activate_money_bonus_code(value)
+        for controller in self.child_controllers:
+            controller.on_activate_money_bonus_code(value)
 
     def on_deactivate_exp_bonus_code(self):
         self.model.on_deactivate_exp_bonus_code()
+        for controller in self.child_controllers:
+            controller.on_deactivate_exp_bonus_code()
 
     def on_deactivate_money_bonus_code(self):
         self.model.on_deactivate_money_bonus_code()
+        for controller in self.child_controllers:
+            controller.on_deactivate_money_bonus_code()
 
 
 class MapBaseController(GameBaseController):
     def __init__(self, parent_controller=None, logger=None):
         super().__init__(parent_controller, logger)
+        self.map_element_controllers = []
 
     def on_change_base_offset(self, new_base_offset):
         self.view.on_change_base_offset(new_base_offset)
+        for controller in self.map_element_controllers:
+            controller.on_change_base_offset(new_base_offset)
 
     def on_zoom_in(self):
         self.view.on_zoom_in()
+        for controller in self.map_element_controllers:
+            controller.on_zoom_in()
 
     def on_zoom_out(self):
         self.view.on_zoom_out()
+        for controller in self.map_element_controllers:
+            controller.on_zoom_out()
 
     def on_unlock(self):
         self.model.on_unlock()

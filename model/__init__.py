@@ -1,6 +1,6 @@
 from typing import Final
 
-from database import USER_DB_CURSOR, CONFIG_DB_CURSOR
+from database import USER_DB_CURSOR
 
 
 def fullscreen_mode_available(fn):
