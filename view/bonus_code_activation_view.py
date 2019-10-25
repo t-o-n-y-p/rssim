@@ -2,6 +2,7 @@ from logging import getLogger
 from hashlib import sha512
 
 from view import *
+from database import BONUS_CODE_MATRIX
 from ui.label.bonus_code_interactive_label import BonusCodeInteractiveLabel
 from ui.button.activate_bonus_code_button import ActivateBonusCodeButton
 from ui.button.cancel_bonus_code_activation_button import CancelBonusCodeActivationButton
@@ -11,7 +12,7 @@ from ui.bonus_code_info import BonusCodeInfoCell
 
 @final
 class BonusCodeActivationView(AppBaseView):
-    def __init__(self):
+    def __init__(self, controller):
         def on_activate_bonus_code(button):
             self.controller.parent_controller.on_activate_new_bonus_code(
                 sha512(self.bonus_code_interactive_label.text.encode('utf-8')).hexdigest())
@@ -20,7 +21,7 @@ class BonusCodeActivationView(AppBaseView):
         def on_cancel_bonus_code_activation(button):
             self.controller.parent_controller.on_close_bonus_code()
 
-        super().__init__(logger=getLogger('root.app.bonus_code_activation.view'))
+        super().__init__(controller, logger=getLogger('root.app.bonus_code_activation.view'))
         USER_DB_CURSOR.execute('SELECT level FROM game_progress')
         self.level = USER_DB_CURSOR.fetchone()[0]
         self.bonus_code_interactive_label = BonusCodeInteractiveLabel(parent_viewport=self.viewport)
@@ -31,7 +32,7 @@ class BonusCodeActivationView(AppBaseView):
                                               parent_viewport=self.viewport)
         self.buttons = [self.activate_bonus_code_button, self.cancel_bonus_code_activation_button]
         self.shader_sprite = BonusCodeViewShaderSprite(view=self)
-        self.bonus_code_matrix = None
+        self.bonus_code_matrix = BONUS_CODE_MATRIX
         self.bonus_code_info_cell = BonusCodeInfoCell(parent_viewport=self.viewport)
         self.on_text_handlers = [self.on_text, ]
         self.on_key_press_handlers = [self.on_key_press, ]

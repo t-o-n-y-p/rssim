@@ -18,7 +18,7 @@ from ui.sprite.mini_environment_sprite import MiniEnvironmentSprite
 
 
 class MapView(MapBaseView):
-    def __init__(self, map_id):
+    def __init__(self, controller, map_id):
         def on_click_zoom_in_button(button):
             button.paired_button.opacity = button.opacity
             button.on_deactivate(instant=True)
@@ -50,7 +50,7 @@ class MapView(MapBaseView):
         def on_open_shop_details(button):
             self.controller.on_open_shop_details(self.shop_buttons.index(button))
 
-        super().__init__(logger=getLogger(f'root.app.game.map.{map_id}.view'))
+        super().__init__(controller, logger=getLogger(f'root.app.game.map.{map_id}.view'))
         self.map_id = map_id
         USER_DB_CURSOR.execute('''SELECT unlocked_tracks FROM map_progress WHERE map_id = ?''', (self.map_id, ))
         self.unlocked_tracks = USER_DB_CURSOR.fetchone()[0]

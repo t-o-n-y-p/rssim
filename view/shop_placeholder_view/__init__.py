@@ -6,8 +6,8 @@ from ui.label.shop_level_placeholder_label import ShopLevelPlaceholderLabel
 
 
 class ShopPlaceholderView(GameBaseView):
-    def __init__(self, map_id, shop_id):
-        super().__init__(logger=getLogger(f'root.app.game.map.{map_id}.shop.{shop_id}.placeholder.view'),
+    def __init__(self, controller, map_id, shop_id):
+        super().__init__(controller, logger=getLogger(f'root.app.game.map.{map_id}.shop.{shop_id}.placeholder.view'),
                          child_window=True)
         self.map_id = map_id
         self.shop_id = shop_id

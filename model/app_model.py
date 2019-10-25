@@ -6,8 +6,8 @@ from database import USER_DB_CURSOR, CONFIG_DB_CURSOR, on_commit
 
 
 class AppModel(AppBaseModel):
-    def __init__(self):
-        super().__init__(logger=getLogger('root.app.model'))
+    def __init__(self, controller, view):
+        super().__init__(controller, view, logger=getLogger('root.app.model'))
         USER_DB_CURSOR.execute('SELECT fullscreen FROM graphics')
         self.fullscreen_mode = bool(USER_DB_CURSOR.fetchone()[0])
         CONFIG_DB_CURSOR.execute('SELECT app_width, app_height FROM screen_resolution_config')

@@ -5,5 +5,5 @@ from view.constructor_view import ConstructorView
 
 @final
 class PassengerMapConstructorView(ConstructorView):
-    def __init__(self):
-        super().__init__(map_id=0)
+    def __init__(self, controller):
+        super().__init__(controller, map_id=0)

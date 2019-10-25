@@ -3,12 +3,12 @@ from operator import itemgetter
 from logging import getLogger
 
 from model import *
-from database import USER_DB_CURSOR, CONFIG_DB_CURSOR
+from database import USER_DB_CURSOR, CONFIG_DB_CURSOR, BASE_SCHEDULE
 
 
 class SchedulerModel(GameBaseModel):
-    def __init__(self, map_id):
-        super().__init__(logger=getLogger(f'root.app.game.map.{map_id}.scheduler.model'))
+    def __init__(self, controller, view, map_id):
+        super().__init__(controller, view, logger=getLogger(f'root.app.game.map.{map_id}.scheduler.model'))
         self.map_id = map_id
         USER_DB_CURSOR.execute('SELECT game_time FROM epoch_timestamp')
         self.game_time = USER_DB_CURSOR.fetchone()[0]
@@ -23,10 +23,7 @@ class SchedulerModel(GameBaseModel):
                                     WHERE min_level <= ? AND max_level >= ? AND map_id = ?''',
                                  (self.level, self.level, self.map_id))
         self.schedule_options = CONFIG_DB_CURSOR.fetchall()
-        USER_DB_CURSOR.execute('''SELECT train_id, arrival, direction, new_direction, 
-                                  cars, boarding_time, exp, money FROM base_schedule WHERE map_id = ?''',
-                               (self.map_id, ))
-        self.base_schedule = USER_DB_CURSOR.fetchall()
+        self.base_schedule = BASE_SCHEDULE[self.map_id]
         USER_DB_CURSOR.execute('''SELECT train_counter, next_cycle_start_time FROM scheduler WHERE map_id = ?''',
                                (self.map_id, ))
         self.train_counter, self.next_cycle_start_time = USER_DB_CURSOR.fetchone()

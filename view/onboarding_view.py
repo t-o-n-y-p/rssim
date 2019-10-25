@@ -9,11 +9,11 @@ from ui.label.skip_onboarding_label import SkipOnboardingLabel
 
 @final
 class OnboardingView(AppBaseView):
-    def __init__(self):
+    def __init__(self, controller):
         def on_skip_onboarding(button):
             self.controller.parent_controller.on_close_onboarding()
 
-        super().__init__(logger=getLogger('root.app.onboarding.view'))
+        super().__init__(controller, logger=getLogger('root.app.onboarding.view'))
         self.onboarding_page_control = OnboardingPageControl(parent_viewport=self.viewport)
         self.skip_onboarding_button = SkipOnboardingButton(on_click_action=on_skip_onboarding,
                                                            parent_viewport=self.viewport)

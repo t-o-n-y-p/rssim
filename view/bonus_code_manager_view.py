@@ -11,8 +11,8 @@ from notifications.money_bonus_expired_notification import MoneyBonusExpiredNoti
 
 @final
 class BonusCodeManagerView(GameBaseView):
-    def __init__(self):
-        super().__init__(logger=getLogger('root.app.bonus_code_manager.view'))
+    def __init__(self, controller):
+        super().__init__(controller, logger=getLogger('root.app.bonus_code_manager.view'))
         self.exp_bonus_percent_label = ExpBonusValuePercentLabel(parent_viewport=self.viewport)
         self.money_bonus_percent_label = MoneyBonusValuePercentLabel(parent_viewport=self.viewport)
         self.exp_bonus_placeholder_label = ExpBonusPlaceholderLabel(parent_viewport=self.viewport)

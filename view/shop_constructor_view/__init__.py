@@ -14,14 +14,14 @@ from notifications.shop_storage_full_notification import ShopStorageFullNotifica
 
 
 class ShopConstructorView(GameBaseView):
-    def __init__(self, map_id, shop_id):
+    def __init__(self, controller, map_id, shop_id):
         def on_clear_storage(button):
             self.controller.on_clear_storage()
 
         def on_buy_stage_action(stage_number):
             self.controller.on_put_stage_under_construction(stage_number)
 
-        super().__init__(logger=getLogger(f'root.app.game.map.{map_id}.shop.{shop_id}.constructor.view'),
+        super().__init__(controller, logger=getLogger(f'root.app.game.map.{map_id}.shop.{shop_id}.constructor.view'),
                          child_window=True)
         self.map_id = map_id
         self.shop_id = shop_id

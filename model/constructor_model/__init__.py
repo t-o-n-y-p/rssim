@@ -1,41 +1,16 @@
 from logging import getLogger
 
 from model import *
-from database import USER_DB_CURSOR, CONFIG_DB_CURSOR
+from database import USER_DB_CURSOR, CONFIG_DB_CURSOR, CONSTRUCTION_STATE_MATRIX
 
 
 class ConstructorModel(GameBaseModel):
-    def __init__(self, map_id):
-        super().__init__(logger=getLogger(f'root.app.game.map.{map_id}.constructor.model'))
+    def __init__(self, controller, view, map_id):
+        super().__init__(controller, view, logger=getLogger(f'root.app.game.map.{map_id}.constructor.model'))
         self.map_id = map_id
-        self.construction_state_matrix = [{}, {}]
+        self.construction_state_matrix = CONSTRUCTION_STATE_MATRIX[self.map_id]
         self.cached_unlocked_tracks = []
         self.cached_unlocked_tiers = []
-        USER_DB_CURSOR.execute('''SELECT track_number, locked, under_construction, construction_time, 
-                                  unlock_condition_from_level, unlock_condition_from_previous_track, 
-                                  unlock_condition_from_environment, unlock_available FROM tracks 
-                                  WHERE locked = 1 AND map_id = ?''', (self.map_id, ))
-        track_info_fetched = USER_DB_CURSOR.fetchall()
-        for info in track_info_fetched:
-            self.construction_state_matrix[TRACKS][info[0]] = [bool(info[1]), bool(info[2]), info[3], bool(info[4]),
-                                                               bool(info[5]), bool(info[6]), bool(info[7])]
-            CONFIG_DB_CURSOR.execute('''SELECT price, max_construction_time, level, environment_tier FROM track_config 
-                                        WHERE track_number = ? AND map_id = ?''', (info[0], self.map_id))
-            self.construction_state_matrix[TRACKS][info[0]].extend(CONFIG_DB_CURSOR.fetchone())
-
-        USER_DB_CURSOR.execute('''SELECT tier, locked, under_construction, construction_time, 
-                                  unlock_condition_from_level, unlock_condition_from_previous_environment,
-                                  unlock_available FROM environment WHERE locked = 1 AND map_id = ?''',
-                               (self.map_id, ))
-        environment_info_fetched = USER_DB_CURSOR.fetchall()
-        for info in environment_info_fetched:
-            self.construction_state_matrix[ENVIRONMENT][info[0]] = [bool(info[1]), bool(info[2]), info[3],
-                                                                    bool(info[4]), bool(info[5]), 1, bool(info[6])]
-            CONFIG_DB_CURSOR.execute('''SELECT price, max_construction_time, level FROM environment_config 
-                                        WHERE tier = ? AND map_id = ?''',
-                                     (info[0], self.map_id))
-            self.construction_state_matrix[ENVIRONMENT][info[0]].extend(CONFIG_DB_CURSOR.fetchone())
-
         USER_DB_CURSOR.execute('SELECT money_target_activated FROM constructor WHERE map_id = ?', (self.map_id, ))
         self.money_target_activated = bool(USER_DB_CURSOR.fetchone()[0])
         USER_DB_CURSOR.execute('SELECT money_target_cell_position FROM constructor WHERE map_id = ?',

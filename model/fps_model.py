@@ -5,8 +5,8 @@ from database import USER_DB_CURSOR
 
 
 class FPSModel(AppBaseModel):
-    def __init__(self):
-        super().__init__(logger=getLogger('root.app.fps.model'))
+    def __init__(self, controller, view):
+        super().__init__(controller, view, logger=getLogger('root.app.fps.model'))
         USER_DB_CURSOR.execute('SELECT display_fps FROM graphics')
         self.display_fps = USER_DB_CURSOR.fetchone()[0]
         self.fps = 0

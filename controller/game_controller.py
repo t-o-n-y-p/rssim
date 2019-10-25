@@ -1,15 +1,30 @@
 from logging import getLogger
 
 from controller import *
+from model.game_model import GameModel
+from view.game_view import GameView
+from ui.fade_animation.fade_in_animation.game_fade_in_animation import GameFadeInAnimation
+from ui.fade_animation.fade_out_animation.game_fade_out_animation import GameFadeOutAnimation
+from controller.bonus_code_manager_controller import BonusCodeManagerController
+from controller.map_controller.passenger_map_controller import PassengerMapController
 
 
 @final
 class GameController(GameBaseController):
     def __init__(self, app):
         super().__init__(parent_controller=app, logger=getLogger('root.app.game.controller'))
-        self.bonus_code_manager = None
-        self.maps = []
-        self.map_transition_animations = []
+        self.fade_in_animation = GameFadeInAnimation(self)
+        self.fade_out_animation = GameFadeOutAnimation(self)
+        self.view = GameView(controller=self)
+        self.model = GameModel(controller=self, view=self.view)
+        self.view.on_init_content()
+        self.bonus_code_manager = BonusCodeManagerController(self)
+        self.maps = [PassengerMapController(self), ]
+        self.fade_in_animation.bonus_code_manager_fade_in_animation = self.bonus_code_manager.fade_in_animation
+        self.fade_out_animation.bonus_code_manager_fade_out_animation = self.bonus_code_manager.fade_out_animation
+        for m in self.maps:
+            self.fade_in_animation.map_fade_in_animations.append(m.fade_in_animation)
+            self.fade_out_animation.map_fade_out_animations.append(m.fade_out_animation)
 
     def on_activate_view(self):
         super().on_activate_view()

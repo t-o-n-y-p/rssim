@@ -1,10 +1,15 @@
 from logging import getLogger
 
 from controller import *
+from model.railroad_switch_model import RailroadSwitchModel
+from view.railroad_switch_view import RailroadSwitchView
+from ui.fade_animation.fade_in_animation.railroad_switch_fade_in_animation import RailroadSwitchFadeInAnimation
+from ui.fade_animation.fade_out_animation.railroad_switch_fade_out_animation import RailroadSwitchFadeOutAnimation
 
 
 class RailroadSwitchController(MapBaseController):
-    def __init__(self, map_id, parent_controller, track_param_1, track_param_2, switch_type):
+    def __init__(self, model: RailroadSwitchModel, view: RailroadSwitchView, map_id, parent_controller,
+                 track_param_1, track_param_2, switch_type):
         logger_name \
             = f'root.app.game.map.{map_id}.railroad_switch.{track_param_1}.{track_param_2}.{switch_type}.controller'
         super().__init__(parent_controller=parent_controller, logger=getLogger(logger_name))
@@ -12,6 +17,14 @@ class RailroadSwitchController(MapBaseController):
         self.track_param_2 = track_param_2
         self.switch_type = switch_type
         self.map_id = map_id
+        self.fade_in_animation = RailroadSwitchFadeInAnimation(self)
+        self.fade_out_animation = RailroadSwitchFadeOutAnimation(self)
+        self.view = view
+        self.model = model
+        self.view.on_init_content()
+
+    def create_switch_elements(self, track_param_1, track_param_2, switch_type):
+        pass
 
     @final
     def on_force_busy_on(self, positions, train_id):

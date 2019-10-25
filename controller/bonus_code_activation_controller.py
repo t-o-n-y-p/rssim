@@ -1,9 +1,20 @@
 from logging import getLogger
 
 from controller import *
+from model.bonus_code_activation_model import BonusCodeActivationModel
+from view.bonus_code_activation_view import BonusCodeActivationView
+from ui.fade_animation.fade_in_animation.bonus_code_activation_fade_in_animation \
+    import BonusCodeActivationFadeInAnimation
+from ui.fade_animation.fade_out_animation.bonus_code_activation_fade_out_animation \
+    import BonusCodeActivationFadeOutAnimation
 
 
 @final
 class BonusCodeActivationController(AppBaseController):
     def __init__(self, app):
         super().__init__(parent_controller=app, logger=getLogger('root.app.bonus_code_activation.controller'))
+        self.fade_in_animation = BonusCodeActivationFadeInAnimation(self)
+        self.fade_out_animation = BonusCodeActivationFadeOutAnimation(self)
+        self.view = BonusCodeActivationView(controller=self)
+        self.model = BonusCodeActivationModel(controller=self, view=self.view)
+        self.view.on_init_content()

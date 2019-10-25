@@ -12,7 +12,7 @@ from ui.shader_sprite.main_menu_view_shader_sprite import MainMenuViewShaderSpri
 
 @final
 class MainMenuView(AppBaseView):
-    def __init__(self):
+    def __init__(self, controller):
         def on_create_station(button):
             self.controller.parent_controller.on_open_onboarding()
 
@@ -28,7 +28,7 @@ class MainMenuView(AppBaseView):
         def on_open_bonus_code(button):
             self.controller.parent_controller.on_open_bonus_code()
 
-        super().__init__(logger=getLogger('root.app.main_menu.view'))
+        super().__init__(controller, logger=getLogger('root.app.main_menu.view'))
         self.create_station_button = CreateStationButton(on_click_action=on_create_station,
                                                          parent_viewport=self.viewport)
         self.back_to_the_station_button = BackToTheStationButton(on_click_action=on_back_to_the_station,

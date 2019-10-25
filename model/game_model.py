@@ -5,8 +5,8 @@ from database import USER_DB_CURSOR, CONFIG_DB_CURSOR
 
 
 class GameModel(GameBaseModel):
-    def __init__(self):
-        super().__init__(logger=getLogger('root.app.game.model'))
+    def __init__(self, controller, view):
+        super().__init__(controller, view, logger=getLogger('root.app.game.model'))
         self.game_paused = True
         USER_DB_CURSOR.execute('''SELECT exp, money_target, exp_multiplier FROM game_progress''')
         self.exp, self.money_target, self.exp_multiplier = USER_DB_CURSOR.fetchone()

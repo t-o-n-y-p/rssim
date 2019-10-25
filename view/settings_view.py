@@ -13,7 +13,7 @@ from ui.shader_sprite.settings_view_shader_sprite import SettingsViewShaderSprit
 
 @final
 class SettingsView(AppBaseView):
-    def __init__(self):
+    def __init__(self, controller):
         def on_accept_changes(button):
             self.controller.parent_controller\
                 .on_accept_changes(self.temp_windowed_resolution, self.temp_display_fps,
@@ -24,7 +24,7 @@ class SettingsView(AppBaseView):
                                    self.temp_enough_money_notification_enabled,
                                    self.temp_bonus_expired_notification_enabled,
                                    self.temp_shop_storage_notification_enabled)
-            self.controller.on_save_state()
+            self.controller.on_save_and_commit_state()
             self.controller.parent_controller.on_close_settings()
 
         def on_reject_changes(button):
@@ -60,7 +60,7 @@ class SettingsView(AppBaseView):
         def on_update_shop_storage_notifications_state(new_state):
             self.temp_shop_storage_notification_enabled = new_state
 
-        super().__init__(logger=getLogger('root.app.settings.view'))
+        super().__init__(controller, logger=getLogger('root.app.settings.view'))
         self.temp_windowed_resolution = (0, 0)
         self.temp_display_fps = False
         self.temp_fade_animations_enabled = False

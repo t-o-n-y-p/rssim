@@ -7,8 +7,8 @@ from ui.sprite.boarding_lights_sprite import BoardingLightsSprite
 
 
 class TrainView(MapBaseView):
-    def __init__(self, map_id, train_id):
-        super().__init__(logger=getLogger(f'root.app.game.map.{map_id}.train.{train_id}.view'))
+    def __init__(self, controller, map_id, train_id):
+        super().__init__(controller, logger=getLogger(f'root.app.game.map.{map_id}.train.{train_id}.view'))
         self.map_id = map_id
         self.train_id = train_id
         self.car_position = []
@@ -21,6 +21,15 @@ class TrainView(MapBaseView):
         self.direction = None
         self.car_image_collection = None
         self.state = None
+
+    def on_train_setup(self):
+        USER_DB_CURSOR.execute('''SELECT state, direction, car_image_collection 
+                                  FROM trains WHERE train_id = ? AND map_id = ?''',
+                               (self.train_id, self.map_id))
+        self.state, self.direction, self.car_image_collection = USER_DB_CURSOR.fetchone()
+
+    def on_train_init(self, state, direction, car_image_collection):
+        self.state, self.direction, self.car_image_collection = state, direction, car_image_collection
 
     @final
     @view_is_not_active

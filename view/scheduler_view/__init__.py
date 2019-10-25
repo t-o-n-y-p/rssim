@@ -1,6 +1,7 @@
 from logging import getLogger
 
 from view import *
+from database import BASE_SCHEDULE
 from ui.schedule import ScheduleRow
 from ui.button.close_schedule_button import CloseScheduleButton
 from ui.shader_sprite.scheduler_view_shader_sprite import SchedulerViewShaderSprite
@@ -9,14 +10,14 @@ from ui.label.schedule_right_caption_label import ScheduleRightCaptionLabel
 
 
 class SchedulerView(GameBaseView):
-    def __init__(self, map_id):
+    def __init__(self, controller, map_id):
         def on_close_schedule(button):
             self.controller.fade_out_animation.on_activate()
 
-        super().__init__(logger=getLogger(f'root.app.game.map.{map_id}.scheduler.view'))
+        super().__init__(controller, logger=getLogger(f'root.app.game.map.{map_id}.scheduler.view'))
         self.map_id = map_id
-        self.base_schedule = None
-        self.arrival_time_threshold = None
+        self.base_schedule = BASE_SCHEDULE[self.map_id]
+        self.arrival_time_threshold = SCHEDULE_ARRIVAL_TIME_THRESHOLD[self.map_id]
         self.left_schedule_caption_label = ScheduleLeftCaptionLabel(parent_viewport=self.viewport)
         self.right_schedule_caption_label = ScheduleRightCaptionLabel(parent_viewport=self.viewport)
         self.close_schedule_button = CloseScheduleButton(on_click_action=on_close_schedule,

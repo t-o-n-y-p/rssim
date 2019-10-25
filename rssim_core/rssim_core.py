@@ -12,6 +12,7 @@ from exceptions import *
 from rssim_core import *
 from ui import SURFACE, BATCHES, MIN_RESOLUTION_WIDTH, MIN_RESOLUTION_HEIGHT
 from database import USER_DB_CURSOR, USER_DB_CONNECTION, USER_DB_LOCATION, on_commit
+from controller.app_controller import AppController
 
 
 @final
@@ -60,7 +61,7 @@ class RSSim:
         gl.glEnable(gl.GL_BLEND)
         gl.glBlendFunc(gl.GL_SRC_ALPHA, gl.GL_ONE_MINUS_SRC_ALPHA)
         # create App object
-        self.app = create_app(loader=self)
+        self.app = AppController(loader=self)
         # initially app is created using default minimal screen resolution; now we change it to user resolution
         # and same about fullscreen mode
         if self.app.model.fullscreen_mode and self.app.model.fullscreen_mode_available:

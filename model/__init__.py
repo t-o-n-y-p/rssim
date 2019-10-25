@@ -1,6 +1,6 @@
 from typing import Final
 
-from database import USER_DB_CURSOR
+from database import USER_DB_CURSOR, CONFIG_DB_CURSOR
 
 
 def fullscreen_mode_available(fn):
@@ -179,18 +179,18 @@ SHOP_STORAGE_ALMOST_FULL_THRESHOLD: Final = 0.9
 
 
 class AppBaseModel:
-    def __init__(self, logger):
+    def __init__(self, controller, view, logger):
         self.logger = logger
-        self.view = None
-        self.controller = None
+        self.view = view
+        self.controller = controller
 
     def on_save_state(self):
         pass
 
 
 class GameBaseModel(AppBaseModel):
-    def __init__(self, logger):
-        super().__init__(logger)
+    def __init__(self, controller, view, logger):
+        super().__init__(controller, view, logger)
         USER_DB_CURSOR.execute('SELECT game_time FROM epoch_timestamp')
         self.game_time = USER_DB_CURSOR.fetchone()[0]
         USER_DB_CURSOR.execute('''SELECT level, money, exp_bonus_multiplier, money_bonus_multiplier 
@@ -231,8 +231,8 @@ class GameBaseModel(AppBaseModel):
 
 
 class MapBaseModel(GameBaseModel):
-    def __init__(self, logger):
-        super().__init__(logger)
+    def __init__(self, controller, view, logger):
+        super().__init__(controller, view, logger)
         self.locked = True
 
     def on_unlock(self):

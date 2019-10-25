@@ -5,8 +5,8 @@ from database import USER_DB_CURSOR, on_commit
 
 
 class OnboardingModel(AppBaseModel):
-    def __init__(self):
-        super().__init__(logger=getLogger('root.app.onboarding.model'))
+    def __init__(self, controller, view):
+        super().__init__(controller, view, logger=getLogger('root.app.onboarding.model'))
 
     @staticmethod
     def on_save_and_commit_onboarding_state():

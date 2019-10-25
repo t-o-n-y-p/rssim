@@ -4,8 +4,9 @@ from view import *
 
 
 class TrainRouteView(MapBaseView):
-    def __init__(self, map_id, track, train_route):
-        super().__init__(logger=getLogger(f'root.app.game.map.{map_id}.train_route.{track}.{train_route}.view'))
+    def __init__(self, controller, map_id, track, train_route):
+        super().__init__(controller,
+                         logger=getLogger(f'root.app.game.map.{map_id}.train_route.{track}.{train_route}.view'))
         self.map_id = map_id
 
     @final

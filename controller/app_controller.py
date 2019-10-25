@@ -4,6 +4,18 @@ from logging import getLogger
 from controller import *
 from database import on_commit
 from ui import SURFACE
+from model.app_model import AppModel
+from view.app_view import AppView
+from ui.fade_animation.fade_in_animation.app_fade_in_animation import AppFadeInAnimation
+from ui.fade_animation.fade_out_animation.app_fade_out_animation import AppFadeOutAnimation
+from ui.transition_animation import TransitionAnimation
+from controller.main_menu_controller import MainMenuController
+from controller.license_controller import LicenseController
+from controller.onboarding_controller import OnboardingController
+from controller.bonus_code_activation_controller import BonusCodeActivationController
+from controller.fps_controller import FPSController
+from controller.settings_controller import SettingsController
+from controller.game_controller import GameController
 
 
 @final
@@ -11,25 +23,68 @@ class AppController(AppBaseController):
     def __init__(self, loader):
         super().__init__(logger=getLogger('root.app.controller'))
         self.loader = loader
-        self.main_menu = None
-        self.onboarding = None
-        self.license = None
-        self.game = None
-        self.settings = None
-        self.fps = None
-        self.bonus_code_activation = None
-        self.main_menu_to_game_transition_animation = None
-        self.main_menu_to_onboarding_transition_animation = None
-        self.game_to_main_menu_transition_animation = None
-        self.main_menu_to_license_transition_animation = None
-        self.license_to_main_menu_transition_animation = None
-        self.game_to_settings_transition_animation = None
-        self.settings_to_game_transition_animation = None
-        self.onboarding_to_game_transition_animation = None
-        self.main_menu_to_settings_transition_animation = None
-        self.settings_to_main_menu_transition_animation = None
-        self.main_menu_to_bonus_code_activation_transition_animation = None
-        self.bonus_code_activation_to_main_menu_transition_animation = None
+        self.fade_in_animation = AppFadeInAnimation(self)
+        self.fade_out_animation = AppFadeOutAnimation(self)
+        self.view = AppView(controller=self)
+        self.model = AppModel(controller=self, view=self.view)
+        self.view.on_init_content()
+        self.main_menu = MainMenuController(self)
+        self.onboarding = OnboardingController(self)
+        self.license = LicenseController(self)
+        self.game = GameController(self)
+        self.settings = SettingsController(self)
+        self.fps = FPSController(self)
+        self.bonus_code_activation = BonusCodeActivationController(self)
+        self.main_menu_to_game_transition_animation \
+            = TransitionAnimation(fade_out_animation=self.main_menu.fade_out_animation,
+                                  fade_in_animation=self.game.fade_in_animation)
+        self.main_menu_to_onboarding_transition_animation = \
+            TransitionAnimation(fade_out_animation=self.main_menu.fade_out_animation,
+                                fade_in_animation=self.onboarding.fade_in_animation)
+        self.game_to_main_menu_transition_animation = \
+            TransitionAnimation(fade_out_animation=self.game.fade_out_animation,
+                                fade_in_animation=self.main_menu.fade_in_animation)
+        self.main_menu_to_license_transition_animation = \
+            TransitionAnimation(fade_out_animation=self.main_menu.fade_out_animation,
+                                fade_in_animation=self.license.fade_in_animation)
+        self.license_to_main_menu_transition_animation = \
+            TransitionAnimation(fade_out_animation=self.license.fade_out_animation,
+                                fade_in_animation=self.main_menu.fade_in_animation)
+        self.game_to_settings_transition_animation = \
+            TransitionAnimation(fade_out_animation=self.game.fade_out_animation,
+                                fade_in_animation=self.settings.fade_in_animation)
+        self.settings_to_game_transition_animation = \
+            TransitionAnimation(fade_out_animation=self.settings.fade_out_animation,
+                                fade_in_animation=self.game.fade_in_animation)
+        self.onboarding_to_game_transition_animation = \
+            TransitionAnimation(fade_out_animation=self.onboarding.fade_out_animation,
+                                fade_in_animation=self.game.fade_in_animation)
+        self.main_menu_to_settings_transition_animation = \
+            TransitionAnimation(fade_out_animation=self.main_menu.fade_out_animation,
+                                fade_in_animation=self.settings.fade_in_animation)
+        self.settings_to_main_menu_transition_animation = \
+            TransitionAnimation(fade_out_animation=self.settings.fade_out_animation,
+                                fade_in_animation=self.main_menu.fade_in_animation)
+        self.main_menu_to_bonus_code_activation_transition_animation = \
+            TransitionAnimation(fade_out_animation=self.main_menu.fade_out_animation,
+                                fade_in_animation=self.bonus_code_activation.fade_in_animation)
+        self.bonus_code_activation_to_main_menu_transition_animation = \
+            TransitionAnimation(fade_out_animation=self.bonus_code_activation.fade_out_animation,
+                                fade_in_animation=self.main_menu.fade_in_animation)
+        self.fade_in_animation.main_menu_fade_in_animation = self.main_menu.fade_in_animation
+        self.fade_in_animation.license_fade_in_animation = self.license.fade_in_animation
+        self.fade_in_animation.onboarding_fade_in_animation = self.onboarding.fade_in_animation
+        self.fade_in_animation.game_fade_in_animation = self.game.fade_in_animation
+        self.fade_in_animation.settings_fade_in_animation = self.settings.fade_in_animation
+        self.fade_in_animation.fps_fade_in_animation = self.fps.fade_in_animation
+        self.fade_in_animation.bonus_code_activation_fade_in_animation = self.bonus_code_activation.fade_in_animation
+        self.fade_out_animation.main_menu_fade_out_animation = self.main_menu.fade_out_animation
+        self.fade_out_animation.license_fade_out_animation = self.license.fade_out_animation
+        self.fade_out_animation.onboarding_fade_out_animation = self.onboarding.fade_out_animation
+        self.fade_out_animation.game_fade_out_animation = self.game.fade_out_animation
+        self.fade_out_animation.settings_fade_out_animation = self.settings.fade_out_animation
+        self.fade_out_animation.fps_fade_out_animation = self.fps.fade_out_animation
+        self.fade_out_animation.bonus_code_activation_fade_out_animation = self.bonus_code_activation.fade_out_animation
 
     def on_activate_view(self):
         super().on_activate_view()

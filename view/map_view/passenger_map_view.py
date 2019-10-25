@@ -5,5 +5,5 @@ from view.map_view import MapView
 
 @final
 class PassengerMapView(MapView):
-    def __init__(self):
-        super().__init__(map_id=0)
+    def __init__(self, controller):
+        super().__init__(controller, map_id=0)

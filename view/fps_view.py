@@ -6,8 +6,8 @@ from ui.label.fps_label import FPSLabel
 
 @final
 class FPSView(AppBaseView):
-    def __init__(self):
-        super().__init__(logger=getLogger('root.app.fps.view'))
+    def __init__(self, controller):
+        super().__init__(controller, logger=getLogger('root.app.fps.view'))
         self.fps_label = FPSLabel(parent_viewport=self.viewport)
 
     @view_is_not_active

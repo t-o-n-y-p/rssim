@@ -5,8 +5,9 @@ from database import USER_DB_CURSOR
 
 
 class SignalModel(MapBaseModel):
-    def __init__(self, map_id, track, base_route):
-        super().__init__(logger=getLogger(f'root.app.game.map.{map_id}.signal.{track}.{base_route}.model'))
+    def __init__(self, controller, view, map_id, track, base_route):
+        super().__init__(controller, view,
+                         logger=getLogger(f'root.app.game.map.{map_id}.signal.{track}.{base_route}.model'))
         self.map_id = map_id
         USER_DB_CURSOR.execute('''SELECT state, locked FROM signals 
                                   WHERE track = ? AND base_route = ? AND map_id = ?''',

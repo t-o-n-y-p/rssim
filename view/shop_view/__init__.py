@@ -7,11 +7,12 @@ from ui.shader_sprite.shop_view_shader_sprite import ShopViewShaderSprite
 
 
 class ShopView(GameBaseView):
-    def __init__(self, map_id, shop_id):
+    def __init__(self, controller, map_id, shop_id):
         def on_close_shop_details(button):
             self.controller.parent_controller.on_close_shop_details(self.shop_id)
 
-        super().__init__(logger=getLogger(f'root.app.game.map.{map_id}.shop.{shop_id}.view'), child_window=True)
+        super().__init__(controller, logger=getLogger(f'root.app.game.map.{map_id}.shop.{shop_id}.view'),
+                         child_window=True)
         self.map_id = map_id
         self.shop_id = shop_id
         self.shader_sprite = ShopViewShaderSprite(view=self)

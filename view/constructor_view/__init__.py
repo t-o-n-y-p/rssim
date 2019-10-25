@@ -1,5 +1,6 @@
 from logging import getLogger
 
+from database import CONSTRUCTION_STATE_MATRIX
 from view import *
 from ui import *
 from ui.constructor.track_cell import TrackCell
@@ -15,7 +16,7 @@ from ui.shader_sprite.constructor_view_shader_sprite import ConstructorViewShade
 
 
 class ConstructorView(GameBaseView):
-    def __init__(self, map_id):
+    def __init__(self, controller, map_id):
         def on_close_constructor(button):
             self.controller.fade_out_animation.on_activate()
 
@@ -35,11 +36,11 @@ class ConstructorView(GameBaseView):
             self.controller.on_deactivate_money_target()
             self.controller.parent_controller.parent_controller.on_update_money_target(0)
 
-        super().__init__(logger=getLogger(f'root.app.game.map.{map_id}.constructor.view'))
+        super().__init__(controller, logger=getLogger(f'root.app.game.map.{map_id}.constructor.view'))
         self.map_id = map_id
         self.no_more_tracks_available_placeholder_viewport = Viewport()
         self.no_more_tiers_available_placeholder_viewport = Viewport()
-        self.construction_state_matrix = [{}, {}]
+        self.construction_state_matrix = CONSTRUCTION_STATE_MATRIX[self.map_id]
         self.close_constructor_button = CloseConstructorButton(on_click_action=on_close_constructor,
                                                                parent_viewport=self.viewport)
         self.buttons = [self.close_constructor_button, ]

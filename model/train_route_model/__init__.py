@@ -5,7 +5,7 @@ from database import USER_DB_CURSOR, CONFIG_DB_CURSOR
 
 
 class TrainRouteModel(MapBaseModel):
-    def __init__(self, map_id, track, train_route):
+    def __init__(self, controller, view, map_id, track, train_route):
         def sgn(x):
             if type(x) is not int:
                 raise ValueError
@@ -16,7 +16,8 @@ class TrainRouteModel(MapBaseModel):
             else:
                 return -1
 
-        super().__init__(logger=getLogger(f'root.app.game.map.{map_id}.train_route.{track}.{train_route}.model'))
+        super().__init__(controller, view,
+                         logger=getLogger(f'root.app.game.map.{map_id}.train_route.{track}.{train_route}.model'))
         self.map_id = map_id
         USER_DB_CURSOR.execute('''SELECT opened, last_opened_by, current_checkpoint, priority, cars 
                                   FROM train_routes WHERE track = ? AND train_route = ? AND map_id = ?''',

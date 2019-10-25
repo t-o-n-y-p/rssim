@@ -2,5 +2,5 @@ from model.constructor_model import ConstructorModel
 
 
 class PassengerMapConstructorModel(ConstructorModel):
-    def __init__(self):
-        super().__init__(map_id=0)
+    def __init__(self, controller, view):
+        super().__init__(controller, view, map_id=0)

@@ -1,13 +1,13 @@
 from logging import getLogger
 
 from model import *
-from database import USER_DB_CURSOR
+from database import USER_DB_CURSOR, BONUS_CODE_MATRIX
 
 
 class BonusCodeManagerModel(GameBaseModel):
-    def __init__(self):
-        super().__init__(logger=getLogger('root.app.bonus_code_manager.model'))
-        self.bonus_code_matrix = None
+    def __init__(self, controller, view):
+        super().__init__(controller, view, logger=getLogger('root.app.bonus_code_manager.model'))
+        self.bonus_code_matrix = BONUS_CODE_MATRIX
 
     def on_save_state(self):
         for code in self.bonus_code_matrix:

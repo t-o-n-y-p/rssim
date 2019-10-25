@@ -21,7 +21,7 @@ from ui.sprite.ru_flag_sprite import RUFlagSprite
 
 @final
 class AppView(AppBaseView):
-    def __init__(self):
+    def __init__(self, controller):
         def on_close_game(button):
             self.controller.on_close_game()
 
@@ -48,7 +48,7 @@ class AppView(AppBaseView):
             self.controller.on_update_current_locale('ru')
             self.controller.on_update_clock_state(clock_24h_enabled=True)
 
-        super().__init__(logger=getLogger('root.app.view'))
+        super().__init__(controller, logger=getLogger('root.app.view'))
         self.title_label = AppTitleLabel(parent_viewport=self.viewport)
         self.us_flag_sprite = USFlagSprite(parent_viewport=self.viewport)
         self.ru_flag_sprite = RUFlagSprite(parent_viewport=self.viewport)

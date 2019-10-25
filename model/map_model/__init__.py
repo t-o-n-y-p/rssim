@@ -7,8 +7,8 @@ from database import USER_DB_CURSOR, CONFIG_DB_CURSOR, on_commit
 
 
 class MapModel(MapBaseModel):
-    def __init__(self, map_id):
-        super().__init__(logger=getLogger(f'root.app.game.map.{map_id}.model'))
+    def __init__(self, controller, view, map_id):
+        super().__init__(controller, view, logger=getLogger(f'root.app.game.map.{map_id}.model'))
         self.map_id = map_id
         USER_DB_CURSOR.execute('''SELECT locked, unlocked_tracks, unlocked_environment 
                                   FROM map_progress WHERE map_id = ?''', (self.map_id, ))

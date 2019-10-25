@@ -179,11 +179,11 @@ MINI_MAP_FADE_OUT_TIMER: Final = 1.0        # time since user releases mouse but
 
 
 class AppBaseView:
-    def __init__(self, logger, child_window=False):
+    def __init__(self, controller, logger, child_window=False):
         self.logger = logger
         self.child_window = child_window
         self.is_activated = False
-        self.controller = None
+        self.controller = controller
         self.viewport = Viewport()
         self.opacity = 0
         self.buttons = []
@@ -304,8 +304,8 @@ class AppBaseView:
 
 
 class GameBaseView(AppBaseView):
-    def __init__(self, logger, child_window=False):
-        super().__init__(logger, child_window)
+    def __init__(self, controller, logger, child_window=False):
+        super().__init__(controller, logger, child_window)
         USER_DB_CURSOR.execute('SELECT game_time FROM epoch_timestamp')
         self.game_time = USER_DB_CURSOR.fetchone()[0]
         USER_DB_CURSOR.execute('''SELECT level, money, exp_bonus_multiplier, money_bonus_multiplier 
@@ -335,8 +335,8 @@ class GameBaseView(AppBaseView):
 
 
 class MapBaseView(GameBaseView):
-    def __init__(self, logger):
-        super().__init__(logger)
+    def __init__(self, controller, logger):
+        super().__init__(controller, logger)
         self.locked = True
         USER_DB_CURSOR.execute('SELECT last_known_base_offset FROM graphics')
         self.base_offset = tuple(map(int, USER_DB_CURSOR.fetchone()[0].split(',')))

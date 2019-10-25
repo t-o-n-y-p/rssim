@@ -5,8 +5,8 @@ from database import USER_DB_CURSOR, CONFIG_DB_CURSOR
 
 
 class DispatcherModel(GameBaseModel):
-    def __init__(self, map_id):
-        super().__init__(logger=getLogger(f'root.app.game.map.{map_id}.dispatcher.model'))
+    def __init__(self, controller, view, map_id):
+        super().__init__(controller, view, logger=getLogger(f'root.app.game.map.{map_id}.dispatcher.model'))
         self.map_id = map_id
         self.trains = []
         self.supported_cars = [0, 0]

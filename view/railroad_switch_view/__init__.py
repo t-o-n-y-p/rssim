@@ -6,9 +6,8 @@ from ui.sprite.railroad_switch_sprite import RailroadSwitchSprite
 
 
 class RailroadSwitchView(MapBaseView):
-    def __init__(self, map_id, track_param_1, track_param_2, switch_type):
-        super().__init__(
-            logger=getLogger(
+    def __init__(self, controller, map_id, track_param_1, track_param_2, switch_type):
+        super().__init__(controller, logger=getLogger(
                 f'root.app.game.map.{map_id}.railroad_switch.{track_param_1}.{track_param_2}.{switch_type}.view'
             )
         )

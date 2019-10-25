@@ -5,8 +5,9 @@ from database import USER_DB_CURSOR, CONFIG_DB_CURSOR
 
 
 class ShopConstructorModel(GameBaseModel):
-    def __init__(self, map_id, shop_id):
-        super().__init__(logger=getLogger(f'root.app.game.map.{map_id}.shop.{shop_id}.constructor.model'))
+    def __init__(self, controller, view, map_id, shop_id):
+        super().__init__(controller, view,
+                         logger=getLogger(f'root.app.game.map.{map_id}.shop.{shop_id}.constructor.model'))
         self.map_id = map_id
         self.shop_id = shop_id
         self.shop_stages_state_matrix = {}

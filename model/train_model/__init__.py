@@ -5,9 +5,10 @@ from database import USER_DB_CURSOR
 
 
 class TrainModel(MapBaseModel):
-    def __init__(self, map_id, train_id):
-        super().__init__(logger=getLogger(f'root.app.game.map.{map_id}.train.{train_id}.model'))
+    def __init__(self, controller, view, map_id, train_id):
+        super().__init__(controller, view, logger=getLogger(f'root.app.game.map.{map_id}.train.{train_id}.model'))
         self.map_id = map_id
+        self.train_id = train_id
         self.train_acceleration_factor = None
         self.train_maximum_speed = None
         self.speed_factor_position_limit = None
@@ -35,14 +36,14 @@ class TrainModel(MapBaseModel):
         self.exp_bonus_multiplier = None
         self.money_bonus_multiplier = None
 
-    def on_train_setup(self, train_id):
-        USER_DB_CURSOR.execute('''SELECT train_id, cars, train_route_track_number, train_route_type, 
+    def on_train_setup(self):
+        USER_DB_CURSOR.execute('''SELECT cars, train_route_track_number, train_route_type, 
                                   state, direction, new_direction, current_direction, speed, speed_state, 
                                   speed_factor_position, priority, boarding_time, exp, money, 
                                   cars_position, cars_position_abs, stop_point, destination_point, 
                                   car_image_collection FROM trains WHERE train_id = ? AND map_id = ?''',
-                               (train_id, self.map_id))
-        train_id, self.cars, self.track, self.train_route, self.state, self.direction, self.new_direction, \
+                               (self.train_id, self.map_id))
+        self.cars, self.track, self.train_route, self.state, self.direction, self.new_direction, \
             self.current_direction, self.speed, self.speed_state, self.speed_factor_position, self.priority, \
             self.boarding_time, self.exp, self.money, cars_position_parsed, cars_position_abs_parsed, \
             self.stop_point, self.destination_point, self.car_image_collection \
@@ -59,6 +60,8 @@ class TrainModel(MapBaseModel):
 
             self.cars_position_abs = cars_position_abs_parsed
 
+        self.view.on_train_setup()
+
     def on_train_init(self, cars, track, train_route, state, direction, new_direction, current_direction,
                       priority, boarding_time, exp, money, car_image_collection,
                       exp_bonus_multiplier, money_bonus_multiplier):
@@ -70,6 +73,7 @@ class TrainModel(MapBaseModel):
         self.speed = self.train_maximum_speed
         self.speed_state = 'move'
         self.speed_factor_position = self.speed_factor_position_limit
+        self.view.on_train_init(self.state, self.direction, self.car_image_collection)
 
     def on_save_state(self):
         cars_position_string = None
@@ -86,7 +90,7 @@ class TrainModel(MapBaseModel):
 
         USER_DB_CURSOR.execute('''INSERT INTO trains VALUES 
                                   (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)''',
-                               (self.map_id, self.controller.train_id, self.cars, self.track, self.train_route,
+                               (self.map_id, self.train_id, self.cars, self.track, self.train_route,
                                 self.state, self.direction, self.new_direction, self.current_direction, self.speed,
                                 self.speed_state, self.speed_factor_position, self.priority, self.boarding_time,
                                 self.exp, self.money, cars_position_string, cars_position_abs_string,
@@ -191,7 +195,7 @@ class TrainModel(MapBaseModel):
                     self.on_switch_direction()
 
                 self.controller.parent_controller.on_open_train_route(self.track, self.train_route,
-                                                                      self.controller.train_id, self.cars)
+                                                                      self.train_id, self.cars)
                 self.on_reconvert_trail_points()
 
             # after boarding time is over, update train state and add exp/money

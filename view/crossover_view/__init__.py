@@ -6,9 +6,8 @@ from ui.sprite.crossover_sprite import CrossoverSprite
 
 
 class CrossoverView(MapBaseView):
-    def __init__(self, map_id, track_param_1, track_param_2, crossover_type):
-        super().__init__(
-            logger=getLogger(
+    def __init__(self, controller, map_id, track_param_1, track_param_2, crossover_type):
+        super().__init__(controller, logger=getLogger(
                 f'root.app.game.map.{map_id}.crossover.{track_param_1}.{track_param_2}.{crossover_type}.view'
             )
         )

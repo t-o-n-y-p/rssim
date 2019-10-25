@@ -18,7 +18,7 @@ from ui.shader_sprite.game_view_shader_sprite import GameViewShaderSprite
 
 @final
 class GameView(GameBaseView):
-    def __init__(self):
+    def __init__(self, controller):
         def on_pause_game(button):
             button.paired_button.opacity = button.opacity
             button.on_deactivate(instant=True)
@@ -35,7 +35,7 @@ class GameView(GameBaseView):
             button.on_deactivate()
             self.controller.parent_controller.on_open_settings_from_game()
 
-        super().__init__(logger=getLogger('root.app.game.view'))
+        super().__init__(controller, logger=getLogger('root.app.game.view'))
         self.game_paused = True
         self.exp_progress_bar = ExpProgressBar(parent_viewport=self.viewport)
         self.money_progress_bar = MoneyProgressBar(parent_viewport=self.viewport)

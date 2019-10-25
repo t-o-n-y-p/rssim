@@ -9,11 +9,11 @@ from ui.shader_sprite.license_view_shader_sprite import LicenseViewShaderSprite
 
 @final
 class LicenseView(AppBaseView):
-    def __init__(self):
+    def __init__(self, controller):
         def on_close_license(button):
             self.controller.parent_controller.on_close_license()
 
-        super().__init__(logger=getLogger('root.app.license.view'))
+        super().__init__(controller, logger=getLogger('root.app.license.view'))
         self.license_page_control = LicensePageControl(parent_viewport=self.viewport)
         self.close_license_button = CloseLicenseButton(on_click_action=on_close_license, parent_viewport=self.viewport)
         self.buttons = [*self.license_page_control.buttons, self.close_license_button]
