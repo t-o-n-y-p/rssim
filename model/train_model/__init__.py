@@ -152,9 +152,9 @@ class TrainModel(MapBaseModel):
                     self.trail_points_v2_head_tail = None
                     self.trail_points_v2_mid = None
                 # 'boarding_complete' state means train has finished entire process,
-                # update state to 'successful_departure' to delete this train later
+                # call on_train_lifecycle_ended() method for map controller to delete this train later
                 elif self.state == 'boarding_complete':
-                    self.state = 'successful_departure'
+                    self.controller.parent_controller.on_train_lifecycle_ended(self.controller)
 
             # update speed depending on speed state
             if self.speed_state == 'accelerate':

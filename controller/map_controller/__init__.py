@@ -51,6 +51,7 @@ class MapController(MapBaseController):
         self.crossovers_list = crossovers_list
         self.trains = trains
         self.trains_list = trains_list
+        self.lifecycle_ended_trains = []
         self.shops = shops
         self.fade_in_animation.constructor_fade_in_animation = self.constructor.fade_in_animation
         self.fade_in_animation.scheduler_fade_in_animation = self.scheduler.fade_in_animation
@@ -117,36 +118,22 @@ class MapController(MapBaseController):
 
     @final
     def on_update_time(self):
-        super().on_update_time()
         # train routes are sorted by priority to implement some kind of queue
         self.train_routes_sorted_list = sorted(self.train_routes_sorted_list,
                                                key=attrgetter('model.priority'), reverse=True)
-        for route in self.train_routes_sorted_list:
-            route.on_update_time()
+        super().on_update_time()
+        # collected trains which has departed successfully should be removed from the game
+        for train in self.lifecycle_ended_trains:
+            train.on_deactivate_view()
+            train.view.on_update_opacity(0)
+            self.fade_in_animation.train_fade_in_animations.remove(train.fade_in_animation)
+            self.fade_out_animation.train_fade_out_animations.remove(train.fade_out_animation)
+            self.trains.pop(train.train_id)
+            self.trains_list.remove(train)
+            self.child_controllers.remove(train)
+            self.map_element_controllers.remove(train)
 
-        # since dictionary items cannot be removed right inside "for" statement,
-        # collect trains which has departed successfully and should be removed from the game
-        successful_departure_state = []
-        for train in self.trains_list:
-            train.on_update_time()
-            if train.model.state == 'successful_departure':
-                successful_departure_state.append(train.train_id)
-
-        for train_id in successful_departure_state:
-            self.trains[train_id].on_deactivate_view()
-            self.trains[train_id].view.on_update_opacity(0)
-            self.fade_in_animation.train_fade_in_animations.remove(self.trains[train_id].fade_in_animation)
-            self.fade_out_animation.train_fade_out_animations.remove(self.trains[train_id].fade_out_animation)
-            train_controller = self.trains.pop(train_id)
-            self.trains_list.remove(train_controller)
-            self.child_controllers.remove(train_controller)
-            self.map_element_controllers.remove(train_controller)
-
-        self.scheduler.on_update_time()
-        self.dispatcher.on_update_time()
-        self.constructor.on_update_time()
-        for shop in self.shops:
-            shop.on_update_time()
+        self.lifecycle_ended_trains.clear()
 
     @final
     def on_zoom_in(self):
@@ -340,13 +327,13 @@ class MapController(MapBaseController):
                                            current_direction, priority, boarding_time, exp, money)
         train.view.on_change_screen_resolution(self.view.screen_resolution)
         # add new train to the list and dictionary
-        self.trains[train.train_id] = train
+        self.trains[train_id] = train
         self.trains_list.append(train)
         self.child_controllers.append(train)
         self.map_element_controllers.append(train)
         # add new train to the dispatcher
         self.dispatcher.on_add_train(train)
-        train.parent_controller.on_open_train_route(track, train_route, train_id, cars)
+        self.on_open_train_route(track, train_route, train_id, cars)
         if self.view.is_activated:
             train.fade_in_animation.on_activate()
         else:
@@ -384,3 +371,6 @@ class MapController(MapBaseController):
         self.shops[shop_id].fade_out_animation.on_activate()
         self.view.on_activate_zoom_buttons()
         self.view.on_activate_shop_buttons()
+
+    def on_train_lifecycle_ended(self, train):
+        self.lifecycle_ended_trains.append(train)
