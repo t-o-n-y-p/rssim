@@ -15,7 +15,7 @@ PASSENGER_CAR_HEAD_IMAGE: Final = []
 for i in range(__car_collections_implemented[0]):
     PASSENGER_CAR_HEAD_IMAGE.append([])
     for j in range(4):
-        PASSENGER_CAR_HEAD_IMAGE[i].append(_cars_texture.get_region(j * 251, i * 47 + 3, 251, 41))
+        PASSENGER_CAR_HEAD_IMAGE[i].append(_cars_texture.get_region((j % 2) * 251, i * 47 + 3, 251, 41))
 
 # anchor is set to the carriage middle point
 for i in range(len(PASSENGER_CAR_HEAD_IMAGE)):
@@ -26,22 +26,19 @@ for i in range(len(PASSENGER_CAR_HEAD_IMAGE)):
 # CAR_MID_IMAGE includes all textures for middle carriage
 PASSENGER_CAR_MID_IMAGE: Final = []
 for i in range(__car_collections_implemented[0]):
-    PASSENGER_CAR_MID_IMAGE.append([])
-    for j in range(4):
-        PASSENGER_CAR_MID_IMAGE[i].append(_cars_texture.get_region((j + 4) * 251, i * 47 + 3, 251, 41))
+    PASSENGER_CAR_MID_IMAGE.append(_cars_texture.get_region(2 * 251, i * 47 + 3, 251, 41))
 
 # anchor is set to the carriage middle point
 for i in range(len(PASSENGER_CAR_MID_IMAGE)):
-    for j in range(4):
-        PASSENGER_CAR_MID_IMAGE[i][j].anchor_x = PASSENGER_CAR_MID_IMAGE[i][j].width // 2
-        PASSENGER_CAR_MID_IMAGE[i][j].anchor_y = PASSENGER_CAR_MID_IMAGE[i][j].height // 2
+    PASSENGER_CAR_MID_IMAGE[i].anchor_x = PASSENGER_CAR_MID_IMAGE[i].width // 2
+    PASSENGER_CAR_MID_IMAGE[i].anchor_y = PASSENGER_CAR_MID_IMAGE[i].height // 2
 
 # CAR_TAIL_IMAGE includes all textures for trailing carriage
 PASSENGER_CAR_TAIL_IMAGE: Final = []
 for i in range(__car_collections_implemented[0]):
     PASSENGER_CAR_TAIL_IMAGE.append([])
     for j in range(4):
-        PASSENGER_CAR_TAIL_IMAGE[i].append(_cars_texture.get_region((j + 8) * 251, i * 47 + 3, 251, 41))
+        PASSENGER_CAR_TAIL_IMAGE[i].append(_cars_texture.get_region((j % 2 + 3) * 251, i * 47 + 3, 251, 41))
 
 # anchor is set to the carriage middle point
 for i in range(len(PASSENGER_CAR_TAIL_IMAGE)):
@@ -52,7 +49,7 @@ for i in range(len(PASSENGER_CAR_TAIL_IMAGE)):
 # BOARDING_LIGHT_IMAGE includes all textures for boarding lights - they are enabled if boarding is in progress
 BOARDING_LIGHT_IMAGE: Final = []
 for i in range(__car_collections_implemented[0]):
-    BOARDING_LIGHT_IMAGE.append(_cars_texture.get_region(12 * 251, i * 47 + 3, 251, 41))
+    BOARDING_LIGHT_IMAGE.append(_cars_texture.get_region(5 * 251, i * 47 + 3, 251, 41))
 
 # anchor is set to the carriage middle point
 for i in range(len(BOARDING_LIGHT_IMAGE)):
