@@ -7,21 +7,23 @@ from ui import *
 
 
 @final
-class GameViewShaderSprite(ShaderSprite):
+class MapSwitcherViewShaderSprite(ShaderSprite):
     def __init__(self, view):
-        super().__init__(logger=getLogger('root.app.game.view.shader_sprite'), view=view)
-        self.shader = from_files_names('shaders/shader.vert', 'shaders/game_view/shader.frag')
+        super().__init__(logger=getLogger('root.app.game.map_switcher.view.shader_sprite'), view=view)
+        self.shader = from_files_names('shaders/shader.vert', 'shaders/map_switcher_view/shader.frag')
 
     def get_bottom_edge(self):
-        return -1.0
+        return get_bottom_bar_height(self.screen_resolution) / self.screen_resolution[1] * 2 - 1
 
     def get_top_edge(self):
         return 1 - get_top_bar_height(self.screen_resolution) / self.screen_resolution[1] * 2
 
     def set_uniforms(self):
-        self.shader.uniforms.screen_resolution = self.view.screen_resolution
-        self.shader.uniforms.bottom_bar_height = get_bottom_bar_height(self.view.screen_resolution)
-        self.shader.uniforms.game_frame_opacity = self.view.opacity
+        self.shader.uniforms.map_switcher_window_opacity = self.view.opacity
+        self.shader.uniforms.map_switcher_window_position = (self.view.viewport.x1, self.view.viewport.y1)
+        self.shader.uniforms.map_switcher_window_size = (self.view.viewport.x2 - self.view.viewport.x1,
+                                                         self.view.viewport.y2 - self.view.viewport.y1)
+        self.shader.uniforms.top_bar_height = get_top_bar_height(self.screen_resolution)
         is_button_activated = []
         button_x = []
         button_y = []

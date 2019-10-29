@@ -91,6 +91,13 @@ for info in environment_info_fetched:
                                 WHERE tier = ? AND map_id = 0''', (info[0], ))
     CONSTRUCTION_STATE_MATRIX[PASSENGER_MAP][ENVIRONMENT][info[0]].extend(CONFIG_DB_CURSOR.fetchone())
 
+MAP_SWITCHER_STATE_MATRIX = [[], []]
+for m in (PASSENGER_MAP, FREIGHT_MAP):
+    USER_DB_CURSOR.execute('''SELECT locked FROM map_progress WHERE map_id = ?''', (m, ))
+    MAP_SWITCHER_STATE_MATRIX[m].append(bool(USER_DB_CURSOR.fetchone()[0]))
+    CONFIG_DB_CURSOR.execute('''SELECT level_required, price FROM map_progress_config WHERE map_id = ?''', (m, ))
+    MAP_SWITCHER_STATE_MATRIX[m].extend(CONFIG_DB_CURSOR.fetchone())
+
 
 def on_commit():
     delete_password(sha512('user_db'.encode('utf-8')).hexdigest(), sha512('user_db'.encode('utf-8')).hexdigest())

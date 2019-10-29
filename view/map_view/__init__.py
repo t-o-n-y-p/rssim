@@ -32,10 +32,10 @@ class MapView(MapBaseView):
             self.controller.on_zoom_out()
 
         def on_leave_action():
-            self.map_move_mode_available = True
+            self.on_map_move_mode_available()
 
         def on_hover_action():
-            self.map_move_mode_available = False
+            self.on_map_move_mode_unavailable()
 
         def on_open_schedule(button):
             button.on_deactivate(instant=True)
@@ -346,3 +346,9 @@ class MapView(MapBaseView):
     def on_recalculate_base_offset_for_new_screen_resolution(self, screen_resolution):
         self.base_offset = (self.base_offset[0] + (screen_resolution[0] - self.screen_resolution[0]) // 2,
                             self.base_offset[1] + (screen_resolution[1] - self.screen_resolution[1]) // 2)
+
+    def on_map_move_mode_available(self):
+        self.map_move_mode_available = True
+
+    def on_map_move_mode_unavailable(self):
+        self.map_move_mode_available = False

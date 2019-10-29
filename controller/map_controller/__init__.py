@@ -374,3 +374,9 @@ class MapController(MapBaseController):
 
     def on_train_lifecycle_ended(self, train):
         self.lifecycle_ended_trains.append(train)
+
+    def on_map_move_mode_available(self):
+        self.view.on_map_move_mode_available()
+
+    def on_map_move_mode_unavailable(self):
+        self.view.on_map_move_mode_unavailable()

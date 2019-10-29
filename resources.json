@@ -366,5 +366,9 @@
 	"activations_title_label_string": {
 		"en": "Activations left:",
 		"ru": "Осталось активаций:"
+	},
+	"map_switcher_title_string": {
+		"en": "Map overview",
+		"ru": "Обзор карт"
 	}
 }

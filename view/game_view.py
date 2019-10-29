@@ -3,6 +3,7 @@ from logging import getLogger
 from view import *
 from ui.button import create_two_state_button
 from ui.button.open_settings_game_view_button import OpenSettingsGameViewButton
+from ui.button.open_map_switcher_button import OpenMapSwitcherButton
 from ui.button.pause_game_button import PauseGameButton
 from ui.button.resume_game_button import ResumeGameButton
 from notifications.level_up_notification import LevelUpNotification
@@ -35,6 +36,15 @@ class GameView(GameBaseView):
             button.on_deactivate()
             self.controller.parent_controller.on_open_settings_from_game()
 
+        def on_open_map_switcher(button):
+            button.on_deactivate(instant=True)
+
+        def on_leave_action():
+            self.controller.on_map_move_mode_available()
+
+        def on_hover_action():
+            self.controller.on_map_move_mode_unavailable()
+
         super().__init__(controller, logger=getLogger('root.app.game.view'))
         self.game_paused = True
         self.exp_progress_bar = ExpProgressBar(parent_viewport=self.viewport)
@@ -44,7 +54,12 @@ class GameView(GameBaseView):
                                       ResumeGameButton(on_click_action=on_resume_game, parent_viewport=self.viewport))
         self.open_settings_button = OpenSettingsGameViewButton(on_click_action=on_open_settings,
                                                                parent_viewport=self.viewport)
-        self.buttons = [self.pause_game_button, self.resume_game_button, self.open_settings_button]
+        self.open_map_switcher_button = OpenMapSwitcherButton(on_click_action=on_open_map_switcher,
+                                                              on_hover_action=on_hover_action,
+                                                              on_leave_action=on_leave_action,
+                                                              parent_viewport=self.viewport)
+        self.buttons = [self.pause_game_button, self.resume_game_button, self.open_settings_button,
+                        self.open_map_switcher_button]
         self.main_clock_label_24h = MainClockLabel24H(parent_viewport=self.viewport)
         self.main_clock_label_12h = MainClockLabel12H(parent_viewport=self.viewport)
         self.exp_percent = 0

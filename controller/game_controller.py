@@ -85,3 +85,11 @@ class GameController(GameBaseController):
             self.on_activate_construction_time_bonus_code(
                 self.bonus_code_manager.model.get_bonus_code_value(sha512_hash) - 1
             )
+
+    def on_map_move_mode_available(self):
+        for m in self.maps:
+            m.on_map_move_mode_available()
+
+    def on_map_move_mode_unavailable(self):
+        for m in self.maps:
+            m.on_map_move_mode_unavailable()
