@@ -194,6 +194,7 @@ class MapController(MapBaseController):
         # if schedule screen is opened, zoom in/zoom out buttons should also be hidden
         self.view.on_deactivate_zoom_buttons()
         self.view.on_deactivate_shop_buttons()
+        self.parent_controller.on_deactivate_map_switcher_button()
         # if mini map is active when user opens schedule screen, it should also be hidden
         self.view.is_mini_map_activated = False
 
@@ -213,16 +214,19 @@ class MapController(MapBaseController):
         # if constructor screen is opened, zoom in/zoom out buttons should also be hidden
         self.view.on_deactivate_zoom_buttons()
         self.view.on_deactivate_shop_buttons()
+        self.parent_controller.on_deactivate_map_switcher_button()
         # if mini map is active when user opens constructor screen, it should also be hidden
         self.view.is_mini_map_activated = False
 
     @final
     def on_close_schedule(self):
         self.view.on_close_schedule()
+        self.parent_controller.on_activate_map_switcher_button()
 
     @final
     def on_close_constructor(self):
         self.view.on_close_constructor()
+        self.parent_controller.on_activate_map_switcher_button()
 
     @final
     def on_switch_signal_to_green(self, signal_track, signal_base_route):
@@ -372,11 +376,27 @@ class MapController(MapBaseController):
         self.view.on_activate_zoom_buttons()
         self.view.on_activate_shop_buttons()
 
+    @final
     def on_train_lifecycle_ended(self, train):
         self.lifecycle_ended_trains.append(train)
 
+    @final
     def on_map_move_mode_available(self):
         self.view.on_map_move_mode_available()
 
+    @final
     def on_map_move_mode_unavailable(self):
         self.view.on_map_move_mode_unavailable()
+
+    @final
+    def on_open_map_switcher(self):
+        for shop in self.shops:
+            shop.fade_out_animation.on_activate()
+
+        self.view.on_deactivate_zoom_buttons()
+        self.view.on_deactivate_shop_buttons()
+        # if mini map is active when user opens constructor screen, it should also be hidden
+        self.view.is_mini_map_activated = False
+
+    def on_close_map_switcher(self):
+        self.view.on_close_map_switcher()

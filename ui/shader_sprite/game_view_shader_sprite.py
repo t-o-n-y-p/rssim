@@ -22,21 +22,9 @@ class GameViewShaderSprite(ShaderSprite):
         self.shader.uniforms.screen_resolution = self.view.screen_resolution
         self.shader.uniforms.bottom_bar_height = get_bottom_bar_height(self.view.screen_resolution)
         self.shader.uniforms.game_frame_opacity = self.view.opacity
-        is_button_activated = []
-        button_x = []
-        button_y = []
-        button_w = []
-        button_h = []
-        for b in self.view.buttons:
-            is_button_activated.append(int(b.is_activated))
-            button_x.append(b.position[0])
-            button_y.append(b.position[1])
-            button_w.append(b.button_size[0])
-            button_h.append(b.button_size[1])
-
-        self.shader.uniforms.is_button_activated = is_button_activated
-        self.shader.uniforms.button_x = button_x
-        self.shader.uniforms.button_y = button_y
-        self.shader.uniforms.button_w = button_w
-        self.shader.uniforms.button_h = button_h
-        self.shader.uniforms.number_of_buttons = len(self.view.buttons)
+        self.shader.uniforms.is_button_activated = [int(self.view.open_map_switcher_button.is_activated), ]
+        self.shader.uniforms.button_x = [self.view.open_map_switcher_button.position[0], ]
+        self.shader.uniforms.button_y = [self.view.open_map_switcher_button.position[1], ]
+        self.shader.uniforms.button_w = [self.view.open_map_switcher_button.button_size[0], ]
+        self.shader.uniforms.button_h = [self.view.open_map_switcher_button.button_size[1], ]
+        self.shader.uniforms.number_of_buttons = 1

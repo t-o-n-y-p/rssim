@@ -106,12 +106,12 @@ class MapView(MapBaseView):
         self.on_mouse_release_handlers.append(self.handle_mouse_release)
         self.on_mouse_drag_handlers.append(self.handle_mouse_drag)
         self.shader_sprite = MapViewShaderSprite(view=self)
-        USER_DB_CURSOR.execute('''SELECT SUM(t.constructions_locked) FROM
-                                  (SELECT COUNT(track_number) AS constructions_locked FROM tracks 
-                                   WHERE locked = 1 AND map_id = ?
-                                   UNION
-                                   SELECT COUNT(tier) AS constructions_locked FROM environment 
-                                   WHERE locked = 1 AND map_id = ?
+        USER_DB_CURSOR.execute('''SELECT SUM(t.constructions_locked) FROM (
+                                      SELECT COUNT(track_number) AS constructions_locked FROM tracks 
+                                      WHERE locked = 1 AND map_id = ?
+                                      UNION
+                                      SELECT COUNT(tier) AS constructions_locked FROM environment 
+                                      WHERE locked = 1 AND map_id = ?
                                   ) AS t''', (self.map_id, self.map_id))
         self.constructions_locked = USER_DB_CURSOR.fetchone()[0]
 
@@ -347,8 +347,17 @@ class MapView(MapBaseView):
         self.base_offset = (self.base_offset[0] + (screen_resolution[0] - self.screen_resolution[0]) // 2,
                             self.base_offset[1] + (screen_resolution[1] - self.screen_resolution[1]) // 2)
 
+    @final
     def on_map_move_mode_available(self):
         self.map_move_mode_available = True
 
+    @final
     def on_map_move_mode_unavailable(self):
         self.map_move_mode_available = False
+
+    @final
+    @view_is_active
+    def on_close_map_switcher(self):
+        self.on_activate_zoom_buttons()
+        self.on_activate_shop_buttons()
+        self.on_map_move_mode_available()

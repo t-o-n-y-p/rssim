@@ -6,6 +6,7 @@ from view.game_view import GameView
 from ui.fade_animation.fade_in_animation.game_fade_in_animation import GameFadeInAnimation
 from ui.fade_animation.fade_out_animation.game_fade_out_animation import GameFadeOutAnimation
 from controller.bonus_code_manager_controller import BonusCodeManagerController
+from controller.map_switcher_controller import MapSwitcherController
 from controller.map_controller.passenger_map_controller import PassengerMapController
 
 
@@ -19,14 +20,17 @@ class GameController(GameBaseController):
         self.model = GameModel(controller=self, view=self.view)
         self.view.on_init_content()
         self.bonus_code_manager = BonusCodeManagerController(self)
+        self.map_switcher = MapSwitcherController(self)
         self.maps = [PassengerMapController(self), ]
         self.fade_in_animation.bonus_code_manager_fade_in_animation = self.bonus_code_manager.fade_in_animation
         self.fade_out_animation.bonus_code_manager_fade_out_animation = self.bonus_code_manager.fade_out_animation
+        self.fade_in_animation.map_switcher_fade_in_animation = self.map_switcher.fade_in_animation
+        self.fade_out_animation.map_switcher_fade_out_animation = self.map_switcher.fade_out_animation
         for m in self.maps:
             self.fade_in_animation.map_fade_in_animations.append(m.fade_in_animation)
             self.fade_out_animation.map_fade_out_animations.append(m.fade_out_animation)
 
-        self.child_controllers = [self.bonus_code_manager, *self.maps]
+        self.child_controllers = [self.bonus_code_manager, self.map_switcher, *self.maps]
 
     @game_is_not_paused
     def on_update_time(self):
@@ -91,3 +95,18 @@ class GameController(GameBaseController):
 
     def on_map_move_mode_unavailable(self):
         self.maps[self.model.get_active_map()].on_map_move_mode_unavailable()
+
+    def on_open_map_switcher(self):
+        self.map_switcher.fade_in_animation.on_activate()
+        self.maps[self.model.get_active_map()].on_open_map_switcher()
+
+    def on_close_map_switcher(self):
+        self.on_activate_map_switcher_button()
+        self.maps[self.model.get_active_map()].on_close_map_switcher()
+
+    @view_is_active
+    def on_activate_map_switcher_button(self):
+        self.view.open_map_switcher_button.on_activate(instant=True)
+
+    def on_deactivate_map_switcher_button(self):
+        self.view.open_map_switcher_button.on_deactivate(instant=True)

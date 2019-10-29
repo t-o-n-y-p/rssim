@@ -9,7 +9,7 @@ from ui.shader_sprite.map_switcher_view_shader_sprite import MapSwitcherViewShad
 class MapSwitcherView(GameBaseView):
     def __init__(self, controller):
         def on_close_map_switcher(button):
-            pass
+            self.controller.fade_out_animation.on_activate()
 
         super().__init__(controller, logger=getLogger(f'root.app.game.map_switcher.view'), child_window=True)
         self.shader_sprite = MapSwitcherViewShaderSprite(view=self)

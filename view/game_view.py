@@ -38,6 +38,8 @@ class GameView(GameBaseView):
 
         def on_open_map_switcher(button):
             button.on_deactivate(instant=True)
+            button.state = 'normal'
+            self.controller.on_open_map_switcher()
 
         def on_leave_action():
             self.controller.on_map_move_mode_available()
