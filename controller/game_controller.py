@@ -87,9 +87,7 @@ class GameController(GameBaseController):
             )
 
     def on_map_move_mode_available(self):
-        for m in self.maps:
-            m.on_map_move_mode_available()
+        self.maps[self.model.get_active_map()].on_map_move_mode_available()
 
     def on_map_move_mode_unavailable(self):
-        for m in self.maps:
-            m.on_map_move_mode_unavailable()
+        self.maps[self.model.get_active_map()].on_map_move_mode_unavailable()

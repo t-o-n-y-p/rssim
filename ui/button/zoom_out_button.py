@@ -10,10 +10,9 @@ class ZoomOutButton(UIButton):
         super().__init__(logger=getLogger('root.button.zoom_out_button'), parent_viewport=parent_viewport)
         self.transparent = False
         self.to_activate_on_controller_init = False
-        self.text = '> <'
-        self.font_name = 'Perfo'
-        self.is_bold = True
-        self.base_font_size_property = 30 / 80
+        self.text = '⊖'
+        self.font_name = 'Arial'
+        self.base_font_size_property = 60 / 80
         self.on_click_action = on_click_action
         self.on_hover_action = on_hover_action
         self.on_leave_action = on_leave_action
