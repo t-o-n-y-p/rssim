@@ -6,7 +6,7 @@ from database import USER_DB_CURSOR, BONUS_CODE_MATRIX
 
 class BonusCodeManagerModel(GameBaseModel):
     def __init__(self, controller, view):
-        super().__init__(controller, view, logger=getLogger('root.app.bonus_code_manager.model'))
+        super().__init__(controller, view, logger=getLogger('root.app.game.bonus_code_manager.model'))
         self.bonus_code_matrix = BONUS_CODE_MATRIX
 
     def on_save_state(self):

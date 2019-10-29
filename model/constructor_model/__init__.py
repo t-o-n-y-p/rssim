@@ -13,8 +13,7 @@ class ConstructorModel(GameBaseModel):
         self.cached_unlocked_tiers = []
         USER_DB_CURSOR.execute('SELECT money_target_activated FROM constructor WHERE map_id = ?', (self.map_id, ))
         self.money_target_activated = bool(USER_DB_CURSOR.fetchone()[0])
-        USER_DB_CURSOR.execute('SELECT money_target_cell_position FROM constructor WHERE map_id = ?',
-                               (self.map_id, ))
+        USER_DB_CURSOR.execute('SELECT money_target_cell_position FROM constructor WHERE map_id = ?', (self.map_id, ))
         self.money_target_cell_position = list(map(int, USER_DB_CURSOR.fetchone()[0].split(',')))
 
     def on_save_state(self):

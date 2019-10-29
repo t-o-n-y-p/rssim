@@ -10,10 +10,6 @@ class SchedulerModel(GameBaseModel):
     def __init__(self, controller, view, map_id):
         super().__init__(controller, view, logger=getLogger(f'root.app.game.map.{map_id}.scheduler.model'))
         self.map_id = map_id
-        USER_DB_CURSOR.execute('SELECT game_time FROM epoch_timestamp')
-        self.game_time = USER_DB_CURSOR.fetchone()[0]
-        USER_DB_CURSOR.execute('SELECT level FROM game_progress')
-        self.level = USER_DB_CURSOR.fetchone()[0]
         USER_DB_CURSOR.execute('''SELECT unlocked_tracks, unlocked_environment, supported_cars_min 
                                   FROM map_progress WHERE map_id = ?''',
                                (self.map_id, ))
@@ -41,15 +37,14 @@ class SchedulerModel(GameBaseModel):
                                   entry_busy_state = ? WHERE map_id = ?''',
                                (self.train_counter, self.next_cycle_start_time,
                                 ','.join(list(map(str, list(map(int, self.entry_busy_state))))), self.map_id))
-        USER_DB_CURSOR.execute('''UPDATE map_progress SET entry_locked_state = ? WHERE map_id = ?''',
-                               (','.join(list(map(str, list(map(int, self.entry_locked_state))))), self.map_id))
+        USER_DB_CURSOR.execute('''UPDATE map_progress SET entry_locked_state = ?, supported_cars_min = ? 
+                                  WHERE map_id = ?''',
+                               (','.join(list(map(str, list(map(int, self.entry_locked_state))))),
+                                self.supported_cars_min, self.map_id))
         USER_DB_CURSOR.execute('''DELETE FROM base_schedule WHERE map_id = ?''', (self.map_id, ))
         for train in self.base_schedule:
             USER_DB_CURSOR.execute('INSERT INTO base_schedule VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)',
                                    (self.map_id, *train))
-
-        USER_DB_CURSOR.execute('''UPDATE map_progress SET supported_cars_min = ? WHERE map_id = ?''',
-                               (self.supported_cars_min, self.map_id))
 
     def on_update_time(self):
         super().on_update_time()

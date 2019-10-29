@@ -9,10 +9,8 @@ class DispatcherModel(GameBaseModel):
         super().__init__(controller, view, logger=getLogger(f'root.app.game.map.{map_id}.dispatcher.model'))
         self.map_id = map_id
         self.trains = []
-        self.supported_cars = [0, 0]
-        USER_DB_CURSOR.execute('''SELECT unlocked_tracks, supported_cars_min, supported_cars_max 
-                                  FROM map_progress WHERE map_id = ?''', (self.map_id, ))
-        self.unlocked_tracks, self.supported_cars[0], self.supported_cars[1] = USER_DB_CURSOR.fetchone()
+        USER_DB_CURSOR.execute('''SELECT unlocked_tracks FROM map_progress WHERE map_id = ?''', (self.map_id, ))
+        self.unlocked_tracks = USER_DB_CURSOR.fetchone()[0]
         USER_DB_CURSOR.execute('SELECT busy FROM tracks WHERE map_id = ?', (self.map_id, ))
         self.track_busy_status = [True, ]
         busy_status_parsed = USER_DB_CURSOR.fetchall()
