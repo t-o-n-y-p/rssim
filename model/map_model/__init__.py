@@ -64,7 +64,7 @@ class MapModel(MapBaseModel):
         USER_DB_CURSOR.execute('DELETE FROM trains WHERE map_id = ?', (self.map_id, ))
 
     def on_create_train(self, train_id, cars, track, train_route, state, direction, new_direction,
-                        current_direction, priority, boarding_time, exp, money):
+                        current_direction, priority, boarding_time, exp, money, switch_direction_required):
         pass
 
     def on_add_new_car_collection(self):

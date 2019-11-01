@@ -3,8 +3,8 @@ from typing import Final
 from pyglet import resource as _resource
 
 
-__car_collections_implemented = [12, ]
-MAXIMUM_CAR_COLLECTIONS: Final = [12, ]
+__car_collections_implemented = [12, 5]
+MAXIMUM_CAR_COLLECTIONS: Final = [12, 5]
 _resource.path = ['font', 'img', 'img/textures.zip']
 _resource.reindex()
 _cars_texture = _resource.texture('cars_in_one.dds')
@@ -17,21 +17,41 @@ for i in range(__car_collections_implemented[0]):
     for j in range(4):
         PASSENGER_CAR_HEAD_IMAGE[i].append(_cars_texture.get_region((j % 2) * 251, i * 47 + 3, 251, 41))
 
+FREIGHT_CAR_HEAD_IMAGE: Final = []
+for i in range(__car_collections_implemented[1]):
+    FREIGHT_CAR_HEAD_IMAGE.append([])
+    FREIGHT_CAR_HEAD_IMAGE[i].append(_cars_texture.get_region(6 * 251, i * 94 + 3, 251, 41))
+    for j in range(1, 6):
+        FREIGHT_CAR_HEAD_IMAGE[i].append(_cars_texture.get_region(6 * 251, i * 94 + 50, 251, 41))
+
 # anchor is set to the carriage middle point
 for i in range(len(PASSENGER_CAR_HEAD_IMAGE)):
     for j in range(4):
         PASSENGER_CAR_HEAD_IMAGE[i][j].anchor_x = PASSENGER_CAR_HEAD_IMAGE[i][j].width // 2
         PASSENGER_CAR_HEAD_IMAGE[i][j].anchor_y = PASSENGER_CAR_HEAD_IMAGE[i][j].height // 2
 
+for i in range(len(FREIGHT_CAR_HEAD_IMAGE)):
+    for j in range(6):
+        FREIGHT_CAR_HEAD_IMAGE[i][j].anchor_x = FREIGHT_CAR_HEAD_IMAGE[i][j].width // 2
+        FREIGHT_CAR_HEAD_IMAGE[i][j].anchor_y = FREIGHT_CAR_HEAD_IMAGE[i][j].height // 2
+
 # CAR_MID_IMAGE includes all textures for middle carriage
 PASSENGER_CAR_MID_IMAGE: Final = []
 for i in range(__car_collections_implemented[0]):
     PASSENGER_CAR_MID_IMAGE.append(_cars_texture.get_region(2 * 251, i * 47 + 3, 251, 41))
 
+FREIGHT_CAR_MID_IMAGE: Final = []
+for i in range(__car_collections_implemented[1]):
+    FREIGHT_CAR_MID_IMAGE.append(_cars_texture.get_region(6 * 251, 20 * 47 + 3, 151, 41))
+
 # anchor is set to the carriage middle point
 for i in range(len(PASSENGER_CAR_MID_IMAGE)):
     PASSENGER_CAR_MID_IMAGE[i].anchor_x = PASSENGER_CAR_MID_IMAGE[i].width // 2
     PASSENGER_CAR_MID_IMAGE[i].anchor_y = PASSENGER_CAR_MID_IMAGE[i].height // 2
+
+for i in range(len(FREIGHT_CAR_MID_IMAGE)):
+    FREIGHT_CAR_MID_IMAGE[i].anchor_x = FREIGHT_CAR_MID_IMAGE[i].width // 2
+    FREIGHT_CAR_MID_IMAGE[i].anchor_y = FREIGHT_CAR_MID_IMAGE[i].height // 2
 
 # CAR_TAIL_IMAGE includes all textures for trailing carriage
 PASSENGER_CAR_TAIL_IMAGE: Final = []
@@ -40,21 +60,41 @@ for i in range(__car_collections_implemented[0]):
     for j in range(4):
         PASSENGER_CAR_TAIL_IMAGE[i].append(_cars_texture.get_region((j % 2 + 3) * 251, i * 47 + 3, 251, 41))
 
+FREIGHT_CAR_TAIL_IMAGE: Final = []
+for i in range(__car_collections_implemented[1]):
+    FREIGHT_CAR_TAIL_IMAGE.append([])
+    FREIGHT_CAR_TAIL_IMAGE[i].append(_cars_texture.get_region(7 * 251, i * 94 + 3, 251, 41))
+    for j in range(1, 6):
+        FREIGHT_CAR_TAIL_IMAGE[i].append(_cars_texture.get_region(7 * 251, i * 94 + 50, 251, 41))
+
 # anchor is set to the carriage middle point
 for i in range(len(PASSENGER_CAR_TAIL_IMAGE)):
     for j in range(4):
         PASSENGER_CAR_TAIL_IMAGE[i][j].anchor_x = PASSENGER_CAR_TAIL_IMAGE[i][j].width // 2
         PASSENGER_CAR_TAIL_IMAGE[i][j].anchor_y = PASSENGER_CAR_TAIL_IMAGE[i][j].height // 2
 
+for i in range(len(FREIGHT_CAR_TAIL_IMAGE)):
+    for j in range(6):
+        FREIGHT_CAR_TAIL_IMAGE[i][j].anchor_x = FREIGHT_CAR_TAIL_IMAGE[i][j].width // 2
+        FREIGHT_CAR_TAIL_IMAGE[i][j].anchor_y = FREIGHT_CAR_TAIL_IMAGE[i][j].height // 2
+
 # BOARDING_LIGHT_IMAGE includes all textures for boarding lights - they are enabled if boarding is in progress
-BOARDING_LIGHT_IMAGE: Final = []
+PASSENGER_BOARDING_LIGHT_IMAGE: Final = []
 for i in range(__car_collections_implemented[0]):
-    BOARDING_LIGHT_IMAGE.append(_cars_texture.get_region(5 * 251, i * 47 + 3, 251, 41))
+    PASSENGER_BOARDING_LIGHT_IMAGE.append(_cars_texture.get_region(5 * 251, i * 47 + 3, 251, 41))
+
+FREIGHT_BOARDING_LIGHT_IMAGE: Final = []
+for i in range(__car_collections_implemented[1]):
+    FREIGHT_BOARDING_LIGHT_IMAGE.append(_cars_texture.get_region(6 * 251, 20 * 47 + 3, 151, 41))
 
 # anchor is set to the carriage middle point
-for i in range(len(BOARDING_LIGHT_IMAGE)):
-    BOARDING_LIGHT_IMAGE[i].anchor_x = BOARDING_LIGHT_IMAGE[i].width // 2
-    BOARDING_LIGHT_IMAGE[i].anchor_y = BOARDING_LIGHT_IMAGE[i].height // 2
+for i in range(len(PASSENGER_BOARDING_LIGHT_IMAGE)):
+    PASSENGER_BOARDING_LIGHT_IMAGE[i].anchor_x = PASSENGER_BOARDING_LIGHT_IMAGE[i].width // 2
+    PASSENGER_BOARDING_LIGHT_IMAGE[i].anchor_y = PASSENGER_BOARDING_LIGHT_IMAGE[i].height // 2
+
+for i in range(len(FREIGHT_BOARDING_LIGHT_IMAGE)):
+    FREIGHT_BOARDING_LIGHT_IMAGE[i].anchor_x = FREIGHT_BOARDING_LIGHT_IMAGE[i].width // 2
+    FREIGHT_BOARDING_LIGHT_IMAGE[i].anchor_y = FREIGHT_BOARDING_LIGHT_IMAGE[i].height // 2
 
 # signal images
 RED_SIGNAL_IMAGE: Final = _resource.texture('signals.dds').get_region(0, 0, 7, 9)

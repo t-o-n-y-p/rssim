@@ -100,6 +100,7 @@ CARS: Final = 4                                # property #4 indicates number of
 STOP_TIME: Final = 5                           # property #5 indicates how much stop time left
 EXP: Final = 6                                 # property #6 indicates how much exp the train gives
 MONEY: Final = 7                               # property #7 indicates how much money the train gives
+SWITCH_DIRECTION_REQUIRED: Final = 8
 # base route types
 ENTRY_BASE_ROUTE: Final = [('left_entry_base_route', 'right_entry_base_route',
                             'left_side_entry_base_route', 'right_side_entry_base_route'), ]
@@ -118,6 +119,7 @@ ARRIVAL_TIME_MAX: Final = 1             # property #0 indicates max arrival time
 # property #3 indicates new direction
 CARS_MIN: Final = 4                     # property #4 indicates min number of cars
 CARS_MAX: Final = 5                     # property #5 indicates max number of cars
+SWITCH_DIRECTION_FLAG = 6
 # train acceleration matrix (numbers are offsets from the starting point), same is used to decelerate
 PASSENGER_TRAIN_ACCELERATION_FACTOR: Final = (0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.5, 0.5, 0.5, 0.5, 0.5,
                                               1.0, 1.0, 1.0, 1.0, 1.5, 1.5, 1.5, 2.0, 2.0, 2.5, 2.5, 3.0, 3.0, 3.5, 3.5,

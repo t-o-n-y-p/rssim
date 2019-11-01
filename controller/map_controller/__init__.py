@@ -326,9 +326,10 @@ class MapController(MapBaseController):
 
     @final
     def on_create_train(self, train_id, cars, track, train_route, state, direction, new_direction,
-                        current_direction, priority, boarding_time, exp, money):
+                        current_direction, priority, boarding_time, exp, money, switch_direction_required):
         train = self.model.on_create_train(train_id, cars, track, train_route, state, direction, new_direction,
-                                           current_direction, priority, boarding_time, exp, money)
+                                           current_direction, priority, boarding_time, exp, money,
+                                           switch_direction_required)
         train.view.on_change_screen_resolution(self.view.screen_resolution)
         # add new train to the list and dictionary
         self.trains[train_id] = train
@@ -400,3 +401,6 @@ class MapController(MapBaseController):
 
     def on_close_map_switcher(self):
         self.view.on_close_map_switcher()
+
+    def on_deactivate_money_target(self):
+        self.constructor.on_deactivate_money_target()

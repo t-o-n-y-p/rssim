@@ -15,7 +15,7 @@ class SchedulerModel(GameBaseModel):
                                (self.map_id, ))
         self.unlocked_tracks, self.unlocked_environment, self.supported_cars_min = USER_DB_CURSOR.fetchone()
         CONFIG_DB_CURSOR.execute('''SELECT arrival_time_min, arrival_time_max, direction, new_direction, 
-                                    cars_min, cars_max FROM schedule_options 
+                                    cars_min, cars_max, switch_direction_required FROM schedule_options 
                                     WHERE min_level <= ? AND max_level >= ? AND map_id = ?''',
                                  (self.level, self.level, self.map_id))
         self.schedule_options = CONFIG_DB_CURSOR.fetchall()
@@ -43,7 +43,7 @@ class SchedulerModel(GameBaseModel):
                                 self.supported_cars_min, self.map_id))
         USER_DB_CURSOR.execute('''DELETE FROM base_schedule WHERE map_id = ?''', (self.map_id, ))
         for train in self.base_schedule:
-            USER_DB_CURSOR.execute('INSERT INTO base_schedule VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)',
+            USER_DB_CURSOR.execute('INSERT INTO base_schedule VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)',
                                    (self.map_id, *train))
 
     def on_update_time(self):
@@ -58,7 +58,7 @@ class SchedulerModel(GameBaseModel):
                     train_options = (self.train_counter, self.next_cycle_start_time
                                      + choice(list(range(i[ARRIVAL_TIME_MIN], i[ARRIVAL_TIME_MAX]))),
                                      i[DIRECTION], i[NEW_DIRECTION], cars, self.frame_per_car * cars,
-                                     self.exp_per_car * cars, self.money_per_car * cars)
+                                     self.exp_per_car * cars, self.money_per_car * cars, i[SWITCH_DIRECTION_FLAG])
                     self.base_schedule.append(train_options)
                     self.train_counter = (self.train_counter + 1) % TRAIN_ID_LIMIT
 
@@ -78,14 +78,14 @@ class SchedulerModel(GameBaseModel):
                             .on_create_train(i[TRAIN_ID], i[CARS], ENTRY_TRACK_ID[self.map_id][i[DIRECTION]],
                                              APPROACHING_TRAIN_ROUTE[self.map_id][i[DIRECTION]], state, i[DIRECTION],
                                              i[DIRECTION], i[DIRECTION], DEFAULT_PRIORITY, PASS_THROUGH_BOARDING_TIME,
-                                             0.0, 0.0)
+                                             0.0, 0.0, False)
                     else:
                         state = 'approaching'
                         self.controller.parent_controller\
                             .on_create_train(i[TRAIN_ID], i[CARS], ENTRY_TRACK_ID[self.map_id][i[DIRECTION]],
                                              APPROACHING_TRAIN_ROUTE[self.map_id][i[DIRECTION]], state, i[DIRECTION],
                                              i[NEW_DIRECTION], i[DIRECTION], DEFAULT_PRIORITY, i[STOP_TIME],
-                                             i[EXP], i[MONEY])
+                                             i[EXP], i[MONEY], bool(i[SWITCH_DIRECTION_REQUIRED]))
 
                     index = self.base_schedule.index(i)
                     self.view.on_release_train(index)

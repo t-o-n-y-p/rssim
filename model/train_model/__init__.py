@@ -33,23 +33,22 @@ class TrainModel(MapBaseModel):
         self.trail_points_v2_head_tail = []
         self.trail_points_v2_mid = []
         self.car_image_collection = 0
-        self.exp_bonus_multiplier = None
-        self.money_bonus_multiplier = None
+        self.switch_direction_required = False
 
     def on_train_setup(self):
         USER_DB_CURSOR.execute('''SELECT cars, train_route_track_number, train_route_type, 
                                   state, direction, new_direction, current_direction, speed, speed_state, 
                                   speed_factor_position, priority, boarding_time, exp, money, 
                                   cars_position, cars_position_abs, stop_point, destination_point, 
-                                  car_image_collection FROM trains WHERE train_id = ? AND map_id = ?''',
+                                  car_image_collection, switch_direction_required 
+                                  FROM trains WHERE train_id = ? AND map_id = ?''',
                                (self.train_id, self.map_id))
         self.cars, self.track, self.train_route, self.state, self.direction, self.new_direction, \
             self.current_direction, self.speed, self.speed_state, self.speed_factor_position, self.priority, \
             self.boarding_time, self.exp, self.money, cars_position_parsed, cars_position_abs_parsed, \
-            self.stop_point, self.destination_point, self.car_image_collection \
+            self.stop_point, self.destination_point, self.car_image_collection, self.switch_direction_required \
             = USER_DB_CURSOR.fetchone()
-        USER_DB_CURSOR.execute('''SELECT exp_bonus_multiplier, money_bonus_multiplier FROM game_progress''')
-        self.exp_bonus_multiplier, self.money_bonus_multiplier = USER_DB_CURSOR.fetchone()
+        self.switch_direction_required = bool(self.switch_direction_required)
         if cars_position_parsed is not None:
             self.cars_position = list(map(float, cars_position_parsed.split(',')))
 
@@ -63,13 +62,15 @@ class TrainModel(MapBaseModel):
         self.view.on_train_setup()
 
     def on_train_init(self, cars, track, train_route, state, direction, new_direction, current_direction,
-                      priority, boarding_time, exp, money, car_image_collection,
+                      priority, boarding_time, exp, money, car_image_collection, switch_direction_required,
                       exp_bonus_multiplier, money_bonus_multiplier):
         self.cars, self.track, self.train_route, self.state, self.direction, self.new_direction, \
             self.current_direction, self.priority, self.boarding_time, \
-            self.exp, self.money, self.car_image_collection, self.exp_bonus_multiplier, self.money_bonus_multiplier \
+            self.exp, self.money, self.car_image_collection, self.switch_direction_required, \
+            self.exp_bonus_multiplier, self.money_bonus_multiplier \
             = cars, track, train_route, state, direction, new_direction, current_direction, \
-            priority, boarding_time, exp, money, car_image_collection, exp_bonus_multiplier, money_bonus_multiplier
+            priority, boarding_time, exp, money, car_image_collection, switch_direction_required, \
+            exp_bonus_multiplier, money_bonus_multiplier
         self.speed = self.train_maximum_speed
         self.speed_state = 'move'
         self.speed_factor_position = self.speed_factor_position_limit
@@ -89,12 +90,13 @@ class TrainModel(MapBaseModel):
             cars_position_abs_string = '|'.join(list(map(str, cars_position_abs_strings_list)))
 
         USER_DB_CURSOR.execute('''INSERT INTO trains VALUES 
-                                  (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)''',
+                                  (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)''',
                                (self.map_id, self.train_id, self.cars, self.track, self.train_route,
                                 self.state, self.direction, self.new_direction, self.current_direction, self.speed,
                                 self.speed_state, self.speed_factor_position, self.priority, self.boarding_time,
                                 self.exp, self.money, cars_position_string, cars_position_abs_string,
-                                self.stop_point, self.destination_point, self.car_image_collection))
+                                self.stop_point, self.destination_point, self.car_image_collection,
+                                int(self.switch_direction_required)))
 
     def on_update_time(self):
         super().on_update_time()
@@ -190,9 +192,9 @@ class TrainModel(MapBaseModel):
             if self.boarding_time == FRAMES_IN_ONE_MINUTE // 2:
                 self.current_direction = self.new_direction
                 self.train_route = EXIT_TRAIN_ROUTE[self.map_id][self.current_direction]
-                self.view.on_update_direction(self.current_direction)
-                if self.direction % 2 != self.new_direction % 2:
+                if self.switch_direction_required:
                     self.on_switch_direction()
+                    self.view.on_update_direction(self.current_direction)
 
                 self.controller.parent_controller.on_open_train_route(self.track, self.train_route,
                                                                       self.train_id, self.cars)
@@ -244,6 +246,7 @@ class TrainModel(MapBaseModel):
         self.cars_position_abs.clear()
 
     def on_switch_direction(self):
+        self.switch_direction_required = False
         self.cars_position_abs = list(reversed(self.cars_position_abs))
         self.view.car_position = []
         for i in self.cars_position_abs:

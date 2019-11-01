@@ -64,7 +64,8 @@ for line in CONFIG_DB_CURSOR.fetchall():
 
 BASE_SCHEDULE = [(), ()]
 USER_DB_CURSOR.execute('''SELECT train_id, arrival, direction, new_direction, 
-                          cars, boarding_time, exp, money FROM base_schedule WHERE map_id = 0''')
+                          cars, boarding_time, exp, money, switch_direction_required 
+                          FROM base_schedule WHERE map_id = 0''')
 BASE_SCHEDULE[PASSENGER_MAP] = USER_DB_CURSOR.fetchall()
 
 CONSTRUCTION_STATE_MATRIX = [[{}, {}], [{}, {}]]

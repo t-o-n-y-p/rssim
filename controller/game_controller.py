@@ -72,9 +72,9 @@ class GameController(GameBaseController):
             map_.on_change_shop_storage_notification_state(notification_state)
 
     def on_deactivate_money_target_for_inactive_maps(self, active_map_id):
-        for i in range(len(self.maps)):
-            if i != active_map_id:
-                self.maps[i].constructor.on_deactivate_money_target()
+        for m in self.maps:
+            if m.map_id != active_map_id:
+                m.on_deactivate_money_target()
 
     def on_add_exp_bonus(self, exp_bonus):
         self.model.on_add_exp_bonus(exp_bonus)

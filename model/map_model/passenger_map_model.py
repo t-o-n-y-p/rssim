@@ -9,12 +9,13 @@ class PassengerMapModel(MapModel):
         super().__init__(controller, view, map_id=0)
 
     def on_create_train(self, train_id, cars, track, train_route, state, direction, new_direction,
-                        current_direction, priority, boarding_time, exp, money):
+                        current_direction, priority, boarding_time, exp, money, switch_direction_required):
         controller = PassengerTrainController(self.controller, train_id, database_mode=False)
         self.controller.fade_in_animation.train_fade_in_animations.append(controller.fade_in_animation)
         self.controller.fade_out_animation.train_fade_out_animations.append(controller.fade_out_animation)
         seed()
         controller.model.on_train_init(cars, track, train_route, state, direction, new_direction, current_direction,
                                        priority, boarding_time, exp, money, choice(self.unlocked_car_collections),
-                                       self.exp_bonus_multiplier, self.money_bonus_multiplier)
+                                       switch_direction_required, self.exp_bonus_multiplier,
+                                       self.money_bonus_multiplier)
         return controller

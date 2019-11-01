@@ -1,5 +1,4 @@
 from logging import getLogger
-from random import seed, choice
 
 from view import *
 from ui.sprite.car_sprite import CarSprite
