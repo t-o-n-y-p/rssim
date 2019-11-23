@@ -68,14 +68,16 @@ class TrainRouteModel(MapBaseModel):
                                              trail_points_v2_part_1_start_parsed[2]))
 
         # parse second part, append all points
+        trail_points_v2_part_2_parsed = []
         if trail_points_v2_part_2_head_tail is not None:
             trail_points_v2_part_2_parsed = trail_points_v2_part_2_head_tail.split('|')
             for i in range(len(trail_points_v2_part_2_parsed)):
                 trail_points_v2_part_2_parsed[i] = list(map(float, trail_points_v2_part_2_parsed[i].split(',')))
 
-            self.trail_points_v2_head_tail.extend(trail_points_v2_part_2_parsed)
-
-        if trail_points_v2_part_2_mid is not None:
+        self.trail_points_v2_head_tail.extend(trail_points_v2_part_2_parsed)
+        if trail_points_v2_part_2_mid is None:
+            self.trail_points_v2_mid.extend(trail_points_v2_part_2_parsed)
+        else:
             trail_points_v2_part_2_parsed = trail_points_v2_part_2_mid.split('|')
             for i in range(len(trail_points_v2_part_2_parsed)):
                 trail_points_v2_part_2_parsed[i] = list(map(float, trail_points_v2_part_2_parsed[i].split(',')))

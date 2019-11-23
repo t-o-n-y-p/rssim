@@ -98,7 +98,7 @@ class SchedulerModel(GameBaseModel):
     def on_level_up(self):
         super().on_level_up()
         CONFIG_DB_CURSOR.execute('''SELECT arrival_time_min, arrival_time_max, direction, new_direction, 
-                                    cars_min, cars_max FROM schedule_options 
+                                    cars_min, cars_max, switch_direction_required FROM schedule_options 
                                     WHERE min_level <= ? AND max_level >= ? AND map_id = ?''',
                                  (self.level, self.level, self.map_id))
         self.schedule_options = CONFIG_DB_CURSOR.fetchall()
