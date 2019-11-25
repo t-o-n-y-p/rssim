@@ -254,26 +254,32 @@ class TrainModel(MapBaseModel):
 
     def on_calculate_car_position_view(self, car_index):
         if car_index in (0, len(self.cars_position) - 1):
-            if self.cars_position[car_index] % 1 < 0.1:
-                return self.trail_points_v2_head_tail[round(self.cars_position[car_index])]
-            else:
-                return (
-                    (self.trail_points_v2_head_tail[int(self.cars_position[car_index])][0]
-                     + self.trail_points_v2_head_tail[int(self.cars_position[car_index]) + 1][0]) / 2,
-                    (self.trail_points_v2_head_tail[int(self.cars_position[car_index])][1]
-                     + self.trail_points_v2_head_tail[int(self.cars_position[car_index]) + 1][1]) / 2,
-                    (self.trail_points_v2_head_tail[int(self.cars_position[car_index])][2]
-                     + self.trail_points_v2_head_tail[int(self.cars_position[car_index]) + 1][2]) / 2
-                )
+            return (
+                self.trail_points_v2_head_tail[int(self.cars_position[car_index])][0]
+                + (self.trail_points_v2_head_tail[int(self.cars_position[car_index]) + 1][0]
+                   - self.trail_points_v2_head_tail[int(self.cars_position[car_index])][0])
+                * (self.cars_position[car_index] % 1),
+                self.trail_points_v2_head_tail[int(self.cars_position[car_index])][1]
+                + (self.trail_points_v2_head_tail[int(self.cars_position[car_index]) + 1][1]
+                   - self.trail_points_v2_head_tail[int(self.cars_position[car_index])][1])
+                * (self.cars_position[car_index] % 1),
+                self.trail_points_v2_head_tail[int(self.cars_position[car_index])][2]
+                + (self.trail_points_v2_head_tail[int(self.cars_position[car_index]) + 1][2]
+                   - self.trail_points_v2_head_tail[int(self.cars_position[car_index])][2])
+                * (self.cars_position[car_index] % 1)
+            )
         else:
-            if self.cars_position[car_index] % 1 < 0.1:
-                return self.trail_points_v2_mid[round(self.cars_position[car_index])]
-            else:
-                return (
-                    (self.trail_points_v2_mid[int(self.cars_position[car_index])][0]
-                     + self.trail_points_v2_mid[int(self.cars_position[car_index]) + 1][0]) / 2,
-                    (self.trail_points_v2_mid[int(self.cars_position[car_index])][1]
-                     + self.trail_points_v2_mid[int(self.cars_position[car_index]) + 1][1]) / 2,
-                    (self.trail_points_v2_mid[int(self.cars_position[car_index])][2]
-                     + self.trail_points_v2_mid[int(self.cars_position[car_index]) + 1][2]) / 2
-                )
+            return (
+                self.trail_points_v2_mid[int(self.cars_position[car_index])][0]
+                + (self.trail_points_v2_mid[int(self.cars_position[car_index]) + 1][0]
+                   - self.trail_points_v2_mid[int(self.cars_position[car_index])][0])
+                * (self.cars_position[car_index] % 1),
+                self.trail_points_v2_mid[int(self.cars_position[car_index])][1]
+                + (self.trail_points_v2_mid[int(self.cars_position[car_index]) + 1][1]
+                   - self.trail_points_v2_mid[int(self.cars_position[car_index])][1])
+                * (self.cars_position[car_index] % 1),
+                self.trail_points_v2_mid[int(self.cars_position[car_index])][2]
+                + (self.trail_points_v2_mid[int(self.cars_position[car_index]) + 1][2]
+                   - self.trail_points_v2_mid[int(self.cars_position[car_index])][2])
+                * (self.cars_position[car_index] % 1)
+            )

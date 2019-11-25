@@ -103,6 +103,7 @@ class TrainRouteModel(MapBaseModel):
                                     FROM train_route_sections WHERE track = ? and train_route = ? AND map_id = ?''',
                                  (track, train_route, self.map_id))
         self.train_route_section_positions = CONFIG_DB_CURSOR.fetchall()
+        # TODO increase trail points length by at least 1
 
     def on_save_state(self):
         USER_DB_CURSOR.execute('''UPDATE train_routes SET opened = ?, last_opened_by = ?, current_checkpoint = ?,
