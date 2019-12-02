@@ -28,12 +28,7 @@ class TrainRouteModel(MapBaseModel):
         USER_DB_CURSOR.execute('''SELECT train_route_section_busy_state FROM train_routes
                                   WHERE track = ? AND train_route = ? AND map_id = ?''',
                                (track, train_route, self.map_id))
-        self.train_route_section_busy_state \
-            = list(map(bool, list(map(int, USER_DB_CURSOR.fetchone()[0].split(',')))))
-        CONFIG_DB_CURSOR.execute('''SELECT signal_track, signal_base_route FROM train_route_config
-                                    WHERE track = ? AND train_route = ? AND map_id = ?''',
-                                 (track, train_route, self.map_id))
-        self.signal_track, self.signal_base_route = CONFIG_DB_CURSOR.fetchone()
+        self.train_route_section_busy_state = list(map(bool, list(map(int, USER_DB_CURSOR.fetchone()[0].split(',')))))
         CONFIG_DB_CURSOR.execute('''SELECT start_point_v2, stop_point_v2, destination_point_v2, checkpoints_v2 
                                     FROM train_route_config WHERE track = ? AND train_route = ? AND map_id = ?''',
                                  (track, train_route, self.map_id))
@@ -99,11 +94,14 @@ class TrainRouteModel(MapBaseModel):
                                     FROM train_route_sections WHERE track = ? and train_route = ? AND map_id = ?''',
                                  (track, train_route, self.map_id))
         self.train_route_sections = CONFIG_DB_CURSOR.fetchall()
+        self.signal_base_route, self.signal_track = None, None
+        if len(self.train_route_sections) > 1:
+            self.signal_base_route, self.signal_track = self.train_route_sections[0][:2]
+
         CONFIG_DB_CURSOR.execute('''SELECT position_1, position_2 
                                     FROM train_route_sections WHERE track = ? and train_route = ? AND map_id = ?''',
                                  (track, train_route, self.map_id))
         self.train_route_section_positions = CONFIG_DB_CURSOR.fetchall()
-        # TODO increase trail points length by at least 1
 
     def on_save_state(self):
         USER_DB_CURSOR.execute('''UPDATE train_routes SET opened = ?, last_opened_by = ?, current_checkpoint = ?,
