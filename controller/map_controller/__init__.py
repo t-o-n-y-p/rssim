@@ -148,6 +148,13 @@ class MapController(MapBaseController):
         self.model.on_save_and_commit_zoom_out_activated(True)
 
     @final
+    def on_unlock(self):
+        super().on_unlock()
+        self.scheduler.on_unlock()
+        for track in range(self.model.unlocked_tracks_by_default):
+            self.on_unlock_track(track)
+
+    @final
     def on_unlock_track(self, track):
         self.model.on_unlock_track(track)
         self.scheduler.on_unlock_track(track)

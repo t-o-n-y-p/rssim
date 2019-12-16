@@ -7,7 +7,7 @@ from ui.fade_animation.fade_in_animation.scheduler_fade_in_animation import Sche
 from ui.fade_animation.fade_out_animation.scheduler_fade_out_animation import SchedulerFadeOutAnimation
 
 
-class SchedulerController(GameBaseController):
+class SchedulerController(MapBaseController):
     def __init__(self, model: SchedulerModel, view: SchedulerView, map_id, parent_controller):
         super().__init__(parent_controller=parent_controller,
                          logger=getLogger(f'root.app.game.map.{map_id}.scheduler.controller'))

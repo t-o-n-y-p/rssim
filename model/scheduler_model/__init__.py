@@ -6,14 +6,16 @@ from model import *
 from database import USER_DB_CURSOR, CONFIG_DB_CURSOR, BASE_SCHEDULE
 
 
-class SchedulerModel(GameBaseModel):
+class SchedulerModel(MapBaseModel):
     def __init__(self, controller, view, map_id):
         super().__init__(controller, view, logger=getLogger(f'root.app.game.map.{map_id}.scheduler.model'))
         self.map_id = map_id
-        USER_DB_CURSOR.execute('''SELECT unlocked_tracks, unlocked_environment, supported_cars_min 
+        USER_DB_CURSOR.execute('''SELECT locked, unlocked_tracks, unlocked_environment, supported_cars_min 
                                   FROM map_progress WHERE map_id = ?''',
                                (self.map_id, ))
-        self.unlocked_tracks, self.unlocked_environment, self.supported_cars_min = USER_DB_CURSOR.fetchone()
+        self.locked, self.unlocked_tracks, self.unlocked_environment, self.supported_cars_min \
+            = USER_DB_CURSOR.fetchone()
+        self.locked = bool(self.locked)
         CONFIG_DB_CURSOR.execute('''SELECT arrival_time_min, arrival_time_max, direction, new_direction, 
                                     cars_min, cars_max, switch_direction_required FROM schedule_options 
                                     WHERE min_level <= ? AND max_level >= ? AND map_id = ?''',
@@ -49,7 +51,7 @@ class SchedulerModel(GameBaseModel):
     def on_update_time(self):
         super().on_update_time()
         # new schedule cycle is created if current schedule end is less than schedule cycle length ahead
-        if self.game_time + self.schedule_cycle_length >= self.next_cycle_start_time:
+        if not self.locked and self.game_time + self.schedule_cycle_length >= self.next_cycle_start_time:
             # trains are added one by one if both direction and new direction are unlocked by user,
             # otherwise train is skipped
             for i in self.schedule_options:
@@ -106,6 +108,10 @@ class SchedulerModel(GameBaseModel):
                                     FROM map_config WHERE level = ? AND map_id = ?''', (self.level, self.map_id))
         self.schedule_cycle_length, self.frame_per_car, self.exp_per_car, self.money_per_car \
             = CONFIG_DB_CURSOR.fetchone()
+
+    def on_unlock(self):
+        super().on_unlock()
+        self.next_cycle_start_time = self.game_time
 
     def on_unlock_track(self, track):
         self.unlocked_tracks = track

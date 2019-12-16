@@ -30,11 +30,6 @@ class MapModel(MapBaseModel):
                                (int(self.locked), self.unlocked_tracks, self.unlocked_environment,
                                 ','.join(list(map(str, self.unlocked_car_collections))), self.map_id))
 
-    def on_unlock(self):
-        super().on_unlock()
-        for track in range(self.unlocked_tracks_by_default):
-            self.controller.on_unlock_track(track)
-
     def on_unlock_track(self, track):
         self.unlocked_tracks = track
         if self.unlocked_tracks in CAR_COLLECTION_UNLOCK_TRACK_LIST[self.map_id]:
