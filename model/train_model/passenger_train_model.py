@@ -15,5 +15,11 @@ class PassengerTrainModel(TrainModel):
             self.cars_position.append(float(first_car_start_point - i * PASSENGER_CAR_LENGTH))
 
         self.view.car_position = []
-        for i in range(len(self.cars_position)):
-            self.view.car_position.append(self.on_calculate_car_position_view(i))
+        self.cars_position[0] = round(self.cars_position[0] + self.speed, 1)
+        self.view.car_position.append(self.trail_points_v2.get_head_tail_car_position(self.cars_position[0]))
+        for i in range(1, len(self.cars_position) - 1):
+            self.cars_position[i] = round(self.cars_position[i] + self.speed, 1)
+            self.view.car_position.append(self.trail_points_v2.get_mid_car_position(self.cars_position[i]))
+
+        self.cars_position[-1] = round(self.cars_position[-1] + self.speed, 1)
+        self.view.car_position.append(self.trail_points_v2.get_head_tail_car_position(self.cars_position[-1]))

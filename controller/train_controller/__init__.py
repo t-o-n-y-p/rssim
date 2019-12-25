@@ -35,5 +35,5 @@ class TrainController(MapBaseController):
         self.model.on_set_train_destination_point(first_car_destination_point)
 
     @final
-    def on_set_trail_points(self, trail_points_v2_head_tail, trail_points_v2_mid):
-        self.model.on_set_trail_points(trail_points_v2_head_tail, trail_points_v2_mid)
+    def on_set_trail_points(self, trail_points_v2):
+        self.model.on_set_trail_points(trail_points_v2)

@@ -30,8 +30,7 @@ class TrainModel(MapBaseModel):
         self.cars_position_abs = []
         self.stop_point = 0
         self.destination_point = 0
-        self.trail_points_v2_head_tail = []
-        self.trail_points_v2_mid = []
+        self.trail_points_v2 = None
         self.car_image_collection = 0
         self.switch_direction_required = False
 
@@ -151,8 +150,7 @@ class TrainModel(MapBaseModel):
                     self.view.state = self.state
                     # when boarding is started, convert trail points to 2D Cartesian
                     self.on_convert_trail_points()
-                    self.trail_points_v2_head_tail = None
-                    self.trail_points_v2_mid = None
+                    self.trail_points_v2 = None
                 # 'boarding_complete' state means train has finished entire process,
                 # call on_train_lifecycle_ended() method for map controller to delete this train later
                 elif self.state == 'boarding_complete':
@@ -179,10 +177,14 @@ class TrainModel(MapBaseModel):
             # if train is not stopped, move all cars ahead
             if self.speed_state != 'stop':
                 self.view.car_position = []
-                for i in range(len(self.cars_position)):
+                self.cars_position[0] = round(self.cars_position[0] + self.speed, 1)
+                self.view.car_position.append(self.trail_points_v2.get_head_tail_car_position(self.cars_position[0]))
+                for i in range(1, len(self.cars_position) - 1):
                     self.cars_position[i] = round(self.cars_position[i] + self.speed, 1)
-                    self.view.car_position.append(self.on_calculate_car_position_view(i))
+                    self.view.car_position.append(self.trail_points_v2.get_mid_car_position(self.cars_position[i]))
 
+                self.cars_position[-1] = round(self.cars_position[-1] + self.speed, 1)
+                self.view.car_position.append(self.trail_points_v2.get_head_tail_car_position(self.cars_position[-1]))
                 self.controller.parent_controller\
                     .on_update_train_route_sections(self.track, self.train_route, self.cars_position[-1])
         else:
@@ -217,31 +219,20 @@ class TrainModel(MapBaseModel):
     def on_set_train_destination_point(self, first_car_destination_point):
         self.destination_point = first_car_destination_point
 
-    def on_set_trail_points(self, trail_points_v2_head_tail, trail_points_v2_mid):
-        self.trail_points_v2_head_tail = trail_points_v2_head_tail
-        self.trail_points_v2_mid = trail_points_v2_mid
+    def on_set_trail_points(self, trail_points_v2):
+        self.trail_points_v2 = trail_points_v2
 
     def on_convert_trail_points(self):
         self.cars_position_abs = []
-        for i in range(len(self.cars_position)):
-            if i in (0, len(self.cars_position) - 1):
-                dot = self.trail_points_v2_head_tail[round(self.cars_position[i])]
-            else:
-                dot = self.trail_points_v2_mid[round(self.cars_position[i])]
-
-            self.cars_position_abs.append([dot[0], dot[1]])
+        for p in self.cars_position:
+            self.cars_position_abs.append(self.trail_points_v2.get_conversion_index(p))
 
         self.cars_position.clear()
 
     def on_reconvert_trail_points(self):
         self.cars_position = []
-        for i in range(len(self.cars_position_abs)):
-            if i in (0, len(self.cars_position_abs) - 1):
-                self.cars_position.append(float(round(abs(self.cars_position_abs[i][0]
-                                                          - self.trail_points_v2_head_tail[0][0]))))
-            else:
-                self.cars_position.append(float(round(abs(self.cars_position_abs[i][0]
-                                                          - self.trail_points_v2_mid[0][0]))))
+        for p in self.cars_position_abs:
+            self.cars_position.append(self.trail_points_v2.get_reconversion_index(p))
 
         self.cars_position_abs.clear()
 
@@ -251,35 +242,3 @@ class TrainModel(MapBaseModel):
         self.view.car_position = []
         for i in self.cars_position_abs:
             self.view.car_position.append((i[0], i[1], 0.0))
-
-    def on_calculate_car_position_view(self, car_index):
-        if car_index in (0, len(self.cars_position) - 1):
-            return (
-                self.trail_points_v2_head_tail[int(self.cars_position[car_index])][0]
-                + (self.trail_points_v2_head_tail[int(self.cars_position[car_index]) + 1][0]
-                   - self.trail_points_v2_head_tail[int(self.cars_position[car_index])][0])
-                * (self.cars_position[car_index] % 1),
-                self.trail_points_v2_head_tail[int(self.cars_position[car_index])][1]
-                + (self.trail_points_v2_head_tail[int(self.cars_position[car_index]) + 1][1]
-                   - self.trail_points_v2_head_tail[int(self.cars_position[car_index])][1])
-                * (self.cars_position[car_index] % 1),
-                self.trail_points_v2_head_tail[int(self.cars_position[car_index])][2]
-                + (self.trail_points_v2_head_tail[int(self.cars_position[car_index]) + 1][2]
-                   - self.trail_points_v2_head_tail[int(self.cars_position[car_index])][2])
-                * (self.cars_position[car_index] % 1)
-            )
-        else:
-            return (
-                self.trail_points_v2_mid[int(self.cars_position[car_index])][0]
-                + (self.trail_points_v2_mid[int(self.cars_position[car_index]) + 1][0]
-                   - self.trail_points_v2_mid[int(self.cars_position[car_index])][0])
-                * (self.cars_position[car_index] % 1),
-                self.trail_points_v2_mid[int(self.cars_position[car_index])][1]
-                + (self.trail_points_v2_mid[int(self.cars_position[car_index]) + 1][1]
-                   - self.trail_points_v2_mid[int(self.cars_position[car_index])][1])
-                * (self.cars_position[car_index] % 1),
-                self.trail_points_v2_mid[int(self.cars_position[car_index])][2]
-                + (self.trail_points_v2_mid[int(self.cars_position[car_index]) + 1][2]
-                   - self.trail_points_v2_mid[int(self.cars_position[car_index])][2])
-                * (self.cars_position[car_index] % 1)
-            )

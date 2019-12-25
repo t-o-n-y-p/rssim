@@ -1,29 +1,18 @@
 from logging import getLogger
 
 from model import *
-from database import USER_DB_CURSOR, CONFIG_DB_CURSOR
+from database import USER_DB_CURSOR, CONFIG_DB_CURSOR, TrailPointsV2
 
 
 class TrainRouteModel(MapBaseModel):
     def __init__(self, controller, view, map_id, track, train_route):
-        def sgn(x):
-            if type(x) is not int:
-                raise ValueError
-            elif x == 0:
-                return 0
-            elif x > 0:
-                return 1
-            else:
-                return -1
-
         super().__init__(controller, view,
                          logger=getLogger(f'root.app.game.map.{map_id}.train_route.{track}.{train_route}.model'))
         self.map_id = map_id
         USER_DB_CURSOR.execute('''SELECT opened, last_opened_by, current_checkpoint, priority, cars 
                                   FROM train_routes WHERE track = ? AND train_route = ? AND map_id = ?''',
                                (track, train_route, self.map_id))
-        self.opened, self.last_opened_by, self.current_checkpoint, self.priority, self.cars \
-            = USER_DB_CURSOR.fetchone()
+        self.opened, self.last_opened_by, self.current_checkpoint, self.priority, self.cars = USER_DB_CURSOR.fetchone()
         self.opened = bool(self.opened)
         USER_DB_CURSOR.execute('''SELECT train_route_section_busy_state FROM train_routes
                                   WHERE track = ? AND train_route = ? AND map_id = ?''',
@@ -38,58 +27,7 @@ class TrainRouteModel(MapBaseModel):
                 fetched_data[i] = tuple(map(int, fetched_data[i].split(',')))
 
         self.start_point_v2, self.stop_point_v2, self.destination_point_v2, self.checkpoints_v2 = fetched_data
-        # trail points are stores in 3 parts:
-        # first part is straight and is defined by start point and end point (always not null),
-        # second part is defined by list of trail points (can be null),
-        # third part is straight too and is defined by start point and end point (can be null)
-        self.trail_points_v2_head_tail = []
-        self.trail_points_v2_mid = []
-        CONFIG_DB_CURSOR.execute('''SELECT trail_points_v2_part_1_start, trail_points_v2_part_1_end, 
-                                    trail_points_v2_part_2_head_tail, trail_points_v2_part_2_mid, 
-                                    trail_points_v2_part_3_start, trail_points_v2_part_3_end FROM train_route_config 
-                                    WHERE track = ? AND train_route = ? AND map_id = ?''',
-                                 (track, train_route, self.map_id))
-        trail_points_v2_part_1_start, trail_points_v2_part_1_end, trail_points_v2_part_2_head_tail, \
-            trail_points_v2_part_2_mid, trail_points_v2_part_3_start, trail_points_v2_part_3_end \
-            = CONFIG_DB_CURSOR.fetchone()
-        # parse start and end points for first part, append all points in between
-        trail_points_v2_part_1_start_parsed = list(map(float, trail_points_v2_part_1_start.split(',')))
-        trail_points_v2_part_1_end_parsed = list(map(float, trail_points_v2_part_1_end.split(',')))
-        for i in range(round(trail_points_v2_part_1_start_parsed[0]), round(trail_points_v2_part_1_end_parsed[0]),
-                       sgn(round(trail_points_v2_part_1_end_parsed[0] - trail_points_v2_part_1_start_parsed[0]))):
-            self.trail_points_v2_head_tail.append((float(i), trail_points_v2_part_1_start_parsed[1],
-                                                   trail_points_v2_part_1_start_parsed[2]))
-            self.trail_points_v2_mid.append((float(i), trail_points_v2_part_1_start_parsed[1],
-                                             trail_points_v2_part_1_start_parsed[2]))
-
-        # parse second part, append all points
-        trail_points_v2_part_2_parsed = []
-        if trail_points_v2_part_2_head_tail is not None:
-            trail_points_v2_part_2_parsed = trail_points_v2_part_2_head_tail.split('|')
-            for i in range(len(trail_points_v2_part_2_parsed)):
-                trail_points_v2_part_2_parsed[i] = list(map(float, trail_points_v2_part_2_parsed[i].split(',')))
-
-        self.trail_points_v2_head_tail.extend(trail_points_v2_part_2_parsed)
-        if trail_points_v2_part_2_mid is None:
-            self.trail_points_v2_mid.extend(trail_points_v2_part_2_parsed)
-        else:
-            trail_points_v2_part_2_parsed = trail_points_v2_part_2_mid.split('|')
-            for i in range(len(trail_points_v2_part_2_parsed)):
-                trail_points_v2_part_2_parsed[i] = list(map(float, trail_points_v2_part_2_parsed[i].split(',')))
-
-            self.trail_points_v2_mid.extend(trail_points_v2_part_2_parsed)
-
-        # parse start and end points for third part, append all points in between
-        if trail_points_v2_part_3_start is not None and trail_points_v2_part_3_end is not None:
-            trail_points_v2_part_3_start_parsed = list(map(float, trail_points_v2_part_3_start.split(',')))
-            trail_points_v2_part_3_end_parsed = list(map(float, trail_points_v2_part_3_end.split(',')))
-            for i in range(round(trail_points_v2_part_3_start_parsed[0]), round(trail_points_v2_part_3_end_parsed[0]),
-                           sgn(round(trail_points_v2_part_3_end_parsed[0] - trail_points_v2_part_3_start_parsed[0]))):
-                self.trail_points_v2_head_tail.append((float(i), trail_points_v2_part_3_start_parsed[1],
-                                                       trail_points_v2_part_3_start_parsed[2]))
-                self.trail_points_v2_mid.append((float(i), trail_points_v2_part_3_start_parsed[1],
-                                                 trail_points_v2_part_3_start_parsed[2]))
-
+        self.trail_points_v2 = TrailPointsV2(self.map_id, track, train_route)
         CONFIG_DB_CURSOR.execute('''SELECT section_type, track_param_1, track_param_2 
                                     FROM train_route_sections WHERE track = ? and train_route = ? AND map_id = ?''',
                                  (track, train_route, self.map_id))
@@ -138,8 +76,7 @@ class TrainRouteModel(MapBaseModel):
         self.last_opened_by = train_id
         self.cars = cars
         self.current_checkpoint = 0
-        self.controller.parent_controller.on_set_trail_points(train_id, self.trail_points_v2_head_tail,
-                                                              self.trail_points_v2_mid)
+        self.controller.parent_controller.on_set_trail_points(train_id, self.trail_points_v2)
         if self.start_point_v2 is not None:
             self.controller.parent_controller.on_set_train_start_point(train_id, self.start_point_v2[cars])
 

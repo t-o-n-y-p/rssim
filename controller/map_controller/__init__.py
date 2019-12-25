@@ -81,8 +81,7 @@ class MapController(MapBaseController):
             self.fade_in_animation.train_route_fade_in_animations.append(train_route.fade_in_animation)
             self.fade_out_animation.train_route_fade_out_animations.append(train_route.fade_out_animation)
             if train_route.model.opened:
-                self.on_set_trail_points(train_route.model.last_opened_by, train_route.model.trail_points_v2_head_tail,
-                                         train_route.model.trail_points_v2_mid)
+                self.on_set_trail_points(train_route.model.last_opened_by, train_route.model.trail_points_v2)
 
         for shop in self.shops:
             self.fade_in_animation.shop_fade_in_animations.append(shop.fade_in_animation)
@@ -308,8 +307,8 @@ class MapController(MapBaseController):
         self.train_routes[track][train_route].on_update_priority(priority)
 
     @final
-    def on_set_trail_points(self, train_id, trail_points_v2_head_tail, trail_points_v2_mid):
-        self.trains[train_id].on_set_trail_points(trail_points_v2_head_tail, trail_points_v2_mid)
+    def on_set_trail_points(self, train_id, trail_points_v2):
+        self.trains[train_id].on_set_trail_points(trail_points_v2)
 
     @final
     def on_set_train_start_point(self, train_id, first_car_start_point):
