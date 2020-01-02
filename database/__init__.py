@@ -2,7 +2,7 @@ from sqlite3 import connect
 from os import path, makedirs
 from shutil import copyfile
 from hashlib import sha512
-from typing import Final
+from typing import Final, final
 
 from keyring import set_password, delete_password, set_keyring
 from keyring.errors import PasswordDeleteError
@@ -57,10 +57,8 @@ for line in CONFIG_DB_CURSOR.fetchall():
     USER_DB_CURSOR.execute('''SELECT activation_available, activations_left, is_activated, bonus_time
                               FROM bonus_codes WHERE sha512_hash = ?''', (line[0],))
     BONUS_CODE_MATRIX[line[0]].extend(USER_DB_CURSOR.fetchone())
-    BONUS_CODE_MATRIX[line[0]][ACTIVATION_AVAILABLE] \
-        = bool(BONUS_CODE_MATRIX[line[0]][ACTIVATION_AVAILABLE])
-    BONUS_CODE_MATRIX[line[0]][IS_ACTIVATED] \
-        = bool(BONUS_CODE_MATRIX[line[0]][IS_ACTIVATED])
+    BONUS_CODE_MATRIX[line[0]][ACTIVATION_AVAILABLE] = bool(BONUS_CODE_MATRIX[line[0]][ACTIVATION_AVAILABLE])
+    BONUS_CODE_MATRIX[line[0]][IS_ACTIVATED] = bool(BONUS_CODE_MATRIX[line[0]][IS_ACTIVATED])
 
 BASE_SCHEDULE = [(), ()]
 USER_DB_CURSOR.execute('''SELECT train_id, arrival, direction, new_direction, 
@@ -109,6 +107,7 @@ def on_commit():
                      sha512(data1[::3] + data1[1::3] + data1[2::3]).hexdigest())
 
 
+@final
 class TrailPointsV2:
     def __init__(self, map_id, track, train_route):
         CONFIG_DB_CURSOR.execute('''SELECT trail_points_v2_part_1_start, trail_points_v2_part_1_end

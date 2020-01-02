@@ -19,14 +19,11 @@ class SignalSprite(MapSprite):
         if self.state == 'green_signal':
             self.texture = GREEN_SIGNAL_IMAGE
 
-        CONFIG_DB_CURSOR.execute('''SELECT x, y, flip_needed FROM signal_config 
+        CONFIG_DB_CURSOR.execute('''SELECT x, y, rotation FROM signal_config 
                                     WHERE track = ? AND base_route = ? AND map_id = ?''',
                                  (track, base_route, self.map_id))
-        x, y, flip_needed = CONFIG_DB_CURSOR.fetchone()
+        x, y, self.rotation = CONFIG_DB_CURSOR.fetchone()
         self.signal_offset = (x, y)
-        if flip_needed:
-            self.rotation = 180.0
-
         self.batch = BATCHES['main_batch']
         self.group = GROUPS['signal']
         self.on_position_changed()
