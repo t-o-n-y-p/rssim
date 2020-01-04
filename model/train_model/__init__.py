@@ -73,7 +73,7 @@ class TrainModel(MapBaseModel):
         self.speed = self.train_maximum_speed
         self.speed_state = 'move'
         self.speed_factor_position = self.speed_factor_position_limit
-        self.view.on_train_init(self.state, self.direction, self.car_image_collection)
+        self.view.on_train_init(self.cars, self.state, self.direction, self.car_image_collection)
 
     def on_save_state(self):
         cars_position_string = None
@@ -177,13 +177,13 @@ class TrainModel(MapBaseModel):
             # if train is not stopped, move all cars ahead
             if self.speed_state != 'stop':
                 self.view.car_position = []
-                self.cars_position[0] = round(self.cars_position[0] + self.speed, 1)
+                self.cars_position[0] = round(self.cars_position[0] + self.speed, 2)
                 self.view.car_position.append(self.trail_points_v2.get_head_tail_car_position(self.cars_position[0]))
                 for i in range(1, len(self.cars_position) - 1):
-                    self.cars_position[i] = round(self.cars_position[i] + self.speed, 1)
+                    self.cars_position[i] = round(self.cars_position[i] + self.speed, 2)
                     self.view.car_position.append(self.trail_points_v2.get_mid_car_position(self.cars_position[i]))
 
-                self.cars_position[-1] = round(self.cars_position[-1] + self.speed, 1)
+                self.cars_position[-1] = round(self.cars_position[-1] + self.speed, 2)
                 self.view.car_position.append(self.trail_points_v2.get_head_tail_car_position(self.cars_position[-1]))
                 self.controller.parent_controller\
                     .on_update_train_route_sections(self.track, self.train_route, self.cars_position[-1])

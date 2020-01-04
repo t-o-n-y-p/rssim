@@ -17,11 +17,12 @@ class MapModel(MapBaseModel):
         USER_DB_CURSOR.execute('''SELECT unlocked_car_collections FROM map_progress WHERE map_id = ?''',
                                (self.map_id, ))
         self.unlocked_car_collections = list(map(int, USER_DB_CURSOR.fetchone()[0].split(',')))
-        USER_DB_CURSOR.execute('SELECT last_known_base_offset FROM graphics WHERE map_id = ?', (self.map_id, ))
+        USER_DB_CURSOR.execute('SELECT last_known_base_offset FROM graphics')
         self.last_known_base_offset = list(map(int, USER_DB_CURSOR.fetchone()[0].split(',')))
-        USER_DB_CURSOR.execute('SELECT zoom_out_activated FROM graphics WHERE map_id = ?', (self.map_id, ))
+        USER_DB_CURSOR.execute('SELECT zoom_out_activated FROM graphics')
         self.zoom_out_activated = bool(USER_DB_CURSOR.fetchone()[0])
-        CONFIG_DB_CURSOR.execute('''SELECT unlocked_tracks_by_default FROM map_progress_config''')
+        CONFIG_DB_CURSOR.execute('''SELECT unlocked_tracks_by_default FROM map_progress_config WHERE map_id = ?''',
+                                 (self.map_id, ))
         self.unlocked_tracks_by_default = CONFIG_DB_CURSOR.fetchone()[0]
 
     def on_save_state(self):

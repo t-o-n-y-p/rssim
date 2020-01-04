@@ -29,8 +29,11 @@ class SchedulerModel(MapBaseModel):
         self.entry_busy_state = list(map(bool, list(map(int, USER_DB_CURSOR.fetchone()[0].split(',')))))
         CONFIG_DB_CURSOR.execute('''SELECT schedule_cycle_length, frame_per_car, exp_per_car, money_per_car 
                                     FROM map_config WHERE level = ? AND map_id = ?''', (self.level, self.map_id))
-        self.schedule_cycle_length, self.frame_per_car, self.exp_per_car, self.money_per_car \
-            = CONFIG_DB_CURSOR.fetchone()
+        if (schedule_config := CONFIG_DB_CURSOR.fetchone()) is not None:
+            self.schedule_cycle_length, self.frame_per_car, self.exp_per_car, self.money_per_car = schedule_config
+        else:
+            self.schedule_cycle_length, self.frame_per_car, self.exp_per_car, self.money_per_car = 0, 0, 0.0, 0.0
+
         USER_DB_CURSOR.execute('''SELECT entry_locked_state FROM map_progress WHERE map_id = ?''', (self.map_id, ))
         self.entry_locked_state = list(map(bool, list(map(int, USER_DB_CURSOR.fetchone()[0].split(',')))))
 
@@ -74,6 +77,9 @@ class SchedulerModel(MapBaseModel):
             if self.game_time >= i[ARRIVAL_TIME]:
                 if not self.entry_busy_state[i[DIRECTION]]:
                     self.entry_busy_state[i[DIRECTION]] = True
+                    for e in JOINT_ENTRIES[self.map_id][i[DIRECTION]]:
+                        self.entry_busy_state[e] = True
+
                     if i[CARS] < self.supported_cars_min:
                         self.controller.parent_controller\
                             .on_create_train(i[TRAIN_ID], i[CARS], ENTRY_TRACK_ID[self.map_id][i[DIRECTION]],
@@ -135,3 +141,5 @@ class SchedulerModel(MapBaseModel):
 
     def on_leave_entry(self, entry_id):
         self.entry_busy_state[entry_id] = False
+        for e in JOINT_ENTRIES[self.map_id][entry_id]:
+            self.entry_busy_state[e] = False

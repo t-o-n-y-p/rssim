@@ -35,11 +35,11 @@ USER_DB_CURSOR: Final = USER_DB_CONNECTION.cursor()
 __config_db_connection = connect('db/config.db')
 CONFIG_DB_CURSOR: Final = __config_db_connection.cursor()
 
-TRACKS = 0
-ENVIRONMENT = 1
+TRACKS: Final = 0
+ENVIRONMENT: Final = 1
 
-PASSENGER_MAP = 0
-FREIGHT_MAP = 1
+PASSENGER_MAP: Final = 0
+FREIGHT_MAP: Final = 1
 # bonus code matrix properties
 CODE_TYPE: Final = 0
 BONUS_VALUE: Final = 1
@@ -61,34 +61,36 @@ for line in CONFIG_DB_CURSOR.fetchall():
     BONUS_CODE_MATRIX[line[0]][IS_ACTIVATED] = bool(BONUS_CODE_MATRIX[line[0]][IS_ACTIVATED])
 
 BASE_SCHEDULE = [(), ()]
-USER_DB_CURSOR.execute('''SELECT train_id, arrival, direction, new_direction, 
-                          cars, boarding_time, exp, money, switch_direction_required 
-                          FROM base_schedule WHERE map_id = 0''')
-BASE_SCHEDULE[PASSENGER_MAP] = USER_DB_CURSOR.fetchall()
+for m in (PASSENGER_MAP, FREIGHT_MAP):
+    USER_DB_CURSOR.execute('''SELECT train_id, arrival, direction, new_direction, 
+                              cars, boarding_time, exp, money, switch_direction_required 
+                              FROM base_schedule WHERE map_id = ?''', (m, ))
+    BASE_SCHEDULE[m] = USER_DB_CURSOR.fetchall()
 
 CONSTRUCTION_STATE_MATRIX = [[{}, {}], [{}, {}]]
-USER_DB_CURSOR.execute('''SELECT track_number, locked, under_construction, construction_time, 
-                          unlock_condition_from_level, unlock_condition_from_previous_track, 
-                          unlock_condition_from_environment, unlock_available FROM tracks 
-                          WHERE locked = 1 AND map_id = 0''')
-track_info_fetched = USER_DB_CURSOR.fetchall()
-for info in track_info_fetched:
-    CONSTRUCTION_STATE_MATRIX[PASSENGER_MAP][TRACKS][info[0]] = [bool(info[1]), bool(info[2]), info[3], bool(info[4]),
-                                                                 bool(info[5]), bool(info[6]), bool(info[7])]
-    CONFIG_DB_CURSOR.execute('''SELECT price, max_construction_time, level, environment_tier FROM track_config 
-                                WHERE track_number = ? AND map_id = 0''', (info[0], ))
-    CONSTRUCTION_STATE_MATRIX[PASSENGER_MAP][TRACKS][info[0]].extend(CONFIG_DB_CURSOR.fetchone())
+for m in (PASSENGER_MAP, FREIGHT_MAP):
+    USER_DB_CURSOR.execute('''SELECT track_number, locked, under_construction, construction_time, 
+                              unlock_condition_from_level, unlock_condition_from_previous_track, 
+                              unlock_condition_from_environment, unlock_available FROM tracks 
+                              WHERE locked = 1 AND map_id = ?''', (m, ))
+    track_info_fetched = USER_DB_CURSOR.fetchall()
+    for info in track_info_fetched:
+        CONSTRUCTION_STATE_MATRIX[m][TRACKS][info[0]] = [bool(info[1]), bool(info[2]), info[3], bool(info[4]),
+                                                         bool(info[5]), bool(info[6]), bool(info[7])]
+        CONFIG_DB_CURSOR.execute('''SELECT price, max_construction_time, level, environment_tier FROM track_config 
+                                    WHERE track_number = ? AND map_id = ?''', (info[0], m))
+        CONSTRUCTION_STATE_MATRIX[m][TRACKS][info[0]].extend(CONFIG_DB_CURSOR.fetchone())
 
-USER_DB_CURSOR.execute('''SELECT tier, locked, under_construction, construction_time, 
-                          unlock_condition_from_level, unlock_condition_from_previous_environment,
-                          unlock_available FROM environment WHERE locked = 1 AND map_id = 0''')
-environment_info_fetched = USER_DB_CURSOR.fetchall()
-for info in environment_info_fetched:
-    CONSTRUCTION_STATE_MATRIX[PASSENGER_MAP][ENVIRONMENT][info[0]] = [bool(info[1]), bool(info[2]), info[3],
-                                                                      bool(info[4]), bool(info[5]), 1, bool(info[6])]
-    CONFIG_DB_CURSOR.execute('''SELECT price, max_construction_time, level FROM environment_config 
-                                WHERE tier = ? AND map_id = 0''', (info[0], ))
-    CONSTRUCTION_STATE_MATRIX[PASSENGER_MAP][ENVIRONMENT][info[0]].extend(CONFIG_DB_CURSOR.fetchone())
+    USER_DB_CURSOR.execute('''SELECT tier, locked, under_construction, construction_time, 
+                              unlock_condition_from_level, unlock_condition_from_previous_environment,
+                              unlock_available FROM environment WHERE locked = 1 AND map_id = ?''', (m, ))
+    environment_info_fetched = USER_DB_CURSOR.fetchall()
+    for info in environment_info_fetched:
+        CONSTRUCTION_STATE_MATRIX[m][ENVIRONMENT][info[0]] = [bool(info[1]), bool(info[2]), info[3],
+                                                              bool(info[4]), bool(info[5]), 1, bool(info[6])]
+        CONFIG_DB_CURSOR.execute('''SELECT price, max_construction_time, level FROM environment_config 
+                                    WHERE tier = ? AND map_id = ?''', (info[0], m))
+        CONSTRUCTION_STATE_MATRIX[m][ENVIRONMENT][info[0]].extend(CONFIG_DB_CURSOR.fetchone())
 
 MAP_SWITCHER_STATE_MATRIX = [[], []]
 for m in (PASSENGER_MAP, FREIGHT_MAP):

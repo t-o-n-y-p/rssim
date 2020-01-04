@@ -1,12 +1,15 @@
 from random import choice, seed
+from typing import final
 
 from model.map_model import MapModel
 from controller.train_controller.passenger_train_controller import PassengerTrainController
+from database import PASSENGER_MAP
 
 
+@final
 class PassengerMapModel(MapModel):
     def __init__(self, controller, view):
-        super().__init__(controller, view, map_id=0)
+        super().__init__(controller, view, map_id=PASSENGER_MAP)
 
     def on_create_train(self, train_id, cars, track, train_route, state, direction, new_direction,
                         current_direction, priority, boarding_time, exp, money, switch_direction_required):

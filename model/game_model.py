@@ -1,9 +1,11 @@
 from logging import getLogger
+from typing import final
 
 from model import *
 from database import USER_DB_CURSOR, CONFIG_DB_CURSOR
 
 
+@final
 class GameModel(GameBaseModel):
     def __init__(self, controller, view):
         super().__init__(controller, view, logger=getLogger('root.app.game.model'))

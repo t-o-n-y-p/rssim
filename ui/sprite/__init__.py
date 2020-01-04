@@ -25,6 +25,14 @@ def sprite_exists(fn):
     return _delete_sprite_if_it_exists
 
 
+def texture_has_changed(fn):
+    def _update_texture_if_it_has_changed(*args, **kwargs):
+        if args[0].texture != args[1]:
+            fn(*args, **kwargs)
+
+    return _update_texture_if_it_has_changed
+
+
 class Sprite:
     def __init__(self, logger):
         self.logger = logger
@@ -73,6 +81,7 @@ class Sprite:
             self.sprite.position = self.position
 
     @final
+    @texture_has_changed
     def on_update_texture(self, new_texture):
         self.texture = new_texture
         if self.sprite is not None:

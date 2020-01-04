@@ -5,9 +5,12 @@ from model.game_model import GameModel
 from view.game_view import GameView
 from ui.fade_animation.fade_in_animation.game_fade_in_animation import GameFadeInAnimation
 from ui.fade_animation.fade_out_animation.game_fade_out_animation import GameFadeOutAnimation
+from ui.transition_animation import TransitionAnimation
 from controller.bonus_code_manager_controller import BonusCodeManagerController
 from controller.map_switcher_controller import MapSwitcherController
 from controller.map_controller.passenger_map_controller import PassengerMapController
+from controller.map_controller.freight_map_controller import FreightMapController
+from database import PASSENGER_MAP, FREIGHT_MAP
 
 
 @final
@@ -21,7 +24,7 @@ class GameController(GameBaseController):
         self.view.on_init_content()
         self.bonus_code_manager = BonusCodeManagerController(self)
         self.map_switcher = MapSwitcherController(self)
-        self.maps = [PassengerMapController(self), ]
+        self.maps = [PassengerMapController(self), FreightMapController(self)]
         self.fade_in_animation.bonus_code_manager_fade_in_animation = self.bonus_code_manager.fade_in_animation
         self.fade_out_animation.bonus_code_manager_fade_out_animation = self.bonus_code_manager.fade_out_animation
         self.fade_in_animation.map_switcher_fade_in_animation = self.map_switcher.fade_in_animation
@@ -31,6 +34,12 @@ class GameController(GameBaseController):
             self.fade_out_animation.map_fade_out_animations.append(m.fade_out_animation)
 
         self.child_controllers = [self.bonus_code_manager, self.map_switcher, *self.maps]
+        self.passenger_to_freight_map_transition_animation \
+            = TransitionAnimation(fade_out_animation=self.maps[PASSENGER_MAP].fade_out_animation,
+                                  fade_in_animation=self.maps[FREIGHT_MAP].fade_in_animation)
+        self.freight_to_passenger_map_transition_animation \
+            = TransitionAnimation(fade_out_animation=self.maps[FREIGHT_MAP].fade_out_animation,
+                                  fade_in_animation=self.maps[PASSENGER_MAP].fade_in_animation)
 
     @game_is_not_paused
     def on_update_time(self):

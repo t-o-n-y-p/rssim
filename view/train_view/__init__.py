@@ -20,12 +20,13 @@ class TrainView(MapBaseView):
         self.direction = None
         self.car_image_collection = None
         self.state = None
+        self.cars = None
 
     def on_train_setup(self):
-        USER_DB_CURSOR.execute('''SELECT state, direction, car_image_collection 
+        USER_DB_CURSOR.execute('''SELECT cars, state, direction, car_image_collection 
                                   FROM trains WHERE train_id = ? AND map_id = ?''',
                                (self.train_id, self.map_id))
-        self.state, self.direction, self.car_image_collection = USER_DB_CURSOR.fetchone()
+        self.cars, self.state, self.direction, self.car_image_collection = USER_DB_CURSOR.fetchone()
         USER_DB_CURSOR.execute('''SELECT cars_position_abs FROM trains WHERE train_id = ? AND map_id = ?''',
                                (self.train_id, self.map_id))
         if (cars_position_abs_parsed := USER_DB_CURSOR.fetchone()[0]) is not None:
@@ -35,18 +36,18 @@ class TrainView(MapBaseView):
 
             self.car_position = cars_position_abs_parsed
 
-    def on_train_init(self, state, direction, car_image_collection):
-        self.state, self.direction, self.car_image_collection = state, direction, car_image_collection
+    def on_train_init(self, cars, state, direction, car_image_collection):
+        self.cars, self.state, self.direction, self.car_image_collection = cars, state, direction, car_image_collection
 
     @final
     @view_is_not_active
     def on_activate(self):
         super().on_activate()
-        for i in range(len(self.car_position)):
+        for i in range(self.cars):
             self.car_sprites.append(CarSprite(self.map_id, self.train_id, parent_viewport=self.viewport))
             if i == 0:
                 self.car_sprites[i].on_update_texture(self.car_head_image[self.car_image_collection][self.direction])
-            elif i == len(self.car_position) - 1:
+            elif i == self.cars - 1:
                 self.car_sprites[i].on_update_texture(self.car_tail_image[self.car_image_collection][self.direction])
             else:
                 self.car_sprites[i].on_update_texture(self.car_mid_image[self.car_image_collection])
