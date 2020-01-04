@@ -1,4 +1,4 @@
-from typing import Final
+from typing import Final, final
 
 from database import USER_DB_CURSOR
 
@@ -342,33 +342,37 @@ class GameBaseModel(AppBaseModel):
         self.money += min(MONEY_LIMIT - self.money, money)
         self.view.on_update_money(self.money)
 
-    def on_pay_money(self, money):
-        self.money -= money
-        self.view.on_update_money(self.money)
-
-    def on_activate_exp_bonus_code(self, value):
-        self.exp_bonus_multiplier = round(1.0 + value, 2)
-        self.view.on_activate_exp_bonus_code(value)
-
     def on_deactivate_exp_bonus_code(self):
         self.exp_bonus_multiplier = 1.0
         self.view.on_deactivate_exp_bonus_code()
-
-    def on_activate_money_bonus_code(self, value):
-        self.money_bonus_multiplier = round(1.0 + value, 2)
-        self.view.on_activate_money_bonus_code(value)
 
     def on_deactivate_money_bonus_code(self):
         self.money_bonus_multiplier = 1.0
         self.view.on_deactivate_money_bonus_code()
 
-    def on_activate_construction_time_bonus_code(self, value):
-        self.construction_time_bonus_multiplier = round(1.0 + value, 2)
-        self.view.on_activate_construction_time_bonus_code(value)
-
     def on_deactivate_construction_time_bonus_code(self):
         self.construction_time_bonus_multiplier = 1.0
         self.view.on_deactivate_construction_time_bonus_code()
+
+    @final
+    def on_pay_money(self, money):
+        self.money -= money
+        self.view.on_update_money(self.money)
+
+    @final
+    def on_activate_exp_bonus_code(self, value):
+        self.exp_bonus_multiplier = round(1.0 + value, 2)
+        self.view.on_activate_exp_bonus_code(value)
+
+    @final
+    def on_activate_money_bonus_code(self, value):
+        self.money_bonus_multiplier = round(1.0 + value, 2)
+        self.view.on_activate_money_bonus_code(value)
+
+    @final
+    def on_activate_construction_time_bonus_code(self, value):
+        self.construction_time_bonus_multiplier = round(1.0 + value, 2)
+        self.view.on_activate_construction_time_bonus_code(value)
 
 
 class MapBaseModel(GameBaseModel):

@@ -112,8 +112,10 @@ class SchedulerModel(MapBaseModel):
         self.schedule_options = CONFIG_DB_CURSOR.fetchall()
         CONFIG_DB_CURSOR.execute('''SELECT schedule_cycle_length, frame_per_car, exp_per_car, money_per_car 
                                     FROM map_config WHERE level = ? AND map_id = ?''', (self.level, self.map_id))
-        self.schedule_cycle_length, self.frame_per_car, self.exp_per_car, self.money_per_car \
-            = CONFIG_DB_CURSOR.fetchone()
+        if (schedule_config := CONFIG_DB_CURSOR.fetchone()) is not None:
+            self.schedule_cycle_length, self.frame_per_car, self.exp_per_car, self.money_per_car = schedule_config
+        else:
+            self.schedule_cycle_length, self.frame_per_car, self.exp_per_car, self.money_per_car = 0, 0, 0.0, 0.0
 
     def on_unlock(self):
         super().on_unlock()

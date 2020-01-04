@@ -343,9 +343,11 @@ class GameBaseView(AppBaseView):
     def on_deactivate_money_bonus_code(self):
         self.money_bonus_multiplier = 1.0
 
+    @final
     def on_activate_construction_time_bonus_code(self, value):
         self.construction_time_bonus_multiplier = round(1.0 + value, 2)
 
+    @final
     def on_deactivate_construction_time_bonus_code(self):
         self.construction_time_bonus_multiplier = 1.0
 
