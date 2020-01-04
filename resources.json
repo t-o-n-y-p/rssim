@@ -59,6 +59,10 @@
 		"en": "Requires level {0}",
 		"ru": "Требуется уровень {0}"
 	},
+	"unlock_condition_from_level_map_switcher_string": {
+		"en": "Requires level {0}",
+		"ru": "Требуется уровень {0}"
+	},
 	"unlock_condition_from_environment_track_description_string": {
 		"en": "Requires Environment: Tier {0}",
 		"ru": "Требуется Окружение: Этап {0}"
@@ -368,7 +372,7 @@
 		"ru": "Осталось активаций:"
 	},
 	"map_switcher_title_string": {
-		"en": "Map overview",
-		"ru": "Обзор карт"
+		"en": "Select the map",
+		"ru": "Выберите карту"
 	}
 }

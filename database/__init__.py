@@ -99,6 +99,10 @@ for m in (PASSENGER_MAP, FREIGHT_MAP):
     CONFIG_DB_CURSOR.execute('''SELECT level_required, price FROM map_progress_config WHERE map_id = ?''', (m, ))
     MAP_SWITCHER_STATE_MATRIX[m].extend(CONFIG_DB_CURSOR.fetchone())
 
+MAP_LOCKED: Final = 0
+MAP_LEVEL_REQUIRED: Final = 1
+MAP_PRICE: Final = 2
+
 
 def on_commit():
     delete_password(sha512('user_db'.encode('utf-8')).hexdigest(), sha512('user_db'.encode('utf-8')).hexdigest())

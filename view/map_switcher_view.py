@@ -4,6 +4,8 @@ from view import *
 from ui.button.close_map_switcher_button import CloseMapSwitcherButton
 from ui.label.map_switcher_title_label import MapSwitcherTitleLabel
 from ui.shader_sprite.map_switcher_view_shader_sprite import MapSwitcherViewShaderSprite
+from ui.map_switcher_cell.passenger_map_switcher_cell import PassengerMapSwitcherCell
+from ui.map_switcher_cell.freight_map_switcher_cell import FreightMapSwitcherCell
 
 
 class MapSwitcherView(GameBaseView):
@@ -17,6 +19,8 @@ class MapSwitcherView(GameBaseView):
         self.close_map_switcher_button = CloseMapSwitcherButton(on_click_action=on_close_map_switcher,
                                                                 parent_viewport=self.viewport)
         self.buttons = [self.close_map_switcher_button, ]
+        self.map_switcher_cells = [PassengerMapSwitcherCell(None, None, None, parent_viewport=self.viewport),
+                                   FreightMapSwitcherCell(None, None, None, parent_viewport=self.viewport)]
 
     @final
     @view_is_not_active
@@ -24,22 +28,31 @@ class MapSwitcherView(GameBaseView):
         super().on_activate()
         self.shader_sprite.create()
         self.title_label.create()
+        for c in self.map_switcher_cells:
+            c.on_activate()
 
     @final
     @view_is_active
     def on_deactivate(self):
         super().on_deactivate()
+        for c in self.map_switcher_cells:
+            c.on_deactivate()
 
     @final
     def on_update_current_locale(self, new_locale):
         super().on_update_current_locale(new_locale)
         self.title_label.on_update_current_locale(self.current_locale)
+        for c in self.map_switcher_cells:
+            c.on_update_current_locale(self.current_locale)
 
     @final
     def on_change_screen_resolution(self, screen_resolution):
         super().on_change_screen_resolution(screen_resolution)
         self.shader_sprite.on_change_screen_resolution(self.screen_resolution)
         self.title_label.on_change_screen_resolution(self.screen_resolution)
+        for c in self.map_switcher_cells:
+            c.on_change_screen_resolution(self.screen_resolution)
+
         for b in self.buttons:
             b.on_change_screen_resolution(self.screen_resolution)
 
@@ -48,3 +61,5 @@ class MapSwitcherView(GameBaseView):
         super().on_update_opacity(new_opacity)
         self.shader_sprite.on_update_opacity(self.opacity)
         self.title_label.on_update_opacity(self.opacity)
+        for c in self.map_switcher_cells:
+            c.on_update_opacity(self.opacity)

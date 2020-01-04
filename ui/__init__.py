@@ -114,7 +114,7 @@ def get_inner_area_rect(screen_resolution):
     inner_area_position = ((screen_resolution[0] - inner_area_size[0]) // 2,
                            (screen_resolution[1] - inner_area_size[1] - 3 * bottom_bar_height // 2) // 2
                            + bottom_bar_height)
-    return (*inner_area_position, *inner_area_size)
+    return *inner_area_position, *inner_area_size
 
 
 def get_mini_map_position(screen_resolution):
