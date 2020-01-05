@@ -3,6 +3,7 @@ from ui import *
 from ui.label.map_switcher_cell_locked_label import MapSwitcherCellLockedLabel
 from ui.label.map_switcher_level_placeholder_label import MapSwitcherLevelPlaceholderLabel
 from ui.label.map_switcher_unlock_available_label import MapSwitcherUnlockAvailableLabel
+from ui.button.build_map_button import BuildMapButton
 
 
 def cell_is_active(fn):
@@ -50,7 +51,8 @@ class MapSwitcherCell:
         self.level = USER_DB_CURSOR.fetchone()[0]
         self.money_target_activated = False
         self.opacity = 0
-        self.buttons = []
+        self.build_map_button = BuildMapButton(None, parent_viewport=self.viewport)
+        self.buttons = [self.build_map_button, ]
         self.data = MAP_SWITCHER_STATE_MATRIX[self.map_id]
         self.locked_label = MapSwitcherCellLockedLabel(parent_viewport=self.viewport)
         self.level_placeholder_label = MapSwitcherLevelPlaceholderLabel(parent_viewport=self.viewport)
@@ -65,6 +67,11 @@ class MapSwitcherCell:
     def on_activate(self):
         self.is_activated = True
         self.on_update_cell_state()
+        if self.data[MAP_LOCKED] and self.level >= self.data[MAP_LEVEL_REQUIRED]:
+            if self.money < self.data[MAP_PRICE]:
+                self.build_map_button.on_disable()
+            else:
+                self.build_map_button.on_activate()
 
     @final
     @cell_is_active
@@ -76,6 +83,11 @@ class MapSwitcherCell:
     @final
     def on_update_money(self, money):
         self.money = money
+        if self.is_activated and self.data[MAP_LOCKED] and self.level >= self.data[MAP_LEVEL_REQUIRED]:
+            if self.money < self.data[MAP_PRICE]:
+                self.build_map_button.on_disable(instant=True)
+            else:
+                self.build_map_button.on_activate(instant=True)
 
     @final
     def on_change_screen_resolution(self, screen_resolution):
@@ -122,6 +134,11 @@ class MapSwitcherCell:
     def on_level_up(self):
         self.level += 1
         self.on_update_cell_state()
+        if self.is_activated and self.data[MAP_LOCKED] and self.level >= self.data[MAP_LEVEL_REQUIRED]:
+            if self.money < self.data[MAP_PRICE]:
+                self.build_map_button.on_disable(instant=True)
+            else:
+                self.build_map_button.on_activate(instant=True)
 
     @final
     def on_update_cell_state(self):

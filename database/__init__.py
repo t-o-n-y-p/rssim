@@ -170,8 +170,11 @@ class TrailPointsV2:
             return [self.part_3_start[0] + self.multiplier * index, *self.part_3_start[1:]]
 
     def get_conversion_index(self, car_position):
-        car_position -= self.part_2_length
-        return [self.part_3_start[0] + self.multiplier * car_position, self.part_3_start[1]]
+        if self.part_2_length is not None:
+            car_position -= self.part_2_length
+            return [self.part_3_start[0] + self.multiplier * car_position, self.part_3_start[1]]
+        else:
+            return [self.part_1_start[0] + self.multiplier * car_position, self.part_1_start[1]]
 
     def get_reconversion_index(self, car_position_abs):
         return float(abs(car_position_abs[0] - self.part_1_start[0]))

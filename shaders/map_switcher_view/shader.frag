@@ -5,12 +5,12 @@ uniform int map_switcher_window_opacity = 0;
 uniform ivec2 map_switcher_window_position = ivec2(0, 0);
 uniform ivec2 map_switcher_window_size = ivec2(0, 0);
 uniform int top_bar_height = 36;
-uniform int is_button_activated[1];
-uniform int button_x[1];
-uniform int button_y[1];
-uniform int button_w[1];
-uniform int button_h[1];
-uniform int number_of_buttons = 1;
+uniform int is_button_activated[3];
+uniform int button_x[3];
+uniform int button_y[3];
+uniform int button_w[3];
+uniform int button_h[3];
+uniform int number_of_buttons = 3;
 
 bool is_map_switcher_window_border(int margin_x, int margin_y)
 {

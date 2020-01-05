@@ -27,14 +27,6 @@ class TrainView(MapBaseView):
                                   FROM trains WHERE train_id = ? AND map_id = ?''',
                                (self.train_id, self.map_id))
         self.cars, self.state, self.direction, self.car_image_collection = USER_DB_CURSOR.fetchone()
-        USER_DB_CURSOR.execute('''SELECT cars_position_abs FROM trains WHERE train_id = ? AND map_id = ?''',
-                               (self.train_id, self.map_id))
-        if (cars_position_abs_parsed := USER_DB_CURSOR.fetchone()[0]) is not None:
-            cars_position_abs_parsed = cars_position_abs_parsed.split('|')
-            for i in range(len(cars_position_abs_parsed)):
-                cars_position_abs_parsed[i] = [*list(map(float, cars_position_abs_parsed[i].split(','))), 0.0]
-
-            self.car_position = cars_position_abs_parsed
 
     def on_train_init(self, cars, state, direction, car_image_collection):
         self.cars, self.state, self.direction, self.car_image_collection = cars, state, direction, car_image_collection

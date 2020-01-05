@@ -19,7 +19,7 @@ class TrainController(MapBaseController):
         self.model = model
         self.view.on_init_content()
 
-    def create_train_elements(self, train_id, mode):
+    def create_train_elements(self, train_id):
         pass
 
     @final
@@ -37,3 +37,7 @@ class TrainController(MapBaseController):
     @final
     def on_set_trail_points(self, trail_points_v2):
         self.model.on_set_trail_points(trail_points_v2)
+
+    @final
+    def on_train_setup(self):
+        self.model.on_train_setup()

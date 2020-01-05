@@ -50,6 +50,12 @@ class TrainModel(MapBaseModel):
         self.switch_direction_required = bool(self.switch_direction_required)
         if cars_position_parsed is not None:
             self.cars_position = list(map(float, cars_position_parsed.split(',')))
+            self.view.car_position = []
+            self.view.car_position.append(self.trail_points_v2.get_head_tail_car_position(self.cars_position[0]))
+            for i in range(1, len(self.cars_position) - 1):
+                self.view.car_position.append(self.trail_points_v2.get_mid_car_position(self.cars_position[i]))
+
+            self.view.car_position.append(self.trail_points_v2.get_head_tail_car_position(self.cars_position[-1]))
 
         if cars_position_abs_parsed is not None:
             cars_position_abs_parsed = cars_position_abs_parsed.split('|')
@@ -57,6 +63,9 @@ class TrainModel(MapBaseModel):
                 cars_position_abs_parsed[i] = list(map(float, cars_position_abs_parsed[i].split(',')))
 
             self.cars_position_abs = cars_position_abs_parsed
+            self.view.car_position = []
+            for i in range(len(self.cars_position_abs)):
+                self.view.car_position.append([*self.cars_position_abs[i], 0.0])
 
         self.view.on_train_setup()
 

@@ -71,17 +71,18 @@ class MapController(MapBaseController):
             self.fade_in_animation.crossover_fade_in_animations.append(crossover.fade_in_animation)
             self.fade_out_animation.crossover_fade_out_animations.append(crossover.fade_out_animation)
 
-        for train in self.trains_list:
-            self.fade_in_animation.train_fade_in_animations.append(train.fade_in_animation)
-            self.fade_out_animation.train_fade_out_animations.append(train.fade_out_animation)
-            if train.model.state in ('approaching', 'approaching_pass_through'):
-                self.dispatcher.on_add_train(train)
-
         for train_route in self.train_routes_sorted_list:
             self.fade_in_animation.train_route_fade_in_animations.append(train_route.fade_in_animation)
             self.fade_out_animation.train_route_fade_out_animations.append(train_route.fade_out_animation)
             if train_route.model.opened:
                 self.on_set_trail_points(train_route.model.last_opened_by, train_route.model.trail_points_v2)
+
+        for train in self.trains_list:
+            train.on_train_setup()
+            self.fade_in_animation.train_fade_in_animations.append(train.fade_in_animation)
+            self.fade_out_animation.train_fade_out_animations.append(train.fade_out_animation)
+            if train.model.state in ('approaching', 'approaching_pass_through'):
+                self.dispatcher.on_add_train(train)
 
         for shop in self.shops:
             self.fade_in_animation.shop_fade_in_animations.append(shop.fade_in_animation)

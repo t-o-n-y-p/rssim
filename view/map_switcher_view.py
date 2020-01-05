@@ -21,6 +21,8 @@ class MapSwitcherView(GameBaseView):
         self.buttons = [self.close_map_switcher_button, ]
         self.map_switcher_cells = [PassengerMapSwitcherCell(None, None, None, parent_viewport=self.viewport),
                                    FreightMapSwitcherCell(None, None, None, parent_viewport=self.viewport)]
+        for c in self.map_switcher_cells:
+            self.buttons.extend(c.buttons)
 
     @final
     @view_is_not_active
@@ -69,3 +71,9 @@ class MapSwitcherView(GameBaseView):
         super().on_level_up()
         for c in self.map_switcher_cells:
             c.on_level_up()
+
+    @final
+    def on_update_money(self, money):
+        super().on_update_money(money)
+        for c in self.map_switcher_cells:
+            c.on_update_money(self.money)
