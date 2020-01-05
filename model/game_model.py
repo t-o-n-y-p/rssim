@@ -1,5 +1,4 @@
 from logging import getLogger
-from typing import final
 
 from model import *
 from database import USER_DB_CURSOR, CONFIG_DB_CURSOR
@@ -66,11 +65,6 @@ class GameModel(GameBaseModel):
     def on_update_money_target(self, money_target):
         self.money_target = money_target
         self.view.on_update_money_target(self.money_target)
-
-    @staticmethod
-    def get_active_map():
-        USER_DB_CURSOR.execute('SELECT map_id FROM graphics')
-        return USER_DB_CURSOR.fetchone()[0]
 
     def on_add_exp_bonus(self, value):
         self.exp_multiplier = round(self.exp_multiplier + value, 4)

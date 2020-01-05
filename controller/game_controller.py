@@ -1,4 +1,5 @@
 from logging import getLogger
+from itertools import chain
 
 from controller import *
 from model.game_model import GameModel
@@ -34,12 +35,16 @@ class GameController(GameBaseController):
             self.fade_out_animation.map_fade_out_animations.append(m.fade_out_animation)
 
         self.child_controllers = [self.bonus_code_manager, self.map_switcher, *self.maps]
-        self.passenger_to_freight_map_transition_animation \
-            = TransitionAnimation(fade_out_animation=self.maps[PASSENGER_MAP].fade_out_animation,
-                                  fade_in_animation=self.maps[FREIGHT_MAP].fade_in_animation)
-        self.freight_to_passenger_map_transition_animation \
-            = TransitionAnimation(fade_out_animation=self.maps[FREIGHT_MAP].fade_out_animation,
-                                  fade_in_animation=self.maps[PASSENGER_MAP].fade_in_animation)
+        self.map_transition_animations = {
+            PASSENGER_MAP: {
+                FREIGHT_MAP: TransitionAnimation(fade_out_animation=self.maps[PASSENGER_MAP].fade_out_animation,
+                                                 fade_in_animation=self.maps[FREIGHT_MAP].fade_in_animation)
+            },
+            FREIGHT_MAP: {
+                PASSENGER_MAP: TransitionAnimation(fade_out_animation=self.maps[FREIGHT_MAP].fade_out_animation,
+                                                   fade_in_animation=self.maps[PASSENGER_MAP].fade_in_animation)
+            }
+        }
 
     @game_is_not_paused
     def on_update_time(self):
@@ -100,18 +105,19 @@ class GameController(GameBaseController):
             )
 
     def on_map_move_mode_available(self):
-        self.maps[self.model.get_active_map()].on_map_move_mode_available()
+        self.maps[self.map_switcher.get_current_map_id()].on_map_move_mode_available()
 
     def on_map_move_mode_unavailable(self):
-        self.maps[self.model.get_active_map()].on_map_move_mode_unavailable()
+        self.maps[self.map_switcher.get_current_map_id()].on_map_move_mode_unavailable()
 
     def on_open_map_switcher(self):
         self.map_switcher.fade_in_animation.on_activate()
-        self.maps[self.model.get_active_map()].on_open_map_switcher()
+        self.maps[self.map_switcher.get_current_map_id()].on_open_map_switcher()
 
     def on_close_map_switcher(self):
+        self.map_switcher.fade_out_animation.on_activate()
         self.on_activate_map_switcher_button()
-        self.maps[self.model.get_active_map()].on_close_map_switcher()
+        self.maps[self.map_switcher.get_current_map_id()].on_close_map_switcher()
 
     @view_is_active
     def on_activate_map_switcher_button(self):
@@ -119,3 +125,19 @@ class GameController(GameBaseController):
 
     def on_deactivate_map_switcher_button(self):
         self.view.open_map_switcher_button.on_deactivate(instant=True)
+
+    def on_force_close_map_switcher(self):
+        self.map_switcher.fade_out_animation.on_activate()
+
+    def on_switch_map(self, new_map_id):
+        current_map_id = self.map_switcher.get_current_map_id()
+        for m in chain(range(current_map_id), range(current_map_id + 1, len(self.maps))):
+            self.map_transition_animations[m][current_map_id].on_deactivate()
+
+        self.map_transition_animations[current_map_id][new_map_id].on_activate()
+        self.map_switcher.on_switch_map(new_map_id)
+        self.on_close_map_switcher()
+
+    def on_unlock_map(self, map_id):
+        self.maps[map_id].on_unlock()
+        self.map_switcher.on_unlock_map(map_id)

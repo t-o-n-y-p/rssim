@@ -91,28 +91,12 @@ class ConstructorModel(GameBaseModel):
                 self.construction_state_matrix[TRACKS][track][CONSTRUCTION_TIME] -= 1
                 if self.construction_state_matrix[TRACKS][track][CONSTRUCTION_TIME] <= 0:
                     unlocked_track = track
-                    self.construction_state_matrix[TRACKS][track][UNDER_CONSTRUCTION] = False
-                    self.construction_state_matrix[TRACKS][track][LOCKED] = False
-                    self.view.on_send_track_construction_completed_notification(track)
                     self.controller.parent_controller.on_unlock_track(track)
-                    # track is added to cached_unlocked_tracks list to be then correctly saved in the database
-                    self.cached_unlocked_tracks.append(track)
-                    # if there are more tracks to unlock, unlock condition for the next track is met
-                    if track < MAXIMUM_TRACK_NUMBER[self.map_id]:
-                        self.construction_state_matrix[TRACKS][track + 1][UNLOCK_CONDITION_FROM_PREVIOUS_TRACK] = True
-                        # if all three conditions are met for the next track, it becomes available for construction
-                        self.on_check_track_unlock_conditions(track + 1)
-
-                    self.view.on_unlock_construction(TRACKS, track)
                 else:
                     self.view.on_update_construction_state(TRACKS, track)
 
         if unlocked_track > 0:
-            self.construction_state_matrix[TRACKS].pop(unlocked_track)
-            # if money target is activated for another track, cell position is updated
-            if self.money_target_activated and self.money_target_cell_position[0] == TRACKS \
-                    and self.money_target_cell_position[1] > 0:
-                self.money_target_cell_position[1] -= 1
+            self.on_remove_track_from_matrix(unlocked_track)
 
         # same for environment
         unlocked_tier = 0
@@ -218,3 +202,24 @@ class ConstructorModel(GameBaseModel):
     def on_deactivate_money_target(self):
         self.money_target_activated = False
         self.view.on_deactivate_money_target()
+
+    def on_unlock_track(self, track):
+        self.construction_state_matrix[TRACKS][track][UNDER_CONSTRUCTION] = False
+        self.construction_state_matrix[TRACKS][track][LOCKED] = False
+        self.view.on_send_track_construction_completed_notification(track)
+        # track is added to cached_unlocked_tracks list to be then correctly saved in the database
+        self.cached_unlocked_tracks.append(track)
+        # if there are more tracks to unlock, unlock condition for the next track is met
+        if track < MAXIMUM_TRACK_NUMBER[self.map_id]:
+            self.construction_state_matrix[TRACKS][track + 1][UNLOCK_CONDITION_FROM_PREVIOUS_TRACK] = True
+            # if all three conditions are met for the next track, it becomes available for construction
+            self.on_check_track_unlock_conditions(track + 1)
+
+        self.view.on_unlock_construction(TRACKS, track)
+
+    def on_remove_track_from_matrix(self, unlocked_track):
+        self.construction_state_matrix[TRACKS].pop(unlocked_track)
+        # if money target is activated for another track, cell position is updated
+        if self.money_target_activated and self.money_target_cell_position[0] == TRACKS \
+                and self.money_target_cell_position[1] > 0:
+            self.money_target_cell_position[1] -= 1

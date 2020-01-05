@@ -47,3 +47,11 @@ class ConstructorController(GameBaseController):
     @final
     def on_change_construction_completed_notification_state(self, notification_state):
         self.view.on_change_construction_completed_notification_state(notification_state)
+
+    @final
+    def on_unlock_track(self, track):
+        self.model.on_unlock_track(track)
+
+    @final
+    def on_remove_track_from_matrix(self, track):
+        self.model.on_remove_track_from_matrix(track)

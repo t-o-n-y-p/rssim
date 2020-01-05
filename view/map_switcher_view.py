@@ -6,12 +6,18 @@ from ui.label.map_switcher_title_label import MapSwitcherTitleLabel
 from ui.shader_sprite.map_switcher_view_shader_sprite import MapSwitcherViewShaderSprite
 from ui.map_switcher_cell.passenger_map_switcher_cell import PassengerMapSwitcherCell
 from ui.map_switcher_cell.freight_map_switcher_cell import FreightMapSwitcherCell
+from database import MAP_SWITCHER_STATE_MATRIX, MAP_PRICE, MAP_LOCKED
 
 
 class MapSwitcherView(GameBaseView):
     def __init__(self, controller):
         def on_close_map_switcher(button):
-            self.controller.fade_out_animation.on_activate()
+            self.controller.parent_controller.on_close_map_switcher()
+
+        def on_buy_map(map_id):
+            self.controller.parent_controller.on_pay_money(MAP_SWITCHER_STATE_MATRIX[map_id][MAP_PRICE])
+            self.controller.parent_controller.on_unlock_map(map_id)
+            self.controller.parent_controller.on_switch_map(map_id)
 
         super().__init__(controller, logger=getLogger(f'root.app.game.map_switcher.view'), child_window=True)
         self.shader_sprite = MapSwitcherViewShaderSprite(view=self)
@@ -19,8 +25,8 @@ class MapSwitcherView(GameBaseView):
         self.close_map_switcher_button = CloseMapSwitcherButton(on_click_action=on_close_map_switcher,
                                                                 parent_viewport=self.viewport)
         self.buttons = [self.close_map_switcher_button, ]
-        self.map_switcher_cells = [PassengerMapSwitcherCell(None, None, None, parent_viewport=self.viewport),
-                                   FreightMapSwitcherCell(None, None, None, parent_viewport=self.viewport)]
+        self.map_switcher_cells = [PassengerMapSwitcherCell(on_buy_map, None, None, parent_viewport=self.viewport),
+                                   FreightMapSwitcherCell(on_buy_map, None, None, parent_viewport=self.viewport)]
         for c in self.map_switcher_cells:
             self.buttons.extend(c.buttons)
 
@@ -77,3 +83,7 @@ class MapSwitcherView(GameBaseView):
         super().on_update_money(money)
         for c in self.map_switcher_cells:
             c.on_update_money(self.money)
+
+    @final
+    def on_unlock_map(self, map_id):
+        MAP_SWITCHER_STATE_MATRIX[map_id][MAP_LOCKED] = False

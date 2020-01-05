@@ -152,11 +152,13 @@ class MapController(MapBaseController):
         super().on_unlock()
         self.scheduler.on_unlock()
         for track in range(self.model.unlocked_tracks_by_default):
-            self.on_unlock_track(track)
+            self.on_unlock_track(track + 1)
+            self.constructor.on_remove_track_from_matrix(track + 1)
 
     @final
     def on_unlock_track(self, track):
         self.model.on_unlock_track(track)
+        self.constructor.on_unlock_track(track)
         self.scheduler.on_unlock_track(track)
         self.dispatcher.on_unlock_track(track)
         for track_param, base_route in self.model.get_signals_to_unlock_with_track(track):
@@ -202,6 +204,7 @@ class MapController(MapBaseController):
         self.view.on_deactivate_zoom_buttons()
         self.view.on_deactivate_shop_buttons()
         self.parent_controller.on_deactivate_map_switcher_button()
+        self.parent_controller.on_force_close_map_switcher()
         # if mini map is active when user opens schedule screen, it should also be hidden
         self.view.is_mini_map_activated = False
 
@@ -222,6 +225,7 @@ class MapController(MapBaseController):
         self.view.on_deactivate_zoom_buttons()
         self.view.on_deactivate_shop_buttons()
         self.parent_controller.on_deactivate_map_switcher_button()
+        self.parent_controller.on_force_close_map_switcher()
         # if mini map is active when user opens constructor screen, it should also be hidden
         self.view.is_mini_map_activated = False
 

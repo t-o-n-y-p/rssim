@@ -17,7 +17,11 @@ class MapSwitcherController(GameBaseController):
         self.model = MapSwitcherModel(controller=self, view=self.view)
         self.view.on_init_content()
 
-    @final
-    def on_deactivate_view(self):
-        super().on_deactivate_view()
-        self.parent_controller.on_close_map_switcher()
+    def on_switch_map(self, new_map_id):
+        self.model.on_switch_map(new_map_id)
+
+    def on_unlock_map(self, map_id):
+        self.view.on_unlock_map(map_id)
+
+    def get_current_map_id(self):
+        return self.model.currently_selected_map

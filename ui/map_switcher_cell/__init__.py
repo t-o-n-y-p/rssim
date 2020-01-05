@@ -32,7 +32,8 @@ class MapSwitcherCell:
             pass
 
         def on_buy_map(button):
-            pass
+            button.on_deactivate()
+            self.on_buy_map_action(self.map_id)
 
         self.logger = logger
         self.is_activated = False
@@ -51,7 +52,7 @@ class MapSwitcherCell:
         self.level = USER_DB_CURSOR.fetchone()[0]
         self.money_target_activated = False
         self.opacity = 0
-        self.build_map_button = BuildMapButton(None, parent_viewport=self.viewport)
+        self.build_map_button = BuildMapButton(on_click_action=on_buy_map, parent_viewport=self.viewport)
         self.buttons = [self.build_map_button, ]
         self.data = MAP_SWITCHER_STATE_MATRIX[self.map_id]
         self.locked_label = MapSwitcherCellLockedLabel(parent_viewport=self.viewport)
