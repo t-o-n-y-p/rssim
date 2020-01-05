@@ -31,6 +31,10 @@
 		"en": "Available for {0:,} ¤",
 		"ru": "Доступен за {0:,} ¤"
 	},
+	"unlock_available_map_switcher_description_string": {
+		"en": "Available for {0:,} ¤",
+		"ru": "Доступно за {0:,} ¤"
+	},
 	"under_construction_hours_minutes_description_string": {
 		"en": "Under construction. {0}h {1}min remaining",
 		"ru": "Идет строительство. Осталось {0}ч {1}мин"
@@ -374,5 +378,13 @@
 	"map_switcher_title_string": {
 		"en": "Select the map",
 		"ru": "Выберите карту"
+	},
+	"passenger_trains_string": {
+		"en": "Passenger trains",
+		"ru": "Пассажирские поезда"
+	},
+	"freight_trains_string": {
+		"en": "Freight trains",
+		"ru": "Грузовые поезда"
 	}
 }

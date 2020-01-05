@@ -63,3 +63,9 @@ class MapSwitcherView(GameBaseView):
         self.title_label.on_update_opacity(self.opacity)
         for c in self.map_switcher_cells:
             c.on_update_opacity(self.opacity)
+
+    @final
+    def on_level_up(self):
+        super().on_level_up()
+        for c in self.map_switcher_cells:
+            c.on_level_up()

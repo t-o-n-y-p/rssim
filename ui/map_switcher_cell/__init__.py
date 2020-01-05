@@ -2,6 +2,7 @@ from database import USER_DB_CURSOR, MAP_SWITCHER_STATE_MATRIX, MAP_LOCKED, MAP_
 from ui import *
 from ui.label.map_switcher_cell_locked_label import MapSwitcherCellLockedLabel
 from ui.label.map_switcher_level_placeholder_label import MapSwitcherLevelPlaceholderLabel
+from ui.label.map_switcher_unlock_available_label import MapSwitcherUnlockAvailableLabel
 
 
 def cell_is_active(fn):
@@ -54,14 +55,16 @@ class MapSwitcherCell:
         self.locked_label = MapSwitcherCellLockedLabel(parent_viewport=self.viewport)
         self.level_placeholder_label = MapSwitcherLevelPlaceholderLabel(parent_viewport=self.viewport)
         self.level_placeholder_label.on_update_args((self.data[MAP_LEVEL_REQUIRED], ))
+        self.unlock_available_label = MapSwitcherUnlockAvailableLabel(parent_viewport=self.viewport)
+        self.unlock_available_label.on_update_args((self.data[MAP_PRICE], ))
+        self.title_label = None
+        self.icon_labels = []
 
     @final
     @cell_is_not_active
     def on_activate(self):
         self.is_activated = True
-        if self.level < self.data[MAP_LEVEL_REQUIRED]:
-            self.locked_label.create()
-            self.level_placeholder_label.create()
+        self.on_update_cell_state()
 
     @final
     @cell_is_active
@@ -85,11 +88,17 @@ class MapSwitcherCell:
         self.viewport.y2 = self.parent_viewport.y2 - top_bar_height
         self.locked_label.on_change_screen_resolution(self.screen_resolution)
         self.level_placeholder_label.on_change_screen_resolution(self.screen_resolution)
+        self.unlock_available_label.on_change_screen_resolution(self.screen_resolution)
+        self.title_label.on_change_screen_resolution(self.screen_resolution)
+        for i in self.icon_labels:
+            i.on_change_screen_resolution(self.screen_resolution)
 
     @final
     def on_update_current_locale(self, new_locale):
         self.current_locale = new_locale
         self.level_placeholder_label.on_update_current_locale(self.current_locale)
+        self.unlock_available_label.on_update_current_locale(self.current_locale)
+        self.title_label.on_update_current_locale(self.current_locale)
 
     @final
     def on_activate_money_target(self):
@@ -104,3 +113,38 @@ class MapSwitcherCell:
         self.opacity = new_opacity
         self.locked_label.on_update_opacity(self.opacity)
         self.level_placeholder_label.on_update_opacity(self.opacity)
+        self.unlock_available_label.on_update_opacity(self.opacity)
+        self.title_label.on_update_opacity(self.opacity)
+        for i in self.icon_labels:
+            i.on_update_opacity(self.opacity)
+
+    @final
+    def on_level_up(self):
+        self.level += 1
+        self.on_update_cell_state()
+
+    @final
+    def on_update_cell_state(self):
+        if self.level < self.data[MAP_LEVEL_REQUIRED]:
+            self.title_label.delete()
+            self.unlock_available_label.delete()
+            self.locked_label.create()
+            self.level_placeholder_label.create()
+            for i in self.icon_labels:
+                i.delete()
+
+        elif self.data[MAP_LOCKED]:
+            self.title_label.delete()
+            self.locked_label.delete()
+            self.level_placeholder_label.delete()
+            self.unlock_available_label.create()
+            for i in self.icon_labels:
+                i.delete()
+
+        else:
+            self.unlock_available_label.delete()
+            self.locked_label.delete()
+            self.level_placeholder_label.delete()
+            self.title_label.create()
+            for i in self.icon_labels:
+                i.create()
