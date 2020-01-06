@@ -15,7 +15,7 @@ from ui.label.no_more_environment_available_label import NoMoreEnvironmentAvaila
 from ui.shader_sprite.constructor_view_shader_sprite import ConstructorViewShaderSprite
 
 
-class ConstructorView(GameBaseView):
+class ConstructorView(MapBaseView):
     def __init__(self, controller, map_id):
         def on_close_constructor(button):
             self.controller.fade_out_animation.on_activate()
@@ -36,8 +36,7 @@ class ConstructorView(GameBaseView):
             self.controller.on_deactivate_money_target()
             self.controller.parent_controller.parent_controller.on_update_money_target(0)
 
-        super().__init__(controller, logger=getLogger(f'root.app.game.map.{map_id}.constructor.view'))
-        self.map_id = map_id
+        super().__init__(controller, map_id, logger=getLogger(f'root.app.game.map.{map_id}.constructor.view'))
         self.no_more_tracks_available_placeholder_viewport = Viewport()
         self.no_more_tiers_available_placeholder_viewport = Viewport()
         self.construction_state_matrix = CONSTRUCTION_STATE_MATRIX[self.map_id]

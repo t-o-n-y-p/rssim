@@ -17,5 +17,5 @@ class GameFadeInAnimation(FadeInAnimation):
     def on_activate(self):
         super().on_activate()
         self.bonus_code_manager_fade_in_animation.on_activate()
-        USER_DB_CURSOR.execute('SELECT map_id FROM graphics')
+        USER_DB_CURSOR.execute('''SELECT last_known_map_id FROM graphics''')
         self.map_fade_in_animations[USER_DB_CURSOR.fetchone()[0]].on_activate()

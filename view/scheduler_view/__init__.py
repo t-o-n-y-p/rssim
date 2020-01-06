@@ -14,8 +14,7 @@ class SchedulerView(MapBaseView):
         def on_close_schedule(button):
             self.controller.fade_out_animation.on_activate()
 
-        super().__init__(controller, logger=getLogger(f'root.app.game.map.{map_id}.scheduler.view'))
-        self.map_id = map_id
+        super().__init__(controller, map_id, logger=getLogger(f'root.app.game.map.{map_id}.scheduler.view'))
         self.base_schedule = BASE_SCHEDULE[self.map_id]
         self.arrival_time_threshold = SCHEDULE_ARRIVAL_TIME_THRESHOLD[self.map_id]
         self.left_schedule_caption_label = ScheduleLeftCaptionLabel(parent_viewport=self.viewport)

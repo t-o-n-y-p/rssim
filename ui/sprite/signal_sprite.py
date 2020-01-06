@@ -9,7 +9,7 @@ from textures import RED_SIGNAL_IMAGE, GREEN_SIGNAL_IMAGE
 @final
 class SignalSprite(MapSprite):
     def __init__(self, map_id, track, base_route, parent_viewport):
-        super().__init__(logger=getLogger(f'root.app.game.map.{map_id}.signal.{track}.{base_route}.sprite'),
+        super().__init__(map_id, logger=getLogger(f'root.app.game.map.{map_id}.signal.{track}.{base_route}.sprite'),
                          parent_viewport=parent_viewport)
         self.map_id = map_id
         USER_DB_CURSOR.execute('''SELECT state FROM signals WHERE track = ? AND base_route = ? AND map_id = ?''',

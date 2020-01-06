@@ -10,7 +10,7 @@ from controller.shop_placeholder_controller import ShopPlaceholderController
 from controller.shop_constructor_controller import ShopConstructorController
 
 
-class ShopController(GameBaseController):
+class ShopController(MapBaseController):
     def __init__(self, model: ShopModel, view: ShopView, placeholder: ShopPlaceholderController,
                  shop_constructor: ShopConstructorController, map_id, shop_id, parent_controller):
         super().__init__(parent_controller=parent_controller,

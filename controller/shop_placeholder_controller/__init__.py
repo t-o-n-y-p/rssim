@@ -7,7 +7,7 @@ from ui.fade_animation.fade_in_animation.shop_placeholder_fade_in_animation impo
 from ui.fade_animation.fade_out_animation.shop_placeholder_fade_out_animation import ShopPlaceholderFadeOutAnimation
 
 
-class ShopPlaceholderController(GameBaseController):
+class ShopPlaceholderController(MapBaseController):
     def __init__(self, model: ShopPlaceholderModel, view: ShopPlaceholderView, map_id, shop_id, parent_controller):
         super().__init__(parent_controller=parent_controller,
                          logger=getLogger(f'root.app.game.map.{map_id}.shop.{shop_id}.placeholder.controller'))

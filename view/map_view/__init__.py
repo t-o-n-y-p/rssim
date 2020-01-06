@@ -50,8 +50,7 @@ class MapView(MapBaseView):
         def on_open_shop_details(button):
             self.controller.on_open_shop_details(self.shop_buttons.index(button))
 
-        super().__init__(controller, logger=getLogger(f'root.app.game.map.{map_id}.view'))
-        self.map_id = map_id
+        super().__init__(controller, map_id, logger=getLogger(f'root.app.game.map.{map_id}.view'))
         USER_DB_CURSOR.execute('''SELECT unlocked_tracks FROM map_progress WHERE map_id = ?''', (self.map_id, ))
         self.unlocked_tracks = USER_DB_CURSOR.fetchone()[0]
         self.mini_map_offset = (0, 0)
@@ -270,7 +269,6 @@ class MapView(MapBaseView):
     def handle_mouse_release(self, x, y, button, modifiers):
         self.map_move_mode = False
         self.mini_map_timer = perf_counter()
-        self.controller.parent_controller.on_change_base_offset_for_inactive_maps(self.base_offset, self.map_id)
         self.controller.on_save_and_commit_last_known_base_offset(self.base_offset)
 
     @final

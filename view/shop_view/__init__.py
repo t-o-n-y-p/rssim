@@ -6,14 +6,13 @@ from ui.label.shop_title_label import ShopTitleLabel
 from ui.shader_sprite.shop_view_shader_sprite import ShopViewShaderSprite
 
 
-class ShopView(GameBaseView):
+class ShopView(MapBaseView):
     def __init__(self, controller, map_id, shop_id):
         def on_close_shop_details(button):
             self.controller.parent_controller.on_close_shop_details(self.shop_id)
 
-        super().__init__(controller, logger=getLogger(f'root.app.game.map.{map_id}.shop.{shop_id}.view'),
+        super().__init__(controller, map_id, logger=getLogger(f'root.app.game.map.{map_id}.shop.{shop_id}.view'),
                          child_window=True)
-        self.map_id = map_id
         self.shop_id = shop_id
         self.shader_sprite = ShopViewShaderSprite(view=self)
         self.title_label = ShopTitleLabel(parent_viewport=self.viewport)

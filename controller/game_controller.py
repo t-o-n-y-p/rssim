@@ -142,7 +142,3 @@ class GameController(GameBaseController):
     def on_unlock_map(self, map_id):
         self.maps[map_id].on_unlock()
         self.map_switcher.on_unlock_map(map_id)
-
-    def on_change_base_offset_for_inactive_maps(self, base_offset, active_map_id):
-        for m in chain(range(active_map_id), range(active_map_id + 1, len(self.maps))):
-            self.maps[m].on_change_base_offset(base_offset)

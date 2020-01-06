@@ -16,6 +16,7 @@ TRACKS: Final = 0                                      # matrix #0 stores tracks
 ENVIRONMENT: Final = 1                                 # matrix #1 stores environment tiers state
 CONSTRUCTOR_VIEW_TRACK_CELLS: Final = 4                # number of cells for tracks on constructor screen
 CONSTRUCTOR_VIEW_ENVIRONMENT_CELLS: Final = 4          # number of cells for environment tiers on constructor screen
+SHOP_DETAILS_BUTTON_NORMAL_SIZE = (250, 40)
 # track, environment and shop stage state matrix properties
 LOCKED: Final = 0                                      # property #0 indicates if track/env. is locked
 UNDER_CONSTRUCTION: Final = 1                          # property #1 indicates if track/env. is under construction

@@ -7,11 +7,10 @@ from ui.sprite.crossover_sprite import CrossoverSprite
 
 class CrossoverView(MapBaseView):
     def __init__(self, controller, map_id, track_param_1, track_param_2, crossover_type):
-        super().__init__(controller, logger=getLogger(
+        super().__init__(controller, map_id, logger=getLogger(
                 f'root.app.game.map.{map_id}.crossover.{track_param_1}.{track_param_2}.{crossover_type}.view'
             )
         )
-        self.map_id = map_id
         CONFIG_DB_CURSOR.execute('''SELECT region_x, region_y, region_w, region_h FROM crossovers_config
                                     WHERE track_param_1 = ? AND track_param_2 = ? AND crossover_type = ? 
                                     AND map_id = ?''',

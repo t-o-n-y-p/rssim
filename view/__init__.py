@@ -353,12 +353,15 @@ class GameBaseView(AppBaseView):
 
 
 class MapBaseView(GameBaseView):
-    def __init__(self, controller, logger):
-        super().__init__(controller, logger)
+    def __init__(self, controller, map_id, logger, child_window=False):
+        super().__init__(controller, logger, child_window)
         self.locked = True
-        USER_DB_CURSOR.execute('SELECT last_known_base_offset FROM graphics')
+        self.map_id = map_id
+        USER_DB_CURSOR.execute('''SELECT last_known_base_offset FROM map_position_settings WHERE map_id = ?''',
+                               (self.map_id, ))
         self.base_offset = tuple(map(int, USER_DB_CURSOR.fetchone()[0].split(',')))
-        USER_DB_CURSOR.execute('SELECT zoom_out_activated FROM graphics')
+        USER_DB_CURSOR.execute('''SELECT zoom_out_activated FROM map_position_settings WHERE map_id = ?''',
+                               (self.map_id, ))
         self.zoom_out_activated = bool(USER_DB_CURSOR.fetchone()[0])
         if self.zoom_out_activated:
             self.zoom_factor = 0.5

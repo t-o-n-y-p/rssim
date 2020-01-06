@@ -5,11 +5,11 @@ from ui.label.shop_locked_label import ShopLockedLabel
 from ui.label.shop_level_placeholder_label import ShopLevelPlaceholderLabel
 
 
-class ShopPlaceholderView(GameBaseView):
+class ShopPlaceholderView(MapBaseView):
     def __init__(self, controller, map_id, shop_id):
-        super().__init__(controller, logger=getLogger(f'root.app.game.map.{map_id}.shop.{shop_id}.placeholder.view'),
+        super().__init__(controller, map_id,
+                         logger=getLogger(f'root.app.game.map.{map_id}.shop.{shop_id}.placeholder.view'),
                          child_window=True)
-        self.map_id = map_id
         self.shop_id = shop_id
         self.lock_label = ShopLockedLabel(parent_viewport=self.viewport)
         self.description_label = ShopLevelPlaceholderLabel(parent_viewport=self.viewport)

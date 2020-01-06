@@ -13,7 +13,7 @@ from notifications.shop_storage_almost_full_notification import ShopStorageAlmos
 from notifications.shop_storage_full_notification import ShopStorageFullNotification
 
 
-class ShopConstructorView(GameBaseView):
+class ShopConstructorView(MapBaseView):
     def __init__(self, controller, map_id, shop_id):
         def on_clear_storage(button):
             self.controller.on_clear_storage()
@@ -21,9 +21,9 @@ class ShopConstructorView(GameBaseView):
         def on_buy_stage_action(stage_number):
             self.controller.on_put_stage_under_construction(stage_number)
 
-        super().__init__(controller, logger=getLogger(f'root.app.game.map.{map_id}.shop.{shop_id}.constructor.view'),
+        super().__init__(controller, map_id,
+                         logger=getLogger(f'root.app.game.map.{map_id}.shop.{shop_id}.constructor.view'),
                          child_window=True)
-        self.map_id = map_id
         self.shop_id = shop_id
         self.shop_stages_state_matrix = {}
         USER_DB_CURSOR.execute('''SELECT current_stage, shop_storage_money

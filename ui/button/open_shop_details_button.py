@@ -8,7 +8,7 @@ from ui.button import MapButton
 @final
 class OpenShopDetailsButton(MapButton):
     def __init__(self, map_id, shop_id, on_click_action, on_hover_action, on_leave_action):
-        super().__init__(logger=getLogger('root.button.open_shop_details_button'))
+        super().__init__(map_id, logger=getLogger('root.button.open_shop_details_button'))
         self.to_activate_on_controller_init = False
         self.invisible = True
         self.text = ''
@@ -17,8 +17,7 @@ class OpenShopDetailsButton(MapButton):
         self.on_click_action = on_click_action
         self.on_hover_action = on_hover_action
         self.on_leave_action = on_leave_action
-        CONFIG_DB_CURSOR.execute('''SELECT button_x, button_y FROM shops_config 
-                                    WHERE map_id = ? AND shop_id = ?''',
+        CONFIG_DB_CURSOR.execute('''SELECT button_x, button_y FROM shops_config WHERE map_id = ? AND shop_id = ?''',
                                  (map_id, shop_id))
         self.shop_button_offset = CONFIG_DB_CURSOR.fetchone()
 
@@ -27,5 +26,5 @@ class OpenShopDetailsButton(MapButton):
                 self.base_offset[1] + self.shop_button_offset[1] // round(1 / self.scale))
 
     def get_size(self):
-        return (250 // round(1 / self.scale),
-                40 // round(1 / self.scale))
+        return (SHOP_DETAILS_BUTTON_NORMAL_SIZE[0] // round(1 / self.scale),
+                SHOP_DETAILS_BUTTON_NORMAL_SIZE[1] // round(1 / self.scale))

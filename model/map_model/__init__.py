@@ -17,9 +17,11 @@ class MapModel(MapBaseModel):
         USER_DB_CURSOR.execute('''SELECT unlocked_car_collections FROM map_progress WHERE map_id = ?''',
                                (self.map_id, ))
         self.unlocked_car_collections = list(map(int, USER_DB_CURSOR.fetchone()[0].split(',')))
-        USER_DB_CURSOR.execute('SELECT last_known_base_offset FROM graphics')
+        USER_DB_CURSOR.execute('''SELECT last_known_base_offset FROM map_position_settings WHERE map_id = ?''',
+                               (self.map_id, ))
         self.last_known_base_offset = list(map(int, USER_DB_CURSOR.fetchone()[0].split(',')))
-        USER_DB_CURSOR.execute('SELECT zoom_out_activated FROM graphics')
+        USER_DB_CURSOR.execute('''SELECT zoom_out_activated FROM map_position_settings WHERE map_id = ?''',
+                               (self.map_id, ))
         self.zoom_out_activated = bool(USER_DB_CURSOR.fetchone()[0])
         CONFIG_DB_CURSOR.execute('''SELECT unlocked_tracks_by_default FROM map_progress_config WHERE map_id = ?''',
                                  (self.map_id, ))
@@ -46,18 +48,18 @@ class MapModel(MapBaseModel):
 
     def on_save_and_commit_last_known_base_offset(self, base_offset):
         self.last_known_base_offset = base_offset
-        USER_DB_CURSOR.execute('UPDATE graphics SET last_known_base_offset = ?',
-                               (','.join(list(map(str, self.last_known_base_offset))), ))
+        USER_DB_CURSOR.execute('''UPDATE map_position_settings SET last_known_base_offset = ? WHERE map_id = ?''',
+                               (','.join(list(map(str, self.last_known_base_offset))), self.map_id))
         on_commit()
 
     def on_save_and_commit_zoom_out_activated(self, zoom_out_activated):
         self.zoom_out_activated = zoom_out_activated
-        USER_DB_CURSOR.execute('UPDATE graphics SET zoom_out_activated = ?',
-                               (int(self.zoom_out_activated), ))
+        USER_DB_CURSOR.execute('''UPDATE map_position_settings SET zoom_out_activated = ? WHERE map_id = ?''',
+                               (int(self.zoom_out_activated), self.map_id))
         on_commit()
 
     def on_clear_trains_info(self):
-        USER_DB_CURSOR.execute('DELETE FROM trains WHERE map_id = ?', (self.map_id, ))
+        USER_DB_CURSOR.execute('''DELETE FROM trains WHERE map_id = ?''', (self.map_id, ))
 
     def on_create_train(self, train_id, cars, track, train_route, state, direction, new_direction,
                         current_direction, priority, boarding_time, exp, money, switch_direction_required):

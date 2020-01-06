@@ -9,9 +9,8 @@ from textures import get_full_map
 @final
 class MainMapSprite(MapSprite):
     def __init__(self, map_id, parent_viewport):
-        super().__init__(logger=getLogger(f'root.app.game.map.{map_id}.main_map_sprite'),
+        super().__init__(map_id, logger=getLogger(f'root.app.game.map.{map_id}.main_map_sprite'),
                          parent_viewport=parent_viewport)
-        self.map_id = map_id
         USER_DB_CURSOR.execute('''SELECT unlocked_tracks FROM map_progress WHERE map_id = ?''', (self.map_id, ))
         unlocked_tracks = USER_DB_CURSOR.fetchone()[0]
         CONFIG_DB_CURSOR.execute('''SELECT unlocked_tracks_by_default FROM map_progress_config WHERE map_id = ?''',

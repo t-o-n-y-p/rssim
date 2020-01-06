@@ -113,12 +113,15 @@ class UISprite(Sprite):
 
 
 class MapSprite(Sprite):
-    def __init__(self, logger, parent_viewport):
+    def __init__(self, map_id, logger, parent_viewport):
         super().__init__(logger=logger)
+        self.map_id = map_id
         self.parent_viewport = parent_viewport
-        USER_DB_CURSOR.execute('SELECT last_known_base_offset FROM graphics')
+        USER_DB_CURSOR.execute('''SELECT last_known_base_offset FROM map_position_settings WHERE map_id = ?''',
+                               (self.map_id, ))
         self.base_offset = tuple(map(int, USER_DB_CURSOR.fetchone()[0].split(',')))
-        USER_DB_CURSOR.execute('SELECT zoom_out_activated FROM graphics')
+        USER_DB_CURSOR.execute('''SELECT zoom_out_activated FROM map_position_settings WHERE map_id = ?''',
+                               (self.map_id, ))
         self.zoom_out_activated = bool(USER_DB_CURSOR.fetchone()[0])
         if self.zoom_out_activated:
             self.scale = 0.5

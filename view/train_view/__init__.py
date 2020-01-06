@@ -7,8 +7,7 @@ from ui.sprite.boarding_lights_sprite import BoardingLightsSprite
 
 class TrainView(MapBaseView):
     def __init__(self, controller, map_id, train_id):
-        super().__init__(controller, logger=getLogger(f'root.app.game.map.{map_id}.train.{train_id}.view'))
-        self.map_id = map_id
+        super().__init__(controller, map_id, logger=getLogger(f'root.app.game.map.{map_id}.train.{train_id}.view'))
         self.train_id = train_id
         self.car_position = []
         self.car_head_image = None
