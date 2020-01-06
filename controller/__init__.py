@@ -274,7 +274,7 @@ class GameBaseController(AppBaseController):
 
     @final
     def on_deactivate_construction_time_bonus_code(self):
-        self.model.on_deactivate_money_bonus_code()
+        self.model.on_deactivate_construction_time_bonus_code()
         for controller in self.child_controllers:
             controller.on_deactivate_construction_time_bonus_code()
 

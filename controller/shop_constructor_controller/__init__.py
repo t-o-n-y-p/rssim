@@ -24,10 +24,7 @@ class ShopConstructorController(MapBaseController):
 
     @final
     def on_clear_storage(self):
-        self.parent_controller.parent_controller.parent_controller.on_add_money(self.model.shop_storage_money
-                                                                                * self.model.money_bonus_multiplier)
-        self.model.shop_storage_money = 0
-        self.view.on_update_storage_money(0)
+        self.model.on_clear_storage()
 
     @final
     def on_put_stage_under_construction(self, stage_number):

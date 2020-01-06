@@ -125,3 +125,10 @@ class ShopConstructorModel(MapBaseModel):
         self.view.on_update_stage_state(stage_number)
         self.controller.parent_controller.parent_controller.parent_controller \
             .on_pay_money(self.shop_stages_state_matrix[stage_number][PRICE])
+
+    @final
+    def on_clear_storage(self):
+        self.controller.parent_controller.parent_controller.parent_controller\
+            .on_add_money(self.shop_storage_money * self.money_bonus_multiplier)
+        self.shop_storage_money = 0
+        self.view.on_update_storage_money(0)
