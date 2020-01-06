@@ -46,14 +46,14 @@ class MapModel(MapBaseModel):
 
     def on_save_and_commit_last_known_base_offset(self, base_offset):
         self.last_known_base_offset = base_offset
-        USER_DB_CURSOR.execute('UPDATE graphics SET last_known_base_offset = ? WHERE map_id = ?',
-                               (','.join(list(map(str, self.last_known_base_offset))), self.map_id))
+        USER_DB_CURSOR.execute('UPDATE graphics SET last_known_base_offset = ?',
+                               (','.join(list(map(str, self.last_known_base_offset))), ))
         on_commit()
 
     def on_save_and_commit_zoom_out_activated(self, zoom_out_activated):
         self.zoom_out_activated = zoom_out_activated
-        USER_DB_CURSOR.execute('UPDATE graphics SET zoom_out_activated = ? WHERE map_id = ?',
-                               (int(zoom_out_activated), self.map_id))
+        USER_DB_CURSOR.execute('UPDATE graphics SET zoom_out_activated = ?',
+                               (int(self.zoom_out_activated), ))
         on_commit()
 
     def on_clear_trains_info(self):

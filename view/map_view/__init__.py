@@ -270,6 +270,7 @@ class MapView(MapBaseView):
     def handle_mouse_release(self, x, y, button, modifiers):
         self.map_move_mode = False
         self.mini_map_timer = perf_counter()
+        self.controller.parent_controller.on_change_base_offset_for_inactive_maps(self.base_offset, self.map_id)
         self.controller.on_save_and_commit_last_known_base_offset(self.base_offset)
 
     @final

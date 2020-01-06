@@ -4,6 +4,7 @@ from ui.label.map_switcher_cell_locked_label import MapSwitcherCellLockedLabel
 from ui.label.map_switcher_level_placeholder_label import MapSwitcherLevelPlaceholderLabel
 from ui.label.map_switcher_unlock_available_label import MapSwitcherUnlockAvailableLabel
 from ui.button.build_map_button import BuildMapButton
+from ui.button.switch_map_button import SwitchMapButton
 
 
 def cell_is_active(fn):
@@ -23,7 +24,7 @@ def cell_is_not_active(fn):
 
 
 class MapSwitcherCell:
-    def __init__(self, map_id, on_buy_map_action, on_set_money_target_action,
+    def __init__(self, map_id, on_buy_map_action, on_switch_map_action, on_set_money_target_action,
                  on_reset_money_target_action, parent_viewport, logger):
         def on_set_money_target(button):
             pass
@@ -35,6 +36,9 @@ class MapSwitcherCell:
             button.on_deactivate()
             self.on_buy_map_action(self.map_id)
 
+        def on_switch_map(button):
+            self.on_switch_map_action(self.map_id)
+
         self.logger = logger
         self.is_activated = False
         self.map_id = map_id
@@ -43,6 +47,7 @@ class MapSwitcherCell:
         USER_DB_CURSOR.execute('SELECT current_locale FROM i18n')
         self.current_locale = USER_DB_CURSOR.fetchone()[0]
         self.on_buy_map_action = on_buy_map_action
+        self.on_switch_map_action = on_switch_map_action
         self.on_set_money_target_action = on_set_money_target_action
         self.on_reset_money_target_action = on_reset_money_target_action
         self.screen_resolution = (0, 0)
@@ -53,7 +58,8 @@ class MapSwitcherCell:
         self.money_target_activated = False
         self.opacity = 0
         self.build_map_button = BuildMapButton(on_click_action=on_buy_map, parent_viewport=self.viewport)
-        self.buttons = [self.build_map_button, ]
+        self.switch_map_button = SwitchMapButton(on_click_action=on_switch_map, parent_viewport=self.viewport)
+        self.buttons = [self.build_map_button, self.switch_map_button]
         self.data = MAP_SWITCHER_STATE_MATRIX[self.map_id]
         self.locked_label = MapSwitcherCellLockedLabel(parent_viewport=self.viewport)
         self.level_placeholder_label = MapSwitcherLevelPlaceholderLabel(parent_viewport=self.viewport)
@@ -68,7 +74,10 @@ class MapSwitcherCell:
     def on_activate(self):
         self.is_activated = True
         self.on_update_cell_state()
-        if self.data[MAP_LOCKED] and self.level >= self.data[MAP_LEVEL_REQUIRED]:
+        if not self.data[MAP_LOCKED]:
+            self.switch_map_button.on_activate()
+        elif self.level >= self.data[MAP_LEVEL_REQUIRED]:
+            self.switch_map_button.on_deactivate()
             if self.money < self.data[MAP_PRICE]:
                 self.build_map_button.on_disable()
             else:
@@ -95,10 +104,10 @@ class MapSwitcherCell:
         self.screen_resolution = screen_resolution
         top_bar_height = get_top_bar_height(self.screen_resolution)
         self.viewport.x1 = self.parent_viewport.x1 \
-                           + self.map_id * ((self.parent_viewport.x2 - self.parent_viewport.x1) // 2)
-        self.viewport.x2 = self.viewport.x1 + (self.parent_viewport.x2 - self.parent_viewport.x1) // 2
+                           + self.map_id * ((self.parent_viewport.x2 - self.parent_viewport.x1) // 2 - 1)
+        self.viewport.x2 = self.viewport.x1 + (self.parent_viewport.x2 - self.parent_viewport.x1) // 2 + 1
         self.viewport.y1 = self.parent_viewport.y1
-        self.viewport.y2 = self.parent_viewport.y2 - top_bar_height
+        self.viewport.y2 = self.parent_viewport.y2 - top_bar_height + 2
         self.locked_label.on_change_screen_resolution(self.screen_resolution)
         self.level_placeholder_label.on_change_screen_resolution(self.screen_resolution)
         self.unlock_available_label.on_change_screen_resolution(self.screen_resolution)

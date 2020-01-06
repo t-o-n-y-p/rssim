@@ -130,14 +130,19 @@ class GameController(GameBaseController):
         self.map_switcher.fade_out_animation.on_activate()
 
     def on_switch_map(self, new_map_id):
-        current_map_id = self.map_switcher.get_current_map_id()
-        for m in chain(range(current_map_id), range(current_map_id + 1, len(self.maps))):
-            self.map_transition_animations[m][current_map_id].on_deactivate()
+        if (current_map_id := self.map_switcher.get_current_map_id()) != new_map_id:
+            for m in chain(range(current_map_id), range(current_map_id + 1, len(self.maps))):
+                self.map_transition_animations[m][current_map_id].on_deactivate()
 
-        self.map_transition_animations[current_map_id][new_map_id].on_activate()
-        self.map_switcher.on_switch_map(new_map_id)
+            self.map_transition_animations[current_map_id][new_map_id].on_activate()
+            self.map_switcher.on_switch_map(new_map_id)
+
         self.on_close_map_switcher()
 
     def on_unlock_map(self, map_id):
         self.maps[map_id].on_unlock()
         self.map_switcher.on_unlock_map(map_id)
+
+    def on_change_base_offset_for_inactive_maps(self, base_offset, active_map_id):
+        for m in chain(range(active_map_id), range(active_map_id + 1, len(self.maps))):
+            self.maps[m].on_change_base_offset(base_offset)

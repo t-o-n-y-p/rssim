@@ -108,6 +108,7 @@ class MapController(MapBaseController):
         self.view.check_base_offset_limits()
         self.on_save_and_commit_last_known_base_offset(self.view.base_offset)
         self.on_change_base_offset(self.view.base_offset)
+        self.parent_controller.on_change_base_offset_for_inactive_maps(self.view.base_offset, self.map_id)
 
     @final
     def on_save_state(self):
@@ -139,12 +140,14 @@ class MapController(MapBaseController):
     def on_zoom_in(self):
         super().on_zoom_in()
         self.on_change_base_offset(self.view.base_offset)
+        self.parent_controller.on_change_base_offset_for_inactive_maps(self.view.base_offset, self.map_id)
         self.model.on_save_and_commit_zoom_out_activated(False)
 
     @final
     def on_zoom_out(self):
         super().on_zoom_out()
         self.on_change_base_offset(self.view.base_offset)
+        self.parent_controller.on_change_base_offset_for_inactive_maps(self.view.base_offset, self.map_id)
         self.model.on_save_and_commit_zoom_out_activated(True)
 
     @final

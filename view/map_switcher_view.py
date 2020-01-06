@@ -19,14 +19,19 @@ class MapSwitcherView(GameBaseView):
             self.controller.parent_controller.on_unlock_map(map_id)
             self.controller.parent_controller.on_switch_map(map_id)
 
+        def on_switch_map(map_id):
+            self.controller.parent_controller.on_switch_map(map_id)
+
         super().__init__(controller, logger=getLogger(f'root.app.game.map_switcher.view'), child_window=True)
         self.shader_sprite = MapSwitcherViewShaderSprite(view=self)
         self.title_label = MapSwitcherTitleLabel(parent_viewport=self.viewport)
         self.close_map_switcher_button = CloseMapSwitcherButton(on_click_action=on_close_map_switcher,
                                                                 parent_viewport=self.viewport)
         self.buttons = [self.close_map_switcher_button, ]
-        self.map_switcher_cells = [PassengerMapSwitcherCell(on_buy_map, None, None, parent_viewport=self.viewport),
-                                   FreightMapSwitcherCell(on_buy_map, None, None, parent_viewport=self.viewport)]
+        self.map_switcher_cells = [PassengerMapSwitcherCell(on_buy_map, on_switch_map, None, None,
+                                                            parent_viewport=self.viewport),
+                                   FreightMapSwitcherCell(on_buy_map, on_switch_map, None, None,
+                                                          parent_viewport=self.viewport)]
         for c in self.map_switcher_cells:
             self.buttons.extend(c.buttons)
 
