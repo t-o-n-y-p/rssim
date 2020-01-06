@@ -8,8 +8,7 @@ from database import USER_DB_CURSOR, CONFIG_DB_CURSOR, BASE_SCHEDULE
 
 class SchedulerModel(MapBaseModel):
     def __init__(self, controller, view, map_id):
-        super().__init__(controller, view, logger=getLogger(f'root.app.game.map.{map_id}.scheduler.model'))
-        self.map_id = map_id
+        super().__init__(controller, view, map_id, logger=getLogger(f'root.app.game.map.{map_id}.scheduler.model'))
         USER_DB_CURSOR.execute('''SELECT locked, unlocked_tracks, unlocked_environment, supported_cars_min 
                                   FROM map_progress WHERE map_id = ?''',
                                (self.map_id, ))
@@ -37,6 +36,7 @@ class SchedulerModel(MapBaseModel):
         USER_DB_CURSOR.execute('''SELECT entry_locked_state FROM map_progress WHERE map_id = ?''', (self.map_id, ))
         self.entry_locked_state = list(map(bool, list(map(int, USER_DB_CURSOR.fetchone()[0].split(',')))))
 
+    @final
     def on_save_state(self):
         USER_DB_CURSOR.execute('''UPDATE scheduler SET train_counter = ?, next_cycle_start_time = ?, 
                                   entry_busy_state = ? WHERE map_id = ?''',
@@ -51,6 +51,7 @@ class SchedulerModel(MapBaseModel):
             USER_DB_CURSOR.execute('INSERT INTO base_schedule VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)',
                                    (self.map_id, *train))
 
+    @final
     def on_update_time(self):
         super().on_update_time()
         # new schedule cycle is created if current schedule end is less than schedule cycle length ahead
@@ -103,6 +104,7 @@ class SchedulerModel(MapBaseModel):
                 # and arrival time for all following trans will be greater than current time
                 break
 
+    @final
     def on_level_up(self):
         super().on_level_up()
         CONFIG_DB_CURSOR.execute('''SELECT arrival_time_min, arrival_time_max, direction, new_direction, 
@@ -117,10 +119,12 @@ class SchedulerModel(MapBaseModel):
         else:
             self.schedule_cycle_length, self.frame_per_car, self.exp_per_car, self.money_per_car = 0, 0, 0.0, 0.0
 
+    @final
     def on_unlock(self):
         super().on_unlock()
         self.next_cycle_start_time = self.game_time
 
+    @final
     def on_unlock_track(self, track):
         self.unlocked_tracks = track
         directions_to_unlock = [direction_id for direction_id, (track, environment)
@@ -133,6 +137,7 @@ class SchedulerModel(MapBaseModel):
                                     WHERE track_number = ? AND map_id = ?''', (track, self.map_id))
         self.supported_cars_min = CONFIG_DB_CURSOR.fetchone()[0]
 
+    @final
     def on_unlock_environment(self, tier):
         self.unlocked_environment = tier
         directions_to_unlock = [direction_id for direction_id, (track, environment)
@@ -141,6 +146,7 @@ class SchedulerModel(MapBaseModel):
         for d in directions_to_unlock:
             self.entry_locked_state[d] = False
 
+    @final
     def on_leave_entry(self, entry_id):
         self.entry_busy_state[entry_id] = False
         for e in JOINT_ENTRIES[self.map_id][entry_id]:

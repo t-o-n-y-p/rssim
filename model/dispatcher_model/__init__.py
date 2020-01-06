@@ -6,8 +6,7 @@ from database import USER_DB_CURSOR, CONFIG_DB_CURSOR
 
 class DispatcherModel(MapBaseModel):
     def __init__(self, controller, view, map_id):
-        super().__init__(controller, view, logger=getLogger(f'root.app.game.map.{map_id}.dispatcher.model'))
-        self.map_id = map_id
+        super().__init__(controller, view, map_id, logger=getLogger(f'root.app.game.map.{map_id}.dispatcher.model'))
         self.trains = []
         USER_DB_CURSOR.execute('''SELECT unlocked_tracks FROM map_progress WHERE map_id = ?''', (self.map_id, ))
         self.unlocked_tracks = USER_DB_CURSOR.fetchone()[0]
@@ -22,11 +21,13 @@ class DispatcherModel(MapBaseModel):
                                     FROM track_config WHERE map_id = ?''', (self.map_id, ))
         self.supported_cars_by_track.extend(CONFIG_DB_CURSOR.fetchall())
 
+    @final
     def on_save_state(self):
         for i in range(1, len(self.track_busy_status)):
             USER_DB_CURSOR.execute('UPDATE tracks SET busy = ? WHERE track_number = ? AND map_id = ?',
                                    (int(self.track_busy_status[i]), i, self.map_id))
 
+    @final
     def on_update_time(self):
         super().on_update_time()
         for t in self.trains:
@@ -45,12 +46,15 @@ class DispatcherModel(MapBaseModel):
                     self.trains.remove(t)
                     break
 
+    @final
     def on_unlock_track(self, track):
         self.unlocked_tracks = track
 
+    @final
     def on_add_train(self, train_controller):
         self.trains.append(train_controller)
 
+    @final
     def on_leave_track(self, track):
         self.track_busy_status[track] = False
 

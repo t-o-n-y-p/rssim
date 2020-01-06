@@ -6,9 +6,8 @@ from database import USER_DB_CURSOR, CONFIG_DB_CURSOR
 
 class ShopConstructorModel(MapBaseModel):
     def __init__(self, controller, view, map_id, shop_id):
-        super().__init__(controller, view,
+        super().__init__(controller, view, map_id,
                          logger=getLogger(f'root.app.game.map.{map_id}.shop.{shop_id}.constructor.model'))
-        self.map_id = map_id
         self.shop_id = shop_id
         self.shop_stages_state_matrix = {}
         USER_DB_CURSOR.execute('''SELECT stage_number, locked, under_construction, construction_time,
@@ -32,6 +31,7 @@ class ShopConstructorModel(MapBaseModel):
                                   FROM shops WHERE map_id = ? AND shop_id = ?''', (self.map_id, self.shop_id))
         self.current_stage, self.shop_storage_money, self.internal_shop_time = USER_DB_CURSOR.fetchone()
 
+    @final
     def on_save_state(self):
         USER_DB_CURSOR.execute('''UPDATE shops SET current_stage = ?, shop_storage_money = ?, 
                                   internal_shop_time = ? WHERE map_id = ? AND shop_id = ?''',
@@ -53,6 +53,7 @@ class ShopConstructorModel(MapBaseModel):
                                               self.map_id, self.shop_id, stage_number
                                               ))))
 
+    @final
     def on_update_time(self):
         super().on_update_time()
         if self.current_stage > 0 \
@@ -97,6 +98,7 @@ class ShopConstructorModel(MapBaseModel):
 
                 self.view.on_update_stage_state(stage)
 
+    @final
     def on_level_up(self):
         super().on_level_up()
         for stage in self.shop_stages_state_matrix:
@@ -105,6 +107,7 @@ class ShopConstructorModel(MapBaseModel):
                 self.on_check_shop_stage_unlock_conditions(stage)
                 self.view.on_update_stage_state(stage)
 
+    @final
     def on_check_shop_stage_unlock_conditions(self, stage):
         if self.shop_stages_state_matrix[stage][UNLOCK_CONDITION_FROM_PREVIOUS_STAGE] \
                 and self.shop_stages_state_matrix[stage][UNLOCK_CONDITION_FROM_LEVEL]:
@@ -112,6 +115,7 @@ class ShopConstructorModel(MapBaseModel):
             self.shop_stages_state_matrix[stage][UNLOCK_CONDITION_FROM_LEVEL] = False
             self.shop_stages_state_matrix[stage][UNLOCK_AVAILABLE] = True
 
+    @final
     def on_put_stage_under_construction(self, stage_number):
         self.shop_stages_state_matrix[stage_number][UNLOCK_AVAILABLE] = False
         self.shop_stages_state_matrix[stage_number][UNDER_CONSTRUCTION] = True

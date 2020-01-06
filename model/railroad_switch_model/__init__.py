@@ -6,11 +6,10 @@ from database import USER_DB_CURSOR, CONFIG_DB_CURSOR
 
 class RailroadSwitchModel(MapBaseModel):
     def __init__(self, controller, view, map_id, track_param_1, track_param_2, switch_type):
-        super().__init__(controller, view, logger=getLogger(
+        super().__init__(controller, view, map_id, logger=getLogger(
                 f'root.app.game.map.{map_id}.railroad_switch.{track_param_1}.{track_param_2}.{switch_type}.model'
             )
         )
-        self.map_id = map_id
         USER_DB_CURSOR.execute('''SELECT busy, force_busy FROM switches 
                                   WHERE track_param_1 = ? AND track_param_2 = ? AND switch_type = ? AND map_id = ?''',
                                (track_param_1, track_param_2, switch_type, self.map_id))
@@ -28,6 +27,7 @@ class RailroadSwitchModel(MapBaseModel):
                                (track_param_1, track_param_2, switch_type, self.map_id))
         self.locked = bool(USER_DB_CURSOR.fetchone()[0])
 
+    @final
     def on_save_state(self):
         track_param_1 = self.controller.track_param_1
         track_param_2 = self.controller.track_param_2
@@ -38,6 +38,7 @@ class RailroadSwitchModel(MapBaseModel):
                                (int(self.busy), int(self.force_busy), self.last_entered_by, self.current_position,
                                 int(self.locked), track_param_1, track_param_2, switch_type, self.map_id))
 
+    @final
     def on_force_busy_on(self, positions, train_id):
         self.force_busy = True
         self.busy = True
@@ -47,6 +48,7 @@ class RailroadSwitchModel(MapBaseModel):
         for listener in self.state_change_listeners:
             self.controller.parent_controller.on_update_train_route_section_status(listener, status=True)
 
+    @final
     def on_force_busy_off(self):
         self.force_busy = False
         self.busy = False

@@ -376,9 +376,10 @@ class GameBaseModel(AppBaseModel):
 
 
 class MapBaseModel(GameBaseModel):
-    def __init__(self, controller, view, logger):
+    def __init__(self, controller, view, map_id, logger):
         super().__init__(controller, view, logger)
         self.locked = True
+        self.map_id = map_id
 
     def on_unlock(self):
         self.locked = False

@@ -1,5 +1,4 @@
 from logging import getLogger
-from typing import final
 
 from model import *
 from database import USER_DB_CURSOR, BONUS_CODE_MATRIX

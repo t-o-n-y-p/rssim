@@ -6,9 +6,8 @@ from database import USER_DB_CURSOR, CONFIG_DB_CURSOR, TrailPointsV2
 
 class TrainRouteModel(MapBaseModel):
     def __init__(self, controller, view, map_id, track, train_route):
-        super().__init__(controller, view,
+        super().__init__(controller, view, map_id,
                          logger=getLogger(f'root.app.game.map.{map_id}.train_route.{track}.{train_route}.model'))
-        self.map_id = map_id
         USER_DB_CURSOR.execute('''SELECT opened, last_opened_by, current_checkpoint, priority, cars 
                                   FROM train_routes WHERE track = ? AND train_route = ? AND map_id = ?''',
                                (track, train_route, self.map_id))
@@ -41,6 +40,7 @@ class TrainRouteModel(MapBaseModel):
                                  (track, train_route, self.map_id))
         self.train_route_section_positions = CONFIG_DB_CURSOR.fetchall()
 
+    @final
     def on_save_state(self):
         USER_DB_CURSOR.execute('''UPDATE train_routes SET opened = ?, last_opened_by = ?, current_checkpoint = ?,
                                   priority = ?, cars = ? WHERE track = ? AND train_route = ? AND map_id = ?''',
@@ -51,6 +51,7 @@ class TrainRouteModel(MapBaseModel):
                                   WHERE track = ? AND train_route = ? AND map_id = ?''',
                                (busy_state_string, self.controller.track, self.controller.train_route, self.map_id))
 
+    @final
     def on_update_time(self):
         super().on_update_time()
         if self.opened and len(self.train_route_sections) > 1:
@@ -71,6 +72,7 @@ class TrainRouteModel(MapBaseModel):
 
                 self.train_route_section_busy_state[-1] = True
 
+    @final
     def on_open_train_route(self, train_id, cars):
         self.opened = True
         self.last_opened_by = train_id
@@ -84,12 +86,14 @@ class TrainRouteModel(MapBaseModel):
         self.controller.parent_controller.on_set_train_destination_point(train_id, self.destination_point_v2[cars])
         self.train_route_section_busy_state[0] = True
 
+    @final
     def on_close_train_route(self):
         self.opened = False
         self.current_checkpoint = 0
         self.train_route_section_busy_state[-1] = False
         self.cars = 0
 
+    @final
     @train_has_passed_train_route_section
     def on_update_train_route_sections(self, last_car_position):
         self.controller.parent_controller.on_train_route_section_force_busy_off(
@@ -109,8 +113,10 @@ class TrainRouteModel(MapBaseModel):
         # moving to the next section
         self.current_checkpoint += 1
 
+    @final
     def on_update_priority(self, priority):
         self.priority = priority
 
+    @final
     def on_update_section_status(self, section, status):
         self.train_route_section_busy_state[section] = status

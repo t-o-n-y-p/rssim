@@ -6,11 +6,10 @@ from database import USER_DB_CURSOR, CONFIG_DB_CURSOR
 
 class CrossoverModel(MapBaseModel):
     def __init__(self, controller, view, map_id, track_param_1, track_param_2, crossover_type):
-        super().__init__(controller, view, logger=getLogger(
+        super().__init__(controller, view, map_id, logger=getLogger(
                 f'root.app.game.map.{map_id}.crossover.{track_param_1}.{track_param_2}.{crossover_type}.model'
             )
         )
-        self.map_id = map_id
         self.busy = {track_param_1: {}, track_param_2: {}}
         self.force_busy = {track_param_1: {}, track_param_2: {}}
         self.last_entered_by = {track_param_1: {}, track_param_2: {}}
@@ -61,6 +60,7 @@ class CrossoverModel(MapBaseModel):
                                   AND map_id = ?''', (track_param_1, track_param_2, crossover_type, self.map_id))
         self.locked = bool(USER_DB_CURSOR.fetchone()[0])
 
+    @final
     def on_save_state(self):
         track_param_1 = self.controller.track_param_1
         track_param_2 = self.controller.track_param_2
@@ -86,6 +86,7 @@ class CrossoverModel(MapBaseModel):
                                 self.current_position_1, self.current_position_2, int(self.locked),
                                 track_param_1, track_param_2, crossover_type, self.map_id))
 
+    @final
     def on_force_busy_on(self, positions, train_id):
         self.force_busy[positions[0]][positions[1]] = True
         # if second position is not equal to first, no other train can fit inside,
@@ -112,6 +113,7 @@ class CrossoverModel(MapBaseModel):
         self.current_position_1, self.current_position_2 = positions
         self.view.on_change_current_position(self.current_position_1, self.current_position_2)
 
+    @final
     def on_force_busy_off(self, positions):
         self.force_busy[positions[0]][positions[1]] = False
         # if second position is not equal to first, no other train can fit inside,
@@ -137,12 +139,14 @@ class CrossoverModel(MapBaseModel):
                     self.on_leave_notify(k[1], k[0])
                     self.on_leave_notify(k[0], k[1])
 
+    @final
     def on_busy_notify(self, position_1, position_2, train_id):
         self.busy[position_1][position_2] = True
         self.last_entered_by[position_1][position_2] = train_id
         for listener in self.state_change_listeners[position_1][position_2]:
             self.controller.parent_controller.on_update_train_route_section_status(listener, status=True)
 
+    @final
     def on_leave_notify(self, position_1, position_2):
         self.busy[position_1][position_2] = False
         for listener in self.state_change_listeners[position_1][position_2]:

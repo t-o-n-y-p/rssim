@@ -6,8 +6,7 @@ from database import USER_DB_CURSOR, CONFIG_DB_CURSOR, CONSTRUCTION_STATE_MATRIX
 
 class ConstructorModel(MapBaseModel):
     def __init__(self, controller, view, map_id):
-        super().__init__(controller, view, logger=getLogger(f'root.app.game.map.{map_id}.constructor.model'))
-        self.map_id = map_id
+        super().__init__(controller, view, map_id, logger=getLogger(f'root.app.game.map.{map_id}.constructor.model'))
         self.construction_state_matrix = CONSTRUCTION_STATE_MATRIX[self.map_id]
         self.cached_unlocked_tracks = []
         self.cached_unlocked_tiers = []
@@ -16,6 +15,7 @@ class ConstructorModel(MapBaseModel):
         USER_DB_CURSOR.execute('SELECT money_target_cell_position FROM constructor WHERE map_id = ?', (self.map_id, ))
         self.money_target_cell_position = list(map(int, USER_DB_CURSOR.fetchone()[0].split(',')))
 
+    @final
     def on_save_state(self):
         USER_DB_CURSOR.execute('''UPDATE constructor SET money_target_activated = ?, money_target_cell_position = ? 
                                   WHERE map_id = ?''',
@@ -82,6 +82,7 @@ class ConstructorModel(MapBaseModel):
                                         )
                                    )
 
+    @final
     def on_update_time(self):
         super().on_update_time()
         # unlocked_track stores track number if some track was unlocked and 0 otherwise
@@ -136,6 +137,7 @@ class ConstructorModel(MapBaseModel):
                     and self.money_target_cell_position[1] > 0:
                 self.money_target_cell_position[1] -= 1
 
+    @final
     def on_level_up(self):
         super().on_level_up()
         # determines if some tracks require level which was just hit
@@ -166,6 +168,7 @@ class ConstructorModel(MapBaseModel):
             self.on_check_environment_unlock_conditions(tier)
             self.view.on_update_construction_state(ENVIRONMENT, tier)
 
+    @final
     def on_put_under_construction(self, construction_type, entity_number):
         self.construction_state_matrix[construction_type][entity_number][UNLOCK_AVAILABLE] = False
         self.construction_state_matrix[construction_type][entity_number][UNDER_CONSTRUCTION] = True
@@ -176,6 +179,7 @@ class ConstructorModel(MapBaseModel):
         self.controller.parent_controller.parent_controller\
             .on_pay_money(self.construction_state_matrix[construction_type][entity_number][PRICE])
 
+    @final
     def on_check_track_unlock_conditions(self, track):
         if self.construction_state_matrix[TRACKS][track][UNLOCK_CONDITION_FROM_PREVIOUS_TRACK] \
                 and self.construction_state_matrix[TRACKS][track][UNLOCK_CONDITION_FROM_ENVIRONMENT] \
@@ -186,6 +190,7 @@ class ConstructorModel(MapBaseModel):
             self.construction_state_matrix[TRACKS][track][UNLOCK_AVAILABLE] = True
             self.view.on_send_track_unlocked_notification(track)
 
+    @final
     def on_check_environment_unlock_conditions(self, tier):
         if self.construction_state_matrix[ENVIRONMENT][tier][UNLOCK_CONDITION_FROM_PREVIOUS_ENVIRONMENT] \
                 and self.construction_state_matrix[ENVIRONMENT][tier][UNLOCK_CONDITION_FROM_LEVEL]:
@@ -194,15 +199,18 @@ class ConstructorModel(MapBaseModel):
             self.construction_state_matrix[ENVIRONMENT][tier][UNLOCK_AVAILABLE] = True
             self.view.on_send_environment_unlocked_notification(tier)
 
+    @final
     def on_activate_money_target(self, construction_type, row):
         self.money_target_activated = True
         self.money_target_cell_position = [construction_type, row]
         self.view.on_activate_money_target(construction_type, row)
 
+    @final
     def on_deactivate_money_target(self):
         self.money_target_activated = False
         self.view.on_deactivate_money_target()
 
+    @final
     def on_unlock_track(self, track):
         self.construction_state_matrix[TRACKS][track][UNDER_CONSTRUCTION] = False
         self.construction_state_matrix[TRACKS][track][LOCKED] = False
@@ -217,6 +225,7 @@ class ConstructorModel(MapBaseModel):
 
         self.view.on_unlock_construction(TRACKS, track)
 
+    @final
     def on_remove_track_from_matrix(self, unlocked_track):
         self.construction_state_matrix[TRACKS].pop(unlocked_track)
         # if money target is activated for another track, cell position is updated

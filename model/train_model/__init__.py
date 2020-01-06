@@ -6,8 +6,8 @@ from database import USER_DB_CURSOR
 
 class TrainModel(MapBaseModel):
     def __init__(self, controller, view, map_id, train_id):
-        super().__init__(controller, view, logger=getLogger(f'root.app.game.map.{map_id}.train.{train_id}.model'))
-        self.map_id = map_id
+        super().__init__(controller, view, map_id,
+                         logger=getLogger(f'root.app.game.map.{map_id}.train.{train_id}.model'))
         self.train_id = train_id
         self.train_acceleration_factor = None
         self.train_maximum_speed = None
@@ -34,6 +34,7 @@ class TrainModel(MapBaseModel):
         self.car_image_collection = 0
         self.switch_direction_required = False
 
+    @final
     def on_train_setup(self):
         USER_DB_CURSOR.execute('''SELECT cars, train_route_track_number, train_route_type, 
                                   state, direction, new_direction, current_direction, speed, speed_state, 
@@ -69,6 +70,7 @@ class TrainModel(MapBaseModel):
 
         self.view.on_train_setup()
 
+    @final
     def on_train_init(self, cars, track, train_route, state, direction, new_direction, current_direction,
                       priority, boarding_time, exp, money, car_image_collection, switch_direction_required,
                       exp_bonus_multiplier, money_bonus_multiplier):
@@ -84,6 +86,7 @@ class TrainModel(MapBaseModel):
         self.speed_factor_position = self.speed_factor_position_limit
         self.view.on_train_init(self.cars, self.state, self.direction, self.car_image_collection)
 
+    @final
     def on_save_state(self):
         cars_position_string = None
         if len(self.cars_position) > 0:
@@ -106,6 +109,7 @@ class TrainModel(MapBaseModel):
                                 self.stop_point, self.destination_point, self.car_image_collection,
                                 int(self.switch_direction_required)))
 
+    @final
     def on_update_time(self):
         super().on_update_time()
         # shorter trains gain more priority because they arrive more frequently
@@ -222,15 +226,19 @@ class TrainModel(MapBaseModel):
     def on_set_train_start_point(self, first_car_start_point):
         pass
 
+    @final
     def on_set_train_stop_point(self, first_car_stop_point):
         self.stop_point = first_car_stop_point
 
+    @final
     def on_set_train_destination_point(self, first_car_destination_point):
         self.destination_point = first_car_destination_point
 
+    @final
     def on_set_trail_points(self, trail_points_v2):
         self.trail_points_v2 = trail_points_v2
 
+    @final
     def on_convert_trail_points(self):
         self.cars_position_abs = []
         for p in self.cars_position:
@@ -238,6 +246,7 @@ class TrainModel(MapBaseModel):
 
         self.cars_position.clear()
 
+    @final
     def on_reconvert_trail_points(self):
         self.cars_position = []
         for p in self.cars_position_abs:
@@ -245,6 +254,7 @@ class TrainModel(MapBaseModel):
 
         self.cars_position_abs.clear()
 
+    @final
     def on_switch_direction(self):
         self.switch_direction_required = False
         self.cars_position_abs = list(reversed(self.cars_position_abs))
