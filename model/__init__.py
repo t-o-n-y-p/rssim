@@ -106,13 +106,13 @@ FREIGHT_MAP_MAIN_PRIORITY_TRACKS = (
                                            (16, 15, 14, 13, 12, 11, 2, 1)                   # 0 -> 1
                                        ),
                                        (
-                                           (2, 1),                                          # 1 -> 0
-                                           (2, 1)                                           # 1 -> 1
+                                           (1, 2),                                          # 1 -> 0
+                                           (1, 2)                                           # 1 -> 1
                                        ),
                                        (
                                            (),                                              # 2 -> 0 (impossible)
                                            (),                                              # 2 -> 1 (not used)
-                                           (5, 3)                                           # 2 -> 2
+                                           (3, 5)                                           # 2 -> 2
                                        ),
                                        (
                                            (),                                              # 3 -> 0 (impossible)
@@ -132,8 +132,8 @@ FREIGHT_MAP_MAIN_PRIORITY_TRACKS = (
                                            (),                                              # 5 -> 1 (not used)
                                            (),                                              # 5 -> 2 (impossible)
                                            (),                                              # 5 -> 3 (not used)
-                                           (6, 4),                                          # 5 -> 4
-                                           (6, 4)                                           # 5 -> 5
+                                           (4, 6),                                          # 5 -> 4
+                                           (4, 6)                                           # 5 -> 5
                                        ),
                                        (
                                            (),                                              # 6 -> 0 (impossible)
@@ -142,7 +142,7 @@ FREIGHT_MAP_MAIN_PRIORITY_TRACKS = (
                                            (),                                              # 6 -> 3 (not used)
                                            (),                                              # 6 -> 4 (impossible)
                                            (),                                              # 6 -> 5 (not used)
-                                           (9, 7)                                           # 6 -> 6
+                                           (7, 9)                                           # 6 -> 6
                                        ),
                                        (
                                            (),                                              # 7 -> 0 (impossible)
@@ -174,8 +174,8 @@ FREIGHT_MAP_MAIN_PRIORITY_TRACKS = (
                                            (),                                              # 9 -> 5 (not used)
                                            (),                                              # 9 -> 6 (impossible)
                                            (),                                              # 9 -> 7 (not used)
-                                           (10, 8),                                         # 9 -> 8
-                                           (10, 8)                                          # 9 -> 9
+                                           (8, 10),                                         # 9 -> 8
+                                           (8, 10)                                          # 9 -> 9
                                        )
                                    )
 # track is selected from this list based on direction and new direction
