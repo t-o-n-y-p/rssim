@@ -18,8 +18,6 @@ class BonusCodeManagerView(GameBaseView):
         self.money_bonus_percent_label = MoneyBonusValuePercentLabel(parent_viewport=self.viewport)
         self.exp_bonus_placeholder_label = ExpBonusPlaceholderLabel(parent_viewport=self.viewport)
         self.money_bonus_placeholder_label = MoneyBonusPlaceholderLabel(parent_viewport=self.viewport)
-        USER_DB_CURSOR.execute('''SELECT bonus_expired_notification_enabled FROM notification_settings''')
-        self.bonus_expired_notification_enabled = bool(USER_DB_CURSOR.fetchone()[0])
 
     @view_is_not_active
     def on_activate(self):

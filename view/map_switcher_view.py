@@ -38,9 +38,6 @@ class MapSwitcherView(GameBaseView):
         for c in self.map_switcher_cells:
             self.buttons.extend(c.buttons)
 
-        USER_DB_CURSOR.execute('''SELECT feature_unlocked_notification_enabled FROM notification_settings''')
-        self.feature_unlocked_notification_enabled = bool(USER_DB_CURSOR.fetchone()[0])
-
     @view_is_not_active
     def on_activate(self):
         super().on_activate()

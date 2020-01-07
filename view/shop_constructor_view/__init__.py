@@ -29,8 +29,6 @@ class ShopConstructorView(MapBaseView):
         USER_DB_CURSOR.execute('''SELECT current_stage, shop_storage_money
                                   FROM shops WHERE map_id = ? AND shop_id = ?''', (self.map_id, self.shop_id))
         self.current_stage, self.shop_storage_money = USER_DB_CURSOR.fetchone()
-        USER_DB_CURSOR.execute('''SELECT shop_storage_notification_enabled FROM notification_settings''')
-        self.shop_storage_notification_enabled = bool(USER_DB_CURSOR.fetchone()[0])
         self.shop_stages_cells_position = (0, 0)
         self.shop_stages_cells_size = (0, 0)
         self.shader_sprite = ShopConstructorViewShaderSprite(view=self)
