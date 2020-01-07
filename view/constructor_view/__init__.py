@@ -60,10 +60,6 @@ class ConstructorView(MapBaseView):
             self.buttons.extend(environment_cells[j].buttons)
 
         self.constructor_cells = [track_cells, environment_cells]
-        USER_DB_CURSOR.execute('''SELECT feature_unlocked_notification_enabled, 
-                                  construction_completed_notification_enabled FROM notification_settings''')
-        self.feature_unlocked_notification_enabled, self.construction_completed_notification_enabled \
-            = (bool(n) for n in USER_DB_CURSOR.fetchone())
         USER_DB_CURSOR.execute('''SELECT money_target_activated FROM constructor WHERE map_id = ?''',
                                (self.map_id, ))
         self.money_target_activated = bool(USER_DB_CURSOR.fetchone()[0])
@@ -323,11 +319,3 @@ class ConstructorView(MapBaseView):
         environment_construction_completed_notification.send(self.current_locale, message_args=(tier,))
         self.controller.parent_controller.parent_controller.parent_controller\
             .on_append_notification(environment_construction_completed_notification)
-
-    @final
-    def on_change_feature_unlocked_notification_state(self, notification_state):
-        self.feature_unlocked_notification_enabled = notification_state
-
-    @final
-    def on_change_construction_completed_notification_state(self, notification_state):
-        self.construction_completed_notification_enabled = notification_state

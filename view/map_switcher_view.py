@@ -6,9 +6,12 @@ from ui.label.map_switcher_title_label import MapSwitcherTitleLabel
 from ui.shader_sprite.map_switcher_view_shader_sprite import MapSwitcherViewShaderSprite
 from ui.map_switcher_cell.passenger_map_switcher_cell import PassengerMapSwitcherCell
 from ui.map_switcher_cell.freight_map_switcher_cell import FreightMapSwitcherCell
-from database import MAP_SWITCHER_STATE_MATRIX, MAP_PRICE, MAP_LOCKED
+from database import MAP_SWITCHER_STATE_MATRIX, MAP_PRICE, MAP_LOCKED, MAP_LEVEL_REQUIRED
+from notifications.map_unlocked_notification import MapUnlockedNotification
+from i18n import I18N_RESOURCES
 
 
+@final
 class MapSwitcherView(GameBaseView):
     def __init__(self, controller):
         def on_close_map_switcher(button):
@@ -35,7 +38,9 @@ class MapSwitcherView(GameBaseView):
         for c in self.map_switcher_cells:
             self.buttons.extend(c.buttons)
 
-    @final
+        USER_DB_CURSOR.execute('''SELECT feature_unlocked_notification_enabled FROM notification_settings''')
+        self.feature_unlocked_notification_enabled = bool(USER_DB_CURSOR.fetchone()[0])
+
     @view_is_not_active
     def on_activate(self):
         super().on_activate()
@@ -44,21 +49,18 @@ class MapSwitcherView(GameBaseView):
         for c in self.map_switcher_cells:
             c.on_activate()
 
-    @final
     @view_is_active
     def on_deactivate(self):
         super().on_deactivate()
         for c in self.map_switcher_cells:
             c.on_deactivate()
 
-    @final
     def on_update_current_locale(self, new_locale):
         super().on_update_current_locale(new_locale)
         self.title_label.on_update_current_locale(self.current_locale)
         for c in self.map_switcher_cells:
             c.on_update_current_locale(self.current_locale)
 
-    @final
     def on_change_screen_resolution(self, screen_resolution):
         super().on_change_screen_resolution(screen_resolution)
         self.shader_sprite.on_change_screen_resolution(self.screen_resolution)
@@ -69,7 +71,6 @@ class MapSwitcherView(GameBaseView):
         for b in self.buttons:
             b.on_change_screen_resolution(self.screen_resolution)
 
-    @final
     def on_update_opacity(self, new_opacity):
         super().on_update_opacity(new_opacity)
         self.shader_sprite.on_update_opacity(self.opacity)
@@ -77,18 +78,29 @@ class MapSwitcherView(GameBaseView):
         for c in self.map_switcher_cells:
             c.on_update_opacity(self.opacity)
 
-    @final
     def on_level_up(self):
         super().on_level_up()
+        for m in range(len(MAP_SWITCHER_STATE_MATRIX)):
+            if self.level == MAP_SWITCHER_STATE_MATRIX[m][MAP_LEVEL_REQUIRED]:
+                self.on_send_map_unlocked_notification(m)
+
         for c in self.map_switcher_cells:
             c.on_level_up()
 
-    @final
     def on_update_money(self, money):
         super().on_update_money(money)
         for c in self.map_switcher_cells:
             c.on_update_money(self.money)
 
-    @final
-    def on_unlock_map(self, map_id):
+    @staticmethod
+    def on_unlock_map(map_id):
         MAP_SWITCHER_STATE_MATRIX[map_id][MAP_LOCKED] = False
+
+    @notifications_available
+    @feature_unlocked_notification_enabled
+    def on_send_map_unlocked_notification(self, map_id):
+        map_unlocked_notification = MapUnlockedNotification()
+        map_unlocked_notification.send(self.current_locale,
+                                       message_args=(I18N_RESOURCES['map_title_string'][self.current_locale][map_id], ))
+        self.controller.parent_controller.parent_controller\
+            .on_append_notification(map_unlocked_notification)

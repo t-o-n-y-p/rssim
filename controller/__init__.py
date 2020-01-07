@@ -119,6 +119,42 @@ class AppBaseController:
             controller.on_enable_notifications()
 
     @final
+    def on_change_level_up_notification_state(self, notification_state):
+        self.view.on_change_level_up_notification_state(notification_state)
+        for controller in self.child_controllers:
+            controller.on_change_level_up_notification_state(notification_state)
+
+    @final
+    def on_change_feature_unlocked_notification_state(self, notification_state):
+        self.view.on_change_feature_unlocked_notification_state(notification_state)
+        for controller in self.child_controllers:
+            controller.on_change_feature_unlocked_notification_state(notification_state)
+
+    @final
+    def on_change_construction_completed_notification_state(self, notification_state):
+        self.view.on_change_construction_completed_notification_state(notification_state)
+        for controller in self.child_controllers:
+            controller.on_change_construction_completed_notification_state(notification_state)
+
+    @final
+    def on_change_enough_money_notification_state(self, notification_state):
+        self.view.on_change_enough_money_notification_state(notification_state)
+        for controller in self.child_controllers:
+            controller.on_change_enough_money_notification_state(notification_state)
+
+    @final
+    def on_change_bonus_expired_notification_state(self, notification_state):
+        self.view.on_change_bonus_expired_notification_state(notification_state)
+        for controller in self.child_controllers:
+            controller.on_change_bonus_expired_notification_state(notification_state)
+
+    @final
+    def on_change_shop_storage_notification_state(self, notification_state):
+        self.view.on_change_shop_storage_notification_state(notification_state)
+        for controller in self.child_controllers:
+            controller.on_change_shop_storage_notification_state(notification_state)
+
+    @final
     def on_update_fade_animation_state(self, new_state):
         self.fade_in_animation.on_update_fade_animation_state(new_state)
         self.fade_out_animation.on_update_fade_animation_state(new_state)

@@ -211,6 +211,11 @@ class AppBaseView:
         self.clock_24h_enabled = bool(USER_DB_CURSOR.fetchone()[0])
         self.all_notifications_enabled = False
         self.shader_sprite = None
+        USER_DB_CURSOR.execute('SELECT * FROM notification_settings')
+        self.level_up_notification_enabled, self.feature_unlocked_notification_enabled, \
+            self.construction_completed_notification_enabled, self.enough_money_notification_enabled, \
+            self.bonus_expired_notification_enabled, self.shop_storage_notification_enabled \
+            = (bool(n) for n in USER_DB_CURSOR.fetchone())
 
     def on_activate(self):
         self.is_activated = True
@@ -274,6 +279,30 @@ class AppBaseView:
     @final
     def on_enable_notifications(self):
         self.all_notifications_enabled = True
+
+    @final
+    def on_change_level_up_notification_state(self, notification_state):
+        self.level_up_notification_enabled = notification_state
+
+    @final
+    def on_change_feature_unlocked_notification_state(self, notification_state):
+        self.feature_unlocked_notification_enabled = notification_state
+
+    @final
+    def on_change_construction_completed_notification_state(self, notification_state):
+        self.construction_completed_notification_enabled = notification_state
+
+    @final
+    def on_change_enough_money_notification_state(self, notification_state):
+        self.enough_money_notification_enabled = notification_state
+
+    @final
+    def on_change_bonus_expired_notification_state(self, notification_state):
+        self.bonus_expired_notification_enabled = notification_state
+
+    @final
+    def on_change_shop_storage_notification_state(self, notification_state):
+        self.shop_storage_notification_enabled = notification_state
 
     @final
     def on_append_handlers(self):

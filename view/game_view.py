@@ -66,10 +66,6 @@ class GameView(GameBaseView):
         self.main_clock_label_12h = MainClockLabel12H(parent_viewport=self.viewport)
         self.exp_percent = 0
         self.money_percent = 0
-        USER_DB_CURSOR.execute('''SELECT level_up_notification_enabled, enough_money_notification_enabled
-                                  FROM notification_settings''')
-        self.level_up_notification_enabled, self.enough_money_notification_enabled \
-            = (bool(n) for n in USER_DB_CURSOR.fetchone())
         self.shader_sprite = GameViewShaderSprite(view=self)
         USER_DB_CURSOR.execute('''SELECT exp, money_target FROM game_progress''')
         self.exp, self.money_target = USER_DB_CURSOR.fetchone()
@@ -207,9 +203,3 @@ class GameView(GameBaseView):
         enough_money_environment_notification = EnoughMoneyEnvironmentNotification()
         enough_money_environment_notification.send(self.current_locale)
         self.controller.parent_controller.on_append_notification(enough_money_environment_notification)
-
-    def on_change_level_up_notification_state(self, notification_state):
-        self.level_up_notification_enabled = notification_state
-
-    def on_change_enough_money_notification_state(self, notification_state):
-        self.enough_money_notification_enabled = notification_state

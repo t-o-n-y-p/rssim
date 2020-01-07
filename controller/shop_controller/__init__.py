@@ -41,7 +41,3 @@ class ShopController(MapBaseController):
         super().on_level_up()
         if self.model.level >= self.model.level_required and self.placeholder.view.is_activated:
             self.placeholder_to_shop_constructor_transition_animation.on_activate()
-
-    @final
-    def on_change_shop_storage_notification_state(self, notification_state):
-        self.shop_constructor.on_change_shop_storage_notification_state(notification_state)

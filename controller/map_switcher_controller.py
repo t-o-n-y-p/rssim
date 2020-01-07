@@ -7,6 +7,7 @@ from model.map_switcher_model import MapSwitcherModel
 from view.map_switcher_view import MapSwitcherView
 
 
+@final
 class MapSwitcherController(GameBaseController):
     def __init__(self, game_controller):
         super().__init__(parent_controller=game_controller,

@@ -169,10 +169,6 @@ class ShopConstructorView(MapBaseView):
                                           self.shop_stages_state_matrix[self.current_stage][STORAGE_CAPACITY])
 
     @final
-    def on_change_shop_storage_notification_state(self, notification_state):
-        self.shop_storage_notification_enabled = notification_state
-
-    @final
     @notifications_available
     @shop_storage_notification_enabled
     def on_send_shop_storage_almost_full_notification(self):

@@ -84,9 +84,6 @@ class BonusCodeManagerView(GameBaseView):
             self.money_bonus_percent_label.delete()
             self.money_bonus_placeholder_label.create()
 
-    def on_change_bonus_expired_notification_state(self, notification_state):
-        self.bonus_expired_notification_enabled = notification_state
-
     @notifications_available
     @bonus_expired_notification_enabled
     def on_send_exp_bonus_expired_notification(self):

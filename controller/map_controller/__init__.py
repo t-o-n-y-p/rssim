@@ -359,19 +359,6 @@ class MapController(MapBaseController):
             train.view.on_change_base_offset(self.view.base_offset)
 
     @final
-    def on_change_feature_unlocked_notification_state(self, notification_state):
-        self.constructor.on_change_feature_unlocked_notification_state(notification_state)
-
-    @final
-    def on_change_construction_completed_notification_state(self, notification_state):
-        self.constructor.on_change_construction_completed_notification_state(notification_state)
-
-    @final
-    def on_change_shop_storage_notification_state(self, notification_state):
-        for shop in self.shops:
-            shop.on_change_shop_storage_notification_state(notification_state)
-
-    @final
     def on_save_and_commit_last_known_base_offset(self, base_offset):
         self.model.on_save_and_commit_last_known_base_offset(base_offset)
 

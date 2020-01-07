@@ -64,27 +64,6 @@ class GameController(GameBaseController):
     def on_add_exp(self, exp):
         self.model.on_add_exp(exp)
 
-    def on_change_level_up_notification_state(self, notification_state):
-        self.view.on_change_level_up_notification_state(notification_state)
-
-    def on_change_feature_unlocked_notification_state(self, notification_state):
-        for m in self.maps:
-            m.on_change_feature_unlocked_notification_state(notification_state)
-
-    def on_change_construction_completed_notification_state(self, notification_state):
-        for m in self.maps:
-            m.on_change_construction_completed_notification_state(notification_state)
-
-    def on_change_enough_money_notification_state(self, notification_state):
-        self.view.on_change_enough_money_notification_state(notification_state)
-
-    def on_change_bonus_expired_notification_state(self, notification_state):
-        self.bonus_code_manager.on_change_bonus_expired_notification_state(notification_state)
-
-    def on_change_shop_storage_notification_state(self, notification_state):
-        for map_ in self.maps:
-            map_.on_change_shop_storage_notification_state(notification_state)
-
     def on_deactivate_money_target_for_inactive_maps(self, active_map_id):
         for m in self.maps:
             if m.map_id != active_map_id:

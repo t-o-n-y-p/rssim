@@ -163,6 +163,18 @@
 		"en": "Environment Tier {0} has just been unlocked. Return to the game to check out the price.",
 		"ru": "Только что открыто Окружение: Этап {0}. Вернись в игру, чтобы узнать цену."
 	},
+	"map_unlocked_notification_caption_string": {
+		"en": "New map available",
+		"ru": "Доступна новая карта"
+	},
+	"map_unlocked_notification_message_string": {
+		"en": "Map \"{0}\" has just been unlocked. Return to the game to check out the price.",
+		"ru": "Только что открыта карта \"{0}\". Вернись в игру, чтобы узнать цену."
+	},
+	"map_title_string": {
+		"en": ["Passenger trains", "Freight trains"],
+		"ru": ["Пассажирские поезда", "Грузовые поезда"]
+	},
 	"track_construction_completed_notification_caption_string": {
 		"en": "Construction completed",
 		"ru": "Строительство завершено"
@@ -378,13 +390,5 @@
 	"map_switcher_title_string": {
 		"en": "Select the map",
 		"ru": "Выберите карту"
-	},
-	"passenger_trains_string": {
-		"en": "Passenger trains",
-		"ru": "Пассажирские поезда"
-	},
-	"freight_trains_string": {
-		"en": "Freight trains",
-		"ru": "Грузовые поезда"
 	}
 }

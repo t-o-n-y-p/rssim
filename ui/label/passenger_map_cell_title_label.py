@@ -2,13 +2,14 @@ from logging import getLogger
 
 from ui.label import LocalizedLabel
 from ui import *
+from database import PASSENGER_MAP
 
 
 @final
 class PassengerMapCellTitleLabel(LocalizedLabel):
     def __init__(self, parent_viewport):
         super().__init__(logger=getLogger('root.passenger_map_cell_title_label'),
-                         i18n_resources_key='passenger_trains_string',
+                         i18n_resources_key='map_title_string',
                          parent_viewport=parent_viewport)
         self.font_name = 'Arial'
         self.base_color = WHITE_RGB
@@ -30,4 +31,4 @@ class PassengerMapCellTitleLabel(LocalizedLabel):
         return None
 
     def get_formatted_text(self):
-        return self.text
+        return self.text[PASSENGER_MAP]

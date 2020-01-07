@@ -41,14 +41,6 @@ class ConstructorController(MapBaseController):
         self.model.on_deactivate_money_target()
 
     @final
-    def on_change_feature_unlocked_notification_state(self, notification_state):
-        self.view.on_change_feature_unlocked_notification_state(notification_state)
-
-    @final
-    def on_change_construction_completed_notification_state(self, notification_state):
-        self.view.on_change_construction_completed_notification_state(notification_state)
-
-    @final
     def on_unlock_track(self, track):
         self.model.on_unlock_track(track)
 

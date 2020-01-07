@@ -134,24 +134,6 @@ class AppController(AppBaseController):
     def on_append_notification(self, notification):
         self.loader.notifications.append(notification)
 
-    def on_change_level_up_notification_state(self, notification_state):
-        self.game.on_change_level_up_notification_state(notification_state)
-
-    def on_change_feature_unlocked_notification_state(self, notification_state):
-        self.game.on_change_feature_unlocked_notification_state(notification_state)
-
-    def on_change_construction_completed_notification_state(self, notification_state):
-        self.game.on_change_construction_completed_notification_state(notification_state)
-
-    def on_change_enough_money_notification_state(self, notification_state):
-        self.game.on_change_enough_money_notification_state(notification_state)
-
-    def on_change_bonus_expired_notification_state(self, notification_state):
-        self.game.on_change_bonus_expired_notification_state(notification_state)
-
-    def on_change_shop_storage_notification_state(self, notification_state):
-        self.game.on_change_shop_storage_notification_state(notification_state)
-
     def on_open_license(self):
         self.game_to_main_menu_transition_animation.on_deactivate()
         self.license_to_main_menu_transition_animation.on_deactivate()
