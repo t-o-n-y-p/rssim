@@ -51,10 +51,8 @@ class MapSwitcherCell:
         self.on_set_money_target_action = on_set_money_target_action
         self.on_reset_money_target_action = on_reset_money_target_action
         self.screen_resolution = (0, 0)
-        USER_DB_CURSOR.execute('''SELECT money FROM game_progress''')
-        self.money = USER_DB_CURSOR.fetchone()[0]
-        USER_DB_CURSOR.execute('''SELECT level FROM game_progress''')
-        self.level = USER_DB_CURSOR.fetchone()[0]
+        USER_DB_CURSOR.execute('''SELECT level, money FROM game_progress''')
+        self.level, self.money = USER_DB_CURSOR.fetchone()
         self.money_target_activated = False
         self.opacity = 0
         self.build_map_button = BuildMapButton(on_click_action=on_buy_map, parent_viewport=self.viewport)

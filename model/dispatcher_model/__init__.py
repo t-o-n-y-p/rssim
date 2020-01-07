@@ -11,15 +11,10 @@ class DispatcherModel(MapBaseModel):
         USER_DB_CURSOR.execute('''SELECT unlocked_tracks FROM map_progress WHERE map_id = ?''', (self.map_id, ))
         self.unlocked_tracks = USER_DB_CURSOR.fetchone()[0]
         USER_DB_CURSOR.execute('SELECT busy FROM tracks WHERE map_id = ?', (self.map_id, ))
-        self.track_busy_status = [True, ]
-        busy_status_parsed = USER_DB_CURSOR.fetchall()
-        for i in busy_status_parsed:
-            self.track_busy_status.append(bool(i[0]))
-
-        self.supported_cars_by_track = [(0, 20), ]
+        self.track_busy_status = [True, *[bool(t[0]) for t in USER_DB_CURSOR.fetchall()]]
         CONFIG_DB_CURSOR.execute('''SELECT supported_cars_min, supported_cars_max 
                                     FROM track_config WHERE map_id = ?''', (self.map_id, ))
-        self.supported_cars_by_track.extend(CONFIG_DB_CURSOR.fetchall())
+        self.supported_cars_by_track = ((0, 20), *CONFIG_DB_CURSOR.fetchall())
 
     @final
     def on_save_state(self):

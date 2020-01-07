@@ -69,7 +69,7 @@ class GameView(GameBaseView):
         USER_DB_CURSOR.execute('''SELECT level_up_notification_enabled, enough_money_notification_enabled
                                   FROM notification_settings''')
         self.level_up_notification_enabled, self.enough_money_notification_enabled \
-            = map(bool, USER_DB_CURSOR.fetchone())
+            = (bool(n) for n in USER_DB_CURSOR.fetchone())
         self.shader_sprite = GameViewShaderSprite(view=self)
         USER_DB_CURSOR.execute('''SELECT exp, money_target FROM game_progress''')
         self.exp, self.money_target = USER_DB_CURSOR.fetchone()

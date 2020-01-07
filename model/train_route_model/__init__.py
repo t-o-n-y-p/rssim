@@ -8,28 +8,30 @@ class TrainRouteModel(MapBaseModel):
     def __init__(self, controller, view, map_id, track, train_route):
         super().__init__(controller, view, map_id,
                          logger=getLogger(f'root.app.game.map.{map_id}.train_route.{track}.{train_route}.model'))
+        self.track = track
+        self.train_route = train_route
         USER_DB_CURSOR.execute('''SELECT opened, last_opened_by, current_checkpoint, priority, cars 
                                   FROM train_routes WHERE track = ? AND train_route = ? AND map_id = ?''',
-                               (track, train_route, self.map_id))
+                               (self.track, self.train_route, self.map_id))
         self.opened, self.last_opened_by, self.current_checkpoint, self.priority, self.cars = USER_DB_CURSOR.fetchone()
         self.opened = bool(self.opened)
         USER_DB_CURSOR.execute('''SELECT train_route_section_busy_state FROM train_routes
                                   WHERE track = ? AND train_route = ? AND map_id = ?''',
-                               (track, train_route, self.map_id))
-        self.train_route_section_busy_state = list(map(bool, list(map(int, USER_DB_CURSOR.fetchone()[0].split(',')))))
+                               (self.track, self.train_route, self.map_id))
+        self.train_route_section_busy_state = [bool(int(s)) for s in USER_DB_CURSOR.fetchone()[0].split(',')]
         CONFIG_DB_CURSOR.execute('''SELECT start_point_v2, stop_point_v2, destination_point_v2, checkpoints_v2 
                                     FROM train_route_config WHERE track = ? AND train_route = ? AND map_id = ?''',
-                                 (track, train_route, self.map_id))
+                                 (self.track, self.train_route, self.map_id))
         fetched_data = list(CONFIG_DB_CURSOR.fetchone())
         for i in range(len(fetched_data)):
             if fetched_data[i] is not None:
-                fetched_data[i] = tuple(map(int, fetched_data[i].split(',')))
+                fetched_data[i] = tuple(int(p) for p in fetched_data[i].split(','))
 
         self.start_point_v2, self.stop_point_v2, self.destination_point_v2, self.checkpoints_v2 = fetched_data
-        self.trail_points_v2 = TrailPointsV2(self.map_id, track, train_route)
+        self.trail_points_v2 = TrailPointsV2(self.map_id, self.track, self.train_route)
         CONFIG_DB_CURSOR.execute('''SELECT section_type, track_param_1, track_param_2 
                                     FROM train_route_sections WHERE track = ? and train_route = ? AND map_id = ?''',
-                                 (track, train_route, self.map_id))
+                                 (self.track, self.train_route, self.map_id))
         self.train_route_sections = CONFIG_DB_CURSOR.fetchall()
         self.signal_base_route, self.signal_track = None, None
         if len(self.train_route_sections) > 1:
@@ -37,19 +39,17 @@ class TrainRouteModel(MapBaseModel):
 
         CONFIG_DB_CURSOR.execute('''SELECT position_1, position_2 
                                     FROM train_route_sections WHERE track = ? and train_route = ? AND map_id = ?''',
-                                 (track, train_route, self.map_id))
+                                 (self.track, self.train_route, self.map_id))
         self.train_route_section_positions = CONFIG_DB_CURSOR.fetchall()
 
     @final
     def on_save_state(self):
         USER_DB_CURSOR.execute('''UPDATE train_routes SET opened = ?, last_opened_by = ?, current_checkpoint = ?,
-                                  priority = ?, cars = ? WHERE track = ? AND train_route = ? AND map_id = ?''',
-                               (int(self.opened), self.last_opened_by, self.current_checkpoint, self.priority,
-                                self.cars, self.controller.track, self.controller.train_route, self.map_id))
-        busy_state_string = ','.join(list(map(str, list(map(int, self.train_route_section_busy_state)))))
-        USER_DB_CURSOR.execute('''UPDATE train_routes SET train_route_section_busy_state = ? 
+                                  priority = ?, cars = ?, train_route_section_busy_state = ? 
                                   WHERE track = ? AND train_route = ? AND map_id = ?''',
-                               (busy_state_string, self.controller.track, self.controller.train_route, self.map_id))
+                               (int(self.opened), self.last_opened_by, self.current_checkpoint, self.priority,
+                                self.cars, ','.join(str(int(t)) for t in self.train_route_section_busy_state),
+                                self.track, self.train_route, self.map_id))
 
     @final
     def on_update_time(self):

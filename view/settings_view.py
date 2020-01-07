@@ -117,7 +117,7 @@ class SettingsView(AppBaseView):
         self.screen_resolution_control.on_activate()
         self.screen_resolution_control.on_init_state(self.available_windowed_resolutions_position)
         USER_DB_CURSOR.execute('SELECT display_fps, fade_animations_enabled FROM graphics')
-        self.temp_display_fps, self.temp_fade_animations_enabled = tuple(map(bool, USER_DB_CURSOR.fetchone()))
+        self.temp_display_fps, self.temp_fade_animations_enabled = (bool(n) for n in USER_DB_CURSOR.fetchone())
         self.display_fps_checkbox.on_activate()
         self.display_fps_checkbox.on_init_state(self.temp_display_fps)
         self.fade_animations_checkbox.on_activate()
@@ -130,7 +130,7 @@ class SettingsView(AppBaseView):
         self.temp_level_up_notification_enabled, self.temp_feature_unlocked_notification_enabled, \
             self.temp_construction_completed_notification_enabled, self.temp_enough_money_notification_enabled, \
             self.temp_bonus_expired_notification_enabled, self.temp_shop_storage_notification_enabled \
-            = tuple(map(bool, USER_DB_CURSOR.fetchone()))
+            = (bool(n) for n in USER_DB_CURSOR.fetchone())
         self.notifications_checkbox_group.on_activate()
         self.notifications_checkbox_group.on_init_state([self.temp_level_up_notification_enabled,
                                                          self.temp_feature_unlocked_notification_enabled,

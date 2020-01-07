@@ -14,8 +14,7 @@ class ShopConstructorModel(MapBaseModel):
                                   unlock_condition_from_level, unlock_condition_from_previous_stage,
                                   unlock_available FROM shop_stages WHERE map_id = ? AND shop_id = ?''',
                                (self.map_id, self.shop_id))
-        fetched_data = USER_DB_CURSOR.fetchall()
-        for stage_info in fetched_data:
+        for stage_info in USER_DB_CURSOR.fetchall():
             self.shop_stages_state_matrix[stage_info[0]] = [bool(stage_info[1]), bool(stage_info[2]), stage_info[3],
                                                             bool(stage_info[4]), bool(stage_info[5]), 1,
                                                             bool(stage_info[6])]
@@ -42,16 +41,17 @@ class ShopConstructorModel(MapBaseModel):
                                       construction_time = ?, unlock_condition_from_level = ?, 
                                       unlock_condition_from_previous_stage = ?, unlock_available = ?
                                       WHERE map_id = ? AND shop_id = ? AND stage_number = ?''',
-                                   tuple(map(int,
-                                             (self.shop_stages_state_matrix[stage_number][LOCKED],
-                                              self.shop_stages_state_matrix[stage_number][UNDER_CONSTRUCTION],
-                                              self.shop_stages_state_matrix[stage_number][CONSTRUCTION_TIME],
-                                              self.shop_stages_state_matrix[stage_number][UNLOCK_CONDITION_FROM_LEVEL],
-                                              self.shop_stages_state_matrix[stage_number][
-                                                                            UNLOCK_CONDITION_FROM_PREVIOUS_STAGE],
-                                              self.shop_stages_state_matrix[stage_number][UNLOCK_AVAILABLE],
-                                              self.map_id, self.shop_id, stage_number
-                                              ))))
+                                   tuple(
+                                       int(t) for t in (
+                                           self.shop_stages_state_matrix[stage_number][LOCKED],
+                                           self.shop_stages_state_matrix[stage_number][UNDER_CONSTRUCTION],
+                                           self.shop_stages_state_matrix[stage_number][CONSTRUCTION_TIME],
+                                           self.shop_stages_state_matrix[stage_number][UNLOCK_CONDITION_FROM_LEVEL],
+                                           self.shop_stages_state_matrix[stage_number][
+                                                                                UNLOCK_CONDITION_FROM_PREVIOUS_STAGE],
+                                           self.shop_stages_state_matrix[stage_number][UNLOCK_AVAILABLE],
+                                           self.map_id, self.shop_id, stage_number)
+                                   ))
 
     @final
     def on_update_time(self):

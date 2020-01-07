@@ -359,7 +359,7 @@ class MapBaseView(GameBaseView):
         self.map_id = map_id
         USER_DB_CURSOR.execute('''SELECT last_known_base_offset FROM map_position_settings WHERE map_id = ?''',
                                (self.map_id, ))
-        self.base_offset = tuple(map(int, USER_DB_CURSOR.fetchone()[0].split(',')))
+        self.base_offset = [int(p) for p in USER_DB_CURSOR.fetchone()[0].split(',')]
         USER_DB_CURSOR.execute('''SELECT zoom_out_activated FROM map_position_settings WHERE map_id = ?''',
                                (self.map_id, ))
         self.zoom_out_activated = bool(USER_DB_CURSOR.fetchone()[0])

@@ -79,21 +79,16 @@ class MapView(MapBaseView):
         self.buttons = [self.zoom_in_button, self.zoom_out_button, self.open_schedule_button,
                         self.open_constructor_button]
         self.shop_buttons = []
-        self.shops_track_required_state = []
-        self.shop_buttons_offsets = []
         CONFIG_DB_CURSOR.execute('''SELECT COUNT(*) FROM shops_config WHERE map_id = ?''', (self.map_id, ))
         for shop_id in range(CONFIG_DB_CURSOR.fetchone()[0]):
             self.shop_buttons.append(OpenShopDetailsButton(map_id=self.map_id, shop_id=shop_id,
                                                            on_click_action=on_open_shop_details,
                                                            on_hover_action=on_hover_action,
                                                            on_leave_action=on_leave_action))
-            CONFIG_DB_CURSOR.execute('''SELECT track_required FROM shops_config 
-                                        WHERE map_id = ? AND shop_id = ?''', (self.map_id, shop_id))
-            self.shops_track_required_state.append(CONFIG_DB_CURSOR.fetchone()[0])
-            CONFIG_DB_CURSOR.execute('''SELECT button_x, button_y FROM shops_config 
-                                        WHERE map_id = ? AND shop_id = ?''', (self.map_id, shop_id))
-            self.shop_buttons_offsets.append(CONFIG_DB_CURSOR.fetchone())
 
+        CONFIG_DB_CURSOR.execute('''SELECT track_required FROM shops_config 
+                                    WHERE map_id = ?''', (self.map_id, ))
+        self.shops_track_required_state = tuple(s[0] for s in CONFIG_DB_CURSOR.fetchall())
         self.buttons.extend(self.shop_buttons)
         for b in self.shop_buttons:
             b.on_change_base_offset(self.base_offset)

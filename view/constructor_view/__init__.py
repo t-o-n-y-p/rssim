@@ -63,13 +63,13 @@ class ConstructorView(MapBaseView):
         USER_DB_CURSOR.execute('''SELECT feature_unlocked_notification_enabled, 
                                   construction_completed_notification_enabled FROM notification_settings''')
         self.feature_unlocked_notification_enabled, self.construction_completed_notification_enabled \
-            = tuple(map(bool, USER_DB_CURSOR.fetchone()))
+            = (bool(n) for n in USER_DB_CURSOR.fetchone())
         USER_DB_CURSOR.execute('''SELECT money_target_activated FROM constructor WHERE map_id = ?''',
                                (self.map_id, ))
         self.money_target_activated = bool(USER_DB_CURSOR.fetchone()[0])
         USER_DB_CURSOR.execute('''SELECT money_target_cell_position FROM constructor WHERE map_id = ?''',
                                (self.map_id, ))
-        self.money_target_cell_position = list(map(int, USER_DB_CURSOR.fetchone()[0].split(',')))
+        self.money_target_cell_position = [int(p) for p in USER_DB_CURSOR.fetchone()[0].split(',')]
         self.shader_sprite = ConstructorViewShaderSprite(view=self)
         self.no_more_tracks_available_label \
             = NoMoreTracksAvailableLabel(parent_viewport=self.no_more_tracks_available_placeholder_viewport)

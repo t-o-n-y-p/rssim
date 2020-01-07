@@ -15,10 +15,10 @@ class MapModel(MapBaseModel):
         self.locked = bool(self.locked)
         USER_DB_CURSOR.execute('''SELECT unlocked_car_collections FROM map_progress WHERE map_id = ?''',
                                (self.map_id, ))
-        self.unlocked_car_collections = list(map(int, USER_DB_CURSOR.fetchone()[0].split(',')))
+        self.unlocked_car_collections = [int(c) for c in USER_DB_CURSOR.fetchone()[0].split(',')]
         USER_DB_CURSOR.execute('''SELECT last_known_base_offset FROM map_position_settings WHERE map_id = ?''',
                                (self.map_id, ))
-        self.last_known_base_offset = list(map(int, USER_DB_CURSOR.fetchone()[0].split(',')))
+        self.last_known_base_offset = [int(p) for p in USER_DB_CURSOR.fetchone()[0].split(',')]
         USER_DB_CURSOR.execute('''SELECT zoom_out_activated FROM map_position_settings WHERE map_id = ?''',
                                (self.map_id, ))
         self.zoom_out_activated = bool(USER_DB_CURSOR.fetchone()[0])
@@ -31,7 +31,7 @@ class MapModel(MapBaseModel):
         USER_DB_CURSOR.execute('''UPDATE map_progress SET locked = ?, unlocked_tracks = ?, unlocked_environment = ?, 
                                   unlocked_car_collections = ? WHERE map_id = ?''',
                                (int(self.locked), self.unlocked_tracks, self.unlocked_environment,
-                                ','.join(list(map(str, self.unlocked_car_collections))), self.map_id))
+                                ','.join(str(c) for c in self.unlocked_car_collections), self.map_id))
 
     @final
     def on_unlock_track(self, track):
@@ -52,7 +52,7 @@ class MapModel(MapBaseModel):
     def on_save_and_commit_last_known_base_offset(self, base_offset):
         self.last_known_base_offset = base_offset
         USER_DB_CURSOR.execute('''UPDATE map_position_settings SET last_known_base_offset = ? WHERE map_id = ?''',
-                               (','.join(list(map(str, self.last_known_base_offset))), self.map_id))
+                               (','.join(str(p) for p in self.last_known_base_offset), self.map_id))
         on_commit()
 
     @final

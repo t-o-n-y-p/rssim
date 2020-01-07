@@ -10,8 +10,7 @@ class SchedulerModel(MapBaseModel):
     def __init__(self, controller, view, map_id):
         super().__init__(controller, view, map_id, logger=getLogger(f'root.app.game.map.{map_id}.scheduler.model'))
         USER_DB_CURSOR.execute('''SELECT locked, unlocked_tracks, unlocked_environment, supported_cars_min 
-                                  FROM map_progress WHERE map_id = ?''',
-                               (self.map_id, ))
+                                  FROM map_progress WHERE map_id = ?''', (self.map_id, ))
         self.locked, self.unlocked_tracks, self.unlocked_environment, self.supported_cars_min \
             = USER_DB_CURSOR.fetchone()
         self.locked = bool(self.locked)
@@ -25,7 +24,7 @@ class SchedulerModel(MapBaseModel):
                                (self.map_id, ))
         self.train_counter, self.next_cycle_start_time = USER_DB_CURSOR.fetchone()
         USER_DB_CURSOR.execute('''SELECT entry_busy_state FROM scheduler WHERE map_id = ?''', (self.map_id, ))
-        self.entry_busy_state = list(map(bool, list(map(int, USER_DB_CURSOR.fetchone()[0].split(',')))))
+        self.entry_busy_state = [bool(int(t)) for t in USER_DB_CURSOR.fetchone()[0].split(',')]
         CONFIG_DB_CURSOR.execute('''SELECT schedule_cycle_length, frame_per_car, exp_per_car, money_per_car 
                                     FROM map_config WHERE level = ? AND map_id = ?''', (self.level, self.map_id))
         if (schedule_config := CONFIG_DB_CURSOR.fetchone()) is not None:
@@ -34,17 +33,17 @@ class SchedulerModel(MapBaseModel):
             self.schedule_cycle_length, self.frame_per_car, self.exp_per_car, self.money_per_car = 0, 0, 0.0, 0.0
 
         USER_DB_CURSOR.execute('''SELECT entry_locked_state FROM map_progress WHERE map_id = ?''', (self.map_id, ))
-        self.entry_locked_state = list(map(bool, list(map(int, USER_DB_CURSOR.fetchone()[0].split(',')))))
+        self.entry_locked_state = [bool(int(t)) for t in USER_DB_CURSOR.fetchone()[0].split(',')]
 
     @final
     def on_save_state(self):
         USER_DB_CURSOR.execute('''UPDATE scheduler SET train_counter = ?, next_cycle_start_time = ?, 
                                   entry_busy_state = ? WHERE map_id = ?''',
                                (self.train_counter, self.next_cycle_start_time,
-                                ','.join(list(map(str, list(map(int, self.entry_busy_state))))), self.map_id))
+                                ','.join(str(int(t)) for t in self.entry_busy_state), self.map_id))
         USER_DB_CURSOR.execute('''UPDATE map_progress SET entry_locked_state = ?, supported_cars_min = ? 
                                   WHERE map_id = ?''',
-                               (','.join(list(map(str, list(map(int, self.entry_locked_state))))),
+                               (','.join(str(int(t)) for t in self.entry_locked_state),
                                 self.supported_cars_min, self.map_id))
         USER_DB_CURSOR.execute('''DELETE FROM base_schedule WHERE map_id = ?''', (self.map_id, ))
         for train in self.base_schedule:

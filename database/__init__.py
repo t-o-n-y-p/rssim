@@ -119,22 +119,22 @@ class TrailPointsV2:
         CONFIG_DB_CURSOR.execute('''SELECT trail_points_v2_part_1_start, trail_points_v2_part_1_end
                                     FROM train_route_config WHERE track = ? AND train_route = ? AND map_id = ?''',
                                  (track, train_route, map_id))
-        self.part_1_start, part_1_end = [list(map(float, s.split(','))) for s in CONFIG_DB_CURSOR.fetchone()]
+        self.part_1_start, part_1_end = (tuple(float(p) for p in s.split(',')) for s in CONFIG_DB_CURSOR.fetchone())
         CONFIG_DB_CURSOR.execute('''SELECT trail_points_v2_part_2_head_tail, trail_points_v2_part_2_mid
                                     FROM train_route_config WHERE track = ? AND train_route = ? AND map_id = ?''',
                                  (track, train_route, map_id))
         self.part_2_head_tail, self.part_2_mid = CONFIG_DB_CURSOR.fetchone()
         if self.part_2_head_tail is not None:
-            self.part_2_head_tail = self.part_2_head_tail.split('|')
-            for i in range(len(self.part_2_head_tail)):
-                self.part_2_head_tail[i] = tuple(map(float, self.part_2_head_tail[i].split(',')))
+            self.part_2_head_tail = tuple(
+                tuple(float(p) for p in s.split(',')) for s in self.part_2_head_tail.split('|')
+            )
 
         if self.part_2_mid is None:
             self.part_2_mid = self.part_2_head_tail
         else:
-            self.part_2_mid = self.part_2_mid.split('|')
-            for i in range(len(self.part_2_mid)):
-                self.part_2_mid[i] = tuple(map(float, self.part_2_mid[i].split(',')))
+            self.part_2_mid = tuple(
+                tuple(float(p) for p in s.split(',')) for s in self.part_2_mid.split('|')
+            )
 
         self.part_1_length = round(part_1_end[0] - self.part_1_start[0])
         self.multiplier = self.part_1_length // abs(self.part_1_length)
@@ -147,34 +147,34 @@ class TrailPointsV2:
 
     def get_head_tail_car_position(self, index):
         if index < self.part_1_length:
-            return [self.part_1_start[0] + self.multiplier * index, *self.part_1_start[1:]]
+            return self.part_1_start[0] + self.multiplier * index, *self.part_1_start[1:]
         elif index < self.part_2_length:
             index -= self.part_1_length
-            return [self.part_2_head_tail[int(index)][i]
-                    + (self.part_2_head_tail[int(index) + 1][i] - self.part_2_head_tail[int(index)][i])
-                    * (index % 1) for i in range(3)]
+            return tuple(self.part_2_head_tail[int(index)][i]
+                         + (self.part_2_head_tail[int(index) + 1][i] - self.part_2_head_tail[int(index)][i])
+                         * (index % 1) for i in range(3))
         else:
             index -= self.part_2_length
-            return [self.part_3_start[0] + self.multiplier * index, *self.part_3_start[1:]]
+            return self.part_3_start[0] + self.multiplier * index, *self.part_3_start[1:]
 
     def get_mid_car_position(self, index):
         if index < self.part_1_length:
-            return [self.part_1_start[0] + self.multiplier * index, *self.part_1_start[1:]]
+            return self.part_1_start[0] + self.multiplier * index, *self.part_1_start[1:]
         elif index < self.part_2_length:
             index -= self.part_1_length
-            return [self.part_2_mid[int(index)][i]
-                    + (self.part_2_mid[int(index) + 1][i] - self.part_2_mid[int(index)][i])
-                    * (index % 1) for i in range(3)]
+            return tuple(self.part_2_mid[int(index)][i]
+                         + (self.part_2_mid[int(index) + 1][i] - self.part_2_mid[int(index)][i])
+                         * (index % 1) for i in range(3))
         else:
             index -= self.part_2_length
-            return [self.part_3_start[0] + self.multiplier * index, *self.part_3_start[1:]]
+            return self.part_3_start[0] + self.multiplier * index, *self.part_3_start[1:]
 
     def get_conversion_index(self, car_position):
         if self.part_2_length is not None:
             car_position -= self.part_2_length
-            return [self.part_3_start[0] + self.multiplier * car_position, self.part_3_start[1]]
+            return self.part_3_start[0] + self.multiplier * car_position, self.part_3_start[1]
         else:
-            return [self.part_1_start[0] + self.multiplier * car_position, self.part_1_start[1]]
+            return self.part_1_start[0] + self.multiplier * car_position, self.part_1_start[1]
 
     def get_reconversion_index(self, car_position_abs):
         return float(abs(car_position_abs[0] - self.part_1_start[0]))

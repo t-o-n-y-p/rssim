@@ -50,7 +50,7 @@ class TrainModel(MapBaseModel):
             = USER_DB_CURSOR.fetchone()
         self.switch_direction_required = bool(self.switch_direction_required)
         if cars_position_parsed is not None:
-            self.cars_position = list(map(float, cars_position_parsed.split(',')))
+            self.cars_position = [float(p) for p in cars_position_parsed.split(',')]
             self.view.car_position = []
             self.view.car_position.append(self.trail_points_v2.get_head_tail_car_position(self.cars_position[0]))
             for i in range(1, len(self.cars_position) - 1):
@@ -59,11 +59,7 @@ class TrainModel(MapBaseModel):
             self.view.car_position.append(self.trail_points_v2.get_head_tail_car_position(self.cars_position[-1]))
 
         if cars_position_abs_parsed is not None:
-            cars_position_abs_parsed = cars_position_abs_parsed.split('|')
-            for i in range(len(cars_position_abs_parsed)):
-                cars_position_abs_parsed[i] = list(map(float, cars_position_abs_parsed[i].split(',')))
-
-            self.cars_position_abs = cars_position_abs_parsed
+            self.cars_position_abs = [[float(p) for p in s.split(',')] for s in cars_position_abs_parsed.split('|')]
             self.view.car_position = []
             for i in range(len(self.cars_position_abs)):
                 self.view.car_position.append([*self.cars_position_abs[i], 0.0])
@@ -90,15 +86,15 @@ class TrainModel(MapBaseModel):
     def on_save_state(self):
         cars_position_string = None
         if len(self.cars_position) > 0:
-            cars_position_string = ','.join(list(map(str, self.cars_position)))
+            cars_position_string = ','.join(str(p) for p in self.cars_position)
 
-        cars_position_abs_strings_list = []
         cars_position_abs_string = None
         if len(self.cars_position_abs) > 0:
+            cars_position_abs_strings_list = []
             for i in self.cars_position_abs:
-                cars_position_abs_strings_list.append(','.join(list(map(str, i))))
+                cars_position_abs_strings_list.append(','.join(str(p) for p in i))
 
-            cars_position_abs_string = '|'.join(list(map(str, cars_position_abs_strings_list)))
+            cars_position_abs_string = '|'.join(cars_position_abs_strings_list)
 
         USER_DB_CURSOR.execute('''INSERT INTO trains VALUES 
                                   (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)''',
@@ -260,4 +256,4 @@ class TrainModel(MapBaseModel):
         self.cars_position_abs = list(reversed(self.cars_position_abs))
         self.view.car_position = []
         for i in self.cars_position_abs:
-            self.view.car_position.append((i[0], i[1], 0.0))
+            self.view.car_position.append((*i, 0.0))

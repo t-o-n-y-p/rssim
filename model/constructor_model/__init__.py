@@ -13,14 +13,14 @@ class ConstructorModel(MapBaseModel):
         USER_DB_CURSOR.execute('SELECT money_target_activated FROM constructor WHERE map_id = ?', (self.map_id, ))
         self.money_target_activated = bool(USER_DB_CURSOR.fetchone()[0])
         USER_DB_CURSOR.execute('SELECT money_target_cell_position FROM constructor WHERE map_id = ?', (self.map_id, ))
-        self.money_target_cell_position = list(map(int, USER_DB_CURSOR.fetchone()[0].split(',')))
+        self.money_target_cell_position = list(int(p) for p in USER_DB_CURSOR.fetchone()[0].split(','))
 
     @final
     def on_save_state(self):
         USER_DB_CURSOR.execute('''UPDATE constructor SET money_target_activated = ?, money_target_cell_position = ? 
                                   WHERE map_id = ?''',
                                (int(self.money_target_activated),
-                                ','.join(list(map(str, self.money_target_cell_position))), self.map_id))
+                                ','.join(str(p) for p in self.money_target_cell_position), self.map_id))
         # if some tracks were unlocked since last time the game progress was saved,
         # they are not listed in track state matrix anymore, so their state is updated separately
         for track in self.cached_unlocked_tracks:
@@ -38,21 +38,20 @@ class ConstructorModel(MapBaseModel):
                                       unlock_condition_from_environment = ?, unlock_available = ? 
                                       WHERE track_number = ? AND map_id = ?''',
                                    tuple(
-                                       map(int,
-                                           (self.construction_state_matrix[TRACKS][track][LOCKED],
-                                            self.construction_state_matrix[TRACKS][track][UNDER_CONSTRUCTION],
-                                            self.construction_state_matrix[TRACKS][track][CONSTRUCTION_TIME],
-                                            self.construction_state_matrix[TRACKS][track][
-                                                     UNLOCK_CONDITION_FROM_LEVEL],
-                                            self.construction_state_matrix[TRACKS][track][
-                                                     UNLOCK_CONDITION_FROM_PREVIOUS_TRACK],
-                                            self.construction_state_matrix[TRACKS][track][
-                                                     UNLOCK_CONDITION_FROM_ENVIRONMENT],
-                                            self.construction_state_matrix[TRACKS][track][UNLOCK_AVAILABLE],
-                                            track, self.map_id)
-                                           )
-                                        )
-                                   )
+                                       int(i) for i in (
+                                           self.construction_state_matrix[TRACKS][track][LOCKED],
+                                           self.construction_state_matrix[TRACKS][track][UNDER_CONSTRUCTION],
+                                           self.construction_state_matrix[TRACKS][track][CONSTRUCTION_TIME],
+                                           self.construction_state_matrix[TRACKS][track][
+                                                    UNLOCK_CONDITION_FROM_LEVEL],
+                                           self.construction_state_matrix[TRACKS][track][
+                                                    UNLOCK_CONDITION_FROM_PREVIOUS_TRACK],
+                                           self.construction_state_matrix[TRACKS][track][
+                                                    UNLOCK_CONDITION_FROM_ENVIRONMENT],
+                                           self.construction_state_matrix[TRACKS][track][UNLOCK_AVAILABLE],
+                                           track, self.map_id
+                                       )
+                                   ))
 
         # same for environment
         for tier in self.cached_unlocked_tiers:
@@ -68,19 +67,17 @@ class ConstructorModel(MapBaseModel):
                                       unlock_condition_from_previous_environment = ?, 
                                       unlock_available = ? WHERE tier = ? AND map_id = ?''',
                                    tuple(
-                                       map(int,
-                                           (self.construction_state_matrix[ENVIRONMENT][tier][LOCKED],
-                                            self.construction_state_matrix[ENVIRONMENT][tier][UNDER_CONSTRUCTION],
-                                            self.construction_state_matrix[ENVIRONMENT][tier][CONSTRUCTION_TIME],
-                                            self.construction_state_matrix[ENVIRONMENT][tier][
-                                                     UNLOCK_CONDITION_FROM_LEVEL],
-                                            self.construction_state_matrix[ENVIRONMENT][tier][
-                                                     UNLOCK_CONDITION_FROM_PREVIOUS_ENVIRONMENT],
-                                            self.construction_state_matrix[ENVIRONMENT][tier][UNLOCK_AVAILABLE],
-                                            tier, self.map_id)
-                                           )
-                                        )
-                                   )
+                                       int(i) for i in (
+                                           self.construction_state_matrix[ENVIRONMENT][tier][LOCKED],
+                                           self.construction_state_matrix[ENVIRONMENT][tier][UNDER_CONSTRUCTION],
+                                           self.construction_state_matrix[ENVIRONMENT][tier][CONSTRUCTION_TIME],
+                                           self.construction_state_matrix[ENVIRONMENT][tier][
+                                                    UNLOCK_CONDITION_FROM_LEVEL],
+                                           self.construction_state_matrix[ENVIRONMENT][tier][
+                                                    UNLOCK_CONDITION_FROM_PREVIOUS_ENVIRONMENT],
+                                           self.construction_state_matrix[ENVIRONMENT][tier][UNLOCK_AVAILABLE],
+                                           tier, self.map_id)
+                                   ))
 
     @final
     def on_update_time(self):
@@ -143,11 +140,7 @@ class ConstructorModel(MapBaseModel):
         # determines if some tracks require level which was just hit
         CONFIG_DB_CURSOR.execute('SELECT track_number FROM track_config WHERE level = ? AND map_id = ?',
                                  (self.level, self.map_id))
-        raw_tracks = CONFIG_DB_CURSOR.fetchall()
-        tracks_parsed = []
-        for i in raw_tracks:
-            tracks_parsed.append(i[0])
-
+        tracks_parsed = [t[0] for t in CONFIG_DB_CURSOR.fetchall()]
         # adjusts "unlock_from_level" condition for all tracks
         for track in tracks_parsed:
             self.construction_state_matrix[TRACKS][track][UNLOCK_CONDITION_FROM_LEVEL] = True
@@ -158,11 +151,7 @@ class ConstructorModel(MapBaseModel):
         # same for environment
         CONFIG_DB_CURSOR.execute('SELECT tier FROM environment_config WHERE level = ? AND map_id = ?',
                                  (self.level, self.map_id))
-        raw_tiers = CONFIG_DB_CURSOR.fetchall()
-        tiers_parsed = []
-        for i in raw_tiers:
-            tiers_parsed.append(i[0])
-
+        tiers_parsed = [t[0] for t in CONFIG_DB_CURSOR.fetchall()]
         for tier in tiers_parsed:
             self.construction_state_matrix[ENVIRONMENT][tier][UNLOCK_CONDITION_FROM_LEVEL] = True
             self.on_check_environment_unlock_conditions(tier)
