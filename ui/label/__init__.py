@@ -199,6 +199,10 @@ class InteractiveLabel:
         self.screen_resolution = (1280, 720)
         self.text_length_limit = 25
 
+    @final
+    def __len__(self):
+        return len(self.text)
+
     def get_x(self):
         pass
 

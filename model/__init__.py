@@ -307,6 +307,7 @@ IS_ACTIVATED: Final = 6
 BONUS_TIME: Final = 7
 # threshold for shop storage notification (0 - empty, 1 - full)
 SHOP_STORAGE_ALMOST_FULL_THRESHOLD: Final = 0.9
+ALLOWED_BONUS_CODE_INPUT = 100
 # ------------------- END CONSTANTS -------------------
 
 

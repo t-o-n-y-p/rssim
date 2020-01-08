@@ -23,7 +23,7 @@ class BonusCodeActivationView(AppBaseView):
 
         super().__init__(controller, logger=getLogger('root.app.bonus_code_activation.view'))
         USER_DB_CURSOR.execute('SELECT level FROM game_progress')
-        self.level = USER_DB_CURSOR.fetchone()[0]
+        self.level = USER_DB_CURSOR.fetchone()
         self.bonus_code_interactive_label = BonusCodeInteractiveLabel(parent_viewport=self.viewport)
         self.activate_bonus_code_button = ActivateBonusCodeButton(on_click_action=on_activate_bonus_code,
                                                                   parent_viewport=self.viewport)
@@ -36,12 +36,10 @@ class BonusCodeActivationView(AppBaseView):
         self.bonus_code_info_cell = BonusCodeInfoCell(parent_viewport=self.viewport)
         self.on_text_handlers = [self.on_text, ]
         self.on_key_press_handlers = [self.on_key_press, ]
-        self.bonus_code_input_characters = 0
 
     @view_is_not_active
     def on_activate(self):
         super().on_activate()
-        self.bonus_code_input_characters = 0
         self.shader_sprite.create()
         self.bonus_code_interactive_label.create()
         self.activate_bonus_code_button.on_disable()
@@ -71,17 +69,21 @@ class BonusCodeActivationView(AppBaseView):
 
     @view_is_active
     def on_text(self, text):
+        characters_before = len(self.bonus_code_interactive_label)
         self.bonus_code_interactive_label.on_text(text)
-        self.bonus_code_input_characters += len(text)
+        characters_after = len(self.bonus_code_interactive_label)
+        if (difference := characters_after - characters_before) > 0:
+            self.controller.on_increment_bonus_code_abuse_counter(difference)
+
         self.on_check_bonus_code_availability()
 
     @view_is_active
     def on_key_press(self, symbol, modifiers):
-        characters_before = len(self.bonus_code_interactive_label.text)
+        characters_before = len(self.bonus_code_interactive_label)
         self.bonus_code_interactive_label.on_key_press(symbol, modifiers)
-        characters_after = len(self.bonus_code_interactive_label.text)
+        characters_after = len(self.bonus_code_interactive_label)
         if (difference := characters_after - characters_before) > 0:
-            self.bonus_code_input_characters += difference
+            self.controller.on_increment_bonus_code_abuse_counter(difference)
 
         self.on_check_bonus_code_availability()
 
@@ -96,7 +98,7 @@ class BonusCodeActivationView(AppBaseView):
             if self.bonus_code_matrix[user_input_hash][ACTIVATIONS_LEFT] > 0 \
                     and self.bonus_code_matrix[user_input_hash][REQUIRED_LEVEL] <= self.level \
                     and self.bonus_code_matrix[user_input_hash][ACTIVATION_AVAILABLE] and activated_bonus_counter == 0:
-                self.bonus_code_input_characters = 0
+                self.controller.on_reset_bonus_code_abuse_counter()
                 self.activate_bonus_code_button.on_activate()
                 self.bonus_code_info_cell.on_activate()
                 self.bonus_code_info_cell.on_assign_data(self.bonus_code_matrix[user_input_hash][CODE_TYPE],
@@ -105,14 +107,8 @@ class BonusCodeActivationView(AppBaseView):
             else:
                 self.activate_bonus_code_button.on_disable()
                 self.bonus_code_info_cell.on_deactivate(instant=True)
-                self.on_detect_abuse()
 
         else:
             self.activate_bonus_code_button.on_disable()
             self.bonus_code_info_cell.on_deactivate(instant=True)
-            self.on_detect_abuse()
 
-    @bonus_code_abuse_detected
-    def on_detect_abuse(self):
-        self.controller.parent_controller.on_close_bonus_code()
-        self.controller.parent_controller.on_save_and_commit_bonus_code_abuse()
