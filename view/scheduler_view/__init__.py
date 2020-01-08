@@ -26,7 +26,7 @@ class SchedulerView(MapBaseView):
         for i in range(SCHEDULE_COLUMNS):
             column = []
             for j in range(SCHEDULE_ROWS):
-                column.append(ScheduleRow(i, j, parent_viewport=self.viewport))
+                column.append(ScheduleRow(self.map_id, i, j, parent_viewport=self.viewport))
 
             self.schedule_rows.append(column)
 

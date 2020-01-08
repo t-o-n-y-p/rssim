@@ -26,9 +26,9 @@ def row_is_not_active(fn):
 
 @final
 class ScheduleRow:
-    def __init__(self, column, row, parent_viewport):
+    def __init__(self, map_id, column, row, parent_viewport):
         self.logger = getLogger(f'root.app.game.map.scheduler.view.row.{column}.{row}')
-        self.column, self.row = column, row
+        self.map_id, self.column, self.row = map_id, column, row
         self.parent_viewport = parent_viewport
         self.viewport = Viewport()
         USER_DB_CURSOR.execute('SELECT current_locale FROM i18n')
@@ -38,7 +38,7 @@ class ScheduleRow:
         self.clock_24h_enabled = bool(USER_DB_CURSOR.fetchone()[0])
         self.main_sprite_24h = ScheduleRow24HMainLabel(self.column, self.row, parent_viewport=self.viewport)
         self.main_sprite_12h = ScheduleRow12HMainLabel(self.column, self.row, parent_viewport=self.viewport)
-        self.arrival_sprite = ScheduleRowArrivalLabel(self.column, self.row, parent_viewport=self.viewport)
+        self.arrival_sprite = ScheduleRowArrivalLabel(self.map_id, self.column, self.row, parent_viewport=self.viewport)
         self.screen_resolution = (1280, 720)
         self.is_activated = False
         self.opacity = 0

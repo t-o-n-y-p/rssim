@@ -92,8 +92,14 @@
 		"ru": "# поезда    Прибытие            Откуда        Длина"
 	},
 	"departed_from_string": {
-		"en": ["West City", "East City", "N.-West City", "S.-East City"],
-		"ru": ["г. Западный", "г. Восточный", "г. С.-Западный", "г. Ю.-Восточный"]
+		"en": [
+			["West City", "East City", "N.-West City", "S.-East City"],
+			["West City", "East Line 1", "West City", "East Line 2", "West City", "East Line 3", "West City", "East Line 4", "West City", "East Line 5"]
+		],
+		"ru": [
+			["г. Западный", "г. Восточный", "г. С.-Западный", "г. Ю.-Восточный"],
+			["г. Западный", "линия Восток 1", "г. Западный", "линия Восток 2", "г. Западный", "линия Восток 3", "г. Западный", "линия Восток 4", "г. Западный", "линия Восток 5"]
+		]
 	},
 	"windowed_resolution_description_string": {
 		"en": "Game resolution in window mode:",
