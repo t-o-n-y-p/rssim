@@ -39,18 +39,34 @@ bool is_app_window_frame(int margin_x, int margin_y, int bottom_bar_height, int 
           || margin_x == size[0] / 2 - top_bar_height || margin_x == size[0] / 2 - top_bar_height + 1
           || margin_x == size[0] / 2 - top_bar_height * 2 + 2 || margin_x == size[0] / 2 - top_bar_height * 2 + 3
           || margin_x == size[0] / 2 - top_bar_height * 3 + 4 || margin_x == size[0] / 2 - top_bar_height * 3 + 5);
+    bool is_map_switcher_button_border
+    = (margin_x >= size[0] / 4 - top_bar_height && margin_x <= size[0] / 4 - top_bar_height + bottom_bar_height
+       && (margin_y == size[1] - 3 * top_bar_height / 2 - bottom_bar_height
+           || margin_y == size[1] - 3 * top_bar_height / 2 - bottom_bar_height + 1
+           || margin_y == size[1] - 3 * top_bar_height / 2 - 1
+           || margin_y == size[1] - 3 * top_bar_height / 2
+          ) || (margin_y >= size[1] - 3 * top_bar_height / 2 - bottom_bar_height
+                && margin_y <= size[1] - 3 * top_bar_height / 2
+                && (margin_x == size[0] / 4 - top_bar_height || margin_x == size[0] / 4 - top_bar_height + 1
+                    || margin_x == size[0] / 4 - top_bar_height + bottom_bar_height - 1
+                    || margin_x == size[0] / 4 - top_bar_height + bottom_bar_height))
+      ) && page_number != 2;
     return is_app_window_main_frame_border || is_app_window_frame_bar_border || is_bottom_bar_button_border
-           || is_zoom_button_border || is_top_bar_button_border;
+           || is_zoom_button_border || is_top_bar_button_border || is_map_switcher_button_border;
 }
 
 bool is_highlighted(int margin_x, int margin_y, int bottom_bar_height, int top_bar_height)
 {
     if (page_number == 0)
-        return (margin_x >= 2 && margin_x <= size[0] / 2 - 3
+        return ((margin_x >= 2 && margin_x <= size[0] / 2 - 3
                 && margin_y >= bottom_bar_height + 1 && margin_y <= size[1] - top_bar_height - top_bar_height * 2 + 3
-               ) || (margin_x >= top_bar_height * 2 - 2 && margin_x <= size[0] / 2 - 3
-                     && margin_y >= size[1] - top_bar_height - top_bar_height * 2 + 4
-                     && margin_y <= size[1] - top_bar_height - 1);
+                ) || (margin_x >= top_bar_height * 2 - 2 && margin_x <= size[0] / 2 - 3
+                      && margin_y >= size[1] - top_bar_height - top_bar_height * 2 + 4
+                      && margin_y <= size[1] - top_bar_height - 1)
+               ) && !(margin_x >= size[0] / 4 - top_bar_height
+                      && margin_x <= size[0] / 4 - top_bar_height + bottom_bar_height
+                      && margin_y >= size[1] - 3 * top_bar_height / 2 - bottom_bar_height
+                      && margin_y <= size[1] - 3 * top_bar_height / 2);
     else if (page_number == 1)
         return margin_x >= 2 && margin_x < top_bar_height * 2 - 4
                && margin_y >= size[1] - top_bar_height - top_bar_height * 2 + 6
