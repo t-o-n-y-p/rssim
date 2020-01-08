@@ -1,11 +1,11 @@
 from logging import getLogger
-from typing import final
 
 from ui.page_control import *
 from ui.onboarding_page.clock_onboarding_page import ClockOnboardingPage
 from ui.onboarding_page.constructor_onboarding_page import ConstructorOnboardingPage
 from ui.onboarding_page.exp_money_onboarding_page import ExpMoneyOnboardingPage
 from ui.onboarding_page.map_onboarding_page import MapOnboardingPage
+from ui.onboarding_page.map_switcher_onboarding_page import MapSwitcherOnboardingPage
 from ui.onboarding_page.pause_resume_onboarding_page import PauseResumeOnboardingPage
 from ui.onboarding_page.schedule_onboarding_page import ScheduleOnboardingPage
 from ui.onboarding_page.settings_onboarding_page import SettingsOnboardingPage
@@ -20,6 +20,7 @@ class OnboardingPageControl(PageControl):
                          parent_viewport=parent_viewport)
         self.pages = [MapOnboardingPage(parent_viewport=self.viewport),
                       ZoomOnboardingPage(parent_viewport=self.viewport),
+                      MapSwitcherOnboardingPage(parent_viewport=self.viewport),
                       ConstructorOnboardingPage(parent_viewport=self.viewport),
                       ExpMoneyOnboardingPage(parent_viewport=self.viewport),
                       ScheduleOnboardingPage(parent_viewport=self.viewport),

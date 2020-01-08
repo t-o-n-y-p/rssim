@@ -111,6 +111,5 @@ class PageControl:
         self.current_page_label.on_update_opacity(self.opacity)
         self.pages[self.current_page].on_update_opacity(self.opacity)
 
-    @final
     def on_apply_shaders_and_draw_vertices(self):
         pass

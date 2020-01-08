@@ -305,6 +305,10 @@
 		"en": "You can drag the map in any direction from any point within the highlighted area except of buttons.",
 		"ru": "Карту можно перетаскивать в любом направлении из любой точки в выделенной области, кроме кнопок."
 	},
+	"map_switcher_onboarding_page_string": {
+		"en": "Navigation between maps is available using map switcher button. \nClick on it and then pick the map in the \"Select the map\" window.",
+		"ru": "Переходить между картами можно с помощью кнопки переключения карт. \nПосле нажатия на нее нужно выбрать карту в окне \"Выберите карту\"."
+	},
 	"pause_resume_onboarding_page_string": {
 		"en": "The third bottom bar button pauses/resumes the game. \nYou can freeze the in-game time for a while using this button at any moment if required.",
 		"ru": "Третья кнопка в нижней панели приостанавливает/возобновляет игру. \nТы можешь при необходимости приостановить внутриигровое время с помощью этой кнопки."
@@ -318,7 +322,7 @@
 		"ru": "Последняя кнопка в нижней панели открывает экран настроек. \nЗдесь ты можешь задать разрешение окна игры, некоторые другие настройки графики, настройки внутриигровых часов и нотификаций."
 	},
 	"zoom_onboarding_page_string": {
-		"en": "Map is available in tow different scales. You can switch them using zoom button in the top left corner.",
+		"en": "Map is available in two different scales. You can switch them using zoom button in the top left corner.",
 		"ru": "Карта доступна в двух масштабах. Ты можешь переключаться между ними с помощью кнопки масштаба в левом верхнем углу."
 	},
 	"24h_main_clock_string": {
