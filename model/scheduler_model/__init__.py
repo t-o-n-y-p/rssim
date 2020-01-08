@@ -59,7 +59,7 @@ class SchedulerModel(MapBaseModel):
             # otherwise train is skipped
             for i in self.schedule_options:
                 if not self.entry_locked_state[i[DIRECTION]] and not self.entry_locked_state[i[NEW_DIRECTION]]:
-                    cars = choice([i[CARS_MIN], i[CARS_MAX]])
+                    cars = choice(list(range(i[CARS_MIN], i[CARS_MAX] + 1)))
                     train_options = (self.train_counter, self.next_cycle_start_time
                                      + choice(list(range(i[ARRIVAL_TIME_MIN], i[ARRIVAL_TIME_MAX]))),
                                      i[DIRECTION], i[NEW_DIRECTION], cars, self.frame_per_car * cars,
