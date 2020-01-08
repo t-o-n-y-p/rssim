@@ -51,7 +51,7 @@ FRAMES_IN_ONE_SECOND: Final = 4                        # indicates how many fram
 MINUTES_IN_ONE_HOUR: Final = 60
 SECONDS_IN_ONE_MINUTE: Final = 60
 HOURS_IN_ONE_DAY: Final = 24
-SCHEDULE_ARRIVAL_TIME_THRESHOLD: Final = [FRAMES_IN_ONE_HOUR, FRAMES_IN_ONE_HOUR * 3]
+SCHEDULE_ARRIVAL_TIME_THRESHOLD: Final = [FRAMES_IN_ONE_HOUR, FRAMES_IN_ONE_HOUR * 10]
 # base_schedule matrix properties
 TRAIN_ID: Final = 0                                    # property #0 indicates train identification number
 ARRIVAL_TIME: Final = 1                                # property #1 indicates arrival time

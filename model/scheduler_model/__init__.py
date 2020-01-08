@@ -34,6 +34,10 @@ class SchedulerModel(MapBaseModel):
 
         USER_DB_CURSOR.execute('''SELECT entry_locked_state FROM map_progress WHERE map_id = ?''', (self.map_id, ))
         self.entry_locked_state = [bool(int(t)) for t in USER_DB_CURSOR.fetchone()[0].split(',')]
+        self.exit_locked_state = self.entry_locked_state
+        for i in range(0, len(self.exit_locked_state), 2):
+            self.exit_locked_state[i], self.exit_locked_state[i + 1] \
+                = self.exit_locked_state[i + 1], self.exit_locked_state[i]
 
     @final
     def on_save_state(self):
@@ -58,7 +62,7 @@ class SchedulerModel(MapBaseModel):
             # trains are added one by one if both direction and new direction are unlocked by user,
             # otherwise train is skipped
             for i in self.schedule_options:
-                if not self.entry_locked_state[i[DIRECTION]] and not self.entry_locked_state[i[NEW_DIRECTION]]:
+                if not self.entry_locked_state[i[DIRECTION]] and not self.exit_locked_state[i[NEW_DIRECTION]]:
                     cars = choice(list(range(i[CARS_MIN], i[CARS_MAX] + 1)))
                     train_options = (self.train_counter, self.next_cycle_start_time
                                      + choice(list(range(i[ARRIVAL_TIME_MIN], i[ARRIVAL_TIME_MAX]))),
@@ -131,6 +135,10 @@ class SchedulerModel(MapBaseModel):
                                 if track == self.unlocked_tracks and environment <= self.unlocked_environment]
         for d in directions_to_unlock:
             self.entry_locked_state[d] = False
+            if d % 2 == 0:
+                self.exit_locked_state[d + 1] = False
+            else:
+                self.exit_locked_state[d - 1] = False
 
         CONFIG_DB_CURSOR.execute('''SELECT supported_cars_min FROM track_config 
                                     WHERE track_number = ? AND map_id = ?''', (track, self.map_id))
@@ -144,6 +152,10 @@ class SchedulerModel(MapBaseModel):
                                 if track <= self.unlocked_tracks and environment == self.unlocked_environment]
         for d in directions_to_unlock:
             self.entry_locked_state[d] = False
+            if d % 2 == 0:
+                self.exit_locked_state[d + 1] = False
+            else:
+                self.exit_locked_state[d - 1] = False
 
     @final
     def on_leave_entry(self, entry_id):
