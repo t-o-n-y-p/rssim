@@ -23,7 +23,7 @@ class BonusCodeActivationView(AppBaseView):
 
         super().__init__(controller, logger=getLogger('root.app.bonus_code_activation.view'))
         USER_DB_CURSOR.execute('SELECT level FROM game_progress')
-        self.level = USER_DB_CURSOR.fetchone()
+        self.level = USER_DB_CURSOR.fetchone()[0]
         self.bonus_code_interactive_label = BonusCodeInteractiveLabel(parent_viewport=self.viewport)
         self.activate_bonus_code_button = ActivateBonusCodeButton(on_click_action=on_activate_bonus_code,
                                                                   parent_viewport=self.viewport)
