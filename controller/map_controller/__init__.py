@@ -8,6 +8,7 @@ from view.map_view import MapView
 from controller.scheduler_controller import SchedulerController
 from controller.constructor_controller import ConstructorController
 from controller.dispatcher_controller import DispatcherController
+from controller.mini_map_controller import MiniMapController
 from controller.signal_controller import SignalController
 from controller.train_route_controller import TrainRouteController
 from controller.railroad_switch_controller import RailroadSwitchController
@@ -20,7 +21,7 @@ from ui.fade_animation.fade_out_animation.map_fade_out_animation import MapFadeO
 
 class MapController(MapBaseController):
     def __init__(self, model: MapModel, view: MapView, scheduler: SchedulerController,
-                 constructor: ConstructorController, dispatcher: DispatcherController,
+                 constructor: ConstructorController, dispatcher: DispatcherController, mini_map: MiniMapController,
                  signals: Dict[int, Dict[str, SignalController]], signals_list: List[SignalController],
                  train_routes: Dict[int, Dict[str, TrainRouteController]],
                  train_routes_sorted_list: List[TrainRouteController],
@@ -41,6 +42,7 @@ class MapController(MapBaseController):
         self.scheduler = scheduler
         self.constructor = constructor
         self.dispatcher = dispatcher
+        self.mini_map = mini_map
         self.signals = signals
         self.signals_list = signals_list
         self.train_routes = train_routes
@@ -56,9 +58,11 @@ class MapController(MapBaseController):
         self.fade_in_animation.constructor_fade_in_animation = self.constructor.fade_in_animation
         self.fade_in_animation.scheduler_fade_in_animation = self.scheduler.fade_in_animation
         self.fade_in_animation.dispatcher_fade_in_animation = self.dispatcher.fade_in_animation
+        self.fade_in_animation.mini_map_fade_in_animation = self.mini_map.fade_in_animation
         self.fade_out_animation.constructor_fade_out_animation = self.constructor.fade_out_animation
         self.fade_out_animation.scheduler_fade_out_animation = self.scheduler.fade_out_animation
         self.fade_out_animation.dispatcher_fade_out_animation = self.dispatcher.fade_out_animation
+        self.fade_out_animation.mini_map_fade_out_animation = self.mini_map.fade_out_animation
         for signal in self.signals_list:
             self.fade_in_animation.signal_fade_in_animations.append(signal.fade_in_animation)
             self.fade_out_animation.signal_fade_out_animations.append(signal.fade_out_animation)
@@ -89,11 +93,12 @@ class MapController(MapBaseController):
             self.fade_out_animation.shop_fade_out_animations.append(shop.fade_out_animation)
 
         self.child_controllers = [
-            self.scheduler, self.constructor, self.dispatcher, *self.signals_list, *self.train_routes_sorted_list,
+            self.scheduler, self.constructor, self.dispatcher, self.mini_map,
+            *self.signals_list, *self.train_routes_sorted_list,
             *self.switches_list, *self.crossovers_list, *self.trains_list, *self.shops
         ]
         self.map_element_controllers = [
-            *self.signals_list, *self.train_routes_sorted_list,
+            self.mini_map, *self.signals_list, *self.train_routes_sorted_list,
             *self.switches_list, *self.crossovers_list, *self.trains_list
         ]
 
@@ -161,6 +166,7 @@ class MapController(MapBaseController):
         self.constructor.on_unlock_track(track)
         self.scheduler.on_unlock_track(track)
         self.dispatcher.on_unlock_track(track)
+        self.mini_map.on_unlock_track(track)
         for track_param, base_route in self.model.get_signals_to_unlock_with_track(track):
             self.signals[track_param][base_route].on_unlock()
 
@@ -178,6 +184,7 @@ class MapController(MapBaseController):
     def on_unlock_environment(self, tier):
         self.model.on_unlock_environment(tier)
         self.scheduler.on_unlock_environment(tier)
+        self.mini_map.on_unlock_environment(tier)
         for track_param, base_route in self.model.get_signals_to_unlock_with_environment(tier):
             self.signals[track_param][base_route].on_unlock()
 
@@ -206,7 +213,7 @@ class MapController(MapBaseController):
         self.parent_controller.on_deactivate_map_switcher_button()
         self.parent_controller.on_force_close_map_switcher()
         # if mini map is active when user opens schedule screen, it should also be hidden
-        self.view.is_mini_map_activated = False
+        self.on_deactivate_mini_map()
 
     @final
     def on_open_constructor(self):
@@ -227,7 +234,7 @@ class MapController(MapBaseController):
         self.parent_controller.on_deactivate_map_switcher_button()
         self.parent_controller.on_force_close_map_switcher()
         # if mini map is active when user opens constructor screen, it should also be hidden
-        self.view.is_mini_map_activated = False
+        self.on_deactivate_mini_map()
 
     @final
     def on_close_schedule(self):
@@ -367,7 +374,7 @@ class MapController(MapBaseController):
         self.shops[shop_id].fade_in_animation.on_activate()
         self.view.on_deactivate_zoom_buttons()
         self.view.on_deactivate_shop_buttons()
-        self.view.is_mini_map_activated = False
+        self.mini_map.fade_out_animation.on_activate()
 
     @final
     def on_close_shop_details(self, shop_id):
@@ -395,10 +402,20 @@ class MapController(MapBaseController):
         self.view.on_deactivate_zoom_buttons()
         self.view.on_deactivate_shop_buttons()
         # if mini map is active when user opens constructor screen, it should also be hidden
-        self.view.is_mini_map_activated = False
+        self.on_deactivate_mini_map()
 
+    @final
     def on_close_map_switcher(self):
         self.view.on_close_map_switcher()
 
+    @final
     def on_deactivate_money_target(self):
         self.constructor.on_deactivate_money_target()
+
+    @final
+    def on_activate_mini_map(self):
+        self.mini_map.fade_in_animation.on_activate()
+
+    @final
+    def on_deactivate_mini_map(self):
+        self.mini_map.fade_out_animation.on_activate()

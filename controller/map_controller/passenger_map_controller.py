@@ -6,6 +6,7 @@ from view.map_view.passenger_map_view import PassengerMapView
 from controller.scheduler_controller.passenger_map_scheduler_controller import PassengerMapSchedulerController
 from controller.constructor_controller.passenger_map_constructor_controller import PassengerMapConstructorController
 from controller.dispatcher_controller.passenger_map_dispatcher_controller import PassengerMapDispatcherController
+from controller.mini_map_controller.passenger_mini_map_controller import PassengerMiniMapController
 from controller.signal_controller.passenger_map_signal_controller import PassengerMapSignalController
 from controller.train_route_controller.passenger_train_route_controller import PassengerTrainRouteController
 from controller.railroad_switch_controller.passenger_map_railroad_switch_controller \
@@ -27,6 +28,7 @@ class PassengerMapController(MapController):
         scheduler = PassengerMapSchedulerController(self)
         constructor = PassengerMapConstructorController(self)
         dispatcher = PassengerMapDispatcherController(self)
+        mini_map = PassengerMiniMapController(self)
         signals = {}
         signals_list = []
         CONFIG_DB_CURSOR.execute('''SELECT DISTINCT track FROM signal_config WHERE map_id = ?''', (PASSENGER_MAP, ))
@@ -110,6 +112,6 @@ class PassengerMapController(MapController):
         for i in range(number_of_shops):
             shops.append(PassengerMapShopController(self, i))
 
-        return model, view, scheduler, constructor, dispatcher, signals, signals_list, \
+        return model, view, scheduler, constructor, dispatcher, mini_map, signals, signals_list, \
                train_routes, train_routes_sorted_list, switches, switches_list, crossovers, crossovers_list, \
                trains, trains_list, shops

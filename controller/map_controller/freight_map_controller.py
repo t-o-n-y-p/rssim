@@ -6,6 +6,7 @@ from view.map_view.freight_map_view import FreightMapView
 from controller.scheduler_controller.freight_map_scheduler_controller import FreightMapSchedulerController
 from controller.constructor_controller.freight_map_constructor_controller import FreightMapConstructorController
 from controller.dispatcher_controller.freight_map_dispatcher_controller import FreightMapDispatcherController
+from controller.mini_map_controller.freight_mini_map_controller import FreightMiniMapController
 from controller.signal_controller.freight_map_signal_controller import FreightMapSignalController
 from controller.train_route_controller.freight_train_route_controller import FreightTrainRouteController
 from controller.railroad_switch_controller.freight_map_railroad_switch_controller \
@@ -26,6 +27,7 @@ class FreightMapController(MapController):
         scheduler = FreightMapSchedulerController(self)
         constructor = FreightMapConstructorController(self)
         dispatcher = FreightMapDispatcherController(self)
+        mini_map = FreightMiniMapController(self)
         signals = {}
         signals_list = []
         CONFIG_DB_CURSOR.execute('''SELECT DISTINCT track FROM signal_config WHERE map_id = ?''', (FREIGHT_MAP, ))
@@ -104,6 +106,6 @@ class FreightMapController(MapController):
                 trains_list.append(trains[i[0]])
 
         shops = []
-        return model, view, scheduler, constructor, dispatcher, signals, signals_list, \
+        return model, view, scheduler, constructor, dispatcher, mini_map, signals, signals_list, \
                train_routes, train_routes_sorted_list, switches, switches_list, crossovers, crossovers_list, \
                trains, trains_list, shops

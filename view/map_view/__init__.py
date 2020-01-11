@@ -1,6 +1,5 @@
 from logging import getLogger
 from time import perf_counter
-from math import ceil
 
 from view import *
 from database import CONFIG_DB_CURSOR
@@ -13,8 +12,6 @@ from ui.button.open_shop_details_button import OpenShopDetailsButton
 from ui.shader_sprite.map_view_shader_sprite import MapViewShaderSprite
 from ui.sprite.main_map_sprite import MainMapSprite
 from ui.sprite.main_environment_sprite import MainEnvironmentSprite
-from ui.sprite.mini_map_sprite import MiniMapSprite
-from ui.sprite.mini_environment_sprite import MiniEnvironmentSprite
 
 
 class MapView(MapBaseView):
@@ -56,14 +53,7 @@ class MapView(MapBaseView):
         self.mini_map_offset = (0, 0)
         self.main_map_sprite = MainMapSprite(map_id=self.map_id, parent_viewport=self.viewport)
         self.environment_sprite = MainEnvironmentSprite(map_id=self.map_id, parent_viewport=self.viewport)
-        self.mini_map_sprite = MiniMapSprite(map_id=self.map_id, parent_viewport=self.viewport)
-        self.mini_environment_sprite = MiniEnvironmentSprite(map_id=self.map_id, parent_viewport=self.viewport)
-        self.is_mini_map_activated = False
         self.mini_map_timer = 0.0
-        self.mini_map_opacity = 0
-        self.mini_map_frame_position = (0, 0)
-        self.mini_map_frame_width = 0
-        self.mini_map_frame_height = 0
         self.base_offset_lower_left_limit = (0, 0)
         self.base_offset_upper_right_limit = (0, 0)
         self.zoom_in_button, self.zoom_out_button \
@@ -108,6 +98,7 @@ class MapView(MapBaseView):
                                       WHERE locked = 1 AND map_id = ?
                                   ) AS t''', (self.map_id, self.map_id))
         self.constructions_locked = USER_DB_CURSOR.fetchone()[0]
+        self.is_mini_map_timer_activated = False
 
     @final
     @view_is_not_active
@@ -129,31 +120,23 @@ class MapView(MapBaseView):
     @view_is_active
     def on_deactivate(self):
         super().on_deactivate()
-        self.is_mini_map_activated = False
 
     @final
     def on_update(self):
-        cpu_time = perf_counter()
-        if self.is_mini_map_activated and not self.map_move_mode \
-                and cpu_time - self.mini_map_timer > MINI_MAP_FADE_OUT_TIMER:
-            self.is_mini_map_activated = False
-
-        self.on_update_mini_map_opacity()
+        if self.is_mini_map_timer_activated and not self.map_move_mode \
+                and perf_counter() - self.mini_map_timer > MINI_MAP_FADE_OUT_TIMER:
+            self.controller.on_deactivate_mini_map()
+            self.is_mini_map_timer_activated = False
 
     @final
     def on_change_screen_resolution(self, screen_resolution):
         super().on_change_screen_resolution(screen_resolution)
-        self.mini_map_sprite.on_change_screen_resolution(self.screen_resolution)
-        self.mini_environment_sprite.on_change_screen_resolution(self.screen_resolution)
         self.base_offset_lower_left_limit = (self.viewport.x1,
                                              self.viewport.y1 + get_bottom_bar_height(self.screen_resolution))
         self.base_offset_upper_right_limit = (self.viewport.x2 - MAP_WIDTH // round(1 / self.zoom_factor),
                                               self.viewport.y2 - MAP_HEIGHT // round(1 / self.zoom_factor)
                                               - get_top_bar_height(self.screen_resolution))
         self.shader_sprite.on_change_screen_resolution(self.screen_resolution)
-        self.mini_map_frame_width = self.get_mini_map_frame_width()
-        self.mini_map_frame_height = self.get_mini_map_frame_height()
-        self.mini_map_frame_position = self.get_mini_map_frame_position()
         self.zoom_in_button.on_change_screen_resolution(self.screen_resolution)
         self.zoom_out_button.on_change_screen_resolution(self.screen_resolution)
         self.open_schedule_button.on_change_screen_resolution(self.screen_resolution)
@@ -192,42 +175,19 @@ class MapView(MapBaseView):
                                 2 * self.base_offset[1] - (self.viewport.y2 - self.viewport.y1) // 2)
 
         self.check_base_offset_limits()
-        self.mini_map_frame_width = self.get_mini_map_frame_width()
-        self.mini_map_frame_height = self.get_mini_map_frame_height()
-        self.mini_map_frame_position = self.get_mini_map_frame_position()
         for b in self.shop_buttons:
             b.on_change_scale(self.zoom_factor)
 
         self.controller.on_save_and_commit_last_known_base_offset(self.base_offset)
 
     @final
-    @mini_map_is_not_active
-    def on_activate_mini_map(self):
-        self.is_mini_map_activated = True
-        self.mini_environment_sprite.create()
-        self.mini_map_sprite.create()
-
-    @final
-    def on_update_mini_map_opacity(self):
-        if self.is_mini_map_activated and self.mini_map_opacity < 255:
-            self.mini_map_opacity += 17
-
-        if not self.is_mini_map_activated and self.mini_map_opacity > 0:
-            self.mini_map_opacity -= 17
-
-        self.mini_map_sprite.on_update_opacity(self.mini_map_opacity)
-        self.mini_environment_sprite.on_update_opacity(self.mini_map_opacity)
-
-    @final
     def on_unlock_track(self, track):
         self.unlocked_tracks = track
         self.main_map_sprite.on_unlock_track(self.unlocked_tracks)
-        self.mini_map_sprite.on_unlock_track(self.unlocked_tracks)
 
     @final
     def on_unlock_environment(self, tier):
         self.environment_sprite.on_unlock_environment(tier)
-        self.mini_environment_sprite.on_unlock_environment(tier)
 
     @final
     def on_deactivate_zoom_buttons(self):
@@ -252,10 +212,9 @@ class MapView(MapBaseView):
     @final
     @map_move_mode_enabled
     def handle_mouse_drag(self, x, y, dx, dy, buttons, modifiers):
-        self.on_activate_mini_map()
+        self.controller.on_activate_mini_map()
         self.base_offset = (self.base_offset[0] + dx, self.base_offset[1] + dy)
         self.check_base_offset_limits()
-        self.mini_map_frame_position = self.get_mini_map_frame_position()
         self.controller.on_change_base_offset(self.base_offset)
 
     @final
@@ -264,6 +223,7 @@ class MapView(MapBaseView):
     def handle_mouse_release(self, x, y, button, modifiers):
         self.map_move_mode = False
         self.mini_map_timer = perf_counter()
+        self.is_mini_map_timer_activated = True
         self.controller.on_save_and_commit_last_known_base_offset(self.base_offset)
 
     @final
@@ -315,26 +275,6 @@ class MapView(MapBaseView):
         self.on_activate_zoom_buttons()
         self.on_activate_shop_buttons()
         self.on_activate_open_constructor_button(instant=True)
-
-    @final
-    def get_mini_map_frame_position(self):
-        return (ceil(-self.base_offset[0] / (MAP_WIDTH // round(1 / self.zoom_factor))
-                     * get_mini_map_width(self.screen_resolution))
-                + get_mini_map_position(self.screen_resolution)[0],
-                ceil((get_bottom_bar_height(self.screen_resolution)
-                      - self.base_offset[1]) / (MAP_HEIGHT // round(1 / self.zoom_factor))
-                     * get_mini_map_height(self.screen_resolution)) + get_mini_map_position(self.screen_resolution)[1])
-
-    @final
-    def get_mini_map_frame_height(self):
-        return int((self.viewport.y2 - self.viewport.y1
-                    - get_bottom_bar_height(self.screen_resolution) - get_top_bar_height(self.screen_resolution))
-                   / (MAP_HEIGHT // round(1 / self.zoom_factor)) * get_mini_map_height(self.screen_resolution))
-
-    @final
-    def get_mini_map_frame_width(self):
-        return int((self.viewport.x2 - self.viewport.x1) / (MAP_WIDTH // round(1 / self.zoom_factor))
-                   * get_mini_map_width(self.screen_resolution))
 
     @final
     def on_recalculate_base_offset_for_new_screen_resolution(self, screen_resolution):

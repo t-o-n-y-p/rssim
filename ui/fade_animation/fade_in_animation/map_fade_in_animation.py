@@ -11,6 +11,7 @@ class MapFadeInAnimation(FadeInAnimation):
         self.constructor_fade_in_animation = None
         self.scheduler_fade_in_animation = None
         self.dispatcher_fade_in_animation = None
+        self.mini_map_fade_in_animation = None
         self.signal_fade_in_animations = []
         self.railroad_switch_fade_in_animations = []
         self.crossover_fade_in_animations = []

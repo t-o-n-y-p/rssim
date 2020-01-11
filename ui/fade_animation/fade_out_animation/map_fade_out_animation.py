@@ -11,6 +11,7 @@ class MapFadeOutAnimation(FadeOutAnimation):
         self.constructor_fade_out_animation = None
         self.scheduler_fade_out_animation = None
         self.dispatcher_fade_out_animation = None
+        self.mini_map_fade_out_animation = None
         self.signal_fade_out_animations = []
         self.railroad_switch_fade_out_animations = []
         self.crossover_fade_out_animations = []
@@ -25,6 +26,7 @@ class MapFadeOutAnimation(FadeOutAnimation):
         self.constructor_fade_out_animation.on_activate()
         self.scheduler_fade_out_animation.on_activate()
         self.dispatcher_fade_out_animation.on_activate()
+        self.mini_map_fade_out_animation.on_activate()
         for animation in self.signal_fade_out_animations:
             animation.on_activate()
 

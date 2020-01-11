@@ -13,8 +13,7 @@ class MiniEnvironmentSprite(UISprite):
                          parent_viewport=parent_viewport)
         self.map_id = map_id
         USER_DB_CURSOR.execute('''SELECT unlocked_environment FROM map_progress WHERE map_id = ?''', (self.map_id, ))
-        unlocked_environment = USER_DB_CURSOR.fetchone()[0]
-        self.texture = get_full_map_e(map_id=self.map_id, tiers=unlocked_environment)
+        self.texture = get_full_map_e(map_id=self.map_id, tiers=USER_DB_CURSOR.fetchone()[0])
         self.batch = BATCHES['mini_map_batch']
         self.group = GROUPS['mini_environment']
         self.usage = 'static'
