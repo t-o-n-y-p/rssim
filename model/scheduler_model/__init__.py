@@ -9,10 +9,14 @@ from database import USER_DB_CURSOR, CONFIG_DB_CURSOR, BASE_SCHEDULE
 class SchedulerModel(MapBaseModel):
     def __init__(self, controller, view, map_id):
         super().__init__(controller, view, map_id, logger=getLogger(f'root.app.game.map.{map_id}.scheduler.model'))
-        USER_DB_CURSOR.execute('''SELECT locked, unlocked_tracks, unlocked_environment, supported_cars_min 
+        USER_DB_CURSOR.execute('''SELECT locked, unlocked_tracks, unlocked_environment 
                                   FROM map_progress WHERE map_id = ?''', (self.map_id, ))
-        self.locked, self.unlocked_tracks, self.unlocked_environment, self.supported_cars_min \
-            = USER_DB_CURSOR.fetchone()
+        self.locked, self.unlocked_tracks, self.unlocked_environment = USER_DB_CURSOR.fetchone()
+        USER_DB_CURSOR.execute('''SELECT min_supported_cars_by_direction 
+                                  FROM map_progress WHERE map_id = ?''', (self.map_id, ))
+        self.min_supported_cars_by_direction = [
+            [int(c) for c in s.split(',')] for s in USER_DB_CURSOR.fetchone()[0].split('|')
+        ]
         self.locked = bool(self.locked)
         CONFIG_DB_CURSOR.execute('''SELECT arrival_time_min, arrival_time_max, direction, new_direction, 
                                     cars_min, cars_max, switch_direction_required FROM schedule_options 
@@ -45,10 +49,12 @@ class SchedulerModel(MapBaseModel):
                                   entry_busy_state = ? WHERE map_id = ?''',
                                (self.train_counter, self.next_cycle_start_time,
                                 ','.join(str(int(t)) for t in self.entry_busy_state), self.map_id))
-        USER_DB_CURSOR.execute('''UPDATE map_progress SET entry_locked_state = ?, supported_cars_min = ? 
+        USER_DB_CURSOR.execute('''UPDATE map_progress SET entry_locked_state = ?, min_supported_cars_by_direction = ? 
                                   WHERE map_id = ?''',
                                (','.join(str(int(t)) for t in self.entry_locked_state),
-                                self.supported_cars_min, self.map_id))
+                                '|'.join([','.join(str(c) for c in self.min_supported_cars_by_direction[direction])
+                                          for direction in range(len(self.min_supported_cars_by_direction))]),
+                                self.map_id))
         USER_DB_CURSOR.execute('''DELETE FROM base_schedule WHERE map_id = ?''', (self.map_id, ))
         for train in self.base_schedule:
             USER_DB_CURSOR.execute('INSERT INTO base_schedule VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)',
@@ -84,7 +90,7 @@ class SchedulerModel(MapBaseModel):
                     for e in JOINT_ENTRIES[self.map_id][i[DIRECTION]]:
                         self.entry_busy_state[e] = True
 
-                    if i[CARS] < self.supported_cars_min:
+                    if i[CARS] < self.min_supported_cars_by_direction[i[DIRECTION]][i[NEW_DIRECTION]]:
                         self.controller.parent_controller\
                             .on_create_train(i[TRAIN_ID], i[CARS], ENTRY_TRACK_ID[self.map_id][i[DIRECTION]],
                                              APPROACHING_TRAIN_ROUTE[self.map_id][i[DIRECTION]],
@@ -140,9 +146,7 @@ class SchedulerModel(MapBaseModel):
             else:
                 self.exit_locked_state[d - 1] = False
 
-        CONFIG_DB_CURSOR.execute('''SELECT supported_cars_min FROM track_config 
-                                    WHERE track_number = ? AND map_id = ?''', (track, self.map_id))
-        self.supported_cars_min = CONFIG_DB_CURSOR.fetchone()[0]
+        self.on_update_min_supported_cars_by_direction()
 
     @final
     def on_unlock_environment(self, tier):
@@ -162,3 +166,6 @@ class SchedulerModel(MapBaseModel):
         self.entry_busy_state[entry_id] = False
         for e in JOINT_ENTRIES[self.map_id][entry_id]:
             self.entry_busy_state[e] = False
+
+    def on_update_min_supported_cars_by_direction(self):
+        pass
