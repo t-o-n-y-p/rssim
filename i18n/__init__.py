@@ -7,6 +7,14 @@ with codecs.open('resources.json', 'r', 'utf-8-sig') as resource_file:
     I18N_RESOURCES: Final = json.load(resource_file)
 
 
+def value_between_1_and_99(fn):
+    def _convert_numbers(*args, **kwargs):
+        if 0 < args[0] < 100:
+            fn(*args, **kwargs)
+
+    return _convert_numbers
+
+
 def i18n_number_category(x, locale):
     """
     Returns localization category of a given number in the given locale.
