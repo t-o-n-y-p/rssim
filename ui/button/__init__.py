@@ -40,8 +40,10 @@ def left_mouse_button(fn):
 
 def cursor_is_over_the_button(fn):
     def _handle_if_cursor_is_over_the_button(*args, **kwargs):
-        if args[1] in range(args[0].position[0] + 2, args[0].position[0] + args[0].button_size[0] - 2) \
-                and args[2] in range(args[0].position[1] + 2, args[0].position[1] + args[0].button_size[1] - 2):
+        if args[1] in range(args[0].position[0] + 2 - args[0].camera.offset_x,
+                            args[0].position[0] + args[0].button_size[0] - 2 - args[0].camera.offset_x) \
+                and args[2] in range(args[0].position[1] + 2 - args[0].camera.offset_y,
+                                     args[0].position[1] + args[0].button_size[1] - 2 - args[0].camera.offset_y):
             fn(*args, **kwargs)
 
     return _handle_if_cursor_is_over_the_button
@@ -76,7 +78,7 @@ BUTTON_BACKGROUND_ALPHA: Final = {
 
 
 class Button:
-    def __init__(self, logger):
+    def __init__(self, batch, camera, logger):
         self.logger = logger
         self.is_activated = False
         self.to_activate_on_controller_init = False
@@ -102,6 +104,8 @@ class Button:
         self.disabled_state = False
         USER_DB_CURSOR.execute('SELECT current_locale FROM i18n')
         self.current_locale = USER_DB_CURSOR.fetchone()[0]
+        self.batch = batch
+        self.camera = camera
 
     @final
     @button_is_not_activated
@@ -117,19 +121,19 @@ class Button:
         # that's why background position starts from (button_position + 2)
         if self.vertex_list is None and not self.invisible:
             self.vertex_list \
-                = BATCHES['ui_batch'].add(4, gl.GL_QUADS, GROUPS['button_background'],
-                                          ('v2i', (self.position[0] + 2, self.position[1] + 2,
-                                                   self.position[0] + self.button_size[0] - 2, self.position[1] + 2,
-                                                   self.position[0] + self.button_size[0] - 2,
-                                                   self.position[1] + self.button_size[1] - 2,
-                                                   self.position[0] + 2, self.position[1] + self.button_size[1] - 2)
-                                           ),
-                                          ('c4f', ((*BUTTON_BACKGROUND_RGB[self.state][self.transparent],
-                                                    BUTTON_BACKGROUND_ALPHA[self.state][self.transparent]
-                                                    * float(self.opacity) / 255.0)
-                                                   * 4)
-                                           )
-                                          )
+                = self.batch.add(4, gl.GL_QUADS, GROUPS['button_background'],
+                                 ('v2i', (self.position[0] + 2, self.position[1] + 2,
+                                          self.position[0] + self.button_size[0] - 2, self.position[1] + 2,
+                                          self.position[0] + self.button_size[0] - 2,
+                                          self.position[1] + self.button_size[1] - 2,
+                                          self.position[0] + 2, self.position[1] + self.button_size[1] - 2)
+                                  ),
+                                 ('c4f', ((*BUTTON_BACKGROUND_RGB[self.state][self.transparent],
+                                           BUTTON_BACKGROUND_ALPHA[self.state][self.transparent]
+                                           * float(self.opacity) / 255.0)
+                                          * 4)
+                                  )
+                                 )
 
         if self.text_label is None:
             if self.text not in (None, ''):
@@ -137,7 +141,7 @@ class Button:
                                         font_size=self.font_size, color=(*WHITE_RGB, self.opacity),
                                         x=self.position[0] + self.button_size[0] // 2,
                                         y=self.position[1] + self.button_size[1] // 2,
-                                        anchor_x='center', anchor_y='center', batch=BATCHES['ui_batch'],
+                                        anchor_x='center', anchor_y='center', batch=self.batch,
                                         group=GROUPS['button_text'])
         else:
             self.text_label.color = (*WHITE_RGB, self.opacity)
@@ -174,7 +178,7 @@ class Button:
                                         font_size=self.font_size, color=(*GREY_RGB, self.opacity),
                                         x=self.position[0] + self.button_size[0] // 2,
                                         y=self.position[1] + self.button_size[1] // 2,
-                                        anchor_x='center', anchor_y='center', batch=BATCHES['ui_batch'],
+                                        anchor_x='center', anchor_y='center', batch=self.batch,
                                         group=GROUPS['button_text'])
         else:
             self.text_label.color = (*GREY_RGB, self.opacity)
@@ -207,14 +211,16 @@ class Button:
     def handle_mouse_motion(self, x, y, dx, dy):
         # if cursor is on the button and button is not pressed, it means cursor was just moved over the button,
         # state and background color are changed to "hover" state
-        if x in range(self.position[0] + 2, self.position[0] + self.button_size[0] - 2) \
-                and y in range(self.position[1] + 2, self.position[1] + self.button_size[1] - 2):
+        if x in range(self.position[0] + 2 - self.camera.offset_x,
+                      self.position[0] + self.button_size[0] - 2 - self.camera.offset_x) \
+                and y in range(self.position[1] + 2 - self.camera.offset_y,
+                               self.position[1] + self.button_size[1] - 2 - self.camera.offset_y):
             if self.state != 'pressed':
                 self.state = 'hover'
                 if self.vertex_list is not None:
                     self.vertex_list.colors = ((*BUTTON_BACKGROUND_RGB[self.state][self.transparent],
-                                               BUTTON_BACKGROUND_ALPHA[self.state][self.transparent]
-                                               * float(self.opacity) / 255.0) * 4)
+                                                BUTTON_BACKGROUND_ALPHA[self.state][self.transparent]
+                                                * float(self.opacity) / 255.0) * 4)
 
                 SURFACE.set_mouse_cursor(HAND_CURSOR)
                 if self.on_hover_action is not None:
@@ -226,8 +232,8 @@ class Button:
                 self.state = 'normal'
                 if self.vertex_list is not None:
                     self.vertex_list.colors = ((*BUTTON_BACKGROUND_RGB[self.state][self.transparent],
-                                               BUTTON_BACKGROUND_ALPHA[self.state][self.transparent]
-                                               * float(self.opacity) / 255.0) * 4)
+                                                BUTTON_BACKGROUND_ALPHA[self.state][self.transparent]
+                                                * float(self.opacity) / 255.0) * 4)
 
                 SURFACE.set_mouse_cursor(DEFAULT_CURSOR)
                 if self.on_leave_action is not None:
@@ -241,8 +247,8 @@ class Button:
         self.state = 'pressed'
         if self.vertex_list is not None:
             self.vertex_list.colors = ((*BUTTON_BACKGROUND_RGB[self.state][self.transparent],
-                                       BUTTON_BACKGROUND_ALPHA[self.state][self.transparent]
-                                       * float(self.opacity) / 255.0) * 4)
+                                        BUTTON_BACKGROUND_ALPHA[self.state][self.transparent]
+                                        * float(self.opacity) / 255.0) * 4)
 
     @final
     @button_is_activated
@@ -253,8 +259,8 @@ class Button:
         self.state = 'hover'
         if self.vertex_list is not None:
             self.vertex_list.colors = ((*BUTTON_BACKGROUND_RGB[self.state][self.transparent],
-                                       BUTTON_BACKGROUND_ALPHA[self.state][self.transparent]
-                                       * float(self.opacity) / 255.0) * 4)
+                                        BUTTON_BACKGROUND_ALPHA[self.state][self.transparent]
+                                        * float(self.opacity) / 255.0) * 4)
 
         SURFACE.set_mouse_cursor(DEFAULT_CURSOR)
         self.on_click_action(self)
@@ -265,8 +271,8 @@ class Button:
         self.state = 'normal'
         if self.vertex_list is not None:
             self.vertex_list.colors = ((*BUTTON_BACKGROUND_RGB[self.state][self.transparent],
-                                       BUTTON_BACKGROUND_ALPHA[self.state][self.transparent]
-                                       * float(self.opacity) / 255.0) * 4)
+                                        BUTTON_BACKGROUND_ALPHA[self.state][self.transparent]
+                                        * float(self.opacity) / 255.0) * 4)
 
         SURFACE.set_mouse_cursor(DEFAULT_CURSOR)
         if self.on_leave_action is not None:
@@ -287,7 +293,7 @@ class Button:
         else:
             if self.vertex_list is not None:
                 self.vertex_list.colors[3::4] \
-                    = ((BUTTON_BACKGROUND_ALPHA[self.state][self.transparent] * float(self.opacity) / 255.0, ) * 4)
+                    = ((BUTTON_BACKGROUND_ALPHA[self.state][self.transparent] * float(self.opacity) / 255.0,) * 4)
 
             if self.text_label is not None:
                 self.text_label.color = (*self.text_label.color[0:3], self.opacity)
@@ -301,7 +307,7 @@ class Button:
 
 class UIButton(Button):
     def __init__(self, logger, parent_viewport):
-        super().__init__(logger=logger)
+        super().__init__(batch=BATCHES['ui_batch'], camera=UI_CAMERA, logger=logger)
         self.parent_viewport = parent_viewport
         self.screen_resolution = (1280, 720)
 
@@ -327,13 +333,10 @@ class UIButton(Button):
 
 class MapButton(Button):
     def __init__(self, map_id, logger):
-        super().__init__(logger=logger)
+        super().__init__(batch=BATCHES['main_batch'], camera=MAP_CAMERA, logger=logger)
         self.map_id = map_id
-        USER_DB_CURSOR.execute('''SELECT last_known_base_offset FROM map_position_settings WHERE map_id = ?''',
-                               (self.map_id, ))
-        self.base_offset = tuple(map(int, USER_DB_CURSOR.fetchone()[0].split(',')))
         USER_DB_CURSOR.execute('''SELECT zoom_out_activated FROM map_position_settings WHERE map_id = ?''',
-                               (self.map_id, ))
+                               (self.map_id,))
         self.zoom_out_activated = bool(USER_DB_CURSOR.fetchone()[0])
         if self.zoom_out_activated:
             self.scale = 0.5
@@ -345,12 +348,6 @@ class MapButton(Button):
 
     def get_size(self):
         pass
-
-    @final
-    def on_change_base_offset(self, base_offset):
-        self.base_offset = base_offset
-        self.position = self.get_position()
-        self.on_move()
 
     @final
     def on_change_scale(self, new_scale):

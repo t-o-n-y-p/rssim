@@ -54,6 +54,9 @@ class MapView(MapBaseView):
         self.main_map_sprite = MainMapSprite(map_id=self.map_id, parent_viewport=self.viewport)
         self.environment_sprite = MainEnvironmentSprite(map_id=self.map_id, parent_viewport=self.viewport)
         self.mini_map_timer = 0.0
+        USER_DB_CURSOR.execute('''SELECT last_known_base_offset FROM map_position_settings WHERE map_id = ?''',
+                               (self.map_id,))
+        self.base_offset = [int(p) for p in USER_DB_CURSOR.fetchone()[0].split(',')]
         self.base_offset_lower_left_limit = (0, 0)
         self.base_offset_upper_right_limit = (0, 0)
         self.zoom_in_button, self.zoom_out_button \
@@ -81,7 +84,7 @@ class MapView(MapBaseView):
         self.shops_track_required_state = tuple(s[0] for s in CONFIG_DB_CURSOR.fetchall())
         self.buttons.extend(self.shop_buttons)
         for b in self.shop_buttons:
-            b.on_change_base_offset(self.base_offset)
+            b.position = b.get_position()
             b.on_change_scale(self.zoom_factor)
 
         self.map_move_mode_available = False
@@ -104,6 +107,7 @@ class MapView(MapBaseView):
     @view_is_not_active
     def on_activate(self):
         super().on_activate()
+        MAP_CAMERA.position = -self.base_offset[0], -self.base_offset[1]
         self.map_move_mode_available = True
         self.shader_sprite.create()
         self.main_map_sprite.create()
@@ -148,14 +152,6 @@ class MapView(MapBaseView):
         self.shader_sprite.on_update_opacity(self.opacity)
         self.main_map_sprite.on_update_opacity(self.opacity)
         self.environment_sprite.on_update_opacity(self.opacity)
-
-    @final
-    def on_change_base_offset(self, new_base_offset):
-        super().on_change_base_offset(new_base_offset)
-        self.main_map_sprite.on_change_base_offset(self.base_offset)
-        self.environment_sprite.on_change_base_offset(self.base_offset)
-        for b in self.shop_buttons:
-            b.on_change_base_offset(self.base_offset)
 
     @final
     def on_change_scale(self, zoom_factor):
@@ -215,7 +211,6 @@ class MapView(MapBaseView):
         self.controller.on_activate_mini_map()
         self.base_offset = (self.base_offset[0] + dx, self.base_offset[1] + dy)
         self.check_base_offset_limits()
-        self.controller.on_change_base_offset(self.base_offset)
 
     @final
     @map_move_mode_enabled
@@ -239,6 +234,9 @@ class MapView(MapBaseView):
 
         if self.base_offset[1] < self.base_offset_upper_right_limit[1]:
             self.base_offset = (self.base_offset[0], self.base_offset_upper_right_limit[1])
+
+        if self.is_activated:
+            MAP_CAMERA.position = -self.base_offset[0], -self.base_offset[1]
 
     @final
     def on_activate_shop_buttons(self):

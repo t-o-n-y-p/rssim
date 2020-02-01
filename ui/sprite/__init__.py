@@ -3,7 +3,7 @@ from typing import Final, final
 import pyglet.sprite
 
 from database import USER_DB_CURSOR
-
+from ui import MAP_CAMERA
 
 SPRITE_VIEWPORT_EDGE_OFFSET_LIMIT_X: Final = 150
 SPRITE_VIEWPORT_EDGE_OFFSET_LIMIT_Y: Final = 100
@@ -117,9 +117,6 @@ class MapSprite(Sprite):
         super().__init__(logger=logger)
         self.map_id = map_id
         self.parent_viewport = parent_viewport
-        USER_DB_CURSOR.execute('''SELECT last_known_base_offset FROM map_position_settings WHERE map_id = ?''',
-                               (self.map_id, ))
-        self.base_offset = tuple(int(p) for p in USER_DB_CURSOR.fetchone()[0].split(','))
         USER_DB_CURSOR.execute('''SELECT zoom_out_activated FROM map_position_settings WHERE map_id = ?''',
                                (self.map_id, ))
         self.zoom_out_activated = bool(USER_DB_CURSOR.fetchone()[0])
@@ -129,11 +126,6 @@ class MapSprite(Sprite):
             self.scale = 1.0
 
     @final
-    def on_change_base_offset(self, base_offset):
-        self.base_offset = base_offset
-        self.on_position_changed()
-
-    @final
     def on_change_scale(self, new_scale):
         self.scale = new_scale
         if self.sprite is not None:
@@ -141,12 +133,11 @@ class MapSprite(Sprite):
 
     @final
     def is_located_outside_viewport(self):
-        return self.parent_viewport.x1 - (self.position[0] + (self.texture.width - self.texture.anchor_x) * self.scale)\
-               > SPRITE_VIEWPORT_EDGE_OFFSET_LIMIT_X \
-               or (self.position[0] - self.texture.anchor_x * self.scale) - self.parent_viewport.x2 \
-               > SPRITE_VIEWPORT_EDGE_OFFSET_LIMIT_X \
-               or self.parent_viewport.y1 \
-               - (self.position[1] + (self.texture.height - self.texture.anchor_y) * self.scale) \
-               > SPRITE_VIEWPORT_EDGE_OFFSET_LIMIT_Y \
-               or (self.position[1] - self.texture.anchor_y * self.scale) - self.parent_viewport.y2 \
-               > SPRITE_VIEWPORT_EDGE_OFFSET_LIMIT_Y
+        return self.position[0] - self.texture.anchor_x \
+               > MAP_CAMERA.offset_x + self.parent_viewport.x2 + SPRITE_VIEWPORT_EDGE_OFFSET_LIMIT_X \
+               or self.position[0] + self.texture.width - self.texture.anchor_x \
+               < MAP_CAMERA.offset_x + self.parent_viewport.x1 - SPRITE_VIEWPORT_EDGE_OFFSET_LIMIT_X \
+               or self.position[1] - self.texture.anchor_y \
+               > MAP_CAMERA.offset_y + self.parent_viewport.y2 + SPRITE_VIEWPORT_EDGE_OFFSET_LIMIT_Y \
+               or self.position[1] + self.texture.height - self.texture.anchor_y \
+               < MAP_CAMERA.offset_y + self.parent_viewport.y1 - SPRITE_VIEWPORT_EDGE_OFFSET_LIMIT_Y

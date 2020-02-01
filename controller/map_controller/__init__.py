@@ -112,7 +112,6 @@ class MapController(MapBaseController):
         super().on_change_screen_resolution(screen_resolution)
         self.view.check_base_offset_limits()
         self.on_save_and_commit_last_known_base_offset(self.view.base_offset)
-        self.on_change_base_offset(self.view.base_offset)
 
     @final
     def on_save_state(self):
@@ -361,9 +360,6 @@ class MapController(MapBaseController):
             train.fade_in_animation.on_activate()
         else:
             train.fade_out_animation.on_activate()
-
-        if self.view.map_move_mode:
-            train.view.on_change_base_offset(self.view.base_offset)
 
     @final
     def on_save_and_commit_last_known_base_offset(self, base_offset):

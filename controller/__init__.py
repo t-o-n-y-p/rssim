@@ -332,9 +332,3 @@ class MapBaseController(GameBaseController):
 
     def on_unlock(self):
         self.model.on_unlock()
-
-    @final
-    def on_change_base_offset(self, new_base_offset):
-        self.view.on_change_base_offset(new_base_offset)
-        for controller in self.map_element_controllers:
-            controller.on_change_base_offset(new_base_offset)

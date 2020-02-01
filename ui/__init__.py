@@ -1,87 +1,14 @@
-from fractions import Fraction
 from typing import Final, final
 
 from pyglet.window import Window
 from pyglet.graphics import Batch, OrderedGroup
-from pyglet.gl import glScalef, glTranslatef
-
-
-@final
-class Viewport:
-    def __init__(self):
-        self.x1 = 0
-        self.y1 = 0
-        self.x2 = 0
-        self.y2 = 0
-
-
-@final
-class Camera:
-    """ A simple 2D camera that contains the speed and offset."""
-
-    def __init__(self, scroll_speed=1, min_zoom=1, max_zoom=4):
-        assert min_zoom <= max_zoom, "Minimum zoom must not be greater than maximum zoom"
-        self.scroll_speed = scroll_speed
-        self.max_zoom = max_zoom
-        self.min_zoom = min_zoom
-        self.offset_x = 0
-        self.offset_y = 0
-        self._zoom = max(min(1, self.max_zoom), self.min_zoom)
-
-    @property
-    def zoom(self):
-        return self._zoom
-
-    @zoom.setter
-    def zoom(self, value):
-        """ Here we set zoom, clamp value to minimum of min_zoom and max of max_zoom."""
-        self._zoom = max(min(value, self.max_zoom), self.min_zoom)
-
-    @property
-    def position(self):
-        """Query the current offset."""
-        return self.offset_x, self.offset_y
-
-    @position.setter
-    def position(self, value):
-        """Set the scroll offset directly."""
-        self.offset_x, self.offset_y = value
-
-    def move(self, axis_x, axis_y):
-        """ Move axis direction with scroll_speed.
-            Example: Move left -> move(-1, 0)
-         """
-        self.offset_x += self.scroll_speed * axis_x
-        self.offset_y += self.scroll_speed * axis_y
-
-    def begin(self):
-        # Set the current camera offset so you can draw your scene.
-        # Translate using the zoom and the offset.
-        glTranslatef(-self.offset_x * self._zoom, -self.offset_y * self._zoom, 0)
-
-        # Scale by zoom level.
-        glScalef(self._zoom, self._zoom, 1)
-
-    def end(self):
-        # Since this is a matrix, you will need to reverse the translate after rendering otherwise
-        # it will multiply the current offset every draw update pushing it further and further away.
-
-        # Reverse scale, since that was the last transform.
-        glScalef(1 / self._zoom, 1 / self._zoom, 1)
-
-        # Reverse translate.
-        glTranslatef(self.offset_x * self._zoom, self.offset_y * self._zoom, 0)
-
-    def __enter__(self):
-        self.begin()
-
-    def __exit__(self, exception_type, exception_value, traceback):
-        self.end()
+from camera.map_camera import MapCamera
+from camera.ui_camera import UICamera
 
 
 # --------------------- CONSTANTS ---------------------
-MAP_CAMERA = Camera(min_zoom=Fraction(1, 2), max_zoom=Fraction(1, 1))
-UI_CAMERA = Camera(min_zoom=1, max_zoom=1)
+MAP_CAMERA: Final = MapCamera()
+UI_CAMERA: Final = UICamera()
 ZOOM_OUT_SCALE_FACTOR: Final = 0.5                     # how much to scale all sprites when map is zoomed out
 ZOOM_IN_SCALE_FACTOR: Final = 1.0                      # how much to scale all sprites when map is zoomed in
 MAP_WIDTH: Final = 8192                                # full-size map width
@@ -207,3 +134,12 @@ def get_mini_map_width(screen_resolution):
 
 def get_mini_map_height(screen_resolution):
     return round(get_mini_map_width(screen_resolution) / 2)
+
+
+@final
+class Viewport:
+    def __init__(self):
+        self.x1 = 0
+        self.y1 = 0
+        self.x2 = 0
+        self.y2 = 0

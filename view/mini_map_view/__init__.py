@@ -55,11 +55,11 @@ class MiniMapView(MapBaseView):
 
     @final
     def get_mini_map_frame_position(self):
-        return (ceil(-self.base_offset[0] / (MAP_WIDTH // round(1 / self.zoom_factor))
+        return (ceil(MAP_CAMERA.position[0] / (MAP_WIDTH // round(1 / self.zoom_factor))
                      * get_mini_map_width(self.screen_resolution))
                 + get_mini_map_position(self.screen_resolution)[0],
                 ceil((get_bottom_bar_height(self.screen_resolution)
-                      - self.base_offset[1]) / (MAP_HEIGHT // round(1 / self.zoom_factor))
+                      + MAP_CAMERA.position[1]) / (MAP_HEIGHT // round(1 / self.zoom_factor))
                      * get_mini_map_height(self.screen_resolution)) + get_mini_map_position(self.screen_resolution)[1])
 
     @final

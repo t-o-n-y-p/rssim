@@ -18,7 +18,7 @@ class MainEnvironmentSprite(MapSprite):
         self.group = GROUPS['environment']
 
     def get_position(self):
-        return self.base_offset
+        return 0, 0
 
     def on_unlock_environment(self, tier):
         self.on_update_texture(get_full_map_e(map_id=self.map_id, tiers=tier))

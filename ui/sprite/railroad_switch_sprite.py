@@ -21,5 +21,4 @@ class RailroadSwitchSprite(MapSprite):
         self.on_position_changed()
 
     def get_position(self):
-        return (self.base_offset[0] + int(self.railroad_switch_offset[0] * self.scale),
-                self.base_offset[1] + int(self.railroad_switch_offset[1] * self.scale))
+        return int(self.railroad_switch_offset[0] * self.scale), int(self.railroad_switch_offset[1] * self.scale)

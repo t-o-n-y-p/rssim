@@ -377,9 +377,6 @@ class MapBaseView(GameBaseView):
         super().__init__(controller, logger, child_window)
         self.locked = True
         self.map_id = map_id
-        USER_DB_CURSOR.execute('''SELECT last_known_base_offset FROM map_position_settings WHERE map_id = ?''',
-                               (self.map_id, ))
-        self.base_offset = [int(p) for p in USER_DB_CURSOR.fetchone()[0].split(',')]
         USER_DB_CURSOR.execute('''SELECT zoom_out_activated FROM map_position_settings WHERE map_id = ?''',
                                (self.map_id, ))
         self.zoom_out_activated = bool(USER_DB_CURSOR.fetchone()[0])
@@ -387,9 +384,6 @@ class MapBaseView(GameBaseView):
             self.zoom_factor = 0.5
         else:
             self.zoom_factor = 1.0
-
-    def on_change_base_offset(self, new_base_offset):
-        self.base_offset = new_base_offset
 
     def on_change_scale(self, zoom_factor):
         self.zoom_factor = zoom_factor
@@ -408,4 +402,4 @@ class MapBaseView(GameBaseView):
     def on_unlock(self):
         self.locked = False
         # this workaround is needed for the object to be displayed immediately on the map
-        self.on_change_base_offset(self.base_offset)
+        self.on_update()

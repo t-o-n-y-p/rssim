@@ -28,18 +28,16 @@ class SignalView(MapBaseView):
         super().on_deactivate()
 
     @final
-    def on_update_opacity(self, new_opacity):
-        super().on_update_opacity(new_opacity)
-        self.signal_sprite.on_update_opacity(self.opacity)
-
-    @final
-    def on_change_base_offset(self, new_base_offset):
-        super().on_change_base_offset(new_base_offset)
-        self.signal_sprite.on_change_base_offset(self.base_offset)
+    def on_update(self):
         if self.signal_sprite.is_located_outside_viewport():
             self.signal_sprite.delete()
         elif not self.locked:
             self.signal_sprite.create()
+
+    @final
+    def on_update_opacity(self, new_opacity):
+        super().on_update_opacity(new_opacity)
+        self.signal_sprite.on_update_opacity(self.opacity)
 
     @final
     def on_change_scale(self, zoom_factor):

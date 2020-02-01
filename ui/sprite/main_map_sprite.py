@@ -21,8 +21,7 @@ class MainMapSprite(MapSprite):
         self.group = GROUPS['main_map']
 
     def get_position(self):
-        return (self.base_offset[0],
-                self.base_offset[1] + (MAP_HEIGHT - self.texture.height) // round(2 / self.scale))
+        return 0, (MAP_HEIGHT - self.texture.height) // round(2 / self.scale)
 
     def on_unlock_track(self, track):
         self.on_update_texture(get_full_map(map_id=self.map_id, tracks=max(track, self.unlocked_tracks_by_default)))
