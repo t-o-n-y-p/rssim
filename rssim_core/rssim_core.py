@@ -10,7 +10,7 @@ from keyring import get_password
 
 from exceptions import *
 from rssim_core import *
-from ui import SURFACE, BATCHES, MIN_RESOLUTION_WIDTH, MIN_RESOLUTION_HEIGHT
+from ui import SURFACE, BATCHES, MIN_RESOLUTION_WIDTH, MIN_RESOLUTION_HEIGHT, MAP_CAMERA, UI_CAMERA
 from database import USER_DB_CURSOR, USER_DB_CONNECTION, USER_DB_LOCATION, on_commit
 from controller.app_controller import AppController
 
@@ -86,13 +86,16 @@ class RSSim:
                     BATCHES[batch].invalidate()
 
                 # draw main batch: environment, main map, signals, trains
-                BATCHES['main_batch'].draw()
-                # draw mini map batch: mini map
-                BATCHES['mini_map_batch'].draw()
-                # draw all vertices with shaders
-                self.app.on_apply_shaders_and_draw_vertices()
-                # draw ui batch: text labels, buttons
-                BATCHES['ui_batch'].draw()
+                with MAP_CAMERA:
+                    BATCHES['main_batch'].draw()
+
+                with UI_CAMERA:
+                    # draw mini map batch: mini map
+                    BATCHES['mini_map_batch'].draw()
+                    # draw all vertices with shaders
+                    self.app.on_apply_shaders_and_draw_vertices()
+                    # draw ui batch: text labels, buttons
+                    BATCHES['ui_batch'].draw()
 
         @SURFACE.event
         def on_activate():
