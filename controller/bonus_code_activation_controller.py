@@ -13,10 +13,10 @@ from ui.fade_animation.fade_out_animation.bonus_code_activation_fade_out_animati
 class BonusCodeActivationController(AppBaseController):
     def __init__(self, app):
         super().__init__(parent_controller=app, logger=getLogger('root.app.bonus_code_activation.controller'))
-        self.fade_in_animation = BonusCodeActivationFadeInAnimation(self)
-        self.fade_out_animation = BonusCodeActivationFadeOutAnimation(self)
         self.view = BonusCodeActivationView(controller=self)
         self.model = BonusCodeActivationModel(controller=self, view=self.view)
+        self.fade_in_animation = BonusCodeActivationFadeInAnimation(self.view)
+        self.fade_out_animation = BonusCodeActivationFadeOutAnimation(self.view)
         self.view.on_init_content()
 
     def on_increment_bonus_code_abuse_counter(self, value):

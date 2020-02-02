@@ -13,10 +13,10 @@ class TrainController(MapBaseController):
                          logger=getLogger(f'root.app.game.map.{map_id}.train.{train_id}.controller'))
         self.train_id = train_id
         self.map_id = map_id
-        self.fade_in_animation = TrainFadeInAnimation(self)
-        self.fade_out_animation = TrainFadeOutAnimation(self)
         self.view = view
         self.model = model
+        self.fade_in_animation = TrainFadeInAnimation(self.view)
+        self.fade_out_animation = TrainFadeOutAnimation(self.view)
         self.view.on_init_content()
 
     def create_train_elements(self, train_id):

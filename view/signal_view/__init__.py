@@ -8,10 +8,11 @@ class SignalView(MapBaseView):
     def __init__(self, controller, map_id, track, base_route):
         super().__init__(controller, map_id,
                          logger=getLogger(f'root.app.game.map.{map_id}.signal.{track}.{base_route}.view'))
-        self.signal_sprite = SignalSprite(self.map_id, track, base_route, parent_viewport=self.viewport)
+        self.track, self.base_route = track, base_route
+        self.signal_sprite = SignalSprite(self.map_id, self.track, self.base_route, parent_viewport=self.viewport)
         USER_DB_CURSOR.execute('''SELECT state, locked FROM signals 
                                   WHERE track = ? AND base_route = ? AND map_id = ?''',
-                               (track, base_route, self.map_id))
+                               (self.track, self.base_route, self.map_id))
         self.state, self.locked = USER_DB_CURSOR.fetchone()
         self.locked = bool(self.locked)
 

@@ -12,20 +12,15 @@ class ConstructorController(MapBaseController):
         super().__init__(parent_controller=parent_controller,
                          logger=getLogger(f'root.app.game.map.{map_id}.constructor.controller'))
         self.map_id = map_id
-        self.fade_in_animation = ConstructorFadeInAnimation(self)
-        self.fade_out_animation = ConstructorFadeOutAnimation(self)
         self.view = view
         self.model = model
+        self.fade_in_animation = ConstructorFadeInAnimation(self.view)
+        self.fade_out_animation = ConstructorFadeOutAnimation(self.view)
         view.construction_state_matrix = model.construction_state_matrix
         self.view.on_init_content()
 
     def create_constructor_elements(self):
         pass
-
-    @final
-    def on_deactivate_view(self):
-        super().on_deactivate_view()
-        self.parent_controller.on_close_constructor()
 
     @final
     def on_put_under_construction(self, construction_type, entity_number):

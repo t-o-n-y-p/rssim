@@ -34,10 +34,10 @@ class MapController(MapBaseController):
         super().__init__(parent_controller=parent_controller,
                          logger=getLogger(f'root.app.game.map.{map_id}.controller'))
         self.map_id = map_id
-        self.fade_in_animation = MapFadeInAnimation(self)
-        self.fade_out_animation = MapFadeOutAnimation(self)
         self.view = view
         self.model = model
+        self.fade_in_animation = MapFadeInAnimation(self.view)
+        self.fade_out_animation = MapFadeOutAnimation(self.view)
         self.view.on_init_content()
         self.scheduler = scheduler
         self.constructor = constructor
@@ -128,7 +128,7 @@ class MapController(MapBaseController):
         super().on_update_time()
         # collected trains which has departed successfully should be removed from the game
         for train in self.lifecycle_ended_trains:
-            train.on_deactivate_view()
+            train.view.on_deactivate()
             train.view.on_update_opacity(0)
             self.fade_in_animation.train_fade_in_animations.remove(train.fade_in_animation)
             self.fade_out_animation.train_fade_out_animations.remove(train.fade_out_animation)

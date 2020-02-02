@@ -18,10 +18,10 @@ from database import PASSENGER_MAP, FREIGHT_MAP
 class GameController(GameBaseController):
     def __init__(self, app):
         super().__init__(parent_controller=app, logger=getLogger('root.app.game.controller'))
-        self.fade_in_animation = GameFadeInAnimation(self)
-        self.fade_out_animation = GameFadeOutAnimation(self)
         self.view = GameView(controller=self)
         self.model = GameModel(controller=self, view=self.view)
+        self.fade_in_animation = GameFadeInAnimation(self.view)
+        self.fade_out_animation = GameFadeOutAnimation(self.view)
         self.view.on_init_content()
         self.bonus_code_manager = BonusCodeManagerController(self)
         self.map_switcher = MapSwitcherController(self)

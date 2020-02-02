@@ -6,8 +6,8 @@ from database import USER_DB_CURSOR
 
 @final
 class GameFadeInAnimation(FadeInAnimation):
-    def __init__(self, game_controller):
-        super().__init__(animation_object=game_controller, logger=getLogger('root.app.game.fade_in_animation'))
+    def __init__(self, game_view):
+        super().__init__(animation_object=game_view, logger=getLogger('root.app.game.fade_in_animation'))
         self.bonus_code_manager_fade_in_animation = None
         self.map_switcher_fade_in_animation = None
         self.map_fade_in_animations = []

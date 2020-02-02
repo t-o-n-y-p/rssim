@@ -1,8 +1,6 @@
-from i18n import value_between_1_and_99
+from i18n import *
 
 
-NOMINATIVE = 'nominative'
-GENITIVE = 'genitive'
 ONE_WORD_CARDINAL = {
     1: 'один',
     2: 'два',
@@ -33,33 +31,141 @@ ONE_WORD_CARDINAL = {
     90: 'девяносто'
 }
 ONE_WORD_ORDINAL = {
-    ONE_WORD_CARDINAL[1]: {NOMINATIVE: 'первый', GENITIVE: 'первого'},
-    ONE_WORD_CARDINAL[2]: {NOMINATIVE: 'второй', GENITIVE: 'второго'},
-    ONE_WORD_CARDINAL[3]: {NOMINATIVE: 'третий', GENITIVE: 'третьего'},
-    ONE_WORD_CARDINAL[4]: {NOMINATIVE: 'четвертый', GENITIVE: 'четвертого'},
-    ONE_WORD_CARDINAL[5]: {NOMINATIVE: 'пятый', GENITIVE: 'пятого'},
-    ONE_WORD_CARDINAL[6]: {NOMINATIVE: 'шестой', GENITIVE: 'шестого'},
-    ONE_WORD_CARDINAL[7]: {NOMINATIVE: 'седьмой', GENITIVE: 'седьмого'},
-    ONE_WORD_CARDINAL[8]: {NOMINATIVE: 'восьмой', GENITIVE: 'восьмого'},
-    ONE_WORD_CARDINAL[9]: {NOMINATIVE: 'девятый', GENITIVE: 'девятого'},
-    ONE_WORD_CARDINAL[10]: {NOMINATIVE: 'десятый', GENITIVE: 'десятого'},
-    ONE_WORD_CARDINAL[11]: {NOMINATIVE: 'одиннадцатый', GENITIVE: 'одиннадцатого'},
-    ONE_WORD_CARDINAL[12]: {NOMINATIVE: 'двенадцатый', GENITIVE: 'двенадцатого'},
-    ONE_WORD_CARDINAL[13]: {NOMINATIVE: 'тринадцатый', GENITIVE: 'тринадцатого'},
-    ONE_WORD_CARDINAL[14]: {NOMINATIVE: 'четырнадцатый', GENITIVE: 'четырнадцатого'},
-    ONE_WORD_CARDINAL[15]: {NOMINATIVE: 'пятнадцатый', GENITIVE: 'пятнадцатого'},
-    ONE_WORD_CARDINAL[16]: {NOMINATIVE: 'шестнадцатый', GENITIVE: 'шестнадцатого'},
-    ONE_WORD_CARDINAL[17]: {NOMINATIVE: 'семнадцатый', GENITIVE: 'семнадцатого'},
-    ONE_WORD_CARDINAL[18]: {NOMINATIVE: 'восемнадцатый', GENITIVE: 'восемнадцатого'},
-    ONE_WORD_CARDINAL[19]: {NOMINATIVE: 'девятнадцатый', GENITIVE: 'девятнадцатого'},
-    ONE_WORD_CARDINAL[20]: {NOMINATIVE: 'двадцатый', GENITIVE: 'двадцатого'},
-    ONE_WORD_CARDINAL[30]: {NOMINATIVE: 'тридцатый', GENITIVE: 'тридцатого'},
-    ONE_WORD_CARDINAL[40]: {NOMINATIVE: 'сороковой', GENITIVE: 'сорокового'},
-    ONE_WORD_CARDINAL[50]: {NOMINATIVE: 'пятидесятый', GENITIVE: 'пятидесятого'},
-    ONE_WORD_CARDINAL[60]: {NOMINATIVE: 'шестидесятый', GENITIVE: 'шестидесятого'},
-    ONE_WORD_CARDINAL[70]: {NOMINATIVE: 'семидесятый', GENITIVE: 'семидесятого'},
-    ONE_WORD_CARDINAL[80]: {NOMINATIVE: 'восьмидесятый', GENITIVE: 'восьмидесятого'},
-    ONE_WORD_CARDINAL[90]: {NOMINATIVE: 'девяностый', GENITIVE: 'девяностого'}
+    ONE_WORD_CARDINAL[1]: {
+        NOMINATIVE: 'первый',
+        GENITIVE: 'первого',
+        DATIVE: 'первому'
+    },
+    ONE_WORD_CARDINAL[2]: {
+        NOMINATIVE: 'второй',
+        GENITIVE: 'второго',
+        DATIVE: 'второму'
+    },
+    ONE_WORD_CARDINAL[3]: {
+        NOMINATIVE: 'третий',
+        GENITIVE: 'третьего',
+        DATIVE: 'третьему'
+    },
+    ONE_WORD_CARDINAL[4]: {
+        NOMINATIVE: 'четвёртый',
+        GENITIVE: 'четвёртого',
+        DATIVE: 'четвёртому'
+    },
+    ONE_WORD_CARDINAL[5]: {
+        NOMINATIVE: 'пятый',
+        GENITIVE: 'пятого',
+        DATIVE: 'пятому'
+    },
+    ONE_WORD_CARDINAL[6]: {
+        NOMINATIVE: 'шестой',
+        GENITIVE: 'шестого',
+        DATIVE: 'шестому'
+    },
+    ONE_WORD_CARDINAL[7]: {
+        NOMINATIVE: 'седьмой',
+        GENITIVE: 'седьмого',
+        DATIVE: 'седьмому'
+    },
+    ONE_WORD_CARDINAL[8]: {
+        NOMINATIVE: 'восьмой',
+        GENITIVE: 'восьмого',
+        DATIVE: 'восьмому'
+    },
+    ONE_WORD_CARDINAL[9]: {
+        NOMINATIVE: 'девятый',
+        GENITIVE: 'девятого',
+        DATIVE: 'девятому'
+    },
+    ONE_WORD_CARDINAL[10]: {
+        NOMINATIVE: 'десятый',
+        GENITIVE: 'десятого',
+        DATIVE: 'десятому'
+    },
+    ONE_WORD_CARDINAL[11]: {
+        NOMINATIVE: 'одиннадцатый',
+        GENITIVE: 'одиннадцатого',
+        DATIVE: 'одиннадцатому'
+    },
+    ONE_WORD_CARDINAL[12]: {
+        NOMINATIVE: 'двенадцатый',
+        GENITIVE: 'двенадцатого',
+        DATIVE: 'двенадцатому'
+    },
+    ONE_WORD_CARDINAL[13]: {
+        NOMINATIVE: 'тринадцатый',
+        GENITIVE: 'тринадцатого',
+        DATIVE: 'тринадцатому'
+    },
+    ONE_WORD_CARDINAL[14]: {
+        NOMINATIVE: 'четырнадцатый',
+        GENITIVE: 'четырнадцатого',
+        DATIVE: 'четырнадцатому'
+    },
+    ONE_WORD_CARDINAL[15]: {
+        NOMINATIVE: 'пятнадцатый',
+        GENITIVE: 'пятнадцатого',
+        DATIVE: 'пятнадцатому'
+    },
+    ONE_WORD_CARDINAL[16]: {
+        NOMINATIVE: 'шестнадцатый',
+        GENITIVE: 'шестнадцатого',
+        DATIVE: 'шестнадцатому'
+    },
+    ONE_WORD_CARDINAL[17]: {
+        NOMINATIVE: 'семнадцатый',
+        GENITIVE: 'семнадцатого',
+        DATIVE: 'семнадцатому'
+    },
+    ONE_WORD_CARDINAL[18]: {
+        NOMINATIVE: 'восемнадцатый',
+        GENITIVE: 'восемнадцатого',
+        DATIVE: 'восемнадцатому'
+    },
+    ONE_WORD_CARDINAL[19]: {
+        NOMINATIVE: 'девятнадцатый',
+        GENITIVE: 'девятнадцатого',
+        DATIVE: 'девятнадцатому'
+    },
+    ONE_WORD_CARDINAL[20]: {
+        NOMINATIVE: 'двадцатый',
+        GENITIVE: 'двадцатого',
+        DATIVE: 'двадцатому'
+    },
+    ONE_WORD_CARDINAL[30]: {
+        NOMINATIVE: 'тридцатый',
+        GENITIVE: 'тридцатого',
+        DATIVE: 'тридцатому'
+    },
+    ONE_WORD_CARDINAL[40]: {
+        NOMINATIVE: 'сороковой',
+        GENITIVE: 'сорокового',
+        DATIVE: 'сороковому'
+    },
+    ONE_WORD_CARDINAL[50]: {
+        NOMINATIVE: 'пятидесятый',
+        GENITIVE: 'пятидесятого',
+        DATIVE: 'пятидесятому'
+    },
+    ONE_WORD_CARDINAL[60]: {
+        NOMINATIVE: 'шестидесятый',
+        GENITIVE: 'шестидесятого',
+        DATIVE: 'шестидесятому'
+    },
+    ONE_WORD_CARDINAL[70]: {
+        NOMINATIVE: 'семидесятый',
+        GENITIVE: 'семидесятого',
+        DATIVE: 'семидесятому'
+    },
+    ONE_WORD_CARDINAL[80]: {
+        NOMINATIVE: 'восьмидесятый',
+        GENITIVE: 'восьмидесятого',
+        DATIVE: 'восьмидесятому'
+    },
+    ONE_WORD_CARDINAL[90]: {
+        NOMINATIVE: 'девяностый',
+        GENITIVE: 'девяностого',
+        DATIVE: 'девяностому'
+    }
 }
 
 

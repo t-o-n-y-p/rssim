@@ -417,5 +417,9 @@
 			"two": "Поезд номер {0} отправляется со {1} пути",
 			"other": "Поезд номер {0} отправляется с {1} пути"
 		}
+	},
+	"train_pass_through_announcement_string": {
+		"en": "Attention please! Train is about to pass through the track {0}",
+		"ru": "Внимание! Внимание! По {0} пути пройдет поезд"
 	}
 }

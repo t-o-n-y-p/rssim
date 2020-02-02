@@ -19,6 +19,7 @@ class ConstructorView(MapBaseView):
     def __init__(self, controller, map_id):
         def on_close_constructor(button):
             self.controller.fade_out_animation.on_activate()
+            self.controller.parent_controller.on_close_constructor()
 
         def on_buy_construction_action(construction_type, row, entity_number):
             self.controller.on_put_under_construction(construction_type, entity_number)

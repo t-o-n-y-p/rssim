@@ -5,8 +5,8 @@ from ui.fade_animation.fade_out_animation import *
 
 @final
 class AppFadeOutAnimation(FadeOutAnimation):
-    def __init__(self, app_controller):
-        super().__init__(animation_object=app_controller, logger=getLogger('root.app.fade_out_animation'))
+    def __init__(self, app_view):
+        super().__init__(animation_object=app_view, logger=getLogger('root.app.fade_out_animation'))
         self.main_menu_fade_out_animation = None
         self.license_fade_out_animation = None
         self.onboarding_fade_out_animation = None

@@ -14,6 +14,9 @@ class ShopView(MapBaseView):
         super().__init__(controller, map_id, logger=getLogger(f'root.app.game.map.{map_id}.shop.{shop_id}.view'),
                          child_window=True)
         self.shop_id = shop_id
+        CONFIG_DB_CURSOR.execute('''SELECT level_required FROM shops_config
+                                    WHERE map_id = ? AND shop_id = ?''', (self.map_id, self.shop_id))
+        self.level_required = CONFIG_DB_CURSOR.fetchone()[0]
         self.shader_sprite = ShopViewShaderSprite(view=self)
         self.title_label = ShopTitleLabel(parent_viewport=self.viewport)
         self.title_label.on_update_args((self.shop_id + 1, ))

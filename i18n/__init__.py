@@ -15,6 +15,11 @@ def value_between_1_and_99(fn):
     return _convert_numbers
 
 
+NOMINATIVE = 'nominative'
+GENITIVE = 'genitive'
+DATIVE = 'dative'
+
+
 def i18n_number_category(x, locale):
     """
     Returns localization category of a given number in the given locale.

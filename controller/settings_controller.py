@@ -13,10 +13,10 @@ class SettingsController(AppBaseController):
         super().__init__(parent_controller=app, logger=getLogger('root.app.settings.controller'))
         self.navigated_from_main_menu = False
         self.navigated_from_game = False
-        self.fade_in_animation = SettingsFadeInAnimation(self)
-        self.fade_out_animation = SettingsFadeOutAnimation(self)
         self.view = SettingsView(controller=self)
         self.model = SettingsModel(controller=self, view=self.view)
+        self.fade_in_animation = SettingsFadeInAnimation(self.view)
+        self.fade_out_animation = SettingsFadeOutAnimation(self.view)
         self.view.on_init_content()
 
     def on_accept_changes(self, windowed_resolution, display_fps, fade_animations_enabled, clock_24h_enabled,

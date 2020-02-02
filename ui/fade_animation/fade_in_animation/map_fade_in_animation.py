@@ -5,9 +5,9 @@ from ui.fade_animation.fade_in_animation import *
 
 @final
 class MapFadeInAnimation(FadeInAnimation):
-    def __init__(self, map_controller):
-        super().__init__(animation_object=map_controller,
-                         logger=getLogger(f'root.app.game.map.{map_controller.map_id}.fade_in_animation'))
+    def __init__(self, map_view):
+        super().__init__(animation_object=map_view,
+                         logger=getLogger(f'root.app.game.map.{map_view.map_id}.fade_in_animation'))
         self.constructor_fade_in_animation = None
         self.scheduler_fade_in_animation = None
         self.dispatcher_fade_in_animation = None

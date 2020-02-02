@@ -46,11 +46,13 @@ TRAIN_ROUTE_DATA_SECTION_NUMBER: Final = 2     # meaning of train_route_data[] l
 
 class AppBaseController:
     def __init__(self, parent_controller=None, logger=None):
-        self.logger = logger
-        self.model = None
-        self.view = None
-        self.is_activated = False
         self.parent_controller = parent_controller
+        self.logger = logger
+        self.view = None
+        self.model = None
+        self.fade_in_animation = None
+        self.fade_out_animation = None
+        self.is_activated = False
         self.on_mouse_press_handlers = []
         self.on_mouse_release_handlers = []
         self.on_mouse_motion_handlers = []
@@ -59,14 +61,7 @@ class AppBaseController:
         self.on_mouse_scroll_handlers = []
         self.on_key_press_handlers = []
         self.on_text_handlers = []
-        self.fade_in_animation = None
-        self.fade_out_animation = None
         self.child_controllers = []
-
-    def on_deactivate_view(self):
-        self.view.on_deactivate()
-        for controller in self.child_controllers:
-            controller.on_deactivate_view()
 
     def on_update_current_locale(self, new_locale):
         self.view.on_update_current_locale(new_locale)
@@ -162,33 +157,18 @@ class AppBaseController:
             controller.on_update_fade_animation_state(new_state)
 
     @final
-    def on_append_handlers(self, on_mouse_motion_handlers=None, on_mouse_press_handlers=None,
-                           on_mouse_release_handlers=None, on_mouse_drag_handlers=None,
-                           on_mouse_leave_handlers=None, on_mouse_scroll_handlers=None,
-                           on_key_press_handlers=None, on_text_handlers=None):
-        if on_mouse_motion_handlers is not None:
-            self.on_mouse_motion_handlers.extend(on_mouse_motion_handlers)
-
-        if on_mouse_press_handlers is not None:
-            self.on_mouse_press_handlers.extend(on_mouse_press_handlers)
-
-        if on_mouse_release_handlers is not None:
-            self.on_mouse_release_handlers.extend(on_mouse_release_handlers)
-
-        if on_mouse_drag_handlers is not None:
-            self.on_mouse_drag_handlers.extend(on_mouse_drag_handlers)
-
-        if on_mouse_leave_handlers is not None:
-            self.on_mouse_leave_handlers.extend(on_mouse_leave_handlers)
-
-        if on_mouse_scroll_handlers is not None:
-            self.on_mouse_scroll_handlers.extend(on_mouse_scroll_handlers)
-
-        if on_key_press_handlers is not None:
-            self.on_key_press_handlers.extend(on_key_press_handlers)
-
-        if on_text_handlers is not None:
-            self.on_text_handlers.extend(on_text_handlers)
+    def on_append_handlers(self, on_mouse_motion_handlers=(), on_mouse_press_handlers=(),
+                           on_mouse_release_handlers=(), on_mouse_drag_handlers=(),
+                           on_mouse_leave_handlers=(), on_mouse_scroll_handlers=(),
+                           on_key_press_handlers=(), on_text_handlers=()):
+        self.on_mouse_motion_handlers.extend(on_mouse_motion_handlers)
+        self.on_mouse_press_handlers.extend(on_mouse_press_handlers)
+        self.on_mouse_release_handlers.extend(on_mouse_release_handlers)
+        self.on_mouse_drag_handlers.extend(on_mouse_drag_handlers)
+        self.on_mouse_leave_handlers.extend(on_mouse_leave_handlers)
+        self.on_mouse_scroll_handlers.extend(on_mouse_scroll_handlers)
+        self.on_key_press_handlers.extend(on_key_press_handlers)
+        self.on_text_handlers.extend(on_text_handlers)
 
         # little recursive pattern there: it stops as soon as reaches
         # App object controller (App object does not have parent objects)
@@ -203,41 +183,33 @@ class AppBaseController:
                                                       on_text_handlers=on_text_handlers)
 
     @final
-    def on_detach_handlers(self, on_mouse_motion_handlers=None, on_mouse_press_handlers=None,
-                           on_mouse_release_handlers=None, on_mouse_drag_handlers=None,
-                           on_mouse_leave_handlers=None, on_mouse_scroll_handlers=None,
-                           on_key_press_handlers=None, on_text_handlers=None):
-        if on_mouse_motion_handlers is not None:
-            for handler in on_mouse_motion_handlers:
-                self.on_mouse_motion_handlers.remove(handler)
+    def on_detach_handlers(self, on_mouse_motion_handlers=(), on_mouse_press_handlers=(),
+                           on_mouse_release_handlers=(), on_mouse_drag_handlers=(),
+                           on_mouse_leave_handlers=(), on_mouse_scroll_handlers=(),
+                           on_key_press_handlers=(), on_text_handlers=()):
+        for handler in on_mouse_motion_handlers:
+            self.on_mouse_motion_handlers.remove(handler)
 
-        if on_mouse_press_handlers is not None:
-            for handler in on_mouse_press_handlers:
-                self.on_mouse_press_handlers.remove(handler)
+        for handler in on_mouse_press_handlers:
+            self.on_mouse_press_handlers.remove(handler)
 
-        if on_mouse_release_handlers is not None:
-            for handler in on_mouse_release_handlers:
-                self.on_mouse_release_handlers.remove(handler)
+        for handler in on_mouse_release_handlers:
+            self.on_mouse_release_handlers.remove(handler)
 
-        if on_mouse_drag_handlers is not None:
-            for handler in on_mouse_drag_handlers:
-                self.on_mouse_drag_handlers.remove(handler)
+        for handler in on_mouse_drag_handlers:
+            self.on_mouse_drag_handlers.remove(handler)
 
-        if on_mouse_leave_handlers is not None:
-            for handler in on_mouse_leave_handlers:
-                self.on_mouse_leave_handlers.remove(handler)
+        for handler in on_mouse_leave_handlers:
+            self.on_mouse_leave_handlers.remove(handler)
 
-        if on_mouse_scroll_handlers is not None:
-            for handler in on_mouse_scroll_handlers:
-                self.on_mouse_scroll_handlers.remove(handler)
+        for handler in on_mouse_scroll_handlers:
+            self.on_mouse_scroll_handlers.remove(handler)
 
-        if on_key_press_handlers is not None:
-            for handler in on_key_press_handlers:
-                self.on_key_press_handlers.remove(handler)
+        for handler in on_key_press_handlers:
+            self.on_key_press_handlers.remove(handler)
 
-        if on_text_handlers is not None:
-            for handler in on_text_handlers:
-                self.on_text_handlers.remove(handler)
+        for handler in on_text_handlers:
+            self.on_text_handlers.remove(handler)
 
         # little recursive pattern there: it stops as soon as reaches
         # App object controller (App object does not have parent objects)

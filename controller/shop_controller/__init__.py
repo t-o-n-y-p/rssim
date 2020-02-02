@@ -17,10 +17,10 @@ class ShopController(MapBaseController):
                          logger=getLogger(f'root.app.game.map.{map_id}.shop.{shop_id}.controller'))
         self.map_id = map_id
         self.shop_id = shop_id
-        self.fade_in_animation = ShopFadeInAnimation(self)
-        self.fade_out_animation = ShopFadeOutAnimation(self)
         self.view = view
         self.model = model
+        self.fade_in_animation = ShopFadeInAnimation(self.view)
+        self.fade_out_animation = ShopFadeOutAnimation(self.view)
         self.view.on_init_content()
         self.placeholder = placeholder
         self.shop_constructor = shop_constructor

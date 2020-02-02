@@ -20,10 +20,10 @@ class CrossoverController(MapBaseController):
         self.track_param_2 = track_param_2
         self.crossover_type = crossover_type
         self.map_id = map_id
-        self.fade_in_animation = CrossoverFadeInAnimation(self)
-        self.fade_out_animation = CrossoverFadeOutAnimation(self)
         self.view = view
         self.model = model
+        self.fade_in_animation = CrossoverFadeInAnimation(self.view)
+        self.fade_out_animation = CrossoverFadeOutAnimation(self.view)
         self.view.on_init_content()
 
     def create_crossover_elements(self, track_param_1, track_param_2, crossover_type):

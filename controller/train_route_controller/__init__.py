@@ -14,10 +14,10 @@ class TrainRouteController(MapBaseController):
         self.track = track
         self.train_route = train_route
         self.map_id = map_id
-        self.fade_in_animation = TrainRouteFadeInAnimation(self)
-        self.fade_out_animation = TrainRouteFadeOutAnimation(self)
         self.view = view
         self.model = model
+        self.fade_in_animation = TrainRouteFadeInAnimation(self.view)
+        self.fade_out_animation = TrainRouteFadeOutAnimation(self.view)
         self.view.on_init_content()
 
     def create_train_route_elements(self, track, train_route):

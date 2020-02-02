@@ -5,10 +5,10 @@ from ui.fade_animation.fade_out_animation import *
 
 @final
 class TrainFadeOutAnimation(FadeOutAnimation):
-    def __init__(self, train_controller):
-        super().__init__(animation_object=train_controller,
+    def __init__(self, train_view):
+        super().__init__(animation_object=train_view,
                          logger=getLogger(
-                             f'root.app.game.map.{train_controller.map_id}.train.{train_controller.train_id}.fade_out_animation'
+                             f'root.app.game.map.{train_view.map_id}.train.{train_view.train_id}.fade_out_animation'
                          ))
 
     @fade_animation_needed

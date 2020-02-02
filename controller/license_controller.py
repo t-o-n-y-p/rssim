@@ -11,8 +11,8 @@ from ui.fade_animation.fade_out_animation.license_fade_out_animation import Lice
 class LicenseController(AppBaseController):
     def __init__(self, app):
         super().__init__(parent_controller=app, logger=getLogger('root.app.license.controller'))
-        self.fade_in_animation = LicenseFadeInAnimation(self)
-        self.fade_out_animation = LicenseFadeOutAnimation(self)
         self.view = LicenseView(controller=self)
         self.model = LicenseModel(controller=self, view=self.view)
+        self.fade_in_animation = LicenseFadeInAnimation(self.view)
+        self.fade_out_animation = LicenseFadeOutAnimation(self.view)
         self.view.on_init_content()

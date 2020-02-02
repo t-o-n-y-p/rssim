@@ -5,10 +5,10 @@ from ui.fade_animation.fade_in_animation import *
 
 @final
 class TrainRouteFadeInAnimation(FadeInAnimation):
-    def __init__(self, train_route_controller):
-        super().__init__(animation_object=train_route_controller,
+    def __init__(self, train_route_view):
+        super().__init__(animation_object=train_route_view,
                          logger=getLogger(
-                             f'root.app.game.map.{train_route_controller.map_id}.train_route.{train_route_controller.track}.{train_route_controller.train_route}.fade_in_animation'
+                             f'root.app.game.map.{train_route_view.map_id}.train_route.{train_route_view.track}.{train_route_view.train_route}.fade_in_animation'
                          ))
 
     @fade_animation_needed

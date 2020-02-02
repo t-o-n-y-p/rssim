@@ -5,11 +5,9 @@ from ui.fade_animation.fade_in_animation import *
 
 @final
 class SchedulerFadeInAnimation(FadeInAnimation):
-    def __init__(self, scheduler_controller):
-        super().__init__(animation_object=scheduler_controller,
-                         logger=getLogger(
-                             f'root.app.game.map.{scheduler_controller.map_id}.scheduler.fade_in_animation'
-                         ))
+    def __init__(self, scheduler_view):
+        super().__init__(animation_object=scheduler_view,
+                         logger=getLogger(f'root.app.game.map.{scheduler_view.map_id}.scheduler.fade_in_animation'))
 
     @fade_animation_needed
     @fade_animation_is_not_active

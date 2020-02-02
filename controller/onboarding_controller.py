@@ -11,12 +11,11 @@ from ui.fade_animation.fade_out_animation.onboarding_fade_out_animation import O
 class OnboardingController(AppBaseController):
     def __init__(self, app):
         super().__init__(parent_controller=app, logger=getLogger('root.app.onboarding.controller'))
-        self.fade_in_animation = OnboardingFadeInAnimation(self)
-        self.fade_out_animation = OnboardingFadeOutAnimation(self)
         self.view = OnboardingView(controller=self)
         self.model = OnboardingModel(controller=self, view=self.view)
+        self.fade_in_animation = OnboardingFadeInAnimation(self.view)
+        self.fade_out_animation = OnboardingFadeOutAnimation(self.view)
         self.view.on_init_content()
 
-    def on_deactivate_view(self):
-        super().on_deactivate_view()
+    def on_save_and_commit_onboarding_state(self):
         self.model.on_save_and_commit_onboarding_state()

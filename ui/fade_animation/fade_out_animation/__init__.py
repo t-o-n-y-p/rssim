@@ -8,8 +8,8 @@ class FadeOutAnimation(FadeAnimation):
 
     def on_activate(self):
         self.is_activated = True
-        self.current_opacity_chart_index = self.opacity_chart.index(self.animation_object.view.opacity)
-        self.animation_object.on_deactivate_view()
+        self.current_opacity_chart_index = self.opacity_chart.index(self.animation_object.opacity)
+        self.animation_object.on_deactivate()
 
     @final
     @fade_animation_is_active

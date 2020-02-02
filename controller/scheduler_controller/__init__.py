@@ -12,19 +12,14 @@ class SchedulerController(MapBaseController):
         super().__init__(parent_controller=parent_controller,
                          logger=getLogger(f'root.app.game.map.{map_id}.scheduler.controller'))
         self.map_id = map_id
-        self.fade_in_animation = SchedulerFadeInAnimation(self)
-        self.fade_out_animation = SchedulerFadeOutAnimation(self)
         self.view = view
         self.model = model
+        self.fade_in_animation = SchedulerFadeInAnimation(self.view)
+        self.fade_out_animation = SchedulerFadeOutAnimation(self.view)
         self.view.on_init_content()
 
     def create_scheduler_elements(self):
         pass
-
-    @final
-    def on_deactivate_view(self):
-        super().on_deactivate_view()
-        self.parent_controller.on_close_schedule()
 
     @final
     def on_unlock_track(self, track):

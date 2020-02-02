@@ -11,8 +11,8 @@ from ui.fade_animation.fade_out_animation.main_menu_fade_out_animation import Ma
 class MainMenuController(AppBaseController):
     def __init__(self, app):
         super().__init__(parent_controller=app, logger=getLogger('root.app.main_menu.controller'))
-        self.fade_in_animation = MainMenuFadeInAnimation(self)
-        self.fade_out_animation = MainMenuFadeOutAnimation(self)
         self.view = MainMenuView(controller=self)
         self.model = MainMenuModel(controller=self, view=self.view)
+        self.fade_in_animation = MainMenuFadeInAnimation(self.view)
+        self.fade_out_animation = MainMenuFadeOutAnimation(self.view)
         self.view.on_init_content()

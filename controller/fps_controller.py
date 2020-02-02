@@ -11,10 +11,10 @@ from ui.fade_animation.fade_out_animation.fps_fade_out_animation import FPSFadeO
 class FPSController(AppBaseController):
     def __init__(self, app_controller):
         super().__init__(parent_controller=app_controller, logger=getLogger('root.app.fps.controller'))
-        self.fade_in_animation = FPSFadeInAnimation(self)
-        self.fade_out_animation = FPSFadeOutAnimation(self)
         self.view = FPSView(controller=self)
         self.model = FPSModel(controller=self, view=self.view)
+        self.fade_in_animation = FPSFadeInAnimation(self.view)
+        self.fade_out_animation = FPSFadeOutAnimation(self.view)
         self.view.on_init_content()
 
     def on_update_fps(self, fps):

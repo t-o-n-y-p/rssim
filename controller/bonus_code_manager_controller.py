@@ -12,10 +12,10 @@ class BonusCodeManagerController(GameBaseController):
     def __init__(self, game_controller):
         super().__init__(parent_controller=game_controller,
                          logger=getLogger('root.app.game.bonus_code_manager.controller'))
-        self.fade_in_animation = BonusCodeManagerFadeInAnimation(self)
-        self.fade_out_animation = BonusCodeManagerFadeOutAnimation(self)
         self.view = BonusCodeManagerView(controller=self)
         self.model = BonusCodeManagerModel(controller=self, view=self.view)
+        self.fade_in_animation = BonusCodeManagerFadeInAnimation(self.view)
+        self.fade_out_animation = BonusCodeManagerFadeOutAnimation(self.view)
         self.view.on_init_content()
 
     def on_activate_new_bonus_code(self, sha512_hash):

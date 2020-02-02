@@ -55,7 +55,7 @@ class FadeAnimation:
             else:
                 self.current_opacity_chart_index = len(self.opacity_chart) - 1
 
-            self.animation_object.view.on_update_opacity(self.opacity_chart[self.current_opacity_chart_index])
+            self.animation_object.on_update_opacity(self.opacity_chart[self.current_opacity_chart_index])
 
     @final
     def on_update_fade_animation_state(self, new_state):

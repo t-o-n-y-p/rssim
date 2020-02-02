@@ -13,6 +13,7 @@ class SchedulerView(MapBaseView):
     def __init__(self, controller, map_id):
         def on_close_schedule(button):
             self.controller.fade_out_animation.on_activate()
+            self.controller.parent_controller.on_close_schedule()
 
         super().__init__(controller, map_id, logger=getLogger(f'root.app.game.map.{map_id}.scheduler.view'))
         self.base_schedule = BASE_SCHEDULE[self.map_id]

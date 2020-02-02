@@ -23,10 +23,10 @@ class AppController(AppBaseController):
     def __init__(self, loader):
         super().__init__(logger=getLogger('root.app.controller'))
         self.loader = loader
-        self.fade_in_animation = AppFadeInAnimation(self)
-        self.fade_out_animation = AppFadeOutAnimation(self)
         self.view = AppView(controller=self)
         self.model = AppModel(controller=self, view=self.view)
+        self.fade_in_animation = AppFadeInAnimation(self.view)
+        self.fade_out_animation = AppFadeOutAnimation(self.view)
         self.view.on_init_content()
         self.main_menu = MainMenuController(self)
         self.onboarding = OnboardingController(self)
@@ -118,7 +118,7 @@ class AppController(AppBaseController):
         self.model.on_fullscreen_mode_turned_off()
 
     def on_close_game(self):
-        self.on_deactivate_view()
+        self.fade_out_animation.on_activate()
         self.on_save_state()
         exit()
 
@@ -155,6 +155,7 @@ class AppController(AppBaseController):
     def on_close_onboarding(self):
         self.main_menu_to_onboarding_transition_animation.on_deactivate()
         self.onboarding_to_game_transition_animation.on_activate()
+        self.onboarding.on_save_and_commit_onboarding_state()
         self.game.on_resume_game()
 
     def on_back_to_the_station(self):
