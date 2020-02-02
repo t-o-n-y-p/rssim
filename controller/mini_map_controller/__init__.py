@@ -10,11 +10,8 @@ from ui.fade_animation.fade_out_animation.mini_map_fade_out_animation import Min
 
 class MiniMapController(MapBaseController):
     def __init__(self, model: MiniMapModel, view: MiniMapView, map_id, parent_controller):
-        super().__init__(parent_controller=parent_controller,
+        super().__init__(model, view, map_id, parent_controller,
                          logger=getLogger(f'root.app.game.map.{map_id}.mini_map.controller'))
-        self.map_id = map_id
-        self.view = view
-        self.model = model
         self.fade_in_animation = MiniMapFadeInAnimation(self.view)
         self.fade_out_animation = MiniMapFadeOutAnimation(self.view)
         self.view.on_init_content()

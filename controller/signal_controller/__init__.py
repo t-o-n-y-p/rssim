@@ -9,13 +9,9 @@ from ui.fade_animation.fade_out_animation.signal_fade_out_animation import Signa
 
 class SignalController(MapBaseController):
     def __init__(self, model: SignalModel, view: SignalView, map_id, parent_controller, track, base_route):
-        super().__init__(parent_controller=parent_controller,
+        super().__init__(model, view, map_id, parent_controller,
                          logger=getLogger(f'root.app.game.map.{map_id}.signal.{track}.{base_route}.controller'))
-        self.track = track
-        self.base_route = base_route
-        self.map_id = map_id
-        self.view = view
-        self.model = model
+        self.track, self.base_route = track, base_route
         self.fade_in_animation = SignalFadeInAnimation(self.view)
         self.fade_out_animation = SignalFadeOutAnimation(self.view)
         self.view.on_init_content()

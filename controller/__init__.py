@@ -288,8 +288,11 @@ class GameBaseController(AppBaseController):
 
 
 class MapBaseController(GameBaseController):
-    def __init__(self, parent_controller=None, logger=None):
+    def __init__(self, model, view, map_id, parent_controller=None, logger=None):
         super().__init__(parent_controller, logger)
+        self.map_id = map_id
+        self.view = view
+        self.model = model
         self.map_element_controllers = []
 
     def on_unlock(self):

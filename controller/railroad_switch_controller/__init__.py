@@ -12,13 +12,8 @@ class RailroadSwitchController(MapBaseController):
                  track_param_1, track_param_2, switch_type):
         logger_name \
             = f'root.app.game.map.{map_id}.railroad_switch.{track_param_1}.{track_param_2}.{switch_type}.controller'
-        super().__init__(parent_controller=parent_controller, logger=getLogger(logger_name))
-        self.track_param_1 = track_param_1
-        self.track_param_2 = track_param_2
-        self.switch_type = switch_type
-        self.map_id = map_id
-        self.view = view
-        self.model = model
+        super().__init__(model, view, map_id, parent_controller, logger=getLogger(logger_name))
+        self.track_param_1, self.track_param_2, self.switch_type = track_param_1, track_param_2, switch_type
         self.fade_in_animation = RailroadSwitchFadeInAnimation(self.view)
         self.fade_out_animation = RailroadSwitchFadeOutAnimation(self.view)
         self.view.on_init_content()

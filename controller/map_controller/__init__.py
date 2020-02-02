@@ -31,11 +31,8 @@ class MapController(MapBaseController):
                  crossovers_list: List[CrossoverController],
                  trains: Dict[int, TrainController], trains_list: List[TrainController], shops: List[ShopController],
                  map_id, parent_controller):
-        super().__init__(parent_controller=parent_controller,
+        super().__init__(model, view, map_id, parent_controller,
                          logger=getLogger(f'root.app.game.map.{map_id}.controller'))
-        self.map_id = map_id
-        self.view = view
-        self.model = model
         self.fade_in_animation = MapFadeInAnimation(self.view)
         self.fade_out_animation = MapFadeOutAnimation(self.view)
         self.view.on_init_content()

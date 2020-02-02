@@ -11,7 +11,7 @@ class CrossoverController(MapBaseController):
     def __init__(self, model: CrossoverModel, view: CrossoverView, map_id, parent_controller,
                  track_param_1, track_param_2, crossover_type):
         super().__init__(
-            parent_controller=parent_controller,
+            model, view, map_id, parent_controller,
             logger=getLogger(
                 f'root.app.game.map.{map_id}.crossover.{track_param_1}.{track_param_2}.{crossover_type}.controller'
             )
@@ -19,9 +19,6 @@ class CrossoverController(MapBaseController):
         self.track_param_1 = track_param_1
         self.track_param_2 = track_param_2
         self.crossover_type = crossover_type
-        self.map_id = map_id
-        self.view = view
-        self.model = model
         self.fade_in_animation = CrossoverFadeInAnimation(self.view)
         self.fade_out_animation = CrossoverFadeOutAnimation(self.view)
         self.view.on_init_content()

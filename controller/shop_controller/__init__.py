@@ -13,12 +13,9 @@ from controller.shop_constructor_controller import ShopConstructorController
 class ShopController(MapBaseController):
     def __init__(self, model: ShopModel, view: ShopView, placeholder: ShopPlaceholderController,
                  shop_constructor: ShopConstructorController, map_id, shop_id, parent_controller):
-        super().__init__(parent_controller=parent_controller,
+        super().__init__(model, view, map_id, parent_controller,
                          logger=getLogger(f'root.app.game.map.{map_id}.shop.{shop_id}.controller'))
-        self.map_id = map_id
         self.shop_id = shop_id
-        self.view = view
-        self.model = model
         self.fade_in_animation = ShopFadeInAnimation(self.view)
         self.fade_out_animation = ShopFadeOutAnimation(self.view)
         self.view.on_init_content()
