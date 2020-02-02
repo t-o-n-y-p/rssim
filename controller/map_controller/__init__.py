@@ -3,6 +3,7 @@ from operator import attrgetter
 from typing import Dict, List
 
 from controller import *
+from controller.narrator_controller import NarratorController
 from model.map_model import MapModel
 from view.map_view import MapView
 from controller.scheduler_controller import SchedulerController
@@ -21,7 +22,8 @@ from ui.fade_animation.fade_out_animation.map_fade_out_animation import MapFadeO
 
 class MapController(MapBaseController):
     def __init__(self, model: MapModel, view: MapView, scheduler: SchedulerController,
-                 constructor: ConstructorController, dispatcher: DispatcherController, mini_map: MiniMapController,
+                 constructor: ConstructorController, dispatcher: DispatcherController,
+                 mini_map: MiniMapController, narrator: NarratorController,
                  signals: Dict[int, Dict[str, SignalController]], signals_list: List[SignalController],
                  train_routes: Dict[int, Dict[str, TrainRouteController]],
                  train_routes_sorted_list: List[TrainRouteController],
@@ -40,6 +42,7 @@ class MapController(MapBaseController):
         self.constructor = constructor
         self.dispatcher = dispatcher
         self.mini_map = mini_map
+        self.narrator = narrator
         self.signals = signals
         self.signals_list = signals_list
         self.train_routes = train_routes
@@ -56,10 +59,12 @@ class MapController(MapBaseController):
         self.fade_in_animation.scheduler_fade_in_animation = self.scheduler.fade_in_animation
         self.fade_in_animation.dispatcher_fade_in_animation = self.dispatcher.fade_in_animation
         self.fade_in_animation.mini_map_fade_in_animation = self.mini_map.fade_in_animation
+        self.fade_in_animation.narrator_fade_in_animation = self.narrator.fade_in_animation
         self.fade_out_animation.constructor_fade_out_animation = self.constructor.fade_out_animation
         self.fade_out_animation.scheduler_fade_out_animation = self.scheduler.fade_out_animation
         self.fade_out_animation.dispatcher_fade_out_animation = self.dispatcher.fade_out_animation
         self.fade_out_animation.mini_map_fade_out_animation = self.mini_map.fade_out_animation
+        self.fade_out_animation.narrator_fade_out_animation = self.narrator.fade_out_animation
         for signal in self.signals_list:
             self.fade_in_animation.signal_fade_in_animations.append(signal.fade_in_animation)
             self.fade_out_animation.signal_fade_out_animations.append(signal.fade_out_animation)
@@ -90,7 +95,7 @@ class MapController(MapBaseController):
             self.fade_out_animation.shop_fade_out_animations.append(shop.fade_out_animation)
 
         self.child_controllers = [
-            self.scheduler, self.constructor, self.dispatcher, self.mini_map,
+            self.scheduler, self.constructor, self.dispatcher, self.mini_map, self.narrator,
             *self.signals_list, *self.train_routes_sorted_list,
             *self.switches_list, *self.crossovers_list, *self.trains_list, *self.shops
         ]

@@ -26,7 +26,7 @@ class AppView(AppBaseView):
             self.controller.on_close_game()
 
         def on_iconify_game(button):
-            SURFACE.minimize()
+            WINDOW.minimize()
 
         def on_app_window_fullscreen(button):
             button.paired_button.opacity = button.opacity
@@ -102,7 +102,7 @@ class AppView(AppBaseView):
 
     def on_change_screen_resolution(self, screen_resolution):
         super().on_change_screen_resolution(screen_resolution)
-        SURFACE.set_size(screen_resolution[0], screen_resolution[1])
+        WINDOW.set_size(screen_resolution[0], screen_resolution[1])
         self.title_label.on_change_screen_resolution(self.screen_resolution)
         self.shader_sprite.on_change_screen_resolution(self.screen_resolution)
         self.us_flag_sprite.on_change_screen_resolution(self.screen_resolution)
@@ -119,11 +119,11 @@ class AppView(AppBaseView):
 
     def on_fullscreen_mode_turned_on(self):
         self.fullscreen_mode = True
-        SURFACE.set_fullscreen(fullscreen=self.fullscreen_mode)
+        WINDOW.set_fullscreen(fullscreen=self.fullscreen_mode)
 
     def on_fullscreen_mode_turned_off(self):
         self.fullscreen_mode = False
-        SURFACE.set_fullscreen(fullscreen=self.fullscreen_mode)
+        WINDOW.set_fullscreen(fullscreen=self.fullscreen_mode)
 
     @game_is_not_fullscreen
     @cursor_is_over_the_app_header

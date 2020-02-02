@@ -25,7 +25,7 @@ def view_is_not_active(fn):
 
 def game_is_not_fullscreen(fn):
     def _handle_if_game_window_is_not_fullscreen(*args, **kwargs):
-        if not SURFACE.fullscreen:
+        if not WINDOW.fullscreen:
             fn(*args, **kwargs)
 
     return _handle_if_game_window_is_not_fullscreen

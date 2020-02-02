@@ -12,6 +12,7 @@ class MapFadeInAnimation(FadeInAnimation):
         self.scheduler_fade_in_animation = None
         self.dispatcher_fade_in_animation = None
         self.mini_map_fade_in_animation = None
+        self.narrator_fade_in_animation = None
         self.signal_fade_in_animations = []
         self.railroad_switch_fade_in_animations = []
         self.crossover_fade_in_animations = []
@@ -23,6 +24,7 @@ class MapFadeInAnimation(FadeInAnimation):
     @fade_animation_is_not_active
     def on_activate(self):
         super().on_activate()
+        self.narrator_fade_in_animation.on_activate()
         for animation in self.signal_fade_in_animations:
             animation.on_activate()
 

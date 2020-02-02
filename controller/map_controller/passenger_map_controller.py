@@ -1,6 +1,7 @@
 from typing import final
 
 from controller.map_controller import MapController
+from controller.narrator_controller.passenger_map_narrator_controller import PassengerMapNarratorController
 from model.map_model.passenger_map_model import PassengerMapModel
 from view.map_view.passenger_map_view import PassengerMapView
 from controller.scheduler_controller.passenger_map_scheduler_controller import PassengerMapSchedulerController
@@ -29,6 +30,7 @@ class PassengerMapController(MapController):
         constructor = PassengerMapConstructorController(self)
         dispatcher = PassengerMapDispatcherController(self)
         mini_map = PassengerMiniMapController(self)
+        narrator = PassengerMapNarratorController(self)
         signals = {}
         signals_list = []
         CONFIG_DB_CURSOR.execute('''SELECT DISTINCT track FROM signal_config WHERE map_id = ?''', (PASSENGER_MAP, ))
@@ -112,6 +114,6 @@ class PassengerMapController(MapController):
         for i in range(number_of_shops):
             shops.append(PassengerMapShopController(self, i))
 
-        return model, view, scheduler, constructor, dispatcher, mini_map, signals, signals_list, \
-               train_routes, train_routes_sorted_list, switches, switches_list, crossovers, crossovers_list, \
-               trains, trains_list, shops
+        return model, view, scheduler, constructor, dispatcher, mini_map, narrator, signals, signals_list, \
+            train_routes, train_routes_sorted_list, switches, switches_list, crossovers, crossovers_list, \
+            trains, trains_list, shops

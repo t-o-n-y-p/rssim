@@ -76,10 +76,10 @@ ACTIVATIONS_LEFT: Final = 5
 IS_ACTIVATED: Final = 6
 BONUS_TIME: Final = 7
 # main surface which harbors all the app
-SURFACE: Final = Window(width=MIN_RESOLUTION_WIDTH, height=MIN_RESOLUTION_HEIGHT,
-                        caption='Railway Station Simulator', style='borderless', fullscreen=False, vsync=False)
+WINDOW: Final = Window(width=MIN_RESOLUTION_WIDTH, height=MIN_RESOLUTION_HEIGHT,
+                       caption='Railway Station Simulator', style='borderless', fullscreen=False, vsync=False)
 # flip the surface so user knows game has launched and is loading now
-SURFACE.flip()
+WINDOW.flip()
 # large portions of sprites which can be drawn together
 BATCHES: Final = {'main_batch': Batch(),
                   'mini_map_batch': Batch(),
@@ -100,8 +100,8 @@ GROUPS: Final = {'environment': OrderedGroup(0),
                  'exp_money_time': OrderedGroup(9),
                  'button_text': OrderedGroup(10)}
 # mouse cursor shapes
-HAND_CURSOR: Final = SURFACE.get_system_mouse_cursor(SURFACE.CURSOR_HAND)
-DEFAULT_CURSOR: Final = SURFACE.get_system_mouse_cursor(SURFACE.CURSOR_DEFAULT)
+HAND_CURSOR: Final = WINDOW.get_system_mouse_cursor(WINDOW.CURSOR_HAND)
+DEFAULT_CURSOR: Final = WINDOW.get_system_mouse_cursor(WINDOW.CURSOR_DEFAULT)
 # ------------------- END CONSTANTS -------------------
 
 

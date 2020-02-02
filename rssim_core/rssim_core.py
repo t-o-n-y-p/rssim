@@ -10,7 +10,7 @@ from keyring import get_password
 
 from exceptions import *
 from rssim_core import *
-from ui import SURFACE, BATCHES, MIN_RESOLUTION_WIDTH, MIN_RESOLUTION_HEIGHT, MAP_CAMERA, UI_CAMERA
+from ui import WINDOW, BATCHES, MIN_RESOLUTION_WIDTH, MIN_RESOLUTION_HEIGHT, MAP_CAMERA, UI_CAMERA
 from database import USER_DB_CURSOR, USER_DB_CONNECTION, USER_DB_LOCATION, on_commit
 from controller.app_controller import AppController
 
@@ -76,12 +76,12 @@ class RSSim:
         self.on_mouse_drag_cached_movement = [0, 0]
         self.on_draw_event_counter = 0
 
-        @SURFACE.event
+        @WINDOW.event
         def on_draw():
             if self.on_draw_event_counter < MAXIMUM_DRAW_EVENTS_PER_FRAME:
                 self.on_draw_event_counter += 1
                 # clear surface
-                SURFACE.clear()
+                WINDOW.clear()
                 for batch in BATCHES:
                     BATCHES[batch].invalidate()
 
@@ -97,7 +97,7 @@ class RSSim:
                     # draw ui batch: text labels, buttons
                     BATCHES['ui_batch'].draw()
 
-        @SURFACE.event
+        @WINDOW.event
         def on_activate():
             self.app.on_disable_notifications()
             for h in self.notifications:
@@ -105,7 +105,7 @@ class RSSim:
 
             self.notifications.clear()
 
-        @SURFACE.event
+        @WINDOW.event
         def on_show():
             self.app.on_disable_notifications()
             for h in self.notifications:
@@ -113,25 +113,25 @@ class RSSim:
 
             self.notifications.clear()
 
-        @SURFACE.event
+        @WINDOW.event
         def on_deactivate():
             self.app.on_enable_notifications()
 
-        @SURFACE.event
+        @WINDOW.event
         def on_hide():
             self.app.on_enable_notifications()
 
-        @SURFACE.event
+        @WINDOW.event
         def on_mouse_press(x, y, button, modifiers):
             for h in self.app.on_mouse_press_handlers:
                 h(x, y, button, modifiers)
 
-        @SURFACE.event
+        @WINDOW.event
         def on_mouse_release(x, y, button, modifiers):
             for h in self.app.on_mouse_release_handlers:
                 h(x, y, button, modifiers)
 
-        @SURFACE.event
+        @WINDOW.event
         def on_mouse_motion(x, y, dx, dy):
             if self.on_mouse_motion_event_counter < MAXIMUM_MOUSE_MOTION_EVENTS_PER_FRAME:
                 self.on_mouse_motion_event_counter += 1
@@ -145,7 +145,7 @@ class RSSim:
                 self.on_mouse_motion_cached_movement[0] += dx
                 self.on_mouse_motion_cached_movement[1] += dy
 
-        @SURFACE.event
+        @WINDOW.event
         def on_mouse_drag(x, y, dx, dy, buttons, modifiers):
             if self.on_mouse_drag_event_counter < MAXIMUM_MOUSE_DRAG_EVENTS_PER_FRAME:
                 self.on_mouse_drag_event_counter += 1
@@ -159,22 +159,22 @@ class RSSim:
                 self.on_mouse_drag_cached_movement[0] += dx
                 self.on_mouse_drag_cached_movement[1] += dy
 
-        @SURFACE.event
+        @WINDOW.event
         def on_mouse_leave(x, y):
             for h in self.app.on_mouse_leave_handlers:
                 h(x, y)
 
-        @SURFACE.event
+        @WINDOW.event
         def on_mouse_scroll(x, y, scroll_x, scroll_y):
             for h in self.app.on_mouse_scroll_handlers:
                 h(x, y, scroll_x, scroll_y)
 
-        @SURFACE.event
+        @WINDOW.event
         def on_key_press(symbol, modifiers):
             for h in self.app.on_key_press_handlers:
                 h(symbol, modifiers)
 
-        @SURFACE.event
+        @WINDOW.event
         def on_text(text):
             for h in self.app.on_text_handlers:
                 h(text)
@@ -185,15 +185,15 @@ class RSSim:
         while True:
             time_1 = perf_counter()
             # dispatch_events() launches keyboard and mouse handlers implemented above
-            SURFACE.dispatch_events()
+            WINDOW.dispatch_events()
             # increment in-game time
             self.app.game.on_update_time()
             # on_update_view() checks if all views content is up-to-date and opacity is correct
             self.app.on_update_view()
             # call on_draw() handler implemented above
-            SURFACE.dispatch_event('on_draw')
+            WINDOW.dispatch_event('on_draw')
             # flip the surface so user can see all the game content
-            SURFACE.flip()
+            WINDOW.flip()
             self.on_mouse_motion_event_counter = 0
             self.on_mouse_drag_event_counter = 0
             self.on_draw_event_counter = 0

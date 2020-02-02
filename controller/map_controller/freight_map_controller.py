@@ -1,6 +1,7 @@
 from typing import final
 
 from controller.map_controller import MapController
+from controller.narrator_controller.freight_map_narrator_controller import FreightMapNarratorController
 from model.map_model.freight_map_model import FreightMapModel
 from view.map_view.freight_map_view import FreightMapView
 from controller.scheduler_controller.freight_map_scheduler_controller import FreightMapSchedulerController
@@ -28,6 +29,7 @@ class FreightMapController(MapController):
         constructor = FreightMapConstructorController(self)
         dispatcher = FreightMapDispatcherController(self)
         mini_map = FreightMiniMapController(self)
+        narrator = FreightMapNarratorController(self)
         signals = {}
         signals_list = []
         CONFIG_DB_CURSOR.execute('''SELECT DISTINCT track FROM signal_config WHERE map_id = ?''', (FREIGHT_MAP, ))
@@ -106,6 +108,6 @@ class FreightMapController(MapController):
                 trains_list.append(trains[i[0]])
 
         shops = []
-        return model, view, scheduler, constructor, dispatcher, mini_map, signals, signals_list, \
-               train_routes, train_routes_sorted_list, switches, switches_list, crossovers, crossovers_list, \
-               trains, trains_list, shops
+        return model, view, scheduler, constructor, dispatcher, mini_map, narrator, signals, signals_list, \
+            train_routes, train_routes_sorted_list, switches, switches_list, crossovers, crossovers_list, \
+            trains, trains_list, shops

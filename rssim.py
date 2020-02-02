@@ -6,7 +6,7 @@ from ctypes import windll
 
 from exceptions import *
 from rssim_core.rssim_core import RSSim
-from ui import SURFACE
+from ui import WINDOW
 
 
 def main():
@@ -14,7 +14,7 @@ def main():
         RSSim().run()
     except (VideoAdapterNotSupportedException, MonitorNotSupportedException,
             UpdateIncompatibleException, HackingDetectedException) as e:
-        SURFACE.close()
+        WINDOW.close()
         windll.user32.MessageBoxW(None, e.text, e.caption, 0x1000)
     except Exception:
         if not path.exists('logs'):

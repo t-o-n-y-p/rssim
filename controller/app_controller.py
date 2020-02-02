@@ -3,7 +3,7 @@ from logging import getLogger
 
 from controller import *
 from database import on_commit
-from ui import SURFACE
+from ui import WINDOW
 from model.app_model import AppModel
 from view.app_view import AppView
 from ui.fade_animation.fade_in_animation.app_fade_in_animation import AppFadeInAnimation
@@ -213,7 +213,7 @@ class AppController(AppBaseController):
                                         level_up_notification_enabled, feature_unlocked_notification_enabled,
                                         construction_completed_notification_enabled, enough_money_notification_enabled,
                                         bonus_expired_notification_enabled, shop_storage_notification_enabled)
-        if not SURFACE.fullscreen:
+        if not WINDOW.fullscreen:
             self.on_change_screen_resolution(windowed_resolution)
 
         self.fps.on_update_display_fps(display_fps)

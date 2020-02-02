@@ -225,7 +225,7 @@ class Button:
                                                 BUTTON_BACKGROUND_ALPHA[self.state][self.transparent]
                                                 * float(self.opacity) / 255.0) * 4)
 
-                SURFACE.set_mouse_cursor(HAND_CURSOR)
+                WINDOW.set_mouse_cursor(HAND_CURSOR)
                 if self.on_hover_action is not None:
                     self.on_hover_action()
         # if cursor is not on the button and button is not normal, it means cursor has just left the button,
@@ -238,7 +238,7 @@ class Button:
                                                 BUTTON_BACKGROUND_ALPHA[self.state][self.transparent]
                                                 * float(self.opacity) / 255.0) * 4)
 
-                SURFACE.set_mouse_cursor(DEFAULT_CURSOR)
+                WINDOW.set_mouse_cursor(DEFAULT_CURSOR)
                 if self.on_leave_action is not None:
                     self.on_leave_action()
 
@@ -265,7 +265,7 @@ class Button:
                                         BUTTON_BACKGROUND_ALPHA[self.state][self.transparent]
                                         * float(self.opacity) / 255.0) * 4)
 
-        SURFACE.set_mouse_cursor(DEFAULT_CURSOR)
+        WINDOW.set_mouse_cursor(DEFAULT_CURSOR)
         self.on_click_action(self)
 
     @final
@@ -277,7 +277,7 @@ class Button:
                                         BUTTON_BACKGROUND_ALPHA[self.state][self.transparent]
                                         * float(self.opacity) / 255.0) * 4)
 
-        SURFACE.set_mouse_cursor(DEFAULT_CURSOR)
+        WINDOW.set_mouse_cursor(DEFAULT_CURSOR)
         if self.on_leave_action is not None:
             self.on_leave_action()
 
