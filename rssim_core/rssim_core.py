@@ -75,6 +75,8 @@ class RSSim:
         self.on_mouse_drag_event_counter = 0
         self.on_mouse_drag_cached_movement = [0, 0]
         self.on_draw_event_counter = 0
+        self.on_mouse_scroll_event_counter = 0
+        self.on_mouse_scroll_cached_movement = [0, 0]
 
         @WINDOW.event
         def on_draw():
@@ -166,8 +168,17 @@ class RSSim:
 
         @WINDOW.event
         def on_mouse_scroll(x, y, scroll_x, scroll_y):
-            for h in self.app.on_mouse_scroll_handlers:
-                h(x, y, scroll_x, scroll_y)
+            if self.on_mouse_scroll_event_counter < MAXIMUM_MOUSE_SCROLL_EVENTS_PER_FRAME:
+                self.on_mouse_scroll_event_counter += 1
+                scroll_x += self.on_mouse_scroll_cached_movement[0]
+                scroll_y += self.on_mouse_scroll_cached_movement[1]
+                self.on_mouse_scroll_cached_movement = [0, 0]
+                for h in self.app.on_mouse_scroll_handlers:
+                    h(x, y, scroll_x, scroll_y)
+
+            else:
+                self.on_mouse_scroll_cached_movement[0] += scroll_x
+                self.on_mouse_scroll_cached_movement[1] += scroll_y
 
         @WINDOW.event
         def on_key_press(symbol, modifiers):
@@ -197,6 +208,7 @@ class RSSim:
             self.on_mouse_motion_event_counter = 0
             self.on_mouse_drag_event_counter = 0
             self.on_draw_event_counter = 0
+            self.on_mouse_scroll_event_counter = 0
             time_4 = perf_counter()
             # FPS is recalculated every FPS_INTERVAL seconds
             if perf_counter() - fps_timer > FPS_INTERVAL:
