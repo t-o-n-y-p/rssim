@@ -9,7 +9,6 @@ from ui.onboarding_page.map_switcher_onboarding_page import MapSwitcherOnboardin
 from ui.onboarding_page.pause_resume_onboarding_page import PauseResumeOnboardingPage
 from ui.onboarding_page.schedule_onboarding_page import ScheduleOnboardingPage
 from ui.onboarding_page.settings_onboarding_page import SettingsOnboardingPage
-from ui.onboarding_page.zoom_onboarding_page import ZoomOnboardingPage
 from ui.shader_sprite.onboarding_page_control_shader_sprite import OnboardingPageControlShaderSprite
 
 
@@ -19,7 +18,6 @@ class OnboardingPageControl(PageControl):
         super().__init__(logger=getLogger('root.app.onboarding.view.onboarding_page_control'),
                          parent_viewport=parent_viewport)
         self.pages = [MapOnboardingPage(parent_viewport=self.viewport),
-                      ZoomOnboardingPage(parent_viewport=self.viewport),
                       MapSwitcherOnboardingPage(parent_viewport=self.viewport),
                       ConstructorOnboardingPage(parent_viewport=self.viewport),
                       ExpMoneyOnboardingPage(parent_viewport=self.viewport),

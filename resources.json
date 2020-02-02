@@ -302,8 +302,8 @@
 		"ru": "Текущий уровень и баланс отображаются в нижней панели справа от кнопки открытия/закрытия экрана строительства. \nПрогресс опыта отображается с текущим уровнем; он показывает, сколько опыта осталось до следующего уровня. \nПрогресс денег отображается с балансом; он показывает, сколько денег осталось до покупки соответствующего пути или окружения."
 	},
 	"map_onboarding_page_string": {
-		"en": "You can drag the map in any direction from any point within the highlighted area except of buttons.",
-		"ru": "Карту можно перетаскивать в любом направлении из любой точки в выделенной области, кроме кнопок."
+		"en": "You can drag the map in any direction from any point within the highlighted area except of buttons. \n\nMap can be zoomed in or out with mouse wheel scroll: scrolling forward zooms the map in, scrolling backward zooms the map out.",
+		"ru": "Карту можно перетаскивать в любом направлении из любой точки в выделенной области, кроме кнопок. \n\nМасштаб карты можно увеличивать или уменьшать колесом мыши: увеличение - прокрутка вперед, уменьшение - прокрутка назад."
 	},
 	"map_switcher_onboarding_page_string": {
 		"en": "Navigation between maps is available using map switcher button. \nClick on it and then pick the map in the \"Select the map\" window.",
@@ -320,10 +320,6 @@
 	"settings_onboarding_page_string": {
 		"en": "The last bottom bar button opens settings screen. \n There you can set app window resolution, some other graphics options, in-game clock format and notification options.",
 		"ru": "Последняя кнопка в нижней панели открывает экран настроек. \nЗдесь ты можешь задать разрешение окна игры, некоторые другие настройки графики, настройки внутриигровых часов и нотификаций."
-	},
-	"zoom_onboarding_page_string": {
-		"en": "Map is available in two different scales. You can switch them using zoom button in the top left corner.",
-		"ru": "Карта доступна в двух масштабах. Ты можешь переключаться между ними с помощью кнопки масштаба в левом верхнем углу."
 	},
 	"24h_main_clock_string": {
 		"en": "{0:0>2} : {1:0>2}",

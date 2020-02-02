@@ -26,12 +26,6 @@ bool is_app_window_frame(int margin_x, int margin_y, int bottom_bar_height, int 
           || margin_x == size[0] / 2 - 5 * bottom_bar_height || margin_x == size[0] / 2 - 5 * bottom_bar_height + 1
           || margin_x == size[0] / 2 - 6 * bottom_bar_height + 1
           || margin_x == size[0] / 2 - 6 * bottom_bar_height + 2);
-    bool is_zoom_button_border
-    = (margin_x >= 0 && margin_x < top_bar_height * 2 - 3
-       && (margin_y == size[1] - top_bar_height - top_bar_height * 2 + 4
-           || margin_y == size[1] - top_bar_height - top_bar_height * 2 + 5)
-      ) || (margin_y >= size[1] - top_bar_height - top_bar_height * 2 + 4 && margin_y < size[1] - top_bar_height
-            && (margin_x == top_bar_height * 2 - 3 || margin_x == top_bar_height * 2 - 4));
     bool is_top_bar_button_border
     = margin_y >= size[1] - top_bar_height && margin_y < size[1]
       && (margin_x == top_bar_height - 1 || margin_x == top_bar_height - 2
@@ -50,33 +44,26 @@ bool is_app_window_frame(int margin_x, int margin_y, int bottom_bar_height, int 
                 && (margin_x == size[0] / 4 - top_bar_height || margin_x == size[0] / 4 - top_bar_height + 1
                     || margin_x == size[0] / 4 - top_bar_height + bottom_bar_height - 1
                     || margin_x == size[0] / 4 - top_bar_height + bottom_bar_height))
-      ) && page_number != 3;
+      ) && page_number != 2;
     return is_app_window_main_frame_border || is_app_window_frame_bar_border || is_bottom_bar_button_border
-           || is_zoom_button_border || is_top_bar_button_border || is_map_switcher_button_border;
+           || is_top_bar_button_border || is_map_switcher_button_border;
 }
 
 bool is_highlighted(int margin_x, int margin_y, int bottom_bar_height, int top_bar_height)
 {
     if (page_number == 0)
         return ((margin_x >= 2 && margin_x <= size[0] / 2 - 3
-                && margin_y >= bottom_bar_height + 1 && margin_y <= size[1] - top_bar_height - top_bar_height * 2 + 3
-                ) || (margin_x >= top_bar_height * 2 - 2 && margin_x <= size[0] / 2 - 3
-                      && margin_y >= size[1] - top_bar_height - top_bar_height * 2 + 4
-                      && margin_y <= size[1] - top_bar_height - 1)
+                && margin_y >= bottom_bar_height + 1 && margin_y <= size[1] - top_bar_height - 1)
                ) && !(margin_x >= size[0] / 4 - top_bar_height
                       && margin_x <= size[0] / 4 - top_bar_height + bottom_bar_height
                       && margin_y >= size[1] - 3 * top_bar_height / 2 - bottom_bar_height
                       && margin_y <= size[1] - 3 * top_bar_height / 2);
     else if (page_number == 1)
-        return margin_x >= 2 && margin_x < top_bar_height * 2 - 4
-               && margin_y >= size[1] - top_bar_height - top_bar_height * 2 + 6
-               && margin_y < size[1] - top_bar_height;
-    else if (page_number == 2)
         return margin_x >= size[0] / 4 - top_bar_height + 2
                && margin_x <= size[0] / 4 - top_bar_height + bottom_bar_height - 2
                && margin_y >= size[1] - 3 * top_bar_height / 2 - bottom_bar_height + 2
                && margin_y <= size[1] - 3 * top_bar_height / 2 - 2;
-    else if (page_number == 3)
+    else if (page_number == 2)
     {
         ivec2 cell_size = ivec2(int(6.875 * bottom_bar_height), bottom_bar_height);
         int interval_between_cells = int(bottom_bar_height / 4);
@@ -93,22 +80,22 @@ bool is_highlighted(int margin_x, int margin_y, int bottom_bar_height, int top_b
                         )
                     );
     }
-    else if (page_number == 4)
+    else if (page_number == 3)
         return margin_x >= bottom_bar_height + 1 && margin_x <= size[0] / 2 - 6 * bottom_bar_height
                && margin_y >= 2 && margin_y <= bottom_bar_height - 2;
-    else if (page_number == 5)
+    else if (page_number == 4)
         return margin_x >= size[0] / 2 - 6 * bottom_bar_height + 3
                && margin_x <= size[0] / 2 - 5 * bottom_bar_height - 1
                && margin_y >= 2 && margin_y <= bottom_bar_height - 2;
-    else if (page_number == 6)
+    else if (page_number == 5)
         return margin_x >= size[0] / 2 - 5 * bottom_bar_height + 2
                && margin_x <= size[0] / 2 - 4 * bottom_bar_height - 2
                && margin_y >= 2 && margin_y <= bottom_bar_height - 2;
-    else if (page_number == 7)
+    else if (page_number == 6)
         return margin_x >= size[0] / 2 - 4 * bottom_bar_height - 1
                && margin_x <= size[0] / 2 - bottom_bar_height - 2
                && margin_y >= 2 && margin_y <= bottom_bar_height - 2;
-    else if (page_number == 8)
+    else if (page_number == 7)
         return margin_x >= size[0] / 2 - bottom_bar_height + 1 && margin_x <= size[0] / 2 - 3
                && margin_y >= 2 && margin_y <= bottom_bar_height - 2;
     else
@@ -117,7 +104,7 @@ bool is_highlighted(int margin_x, int margin_y, int bottom_bar_height, int top_b
 
 bool is_constructor_cell(int margin_x, int margin_y, int bottom_bar_height, int top_bar_height)
 {
-    if (page_number == 3)
+    if (page_number == 2)
     {
         ivec2 cell_size = ivec2(int(6.875 * bottom_bar_height), bottom_bar_height);
         int interval_between_cells = int(bottom_bar_height / 4);
