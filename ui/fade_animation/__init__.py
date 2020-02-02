@@ -21,7 +21,7 @@ def fade_animation_is_not_active(fn):
 
 def fade_animation_needed(fn):
     def _handle_if_object_view_is_visible(*args, **kwargs):
-        if args[0].animation_object.view.opacity != args[0].opacity_chart[-1]:
+        if args[0].animation_object.opacity != args[0].opacity_chart[-1]:
             fn(*args, **kwargs)
 
     return _handle_if_object_view_is_visible
