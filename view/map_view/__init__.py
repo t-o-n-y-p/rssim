@@ -166,6 +166,8 @@ class MapView(MapBaseView):
     @cursor_is_on_the_map
     @map_move_mode_available
     def on_mouse_scroll(self, x, y, scroll_x, scroll_y):
+        self.map_move_mode = True
+        self.controller.on_activate_mini_map()
         MAP_CAMERA.zoom -= scroll_y * MAP_ZOOM_STEP
         self.on_recalculate_base_offset_for_new_zoom(MAP_CAMERA.zoom)
         self.base_offset_upper_right_limit = (self.viewport.x2 - MAP_WIDTH * MAP_CAMERA.zoom,
@@ -178,6 +180,8 @@ class MapView(MapBaseView):
             b.on_change_scale()
 
         self.controller.on_save_and_commit_last_known_zoom()
+        self.map_move_mode = False
+        self.mini_map_timer = perf_counter()
 
     @final
     def check_base_offset_limits(self):
