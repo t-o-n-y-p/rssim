@@ -1,3 +1,4 @@
+from fractions import Fraction
 from typing import Final, final
 
 from pyglet.window import Window
@@ -9,8 +10,7 @@ from camera.ui_camera import UICamera
 # --------------------- CONSTANTS ---------------------
 MAP_CAMERA: Final = MapCamera()
 UI_CAMERA: Final = UICamera()
-ZOOM_OUT_SCALE_FACTOR: Final = 0.5                     # how much to scale all sprites when map is zoomed out
-ZOOM_IN_SCALE_FACTOR: Final = 1.0                      # how much to scale all sprites when map is zoomed in
+MAP_ZOOM_STEP = Fraction(1, 4)
 MAP_WIDTH: Final = 8192                                # full-size map width
 MAP_HEIGHT: Final = 4096                               # full-size map height
 MIN_RESOLUTION_WIDTH: Final = 1280                     # minimum screen resolution width supported by the app UI

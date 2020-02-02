@@ -80,13 +80,6 @@ class TrainView(MapBaseView):
             self.boarding_light_sprites = []
 
     @final
-    def on_change_scale(self, zoom_factor):
-        super().on_change_scale(zoom_factor)
-        for i in range(len(self.car_sprites)):
-            self.car_sprites[i].on_change_scale(self.zoom_factor)
-            self.boarding_light_sprites[i].on_change_scale(self.zoom_factor)
-
-    @final
     def on_update_direction(self, new_direction):
         self.direction = new_direction
         for i in range(len(self.car_sprites)):

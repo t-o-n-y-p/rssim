@@ -22,9 +22,8 @@ class OpenShopDetailsButton(MapButton):
         self.shop_button_offset = CONFIG_DB_CURSOR.fetchone()
 
     def get_position(self):
-        return (self.shop_button_offset[0] // round(1 / self.scale),
-                self.shop_button_offset[1] // round(1 / self.scale))
+        return self.shop_button_offset
 
     def get_size(self):
-        return (SHOP_DETAILS_BUTTON_NORMAL_SIZE[0] // round(1 / self.scale),
-                SHOP_DETAILS_BUTTON_NORMAL_SIZE[1] // round(1 / self.scale))
+        return (int(MAP_CAMERA.zoom * SHOP_DETAILS_BUTTON_NORMAL_SIZE[0]),
+                int(MAP_CAMERA.zoom * SHOP_DETAILS_BUTTON_NORMAL_SIZE[1]))

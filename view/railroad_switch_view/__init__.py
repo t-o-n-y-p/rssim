@@ -57,11 +57,6 @@ class RailroadSwitchView(MapBaseView):
         self.sprite.on_update_opacity(self.opacity)
 
     @final
-    def on_change_scale(self, zoom_factor):
-        super().on_change_scale(zoom_factor)
-        self.sprite.on_change_scale(self.zoom_factor)
-
-    @final
     def on_change_current_position(self, current_position):
         self.current_position = current_position
         self.sprite.on_update_texture(self.images[self.current_position])

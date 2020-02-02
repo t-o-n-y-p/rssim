@@ -320,15 +320,5 @@ class MapBaseController(GameBaseController):
         super().__init__(parent_controller, logger)
         self.map_element_controllers = []
 
-    def on_zoom_in(self):
-        self.view.on_zoom_in()
-        for controller in self.map_element_controllers:
-            controller.on_zoom_in()
-
-    def on_zoom_out(self):
-        self.view.on_zoom_out()
-        for controller in self.map_element_controllers:
-            controller.on_zoom_out()
-
     def on_unlock(self):
         self.model.on_unlock()

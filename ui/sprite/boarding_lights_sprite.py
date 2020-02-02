@@ -18,7 +18,7 @@ class BoardingLightsSprite(MapSprite):
         self.on_position_changed()
 
     def get_position(self):
-        return self.car_offset[0] * self.scale, self.car_offset[1] * self.scale
+        return self.car_offset
 
     def on_update_car_position(self, car_position):
         self.car_offset = car_position[0:2]

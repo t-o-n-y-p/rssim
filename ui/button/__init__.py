@@ -40,10 +40,12 @@ def left_mouse_button(fn):
 
 def cursor_is_over_the_button(fn):
     def _handle_if_cursor_is_over_the_button(*args, **kwargs):
-        if args[1] in range(args[0].position[0] + 2 - args[0].camera.offset_x,
-                            args[0].position[0] + args[0].button_size[0] - 2 - args[0].camera.offset_x) \
-                and args[2] in range(args[0].position[1] + 2 - args[0].camera.offset_y,
-                                     args[0].position[1] + args[0].button_size[1] - 2 - args[0].camera.offset_y):
+        if args[1] in range(int((args[0].position[0] + 2) * args[0].camera.zoom - args[0].camera.offset_x),
+                            int((args[0].position[0] + args[0].button_size[0] - 2) * args[0].camera.zoom
+                            - args[0].camera.offset_x)) \
+                and args[2] in range(int((args[0].position[1] + 2) * args[0].camera.zoom - args[0].camera.offset_y),
+                                     int((args[0].position[1] + args[0].button_size[1] - 2) * args[0].camera.zoom
+                                     - args[0].camera.offset_y)):
             fn(*args, **kwargs)
 
     return _handle_if_cursor_is_over_the_button
@@ -208,13 +210,14 @@ class Button:
 
     @final
     @button_is_activated
-    def handle_mouse_motion(self, x, y, dx, dy):
+    def on_mouse_motion(self, x, y, dx, dy):
         # if cursor is on the button and button is not pressed, it means cursor was just moved over the button,
         # state and background color are changed to "hover" state
-        if x in range(self.position[0] + 2 - self.camera.offset_x,
-                      self.position[0] + self.button_size[0] - 2 - self.camera.offset_x) \
-                and y in range(self.position[1] + 2 - self.camera.offset_y,
-                               self.position[1] + self.button_size[1] - 2 - self.camera.offset_y):
+        if x in range(int((self.position[0] + 2) * self.camera.zoom - self.camera.offset_x),
+                      int((self.position[0] + self.button_size[0] - 2) * self.camera.zoom - self.camera.offset_x)) \
+                and y in range(int((self.position[1] + 2) * self.camera.zoom - self.camera.offset_y),
+                               int((self.position[1] + self.button_size[1] - 2) * self.camera.zoom
+                                   - self.camera.offset_y)):
             if self.state != 'pressed':
                 self.state = 'hover'
                 if self.vertex_list is not None:
@@ -243,7 +246,7 @@ class Button:
     @button_is_activated
     @cursor_is_over_the_button
     @left_mouse_button
-    def handle_mouse_press(self, x, y, button, modifiers):
+    def on_mouse_press(self, x, y, button, modifiers):
         self.state = 'pressed'
         if self.vertex_list is not None:
             self.vertex_list.colors = ((*BUTTON_BACKGROUND_RGB[self.state][self.transparent],
@@ -255,7 +258,7 @@ class Button:
     @cursor_is_over_the_button
     @button_is_pressed
     @left_mouse_button
-    def handle_mouse_release(self, x, y, button, modifiers):
+    def on_mouse_release(self, x, y, button, modifiers):
         self.state = 'hover'
         if self.vertex_list is not None:
             self.vertex_list.colors = ((*BUTTON_BACKGROUND_RGB[self.state][self.transparent],
@@ -267,7 +270,7 @@ class Button:
 
     @final
     @button_is_activated
-    def handle_mouse_leave(self, x, y):
+    def on_mouse_leave(self, x, y):
         self.state = 'normal'
         if self.vertex_list is not None:
             self.vertex_list.colors = ((*BUTTON_BACKGROUND_RGB[self.state][self.transparent],
@@ -335,13 +338,6 @@ class MapButton(Button):
     def __init__(self, map_id, logger):
         super().__init__(batch=BATCHES['main_batch'], camera=MAP_CAMERA, logger=logger)
         self.map_id = map_id
-        USER_DB_CURSOR.execute('''SELECT zoom_out_activated FROM map_position_settings WHERE map_id = ?''',
-                               (self.map_id,))
-        self.zoom_out_activated = bool(USER_DB_CURSOR.fetchone()[0])
-        if self.zoom_out_activated:
-            self.scale = 0.5
-        else:
-            self.scale = 1.0
 
     def get_position(self):
         pass
@@ -350,7 +346,6 @@ class MapButton(Button):
         pass
 
     @final
-    def on_change_scale(self, new_scale):
-        self.scale = new_scale
+    def on_change_scale(self):
         self.button_size = self.get_size()
         self.on_resize()

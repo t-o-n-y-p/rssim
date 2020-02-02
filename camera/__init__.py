@@ -32,17 +32,10 @@ class Camera:
         """Set the scroll offset directly."""
         self.offset_x, self.offset_y = value
 
-    def move(self, axis_x, axis_y):
-        """ Move axis direction with scroll_speed.
-            Example: Move left -> move(-1, 0)
-         """
-        self.offset_x += self.scroll_speed * axis_x
-        self.offset_y += self.scroll_speed * axis_y
-
     def begin(self):
         # Set the current camera offset so you can draw your scene.
         # Translate using the zoom and the offset.
-        glTranslatef(-self.offset_x * self._zoom, -self.offset_y * self._zoom, 0)
+        glTranslatef(-self.offset_x, -self.offset_y, 0)
 
         # Scale by zoom level.
         glScalef(self._zoom, self._zoom, 1)
@@ -55,7 +48,7 @@ class Camera:
         glScalef(1 / self._zoom, 1 / self._zoom, 1)
 
         # Reverse translate.
-        glTranslatef(self.offset_x * self._zoom, self.offset_y * self._zoom, 0)
+        glTranslatef(self.offset_x, self.offset_y, 0)
 
     def __enter__(self):
         self.begin()

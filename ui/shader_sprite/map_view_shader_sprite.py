@@ -19,11 +19,4 @@ class MapViewShaderSprite(ShaderSprite):
         return 1 - get_top_bar_height(self.screen_resolution) / self.screen_resolution[1] * 2
 
     def set_uniforms(self):
-        self.shader.uniforms.map_opacity = self.view.opacity
-        self.shader.uniforms.is_button_activated \
-            = [int(self.view.zoom_in_button.is_activated or self.view.zoom_out_button.is_activated), ]
-        self.shader.uniforms.button_x = [self.view.zoom_in_button.position[0], ]
-        self.shader.uniforms.button_y = [self.view.zoom_in_button.position[1], ]
-        self.shader.uniforms.button_w = [self.view.zoom_in_button.button_size[0], ]
-        self.shader.uniforms.button_h = [self.view.zoom_in_button.button_size[1], ]
-        self.shader.uniforms.number_of_buttons = 1
+        pass

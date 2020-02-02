@@ -308,10 +308,10 @@ class AppBaseView:
                                            on_text_handlers=self.on_text_handlers)
         # appends button handlers
         for b in self.buttons:
-            self.controller.on_append_handlers(on_mouse_motion_handlers=(b.handle_mouse_motion, ),
-                                               on_mouse_press_handlers=(b.handle_mouse_press, ),
-                                               on_mouse_release_handlers=(b.handle_mouse_release, ),
-                                               on_mouse_leave_handlers=(b.handle_mouse_leave, ))
+            self.controller.on_append_handlers(on_mouse_motion_handlers=(b.on_mouse_motion,),
+                                               on_mouse_press_handlers=(b.on_mouse_press,),
+                                               on_mouse_release_handlers=(b.on_mouse_release,),
+                                               on_mouse_leave_handlers=(b.on_mouse_leave,))
 
     @final
     def on_detach_handlers(self):
@@ -326,10 +326,10 @@ class AppBaseView:
                                            on_text_handlers=self.on_text_handlers)
         # detaches button handlers
         for b in self.buttons:
-            self.controller.on_detach_handlers(on_mouse_motion_handlers=(b.handle_mouse_motion, ),
-                                               on_mouse_press_handlers=(b.handle_mouse_press, ),
-                                               on_mouse_release_handlers=(b.handle_mouse_release, ),
-                                               on_mouse_leave_handlers=(b.handle_mouse_leave, ))
+            self.controller.on_detach_handlers(on_mouse_motion_handlers=(b.on_mouse_motion,),
+                                               on_mouse_press_handlers=(b.on_mouse_press,),
+                                               on_mouse_release_handlers=(b.on_mouse_release,),
+                                               on_mouse_leave_handlers=(b.on_mouse_leave,))
 
 
 class GameBaseView(AppBaseView):
@@ -377,26 +377,6 @@ class MapBaseView(GameBaseView):
         super().__init__(controller, logger, child_window)
         self.locked = True
         self.map_id = map_id
-        USER_DB_CURSOR.execute('''SELECT zoom_out_activated FROM map_position_settings WHERE map_id = ?''',
-                               (self.map_id, ))
-        self.zoom_out_activated = bool(USER_DB_CURSOR.fetchone()[0])
-        if self.zoom_out_activated:
-            self.zoom_factor = 0.5
-        else:
-            self.zoom_factor = 1.0
-
-    def on_change_scale(self, zoom_factor):
-        self.zoom_factor = zoom_factor
-
-    @final
-    def on_zoom_in(self):
-        self.zoom_out_activated = False
-        self.on_change_scale(ZOOM_IN_SCALE_FACTOR)
-
-    @final
-    def on_zoom_out(self):
-        self.zoom_out_activated = True
-        self.on_change_scale(ZOOM_OUT_SCALE_FACTOR)
 
     @final
     def on_unlock(self):

@@ -1,3 +1,4 @@
+from fractions import Fraction
 from random import choice, seed
 from logging import getLogger
 
@@ -18,10 +19,10 @@ class MapModel(MapBaseModel):
         self.unlocked_car_collections = [int(c) for c in USER_DB_CURSOR.fetchone()[0].split(',')]
         USER_DB_CURSOR.execute('''SELECT last_known_base_offset FROM map_position_settings WHERE map_id = ?''',
                                (self.map_id, ))
-        self.last_known_base_offset = [int(p) for p in USER_DB_CURSOR.fetchone()[0].split(',')]
-        USER_DB_CURSOR.execute('''SELECT zoom_out_activated FROM map_position_settings WHERE map_id = ?''',
+        self.last_known_base_offset = [float(p) for p in USER_DB_CURSOR.fetchone()[0].split(',')]
+        USER_DB_CURSOR.execute('''SELECT last_known_zoom FROM map_position_settings WHERE map_id = ?''',
                                (self.map_id, ))
-        self.zoom_out_activated = bool(USER_DB_CURSOR.fetchone()[0])
+        self.last_known_zoom = Fraction(USER_DB_CURSOR.fetchone()[0])
         CONFIG_DB_CURSOR.execute('''SELECT unlocked_tracks_by_default FROM map_progress_config WHERE map_id = ?''',
                                  (self.map_id, ))
         self.unlocked_tracks_by_default = CONFIG_DB_CURSOR.fetchone()[0]
@@ -49,17 +50,18 @@ class MapModel(MapBaseModel):
         self.view.on_unlock_construction()
 
     @final
-    def on_save_and_commit_last_known_base_offset(self, base_offset):
-        self.last_known_base_offset = base_offset
+    def on_save_and_commit_last_known_base_offset(self):
+        self.last_known_base_offset = self.view.base_offset
         USER_DB_CURSOR.execute('''UPDATE map_position_settings SET last_known_base_offset = ? WHERE map_id = ?''',
                                (','.join(str(p) for p in self.last_known_base_offset), self.map_id))
         on_commit()
 
     @final
-    def on_save_and_commit_zoom_out_activated(self, zoom_out_activated):
-        self.zoom_out_activated = zoom_out_activated
-        USER_DB_CURSOR.execute('''UPDATE map_position_settings SET zoom_out_activated = ? WHERE map_id = ?''',
-                               (int(self.zoom_out_activated), self.map_id))
+    def on_save_and_commit_last_known_zoom(self):
+        self.last_known_zoom = self.view.zoom
+        USER_DB_CURSOR.execute('''UPDATE map_position_settings SET last_known_zoom = ? WHERE map_id = ?''',
+                               ('/'.join((str(self.last_known_zoom.numerator), str(self.last_known_zoom.denominator))),
+                                self.map_id))
         on_commit()
 
     @final

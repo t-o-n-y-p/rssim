@@ -3,9 +3,6 @@ from time import perf_counter
 
 from view import *
 from database import CONFIG_DB_CURSOR
-from ui.button import create_two_state_button
-from ui.button.zoom_in_button import ZoomInButton
-from ui.button.zoom_out_button import ZoomOutButton
 from ui.button.open_schedule_button import OpenScheduleButton
 from ui.button.open_constructor_button import OpenConstructorButton
 from ui.button.open_shop_details_button import OpenShopDetailsButton
@@ -16,18 +13,6 @@ from ui.sprite.main_environment_sprite import MainEnvironmentSprite
 
 class MapView(MapBaseView):
     def __init__(self, controller, map_id):
-        def on_click_zoom_in_button(button):
-            button.paired_button.opacity = button.opacity
-            button.on_deactivate(instant=True)
-            button.paired_button.on_activate(instant=True)
-            self.controller.on_zoom_in()
-
-        def on_click_zoom_out_button(button):
-            button.paired_button.opacity = button.opacity
-            button.on_deactivate(instant=True)
-            button.paired_button.on_activate(instant=True)
-            self.controller.on_zoom_out()
-
         def on_leave_action():
             self.on_map_move_mode_available()
 
@@ -56,21 +41,16 @@ class MapView(MapBaseView):
         self.mini_map_timer = 0.0
         USER_DB_CURSOR.execute('''SELECT last_known_base_offset FROM map_position_settings WHERE map_id = ?''',
                                (self.map_id,))
-        self.base_offset = [int(p) for p in USER_DB_CURSOR.fetchone()[0].split(',')]
+        self.base_offset = [float(p) for p in USER_DB_CURSOR.fetchone()[0].split(',')]
+        USER_DB_CURSOR.execute('''SELECT last_known_zoom FROM map_position_settings 
+                                  WHERE map_id IN (SELECT last_known_map_id FROM graphics)''')
+        self.zoom = Fraction(USER_DB_CURSOR.fetchone()[0])
         self.base_offset_lower_left_limit = (0, 0)
         self.base_offset_upper_right_limit = (0, 0)
-        self.zoom_in_button, self.zoom_out_button \
-            = create_two_state_button(ZoomInButton(on_click_action=on_click_zoom_in_button,
-                                                   on_hover_action=on_hover_action, on_leave_action=on_leave_action,
-                                                   parent_viewport=self.viewport),
-                                      ZoomOutButton(on_click_action=on_click_zoom_out_button,
-                                                    on_hover_action=on_hover_action, on_leave_action=on_leave_action,
-                                                    parent_viewport=self.viewport))
         self.open_schedule_button = OpenScheduleButton(on_click_action=on_open_schedule, parent_viewport=self.viewport)
         self.open_constructor_button = OpenConstructorButton(on_click_action=on_open_constructor,
                                                              parent_viewport=self.viewport)
-        self.buttons = [self.zoom_in_button, self.zoom_out_button, self.open_schedule_button,
-                        self.open_constructor_button]
+        self.buttons = [self.open_schedule_button, self.open_constructor_button]
         self.shop_buttons = []
         CONFIG_DB_CURSOR.execute('''SELECT COUNT(*) FROM shops_config WHERE map_id = ?''', (self.map_id, ))
         for shop_id in range(CONFIG_DB_CURSOR.fetchone()[0]):
@@ -85,13 +65,14 @@ class MapView(MapBaseView):
         self.buttons.extend(self.shop_buttons)
         for b in self.shop_buttons:
             b.position = b.get_position()
-            b.on_change_scale(self.zoom_factor)
+            b.on_change_scale()
 
         self.map_move_mode_available = False
         self.map_move_mode = False
-        self.on_mouse_press_handlers.append(self.handle_mouse_press)
-        self.on_mouse_release_handlers.append(self.handle_mouse_release)
-        self.on_mouse_drag_handlers.append(self.handle_mouse_drag)
+        self.on_mouse_press_handlers.append(self.on_mouse_press)
+        self.on_mouse_release_handlers.append(self.on_mouse_release)
+        self.on_mouse_drag_handlers.append(self.on_mouse_drag)
+        self.on_mouse_scroll_handlers.append(self.on_mouse_scroll)
         self.shader_sprite = MapViewShaderSprite(view=self)
         USER_DB_CURSOR.execute('''SELECT SUM(t.constructions_locked) FROM (
                                       SELECT COUNT(track_number) AS constructions_locked FROM tracks 
@@ -108,15 +89,11 @@ class MapView(MapBaseView):
     def on_activate(self):
         super().on_activate()
         MAP_CAMERA.position = -self.base_offset[0], -self.base_offset[1]
+        MAP_CAMERA.zoom = self.zoom
         self.map_move_mode_available = True
         self.shader_sprite.create()
         self.main_map_sprite.create()
         self.environment_sprite.create()
-        if self.zoom_out_activated:
-            self.zoom_in_button.on_activate()
-        else:
-            self.zoom_out_button.on_activate()
-
         self.on_activate_open_constructor_button()
         self.on_activate_shop_buttons()
 
@@ -137,12 +114,10 @@ class MapView(MapBaseView):
         super().on_change_screen_resolution(screen_resolution)
         self.base_offset_lower_left_limit = (self.viewport.x1,
                                              self.viewport.y1 + get_bottom_bar_height(self.screen_resolution))
-        self.base_offset_upper_right_limit = (self.viewport.x2 - MAP_WIDTH // round(1 / self.zoom_factor),
-                                              self.viewport.y2 - MAP_HEIGHT // round(1 / self.zoom_factor)
+        self.base_offset_upper_right_limit = (self.viewport.x2 - MAP_WIDTH * self.zoom,
+                                              self.viewport.y2 - MAP_HEIGHT * self.zoom
                                               - get_top_bar_height(self.screen_resolution))
         self.shader_sprite.on_change_screen_resolution(self.screen_resolution)
-        self.zoom_in_button.on_change_screen_resolution(self.screen_resolution)
-        self.zoom_out_button.on_change_screen_resolution(self.screen_resolution)
         self.open_schedule_button.on_change_screen_resolution(self.screen_resolution)
         self.open_constructor_button.on_change_screen_resolution(self.screen_resolution)
 
@@ -154,29 +129,6 @@ class MapView(MapBaseView):
         self.environment_sprite.on_update_opacity(self.opacity)
 
     @final
-    def on_change_scale(self, zoom_factor):
-        super().on_change_scale(zoom_factor)
-        self.main_map_sprite.on_change_scale(self.zoom_factor)
-        self.environment_sprite.on_change_scale(self.zoom_factor)
-        self.base_offset_upper_right_limit = (self.viewport.x2 - MAP_WIDTH // round(1 / self.zoom_factor),
-                                              self.viewport.y2 - MAP_HEIGHT // round(1 / self.zoom_factor)
-                                              - get_top_bar_height(self.screen_resolution))
-        if self.zoom_out_activated:
-            self.base_offset = (self.base_offset[0] // 2
-                                + (self.viewport.x2 - self.viewport.x1) // 4,
-                                self.base_offset[1] // 2
-                                + (self.viewport.y2 - self.viewport.y1) // 4)
-        else:
-            self.base_offset = (2 * self.base_offset[0] - (self.viewport.x2 - self.viewport.x1) // 2,
-                                2 * self.base_offset[1] - (self.viewport.y2 - self.viewport.y1) // 2)
-
-        self.check_base_offset_limits()
-        for b in self.shop_buttons:
-            b.on_change_scale(self.zoom_factor)
-
-        self.controller.on_save_and_commit_last_known_base_offset(self.base_offset)
-
-    @final
     def on_unlock_track(self, track):
         self.unlocked_tracks = track
         self.main_map_sprite.on_unlock_track(self.unlocked_tracks)
@@ -186,28 +138,16 @@ class MapView(MapBaseView):
         self.environment_sprite.on_unlock_environment(tier)
 
     @final
-    def on_deactivate_zoom_buttons(self):
-        self.zoom_in_button.on_deactivate(instant=True)
-        self.zoom_out_button.on_deactivate(instant=True)
-
-    @final
-    def on_activate_zoom_buttons(self):
-        if self.zoom_out_activated:
-            self.zoom_in_button.on_activate(instant=True)
-        else:
-            self.zoom_out_button.on_activate(instant=True)
-
-    @final
     @view_is_active
     @cursor_is_on_the_map
     @left_mouse_button
     @map_move_mode_available
-    def handle_mouse_press(self, x, y, button, modifiers):
+    def on_mouse_press(self, x, y, button, modifiers):
         self.map_move_mode = True
 
     @final
     @map_move_mode_enabled
-    def handle_mouse_drag(self, x, y, dx, dy, buttons, modifiers):
+    def on_mouse_drag(self, x, y, dx, dy, buttons, modifiers):
         self.controller.on_activate_mini_map()
         self.base_offset = (self.base_offset[0] + dx, self.base_offset[1] + dy)
         self.check_base_offset_limits()
@@ -215,11 +155,26 @@ class MapView(MapBaseView):
     @final
     @map_move_mode_enabled
     @left_mouse_button
-    def handle_mouse_release(self, x, y, button, modifiers):
+    def on_mouse_release(self, x, y, button, modifiers):
         self.map_move_mode = False
         self.mini_map_timer = perf_counter()
         self.is_mini_map_timer_activated = True
-        self.controller.on_save_and_commit_last_known_base_offset(self.base_offset)
+        self.controller.on_save_and_commit_last_known_base_offset()
+
+    @final
+    @view_is_active
+    @cursor_is_on_the_map
+    @map_move_mode_available
+    def on_mouse_scroll(self, x, y, scroll_x, scroll_y):
+        MAP_CAMERA.zoom -= scroll_y * MAP_ZOOM_STEP
+        self.on_recalculate_base_offset_for_new_zoom(MAP_CAMERA.zoom)
+        self.base_offset_upper_right_limit = (self.viewport.x2 - MAP_WIDTH * MAP_CAMERA.zoom,
+                                              self.viewport.y2 - MAP_HEIGHT * MAP_CAMERA.zoom
+                                              - get_top_bar_height(self.screen_resolution))
+        self.check_base_offset_limits()
+        self.controller.on_save_and_commit_last_known_base_offset()
+        self.zoom = Fraction(MAP_CAMERA.zoom)
+        self.controller.on_save_and_commit_last_known_zoom()
 
     @final
     def check_base_offset_limits(self):
@@ -263,14 +218,12 @@ class MapView(MapBaseView):
     @final
     @view_is_active
     def on_close_schedule(self):
-        self.on_activate_zoom_buttons()
         self.on_activate_shop_buttons()
         self.open_schedule_button.on_activate(instant=True)
 
     @final
     @view_is_active
     def on_close_constructor(self):
-        self.on_activate_zoom_buttons()
         self.on_activate_shop_buttons()
         self.on_activate_open_constructor_button(instant=True)
 
@@ -278,6 +231,16 @@ class MapView(MapBaseView):
     def on_recalculate_base_offset_for_new_screen_resolution(self, screen_resolution):
         self.base_offset = (self.base_offset[0] + (screen_resolution[0] - self.screen_resolution[0]) // 2,
                             self.base_offset[1] + (screen_resolution[1] - self.screen_resolution[1]) // 2)
+
+    @final
+    def on_recalculate_base_offset_for_new_zoom(self, new_zoom):
+        multiplier = new_zoom / self.zoom
+        if multiplier > 1:
+            self.base_offset = (self.base_offset[0] - (multiplier - 1) * (self.viewport.x2 - self.viewport.x1) // 2,
+                                self.base_offset[1] - (multiplier - 1) * (self.viewport.x2 - self.viewport.x1) // 2)
+        elif multiplier < 1:
+            self.base_offset = (self.base_offset[0] + multiplier * (self.viewport.x2 - self.viewport.x1) // 2,
+                                self.base_offset[1] + multiplier * (self.viewport.x2 - self.viewport.x1) // 2)
 
     @final
     def on_map_move_mode_available(self):
@@ -290,6 +253,5 @@ class MapView(MapBaseView):
     @final
     @view_is_active
     def on_close_map_switcher(self):
-        self.on_activate_zoom_buttons()
         self.on_activate_shop_buttons()
         self.on_map_move_mode_available()

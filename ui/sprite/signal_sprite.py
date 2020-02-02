@@ -29,7 +29,7 @@ class SignalSprite(MapSprite):
         self.on_position_changed()
 
     def get_position(self):
-        return int(self.signal_offset[0] * self.scale), int(self.signal_offset[1] * self.scale)
+        return self.signal_offset
 
     def on_change_state(self, state):
         self.state = state

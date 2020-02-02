@@ -21,4 +21,4 @@ class CrossoverSprite(MapSprite):
         self.on_position_changed()
 
     def get_position(self):
-        return int(self.crossover_offset[0] * self.scale), int(self.crossover_offset[1] * self.scale)
+        return self.crossover_offset

@@ -111,7 +111,7 @@ class MapController(MapBaseController):
         self.view.on_recalculate_base_offset_for_new_screen_resolution(screen_resolution)
         super().on_change_screen_resolution(screen_resolution)
         self.view.check_base_offset_limits()
-        self.on_save_and_commit_last_known_base_offset(self.view.base_offset)
+        self.on_save_and_commit_last_known_base_offset()
 
     @final
     def on_save_state(self):
@@ -140,16 +140,8 @@ class MapController(MapBaseController):
         self.lifecycle_ended_trains.clear()
 
     @final
-    def on_zoom_in(self):
-        super().on_zoom_in()
-        self.on_change_base_offset(self.view.base_offset)
-        self.model.on_save_and_commit_zoom_out_activated(False)
-
-    @final
-    def on_zoom_out(self):
-        super().on_zoom_out()
-        self.on_change_base_offset(self.view.base_offset)
-        self.model.on_save_and_commit_zoom_out_activated(True)
+    def on_save_and_commit_last_known_zoom(self):
+        self.model.on_save_and_commit_last_known_zoom()
 
     @final
     def on_unlock(self):
@@ -206,8 +198,6 @@ class MapController(MapBaseController):
             self.constructor.fade_out_animation.on_activate()
 
         self.scheduler.fade_in_animation.on_activate()
-        # if schedule screen is opened, zoom in/zoom out buttons should also be hidden
-        self.view.on_deactivate_zoom_buttons()
         self.view.on_deactivate_shop_buttons()
         self.parent_controller.on_deactivate_map_switcher_button()
         self.parent_controller.on_force_close_map_switcher()
@@ -227,8 +217,6 @@ class MapController(MapBaseController):
             self.scheduler.fade_out_animation.on_activate()
 
         self.constructor.fade_in_animation.on_activate()
-        # if constructor screen is opened, zoom in/zoom out buttons should also be hidden
-        self.view.on_deactivate_zoom_buttons()
         self.view.on_deactivate_shop_buttons()
         self.parent_controller.on_deactivate_map_switcher_button()
         self.parent_controller.on_force_close_map_switcher()
@@ -362,20 +350,18 @@ class MapController(MapBaseController):
             train.fade_out_animation.on_activate()
 
     @final
-    def on_save_and_commit_last_known_base_offset(self, base_offset):
-        self.model.on_save_and_commit_last_known_base_offset(base_offset)
+    def on_save_and_commit_last_known_base_offset(self):
+        self.model.on_save_and_commit_last_known_base_offset()
 
     @final
     def on_open_shop_details(self, shop_id):
         self.shops[shop_id].fade_in_animation.on_activate()
-        self.view.on_deactivate_zoom_buttons()
         self.view.on_deactivate_shop_buttons()
         self.mini_map.fade_out_animation.on_activate()
 
     @final
     def on_close_shop_details(self, shop_id):
         self.shops[shop_id].fade_out_animation.on_activate()
-        self.view.on_activate_zoom_buttons()
         self.view.on_activate_shop_buttons()
 
     @final
@@ -395,7 +381,6 @@ class MapController(MapBaseController):
         for shop in self.shops:
             shop.fade_out_animation.on_activate()
 
-        self.view.on_deactivate_zoom_buttons()
         self.view.on_deactivate_shop_buttons()
         # if mini map is active when user opens constructor screen, it should also be hidden
         self.on_deactivate_mini_map()

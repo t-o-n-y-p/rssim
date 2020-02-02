@@ -2,7 +2,6 @@ from typing import Final, final
 
 import pyglet.sprite
 
-from database import USER_DB_CURSOR
 from ui import MAP_CAMERA
 
 SPRITE_VIEWPORT_EDGE_OFFSET_LIMIT_X: Final = 150
@@ -117,27 +116,14 @@ class MapSprite(Sprite):
         super().__init__(logger=logger)
         self.map_id = map_id
         self.parent_viewport = parent_viewport
-        USER_DB_CURSOR.execute('''SELECT zoom_out_activated FROM map_position_settings WHERE map_id = ?''',
-                               (self.map_id, ))
-        self.zoom_out_activated = bool(USER_DB_CURSOR.fetchone()[0])
-        if self.zoom_out_activated:
-            self.scale = 0.5
-        else:
-            self.scale = 1.0
-
-    @final
-    def on_change_scale(self, new_scale):
-        self.scale = new_scale
-        if self.sprite is not None:
-            self.sprite.scale = self.scale
 
     @final
     def is_located_outside_viewport(self):
         return self.position[0] - self.texture.anchor_x \
                > MAP_CAMERA.offset_x + self.parent_viewport.x2 + SPRITE_VIEWPORT_EDGE_OFFSET_LIMIT_X \
-               or self.position[0] + self.texture.width - self.texture.anchor_x \
+               or self.position[0] + (self.texture.width - self.texture.anchor_x) \
                < MAP_CAMERA.offset_x + self.parent_viewport.x1 - SPRITE_VIEWPORT_EDGE_OFFSET_LIMIT_X \
                or self.position[1] - self.texture.anchor_y \
                > MAP_CAMERA.offset_y + self.parent_viewport.y2 + SPRITE_VIEWPORT_EDGE_OFFSET_LIMIT_Y \
-               or self.position[1] + self.texture.height - self.texture.anchor_y \
+               or self.position[1] + (self.texture.height - self.texture.anchor_y) \
                < MAP_CAMERA.offset_y + self.parent_viewport.y1 - SPRITE_VIEWPORT_EDGE_OFFSET_LIMIT_Y
