@@ -120,10 +120,14 @@ class MapSprite(Sprite):
     @final
     def is_located_outside_viewport(self):
         return self.position[0] - self.texture.anchor_x \
-               > MAP_CAMERA.offset_x + self.parent_viewport.x2 + SPRITE_VIEWPORT_EDGE_OFFSET_LIMIT_X \
-               or self.position[0] + (self.texture.width - self.texture.anchor_x) \
-               < MAP_CAMERA.offset_x + self.parent_viewport.x1 - SPRITE_VIEWPORT_EDGE_OFFSET_LIMIT_X \
+               - (MAP_CAMERA.offset_x + self.parent_viewport.x2) / MAP_CAMERA.zoom \
+               > SPRITE_VIEWPORT_EDGE_OFFSET_LIMIT_X \
+               or self.position[0] + self.texture.width - self.texture.anchor_x \
+               - (MAP_CAMERA.offset_x + self.parent_viewport.x1) / MAP_CAMERA.zoom \
+               < -SPRITE_VIEWPORT_EDGE_OFFSET_LIMIT_X \
                or self.position[1] - self.texture.anchor_y \
-               > MAP_CAMERA.offset_y + self.parent_viewport.y2 + SPRITE_VIEWPORT_EDGE_OFFSET_LIMIT_Y \
-               or self.position[1] + (self.texture.height - self.texture.anchor_y) \
-               < MAP_CAMERA.offset_y + self.parent_viewport.y1 - SPRITE_VIEWPORT_EDGE_OFFSET_LIMIT_Y
+               - (MAP_CAMERA.offset_y + self.parent_viewport.y2) / MAP_CAMERA.zoom \
+               > SPRITE_VIEWPORT_EDGE_OFFSET_LIMIT_Y \
+               or self.position[1] + self.texture.height - self.texture.anchor_y \
+               - (MAP_CAMERA.offset_y + self.parent_viewport.y1) / MAP_CAMERA.zoom \
+               < -SPRITE_VIEWPORT_EDGE_OFFSET_LIMIT_Y
