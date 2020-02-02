@@ -41,7 +41,7 @@ class Sprite:
         self.batch = None
         self.group = None
         self.usage = 'dynamic'
-        self.subpixel = False
+        self.subpixel = True
         self.opacity = 0
         self.rotation = 0
         self.scale = 1.0

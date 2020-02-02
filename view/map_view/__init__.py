@@ -174,6 +174,9 @@ class MapView(MapBaseView):
         self.check_base_offset_limits()
         self.controller.on_save_and_commit_last_known_base_offset()
         self.zoom = Fraction(MAP_CAMERA.zoom)
+        for b in self.shop_buttons:
+            b.on_change_scale()
+
         self.controller.on_save_and_commit_last_known_zoom()
 
     @final

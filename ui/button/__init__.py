@@ -40,11 +40,11 @@ def left_mouse_button(fn):
 
 def cursor_is_over_the_button(fn):
     def _handle_if_cursor_is_over_the_button(*args, **kwargs):
-        if args[1] in range(int((args[0].position[0] + 2) * args[0].camera.zoom - args[0].camera.offset_x),
-                            int((args[0].position[0] + args[0].button_size[0] - 2) * args[0].camera.zoom
+        if args[1] in range(int((args[0].position[0] * args[0].camera.zoom + 2) - args[0].camera.offset_x),
+                            int((args[0].position[0] * args[0].camera.zoom + args[0].button_size[0] - 2)
                             - args[0].camera.offset_x)) \
-                and args[2] in range(int((args[0].position[1] + 2) * args[0].camera.zoom - args[0].camera.offset_y),
-                                     int((args[0].position[1] + args[0].button_size[1] - 2) * args[0].camera.zoom
+                and args[2] in range(int((args[0].position[1] * args[0].camera.zoom + 2) - args[0].camera.offset_y),
+                                     int((args[0].position[1] * args[0].camera.zoom + args[0].button_size[1] - 2)
                                      - args[0].camera.offset_y)):
             fn(*args, **kwargs)
 
@@ -213,10 +213,10 @@ class Button:
     def on_mouse_motion(self, x, y, dx, dy):
         # if cursor is on the button and button is not pressed, it means cursor was just moved over the button,
         # state and background color are changed to "hover" state
-        if x in range(int((self.position[0] + 2) * self.camera.zoom - self.camera.offset_x),
-                      int((self.position[0] + self.button_size[0] - 2) * self.camera.zoom - self.camera.offset_x)) \
-                and y in range(int((self.position[1] + 2) * self.camera.zoom - self.camera.offset_y),
-                               int((self.position[1] + self.button_size[1] - 2) * self.camera.zoom
+        if x in range(int((self.position[0] * self.camera.zoom + 2) - self.camera.offset_x),
+                      int((self.position[0] * self.camera.zoom + self.button_size[0] - 2) - self.camera.offset_x)) \
+                and y in range(int((self.position[1] * self.camera.zoom + 2) - self.camera.offset_y),
+                               int((self.position[1] * self.camera.zoom + self.button_size[1] - 2)
                                    - self.camera.offset_y)):
             if self.state != 'pressed':
                 self.state = 'hover'
