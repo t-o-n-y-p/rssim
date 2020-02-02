@@ -10,7 +10,7 @@ from camera.ui_camera import UICamera
 # --------------------- CONSTANTS ---------------------
 MAP_CAMERA: Final = MapCamera()
 UI_CAMERA: Final = UICamera()
-MAP_ZOOM_STEP = Fraction(1, 4)
+MAP_ZOOM_STEP = Fraction(1, 10)
 MAP_WIDTH: Final = 8192                                # full-size map width
 MAP_HEIGHT: Final = 4096                               # full-size map height
 MIN_RESOLUTION_WIDTH: Final = 1280                     # minimum screen resolution width supported by the app UI

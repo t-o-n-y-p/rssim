@@ -242,12 +242,10 @@ class MapView(MapBaseView):
     @final
     def on_recalculate_base_offset_for_new_zoom(self, new_zoom):
         multiplier = new_zoom / self.zoom
-        if multiplier > 1:
-            self.base_offset = (self.base_offset[0] - (multiplier - 1) * (self.viewport.x2 - self.viewport.x1) // 2,
-                                self.base_offset[1] - (multiplier - 1) * (self.viewport.x2 - self.viewport.x1) // 2)
-        elif multiplier < 1:
-            self.base_offset = (self.base_offset[0] + multiplier * (self.viewport.x2 - self.viewport.x1) // 2,
-                                self.base_offset[1] + multiplier * (self.viewport.x2 - self.viewport.x1) // 2)
+        self.base_offset = (
+            multiplier * self.base_offset[0] - (multiplier - 1) * (self.viewport.x1 + self.viewport.x2) // 2,
+            multiplier * self.base_offset[1] - (multiplier - 1) * (self.viewport.y1 + self.viewport.y2) // 2
+        )
 
     @final
     def on_map_move_mode_available(self):
