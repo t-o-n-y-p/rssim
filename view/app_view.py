@@ -71,6 +71,7 @@ class AppView(AppBaseView):
         self.on_mouse_press_handlers.append(self.handle_mouse_press)
         self.on_mouse_release_handlers.append(self.handle_mouse_release)
         self.on_mouse_drag_handlers.append(self.handle_mouse_drag)
+        self.on_resize_handlers.append(self.on_resize)
         self.shader_sprite = AppViewShaderSprite(view=self)
         USER_DB_CURSOR.execute('SELECT fullscreen FROM graphics')
         self.fullscreen_mode = bool(USER_DB_CURSOR.fetchone()[0])
@@ -100,9 +101,9 @@ class AppView(AppBaseView):
     def on_deactivate(self):
         super().on_deactivate()
 
-    def on_change_screen_resolution(self, screen_resolution):
-        super().on_change_screen_resolution(screen_resolution)
-        WINDOW.set_size(screen_resolution[0], screen_resolution[1])
+    @window_size_has_changed
+    def on_resize(self, width, height):
+        super().on_resize(width, height)
         self.title_label.on_change_screen_resolution(self.screen_resolution)
         self.shader_sprite.on_change_screen_resolution(self.screen_resolution)
         self.us_flag_sprite.on_change_screen_resolution(self.screen_resolution)

@@ -42,8 +42,9 @@ class BonusCodeManagerView(GameBaseView):
     def on_deactivate(self):
         super().on_deactivate()
 
-    def on_change_screen_resolution(self, screen_resolution):
-        super().on_change_screen_resolution(screen_resolution)
+    @window_size_has_changed
+    def on_resize(self, width, height):
+        super().on_resize(width, height)
         self.exp_bonus_percent_label.on_change_screen_resolution(self.screen_resolution)
         self.money_bonus_percent_label.on_change_screen_resolution(self.screen_resolution)
         self.exp_bonus_placeholder_label.on_change_screen_resolution(self.screen_resolution)

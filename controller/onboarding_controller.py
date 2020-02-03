@@ -15,7 +15,6 @@ class OnboardingController(AppBaseController):
         self.model = OnboardingModel(controller=self, view=self.view)
         self.fade_in_animation = OnboardingFadeInAnimation(self.view)
         self.fade_out_animation = OnboardingFadeOutAnimation(self.view)
-        self.view.on_init_content()
 
     def on_save_and_commit_onboarding_state(self):
         self.model.on_save_and_commit_onboarding_state()

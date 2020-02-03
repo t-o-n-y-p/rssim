@@ -19,8 +19,9 @@ class FPSView(AppBaseView):
     def on_deactivate(self):
         super().on_deactivate()
 
-    def on_change_screen_resolution(self, screen_resolution):
-        super().on_change_screen_resolution(screen_resolution)
+    @window_size_has_changed
+    def on_resize(self, width, height):
+        super().on_resize(width, height)
         self.fps_label.on_change_screen_resolution(self.screen_resolution)
 
     def on_update_opacity(self, new_opacity):

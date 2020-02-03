@@ -36,8 +36,9 @@ class ShopPlaceholderView(MapBaseView):
         self.description_label.on_update_current_locale(self.current_locale)
 
     @final
-    def on_change_screen_resolution(self, screen_resolution):
-        super().on_change_screen_resolution(screen_resolution)
+    @window_size_has_changed
+    def on_resize(self, width, height):
+        super().on_resize(width, height)
         self.lock_label.on_change_screen_resolution(self.screen_resolution)
         self.description_label.on_change_screen_resolution(self.screen_resolution)
 

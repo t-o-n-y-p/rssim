@@ -96,8 +96,9 @@ class ShopConstructorView(MapBaseView):
             self.shop_stage_cells[stage_cell].on_update_current_locale(self.current_locale)
 
     @final
-    def on_change_screen_resolution(self, screen_resolution):
-        super().on_change_screen_resolution(screen_resolution)
+    @window_size_has_changed
+    def on_resize(self, width, height):
+        super().on_resize(width, height)
         self.current_hourly_profit_label.on_change_screen_resolution(self.screen_resolution)
         self.current_exp_bonus_label.on_change_screen_resolution(self.screen_resolution)
         self.hourly_profit_value_label.on_change_screen_resolution(self.screen_resolution)

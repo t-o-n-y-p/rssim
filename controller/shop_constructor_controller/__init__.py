@@ -14,7 +14,6 @@ class ShopConstructorController(MapBaseController):
         self.shop_id = shop_id
         self.fade_in_animation = ShopConstructorFadeInAnimation(self.view)
         self.fade_out_animation = ShopConstructorFadeOutAnimation(self.view)
-        self.view.on_init_content()
 
     def create_shop_constructor_elements(self, shop_id):
         pass

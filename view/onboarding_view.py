@@ -38,8 +38,9 @@ class OnboardingView(AppBaseView):
         self.onboarding_page_control.on_update_current_locale(self.current_locale)
         self.skip_onboarding_label.on_update_current_locale(self.current_locale)
 
-    def on_change_screen_resolution(self, screen_resolution):
-        super().on_change_screen_resolution(screen_resolution)
+    @window_size_has_changed
+    def on_resize(self, width, height):
+        super().on_resize(width, height)
         self.shader_sprite.on_change_screen_resolution(self.screen_resolution)
         self.onboarding_page_control.on_change_screen_resolution(self.screen_resolution)
         self.skip_onboarding_label.on_change_screen_resolution(self.screen_resolution)

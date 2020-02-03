@@ -116,8 +116,9 @@ class GameView(GameBaseView):
         self.main_clock_label_12h.on_update_current_locale(self.current_locale)
         self.exp_progress_bar.on_update_current_locale(self.current_locale)
 
-    def on_change_screen_resolution(self, screen_resolution):
-        super().on_change_screen_resolution(screen_resolution)
+    @window_size_has_changed
+    def on_resize(self, width, height):
+        super().on_resize(width, height)
         self.exp_progress_bar.on_change_screen_resolution(self.screen_resolution)
         self.money_progress_bar.on_change_screen_resolution(self.screen_resolution)
         self.shader_sprite.on_change_screen_resolution(self.screen_resolution)

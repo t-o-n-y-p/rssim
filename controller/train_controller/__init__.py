@@ -14,7 +14,6 @@ class TrainController(MapBaseController):
         self.train_id = train_id
         self.fade_in_animation = TrainFadeInAnimation(self.view)
         self.fade_out_animation = TrainFadeOutAnimation(self.view)
-        self.view.on_init_content()
 
     def create_train_elements(self, train_id):
         pass

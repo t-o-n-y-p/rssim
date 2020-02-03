@@ -15,4 +15,3 @@ class LicenseController(AppBaseController):
         self.model = LicenseModel(controller=self, view=self.view)
         self.fade_in_animation = LicenseFadeInAnimation(self.view)
         self.fade_out_animation = LicenseFadeOutAnimation(self.view)
-        self.view.on_init_content()

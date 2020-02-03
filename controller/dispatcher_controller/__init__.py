@@ -13,7 +13,6 @@ class DispatcherController(MapBaseController):
                          logger=getLogger(f'root.app.game.map.{map_id}.dispatcher.controller'))
         self.fade_in_animation = DispatcherFadeInAnimation(self.view)
         self.fade_out_animation = DispatcherFadeOutAnimation(self.view)
-        self.view.on_init_content()
 
     def create_dispatcher_elements(self):
         pass

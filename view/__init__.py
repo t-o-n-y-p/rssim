@@ -1,9 +1,7 @@
-from ctypes import windll
-
 from pyglet.window import mouse
 
 from ui import *
-from database import USER_DB_CURSOR, CONFIG_DB_CURSOR
+from database import USER_DB_CURSOR
 from ui import Viewport
 
 
@@ -173,6 +171,14 @@ def shader_sprite_exists(fn):
     return _delete_shader_sprite_if_it_exists
 
 
+def window_size_has_changed(fn):
+    def _update_sprites_if_window_size_has_changed(*args, **kwargs):
+        if args[1:] != args[0].screen_resolution:
+            fn(*args, **kwargs)
+
+    return _update_sprites_if_window_size_has_changed
+
+
 # --------------------- CONSTANTS ---------------------
 MINI_MAP_FADE_OUT_TIMER: Final = 1.0        # time since user releases mouse button after which mini-map disappears
 # ------------------- END CONSTANTS -------------------
@@ -195,6 +201,7 @@ class AppBaseView:
         self.on_mouse_scroll_handlers = []
         self.on_key_press_handlers = []
         self.on_text_handlers = []
+        self.on_resize_handlers = [self.on_resize, ]
         self.screen_resolution = (0, 0)
         USER_DB_CURSOR.execute('SELECT current_locale FROM i18n')
         self.current_locale = USER_DB_CURSOR.fetchone()[0]
@@ -228,8 +235,9 @@ class AppBaseView:
     def on_update_current_locale(self, new_locale):
         self.current_locale = new_locale
 
-    def on_change_screen_resolution(self, screen_resolution):
-        self.screen_resolution = screen_resolution
+    @window_size_has_changed
+    def on_resize(self, width, height):
+        self.screen_resolution = width, height
         if self.child_window:
             inner_area_rect = get_inner_area_rect(self.screen_resolution)
             self.viewport.x1, self.viewport.y1 = inner_area_rect[:2]
@@ -250,18 +258,6 @@ class AppBaseView:
         self.opacity = new_opacity
         for b in self.buttons:
             b.on_update_opacity(self.opacity)
-
-    @final
-    def on_init_content(self):
-        CONFIG_DB_CURSOR.execute('SELECT app_width, app_height FROM screen_resolution_config')
-        screen_resolution_config = CONFIG_DB_CURSOR.fetchall()
-        monitor_resolution_config = (windll.user32.GetSystemMetrics(0), windll.user32.GetSystemMetrics(1))
-        USER_DB_CURSOR.execute('SELECT fullscreen FROM graphics')
-        if bool(USER_DB_CURSOR.fetchone()[0]) and monitor_resolution_config in screen_resolution_config:
-            self.on_change_screen_resolution(monitor_resolution_config)
-        else:
-            USER_DB_CURSOR.execute('SELECT app_width, app_height FROM graphics')
-            self.on_change_screen_resolution(USER_DB_CURSOR.fetchone())
 
     @final
     def on_disable_notifications(self):

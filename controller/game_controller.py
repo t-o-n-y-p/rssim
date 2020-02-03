@@ -22,7 +22,6 @@ class GameController(GameBaseController):
         self.model = GameModel(controller=self, view=self.view)
         self.fade_in_animation = GameFadeInAnimation(self.view)
         self.fade_out_animation = GameFadeOutAnimation(self.view)
-        self.view.on_init_content()
         self.bonus_code_manager = BonusCodeManagerController(self)
         self.map_switcher = MapSwitcherController(self)
         self.maps = [PassengerMapController(self), FreightMapController(self)]

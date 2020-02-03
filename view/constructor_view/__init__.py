@@ -149,14 +149,15 @@ class ConstructorView(MapBaseView):
             self.constructor_cells[ENVIRONMENT][j].on_update_current_locale(self.current_locale)
 
     @final
-    def on_change_screen_resolution(self, screen_resolution):
-        super().on_change_screen_resolution(screen_resolution)
+    @window_size_has_changed
+    def on_resize(self, width, height):
+        super().on_resize(width, height)
         self.shader_sprite.on_change_screen_resolution(self.screen_resolution)
         for j in range(CONSTRUCTOR_VIEW_TRACK_CELLS):
-            self.constructor_cells[TRACKS][j].on_change_screen_resolution(screen_resolution)
+            self.constructor_cells[TRACKS][j].on_change_screen_resolution(self.screen_resolution)
 
         for j in range(CONSTRUCTOR_VIEW_ENVIRONMENT_CELLS):
-            self.constructor_cells[ENVIRONMENT][j].on_change_screen_resolution(screen_resolution)
+            self.constructor_cells[ENVIRONMENT][j].on_change_screen_resolution(self.screen_resolution)
 
         self.no_more_tracks_available_placeholder_viewport.x1 = self.constructor_cells[TRACKS][-1].viewport.x1
         self.no_more_tracks_available_placeholder_viewport.x2 = self.constructor_cells[TRACKS][-1].viewport.x2

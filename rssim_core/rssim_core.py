@@ -62,11 +62,7 @@ class RSSim:
         gl.glBlendFunc(gl.GL_SRC_ALPHA, gl.GL_ONE_MINUS_SRC_ALPHA)
         # create App object
         self.app = AppController(loader=self)
-        # initially app is created using default minimal screen resolution; now we change it to user resolution
-        # and same about fullscreen mode
-        if self.app.model.fullscreen_mode and self.app.model.fullscreen_mode_available:
-            self.app.on_fullscreen_mode_turned_on()
-
+        self.app.on_grab_resize_handlers()
         # activate app after it is created
         self.app.fade_in_animation.on_activate()
         self.notifications = []
@@ -189,6 +185,11 @@ class RSSim:
         def on_text(text):
             for h in self.app.on_text_handlers:
                 h(text)
+
+        @WINDOW.event
+        def on_resize(width, height):
+            for h in self.app.on_resize_handlers:
+                h(width, height)
 
     def run(self):
         # fps_timer is used to determine if it's time to recalculate FPS

@@ -16,7 +16,6 @@ class RailroadSwitchController(MapBaseController):
         self.track_param_1, self.track_param_2, self.switch_type = track_param_1, track_param_2, switch_type
         self.fade_in_animation = RailroadSwitchFadeInAnimation(self.view)
         self.fade_out_animation = RailroadSwitchFadeOutAnimation(self.view)
-        self.view.on_init_content()
 
     def create_switch_elements(self, track_param_1, track_param_2, switch_type):
         pass

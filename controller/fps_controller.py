@@ -15,7 +15,6 @@ class FPSController(AppBaseController):
         self.model = FPSModel(controller=self, view=self.view)
         self.fade_in_animation = FPSFadeInAnimation(self.view)
         self.fade_out_animation = FPSFadeOutAnimation(self.view)
-        self.view.on_init_content()
 
     def on_update_fps(self, fps):
         self.model.on_update_fps(fps)

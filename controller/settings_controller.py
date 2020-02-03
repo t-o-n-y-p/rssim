@@ -17,7 +17,6 @@ class SettingsController(AppBaseController):
         self.model = SettingsModel(controller=self, view=self.view)
         self.fade_in_animation = SettingsFadeInAnimation(self.view)
         self.fade_out_animation = SettingsFadeOutAnimation(self.view)
-        self.view.on_init_content()
 
     def on_accept_changes(self, windowed_resolution, display_fps, fade_animations_enabled, clock_24h_enabled,
                           level_up_notification_enabled, feature_unlocked_notification_enabled,

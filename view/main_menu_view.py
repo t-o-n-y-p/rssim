@@ -71,8 +71,9 @@ class MainMenuView(AppBaseView):
         self.open_license_label.on_update_current_locale(self.current_locale)
         self.enter_code_button.on_update_current_locale(self.current_locale)
 
-    def on_change_screen_resolution(self, screen_resolution):
-        super().on_change_screen_resolution(screen_resolution)
+    @window_size_has_changed
+    def on_resize(self, width, height):
+        super().on_resize(width, height)
         self.shader_sprite.on_change_screen_resolution(self.screen_resolution)
         self.open_license_label.on_change_screen_resolution(self.screen_resolution)
         for b in self.buttons:

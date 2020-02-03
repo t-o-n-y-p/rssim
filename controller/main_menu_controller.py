@@ -15,4 +15,3 @@ class MainMenuController(AppBaseController):
         self.model = MainMenuModel(controller=self, view=self.view)
         self.fade_in_animation = MainMenuFadeInAnimation(self.view)
         self.fade_out_animation = MainMenuFadeOutAnimation(self.view)
-        self.view.on_init_content()

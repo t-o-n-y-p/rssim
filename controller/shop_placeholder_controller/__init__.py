@@ -14,7 +14,6 @@ class ShopPlaceholderController(MapBaseController):
         self.shop_id = shop_id
         self.fade_in_animation = ShopPlaceholderFadeInAnimation(self.view)
         self.fade_out_animation = ShopPlaceholderFadeOutAnimation(self.view)
-        self.view.on_init_content()
 
     def create_shop_placeholder_elements(self, shop_id):
         pass

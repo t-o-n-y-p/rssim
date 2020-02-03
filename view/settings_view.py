@@ -157,8 +157,9 @@ class SettingsView(AppBaseView):
         self.clock_24h_checkbox.on_update_current_locale(self.current_locale)
         self.notifications_checkbox_group.on_update_current_locale(self.current_locale)
 
-    def on_change_screen_resolution(self, screen_resolution):
-        super().on_change_screen_resolution(screen_resolution)
+    @window_size_has_changed
+    def on_resize(self, width, height):
+        super().on_resize(width, height)
         self.screen_resolution_control.on_change_screen_resolution(self.screen_resolution)
         self.display_fps_checkbox.on_change_screen_resolution(self.screen_resolution)
         self.fade_animations_checkbox.on_change_screen_resolution(self.screen_resolution)

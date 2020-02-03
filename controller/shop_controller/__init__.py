@@ -18,7 +18,6 @@ class ShopController(MapBaseController):
         self.shop_id = shop_id
         self.fade_in_animation = ShopFadeInAnimation(self.view)
         self.fade_out_animation = ShopFadeOutAnimation(self.view)
-        self.view.on_init_content()
         self.placeholder = placeholder
         self.shop_constructor = shop_constructor
         self.placeholder_to_shop_constructor_transition_animation = \

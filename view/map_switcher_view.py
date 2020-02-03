@@ -58,8 +58,9 @@ class MapSwitcherView(GameBaseView):
         for c in self.map_switcher_cells:
             c.on_update_current_locale(self.current_locale)
 
-    def on_change_screen_resolution(self, screen_resolution):
-        super().on_change_screen_resolution(screen_resolution)
+    @window_size_has_changed
+    def on_resize(self, width, height):
+        super().on_resize(width, height)
         self.shader_sprite.on_change_screen_resolution(self.screen_resolution)
         self.title_label.on_change_screen_resolution(self.screen_resolution)
         for c in self.map_switcher_cells:

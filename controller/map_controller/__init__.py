@@ -37,7 +37,6 @@ class MapController(MapBaseController):
                          logger=getLogger(f'root.app.game.map.{map_id}.controller'))
         self.fade_in_animation = MapFadeInAnimation(self.view)
         self.fade_out_animation = MapFadeOutAnimation(self.view)
-        self.view.on_init_content()
         self.scheduler = scheduler
         self.constructor = constructor
         self.dispatcher = dispatcher
@@ -106,14 +105,6 @@ class MapController(MapBaseController):
 
     def create_map_elements(self):
         pass
-
-    @final
-    def on_change_screen_resolution(self, screen_resolution):
-        # recalculating base offset before applying new screen resolution
-        self.view.on_recalculate_base_offset_for_new_screen_resolution(screen_resolution)
-        super().on_change_screen_resolution(screen_resolution)
-        self.view.check_base_offset_limits()
-        self.on_save_and_commit_last_known_base_offset()
 
     @final
     def on_save_state(self):
@@ -337,7 +328,7 @@ class MapController(MapBaseController):
         train = self.model.on_create_train(train_id, cars, track, train_route, state, direction, new_direction,
                                            current_direction, priority, boarding_time, exp, money,
                                            switch_direction_required)
-        train.view.on_change_screen_resolution(self.view.screen_resolution)
+        train.view.on_resize(*self.view.screen_resolution)
         # add new train to the list and dictionary
         self.trains[train_id] = train
         self.trains_list.append(train)

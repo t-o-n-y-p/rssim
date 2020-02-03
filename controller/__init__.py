@@ -61,17 +61,13 @@ class AppBaseController:
         self.on_mouse_scroll_handlers = []
         self.on_key_press_handlers = []
         self.on_text_handlers = []
+        self.on_resize_handlers = []
         self.child_controllers = []
 
     def on_update_current_locale(self, new_locale):
         self.view.on_update_current_locale(new_locale)
         for controller in self.child_controllers:
             controller.on_update_current_locale(new_locale)
-
-    def on_change_screen_resolution(self, screen_resolution):
-        self.view.on_change_screen_resolution(screen_resolution)
-        for controller in self.child_controllers:
-            controller.on_change_screen_resolution(screen_resolution)
 
     def on_save_state(self):
         self.model.on_save_state()
@@ -222,6 +218,14 @@ class AppBaseController:
                                                       on_mouse_scroll_handlers=on_mouse_scroll_handlers,
                                                       on_key_press_handlers=on_key_press_handlers,
                                                       on_text_handlers=on_text_handlers)
+
+    @final
+    def on_grab_resize_handlers(self):
+        self.on_resize_handlers.extend(self.view.on_resize_handlers)
+        for controller in self.child_controllers:
+            self.on_resize_handlers.extend(controller.on_grab_resize_handlers())
+
+        return self.on_resize_handlers
 
 
 class GameBaseController(AppBaseController):

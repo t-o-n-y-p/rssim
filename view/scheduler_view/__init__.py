@@ -70,8 +70,9 @@ class SchedulerView(MapBaseView):
                 self.schedule_rows[i][j].on_update_current_locale(self.current_locale)
 
     @final
-    def on_change_screen_resolution(self, screen_resolution):
-        super().on_change_screen_resolution(screen_resolution)
+    @window_size_has_changed
+    def on_resize(self, width, height):
+        super().on_resize(width, height)
         self.shader_sprite.on_change_screen_resolution(self.screen_resolution)
         self.left_schedule_caption_label.on_change_screen_resolution(self.screen_resolution)
         self.right_schedule_caption_label.on_change_screen_resolution(self.screen_resolution)

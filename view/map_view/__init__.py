@@ -110,8 +110,13 @@ class MapView(MapBaseView):
             self.is_mini_map_timer_activated = False
 
     @final
-    def on_change_screen_resolution(self, screen_resolution):
-        super().on_change_screen_resolution(screen_resolution)
+    @window_size_has_changed
+    def on_resize(self, width, height):
+        # recalculating base offset before applying new screen resolution
+        if self.screen_resolution > (0, 0):
+            self.on_recalculate_base_offset_for_new_screen_resolution((width, height))
+
+        super().on_resize(width, height)
         self.base_offset_lower_left_limit = (self.viewport.x1,
                                              self.viewport.y1 + get_bottom_bar_height(self.screen_resolution))
         self.base_offset_upper_right_limit = (self.viewport.x2 - MAP_WIDTH * self.zoom,
@@ -120,6 +125,8 @@ class MapView(MapBaseView):
         self.shader_sprite.on_change_screen_resolution(self.screen_resolution)
         self.open_schedule_button.on_change_screen_resolution(self.screen_resolution)
         self.open_constructor_button.on_change_screen_resolution(self.screen_resolution)
+        self.check_base_offset_limits()
+        self.controller.on_save_and_commit_last_known_base_offset()
 
     @final
     def on_update_opacity(self, new_opacity):

@@ -14,7 +14,6 @@ class SignalController(MapBaseController):
         self.track, self.base_route = track, base_route
         self.fade_in_animation = SignalFadeInAnimation(self.view)
         self.fade_out_animation = SignalFadeOutAnimation(self.view)
-        self.view.on_init_content()
 
     def create_signal_elements(self, track, base_route):
         pass

@@ -1,10 +1,29 @@
+from ctypes import windll
 from fractions import Fraction
 from typing import Final, final
 
+from database import CONFIG_DB_CURSOR, USER_DB_CURSOR
 from pyglet.window import Window
 from pyglet.graphics import Batch, OrderedGroup
 from camera.map_camera import MapCamera
 from camera.ui_camera import UICamera
+
+
+def _create_window():
+    CONFIG_DB_CURSOR.execute('SELECT app_width, app_height FROM screen_resolution_config')
+    screen_resolution_config = CONFIG_DB_CURSOR.fetchall()
+    monitor_resolution_config = (windll.user32.GetSystemMetrics(0), windll.user32.GetSystemMetrics(1))
+    USER_DB_CURSOR.execute('SELECT fullscreen FROM graphics')
+    if bool(USER_DB_CURSOR.fetchone()[0]) and monitor_resolution_config in screen_resolution_config:
+        window = Window(width=monitor_resolution_config[0], height=monitor_resolution_config[1],
+                        caption='Railway Station Simulator', style='borderless', fullscreen=False, vsync=False)
+        window.set_fullscreen(True)
+        return window
+
+    USER_DB_CURSOR.execute('SELECT app_width, app_height FROM graphics')
+    screen_resolution = USER_DB_CURSOR.fetchone()
+    return Window(width=screen_resolution[0], height=screen_resolution[1],
+                  caption='Railway Station Simulator', style='borderless', fullscreen=False, vsync=False)
 
 
 # --------------------- CONSTANTS ---------------------
@@ -76,8 +95,7 @@ ACTIVATIONS_LEFT: Final = 5
 IS_ACTIVATED: Final = 6
 BONUS_TIME: Final = 7
 # main surface which harbors all the app
-WINDOW: Final = Window(width=MIN_RESOLUTION_WIDTH, height=MIN_RESOLUTION_HEIGHT,
-                       caption='Railway Station Simulator', style='borderless', fullscreen=False, vsync=False)
+WINDOW: Final = _create_window()
 # flip the surface so user knows game has launched and is loading now
 WINDOW.flip()
 # large portions of sprites which can be drawn together

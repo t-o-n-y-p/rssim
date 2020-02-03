@@ -31,8 +31,9 @@ class MiniMapView(MapBaseView):
         super().on_deactivate()
 
     @final
-    def on_change_screen_resolution(self, screen_resolution):
-        super().on_change_screen_resolution(screen_resolution)
+    @window_size_has_changed
+    def on_resize(self, width, height):
+        super().on_resize(width, height)
         self.shader_sprite.on_change_screen_resolution(self.screen_resolution)
         self.mini_map_sprite.on_change_screen_resolution(self.screen_resolution)
         self.mini_environment_sprite.on_change_screen_resolution(self.screen_resolution)

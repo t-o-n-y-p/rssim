@@ -16,7 +16,6 @@ class MapSwitcherController(GameBaseController):
         self.model = MapSwitcherModel(controller=self, view=self.view)
         self.fade_in_animation = MapSwitcherFadeInAnimation(self.view)
         self.fade_out_animation = MapSwitcherFadeOutAnimation(self.view)
-        self.view.on_init_content()
 
     def on_switch_map(self, new_map_id):
         self.model.on_switch_map(new_map_id)

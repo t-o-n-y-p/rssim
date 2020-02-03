@@ -14,7 +14,6 @@ class MiniMapController(MapBaseController):
                          logger=getLogger(f'root.app.game.map.{map_id}.mini_map.controller'))
         self.fade_in_animation = MiniMapFadeInAnimation(self.view)
         self.fade_out_animation = MiniMapFadeOutAnimation(self.view)
-        self.view.on_init_content()
 
     def create_mini_map_elements(self):
         pass

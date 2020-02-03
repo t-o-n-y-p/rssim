@@ -14,7 +14,6 @@ class ConstructorController(MapBaseController):
         self.fade_in_animation = ConstructorFadeInAnimation(self.view)
         self.fade_out_animation = ConstructorFadeOutAnimation(self.view)
         view.construction_state_matrix = model.construction_state_matrix
-        self.view.on_init_content()
 
     def create_constructor_elements(self):
         pass

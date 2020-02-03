@@ -17,7 +17,6 @@ class BonusCodeActivationController(AppBaseController):
         self.model = BonusCodeActivationModel(controller=self, view=self.view)
         self.fade_in_animation = BonusCodeActivationFadeInAnimation(self.view)
         self.fade_out_animation = BonusCodeActivationFadeOutAnimation(self.view)
-        self.view.on_init_content()
 
     def on_increment_bonus_code_abuse_counter(self, value):
         self.model.on_increment_bonus_code_abuse_counter(value)
