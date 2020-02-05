@@ -98,6 +98,8 @@ for i in range(len(FREIGHT_BOARDING_LIGHT_IMAGE)):
     FREIGHT_BOARDING_LIGHT_IMAGE[i].anchor_y = FREIGHT_BOARDING_LIGHT_IMAGE[i].height // 2
 
 # signal images
+GREEN_SIGNAL = 'green_signal'
+RED_SIGNAL = 'red_signal'
 RED_SIGNAL_IMAGE: Final = __resource.texture('signals.dds').get_region(0, 0, 7, 9)
 GREEN_SIGNAL_IMAGE: Final = __resource.texture('signals.dds').get_region(8, 0, 7, 9)
 # anchor is set to the middle point

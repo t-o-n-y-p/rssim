@@ -4,6 +4,7 @@ from win32api import GetCursorPos
 from win32gui import GetActiveWindow, GetWindowRect, SetWindowPos
 from win32con import HWND_TOP, SWP_NOREDRAW
 
+from i18n import ENGLISH, RUSSIAN
 from view import *
 from ui import *
 from ui.button import create_two_state_button
@@ -41,11 +42,11 @@ class AppView(AppBaseView):
             self.controller.on_restore_button_click()
 
         def on_set_en_locale(button):
-            self.controller.on_update_current_locale('en')
+            self.controller.on_update_current_locale(ENGLISH)
             self.controller.on_update_clock_state(clock_24h_enabled=False)
 
         def on_set_ru_locale(button):
-            self.controller.on_update_current_locale('ru')
+            self.controller.on_update_current_locale(RUSSIAN)
             self.controller.on_update_clock_state(clock_24h_enabled=True)
 
         super().__init__(controller, logger=getLogger('root.app.view'))
@@ -68,9 +69,9 @@ class AppView(AppBaseView):
         self.game_window_handler = GetActiveWindow()
         self.game_window_position = GetWindowRect(self.game_window_handler)
         self.absolute_mouse_pos = GetCursorPos()
-        self.on_mouse_press_handlers.append(self.handle_mouse_press)
-        self.on_mouse_release_handlers.append(self.handle_mouse_release)
-        self.on_mouse_drag_handlers.append(self.handle_mouse_drag)
+        self.on_mouse_press_handlers.append(self.on_mouse_press)
+        self.on_mouse_release_handlers.append(self.on_mouse_release)
+        self.on_mouse_drag_handlers.append(self.on_mouse_drag)
         self.on_resize_handlers.append(self.on_resize)
         self.shader_sprite = AppViewShaderSprite(view=self)
         USER_DB_CURSOR.execute('SELECT fullscreen FROM graphics')
@@ -134,17 +135,17 @@ class AppView(AppBaseView):
     @cursor_is_over_the_app_header
     @left_mouse_button
     @view_is_active
-    def handle_mouse_press(self, x, y, button, modifiers):
+    def on_mouse_press(self, x, y, button, modifiers):
         self.app_window_move_mode = True
         self.app_window_move_offset = (x, self.viewport.y2 - y)
 
     @app_window_move_mode_enabled
     @left_mouse_button
-    def handle_mouse_release(self, x, y, button, modifiers):
+    def on_mouse_release(self, x, y, button, modifiers):
         self.app_window_move_mode = False
 
     @app_window_move_mode_enabled
-    def handle_mouse_drag(self, x, y, dx, dy, buttons, modifiers):
+    def on_mouse_drag(self, x, y, dx, dy, buttons, modifiers):
         self.absolute_mouse_pos = GetCursorPos()
         self.game_window_position = GetWindowRect(self.game_window_handler)
         SetWindowPos(self.game_window_handler, HWND_TOP,

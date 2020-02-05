@@ -2,6 +2,7 @@ from logging import getLogger
 
 from model import *
 from database import USER_DB_CURSOR
+from textures import GREEN_SIGNAL, RED_SIGNAL
 
 
 class SignalModel(MapBaseModel, ABC):
@@ -24,10 +25,10 @@ class SignalModel(MapBaseModel, ABC):
 
     @final
     def on_switch_to_green(self):
-        self.state = 'green_signal'
+        self.state = GREEN_SIGNAL
         self.view.on_change_state(self.state)
 
     @final
     def on_switch_to_red(self):
-        self.state = 'red_signal'
+        self.state = RED_SIGNAL
         self.view.on_change_state(self.state)

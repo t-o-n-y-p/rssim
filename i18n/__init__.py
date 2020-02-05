@@ -19,6 +19,16 @@ NOMINATIVE = 'nominative'
 GENITIVE = 'genitive'
 DATIVE = 'dative'
 
+ENGLISH = 'en'
+RUSSIAN = 'ru'
+
+ZERO = 'zero'
+ONE = 'one'
+TWO = 'two'
+FEW = 'few'
+MANY = 'many'
+OTHER = 'other'
+
 
 def i18n_number_category(x, locale):
     """
@@ -30,18 +40,18 @@ def i18n_number_category(x, locale):
     :return:            group ID, possible values: 'zero', 'one', 'two', 'few', 'many', 'other'
     """
     if type(x) is float:
-        return 'other'
+        return OTHER
     elif type(x) is int:
-        if locale == 'en':
+        if locale == ENGLISH:
             if x == 1:
-                return 'one'
+                return ONE
             else:
-                return 'other'
+                return OTHER
 
-        elif locale == 'ru':
+        elif locale == RUSSIAN:
             if x % 10 == 1 and x % 100 != 11:
-                return 'one'
+                return ONE
             elif x % 10 in (2, 3, 4) and x % 100 not in (12, 13, 14):
-                return 'few'
+                return FEW
             else:
-                return 'many'
+                return MANY

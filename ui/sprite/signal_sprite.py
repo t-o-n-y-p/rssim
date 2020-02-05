@@ -2,7 +2,7 @@ from logging import getLogger
 
 from ui import *
 from ui.sprite import MapSprite
-from textures import RED_SIGNAL_IMAGE, GREEN_SIGNAL_IMAGE
+from textures import RED_SIGNAL_IMAGE, GREEN_SIGNAL_IMAGE, GREEN_SIGNAL
 
 
 @final
@@ -15,7 +15,7 @@ class SignalSprite(MapSprite):
                                (track, base_route, self.map_id))
         self.state = USER_DB_CURSOR.fetchone()[0]
         self.texture = RED_SIGNAL_IMAGE
-        if self.state == 'green_signal':
+        if self.state == GREEN_SIGNAL:
             self.texture = GREEN_SIGNAL_IMAGE
 
         CONFIG_DB_CURSOR.execute('''SELECT x, y, rotation FROM signal_config 
@@ -32,7 +32,7 @@ class SignalSprite(MapSprite):
 
     def on_change_state(self, state):
         self.state = state
-        if self.state == 'green_signal':
+        if self.state == GREEN_SIGNAL:
             self.on_update_texture(GREEN_SIGNAL_IMAGE)
         else:
             self.on_update_texture(RED_SIGNAL_IMAGE)
