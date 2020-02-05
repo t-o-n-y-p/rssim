@@ -1,59 +1,29 @@
 from logging import getLogger
 from operator import attrgetter
-from typing import Dict, List
 
 from controller import *
-from controller.narrator_controller import NarratorController
-from model.map_model import MapModel
-from view.map_view import MapView
-from controller.scheduler_controller import SchedulerController
-from controller.constructor_controller import ConstructorController
-from controller.dispatcher_controller import DispatcherController
-from controller.mini_map_controller import MiniMapController
-from controller.signal_controller import SignalController
-from controller.train_route_controller import TrainRouteController
-from controller.railroad_switch_controller import RailroadSwitchController
-from controller.crossover_controller import CrossoverController
-from controller.train_controller import TrainController
-from controller.shop_controller import ShopController
 from ui.fade_animation.fade_in_animation.map_fade_in_animation import MapFadeInAnimation
 from ui.fade_animation.fade_out_animation.map_fade_out_animation import MapFadeOutAnimation
 
 
-class MapController(MapBaseController):
-    def __init__(self, model: MapModel, view: MapView, scheduler: SchedulerController,
-                 constructor: ConstructorController, dispatcher: DispatcherController,
-                 mini_map: MiniMapController, narrator: NarratorController,
-                 signals: Dict[int, Dict[str, SignalController]], signals_list: List[SignalController],
-                 train_routes: Dict[int, Dict[str, TrainRouteController]],
-                 train_routes_sorted_list: List[TrainRouteController],
-                 switches: Dict[int, Dict[int, Dict[str, RailroadSwitchController]]],
-                 switches_list: List[RailroadSwitchController],
-                 crossovers: Dict[int, Dict[int, Dict[str, CrossoverController]]],
-                 crossovers_list: List[CrossoverController],
-                 trains: Dict[int, TrainController], trains_list: List[TrainController], shops: List[ShopController],
-                 map_id, parent_controller):
-        super().__init__(model, view, map_id, parent_controller,
-                         logger=getLogger(f'root.app.game.map.{map_id}.controller'))
+class MapController(MapBaseController, ABC):
+    def __init__(self, map_id, parent_controller):
+        super().__init__(map_id, parent_controller, logger=getLogger(f'root.app.game.map.{map_id}.controller'))
+        self.view, self.model = self.create_view_and_model()
         self.fade_in_animation = MapFadeInAnimation(self.view)
         self.fade_out_animation = MapFadeOutAnimation(self.view)
-        self.scheduler = scheduler
-        self.constructor = constructor
-        self.dispatcher = dispatcher
-        self.mini_map = mini_map
-        self.narrator = narrator
-        self.signals = signals
-        self.signals_list = signals_list
-        self.train_routes = train_routes
-        self.train_routes_sorted_list = train_routes_sorted_list
-        self.switches = switches
-        self.switches_list = switches_list
-        self.crossovers = crossovers
-        self.crossovers_list = crossovers_list
-        self.trains = trains
-        self.trains_list = trains_list
+        self.scheduler = self.create_scheduler()
+        self.constructor = self.create_constructor()
+        self.dispatcher = self.create_dispatcher()
+        self.mini_map = self.create_mini_map()
+        self.narrator = self.create_narrator()
+        self.signals, self.signals_list = self.create_signals()
+        self.train_routes, self.train_routes_sorted_list = self.create_train_routes()
+        self.switches, self.switches_list = self.create_switches()
+        self.crossovers, self.crossovers_list = self.create_crossovers()
+        self.trains, self.trains_list = self.create_trains()
+        self.shops = self.create_shops()
         self.lifecycle_ended_trains = []
-        self.shops = shops
         self.fade_in_animation.constructor_fade_in_animation = self.constructor.fade_in_animation
         self.fade_in_animation.scheduler_fade_in_animation = self.scheduler.fade_in_animation
         self.fade_in_animation.dispatcher_fade_in_animation = self.dispatcher.fade_in_animation
@@ -103,7 +73,52 @@ class MapController(MapBaseController):
             *self.switches_list, *self.crossovers_list, *self.trains_list
         ]
 
-    def create_map_elements(self):
+    @abstractmethod
+    def create_view_and_model(self):
+        pass
+
+    @abstractmethod
+    def create_scheduler(self):
+        pass
+
+    @abstractmethod
+    def create_constructor(self):
+        pass
+
+    @abstractmethod
+    def create_dispatcher(self):
+        pass
+
+    @abstractmethod
+    def create_mini_map(self):
+        pass
+
+    @abstractmethod
+    def create_narrator(self):
+        pass
+
+    @abstractmethod
+    def create_signals(self):
+        pass
+
+    @abstractmethod
+    def create_train_routes(self):
+        pass
+
+    @abstractmethod
+    def create_switches(self):
+        pass
+
+    @abstractmethod
+    def create_crossovers(self):
+        pass
+
+    @abstractmethod
+    def create_trains(self):
+        pass
+
+    @abstractmethod
+    def create_shops(self):
         pass
 
     @final
@@ -123,6 +138,7 @@ class MapController(MapBaseController):
         for train in self.lifecycle_ended_trains:
             train.view.on_deactivate()
             train.view.on_update_opacity(0)
+            train.view.on_detach_resize_handlers()
             self.fade_in_animation.train_fade_in_animations.remove(train.fade_in_animation)
             self.fade_out_animation.train_fade_out_animations.remove(train.fade_out_animation)
             self.trains.pop(train.train_id)

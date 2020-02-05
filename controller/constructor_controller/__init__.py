@@ -1,21 +1,20 @@
 from logging import getLogger
 
 from controller import *
-from model.constructor_model import ConstructorModel
-from view.constructor_view import ConstructorView
 from ui.fade_animation.fade_in_animation.constructor_fade_in_animation import ConstructorFadeInAnimation
 from ui.fade_animation.fade_out_animation.constructor_fade_out_animation import ConstructorFadeOutAnimation
 
 
-class ConstructorController(MapBaseController):
-    def __init__(self, model: ConstructorModel, view: ConstructorView, map_id, parent_controller):
-        super().__init__(model, view, map_id, parent_controller,
+class ConstructorController(MapBaseController, ABC):
+    def __init__(self, map_id, parent_controller):
+        super().__init__(map_id, parent_controller,
                          logger=getLogger(f'root.app.game.map.{map_id}.constructor.controller'))
+        self.view, self.model = self.create_view_and_model()
         self.fade_in_animation = ConstructorFadeInAnimation(self.view)
         self.fade_out_animation = ConstructorFadeOutAnimation(self.view)
-        view.construction_state_matrix = model.construction_state_matrix
 
-    def create_constructor_elements(self):
+    @abstractmethod
+    def create_view_and_model(self):
         pass
 
     @final

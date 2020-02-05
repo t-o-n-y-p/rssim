@@ -1,3 +1,4 @@
+from abc import ABC, abstractmethod
 from typing import Final, final
 
 
@@ -44,7 +45,7 @@ TRAIN_ROUTE_DATA_SECTION_NUMBER: Final = 2     # meaning of train_route_data[] l
 # ------------------- END CONSTANTS -------------------
 
 
-class AppBaseController:
+class AppBaseController(ABC):
     def __init__(self, parent_controller=None, logger=None):
         self.parent_controller = parent_controller
         self.logger = logger
@@ -220,15 +221,21 @@ class AppBaseController:
                                                       on_text_handlers=on_text_handlers)
 
     @final
-    def on_grab_resize_handlers(self):
-        self.on_resize_handlers.extend(self.view.on_resize_handlers)
-        for controller in self.child_controllers:
-            self.on_resize_handlers.extend(controller.on_grab_resize_handlers())
+    def on_append_resize_handlers(self, on_resize_handlers=()):
+        self.on_resize_handlers.extend(on_resize_handlers)
+        if self.parent_controller is not None:
+            self.parent_controller.on_append_resize_handlers(on_resize_handlers=on_resize_handlers)
 
-        return self.on_resize_handlers
+    @final
+    def on_detach_resize_handlers(self, on_resize_handlers=()):
+        for handler in on_resize_handlers:
+            self.on_resize_handlers.remove(handler)
+
+        if self.parent_controller is not None:
+            self.parent_controller.on_detach_resize_handlers(on_resize_handlers=on_resize_handlers)
 
 
-class GameBaseController(AppBaseController):
+class GameBaseController(AppBaseController, ABC):
     def __init__(self, parent_controller=None, logger=None):
         super().__init__(parent_controller, logger)
 
@@ -291,13 +298,15 @@ class GameBaseController(AppBaseController):
             controller.on_deactivate_construction_time_bonus_code()
 
 
-class MapBaseController(GameBaseController):
-    def __init__(self, model, view, map_id, parent_controller=None, logger=None):
+class MapBaseController(GameBaseController, ABC):
+    def __init__(self, map_id, parent_controller=None, logger=None):
         super().__init__(parent_controller, logger)
         self.map_id = map_id
-        self.view = view
-        self.model = model
         self.map_element_controllers = []
+
+    @abstractmethod
+    def create_view_and_model(self, *args, **kwargs):
+        pass
 
     def on_unlock(self):
         self.model.on_unlock()

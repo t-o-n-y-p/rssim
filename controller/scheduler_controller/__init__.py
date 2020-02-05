@@ -1,20 +1,20 @@
 from logging import getLogger
 
 from controller import *
-from model.scheduler_model import SchedulerModel
-from view.scheduler_view import SchedulerView
 from ui.fade_animation.fade_in_animation.scheduler_fade_in_animation import SchedulerFadeInAnimation
 from ui.fade_animation.fade_out_animation.scheduler_fade_out_animation import SchedulerFadeOutAnimation
 
 
-class SchedulerController(MapBaseController):
-    def __init__(self, model: SchedulerModel, view: SchedulerView, map_id, parent_controller):
-        super().__init__(model, view, map_id, parent_controller,
+class SchedulerController(MapBaseController, ABC):
+    def __init__(self, map_id, parent_controller):
+        super().__init__(map_id, parent_controller,
                          logger=getLogger(f'root.app.game.map.{map_id}.scheduler.controller'))
+        self.view, self.model = self.create_view_and_model()
         self.fade_in_animation = SchedulerFadeInAnimation(self.view)
         self.fade_out_animation = SchedulerFadeOutAnimation(self.view)
 
-    def create_scheduler_elements(self):
+    @abstractmethod
+    def create_view_and_model(self):
         pass
 
     @final

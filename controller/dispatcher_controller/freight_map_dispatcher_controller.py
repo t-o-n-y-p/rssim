@@ -9,9 +9,9 @@ from database import FREIGHT_MAP
 @final
 class FreightMapDispatcherController(DispatcherController):
     def __init__(self, map_controller):
-        super().__init__(*self.create_dispatcher_elements(), map_id=FREIGHT_MAP, parent_controller=map_controller)
+        super().__init__(map_id=FREIGHT_MAP, parent_controller=map_controller)
 
-    def create_dispatcher_elements(self):
+    def create_view_and_model(self):
         view = FreightMapDispatcherView(controller=self)
         model = FreightMapDispatcherModel(controller=self, view=view)
-        return model, view
+        return view, model

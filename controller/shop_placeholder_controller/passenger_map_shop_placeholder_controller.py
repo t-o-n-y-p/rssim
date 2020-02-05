@@ -9,10 +9,9 @@ from database import PASSENGER_MAP
 @final
 class PassengerMapShopPlaceholderController(ShopPlaceholderController):
     def __init__(self, shop_controller, shop_id):
-        super().__init__(*self.create_shop_placeholder_elements(shop_id), map_id=PASSENGER_MAP,
-                         parent_controller=shop_controller, shop_id=shop_id)
+        super().__init__(map_id=PASSENGER_MAP, parent_controller=shop_controller, shop_id=shop_id)
 
-    def create_shop_placeholder_elements(self, shop_id):
+    def create_view_and_model(self, shop_id):
         view = PassengerMapShopPlaceholderView(controller=self, shop_id=shop_id)
         model = PassengerMapShopPlaceholderModel(controller=self, view=view, shop_id=shop_id)
-        return model, view
+        return view, model

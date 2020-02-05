@@ -9,9 +9,9 @@ from database import FREIGHT_MAP
 @final
 class FreightMapSchedulerController(SchedulerController):
     def __init__(self, map_controller):
-        super().__init__(*self.create_scheduler_elements(), map_id=FREIGHT_MAP, parent_controller=map_controller)
+        super().__init__(map_id=FREIGHT_MAP, parent_controller=map_controller)
 
-    def create_scheduler_elements(self):
+    def create_view_and_model(self):
         view = FreightMapSchedulerView(controller=self)
         model = FreightMapSchedulerModel(controller=self, view=view)
-        return model, view
+        return view, model

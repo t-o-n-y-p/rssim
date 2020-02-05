@@ -9,9 +9,10 @@ from database import PASSENGER_MAP
 @final
 class PassengerMapConstructorController(ConstructorController):
     def __init__(self, map_controller):
-        super().__init__(*self.create_constructor_elements(), map_id=PASSENGER_MAP, parent_controller=map_controller)
+        super().__init__(map_id=PASSENGER_MAP, parent_controller=map_controller)
 
-    def create_constructor_elements(self):
+    def create_view_and_model(self):
         view = PassengerMapConstructorView(controller=self)
         model = PassengerMapConstructorModel(controller=self, view=view)
-        return model, view
+        view.construction_state_matrix = model.construction_state_matrix
+        return view, model

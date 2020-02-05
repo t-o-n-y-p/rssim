@@ -1,20 +1,20 @@
 from logging import getLogger
 
 from controller import *
-from model.dispatcher_model import DispatcherModel
-from view.dispatcher_view import DispatcherView
 from ui.fade_animation.fade_in_animation.dispatcher_fade_in_animation import DispatcherFadeInAnimation
 from ui.fade_animation.fade_out_animation.dispatcher_fade_out_animation import DispatcherFadeOutAnimation
 
 
-class DispatcherController(MapBaseController):
-    def __init__(self, model: DispatcherModel, view: DispatcherView, map_id, parent_controller):
-        super().__init__(model, view, map_id, parent_controller,
+class DispatcherController(MapBaseController, ABC):
+    def __init__(self, map_id, parent_controller):
+        super().__init__(map_id, parent_controller,
                          logger=getLogger(f'root.app.game.map.{map_id}.dispatcher.controller'))
+        self.view, self.model = self.create_view_and_model()
         self.fade_in_animation = DispatcherFadeInAnimation(self.view)
         self.fade_out_animation = DispatcherFadeOutAnimation(self.view)
 
-    def create_dispatcher_elements(self):
+    @abstractmethod
+    def create_view_and_model(self):
         pass
 
     @final

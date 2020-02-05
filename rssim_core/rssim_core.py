@@ -62,7 +62,6 @@ class RSSim:
         gl.glBlendFunc(gl.GL_SRC_ALPHA, gl.GL_ONE_MINUS_SRC_ALPHA)
         # create App object
         self.app = AppController(loader=self)
-        self.app.on_grab_resize_handlers()
         # activate app after it is created
         self.app.fade_in_animation.on_activate()
         self.notifications = []

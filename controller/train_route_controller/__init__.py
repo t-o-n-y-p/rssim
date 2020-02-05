@@ -1,21 +1,21 @@
 from logging import getLogger
 
 from controller import *
-from model.train_route_model import TrainRouteModel
-from view.train_route_view import TrainRouteView
 from ui.fade_animation.fade_in_animation.train_route_fade_in_animation import TrainRouteFadeInAnimation
 from ui.fade_animation.fade_out_animation.train_route_fade_out_animation import TrainRouteFadeOutAnimation
 
 
-class TrainRouteController(MapBaseController):
-    def __init__(self, model: TrainRouteModel, view: TrainRouteView, map_id, parent_controller, track, train_route):
-        super().__init__(model, view, map_id, parent_controller,
+class TrainRouteController(MapBaseController, ABC):
+    def __init__(self, map_id, parent_controller, track, train_route):
+        super().__init__(map_id, parent_controller,
                          logger=getLogger(f'root.app.game.map.{map_id}.train_route.{track}.{train_route}.controller'))
+        self.view, self.model = self.create_view_and_model(track, train_route)
         self.track, self.train_route = track, train_route
         self.fade_in_animation = TrainRouteFadeInAnimation(self.view)
         self.fade_out_animation = TrainRouteFadeOutAnimation(self.view)
 
-    def create_train_route_elements(self, track, train_route):
+    @abstractmethod
+    def create_view_and_model(self, track, train_route):
         pass
 
     @final

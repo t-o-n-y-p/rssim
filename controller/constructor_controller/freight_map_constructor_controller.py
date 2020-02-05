@@ -9,9 +9,10 @@ from database import FREIGHT_MAP
 @final
 class FreightMapConstructorController(ConstructorController):
     def __init__(self, map_controller):
-        super().__init__(*self.create_constructor_elements(), map_id=FREIGHT_MAP, parent_controller=map_controller)
+        super().__init__(map_id=FREIGHT_MAP, parent_controller=map_controller)
 
-    def create_constructor_elements(self):
+    def create_view_and_model(self):
         view = FreightMapConstructorView(controller=self)
         model = FreightMapConstructorModel(controller=self, view=view)
-        return model, view
+        view.construction_state_matrix = model.construction_state_matrix
+        return view, model
