@@ -1,3 +1,5 @@
+from abc import ABC
+
 from ui import *
 from ui.button.previous_page_button import PreviousPageButton
 from ui.button.next_page_button import NextPageButton
@@ -13,7 +15,7 @@ def shader_sprite_exists(fn):
     return _handle_if_shader_sprite_exists
 
 
-class PageControl:
+class PageControl(ABC):
     def __init__(self, logger, parent_viewport):
         def on_navigate_to_previous_page(button):
             self.pages[self.current_page - 1].on_update_opacity(self.pages[self.current_page].opacity)

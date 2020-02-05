@@ -4,7 +4,7 @@ from model import *
 from database import USER_DB_CURSOR, CONFIG_DB_CURSOR
 
 
-class CrossoverModel(MapBaseModel):
+class CrossoverModel(MapBaseModel, ABC):
     def __init__(self, controller, view, map_id, track_param_1, track_param_2, crossover_type):
         super().__init__(controller, view, map_id, logger=getLogger(
                 f'root.app.game.map.{map_id}.crossover.{track_param_1}.{track_param_2}.{crossover_type}.model'

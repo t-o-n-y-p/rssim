@@ -1,3 +1,5 @@
+from abc import ABC, abstractmethod
+
 from pyglet.gl import GL_QUADS
 
 from ui import *
@@ -19,7 +21,7 @@ def shader_sprite_exists(fn):
     return _delete_shader_sprite_if_it_exists
 
 
-class ShaderSprite:
+class ShaderSprite(ABC):
     def __init__(self, logger, view):
         self.logger = logger
         self.view = view
@@ -32,12 +34,15 @@ class ShaderSprite:
         self.screen_resolution = (1280, 720)
         self.opacity = 0
 
+    @abstractmethod
     def get_bottom_edge(self):
         pass
 
+    @abstractmethod
     def get_top_edge(self):
         pass
 
+    @abstractmethod
     def set_uniforms(self):
         pass
 

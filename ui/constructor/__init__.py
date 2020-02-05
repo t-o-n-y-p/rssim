@@ -1,3 +1,4 @@
+from abc import ABC, abstractmethod
 from logging import getLogger
 
 from database import USER_DB_CURSOR
@@ -36,7 +37,7 @@ def unlock_available(fn):
     return _handle_if_unlock_available
 
 
-class ConstructorCell:
+class ConstructorCell(ABC):
     def __init__(self, construction_type, row, on_buy_construction_action, on_set_money_target_action,
                  on_reset_money_target_action, parent_viewport):
         def on_set_money_target(button):
@@ -127,6 +128,7 @@ class ConstructorCell:
             self.on_update_description_label()
             self.on_update_build_button_state()
 
+    @abstractmethod
     def on_update_description_label(self):
         pass
 

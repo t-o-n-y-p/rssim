@@ -1,3 +1,4 @@
+from abc import ABC
 from typing import final
 
 from win32api import GetModuleHandle
@@ -16,7 +17,7 @@ _wnd_class.lpfnWndProc = {}
 _wnd_class_instance = RegisterClass(_wnd_class)
 
 
-class Notification:
+class Notification(ABC):
     def __init__(self, logger):
         self.logger = logger
         self.caption_key = None

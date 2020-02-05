@@ -4,7 +4,7 @@ from model import *
 from database import USER_DB_CURSOR
 
 
-class SignalModel(MapBaseModel):
+class SignalModel(MapBaseModel, ABC):
     def __init__(self, controller, view, map_id, track, base_route):
         super().__init__(controller, view, map_id,
                          logger=getLogger(f'root.app.game.map.{map_id}.signal.{track}.{base_route}.model'))

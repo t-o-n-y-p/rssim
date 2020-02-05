@@ -1,3 +1,5 @@
+from abc import ABC
+
 from ui import *
 from ui.button import create_two_state_button
 from ui.button.checked_checkbox_button import CheckedCheckboxButton
@@ -5,7 +7,7 @@ from ui.button.unchecked_checkbox_button import UncheckedCheckboxButton
 from database import USER_DB_CURSOR
 
 
-class Checkbox:
+class Checkbox(ABC):
     def __init__(self, column, row, on_update_state_action, parent_viewport, logger):
         def on_check(button):
             button.paired_button.opacity = button.opacity

@@ -5,7 +5,7 @@ from textures import SWITCHES_STRAIGHT, SWITCHES_DIVERGING
 from ui.sprite.crossover_sprite import CrossoverSprite
 
 
-class CrossoverView(MapBaseView):
+class CrossoverView(MapBaseView, ABC):
     def __init__(self, controller, map_id, track_param_1, track_param_2, crossover_type):
         super().__init__(controller, map_id, logger=getLogger(
                 f'root.app.game.map.{map_id}.crossover.{track_param_1}.{track_param_2}.{crossover_type}.view'

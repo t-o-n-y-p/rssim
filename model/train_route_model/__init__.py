@@ -4,7 +4,7 @@ from model import *
 from database import USER_DB_CURSOR, CONFIG_DB_CURSOR, TrailPointsV2
 
 
-class TrainRouteModel(MapBaseModel):
+class TrainRouteModel(MapBaseModel, ABC):
     def __init__(self, controller, view, map_id, track, train_route):
         super().__init__(controller, view, map_id,
                          logger=getLogger(f'root.app.game.map.{map_id}.train_route.{track}.{train_route}.model'))

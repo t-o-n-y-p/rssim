@@ -52,6 +52,10 @@ class MapSwitcherView(GameBaseView):
         for c in self.map_switcher_cells:
             c.on_deactivate()
 
+    @view_is_active
+    def on_update(self):
+        pass
+
     def on_update_current_locale(self, new_locale):
         super().on_update_current_locale(new_locale)
         self.title_label.on_update_current_locale(self.current_locale)

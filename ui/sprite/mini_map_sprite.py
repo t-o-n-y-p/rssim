@@ -1,6 +1,5 @@
 from logging import getLogger
 
-from database import USER_DB_CURSOR, CONFIG_DB_CURSOR
 from ui import *
 from ui.sprite import UISprite
 from textures import get_full_map

@@ -1,6 +1,5 @@
 from logging import getLogger
 
-from database import CONFIG_DB_CURSOR
 from ui import *
 from ui.sprite import MapSprite
 

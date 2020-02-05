@@ -1,3 +1,4 @@
+from abc import ABC, abstractmethod
 from typing import final
 
 from database import USER_DB_CURSOR
@@ -27,7 +28,7 @@ def fade_animation_needed(fn):
     return _handle_if_object_view_is_visible
 
 
-class FadeAnimation:
+class FadeAnimation(ABC):
     def __init__(self, animation_object, logger):
         self.animation_object = animation_object
         self.logger = logger
@@ -38,9 +39,11 @@ class FadeAnimation:
         USER_DB_CURSOR.execute('SELECT fade_animations_enabled FROM graphics')
         self.fade_animations_enabled = bool(USER_DB_CURSOR.fetchone()[0])
 
+    @abstractmethod
     def on_activate(self):
         pass
 
+    @abstractmethod
     def on_deactivate(self):
         pass
 

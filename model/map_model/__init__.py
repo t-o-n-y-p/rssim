@@ -7,7 +7,7 @@ from textures import MAXIMUM_CAR_COLLECTIONS
 from database import USER_DB_CURSOR, CONFIG_DB_CURSOR, on_commit
 
 
-class MapModel(MapBaseModel):
+class MapModel(MapBaseModel, ABC):
     def __init__(self, controller, view, map_id):
         super().__init__(controller, view, map_id, logger=getLogger(f'root.app.game.map.{map_id}.model'))
         USER_DB_CURSOR.execute('''SELECT locked, unlocked_tracks, unlocked_environment 

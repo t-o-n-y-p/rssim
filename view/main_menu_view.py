@@ -63,6 +63,10 @@ class MainMenuView(AppBaseView):
     def on_deactivate(self):
         super().on_deactivate()
 
+    @view_is_active
+    def on_update(self):
+        pass
+
     def on_update_current_locale(self, new_locale):
         super().on_update_current_locale(new_locale)
         self.create_station_button.on_update_current_locale(self.current_locale)

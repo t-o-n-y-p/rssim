@@ -11,7 +11,7 @@ from ui.sprite.main_map_sprite import MainMapSprite
 from ui.sprite.main_environment_sprite import MainEnvironmentSprite
 
 
-class MapView(MapBaseView):
+class MapView(MapBaseView, ABC):
     def __init__(self, controller, map_id):
         def on_leave_action():
             self.on_map_move_mode_available()

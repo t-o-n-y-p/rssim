@@ -149,6 +149,10 @@ class SettingsView(AppBaseView):
         self.clock_24h_checkbox.on_deactivate()
         self.notifications_checkbox_group.on_deactivate()
 
+    @view_is_active
+    def on_update(self):
+        pass
+
     def on_update_current_locale(self, new_locale):
         super().on_update_current_locale(new_locale)
         self.screen_resolution_control.on_update_current_locale(self.current_locale)

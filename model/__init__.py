@@ -1,3 +1,4 @@
+from abc import ABC, abstractmethod
 from typing import Final, final
 
 from database import USER_DB_CURSOR
@@ -311,17 +312,18 @@ ALLOWED_BONUS_CODE_INPUT = 100
 # ------------------- END CONSTANTS -------------------
 
 
-class AppBaseModel:
+class AppBaseModel(ABC):
     def __init__(self, controller, view, logger):
         self.logger = logger
         self.view = view
         self.controller = controller
 
+    @abstractmethod
     def on_save_state(self):
         pass
 
 
-class GameBaseModel(AppBaseModel):
+class GameBaseModel(AppBaseModel, ABC):
     def __init__(self, controller, view, logger):
         super().__init__(controller, view, logger)
         USER_DB_CURSOR.execute('SELECT game_time FROM epoch_timestamp')
@@ -376,7 +378,7 @@ class GameBaseModel(AppBaseModel):
         self.view.on_activate_construction_time_bonus_code(value)
 
 
-class MapBaseModel(GameBaseModel):
+class MapBaseModel(GameBaseModel, ABC):
     def __init__(self, controller, view, map_id, logger):
         super().__init__(controller, view, logger)
         self.locked = True

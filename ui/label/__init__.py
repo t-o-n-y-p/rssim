@@ -1,3 +1,4 @@
+from abc import ABC, abstractmethod
 from typing import final
 
 import pyglet.text
@@ -53,7 +54,7 @@ def arguments_have_changed(fn):
     return _update_label_if_args_have_changed
 
 
-class Label:
+class Label(ABC):
     def __init__(self, logger, parent_viewport):
         self.logger = logger
         self.parent_viewport = parent_viewport
@@ -76,18 +77,23 @@ class Label:
         self.group = None
         self.screen_resolution = (1280, 720)
 
+    @abstractmethod
     def get_x(self):
         pass
 
+    @abstractmethod
     def get_y(self):
         pass
 
+    @abstractmethod
     def get_font_size(self):
         pass
 
+    @abstractmethod
     def get_width(self):
         pass
 
+    @abstractmethod
     def get_formatted_text(self):
         pass
 
@@ -154,7 +160,7 @@ class Label:
             self.text_label.text = self.get_formatted_text()
 
 
-class LocalizedLabel(Label):
+class LocalizedLabel(Label, ABC):
     def __init__(self, logger, i18n_resources_key, parent_viewport):
         super().__init__(logger=logger, parent_viewport=parent_viewport)
         self.i18n_resources_key = i18n_resources_key
@@ -170,7 +176,7 @@ class LocalizedLabel(Label):
             self.text_label.text = self.get_formatted_text()
 
 
-class InteractiveLabel:
+class InteractiveLabel(ABC):
     def __init__(self, logger, parent_viewport):
         self.logger = logger
         self.parent_viewport = parent_viewport
@@ -203,18 +209,23 @@ class InteractiveLabel:
     def __len__(self):
         return len(self.text)
 
+    @abstractmethod
     def get_x(self):
         pass
 
+    @abstractmethod
     def get_y(self):
         pass
 
+    @abstractmethod
     def get_font_size(self):
         pass
 
+    @abstractmethod
     def get_width(self):
         pass
 
+    @abstractmethod
     def get_formatted_placeholder_text(self):
         pass
 

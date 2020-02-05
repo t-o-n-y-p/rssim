@@ -15,7 +15,7 @@ from ui.label.no_more_environment_available_label import NoMoreEnvironmentAvaila
 from ui.shader_sprite.constructor_view_shader_sprite import ConstructorViewShaderSprite
 
 
-class ConstructorView(MapBaseView):
+class ConstructorView(MapBaseView, ABC):
     def __init__(self, controller, map_id):
         def on_close_constructor(button):
             self.controller.fade_out_animation.on_activate()

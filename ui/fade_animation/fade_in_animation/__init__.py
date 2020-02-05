@@ -1,7 +1,7 @@
 from ui.fade_animation import *
 
 
-class FadeInAnimation(FadeAnimation):
+class FadeInAnimation(FadeAnimation, ABC):
     def __init__(self, animation_object, logger):
         super().__init__(animation_object=animation_object, logger=logger)
         self.opacity_chart = [0, 17, 34, 51, 68, 85, 102, 119, 136, 153, 170, 187, 204, 221, 238, 255]

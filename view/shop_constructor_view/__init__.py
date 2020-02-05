@@ -13,7 +13,7 @@ from notifications.shop_storage_almost_full_notification import ShopStorageAlmos
 from notifications.shop_storage_full_notification import ShopStorageFullNotification
 
 
-class ShopConstructorView(MapBaseView):
+class ShopConstructorView(MapBaseView, ABC):
     def __init__(self, controller, map_id, shop_id):
         def on_clear_storage(button):
             self.controller.on_clear_storage()

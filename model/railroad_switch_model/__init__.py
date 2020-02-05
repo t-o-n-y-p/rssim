@@ -4,7 +4,7 @@ from model import *
 from database import USER_DB_CURSOR, CONFIG_DB_CURSOR
 
 
-class RailroadSwitchModel(MapBaseModel):
+class RailroadSwitchModel(MapBaseModel, ABC):
     def __init__(self, controller, view, map_id, track_param_1, track_param_2, switch_type):
         super().__init__(controller, view, map_id, logger=getLogger(
                 f'root.app.game.map.{map_id}.railroad_switch.{track_param_1}.{track_param_2}.{switch_type}.model'

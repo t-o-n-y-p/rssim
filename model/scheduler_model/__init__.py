@@ -6,7 +6,7 @@ from model import *
 from database import USER_DB_CURSOR, CONFIG_DB_CURSOR, BASE_SCHEDULE
 
 
-class SchedulerModel(MapBaseModel):
+class SchedulerModel(MapBaseModel, ABC):
     def __init__(self, controller, view, map_id):
         super().__init__(controller, view, map_id, logger=getLogger(f'root.app.game.map.{map_id}.scheduler.model'))
         USER_DB_CURSOR.execute('''SELECT locked, unlocked_tracks, unlocked_environment 

@@ -1,6 +1,5 @@
 from logging import getLogger
 
-from database import CONFIG_DB_CURSOR, USER_DB_CURSOR
 from ui import *
 from ui.sprite import MapSprite
 from textures import RED_SIGNAL_IMAGE, GREEN_SIGNAL_IMAGE

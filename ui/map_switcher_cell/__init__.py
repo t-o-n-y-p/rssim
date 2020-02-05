@@ -1,3 +1,5 @@
+from abc import ABC
+
 from database import USER_DB_CURSOR, MAP_SWITCHER_STATE_MATRIX, MAP_LOCKED, MAP_LEVEL_REQUIRED, MAP_PRICE
 from ui import *
 from ui.label.map_switcher_cell_locked_label import MapSwitcherCellLockedLabel
@@ -23,7 +25,7 @@ def cell_is_not_active(fn):
     return _handle_if_cell_is_not_activated
 
 
-class MapSwitcherCell:
+class MapSwitcherCell(ABC):
     def __init__(self, map_id, on_buy_map_action, on_switch_map_action, on_set_money_target_action,
                  on_reset_money_target_action, parent_viewport, logger):
         def on_set_money_target(button):

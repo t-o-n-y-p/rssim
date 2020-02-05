@@ -1,8 +1,10 @@
+from abc import ABC
+
 from ui import *
 from database import USER_DB_CURSOR
 
 
-class CheckboxGroup:
+class CheckboxGroup(ABC):
     def __init__(self, column, row, parent_viewport, logger):
         self.logger = logger
         self.column, self.row = column, row

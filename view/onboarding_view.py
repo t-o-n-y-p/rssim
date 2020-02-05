@@ -33,6 +33,10 @@ class OnboardingView(AppBaseView):
         super().on_deactivate()
         self.onboarding_page_control.on_deactivate()
 
+    @view_is_active
+    def on_update(self):
+        pass
+
     def on_update_current_locale(self, new_locale):
         super().on_update_current_locale(new_locale)
         self.onboarding_page_control.on_update_current_locale(self.current_locale)

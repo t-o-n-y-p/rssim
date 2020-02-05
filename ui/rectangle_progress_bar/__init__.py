@@ -1,3 +1,5 @@
+from abc import ABC, abstractmethod
+
 from pyglet.sprite import Sprite
 
 from ui import *
@@ -12,7 +14,7 @@ def progress_bar_is_active(fn):
     return _handle_if_progress_bar_is_activated
 
 
-class RectangleProgressBar:
+class RectangleProgressBar(ABC):
     def __init__(self, logger, parent_viewport):
         self.logger = logger
         self.is_activated = False
@@ -29,9 +31,11 @@ class RectangleProgressBar:
         self.current_locale = USER_DB_CURSOR.fetchone()[0]
         self.current_percent = 0
 
+    @abstractmethod
     def get_position(self):
         pass
 
+    @abstractmethod
     def get_scale(self):
         pass
 

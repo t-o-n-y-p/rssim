@@ -8,7 +8,7 @@ from ui.sprite.mini_environment_sprite import MiniEnvironmentSprite
 from ui.shader_sprite.mini_map_view_shader_sprite import MiniMapViewShaderSprite
 
 
-class MiniMapView(MapBaseView):
+class MiniMapView(MapBaseView, ABC):
     def __init__(self, controller, map_id):
         super().__init__(controller, map_id, logger=getLogger(f'root.app.game.map.{map_id}.mini_map.view'))
         USER_DB_CURSOR.execute('''SELECT unlocked_tracks FROM map_progress WHERE map_id = ?''', (self.map_id, ))

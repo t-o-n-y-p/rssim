@@ -1,3 +1,5 @@
+from abc import ABC
+
 from pyglet.text.document import FormattedDocument
 from pyglet.text.layout import IncrementalTextLayout
 
@@ -21,7 +23,7 @@ def cursor_is_inside_the_text_box(fn):
     return _handle_scroll_if_cursor_is_inside_the_text_box
 
 
-class LicensePage:
+class LicensePage(ABC):
     def __init__(self, logger, parent_viewport):
         self.is_activated = False
         self.logger = logger

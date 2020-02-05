@@ -12,6 +12,9 @@ class FPSModel(AppBaseModel):
         self.display_fps = USER_DB_CURSOR.fetchone()[0]
         self.fps = 0
 
+    def on_save_state(self):
+        pass
+
     def on_update_fps(self, fps):
         self.fps = fps
         self.view.on_update_fps(fps)

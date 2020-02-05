@@ -4,7 +4,7 @@ from model import *
 from database import USER_DB_CURSOR
 
 
-class TrainModel(MapBaseModel):
+class TrainModel(MapBaseModel, ABC):
     def __init__(self, controller, view, map_id, train_id):
         super().__init__(controller, view, map_id,
                          logger=getLogger(f'root.app.game.map.{map_id}.train.{train_id}.model'))

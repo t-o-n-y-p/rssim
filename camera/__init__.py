@@ -1,7 +1,9 @@
+from abc import ABC
+
 from pyglet.gl import glTranslatef, glScalef
 
 
-class Camera:
+class Camera(ABC):
     """ A simple 2D camera that contains the speed and offset."""
 
     def __init__(self, scroll_speed=1, min_zoom=1, max_zoom=4):

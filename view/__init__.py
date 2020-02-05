@@ -1,3 +1,5 @@
+from abc import ABC
+
 from pyglet.window import mouse
 
 from ui import *
@@ -184,7 +186,7 @@ MINI_MAP_FADE_OUT_TIMER: Final = 1.0        # time since user releases mouse but
 # ------------------- END CONSTANTS -------------------
 
 
-class AppBaseView:
+class AppBaseView(ABC):
     def __init__(self, controller, logger, child_window=False):
         self.logger = logger
         self.child_window = child_window
@@ -337,7 +339,7 @@ class AppBaseView:
         self.controller.on_detach_resize_handlers(on_resize_handlers=self.on_resize_handlers)
 
 
-class GameBaseView(AppBaseView):
+class GameBaseView(AppBaseView, ABC):
     def __init__(self, controller, logger, child_window=False):
         super().__init__(controller, logger, child_window)
         USER_DB_CURSOR.execute('SELECT game_time FROM epoch_timestamp')
@@ -377,7 +379,7 @@ class GameBaseView(AppBaseView):
         self.construction_time_bonus_multiplier = 1.0
 
 
-class MapBaseView(GameBaseView):
+class MapBaseView(GameBaseView, ABC):
     def __init__(self, controller, map_id, logger, child_window=False):
         super().__init__(controller, logger, child_window)
         self.locked = True

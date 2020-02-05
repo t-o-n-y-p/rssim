@@ -1,8 +1,10 @@
+from abc import ABC
+
 from ui import *
 from database import USER_DB_CURSOR
 
 
-class OnboardingPage:
+class OnboardingPage(ABC):
     def __init__(self, logger, parent_viewport):
         self.logger = logger
         self.parent_viewport = parent_viewport

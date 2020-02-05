@@ -4,7 +4,7 @@ from model import *
 from database import USER_DB_CURSOR, CONFIG_DB_CURSOR
 
 
-class DispatcherModel(MapBaseModel):
+class DispatcherModel(MapBaseModel, ABC):
     def __init__(self, controller, view, map_id):
         super().__init__(controller, view, map_id, logger=getLogger(f'root.app.game.map.{map_id}.dispatcher.model'))
         self.trains = []

@@ -19,6 +19,10 @@ class FPSView(AppBaseView):
     def on_deactivate(self):
         super().on_deactivate()
 
+    @view_is_active
+    def on_update(self):
+        pass
+
     @window_size_has_changed
     def on_resize(self, width, height):
         super().on_resize(width, height)

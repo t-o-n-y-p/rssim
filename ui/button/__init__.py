@@ -1,3 +1,5 @@
+from abc import ABC, abstractmethod
+
 from pyglet import gl
 from pyglet.text import Label
 from pyglet.window import mouse
@@ -79,7 +81,7 @@ BUTTON_BACKGROUND_ALPHA: Final = {
 }
 
 
-class Button:
+class Button(ABC):
     def __init__(self, batch, camera, logger):
         self.logger = logger
         self.is_activated = False
@@ -308,15 +310,17 @@ class Button:
         pass
 
 
-class UIButton(Button):
+class UIButton(Button, ABC):
     def __init__(self, logger, parent_viewport):
         super().__init__(batch=BATCHES['ui_batch'], camera=UI_CAMERA, logger=logger)
         self.parent_viewport = parent_viewport
         self.screen_resolution = (1280, 720)
 
+    @abstractmethod
     def get_position(self):
         pass
 
+    @abstractmethod
     def get_size(self):
         pass
 
@@ -334,14 +338,16 @@ class UIButton(Button):
         self.on_move()
 
 
-class MapButton(Button):
+class MapButton(Button, ABC):
     def __init__(self, map_id, logger):
         super().__init__(batch=BATCHES['main_batch'], camera=MAP_CAMERA, logger=logger)
         self.map_id = map_id
 
+    @abstractmethod
     def get_position(self):
         pass
 
+    @abstractmethod
     def get_size(self):
         pass
 

@@ -110,6 +110,10 @@ class GameView(GameBaseView):
         self.exp_progress_bar.on_deactivate()
         self.money_progress_bar.on_deactivate()
 
+    @view_is_active
+    def on_update(self):
+        pass
+
     def on_update_current_locale(self, new_locale):
         super().on_update_current_locale(new_locale)
         self.main_clock_label_24h.on_update_current_locale(self.current_locale)

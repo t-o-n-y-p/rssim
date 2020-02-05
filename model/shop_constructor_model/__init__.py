@@ -4,7 +4,7 @@ from model import *
 from database import USER_DB_CURSOR, CONFIG_DB_CURSOR
 
 
-class ShopConstructorModel(MapBaseModel):
+class ShopConstructorModel(MapBaseModel, ABC):
     def __init__(self, controller, view, map_id, shop_id):
         super().__init__(controller, view, map_id,
                          logger=getLogger(f'root.app.game.map.{map_id}.shop.{shop_id}.constructor.model'))

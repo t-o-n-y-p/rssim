@@ -4,7 +4,7 @@ from model import *
 from database import USER_DB_CURSOR, CONFIG_DB_CURSOR, CONSTRUCTION_STATE_MATRIX
 
 
-class ConstructorModel(MapBaseModel):
+class ConstructorModel(MapBaseModel, ABC):
     def __init__(self, controller, view, map_id):
         super().__init__(controller, view, map_id, logger=getLogger(f'root.app.game.map.{map_id}.constructor.model'))
         self.construction_state_matrix = CONSTRUCTION_STATE_MATRIX[self.map_id]

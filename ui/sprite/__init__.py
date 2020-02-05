@@ -1,3 +1,4 @@
+from abc import ABC, abstractmethod
 from typing import Final, final
 
 import pyglet.sprite
@@ -32,7 +33,7 @@ def texture_has_changed(fn):
     return _update_texture_if_it_has_changed
 
 
-class Sprite:
+class Sprite(ABC):
     def __init__(self, logger):
         self.logger = logger
         self.sprite = None
@@ -46,6 +47,7 @@ class Sprite:
         self.rotation = 0
         self.scale = 1.0
 
+    @abstractmethod
     def get_position(self):
         pass
 
@@ -93,12 +95,13 @@ class Sprite:
             self.sprite.rotation = angle
 
 
-class UISprite(Sprite):
+class UISprite(Sprite, ABC):
     def __init__(self, logger, parent_viewport):
         super().__init__(logger=logger)
         self.parent_viewport = parent_viewport
         self.screen_resolution = (1280, 720)
 
+    @abstractmethod
     def get_scale(self):
         pass
 
@@ -111,7 +114,7 @@ class UISprite(Sprite):
             self.sprite.update(x=self.position[0], y=self.position[1], scale=self.scale)
 
 
-class MapSprite(Sprite):
+class MapSprite(Sprite, ABC):
     def __init__(self, map_id, logger, parent_viewport):
         super().__init__(logger=logger)
         self.map_id = map_id
