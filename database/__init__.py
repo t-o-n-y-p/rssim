@@ -60,6 +60,26 @@ for line in CONFIG_DB_CURSOR.fetchall():
     BONUS_CODE_MATRIX[line[0]][ACTIVATION_AVAILABLE] = bool(BONUS_CODE_MATRIX[line[0]][ACTIVATION_AVAILABLE])
     BONUS_CODE_MATRIX[line[0]][IS_ACTIVATED] = bool(BONUS_CODE_MATRIX[line[0]][IS_ACTIVATED])
 
+# base_schedule matrix properties
+TRAIN_ID: Final = 0                            # property #0 indicates train identification number
+ARRIVAL_TIME: Final = 1                        # property #1 indicates arrival time
+DIRECTION: Final = 2                           # property #2 indicates direction
+NEW_DIRECTION: Final = 3                       # property #3 indicates new direction
+CARS: Final = 4                                # property #4 indicates number of cars
+STOP_TIME: Final = 5                           # property #5 indicates how much stop time left
+EXP: Final = 6                                 # property #6 indicates how much exp the train gives
+MONEY: Final = 7                               # property #7 indicates how much money the train gives
+SWITCH_DIRECTION_REQUIRED: Final = 8
+
+# schedule options matrix properties
+ARRIVAL_TIME_MIN: Final = 0             # property #1 indicates min arrival time offset from the beginning of the cycle
+ARRIVAL_TIME_MAX: Final = 1             # property #0 indicates max arrival time offset from the beginning of the cycle
+# property #2 indicates direction
+# property #3 indicates new direction
+CARS_MIN: Final = 4                     # property #4 indicates min number of cars
+CARS_MAX: Final = 5                     # property #5 indicates max number of cars
+SWITCH_DIRECTION_FLAG = 6
+
 BASE_SCHEDULE = [(), ()]
 for m in (PASSENGER_MAP, FREIGHT_MAP):
     USER_DB_CURSOR.execute('''SELECT train_id, arrival, direction, new_direction, 
@@ -91,6 +111,24 @@ for m in (PASSENGER_MAP, FREIGHT_MAP):
         CONFIG_DB_CURSOR.execute('''SELECT price, max_construction_time, level FROM environment_config 
                                     WHERE tier = ? AND map_id = ?''', (info[0], m))
         CONSTRUCTION_STATE_MATRIX[m][ENVIRONMENT][info[0]].extend(CONFIG_DB_CURSOR.fetchone())
+
+# track, environment and shop stage state matrix properties
+LOCKED: Final = 0                                      # property #0 indicates if track/env. is locked
+UNDER_CONSTRUCTION: Final = 1                          # property #1 indicates if track/env. is under construction
+CONSTRUCTION_TIME: Final = 2                           # property #2 indicates construction time left
+UNLOCK_CONDITION_FROM_LEVEL: Final = 3                 # property #3 indicates if unlock condition from level is met
+UNLOCK_CONDITION_FROM_PREVIOUS_TRACK: Final = 4        # property #4 indicates if unlock previous track condition is met
+UNLOCK_CONDITION_FROM_PREVIOUS_ENVIRONMENT: Final = 4  # property #4 indicates if unlock previous env. condition is met
+UNLOCK_CONDITION_FROM_PREVIOUS_STAGE: Final = 4        # property #4 indicates if unlock previous stage condition is met
+UNLOCK_CONDITION_FROM_ENVIRONMENT: Final = 5           # indicates if unlock environment condition is met (tracks only)
+UNLOCK_AVAILABLE: Final = 6                            # property #6 indicates if all unlock conditions are met
+PRICE: Final = 7                                       # property #7 indicates track/env. price
+MAX_CONSTRUCTION_TIME: Final = 8
+LEVEL_REQUIRED: Final = 9                              # property #9 indicates required level for this track/env.
+ENVIRONMENT_REQUIRED: Final = 10                       # property #10 indicates required environment tier (tracks only)
+HOURLY_PROFIT: Final = 11
+STORAGE_CAPACITY: Final = 12
+EXP_BONUS: Final = 13
 
 MAP_SWITCHER_STATE_MATRIX = [[], []]
 for m in (PASSENGER_MAP, FREIGHT_MAP):

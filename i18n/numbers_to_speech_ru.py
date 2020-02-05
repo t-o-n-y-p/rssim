@@ -1,7 +1,7 @@
 from i18n import *
 
 
-ONE_WORD_CARDINAL = {
+ONE_WORD_CARDINAL: Final = {
     1: 'один',
     2: 'два',
     3: 'три',
@@ -30,7 +30,7 @@ ONE_WORD_CARDINAL = {
     80: 'восемьдесят',
     90: 'девяносто'
 }
-ONE_WORD_ORDINAL = {
+ONE_WORD_ORDINAL: Final = {
     ONE_WORD_CARDINAL[1]: {
         NOMINATIVE: 'первый',
         GENITIVE: 'первого',

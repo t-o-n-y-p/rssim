@@ -1,7 +1,9 @@
+from typing import Final
+
 from i18n import value_between_1_and_99
 
 
-ONE_WORD_CARDINAL = {
+ONE_WORD_CARDINAL: Final = {
     1: 'one',
     2: 'two',
     3: 'three',

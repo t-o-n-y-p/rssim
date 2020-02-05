@@ -15,19 +15,19 @@ def value_between_1_and_99(fn):
     return _convert_numbers
 
 
-NOMINATIVE = 'nominative'
-GENITIVE = 'genitive'
-DATIVE = 'dative'
+NOMINATIVE: Final = 'nominative'
+GENITIVE: Final = 'genitive'
+DATIVE: Final = 'dative'
 
-ENGLISH = 'en'
-RUSSIAN = 'ru'
+ENGLISH: Final = 'en'
+RUSSIAN: Final = 'ru'
 
-ZERO = 'zero'
-ONE = 'one'
-TWO = 'two'
-FEW = 'few'
-MANY = 'many'
-OTHER = 'other'
+ZERO: Final = 'zero'
+ONE: Final = 'one'
+TWO: Final = 'two'
+FEW: Final = 'few'
+MANY: Final = 'many'
+OTHER: Final = 'other'
 
 
 def i18n_number_category(x, locale):
