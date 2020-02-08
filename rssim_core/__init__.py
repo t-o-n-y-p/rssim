@@ -5,7 +5,6 @@ from typing import Final
 CURRENT_VERSION: Final = (0, 10, 2)                    # current app version
 MIN_UPDATE_COMPATIBLE_VERSION: Final = (0, 10, 2)      # game cannot be updated from version earlier than this
 REQUIRED_TEXTURE_SIZE: Final = 8192                    # maximum texture resolution presented in the app
-FPS_INTERVAL: Final = 0.2                              # interval between FPS update
 LOG_LEVEL_OFF: Final = 30                              # integer log level high enough to cut off all logs
 LOG_LEVEL_INFO: Final = 20                             # integer log level which includes basic logs
 LOG_LEVEL_DEBUG: Final = 10                            # integer log level which includes all possible logs

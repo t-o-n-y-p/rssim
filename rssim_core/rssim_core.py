@@ -1,5 +1,4 @@
 from ctypes import c_long, windll
-from time import perf_counter
 from os import path, mkdir
 from logging import FileHandler, Formatter, getLogger
 from datetime import datetime
@@ -93,6 +92,8 @@ class RSSim:
                     self.app.on_apply_shaders_and_draw_vertices()
                     # draw ui batch: text labels, buttons
                     BATCHES['ui_batch'].draw()
+
+                WINDOW.flip()
 
         @WINDOW.event
         def on_activate():
@@ -191,10 +192,7 @@ class RSSim:
                 h(width, height)
 
     def run(self):
-        # fps_timer is used to determine if it's time to recalculate FPS
-        fps_timer = 0.0
         while True:
-            time_1 = perf_counter()
             # dispatch_events() launches keyboard and mouse handlers implemented above
             WINDOW.dispatch_events()
             # increment in-game time
@@ -203,17 +201,10 @@ class RSSim:
             self.app.on_update_view()
             # call on_draw() handler implemented above
             WINDOW.dispatch_event('on_draw')
-            # flip the surface so user can see all the game content
-            WINDOW.flip()
             self.on_mouse_motion_event_counter = 0
             self.on_mouse_drag_event_counter = 0
             self.on_draw_event_counter = 0
             self.on_mouse_scroll_event_counter = 0
-            time_4 = perf_counter()
-            # FPS is recalculated every FPS_INTERVAL seconds
-            if perf_counter() - fps_timer > FPS_INTERVAL:
-                self.app.on_update_fps(round(1 / (time_4 - time_1)))
-                fps_timer = perf_counter()
 
     @staticmethod
     def on_check_for_updates():

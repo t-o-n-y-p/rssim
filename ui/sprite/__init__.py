@@ -1,7 +1,7 @@
 from abc import ABC, abstractmethod
 from typing import Final, final
 
-import pyglet.sprite
+from pyglet.sprite import Sprite as PygletSprite
 
 from ui import MAP_CAMERA
 
@@ -55,8 +55,8 @@ class Sprite(ABC):
     @sprite_does_not_exist
     def create(self):
         self.position = self.get_position()
-        self.sprite = pyglet.sprite.Sprite(self.texture, x=self.position[0], y=self.position[1], batch=self.batch,
-                                           group=self.group, usage=self.usage, subpixel=self.subpixel)
+        self.sprite = PygletSprite(self.texture, x=self.position[0], y=self.position[1], batch=self.batch,
+                                   group=self.group, usage=self.usage, subpixel=self.subpixel)
         self.sprite.opacity = self.opacity
         self.sprite.update(rotation=self.rotation, scale=self.scale)
 
