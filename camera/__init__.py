@@ -32,7 +32,7 @@ class Camera(ABC):
     @position.setter
     def position(self, value):
         """Set the scroll offset directly."""
-        self.offset_x, self.offset_y = value
+        self.offset_x, self.offset_y = int(value[0]), int(value[1])
 
     def begin(self):
         # Set the current camera offset so you can draw your scene.

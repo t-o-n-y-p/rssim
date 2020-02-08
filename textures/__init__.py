@@ -1,15 +1,14 @@
 from typing import Final
 
-from pyglet import resource as __resource
-from pyglet.resource import ResourceNotFoundException
+from pyglet import resource
 
 
 __car_collections_implemented = [12, 5]
 MAXIMUM_CAR_COLLECTIONS: Final = [12, 5]
-__resource.path = ['font', 'img', 'img/textures.zip']
-__resource.reindex()
-_cars_texture = __resource.texture('cars_in_one.dds')
-__resource.add_font('perfo-bold.ttf')
+resource.path = ['font', 'img', 'img/textures.zip']
+resource.reindex()
+_cars_texture = resource.texture('cars_in_one.dds')
+resource.add_font('perfo-bold.ttf')
 
 # CAR_HEAD_IMAGE includes all textures for leading carriage
 PASSENGER_CAR_HEAD_IMAGE: Final = []
@@ -100,8 +99,8 @@ for i in range(len(FREIGHT_BOARDING_LIGHT_IMAGE)):
 # signal images
 GREEN_SIGNAL: Final = 'green_signal'
 RED_SIGNAL: Final = 'red_signal'
-RED_SIGNAL_IMAGE: Final = __resource.texture('signals.dds').get_region(0, 0, 7, 9)
-GREEN_SIGNAL_IMAGE: Final = __resource.texture('signals.dds').get_region(8, 0, 7, 9)
+RED_SIGNAL_IMAGE: Final = resource.texture('signals.dds').get_region(0, 0, 7, 9)
+GREEN_SIGNAL_IMAGE: Final = resource.texture('signals.dds').get_region(8, 0, 7, 9)
 # anchor is set to the middle point
 RED_SIGNAL_IMAGE.anchor_x = 3
 RED_SIGNAL_IMAGE.anchor_y = 4
@@ -109,7 +108,7 @@ GREEN_SIGNAL_IMAGE.anchor_x = 3
 GREEN_SIGNAL_IMAGE.anchor_y = 4
 
 # textures for localization buttons in the top left corner
-_flags = __resource.texture('flags.dds')
+_flags = resource.texture('flags.dds')
 FLAG_US: Final = _flags.get_region(0, 0, 128, 128)
 FLAG_RU: Final = _flags.get_region(128, 0, 128, 128)
 FLAG_US.anchor_x = FLAG_US.width // 2
@@ -118,13 +117,13 @@ FLAG_RU.anchor_x = FLAG_RU.width // 2
 FLAG_RU.anchor_y = FLAG_RU.height // 2
 
 # textures for switches in crossovers in straight and diverging state
-SWITCHES_STRAIGHT: Final = __resource.texture('switches_straight.dds')
-SWITCHES_DIVERGING: Final = __resource.texture('switches_diverging.dds')
+SWITCHES_STRAIGHT: Final = resource.texture('switches_straight.dds')
+SWITCHES_DIVERGING: Final = resource.texture('switches_diverging.dds')
 
 
 def get_full_map(map_id, tracks):
-    return __resource.texture(f'full_map_{tracks}_{map_id}.dds')
+    return resource.texture(f'full_map_{tracks}_{map_id}.dds')
 
 
 def get_full_map_e(map_id, tiers):
-    return __resource.texture(f'full_map_e_{tiers}_{map_id}.dds')
+    return resource.texture(f'full_map_e_{tiers}_{map_id}.dds')

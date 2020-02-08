@@ -1,10 +1,10 @@
 from ctypes import windll
 from fractions import Fraction
-from typing import Final, final
 
-from database import CONFIG_DB_CURSOR, USER_DB_CURSOR
 from pyglet.window import Window
 from pyglet.graphics import Batch, OrderedGroup
+
+from database import *
 from camera.map_camera import MapCamera
 from camera.ui_camera import UICamera
 
@@ -29,35 +29,16 @@ def _create_window():
 # --------------------- CONSTANTS ---------------------
 MAP_CAMERA: Final = MapCamera()
 UI_CAMERA: Final = UICamera()
-MAP_ZOOM_STEP = Fraction(1, 10)
+MAP_ZOOM_STEP = Fraction(1, 2)
 MAP_WIDTH: Final = 8192                                # full-size map width
 MAP_HEIGHT: Final = 4096                               # full-size map height
 MIN_RESOLUTION_WIDTH: Final = 1280                     # minimum screen resolution width supported by the app UI
 MIN_RESOLUTION_HEIGHT: Final = 720                     # minimum screen resolution height supported by the app UI
 SCHEDULE_ROWS: Final = 12                              # number of schedule rows on schedule screen
 SCHEDULE_COLUMNS: Final = 2                            # number of schedule columns on schedule screen
-TRACKS: Final = 0                                      # matrix #0 stores tracks state
-ENVIRONMENT: Final = 1                                 # matrix #1 stores environment tiers state
 CONSTRUCTOR_VIEW_TRACK_CELLS: Final = 4                # number of cells for tracks on constructor screen
 CONSTRUCTOR_VIEW_ENVIRONMENT_CELLS: Final = 4          # number of cells for environment tiers on constructor screen
 SHOP_DETAILS_BUTTON_NORMAL_SIZE = (250, 40)
-# track, environment and shop stage state matrix properties
-LOCKED: Final = 0                                      # property #0 indicates if track/env. is locked
-UNDER_CONSTRUCTION: Final = 1                          # property #1 indicates if track/env. is under construction
-CONSTRUCTION_TIME: Final = 2                           # property #2 indicates construction time left
-UNLOCK_CONDITION_FROM_LEVEL: Final = 3                 # property #3 indicates if unlock condition from level is met
-UNLOCK_CONDITION_FROM_PREVIOUS_TRACK: Final = 4        # property #4 indicates if unlock previous track condition is met
-UNLOCK_CONDITION_FROM_PREVIOUS_ENVIRONMENT: Final = 4  # property #4 indicates if unlock previous env. condition is met
-UNLOCK_CONDITION_FROM_PREVIOUS_STAGE: Final = 4        # property #4 indicates if unlock previous stage condition is met
-UNLOCK_CONDITION_FROM_ENVIRONMENT: Final = 5           # indicates if unlock environment condition is met (tracks only)
-UNLOCK_AVAILABLE: Final = 6                            # property #6 indicates if all unlock conditions are met
-PRICE: Final = 7                                       # property #7 indicates track/env. price
-MAX_CONSTRUCTION_TIME: Final = 8
-LEVEL_REQUIRED: Final = 9                              # property #9 indicates required level for this track/env.
-ENVIRONMENT_REQUIRED: Final = 10                       # property #10 indicates required environment tier (tracks only)
-HOURLY_PROFIT: Final = 11
-STORAGE_CAPACITY: Final = 12
-EXP_BONUS: Final = 13
 # colors
 ORANGE_RGB: Final = (255, 127, 0)                      # orange UI color
 ORANGE_GREY_RGB: Final = (112, 56, 0)
@@ -76,24 +57,6 @@ MINUTES_IN_ONE_HOUR: Final = 60
 SECONDS_IN_ONE_MINUTE: Final = 60
 HOURS_IN_ONE_DAY: Final = 24
 SCHEDULE_ARRIVAL_TIME_THRESHOLD: Final = [FRAMES_IN_ONE_HOUR, FRAMES_IN_ONE_HOUR * 10]
-# base_schedule matrix properties
-TRAIN_ID: Final = 0                                    # property #0 indicates train identification number
-ARRIVAL_TIME: Final = 1                                # property #1 indicates arrival time
-DIRECTION: Final = 2                                   # property #2 indicates direction
-NEW_DIRECTION: Final = 3                               # property #3 indicates new direction
-CARS: Final = 4                                        # property #4 indicates number of cars
-STOP_TIME: Final = 5                                   # property #5 indicates how much stop time left
-EXP: Final = 6                                         # property #6 indicates how much exp the train gives
-MONEY: Final = 7                                       # property #7 indicates how much money the train gives
-# bonus code matrix properties
-CODE_TYPE: Final = 0
-BONUS_VALUE: Final = 1
-REQUIRED_LEVEL: Final = 2
-MAXIMUM_BONUS_TIME: Final = 3
-ACTIVATION_AVAILABLE: Final = 4
-ACTIVATIONS_LEFT: Final = 5
-IS_ACTIVATED: Final = 6
-BONUS_TIME: Final = 7
 # main surface which harbors all the app
 WINDOW: Final = _create_window()
 # flip the surface so user knows game has launched and is loading now
