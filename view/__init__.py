@@ -174,14 +174,6 @@ def shader_sprite_exists(fn):
     return _delete_shader_sprite_if_it_exists
 
 
-def window_size_has_changed(fn):
-    def _update_sprites_if_window_size_has_changed(*args, **kwargs):
-        if args[1:] != args[0].screen_resolution:
-            fn(*args, **kwargs)
-
-    return _update_sprites_if_window_size_has_changed
-
-
 # --------------------- CONSTANTS ---------------------
 MINI_MAP_FADE_OUT_TIMER: Final = 1.0        # time since user releases mouse button after which mini-map disappears
 ANNOUNCEMENT_PLAYER: Final = Player()

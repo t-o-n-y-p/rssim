@@ -13,7 +13,6 @@ from controller.main_menu_controller import MainMenuController
 from controller.license_controller import LicenseController
 from controller.onboarding_controller import OnboardingController
 from controller.bonus_code_activation_controller import BonusCodeActivationController
-from controller.fps_controller import FPSController
 from controller.settings_controller import SettingsController
 from controller.game_controller import GameController
 
@@ -32,7 +31,6 @@ class AppController(AppBaseController):
         self.license = LicenseController(self)
         self.game = GameController(self)
         self.settings = SettingsController(self)
-        self.fps = FPSController(self)
         self.bonus_code_activation = BonusCodeActivationController(self)
         self.main_menu_to_game_transition_animation \
             = TransitionAnimation(fade_out_animation=self.main_menu.fade_out_animation,
@@ -75,18 +73,16 @@ class AppController(AppBaseController):
         self.fade_in_animation.onboarding_fade_in_animation = self.onboarding.fade_in_animation
         self.fade_in_animation.game_fade_in_animation = self.game.fade_in_animation
         self.fade_in_animation.settings_fade_in_animation = self.settings.fade_in_animation
-        self.fade_in_animation.fps_fade_in_animation = self.fps.fade_in_animation
         self.fade_in_animation.bonus_code_activation_fade_in_animation = self.bonus_code_activation.fade_in_animation
         self.fade_out_animation.main_menu_fade_out_animation = self.main_menu.fade_out_animation
         self.fade_out_animation.license_fade_out_animation = self.license.fade_out_animation
         self.fade_out_animation.onboarding_fade_out_animation = self.onboarding.fade_out_animation
         self.fade_out_animation.game_fade_out_animation = self.game.fade_out_animation
         self.fade_out_animation.settings_fade_out_animation = self.settings.fade_out_animation
-        self.fade_out_animation.fps_fade_out_animation = self.fps.fade_out_animation
         self.fade_out_animation.bonus_code_activation_fade_out_animation = self.bonus_code_activation.fade_out_animation
         self.child_controllers = [
             self.main_menu, self.onboarding, self.license, self.game,
-            self.settings, self.fps, self.bonus_code_activation
+            self.settings, self.bonus_code_activation
         ]
 
     def on_update_current_locale(self, new_locale):
@@ -126,9 +122,6 @@ class AppController(AppBaseController):
 
     def on_activate_game_view(self):
         self.game.on_activate_view()
-
-    def on_update_fps(self, fps):
-        self.fps.on_update_fps(fps)
 
     def on_append_notification(self, notification):
         self.loader.notifications.append(notification)
@@ -212,7 +205,6 @@ class AppController(AppBaseController):
                                         level_up_notification_enabled, feature_unlocked_notification_enabled,
                                         construction_completed_notification_enabled, enough_money_notification_enabled,
                                         bonus_expired_notification_enabled, shop_storage_notification_enabled)
-        self.fps.on_update_display_fps(display_fps)
         self.on_update_fade_animation_state(fade_animations_enabled)
         self.on_update_clock_state(clock_24h_enabled)
         self.on_change_level_up_notification_state(level_up_notification_enabled)
@@ -223,6 +215,11 @@ class AppController(AppBaseController):
         self.on_change_shop_storage_notification_state(shop_storage_notification_enabled)
         if not WINDOW.fullscreen:
             WINDOW.set_size(*windowed_resolution)
+
+        if display_fps:
+            self.view.fps_display.on_activate()
+        else:
+            self.view.fps_display.on_deactivate()
 
     def on_save_and_commit_bonus_code_abuse(self):
         self.model.on_save_and_commit_bonus_code_abuse()

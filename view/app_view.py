@@ -18,6 +18,7 @@ from ui.label.app_title_label import AppTitleLabel
 from ui.shader_sprite.app_view_shader_sprite import AppViewShaderSprite
 from ui.sprite.us_flag_sprite import USFlagSprite
 from ui.sprite.ru_flag_sprite import RUFlagSprite
+from ui.fps_display import FPSDisplay
 
 
 @final
@@ -51,6 +52,7 @@ class AppView(AppBaseView):
 
         super().__init__(controller, logger=getLogger('root.app.view'))
         self.title_label = AppTitleLabel(parent_viewport=self.viewport)
+        self.fps_display = FPSDisplay(parent_viewport=self.viewport)
         self.us_flag_sprite = USFlagSprite(parent_viewport=self.viewport)
         self.ru_flag_sprite = RUFlagSprite(parent_viewport=self.viewport)
         self.close_game_button = CloseGameButton(on_click_action=on_close_game, parent_viewport=self.viewport)
@@ -98,9 +100,14 @@ class AppView(AppBaseView):
         else:
             self.fullscreen_button.on_disable()
 
+        USER_DB_CURSOR.execute('SELECT display_fps FROM graphics')
+        if bool(USER_DB_CURSOR.fetchone()[0]):
+            self.fps_display.on_activate()
+
     @view_is_active
     def on_deactivate(self):
         super().on_deactivate()
+        self.fps_display.on_deactivate()
 
     @view_is_active
     def on_update(self):
@@ -110,6 +117,7 @@ class AppView(AppBaseView):
     def on_resize(self, width, height):
         super().on_resize(width, height)
         self.title_label.on_change_screen_resolution(self.screen_resolution)
+        self.fps_display.on_change_screen_resolution(self.screen_resolution)
         self.shader_sprite.on_change_screen_resolution(self.screen_resolution)
         self.us_flag_sprite.on_change_screen_resolution(self.screen_resolution)
         self.ru_flag_sprite.on_change_screen_resolution(self.screen_resolution)
@@ -118,6 +126,7 @@ class AppView(AppBaseView):
 
     def on_update_opacity(self, new_opacity):
         super().on_update_opacity(new_opacity)
+        self.fps_display.on_update_opacity(self.opacity)
         self.shader_sprite.on_update_opacity(self.opacity)
         self.title_label.on_update_opacity(self.opacity)
         self.us_flag_sprite.on_update_opacity(self.opacity)

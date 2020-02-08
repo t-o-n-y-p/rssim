@@ -12,7 +12,6 @@ class AppFadeOutAnimation(FadeOutAnimation):
         self.onboarding_fade_out_animation = None
         self.game_fade_out_animation = None
         self.settings_fade_out_animation = None
-        self.fps_fade_out_animation = None
         self.bonus_code_activation_fade_out_animation = None
 
     @fade_animation_needed
@@ -24,5 +23,4 @@ class AppFadeOutAnimation(FadeOutAnimation):
         self.onboarding_fade_out_animation.on_activate()
         self.game_fade_out_animation.on_activate()
         self.settings_fade_out_animation.on_activate()
-        self.fps_fade_out_animation.on_activate()
         self.bonus_code_activation_fade_out_animation.on_activate()

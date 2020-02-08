@@ -1,7 +1,7 @@
 from abc import ABC, abstractmethod
 from typing import final
 
-import pyglet.text
+from pyglet.text import Label as PygletLabel
 from win32clipboard import OpenClipboard, CloseClipboard, GetClipboardData
 from pyglet.window.key import BACKSPACE, V, MOD_CTRL
 
@@ -100,11 +100,11 @@ class Label(ABC):
     @final
     @text_label_does_not_exist
     def create(self):
-        self.text_label = pyglet.text.Label(self.get_formatted_text(), font_name=self.font_name, bold=self.bold,
-                                            font_size=self.font_size, color=(*self.base_color, self.opacity),
-                                            x=self.x, y=self.y, width=self.width,
-                                            anchor_x=self.anchor_x, anchor_y=self.anchor_y, align=self.align,
-                                            multiline=self.multiline, batch=self.batch, group=self.group)
+        self.text_label = PygletLabel(self.get_formatted_text(), font_name=self.font_name, bold=self.bold,
+                                      font_size=self.font_size, color=(*self.base_color, self.opacity),
+                                      x=self.x, y=self.y, width=self.width,
+                                      anchor_x=self.anchor_x, anchor_y=self.anchor_y, align=self.align,
+                                      multiline=self.multiline, batch=self.batch, group=self.group)
 
     @final
     @text_label_exists

@@ -9,6 +9,14 @@ from camera.map_camera import MapCamera
 from camera.ui_camera import UICamera
 
 
+def window_size_has_changed(fn):
+    def _update_sprites_if_window_size_has_changed(*args, **kwargs):
+        if args[1:] != args[0].screen_resolution:
+            fn(*args, **kwargs)
+
+    return _update_sprites_if_window_size_has_changed
+
+
 def _create_window():
     CONFIG_DB_CURSOR.execute('SELECT app_width, app_height FROM screen_resolution_config')
     screen_resolution_config = CONFIG_DB_CURSOR.fetchall()

@@ -1,7 +1,6 @@
 from logging import getLogger
 
 from ui.fade_animation.fade_in_animation import *
-from database import USER_DB_CURSOR
 
 
 @final
@@ -13,7 +12,6 @@ class AppFadeInAnimation(FadeInAnimation):
         self.onboarding_fade_in_animation = None
         self.game_fade_in_animation = None
         self.settings_fade_in_animation = None
-        self.fps_fade_in_animation = None
         self.bonus_code_activation_fade_in_animation = None
 
     @fade_animation_needed
@@ -21,7 +19,3 @@ class AppFadeInAnimation(FadeInAnimation):
     def on_activate(self):
         super().on_activate()
         self.main_menu_fade_in_animation.on_activate()
-        # activate FPS animation only if FPS monitor is enabled
-        USER_DB_CURSOR.execute('SELECT display_fps FROM graphics')
-        if bool(USER_DB_CURSOR.fetchone()[0]):
-            self.fps_fade_in_animation.on_activate()
