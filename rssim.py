@@ -5,13 +5,13 @@ from traceback import print_tb
 from ctypes import windll
 
 from exceptions import *
-from rssim_core.rssim_core import RSSim
+from rssim_core.rssim_core import Launcher
 from ui import WINDOW
 
 
 def main():
     try:
-        RSSim().run()
+        Launcher().run()
     except (VideoAdapterNotSupportedException, MonitorNotSupportedException,
             UpdateIncompatibleException, HackingDetectedException) as e:
         WINDOW.close()

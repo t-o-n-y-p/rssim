@@ -1,3 +1,5 @@
+from time import perf_counter
+
 from pyglet.window import FPSDisplay as PygletFPSDisplay
 
 from ui import *
