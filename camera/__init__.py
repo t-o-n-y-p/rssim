@@ -13,7 +13,12 @@ class Camera(ABC):
         self.min_zoom = min_zoom
         self.offset_x = 0
         self.offset_y = 0
-        self._zoom = max(min(1, self.max_zoom), self.min_zoom)
+        if 1 < self.min_zoom:
+            self._zoom = self.min_zoom
+        elif 1 > self.max_zoom:
+            self._zoom = self.max_zoom
+        else:
+            self._zoom = 1
 
     @property
     def zoom(self):
@@ -22,7 +27,12 @@ class Camera(ABC):
     @zoom.setter
     def zoom(self, value):
         """ Here we set zoom, clamp value to minimum of min_zoom and max of max_zoom."""
-        self._zoom = max(min(value, self.max_zoom), self.min_zoom)
+        if value < self.min_zoom < self._zoom:
+            self._zoom = self.min_zoom
+        elif value > self.max_zoom > self._zoom:
+            self._zoom = self.max_zoom
+        elif self.min_zoom <= value <= self.max_zoom:
+            self._zoom = value
 
     @property
     def position(self):
