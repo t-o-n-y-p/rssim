@@ -154,10 +154,10 @@ class AppBaseController(ABC):
             controller.on_update_fade_animation_state(new_state)
 
     @final
-    def on_append_handlers(self, on_mouse_motion_handlers=(), on_mouse_press_handlers=(),
-                           on_mouse_release_handlers=(), on_mouse_drag_handlers=(),
-                           on_mouse_leave_handlers=(), on_mouse_scroll_handlers=(),
-                           on_key_press_handlers=(), on_text_handlers=()):
+    def on_append_view_handlers(self, on_mouse_motion_handlers=(), on_mouse_press_handlers=(),
+                                on_mouse_release_handlers=(), on_mouse_drag_handlers=(),
+                                on_mouse_leave_handlers=(), on_mouse_scroll_handlers=(),
+                                on_key_press_handlers=(), on_text_handlers=()):
         self.on_mouse_motion_handlers.extend(on_mouse_motion_handlers)
         self.on_mouse_press_handlers.extend(on_mouse_press_handlers)
         self.on_mouse_release_handlers.extend(on_mouse_release_handlers)
@@ -170,20 +170,20 @@ class AppBaseController(ABC):
         # little recursive pattern there: it stops as soon as reaches
         # App object controller (App object does not have parent objects)
         if self.parent_controller is not None:
-            self.parent_controller.on_append_handlers(on_mouse_motion_handlers=on_mouse_motion_handlers,
-                                                      on_mouse_press_handlers=on_mouse_press_handlers,
-                                                      on_mouse_release_handlers=on_mouse_release_handlers,
-                                                      on_mouse_drag_handlers=on_mouse_drag_handlers,
-                                                      on_mouse_leave_handlers=on_mouse_leave_handlers,
-                                                      on_mouse_scroll_handlers=on_mouse_scroll_handlers,
-                                                      on_key_press_handlers=on_key_press_handlers,
-                                                      on_text_handlers=on_text_handlers)
+            self.parent_controller.on_append_view_handlers(on_mouse_motion_handlers=on_mouse_motion_handlers,
+                                                           on_mouse_press_handlers=on_mouse_press_handlers,
+                                                           on_mouse_release_handlers=on_mouse_release_handlers,
+                                                           on_mouse_drag_handlers=on_mouse_drag_handlers,
+                                                           on_mouse_leave_handlers=on_mouse_leave_handlers,
+                                                           on_mouse_scroll_handlers=on_mouse_scroll_handlers,
+                                                           on_key_press_handlers=on_key_press_handlers,
+                                                           on_text_handlers=on_text_handlers)
 
     @final
-    def on_detach_handlers(self, on_mouse_motion_handlers=(), on_mouse_press_handlers=(),
-                           on_mouse_release_handlers=(), on_mouse_drag_handlers=(),
-                           on_mouse_leave_handlers=(), on_mouse_scroll_handlers=(),
-                           on_key_press_handlers=(), on_text_handlers=()):
+    def on_detach_view_handlers(self, on_mouse_motion_handlers=(), on_mouse_press_handlers=(),
+                                on_mouse_release_handlers=(), on_mouse_drag_handlers=(),
+                                on_mouse_leave_handlers=(), on_mouse_scroll_handlers=(),
+                                on_key_press_handlers=(), on_text_handlers=()):
         for handler in on_mouse_motion_handlers:
             self.on_mouse_motion_handlers.remove(handler)
 
@@ -211,28 +211,28 @@ class AppBaseController(ABC):
         # little recursive pattern there: it stops as soon as reaches
         # App object controller (App object does not have parent objects)
         if self.parent_controller is not None:
-            self.parent_controller.on_detach_handlers(on_mouse_motion_handlers=on_mouse_motion_handlers,
-                                                      on_mouse_press_handlers=on_mouse_press_handlers,
-                                                      on_mouse_release_handlers=on_mouse_release_handlers,
-                                                      on_mouse_drag_handlers=on_mouse_drag_handlers,
-                                                      on_mouse_leave_handlers=on_mouse_leave_handlers,
-                                                      on_mouse_scroll_handlers=on_mouse_scroll_handlers,
-                                                      on_key_press_handlers=on_key_press_handlers,
-                                                      on_text_handlers=on_text_handlers)
+            self.parent_controller.on_detach_view_handlers(on_mouse_motion_handlers=on_mouse_motion_handlers,
+                                                           on_mouse_press_handlers=on_mouse_press_handlers,
+                                                           on_mouse_release_handlers=on_mouse_release_handlers,
+                                                           on_mouse_drag_handlers=on_mouse_drag_handlers,
+                                                           on_mouse_leave_handlers=on_mouse_leave_handlers,
+                                                           on_mouse_scroll_handlers=on_mouse_scroll_handlers,
+                                                           on_key_press_handlers=on_key_press_handlers,
+                                                           on_text_handlers=on_text_handlers)
 
     @final
-    def on_append_resize_handlers(self, on_resize_handlers=()):
+    def on_append_window_handlers(self, on_resize_handlers=()):
         self.on_resize_handlers.extend(on_resize_handlers)
         if self.parent_controller is not None:
-            self.parent_controller.on_append_resize_handlers(on_resize_handlers=on_resize_handlers)
+            self.parent_controller.on_append_window_handlers(on_resize_handlers=on_resize_handlers)
 
     @final
-    def on_detach_resize_handlers(self, on_resize_handlers=()):
+    def on_detach_window_handlers(self, on_resize_handlers=()):
         for handler in on_resize_handlers:
             self.on_resize_handlers.remove(handler)
 
         if self.parent_controller is not None:
-            self.parent_controller.on_detach_resize_handlers(on_resize_handlers=on_resize_handlers)
+            self.parent_controller.on_detach_window_handlers(on_resize_handlers=on_resize_handlers)
 
 
 class GameBaseController(AppBaseController, ABC):

@@ -18,8 +18,8 @@ def video_adapter_is_supported(fn):
         gl.glGetIntegerv(gl.GL_MAX_TEXTURE_SIZE, max_texture_size)
         if max_texture_size.value < REQUIRED_TEXTURE_SIZE:
             raise VideoAdapterNotSupportedException
-        else:
-            fn(*args, **kwargs)
+
+        fn(*args, **kwargs)
 
     return _launch_game_if_video_adapter_is_supported
 
@@ -30,8 +30,8 @@ def monitor_is_supported(fn):
         if windll.user32.GetSystemMetrics(0) < MIN_RESOLUTION_WIDTH \
                 or windll.user32.GetSystemMetrics(1) < MIN_RESOLUTION_HEIGHT:
             raise MonitorNotSupportedException
-        else:
-            fn(*args, **kwargs)
+
+        fn(*args, **kwargs)
 
     return _launch_game_if_monitor_is_supported
 
@@ -42,8 +42,8 @@ def game_config_was_not_modified(fn):
             data = (f2.read() + f1.read())[::-1]
             if sha512(data[::3] + data[1::3] + data[2::3]).hexdigest() != DATABASE_SHA512:
                 raise HackingDetectedException
-            else:
-                fn(*args, **kwargs)
+
+            fn(*args, **kwargs)
 
     return _launch_game_if_game_config_was_not_modified
 
@@ -56,8 +56,8 @@ def player_progress_was_not_modified(fn):
                     != get_password(sha512('user_db'.encode('utf-8')).hexdigest(),
                                     sha512('user_db'.encode('utf-8')).hexdigest()):
                 raise HackingDetectedException
-            else:
-                fn(*args, **kwargs)
+
+            fn(*args, **kwargs)
 
     return _launch_game_if_player_progress_was_not_modified
 

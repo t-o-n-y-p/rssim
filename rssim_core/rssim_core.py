@@ -2,6 +2,7 @@ from os import mkdir
 from logging import FileHandler, Formatter, getLogger
 from datetime import datetime
 from sqlite3 import OperationalError
+from time import perf_counter
 from typing import final
 
 import pyglet
@@ -57,6 +58,7 @@ class Launcher:
         self.on_mouse_drag_cached_movement = [0, 0]
         self.on_mouse_scroll_event_counter = 0
         self.on_mouse_scroll_cached_movement = [0, 0]
+        self.last_frame_time = perf_counter()
 
         @WINDOW.event
         def on_draw():
@@ -78,6 +80,10 @@ class Launcher:
             self.on_mouse_motion_event_counter = 0
             self.on_mouse_drag_event_counter = 0
             self.on_mouse_scroll_event_counter = 0
+            # while perf_counter() - self.last_frame_time < 1/60:
+            #     pass
+            #
+            # self.last_frame_time = perf_counter()
 
         @WINDOW.event
         def on_activate():

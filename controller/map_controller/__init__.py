@@ -138,7 +138,7 @@ class MapController(MapBaseController, ABC):
         for train in self.lifecycle_ended_trains:
             train.view.on_deactivate()
             train.view.on_update_opacity(0)
-            train.view.on_detach_resize_handlers()
+            train.view.on_detach_window_handlers()
             self.fade_in_animation.train_fade_in_animations.remove(train.fade_in_animation)
             self.fade_out_animation.train_fade_out_animations.remove(train.fade_out_animation)
             self.trains.pop(train.train_id)
