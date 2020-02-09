@@ -2,12 +2,13 @@ from os import mkdir
 from logging import FileHandler, Formatter, getLogger
 from datetime import datetime
 from sqlite3 import OperationalError
+from typing import final
 
 import pyglet
 
-from exceptions import *
+from exceptions import UpdateIncompatibleException
 from rssim_core import *
-from ui import WINDOW, BATCHES, MAP_CAMERA, UI_CAMERA
+from ui import WINDOW, BATCHES, MAP_CAMERA
 from database import USER_DB_CURSOR, on_commit
 from controller.app_controller import AppController
 
@@ -54,35 +55,29 @@ class Launcher:
         self.on_mouse_motion_cached_movement = [0, 0]
         self.on_mouse_drag_event_counter = 0
         self.on_mouse_drag_cached_movement = [0, 0]
-        self.on_draw_event_counter = 0
         self.on_mouse_scroll_event_counter = 0
         self.on_mouse_scroll_cached_movement = [0, 0]
 
         @WINDOW.event
         def on_draw():
-            if self.on_draw_event_counter < MAXIMUM_DRAW_EVENTS_PER_FRAME:
-                self.on_draw_event_counter += 1
-                # clear surface
-                WINDOW.clear()
-                for batch in BATCHES:
-                    BATCHES[batch].invalidate()
+            # clear surface
+            WINDOW.clear()
+            for batch in BATCHES:
+                BATCHES[batch].invalidate()
 
-                # draw main batch: environment, main map, signals, trains
-                with MAP_CAMERA:
-                    BATCHES['main_batch'].draw()
+            # draw main batch: environment, main map, signals, trains
+            with MAP_CAMERA:
+                BATCHES['main_batch'].draw()
 
-                with UI_CAMERA:
-                    # draw mini map batch: mini map
-                    BATCHES['mini_map_batch'].draw()
-                    # draw all vertices with shaders
-                    self.app.on_apply_shaders_and_draw_vertices()
-                    # draw ui batch: text labels, buttons
-                    BATCHES['ui_batch'].draw()
-
-                self.on_mouse_motion_event_counter = 0
-                self.on_mouse_drag_event_counter = 0
-                self.on_draw_event_counter = 0
-                self.on_mouse_scroll_event_counter = 0
+            # draw mini map batch: mini map
+            BATCHES['mini_map_batch'].draw()
+            # draw all vertices with shaders
+            self.app.on_apply_shaders_and_draw_vertices()
+            # draw ui batch: text labels, buttons
+            BATCHES['ui_batch'].draw()
+            self.on_mouse_motion_event_counter = 0
+            self.on_mouse_drag_event_counter = 0
+            self.on_mouse_scroll_event_counter = 0
 
         @WINDOW.event
         def on_activate():
