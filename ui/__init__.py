@@ -43,8 +43,6 @@ MIN_RESOLUTION_WIDTH: Final = 1280                     # minimum screen resoluti
 MIN_RESOLUTION_HEIGHT: Final = 720                     # minimum screen resolution height supported by the app UI
 SCHEDULE_ROWS: Final = 12                              # number of schedule rows on schedule screen
 SCHEDULE_COLUMNS: Final = 2                            # number of schedule columns on schedule screen
-CONSTRUCTOR_VIEW_TRACK_CELLS: Final = 4                # number of cells for tracks on constructor screen
-CONSTRUCTOR_VIEW_ENVIRONMENT_CELLS: Final = 4          # number of cells for environment tiers on constructor screen
 SHOP_DETAILS_BUTTON_NORMAL_SIZE = (250, 40)
 # colors
 ORANGE_RGB: Final = (255, 127, 0)                      # orange UI color
@@ -55,14 +53,6 @@ RED_RGB: Final = (255, 0, 0)                           # red UI color
 RED_GREY_RGB: Final = (112, 0, 0)
 WHITE_RGB: Final = (255, 255, 255)                     # white UI color
 GREY_RGB: Final = (112, 112, 112)                      # grey UI color
-# time
-FRAMES_IN_ONE_DAY: Final = 345600                      # indicates how many frames fit in one in-game day
-FRAMES_IN_ONE_HOUR: Final = 14400                      # indicates how many frames fit in one in-game hour
-FRAMES_IN_ONE_MINUTE: Final = 240                      # indicates how many frames fit in one in-game minute
-FRAMES_IN_ONE_SECOND: Final = 4                        # indicates how many frames fit in one in-game second
-MINUTES_IN_ONE_HOUR: Final = 60
-SECONDS_IN_ONE_MINUTE: Final = 60
-HOURS_IN_ONE_DAY: Final = 24
 SCHEDULE_ARRIVAL_TIME_THRESHOLD: Final = [FRAMES_IN_ONE_HOUR, FRAMES_IN_ONE_HOUR * 10]
 # main surface which harbors all the app
 WINDOW: Final = _create_window()

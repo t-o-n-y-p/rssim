@@ -244,22 +244,16 @@ FULLSCREEN_MODE_TURNED_OFF: Final = 0  # database value for fullscreen mode turn
 FULLSCREEN_MODE_TURNED_ON: Final = 1  # database value for fullscreen mode turned off
 MAXIMUM_TRACK_NUMBER: Final = (32, 16)  # player can have maximum of 32 tracks on map 0 and 16 tracks on map 1
 MAXIMUM_ENVIRONMENT_TIER: Final = (6, 3)  # environment tier 6 is final for map 0, for map 1 we have 3 tiers
-FRAMES_IN_ONE_MINUTE: Final = 240  # indicates how many frames fit in 1 in-game minute
-FRAMES_IN_ONE_HOUR: Final = 14400  # indicates how many frames fit in one in-game hour
 DEFAULT_PRIORITY: Final = 10000000  # default priority for any new train created
-PASS_THROUGH_BOARDING_TIME: Final = 480  # default boarding time for pass-through trains
+PASS_THROUGH_BOARDING_TIME: Final = FRAMES_IN_ONE_MINUTE * 2  # default boarding time for pass-through trains
 PASSENGER_CAR_LENGTH: Final = 251  # length of the passenger car in pixels
 FREIGHT_HEAD_TAIL_CAR_LENGTH: Final = 251  # length of the head/tail freight car in pixels
 FREIGHT_MID_CAR_LENGTH: Final = 151  # length of the middle freight car in pixels
 # when any track from this list is unlocked, new car collection is added
-CAR_COLLECTION_UNLOCK_TRACK_LIST: Final = ((6, 10, 14, 18, 21, 22, 26, 30), (4, 8, 12))
-CONSTRUCTOR_VIEW_TRACK_CELLS: Final = 4  # number of cells for tracks on constructor screen
-CONSTRUCTOR_VIEW_ENVIRONMENT_CELLS: Final = 4  # number of cells for environment tiers on constructor screen
+CAR_COLLECTION_UNLOCK_TRACK_LIST: Final = ((6, 10, 14, 18, 21, 22, 26, 30), (4, 8, 12, 16))
 # threshold for shop storage notification (0 - empty, 1 - full)
 SHOP_STORAGE_ALMOST_FULL_THRESHOLD: Final = 0.9
 ALLOWED_BONUS_CODE_INPUT = 100
-
-
 # ------------------- END CONSTANTS -------------------
 
 

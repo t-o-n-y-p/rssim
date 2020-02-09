@@ -35,11 +35,23 @@ USER_DB_CURSOR: Final = USER_DB_CONNECTION.cursor()
 __config_db_connection = connect('db/config.db')
 CONFIG_DB_CURSOR: Final = __config_db_connection.cursor()
 
+# time
+MINUTES_IN_ONE_HOUR: Final = 60
+SECONDS_IN_ONE_MINUTE: Final = 60
+HOURS_IN_ONE_DAY: Final = 24
+FRAMES_IN_ONE_MINUTE: Final = 240
+FRAMES_IN_ONE_SECOND: Final = FRAMES_IN_ONE_MINUTE // SECONDS_IN_ONE_MINUTE
+FRAMES_IN_ONE_HOUR: Final = FRAMES_IN_ONE_MINUTE * MINUTES_IN_ONE_HOUR
+FRAMES_IN_ONE_DAY: Final = FRAMES_IN_ONE_HOUR * HOURS_IN_ONE_DAY
+
 TRACKS: Final = 0
 ENVIRONMENT: Final = 1
 
 PASSENGER_MAP: Final = 0
 FREIGHT_MAP: Final = 1
+
+CONSTRUCTOR_VIEW_TRACK_CELLS: Final = 4                # number of cells for tracks on constructor screen
+CONSTRUCTOR_VIEW_ENVIRONMENT_CELLS: Final = 4          # number of cells for environment tiers on constructor screen
 # bonus code matrix properties
 CODE_TYPE: Final = 0
 BONUS_VALUE: Final = 1
