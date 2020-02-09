@@ -13,7 +13,7 @@ class Camera(ABC):
         self.min_zoom = min_zoom
         self.offset_x = 0
         self.offset_y = 0
-        self._zoom = max(min(1, self.max_zoom), self.min_zoom)
+        self._zoom = max(min(1.0, self.max_zoom), self.min_zoom)
 
     @property
     def zoom(self):
@@ -22,7 +22,7 @@ class Camera(ABC):
     @zoom.setter
     def zoom(self, value):
         """ Here we set zoom, clamp value to minimum of min_zoom and max of max_zoom."""
-        self._zoom = max(min(value, self.max_zoom), self.min_zoom)
+        self._zoom = max(min(round(value, 1), self.max_zoom), self.min_zoom)
 
     @property
     def position(self):
@@ -47,7 +47,7 @@ class Camera(ABC):
         # it will multiply the current offset every draw update pushing it further and further away.
 
         # Reverse scale, since that was the last transform.
-        glScalef(1 / self._zoom, 1 / self._zoom, 1)
+        glScalef(round(1 / self._zoom, 1), round(1 / self._zoom, 1), 1)
 
         # Reverse translate.
         glTranslatef(self.offset_x, self.offset_y, 0)

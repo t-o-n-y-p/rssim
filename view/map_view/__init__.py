@@ -44,7 +44,7 @@ class MapView(MapBaseView, ABC):
         self.base_offset = [float(p) for p in USER_DB_CURSOR.fetchone()[0].split(',')]
         USER_DB_CURSOR.execute('''SELECT last_known_zoom FROM map_position_settings 
                                   WHERE map_id IN (SELECT last_known_map_id FROM graphics)''')
-        self.zoom = Fraction(USER_DB_CURSOR.fetchone()[0])
+        self.zoom = USER_DB_CURSOR.fetchone()[0]
         self.base_offset_lower_left_limit = (0, 0)
         self.base_offset_upper_right_limit = (0, 0)
         self.open_schedule_button = OpenScheduleButton(on_click_action=on_open_schedule, parent_viewport=self.viewport)
@@ -88,14 +88,14 @@ class MapView(MapBaseView, ABC):
     @view_is_not_active
     def on_activate(self):
         super().on_activate()
-        MAP_CAMERA.position = -self.base_offset[0], -self.base_offset[1]
-        MAP_CAMERA.zoom = self.zoom
         self.map_move_mode_available = True
         self.shader_sprite.create()
         self.main_map_sprite.create()
         self.environment_sprite.create()
         self.on_activate_open_constructor_button()
         self.on_activate_shop_buttons()
+        MAP_CAMERA.position = -self.base_offset[0], -self.base_offset[1]
+        MAP_CAMERA.zoom = self.zoom
 
     @final
     @view_is_active
@@ -182,7 +182,7 @@ class MapView(MapBaseView, ABC):
                                               - get_top_bar_height(self.screen_resolution))
         self.check_base_offset_limits()
         self.controller.on_save_and_commit_last_known_base_offset()
-        self.zoom = Fraction(MAP_CAMERA.zoom)
+        self.zoom = MAP_CAMERA.zoom
         for b in self.shop_buttons:
             b.on_change_scale()
 

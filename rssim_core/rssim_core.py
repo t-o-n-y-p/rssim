@@ -3,17 +3,17 @@ from logging import FileHandler, Formatter, getLogger
 from datetime import datetime
 from sqlite3 import OperationalError
 
-from pyglet import clock, app
+import pyglet
 
 from exceptions import *
 from rssim_core import *
-from ui import WINDOW, BATCHES, MAP_CAMERA
+from ui import WINDOW, BATCHES, MAP_CAMERA, UI_CAMERA
 from database import USER_DB_CURSOR, on_commit
 from controller.app_controller import AppController
 
 
 @final
-class Launcher:
+class RSSim:
     @video_adapter_is_supported
     @monitor_is_supported
     @game_config_was_not_modified
@@ -24,28 +24,65 @@ class Launcher:
             self.app.game.on_update_time()
             # on_update_view() checks if all views content is up-to-date and opacity is correct
             self.app.on_update_view()
-            self.on_mouse_motion_event_counter = 0
-            self.on_mouse_drag_event_counter = 0
-            self.on_mouse_scroll_event_counter = 0
+
+        # check if game was updated from previous version (0.9.0 and higher are supported)
+        self.on_check_for_updates()
+        # set up the main logger, create log file
+        self.logger = getLogger('root')
+        current_datetime = datetime.now()
+        if not path.exists('logs'):
+            mkdir('logs')
+
+        logs_handler = FileHandler('logs/logs_{0}_{1:0>2}-{2:0>2}-{3:0>2}-{4:0>6}.log'
+                                   .format(str(current_datetime.date()), current_datetime.time().hour,
+                                           current_datetime.time().minute, current_datetime.time().second,
+                                           current_datetime.time().microsecond),
+                                   encoding='utf8')
+        logs_handler.setFormatter(Formatter('%(asctime)s - %(name)s - %(levelname)s - %(message)s'))
+        self.logger.addHandler(logs_handler)
+        self.logger.setLevel(LOG_LEVEL_DEBUG)
+        # set blending mode; this is required to correctly draw transparent textures
+        gl.glEnable(gl.GL_BLEND)
+        gl.glBlendFunc(gl.GL_SRC_ALPHA, gl.GL_ONE_MINUS_SRC_ALPHA)
+        # create App object
+        self.app = AppController(loader=self)
+        # activate app after it is created
+        self.app.fade_in_animation.on_activate()
+        pyglet.clock.schedule(on_app_update)
+        self.notifications = []
+        self.on_mouse_motion_event_counter = 0
+        self.on_mouse_motion_cached_movement = [0, 0]
+        self.on_mouse_drag_event_counter = 0
+        self.on_mouse_drag_cached_movement = [0, 0]
+        self.on_draw_event_counter = 0
+        self.on_mouse_scroll_event_counter = 0
+        self.on_mouse_scroll_cached_movement = [0, 0]
 
         @WINDOW.event
         def on_draw():
-            self.on_draw_event_counter += 1
-            # clear surface
-            WINDOW.clear()
-            for batch in BATCHES:
-                BATCHES[batch].invalidate()
+            if self.on_draw_event_counter < MAXIMUM_DRAW_EVENTS_PER_FRAME:
+                self.on_draw_event_counter += 1
+                # clear surface
+                WINDOW.clear()
+                for batch in BATCHES:
+                    BATCHES[batch].invalidate()
 
-            # draw main batch: environment, main map, signals, trains
-            with MAP_CAMERA:
-                BATCHES['main_batch'].draw()
+                # draw main batch: environment, main map, signals, trains
+                with MAP_CAMERA:
+                    BATCHES['main_batch'].draw()
 
-            # draw mini map batch: mini map
-            BATCHES['mini_map_batch'].draw()
-            # draw all vertices with shaders
-            self.app.on_apply_shaders_and_draw_vertices()
-            # draw ui batch: text labels, buttons
-            BATCHES['ui_batch'].draw()
+                with UI_CAMERA:
+                    # draw mini map batch: mini map
+                    BATCHES['mini_map_batch'].draw()
+                    # draw all vertices with shaders
+                    self.app.on_apply_shaders_and_draw_vertices()
+                    # draw ui batch: text labels, buttons
+                    BATCHES['ui_batch'].draw()
+
+                self.on_mouse_motion_event_counter = 0
+                self.on_mouse_drag_event_counter = 0
+                self.on_draw_event_counter = 0
+                self.on_mouse_scroll_event_counter = 0
 
         @WINDOW.event
         def on_activate():
@@ -143,42 +180,9 @@ class Launcher:
             for h in self.app.on_resize_handlers:
                 h(width, height)
 
-        # check if game was updated from previous version (0.9.0 and higher are supported)
-        self.on_check_for_updates()
-        # set up the main logger, create log file
-        self.logger = getLogger('root')
-        current_datetime = datetime.now()
-        if not path.exists('logs'):
-            mkdir('logs')
-
-        logs_handler = FileHandler('logs/logs_{0}_{1:0>2}-{2:0>2}-{3:0>2}-{4:0>6}.log'
-                                   .format(str(current_datetime.date()), current_datetime.time().hour,
-                                           current_datetime.time().minute, current_datetime.time().second,
-                                           current_datetime.time().microsecond),
-                                   encoding='utf8')
-        logs_handler.setFormatter(Formatter('%(asctime)s - %(name)s - %(levelname)s - %(message)s'))
-        self.logger.addHandler(logs_handler)
-        self.logger.setLevel(LOG_LEVEL_DEBUG)
-        # set blending mode; this is required to correctly draw transparent textures
-        gl.glEnable(gl.GL_BLEND)
-        gl.glBlendFunc(gl.GL_SRC_ALPHA, gl.GL_ONE_MINUS_SRC_ALPHA)
-        # create App object
-        self.app = AppController(loader=self)
-        clock.schedule_interval(on_app_update, 1/60)
-        # activate app after it is created
-        self.app.fade_in_animation.on_activate()
-        self.notifications = []
-        self.on_mouse_motion_event_counter = 0
-        self.on_mouse_motion_cached_movement = [0, 0]
-        self.on_mouse_drag_event_counter = 0
-        self.on_mouse_drag_cached_movement = [0, 0]
-        self.on_draw_event_counter = 0
-        self.on_mouse_scroll_event_counter = 0
-        self.on_mouse_scroll_cached_movement = [0, 0]
-
     @staticmethod
     def run():
-        app.run()
+        pyglet.app.run()
 
     @staticmethod
     def on_check_for_updates():
