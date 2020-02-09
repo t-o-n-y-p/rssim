@@ -13,7 +13,7 @@ from controller.app_controller import AppController
 
 
 @final
-class RSSim:
+class Launcher:
     @video_adapter_is_supported
     @monitor_is_supported
     @game_config_was_not_modified
