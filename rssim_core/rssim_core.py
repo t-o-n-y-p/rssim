@@ -4,6 +4,7 @@ from logging import FileHandler, Formatter, getLogger
 from datetime import datetime
 from hashlib import sha512
 
+import pyglet
 from pyglet import gl
 from keyring import get_password
 
@@ -17,6 +18,12 @@ from controller.app_controller import AppController
 @final
 class RSSim:
     def __init__(self):
+        def on_app_update(dt):
+            # increment in-game time
+            self.app.game.on_update_time()
+            # on_update_view() checks if all views content is up-to-date and opacity is correct
+            self.app.on_update_view()
+
         # determine if video adapter supports all game textures, if not - raise specific exception
         max_texture_size = c_long(0)
         gl.glGetIntegerv(gl.GL_MAX_TEXTURE_SIZE, max_texture_size)
@@ -63,6 +70,7 @@ class RSSim:
         self.app = AppController(loader=self)
         # activate app after it is created
         self.app.fade_in_animation.on_activate()
+        pyglet.clock.schedule(on_app_update)
         self.notifications = []
         self.on_mouse_motion_event_counter = 0
         self.on_mouse_motion_cached_movement = [0, 0]
@@ -93,7 +101,10 @@ class RSSim:
                     # draw ui batch: text labels, buttons
                     BATCHES['ui_batch'].draw()
 
-                WINDOW.flip()
+                self.on_mouse_motion_event_counter = 0
+                self.on_mouse_drag_event_counter = 0
+                self.on_draw_event_counter = 0
+                self.on_mouse_scroll_event_counter = 0
 
         @WINDOW.event
         def on_activate():
@@ -191,20 +202,9 @@ class RSSim:
             for h in self.app.on_resize_handlers:
                 h(width, height)
 
-    def run(self):
-        while True:
-            # dispatch_events() launches keyboard and mouse handlers implemented above
-            WINDOW.dispatch_events()
-            # increment in-game time
-            self.app.game.on_update_time()
-            # on_update_view() checks if all views content is up-to-date and opacity is correct
-            self.app.on_update_view()
-            # call on_draw() handler implemented above
-            WINDOW.dispatch_event('on_draw')
-            self.on_mouse_motion_event_counter = 0
-            self.on_mouse_drag_event_counter = 0
-            self.on_draw_event_counter = 0
-            self.on_mouse_scroll_event_counter = 0
+    @staticmethod
+    def run():
+        pyglet.app.run()
 
     @staticmethod
     def on_check_for_updates():
