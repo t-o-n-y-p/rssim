@@ -1,51 +1,29 @@
-from ctypes import c_long, windll
-from os import path, mkdir
+from os import mkdir
 from logging import FileHandler, Formatter, getLogger
 from datetime import datetime
-from hashlib import sha512
+from sqlite3 import OperationalError
 
 import pyglet
-from pyglet import gl
-from keyring import get_password
 
 from exceptions import *
 from rssim_core import *
-from ui import WINDOW, BATCHES, MIN_RESOLUTION_WIDTH, MIN_RESOLUTION_HEIGHT, MAP_CAMERA, UI_CAMERA
-from database import USER_DB_CURSOR, USER_DB_CONNECTION, USER_DB_LOCATION, on_commit
+from ui import WINDOW, BATCHES, MAP_CAMERA, UI_CAMERA
+from database import USER_DB_CURSOR, on_commit
 from controller.app_controller import AppController
 
 
 @final
 class RSSim:
+    @video_adapter_is_supported
+    @monitor_is_supported
+    @game_config_was_not_modified
+    @player_progress_was_not_modified
     def __init__(self):
         def on_app_update(dt):
             # increment in-game time
             self.app.game.on_update_time()
             # on_update_view() checks if all views content is up-to-date and opacity is correct
             self.app.on_update_view()
-
-        # determine if video adapter supports all game textures, if not - raise specific exception
-        max_texture_size = c_long(0)
-        gl.glGetIntegerv(gl.GL_MAX_TEXTURE_SIZE, max_texture_size)
-        if max_texture_size.value < REQUIRED_TEXTURE_SIZE:
-            raise VideoAdapterNotSupportedException
-
-        # determine if screen resolution meets requirements, if not - raise specific exception
-        if windll.user32.GetSystemMetrics(0) < MIN_RESOLUTION_WIDTH \
-                or windll.user32.GetSystemMetrics(1) < MIN_RESOLUTION_HEIGHT:
-            raise MonitorNotSupportedException
-
-        with open('db/config.db', 'rb') as f1, open('db/default.db', 'rb') as f2:
-            data = (f2.read() + f1.read())[::-1]
-            if sha512(data[::3] + data[1::3] + data[2::3]).hexdigest() != DATABASE_SHA512:
-                raise HackingDetectedException
-
-        with open(path.join(USER_DB_LOCATION, 'user.db'), 'rb') as f:
-            data = f.read()[::-1]
-            if sha512(data[::3] + data[1::3] + data[2::3]).hexdigest() \
-                    != get_password(sha512('user_db'.encode('utf-8')).hexdigest(),
-                                    sha512('user_db'.encode('utf-8')).hexdigest()):
-                raise HackingDetectedException
 
         # check if game was updated from previous version (0.9.0 and higher are supported)
         self.on_check_for_updates()
@@ -224,21 +202,14 @@ class RSSim:
         # for now log level is set to DEBUG, but can also be set to LOG_LEVEL_INFO
         logger.setLevel(LOG_LEVEL_DEBUG)
         logger.info('START CHECK_FOR_UPDATES')
-        # If version does not exist, DB version is 0.9.0.
-        # Just increment version here, no other DB changes.
-        USER_DB_CURSOR.execute('SELECT * FROM sqlite_master WHERE type = "table" AND tbl_name = "version"')
-        if len(USER_DB_CURSOR.fetchall()) == 0:
-            logger.debug('version info not found')
-            USER_DB_CURSOR.execute('CREATE TABLE version (major integer, minor integer, patch integer)')
-            logger.debug('version table created')
-            USER_DB_CURSOR.execute('INSERT INTO version VALUES (0, 9, 1)')
-            logger.debug('version 0.9.1 set')
-            USER_DB_CONNECTION.commit()
-
         # If version exists, read it from user DB.
         # If current game version is higher, use migration scripts one by one.
         # Migration script file is named "<version>.sql"
-        USER_DB_CURSOR.execute('SELECT * FROM version')
+        try:
+            USER_DB_CURSOR.execute('SELECT * FROM version')
+        except OperationalError:
+            raise UpdateIncompatibleException
+
         user_db_version = USER_DB_CURSOR.fetchone()
         logger.debug(f'user DB version: {user_db_version}')
         logger.debug(f'current game version: {CURRENT_VERSION}')

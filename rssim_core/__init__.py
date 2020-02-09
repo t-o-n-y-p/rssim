@@ -1,4 +1,65 @@
+from ctypes import c_long, windll
+from os import path
 from typing import Final
+from hashlib import sha512
+
+from keyring import get_password
+from pyglet import gl
+
+from database import USER_DB_LOCATION
+from exceptions import VideoAdapterNotSupportedException, MonitorNotSupportedException, HackingDetectedException
+from ui import MIN_RESOLUTION_WIDTH, MIN_RESOLUTION_HEIGHT
+
+
+def video_adapter_is_supported(fn):
+    def _launch_game_if_video_adapter_is_supported(*args, **kwargs):
+        # determine if video adapter supports all game textures, if not - raise specific exception
+        max_texture_size = c_long(0)
+        gl.glGetIntegerv(gl.GL_MAX_TEXTURE_SIZE, max_texture_size)
+        if max_texture_size.value < REQUIRED_TEXTURE_SIZE:
+            raise VideoAdapterNotSupportedException
+        else:
+            fn(*args, **kwargs)
+
+    return _launch_game_if_video_adapter_is_supported
+
+
+def monitor_is_supported(fn):
+    def _launch_game_if_monitor_is_supported(*args, **kwargs):
+        # determine if screen resolution meets requirements, if not - raise specific exception
+        if windll.user32.GetSystemMetrics(0) < MIN_RESOLUTION_WIDTH \
+                or windll.user32.GetSystemMetrics(1) < MIN_RESOLUTION_HEIGHT:
+            raise MonitorNotSupportedException
+        else:
+            fn(*args, **kwargs)
+
+    return _launch_game_if_monitor_is_supported
+
+
+def game_config_was_not_modified(fn):
+    def _launch_game_if_game_config_was_not_modified(*args, **kwargs):
+        with open('db/config.db', 'rb') as f1, open('db/default.db', 'rb') as f2:
+            data = (f2.read() + f1.read())[::-1]
+            if sha512(data[::3] + data[1::3] + data[2::3]).hexdigest() != DATABASE_SHA512:
+                raise HackingDetectedException
+            else:
+                fn(*args, **kwargs)
+
+    return _launch_game_if_game_config_was_not_modified
+
+
+def player_progress_was_not_modified(fn):
+    def _launch_game_if_player_progress_was_not_modified(*args, **kwargs):
+        with open(path.join(USER_DB_LOCATION, 'user.db'), 'rb') as f:
+            data = f.read()[::-1]
+            if sha512(data[::3] + data[1::3] + data[2::3]).hexdigest() \
+                    != get_password(sha512('user_db'.encode('utf-8')).hexdigest(),
+                                    sha512('user_db'.encode('utf-8')).hexdigest()):
+                raise HackingDetectedException
+            else:
+                fn(*args, **kwargs)
+
+    return _launch_game_if_player_progress_was_not_modified
 
 
 # --------------------- CONSTANTS ---------------------
