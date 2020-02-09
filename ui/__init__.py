@@ -1,5 +1,4 @@
 from ctypes import windll
-from fractions import Fraction
 
 from pyglet.window import Window
 from pyglet.graphics import Batch, OrderedGroup
@@ -29,7 +28,7 @@ def _create_window():
 # --------------------- CONSTANTS ---------------------
 MAP_CAMERA: Final = MapCamera()
 UI_CAMERA: Final = UICamera()
-MAP_ZOOM_STEP = Fraction(1, 2)
+MAP_ZOOM_STEP = 0.5
 MAP_WIDTH: Final = 8192                                # full-size map width
 MAP_HEIGHT: Final = 4096                               # full-size map height
 MIN_RESOLUTION_WIDTH: Final = 1280                     # minimum screen resolution width supported by the app UI
