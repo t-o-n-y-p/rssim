@@ -203,7 +203,6 @@ class AppBaseView(ABC):
         self.on_key_press_handlers = []
         self.on_text_handlers = []
         self.on_resize_handlers = [self.on_resize, ]
-        self.on_append_window_handlers()
         self.screen_resolution = (0, 0)
         USER_DB_CURSOR.execute('SELECT current_locale FROM i18n')
         self.current_locale = USER_DB_CURSOR.fetchone()[0]
@@ -332,10 +331,14 @@ class AppBaseView(ABC):
     @final
     def on_append_window_handlers(self):
         self.controller.on_append_window_handlers(on_resize_handlers=self.on_resize_handlers)
+        for b in self.buttons:
+            self.controller.on_append_window_handlers(on_resize_handlers=(b.on_resize, ))
 
     @final
     def on_detach_window_handlers(self):
         self.controller.on_detach_window_handlers(on_resize_handlers=self.on_resize_handlers)
+        for b in self.buttons:
+            self.controller.on_detach_window_handlers(on_resize_handlers=(b.on_resize, ))
 
 
 class GameBaseView(AppBaseView, ABC):

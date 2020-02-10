@@ -18,6 +18,7 @@ class OnboardingView(AppBaseView):
         self.skip_onboarding_button = SkipOnboardingButton(on_click_action=on_skip_onboarding,
                                                            parent_viewport=self.viewport)
         self.buttons = [*self.onboarding_page_control.buttons, self.skip_onboarding_button]
+        self.on_append_window_handlers()
         self.shader_sprite = OnboardingViewShaderSprite(view=self)
         self.skip_onboarding_label = SkipOnboardingLabel(parent_viewport=self.viewport)
 
@@ -48,8 +49,6 @@ class OnboardingView(AppBaseView):
         self.shader_sprite.on_change_screen_resolution(self.screen_resolution)
         self.onboarding_page_control.on_change_screen_resolution(self.screen_resolution)
         self.skip_onboarding_label.on_change_screen_resolution(self.screen_resolution)
-        for b in self.buttons:
-            b.on_change_screen_resolution(self.screen_resolution)
 
     def on_apply_shaders_and_draw_vertices(self):
         super().on_apply_shaders_and_draw_vertices()

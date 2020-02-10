@@ -41,9 +41,9 @@ class MapView(MapBaseView, ABC):
         self.mini_map_timer = 0.0
         USER_DB_CURSOR.execute('''SELECT last_known_base_offset FROM map_position_settings WHERE map_id = ?''',
                                (self.map_id,))
-        self.base_offset = [int(p) for p in USER_DB_CURSOR.fetchone()[0].split(',')]
-        USER_DB_CURSOR.execute('''SELECT last_known_zoom FROM map_position_settings 
-                                  WHERE map_id IN (SELECT last_known_map_id FROM graphics)''')
+        self.base_offset = tuple(int(p) for p in USER_DB_CURSOR.fetchone()[0].split(','))
+        USER_DB_CURSOR.execute('''SELECT last_known_zoom FROM map_position_settings WHERE map_id = ?''',
+                               (self.map_id, ))
         self.zoom = USER_DB_CURSOR.fetchone()[0]
         self.base_offset_lower_left_limit = (0, 0)
         self.base_offset_upper_right_limit = (0, 0)
@@ -51,6 +51,7 @@ class MapView(MapBaseView, ABC):
         self.open_constructor_button = OpenConstructorButton(on_click_action=on_open_constructor,
                                                              parent_viewport=self.viewport)
         self.buttons = [self.open_schedule_button, self.open_constructor_button]
+        self.on_append_window_handlers()
         self.shop_buttons = []
         CONFIG_DB_CURSOR.execute('''SELECT COUNT(*) FROM shops_config WHERE map_id = ?''', (self.map_id, ))
         for shop_id in range(CONFIG_DB_CURSOR.fetchone()[0]):
@@ -123,8 +124,6 @@ class MapView(MapBaseView, ABC):
                                               int(self.viewport.y2 - MAP_HEIGHT * self.zoom
                                                   - get_top_bar_height(self.screen_resolution)))
         self.shader_sprite.on_change_screen_resolution(self.screen_resolution)
-        self.open_schedule_button.on_change_screen_resolution(self.screen_resolution)
-        self.open_constructor_button.on_change_screen_resolution(self.screen_resolution)
         self.check_base_offset_limits()
         self.controller.on_save_and_commit_last_known_base_offset()
 

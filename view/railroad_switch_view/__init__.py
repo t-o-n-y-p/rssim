@@ -34,6 +34,7 @@ class RailroadSwitchView(MapBaseView, ABC):
         self.sprite = RailroadSwitchSprite(self.map_id, self.track_param_1, self.track_param_2, self.switch_type,
                                            parent_viewport=self.viewport)
         self.sprite.on_update_texture(self.images[self.current_position])
+        self.on_append_window_handlers()
 
     @final
     @view_is_not_active

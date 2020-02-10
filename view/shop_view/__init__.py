@@ -23,6 +23,7 @@ class ShopView(MapBaseView, ABC):
         self.close_shop_details_button = CloseShopDetailsButton(on_click_action=on_close_shop_details,
                                                                 parent_viewport=self.viewport)
         self.buttons = [self.close_shop_details_button, ]
+        self.on_append_window_handlers()
 
     @final
     @view_is_not_active
@@ -47,8 +48,6 @@ class ShopView(MapBaseView, ABC):
         super().on_resize(width, height)
         self.shader_sprite.on_change_screen_resolution(self.screen_resolution)
         self.title_label.on_change_screen_resolution(self.screen_resolution)
-        for b in self.buttons:
-            b.on_change_screen_resolution(self.screen_resolution)
 
     @final
     def on_update_opacity(self, new_opacity):

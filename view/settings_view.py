@@ -105,6 +105,7 @@ class SettingsView(AppBaseView):
                         *self.screen_resolution_control.buttons, *self.display_fps_checkbox.buttons,
                         *self.fade_animations_checkbox.buttons, *self.clock_24h_checkbox.buttons,
                         *self.notifications_checkbox_group.buttons]
+        self.on_append_window_handlers()
         self.shader_sprite = SettingsViewShaderSprite(view=self)
 
     @view_is_not_active
@@ -169,8 +170,6 @@ class SettingsView(AppBaseView):
         self.fade_animations_checkbox.on_change_screen_resolution(self.screen_resolution)
         self.clock_24h_checkbox.on_change_screen_resolution(self.screen_resolution)
         self.notifications_checkbox_group.on_change_screen_resolution(self.screen_resolution)
-        for b in self.buttons:
-            b.on_change_screen_resolution(self.screen_resolution)
 
     def on_update_opacity(self, new_opacity):
         super().on_update_opacity(new_opacity)

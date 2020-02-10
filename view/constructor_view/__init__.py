@@ -60,6 +60,7 @@ class ConstructorView(MapBaseView, ABC):
             )
             self.buttons.extend(environment_cells[j].buttons)
 
+        self.on_append_window_handlers()
         self.constructor_cells = [track_cells, environment_cells]
         USER_DB_CURSOR.execute('''SELECT money_target_activated FROM constructor WHERE map_id = ?''',
                                (self.map_id, ))
@@ -181,8 +182,6 @@ class ConstructorView(MapBaseView, ABC):
 
         self.no_more_tracks_available_label.on_change_screen_resolution(self.screen_resolution)
         self.no_more_tiers_available_label.on_change_screen_resolution(self.screen_resolution)
-        for b in self.buttons:
-            b.on_change_screen_resolution(self.screen_resolution)
 
     @final
     def on_update_opacity(self, new_opacity):

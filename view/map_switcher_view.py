@@ -30,13 +30,15 @@ class MapSwitcherView(GameBaseView):
         self.title_label = MapSwitcherTitleLabel(parent_viewport=self.viewport)
         self.close_map_switcher_button = CloseMapSwitcherButton(on_click_action=on_close_map_switcher,
                                                                 parent_viewport=self.viewport)
-        self.buttons = [self.close_map_switcher_button, ]
         self.map_switcher_cells = [PassengerMapSwitcherCell(on_buy_map, on_switch_map, None, None,
                                                             parent_viewport=self.viewport),
                                    FreightMapSwitcherCell(on_buy_map, on_switch_map, None, None,
                                                           parent_viewport=self.viewport)]
+        self.buttons = [self.close_map_switcher_button, ]
         for c in self.map_switcher_cells:
             self.buttons.extend(c.buttons)
+
+        self.on_append_window_handlers()
 
     @view_is_not_active
     def on_activate(self):
@@ -69,9 +71,6 @@ class MapSwitcherView(GameBaseView):
         self.title_label.on_change_screen_resolution(self.screen_resolution)
         for c in self.map_switcher_cells:
             c.on_change_screen_resolution(self.screen_resolution)
-
-        for b in self.buttons:
-            b.on_change_screen_resolution(self.screen_resolution)
 
     def on_update_opacity(self, new_opacity):
         super().on_update_opacity(new_opacity)

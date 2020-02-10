@@ -62,6 +62,7 @@ class GameView(GameBaseView):
                                                               parent_viewport=self.viewport)
         self.buttons = [self.pause_game_button, self.resume_game_button, self.open_settings_button,
                         self.open_map_switcher_button]
+        self.on_append_window_handlers()
         self.main_clock_label_24h = MainClockLabel24H(parent_viewport=self.viewport)
         self.main_clock_label_12h = MainClockLabel12H(parent_viewport=self.viewport)
         self.exp_percent = 0
@@ -128,8 +129,6 @@ class GameView(GameBaseView):
         self.shader_sprite.on_change_screen_resolution(self.screen_resolution)
         self.main_clock_label_24h.on_change_screen_resolution(self.screen_resolution)
         self.main_clock_label_12h.on_change_screen_resolution(self.screen_resolution)
-        for b in self.buttons:
-            b.on_change_screen_resolution(self.screen_resolution)
 
     def on_update_clock_state(self, clock_24h_enabled):
         super().on_update_clock_state(clock_24h_enabled)

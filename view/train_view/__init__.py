@@ -20,6 +20,7 @@ class TrainView(MapBaseView, ABC):
         self.car_image_collection = None
         self.state = None
         self.cars = None
+        self.on_append_window_handlers()
 
     def on_train_setup(self):
         USER_DB_CURSOR.execute('''SELECT cars, state, direction, car_image_collection 

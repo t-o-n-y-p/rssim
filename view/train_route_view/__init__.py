@@ -8,6 +8,7 @@ class TrainRouteView(MapBaseView, ABC):
         super().__init__(controller, map_id,
                          logger=getLogger(f'root.app.game.map.{map_id}.train_route.{track}.{train_route}.view'))
         self.track, self.train_route = track, train_route
+        self.on_append_window_handlers()
 
     @final
     @view_is_not_active

@@ -111,6 +111,14 @@ class Button(ABC):
         self.batch = batch
         self.camera = camera
 
+    @abstractmethod
+    def get_position(self):
+        pass
+
+    @abstractmethod
+    def get_size(self):
+        pass
+
     @final
     @button_is_not_activated
     def on_activate(self, instant=False):
@@ -186,29 +194,6 @@ class Button(ABC):
                                         group=GROUPS['button_text'])
         else:
             self.text_label.color = (*GREY_RGB, self.opacity)
-
-    @final
-    @button_is_activated_or_disabled
-    def on_move(self):
-        if self.vertex_list is not None:
-            # move the button background to the new position
-            # 2 pixels are left for red button border,
-            # that's why background position starts from (button_position + 2)
-            self.vertex_list.vertices = (self.position[0] + 2, self.position[1] + 2,
-                                         self.position[0] + self.button_size[0] - 2, self.position[1] + 2,
-                                         self.position[0] + self.button_size[0] - 2,
-                                         self.position[1] + self.button_size[1] - 2,
-                                         self.position[0] + 2, self.position[1] + self.button_size[1] - 2)
-        # move the text label to the center of the button
-        if self.text_label is not None:
-            self.text_label.x = self.position[0] + self.button_size[0] // 2
-            self.text_label.y = self.position[1] + self.button_size[1] // 2
-
-    @final
-    def on_resize(self):
-        self.font_size = int(self.base_font_size_property * min(self.button_size))
-        if self.text_label is not None:
-            self.text_label.font_size = self.font_size
 
     @final
     @button_is_activated
@@ -306,9 +291,6 @@ class Button(ABC):
     def on_update_current_locale(self, new_locale):
         pass
 
-    def on_change_screen_resolution(self, screen_resolution):
-        pass
-
 
 class UIButton(Button, ABC):
     def __init__(self, logger, parent_viewport):
@@ -316,26 +298,28 @@ class UIButton(Button, ABC):
         self.parent_viewport = parent_viewport
         self.screen_resolution = (1280, 720)
 
-    @abstractmethod
-    def get_position(self):
-        pass
-
-    @abstractmethod
-    def get_size(self):
-        pass
-
     @final
-    def on_change_screen_resolution(self, screen_resolution):
-        self.screen_resolution = screen_resolution
-        self.position = self.get_position()
+    def on_resize(self, width, height):
+        self.screen_resolution = width, height
         self.button_size = self.get_size()
-        self.on_move()
-        self.on_resize()
-
-    @final
-    def on_position_changed(self):
+        self.font_size = int(self.base_font_size_property * min(self.button_size))
         self.position = self.get_position()
-        self.on_move()
+        if self.vertex_list is not None:
+            # move the button background to the new position
+            # 2 pixels are left for red button border,
+            # that's why background position starts from (button_position + 2)
+            self.vertex_list.vertices = (self.position[0] + 2, self.position[1] + 2,
+                                         self.position[0] + self.button_size[0] - 2, self.position[1] + 2,
+                                         self.position[0] + self.button_size[0] - 2,
+                                         self.position[1] + self.button_size[1] - 2,
+                                         self.position[0] + 2, self.position[1] + self.button_size[1] - 2)
+        # move the text label to the center of the button
+        if self.text_label is not None:
+            self.text_label.begin_update()
+            self.text_label.x = self.position[0] + self.button_size[0] // 2
+            self.text_label.y = self.position[1] + self.button_size[1] // 2
+            self.text_label.font_size = self.font_size
+            self.text_label.end_update()
 
 
 class MapButton(Button, ABC):
@@ -343,15 +327,9 @@ class MapButton(Button, ABC):
         super().__init__(batch=BATCHES['main_batch'], camera=MAP_CAMERA, logger=logger)
         self.map_id = map_id
 
-    @abstractmethod
-    def get_position(self):
-        pass
-
-    @abstractmethod
-    def get_size(self):
-        pass
-
     @final
     def on_change_scale(self):
         self.button_size = self.get_size()
-        self.on_resize()
+        self.font_size = int(self.base_font_size_property * min(self.button_size))
+        if self.text_label is not None:
+            self.text_label.font_size = self.font_size

@@ -17,6 +17,7 @@ class LicenseView(AppBaseView):
         self.license_page_control = LicensePageControl(parent_viewport=self.viewport)
         self.close_license_button = CloseLicenseButton(on_click_action=on_close_license, parent_viewport=self.viewport)
         self.buttons = [*self.license_page_control.buttons, self.close_license_button]
+        self.on_append_window_handlers()
         self.close_license_label = CloseLicenseLabel(parent_viewport=self.viewport)
         self.shader_sprite = LicenseViewShaderSprite(view=self)
         self.on_mouse_scroll_handlers.extend(self.license_page_control.on_mouse_scroll_handlers)
@@ -48,8 +49,6 @@ class LicenseView(AppBaseView):
         self.shader_sprite.on_change_screen_resolution(self.screen_resolution)
         self.close_license_label.on_change_screen_resolution(self.screen_resolution)
         self.license_page_control.on_change_screen_resolution(self.screen_resolution)
-        for b in self.buttons:
-            b.on_change_screen_resolution(self.screen_resolution)
 
     def on_update_opacity(self, new_opacity):
         super().on_update_opacity(new_opacity)

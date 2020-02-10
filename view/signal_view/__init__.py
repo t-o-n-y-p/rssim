@@ -15,6 +15,7 @@ class SignalView(MapBaseView, ABC):
                                (self.track, self.base_route, self.map_id))
         self.state, self.locked = USER_DB_CURSOR.fetchone()
         self.locked = bool(self.locked)
+        self.on_append_window_handlers()
 
     @final
     @view_is_not_active

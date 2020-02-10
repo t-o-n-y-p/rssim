@@ -40,6 +40,7 @@ class CrossoverView(MapBaseView, ABC):
         self.sprite = CrossoverSprite(self.map_id, self.track_param_1, self.track_param_2, self.crossover_type,
                                       parent_viewport=self.viewport)
         self.sprite.on_update_texture(self.images[self.current_position_1][self.current_position_2])
+        self.on_append_window_handlers()
 
     @final
     @view_is_not_active

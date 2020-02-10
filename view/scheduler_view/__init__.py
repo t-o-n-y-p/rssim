@@ -23,6 +23,7 @@ class SchedulerView(MapBaseView, ABC):
         self.close_schedule_button = CloseScheduleButton(on_click_action=on_close_schedule,
                                                          parent_viewport=self.viewport)
         self.buttons.append(self.close_schedule_button)
+        self.on_append_window_handlers()
         self.schedule_rows = []
         for i in range(SCHEDULE_COLUMNS):
             column = []
@@ -79,9 +80,6 @@ class SchedulerView(MapBaseView, ABC):
         for i in range(SCHEDULE_COLUMNS):
             for j in range(SCHEDULE_ROWS):
                 self.schedule_rows[i][j].on_change_screen_resolution(self.screen_resolution)
-
-        for b in self.buttons:
-            b.on_change_screen_resolution(self.screen_resolution)
 
     @final
     def on_update_clock_state(self, clock_24h_enabled):

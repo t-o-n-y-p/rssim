@@ -1,5 +1,4 @@
 from logging import getLogger
-from hashlib import sha512
 
 from view import *
 from database import BONUS_CODE_MATRIX
@@ -31,6 +30,7 @@ class BonusCodeActivationView(AppBaseView):
             = CancelBonusCodeActivationButton(on_click_action=on_cancel_bonus_code_activation,
                                               parent_viewport=self.viewport)
         self.buttons = [self.activate_bonus_code_button, self.cancel_bonus_code_activation_button]
+        self.on_append_window_handlers()
         self.shader_sprite = BonusCodeViewShaderSprite(view=self)
         self.bonus_code_matrix = BONUS_CODE_MATRIX
         self.bonus_code_info_cell = BonusCodeInfoCell(parent_viewport=self.viewport)
@@ -63,8 +63,6 @@ class BonusCodeActivationView(AppBaseView):
         super().on_resize(width, height)
         self.bonus_code_interactive_label.on_change_screen_resolution(self.screen_resolution)
         self.bonus_code_info_cell.on_change_screen_resolution(self.screen_resolution)
-        for b in self.buttons:
-            b.on_change_screen_resolution(self.screen_resolution)
 
     def on_update_opacity(self, new_opacity):
         super().on_update_opacity(new_opacity)

@@ -46,6 +46,8 @@ class ShopConstructorView(MapBaseView, ABC):
                                                      parent_viewport=self.viewport)
             self.buttons.append(self.shop_stage_cells[i].build_button)
 
+        self.on_append_window_handlers()
+
     @final
     @view_is_not_active
     def on_activate(self):
@@ -113,9 +115,6 @@ class ShopConstructorView(MapBaseView, ABC):
         self.shop_storage_progress_bar.on_change_screen_resolution(self.screen_resolution)
         for stage_cell in self.shop_stage_cells:
             self.shop_stage_cells[stage_cell].on_change_screen_resolution(self.screen_resolution)
-
-        for b in self.buttons:
-            b.on_change_screen_resolution(self.screen_resolution)
 
     @final
     def on_update_opacity(self, new_opacity):

@@ -39,6 +39,7 @@ class MainMenuView(AppBaseView):
         self.enter_code_button = EnterCodeButton(on_click_action=on_open_bonus_code, parent_viewport=self.viewport)
         self.buttons = [self.create_station_button, self.back_to_the_station_button, self.open_license_button,
                         self.open_settings_button, self.enter_code_button]
+        self.on_append_window_handlers()
         self.open_license_label = OpenLicenseLabel(parent_viewport=self.viewport)
         self.shader_sprite = MainMenuViewShaderSprite(view=self)
 
@@ -80,8 +81,6 @@ class MainMenuView(AppBaseView):
         super().on_resize(width, height)
         self.shader_sprite.on_change_screen_resolution(self.screen_resolution)
         self.open_license_label.on_change_screen_resolution(self.screen_resolution)
-        for b in self.buttons:
-            b.on_change_screen_resolution(self.screen_resolution)
 
     def on_update_opacity(self, new_opacity):
         super().on_update_opacity(new_opacity)

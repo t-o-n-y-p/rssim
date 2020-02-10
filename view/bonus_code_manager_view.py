@@ -18,6 +18,7 @@ class BonusCodeManagerView(GameBaseView):
         self.money_bonus_percent_label = MoneyBonusValuePercentLabel(parent_viewport=self.viewport)
         self.exp_bonus_placeholder_label = ExpBonusPlaceholderLabel(parent_viewport=self.viewport)
         self.money_bonus_placeholder_label = MoneyBonusPlaceholderLabel(parent_viewport=self.viewport)
+        self.on_append_window_handlers()
 
     @view_is_not_active
     def on_activate(self):

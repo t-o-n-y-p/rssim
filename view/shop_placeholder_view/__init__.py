@@ -17,6 +17,7 @@ class ShopPlaceholderView(MapBaseView, ABC):
                                     WHERE map_id = ? AND shop_id = ?''', (self.map_id, self.shop_id))
         self.level_required = CONFIG_DB_CURSOR.fetchone()[0]
         self.description_label.on_update_args((self.level_required, ))
+        self.on_append_window_handlers()
 
     @final
     @view_is_not_active
