@@ -5,7 +5,7 @@ from traceback import print_tb
 from ctypes import windll
 
 from exceptions import *
-from rssim_core.rssim_core import Launcher
+from rssim_core import Launcher
 from ui import WINDOW
 
 
