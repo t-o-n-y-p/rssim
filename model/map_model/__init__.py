@@ -18,7 +18,7 @@ class MapModel(MapBaseModel, ABC):
         self.unlocked_car_collections = [int(c) for c in USER_DB_CURSOR.fetchone()[0].split(',')]
         USER_DB_CURSOR.execute('''SELECT last_known_base_offset FROM map_position_settings WHERE map_id = ?''',
                                (self.map_id, ))
-        self.last_known_base_offset = [float(p) for p in USER_DB_CURSOR.fetchone()[0].split(',')]
+        self.last_known_base_offset = [int(p) for p in USER_DB_CURSOR.fetchone()[0].split(',')]
         USER_DB_CURSOR.execute('''SELECT last_known_zoom FROM map_position_settings WHERE map_id = ?''',
                                (self.map_id, ))
         self.last_known_zoom = USER_DB_CURSOR.fetchone()[0]

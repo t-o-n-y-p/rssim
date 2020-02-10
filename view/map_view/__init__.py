@@ -41,7 +41,7 @@ class MapView(MapBaseView, ABC):
         self.mini_map_timer = 0.0
         USER_DB_CURSOR.execute('''SELECT last_known_base_offset FROM map_position_settings WHERE map_id = ?''',
                                (self.map_id,))
-        self.base_offset = [float(p) for p in USER_DB_CURSOR.fetchone()[0].split(',')]
+        self.base_offset = [int(p) for p in USER_DB_CURSOR.fetchone()[0].split(',')]
         USER_DB_CURSOR.execute('''SELECT last_known_zoom FROM map_position_settings 
                                   WHERE map_id IN (SELECT last_known_map_id FROM graphics)''')
         self.zoom = USER_DB_CURSOR.fetchone()[0]
@@ -119,9 +119,9 @@ class MapView(MapBaseView, ABC):
         super().on_resize(width, height)
         self.base_offset_lower_left_limit = (self.viewport.x1,
                                              self.viewport.y1 + get_bottom_bar_height(self.screen_resolution))
-        self.base_offset_upper_right_limit = (self.viewport.x2 - MAP_WIDTH * self.zoom,
-                                              self.viewport.y2 - MAP_HEIGHT * self.zoom
-                                              - get_top_bar_height(self.screen_resolution))
+        self.base_offset_upper_right_limit = (int(self.viewport.x2 - MAP_WIDTH * self.zoom),
+                                              int(self.viewport.y2 - MAP_HEIGHT * self.zoom
+                                                  - get_top_bar_height(self.screen_resolution)))
         self.shader_sprite.on_change_screen_resolution(self.screen_resolution)
         self.open_schedule_button.on_change_screen_resolution(self.screen_resolution)
         self.open_constructor_button.on_change_screen_resolution(self.screen_resolution)
@@ -177,9 +177,9 @@ class MapView(MapBaseView, ABC):
         self.controller.on_activate_mini_map()
         MAP_CAMERA.zoom -= scroll_y * MAP_ZOOM_STEP
         self.on_recalculate_base_offset_for_new_zoom(MAP_CAMERA.zoom)
-        self.base_offset_upper_right_limit = (self.viewport.x2 - MAP_WIDTH * MAP_CAMERA.zoom,
-                                              self.viewport.y2 - MAP_HEIGHT * MAP_CAMERA.zoom
-                                              - get_top_bar_height(self.screen_resolution))
+        self.base_offset_upper_right_limit = (int(self.viewport.x2 - MAP_WIDTH * MAP_CAMERA.zoom),
+                                              int(self.viewport.y2 - MAP_HEIGHT * MAP_CAMERA.zoom
+                                                  - get_top_bar_height(self.screen_resolution)))
         self.check_base_offset_limits()
         self.controller.on_save_and_commit_last_known_base_offset()
         self.zoom = MAP_CAMERA.zoom
@@ -250,8 +250,8 @@ class MapView(MapBaseView, ABC):
     def on_recalculate_base_offset_for_new_zoom(self, new_zoom):
         multiplier = new_zoom / self.zoom
         self.base_offset = (
-            multiplier * self.base_offset[0] - (multiplier - 1) * (self.viewport.x1 + self.viewport.x2) // 2,
-            multiplier * self.base_offset[1] - (multiplier - 1) * (self.viewport.y1 + self.viewport.y2) // 2
+            int(multiplier * self.base_offset[0] - (multiplier - 1) * (self.viewport.x1 + self.viewport.x2) // 2),
+            int(multiplier * self.base_offset[1] - (multiplier - 1) * (self.viewport.y1 + self.viewport.y2) // 2)
         )
 
     @final
