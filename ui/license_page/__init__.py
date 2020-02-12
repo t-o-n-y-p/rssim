@@ -29,7 +29,7 @@ class LicensePage(ABC):
         self.logger = logger
         self.parent_viewport = parent_viewport
         self.viewport = Viewport()
-        self.screen_resolution = (1280, 720)
+        self.screen_resolution = (0, 0)
         USER_DB_CURSOR.execute('SELECT current_locale FROM i18n')
         self.current_locale = USER_DB_CURSOR.fetchone()[0]
         self.license_text = ''
