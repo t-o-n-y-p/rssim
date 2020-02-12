@@ -296,9 +296,10 @@ class UIButton(Button, ABC):
     def __init__(self, logger, parent_viewport):
         super().__init__(batch=BATCHES['ui_batch'], camera=UI_CAMERA, logger=logger)
         self.parent_viewport = parent_viewport
-        self.screen_resolution = (1280, 720)
+        self.screen_resolution = (0, 0)
 
     @final
+    @window_size_has_changed
     def on_resize(self, width, height):
         self.screen_resolution = width, height
         self.button_size = self.get_size()

@@ -36,6 +36,7 @@ class LicensePage(ABC):
         self.document = None
         self.license_layout = None
         self.opacity = 0
+        self.on_resize_handlers = [self.on_resize, ]
 
     @final
     def on_activate(self):
@@ -67,8 +68,9 @@ class LicensePage(ABC):
             self.license_layout = None
 
     @final
-    def on_change_screen_resolution(self, screen_resolution):
-        self.screen_resolution = screen_resolution
+    @window_size_has_changed
+    def on_resize(self, width, height):
+        self.screen_resolution = width, height
         self.viewport.x1, self.viewport.x2 = self.parent_viewport.x1, self.parent_viewport.x2
         self.viewport.y1 = self.parent_viewport.y1 + get_bottom_bar_height(self.screen_resolution)
         self.viewport.y2 = self.parent_viewport.y2
@@ -86,7 +88,7 @@ class LicensePage(ABC):
     @final
     @page_is_active
     @cursor_is_inside_the_text_box
-    def handle_mouse_scroll(self, x, y, scroll_x, scroll_y):
+    def on_mouse_scroll(self, x, y, scroll_x, scroll_y):
         self.license_layout.view_y += scroll_y * self.document.get_style('font_size')
 
     @final

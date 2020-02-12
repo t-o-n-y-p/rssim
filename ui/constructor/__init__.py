@@ -1,7 +1,6 @@
 from abc import ABC, abstractmethod
 from logging import getLogger
 
-from database import USER_DB_CURSOR
 from ui import *
 from ui.button import create_two_state_button
 from ui.button.build_construction_button import BuildConstructionButton
@@ -90,6 +89,10 @@ class ConstructorCell(ABC):
         self.money = USER_DB_CURSOR.fetchone()[0]
         self.money_target_activated = False
         self.opacity = 0
+        self.on_resize_handlers = [
+            self.on_resize, self.locked_label.on_resize, self.level_required_label.on_resize,
+            self.under_construction_days_label.on_resize, self.under_construction_hours_minutes_label.on_resize
+        ]
 
     @final
     @cell_is_active
@@ -174,8 +177,9 @@ class ConstructorCell(ABC):
             b.on_deactivate()
 
     @final
-    def on_change_screen_resolution(self, screen_resolution):
-        self.screen_resolution = screen_resolution
+    @window_size_has_changed
+    def on_resize(self, width, height):
+        self.screen_resolution = width, height
         bottom_bar_height = get_bottom_bar_height(self.screen_resolution)
         inner_area_rect = get_inner_area_rect(self.screen_resolution)
         self.viewport.x1 = inner_area_rect[0] \
@@ -191,16 +195,6 @@ class ConstructorCell(ABC):
                                * (bottom_bar_height + bottom_bar_height // 4)
 
         self.viewport.y2 = self.viewport.y1 + bottom_bar_height
-        self.locked_label.on_change_screen_resolution(self.screen_resolution)
-        self.title_label.on_change_screen_resolution(self.screen_resolution)
-        self.level_required_label.on_change_screen_resolution(self.screen_resolution)
-        self.previous_entity_required_label.on_change_screen_resolution(self.screen_resolution)
-        if self.environment_required_label is not None:
-            self.environment_required_label.on_change_screen_resolution(self.screen_resolution)
-
-        self.unlock_available_label.on_change_screen_resolution(self.screen_resolution)
-        self.under_construction_days_label.on_change_screen_resolution(self.screen_resolution)
-        self.under_construction_hours_minutes_label.on_change_screen_resolution(self.screen_resolution)
 
     @final
     def on_update_current_locale(self, new_locale):

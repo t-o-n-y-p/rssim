@@ -51,6 +51,8 @@ class MapView(MapBaseView, ABC):
         self.open_constructor_button = OpenConstructorButton(on_click_action=on_open_constructor,
                                                              parent_viewport=self.viewport)
         self.buttons = [self.open_schedule_button, self.open_constructor_button]
+        self.shader_sprite = MapViewShaderSprite(view=self)
+        self.on_resize_handlers.append(self.shader_sprite.on_resize)
         self.on_append_window_handlers()
         self.shop_buttons = []
         CONFIG_DB_CURSOR.execute('''SELECT COUNT(*) FROM shops_config WHERE map_id = ?''', (self.map_id, ))
@@ -74,7 +76,6 @@ class MapView(MapBaseView, ABC):
         self.on_mouse_release_handlers.append(self.on_mouse_release)
         self.on_mouse_drag_handlers.append(self.on_mouse_drag)
         self.on_mouse_scroll_handlers.append(self.on_mouse_scroll)
-        self.shader_sprite = MapViewShaderSprite(view=self)
         USER_DB_CURSOR.execute('''SELECT SUM(t.constructions_locked) FROM (
                                       SELECT COUNT(track_number) AS constructions_locked FROM tracks 
                                       WHERE locked = 1 AND map_id = ?
@@ -123,7 +124,6 @@ class MapView(MapBaseView, ABC):
         self.base_offset_upper_right_limit = (int(self.viewport.x2 - MAP_WIDTH * self.zoom),
                                               int(self.viewport.y2 - MAP_HEIGHT * self.zoom
                                                   - get_top_bar_height(self.screen_resolution)))
-        self.shader_sprite.on_change_screen_resolution(self.screen_resolution)
         self.check_base_offset_limits()
         self.controller.on_save_and_commit_last_known_base_offset()
 

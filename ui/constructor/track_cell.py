@@ -16,6 +16,10 @@ class TrackCell(ConstructorCell):
         self.previous_entity_required_label = PreviousTrackRequiredLabel(parent_viewport=self.viewport)
         self.environment_required_label = EnvironmentRequiredLabel(parent_viewport=self.viewport)
         self.unlock_available_label = TrackUnlockAvailableLabel(parent_viewport=self.viewport)
+        self.on_resize_handlers.extend([
+            self.title_label.on_resize, self.previous_entity_required_label.on_resize,
+            self.environment_required_label.on_resize, self.unlock_available_label.on_resize
+        ])
 
     def on_update_description_label(self):
         if self.data[UNDER_CONSTRUCTION]:

@@ -12,3 +12,6 @@ class ScreenResolutionControl(EnumValueControl):
                          logger=getLogger('root.app.settings.view.enum_value_control.screen_resolution_control'))
         self.description_label = ScreenResolutionControlDescriptionLabel(parent_viewport=self.viewport)
         self.temp_value_label = TempScreenResolutionValueLabel(parent_viewport=self.viewport)
+        self.on_resize_handlers.extend([
+            self.description_label.on_resize, self.temp_value_label.on_resize
+        ])

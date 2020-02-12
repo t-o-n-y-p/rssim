@@ -18,7 +18,7 @@ class RectangleProgressBar(ABC):
     def __init__(self, logger, parent_viewport):
         self.logger = logger
         self.is_activated = False
-        self.screen_resolution = (1280, 720)
+        self.screen_resolution = (0, 0)
         self.parent_viewport = parent_viewport
         self.viewport = Viewport()
         self.inactive_image = None
@@ -30,6 +30,7 @@ class RectangleProgressBar(ABC):
         USER_DB_CURSOR.execute('SELECT current_locale FROM i18n')
         self.current_locale = USER_DB_CURSOR.fetchone()[0]
         self.current_percent = 0
+        self.on_resize_handlers = [self.on_resize, ]
 
     @abstractmethod
     def get_position(self):
@@ -60,12 +61,12 @@ class RectangleProgressBar(ABC):
         self.is_activated = False
 
     @final
-    def on_change_screen_resolution(self, screen_resolution):
-        self.screen_resolution = screen_resolution
+    @window_size_has_changed
+    def on_resize(self, width, height):
+        self.screen_resolution = width, height
         self.viewport.x1, self.viewport.y1 = self.get_position()
         self.viewport.x2 = self.viewport.x1 + int(self.inactive_image.width * self.get_scale())
         self.viewport.y2 = self.viewport.y1 + int(self.inactive_image.height * self.get_scale())
-        self.text_label.on_change_screen_resolution(self.screen_resolution)
         if self.inactive_sprite is not None:
             self.inactive_sprite.position = (self.viewport.x1, self.viewport.y1)
             self.inactive_sprite.scale = self.get_scale()

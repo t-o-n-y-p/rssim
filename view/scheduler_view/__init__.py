@@ -23,16 +23,22 @@ class SchedulerView(MapBaseView, ABC):
         self.close_schedule_button = CloseScheduleButton(on_click_action=on_close_schedule,
                                                          parent_viewport=self.viewport)
         self.buttons.append(self.close_schedule_button)
-        self.on_append_window_handlers()
         self.schedule_rows = []
         for i in range(SCHEDULE_COLUMNS):
             column = []
             for j in range(SCHEDULE_ROWS):
-                column.append(ScheduleRow(self.map_id, i, j, parent_viewport=self.viewport))
+                new_schedule_row = ScheduleRow(self.map_id, i, j, parent_viewport=self.viewport)
+                column.append(new_schedule_row)
+                self.on_resize_handlers.extend(new_schedule_row.on_resize_handlers)
 
             self.schedule_rows.append(column)
 
         self.shader_sprite = SchedulerViewShaderSprite(view=self)
+        self.on_resize_handlers.extend([
+            self.left_schedule_caption_label.on_resize, self.right_schedule_caption_label.on_resize,
+            self.shader_sprite.on_resize
+        ])
+        self.on_append_window_handlers()
 
     @final
     @view_is_not_active
@@ -69,17 +75,6 @@ class SchedulerView(MapBaseView, ABC):
         for i in range(SCHEDULE_COLUMNS):
             for j in range(SCHEDULE_ROWS):
                 self.schedule_rows[i][j].on_update_current_locale(self.current_locale)
-
-    @final
-    @window_size_has_changed
-    def on_resize(self, width, height):
-        super().on_resize(width, height)
-        self.shader_sprite.on_change_screen_resolution(self.screen_resolution)
-        self.left_schedule_caption_label.on_change_screen_resolution(self.screen_resolution)
-        self.right_schedule_caption_label.on_change_screen_resolution(self.screen_resolution)
-        for i in range(SCHEDULE_COLUMNS):
-            for j in range(SCHEDULE_ROWS):
-                self.schedule_rows[i][j].on_change_screen_resolution(self.screen_resolution)
 
     @final
     def on_update_clock_state(self, clock_24h_enabled):

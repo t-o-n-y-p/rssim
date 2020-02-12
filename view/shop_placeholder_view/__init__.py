@@ -17,6 +17,9 @@ class ShopPlaceholderView(MapBaseView, ABC):
                                     WHERE map_id = ? AND shop_id = ?''', (self.map_id, self.shop_id))
         self.level_required = CONFIG_DB_CURSOR.fetchone()[0]
         self.description_label.on_update_args((self.level_required, ))
+        self.on_resize_handlers.extend([
+            self.lock_label.on_resize, self.description_label.on_resize
+        ])
         self.on_append_window_handlers()
 
     @final
@@ -35,13 +38,6 @@ class ShopPlaceholderView(MapBaseView, ABC):
     def on_update_current_locale(self, new_locale):
         super().on_update_current_locale(new_locale)
         self.description_label.on_update_current_locale(self.current_locale)
-
-    @final
-    @window_size_has_changed
-    def on_resize(self, width, height):
-        super().on_resize(width, height)
-        self.lock_label.on_change_screen_resolution(self.screen_resolution)
-        self.description_label.on_change_screen_resolution(self.screen_resolution)
 
     @final
     def on_update_opacity(self, new_opacity):

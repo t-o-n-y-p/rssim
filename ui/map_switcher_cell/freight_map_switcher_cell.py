@@ -18,3 +18,6 @@ class FreightMapSwitcherCell(MapSwitcherCell):
         self.title_label = FreightMapCellTitleLabel(parent_viewport=self.viewport)
         self.icon_labels = [FreightMapCellIcon0Label(parent_viewport=self.viewport),
                             FreightMapCellIcon1Label(parent_viewport=self.viewport)]
+        self.on_resize_handlers.append(self.title_label.on_resize)
+        for label in self.icon_labels:
+            self.on_resize_handlers.append(label.on_resize)

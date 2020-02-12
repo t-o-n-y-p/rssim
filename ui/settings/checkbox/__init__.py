@@ -32,10 +32,11 @@ class Checkbox(ABC):
             = create_two_state_button(CheckedCheckboxButton(on_click_action=on_uncheck, parent_viewport=self.viewport),
                                       UncheckedCheckboxButton(on_click_action=on_check, parent_viewport=self.viewport))
         self.buttons = [self.checked_checkbox_button, self.unchecked_checkbox_button]
-        self.screen_resolution = (1280, 720)
+        self.screen_resolution = (0, 0)
         self.description_label = None
         self.is_activated = False
         self.opacity = 0
+        self.on_resize_handlers = [self.on_resize, ]
 
     @final
     def on_update_opacity(self, new_opacity):
@@ -61,8 +62,9 @@ class Checkbox(ABC):
             b.on_deactivate()
 
     @final
-    def on_change_screen_resolution(self, screen_resolution):
-        self.screen_resolution = screen_resolution
+    @window_size_has_changed
+    def on_resize(self, width, height):
+        self.screen_resolution = width, height
         self.viewport.x1 = self.parent_viewport.x1 \
                            + (self.column + 1) * (self.parent_viewport.x2 - self.parent_viewport.x1) // 4
         self.viewport.x2 = self.viewport.x1 + (self.parent_viewport.x2 - self.parent_viewport.x1) // 2
@@ -72,7 +74,6 @@ class Checkbox(ABC):
                            - get_top_bar_height(self.screen_resolution) // 2
         self.viewport.y2 = mid_line + self.row * (5 * get_top_bar_height(self.screen_resolution) // 8) \
                            + get_top_bar_height(self.screen_resolution) // 2
-        self.description_label.on_change_screen_resolution(self.screen_resolution)
 
     @final
     def on_update_current_locale(self, new_locale):

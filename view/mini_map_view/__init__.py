@@ -16,6 +16,9 @@ class MiniMapView(MapBaseView, ABC):
         self.mini_map_sprite = MiniMapSprite(map_id=self.map_id, parent_viewport=self.viewport)
         self.mini_environment_sprite = MiniEnvironmentSprite(map_id=self.map_id, parent_viewport=self.viewport)
         self.shader_sprite = MiniMapViewShaderSprite(view=self)
+        self.on_resize_handlers.extend([
+            self.shader_sprite.on_resize, self.mini_map_sprite.on_resize, self.mini_environment_sprite.on_resize
+        ])
         self.on_append_window_handlers()
 
     @final
@@ -30,14 +33,6 @@ class MiniMapView(MapBaseView, ABC):
     @view_is_active
     def on_deactivate(self):
         super().on_deactivate()
-
-    @final
-    @window_size_has_changed
-    def on_resize(self, width, height):
-        super().on_resize(width, height)
-        self.shader_sprite.on_change_screen_resolution(self.screen_resolution)
-        self.mini_map_sprite.on_change_screen_resolution(self.screen_resolution)
-        self.mini_environment_sprite.on_change_screen_resolution(self.screen_resolution)
 
     @final
     def on_update_opacity(self, new_opacity):

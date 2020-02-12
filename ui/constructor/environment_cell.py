@@ -14,6 +14,10 @@ class EnvironmentCell(ConstructorCell):
         self.title_label = EnvironmentCellTitleLabel(parent_viewport=self.viewport)
         self.previous_entity_required_label = PreviousEnvironmentRequiredLabel(parent_viewport=self.viewport)
         self.unlock_available_label = EnvironmentUnlockAvailableLabel(parent_viewport=self.viewport)
+        self.on_resize_handlers.extend([
+            self.title_label.on_resize, self.previous_entity_required_label.on_resize,
+            self.unlock_available_label.on_resize
+        ])
 
     def on_update_description_label(self):
         if self.data[UNDER_CONSTRUCTION]:

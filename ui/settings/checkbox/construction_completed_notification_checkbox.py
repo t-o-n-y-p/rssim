@@ -14,3 +14,4 @@ class ConstructionCompletedNotificationCheckbox(Checkbox):
                          ))
         self.description_label \
             = ConstructionCompletedNotificationCheckboxDescriptionLabel(parent_viewport=self.viewport)
+        self.on_resize_handlers.append(self.description_label.on_resize)

@@ -31,7 +31,7 @@ class ShaderSprite(ABC):
         self.top_edge = 1.0
         self.batch = BATCHES['main_frame']
         self.group = GROUPS['main_frame']
-        self.screen_resolution = (1280, 720)
+        self.screen_resolution = (0, 0)
         self.opacity = 0
 
     @abstractmethod
@@ -68,8 +68,9 @@ class ShaderSprite(ABC):
         self.shader.clear()
 
     @final
-    def on_change_screen_resolution(self, screen_resolution):
-        self.screen_resolution = screen_resolution
+    @window_size_has_changed
+    def on_resize(self, width, height):
+        self.screen_resolution = width, height
         self.bottom_edge = self.get_bottom_edge()
         self.top_edge = self.get_top_edge()
         if self.sprite is not None:

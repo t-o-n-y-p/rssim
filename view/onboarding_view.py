@@ -18,9 +18,13 @@ class OnboardingView(AppBaseView):
         self.skip_onboarding_button = SkipOnboardingButton(on_click_action=on_skip_onboarding,
                                                            parent_viewport=self.viewport)
         self.buttons = [*self.onboarding_page_control.buttons, self.skip_onboarding_button]
-        self.on_append_window_handlers()
         self.shader_sprite = OnboardingViewShaderSprite(view=self)
         self.skip_onboarding_label = SkipOnboardingLabel(parent_viewport=self.viewport)
+        self.on_resize_handlers.extend([
+            *self.onboarding_page_control.on_resize_handlers,
+            self.shader_sprite.on_resize, self.skip_onboarding_label.on_resize
+        ])
+        self.on_append_window_handlers()
 
     @view_is_not_active
     def on_activate(self):
@@ -42,13 +46,6 @@ class OnboardingView(AppBaseView):
         super().on_update_current_locale(new_locale)
         self.onboarding_page_control.on_update_current_locale(self.current_locale)
         self.skip_onboarding_label.on_update_current_locale(self.current_locale)
-
-    @window_size_has_changed
-    def on_resize(self, width, height):
-        super().on_resize(width, height)
-        self.shader_sprite.on_change_screen_resolution(self.screen_resolution)
-        self.onboarding_page_control.on_change_screen_resolution(self.screen_resolution)
-        self.skip_onboarding_label.on_change_screen_resolution(self.screen_resolution)
 
     def on_apply_shaders_and_draw_vertices(self):
         super().on_apply_shaders_and_draw_vertices()

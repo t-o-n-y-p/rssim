@@ -45,7 +45,13 @@ class ShopConstructorView(MapBaseView, ABC):
             self.shop_stage_cells[i] = ShopStageCell(stage_number=i, on_buy_stage_action=on_buy_stage_action,
                                                      parent_viewport=self.viewport)
             self.buttons.append(self.shop_stage_cells[i].build_button)
+            self.on_resize_handlers.extend(self.shop_stage_cells[i].on_resize_handlers)
 
+        self.on_resize_handlers.extend([
+            self.shader_sprite.on_resize, self.current_hourly_profit_label.on_resize,
+            self.current_exp_bonus_label.on_resize, self.hourly_profit_value_label.on_resize,
+            self.exp_bonus_value_label.on_resize, *self.shop_storage_progress_bar.on_resize_handlers
+        ])
         self.on_append_window_handlers()
 
     @final
@@ -101,20 +107,12 @@ class ShopConstructorView(MapBaseView, ABC):
     @window_size_has_changed
     def on_resize(self, width, height):
         super().on_resize(width, height)
-        self.current_hourly_profit_label.on_change_screen_resolution(self.screen_resolution)
-        self.current_exp_bonus_label.on_change_screen_resolution(self.screen_resolution)
-        self.hourly_profit_value_label.on_change_screen_resolution(self.screen_resolution)
-        self.exp_bonus_value_label.on_change_screen_resolution(self.screen_resolution)
-        self.shader_sprite.on_change_screen_resolution(self.screen_resolution)
         self.shop_stages_cells_position = (self.viewport.x1 + get_top_bar_height(self.screen_resolution) // 4,
                                            self.viewport.y1 + get_top_bar_height(self.screen_resolution) // 4)
         self.shop_stages_cells_size = ((self.viewport.x2 - self.viewport.x1)
                                        - get_top_bar_height(self.screen_resolution) // 2,
                                        3 * get_bottom_bar_height(self.screen_resolution)
                                        - get_bottom_bar_height(self.screen_resolution) // 8)
-        self.shop_storage_progress_bar.on_change_screen_resolution(self.screen_resolution)
-        for stage_cell in self.shop_stage_cells:
-            self.shop_stage_cells[stage_cell].on_change_screen_resolution(self.screen_resolution)
 
     @final
     def on_update_opacity(self, new_opacity):

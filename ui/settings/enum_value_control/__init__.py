@@ -36,7 +36,7 @@ class EnumValueControl(ABC):
         USER_DB_CURSOR.execute('SELECT current_locale FROM i18n')
         self.current_locale = USER_DB_CURSOR.fetchone()[0]
         self.on_update_state_action = on_update_state_action
-        self.screen_resolution = (1280, 720)
+        self.screen_resolution = (0, 0)
         self.description_label = None
         self.temp_value_label = None
         self.choice_state = None
@@ -47,6 +47,7 @@ class EnumValueControl(ABC):
         self.buttons = [self.increment_button, self.decrement_button]
         self.is_activated = False
         self.opacity = 0
+        self.on_resize_handlers = [self.on_resize, ]
 
     @final
     def on_activate(self):
@@ -77,8 +78,9 @@ class EnumValueControl(ABC):
             self.decrement_button.state = 'normal'
 
     @final
-    def on_change_screen_resolution(self, screen_resolution):
-        self.screen_resolution = screen_resolution
+    @window_size_has_changed
+    def on_resize(self, width, height):
+        self.screen_resolution = width, height
         self.viewport.x1 = self.parent_viewport.x1 \
                            + (self.column + 1) * (self.parent_viewport.x2 - self.parent_viewport.x1) // 4
         self.viewport.x2 = self.viewport.x1 + (self.parent_viewport.x2 - self.parent_viewport.x1) // 2
@@ -88,8 +90,6 @@ class EnumValueControl(ABC):
                            - get_top_bar_height(self.screen_resolution) // 2
         self.viewport.y2 = mid_line + self.row * (5 * get_top_bar_height(self.screen_resolution) // 8) \
                            + get_top_bar_height(self.screen_resolution) // 2
-        self.description_label.on_change_screen_resolution(self.screen_resolution)
-        self.temp_value_label.on_change_screen_resolution(self.screen_resolution)
 
     @final
     def on_update_current_locale(self, new_locale):

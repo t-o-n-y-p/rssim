@@ -44,7 +44,12 @@ class BonusCodeInfoCell:
             = BonusInfoCellConstructionTimeBonusValueLabel(parent_viewport=self.viewport)
         self.activations_title_label = ActivationsTitleLabel(parent_viewport=self.viewport)
         self.activations_value_label = ActivationsValueLabel(parent_viewport=self.viewport)
-        self.screen_resolution = (1280, 720)
+        self.on_resize_handlers = [
+            self.on_resize, self.bonus_title_label.on_resize, self.exp_bonus_value_label.on_resize,
+            self.money_bonus_value_label.on_resize, self.construction_time_bonus_value_label.on_resize,
+            self.activations_title_label.on_resize, self.activations_value_label.on_resize
+        ]
+        self.screen_resolution = (0, 0)
         self.is_activated = False
         self.opacity = 0
 
@@ -86,8 +91,9 @@ class BonusCodeInfoCell:
         self.activations_value_label.on_update_args((self.activations_left, ))
         self.activations_value_label.create()
 
-    def on_change_screen_resolution(self, screen_resolution):
-        self.screen_resolution = screen_resolution
+    @window_size_has_changed
+    def on_resize(self, width, height):
+        self.screen_resolution = width, height
         self.viewport.x1 = (self.parent_viewport.x1 + self.parent_viewport.x2) // 2 \
                            - 5 * get_top_bar_height(self.screen_resolution)
         self.viewport.x2 = (self.parent_viewport.x1 + self.parent_viewport.x2) // 2 \
@@ -100,12 +106,6 @@ class BonusCodeInfoCell:
                             + self.parent_viewport.y2 - get_top_bar_height(self.screen_resolution)) // 2\
                            - 5 * get_bottom_bar_height(self.screen_resolution) // 8 \
                            + get_bottom_bar_height(self.screen_resolution) // 2
-        self.bonus_title_label.on_change_screen_resolution(self.screen_resolution)
-        self.exp_bonus_value_label.on_change_screen_resolution(self.screen_resolution)
-        self.money_bonus_value_label.on_change_screen_resolution(self.screen_resolution)
-        self.construction_time_bonus_value_label.on_change_screen_resolution(self.screen_resolution)
-        self.activations_title_label.on_change_screen_resolution(self.screen_resolution)
-        self.activations_value_label.on_change_screen_resolution(self.screen_resolution)
 
     def on_update_current_locale(self, new_locale):
         self.current_locale = new_locale

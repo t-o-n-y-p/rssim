@@ -26,6 +26,9 @@ class OnboardingPageControl(PageControl):
                       ClockOnboardingPage(parent_viewport=self.viewport),
                       SettingsOnboardingPage(parent_viewport=self.viewport)]
         self.shader_sprite = OnboardingPageControlShaderSprite(view=self)
+        self.on_resize_handlers.append(self.shader_sprite.on_resize)
+        for p in self.pages:
+            self.on_resize_handlers.extend(p.on_resize_handlers)
 
     @shader_sprite_exists
     def on_apply_shaders_and_draw_vertices(self):

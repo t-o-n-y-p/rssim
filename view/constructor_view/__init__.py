@@ -1,6 +1,5 @@
 from logging import getLogger
 
-from database import CONSTRUCTION_STATE_MATRIX
 from view import *
 from ui import *
 from ui.constructor.track_cell import TrackCell
@@ -52,6 +51,7 @@ class ConstructorView(MapBaseView, ABC):
                           on_reset_money_target_action, parent_viewport=self.viewport)
             )
             self.buttons.extend(track_cells[j].buttons)
+            self.on_resize_handlers.extend(track_cells[j].on_resize_handlers)
 
         for j in range(CONSTRUCTOR_VIEW_ENVIRONMENT_CELLS):
             environment_cells.append(
@@ -59,8 +59,8 @@ class ConstructorView(MapBaseView, ABC):
                                 on_reset_money_target_action, parent_viewport=self.viewport)
             )
             self.buttons.extend(environment_cells[j].buttons)
+            self.on_resize_handlers.extend(environment_cells[j].on_resize_handlers)
 
-        self.on_append_window_handlers()
         self.constructor_cells = [track_cells, environment_cells]
         USER_DB_CURSOR.execute('''SELECT money_target_activated FROM constructor WHERE map_id = ?''',
                                (self.map_id, ))
@@ -73,6 +73,11 @@ class ConstructorView(MapBaseView, ABC):
             = NoMoreTracksAvailableLabel(parent_viewport=self.no_more_tracks_available_placeholder_viewport)
         self.no_more_tiers_available_label \
             = NoMoreEnvironmentAvailableLabel(parent_viewport=self.no_more_tiers_available_placeholder_viewport)
+        self.on_resize_handlers.extend([
+            self.shader_sprite.on_resize, self.no_more_tracks_available_label.on_resize,
+            self.no_more_tiers_available_label.on_resize
+        ])
+        self.on_append_window_handlers()
 
     @final
     @view_is_not_active
@@ -153,13 +158,6 @@ class ConstructorView(MapBaseView, ABC):
     @window_size_has_changed
     def on_resize(self, width, height):
         super().on_resize(width, height)
-        self.shader_sprite.on_change_screen_resolution(self.screen_resolution)
-        for j in range(CONSTRUCTOR_VIEW_TRACK_CELLS):
-            self.constructor_cells[TRACKS][j].on_change_screen_resolution(self.screen_resolution)
-
-        for j in range(CONSTRUCTOR_VIEW_ENVIRONMENT_CELLS):
-            self.constructor_cells[ENVIRONMENT][j].on_change_screen_resolution(self.screen_resolution)
-
         self.no_more_tracks_available_placeholder_viewport.x1 = self.constructor_cells[TRACKS][-1].viewport.x1
         self.no_more_tracks_available_placeholder_viewport.x2 = self.constructor_cells[TRACKS][-1].viewport.x2
         self.no_more_tracks_available_placeholder_viewport.y1 = self.constructor_cells[TRACKS][-1].viewport.y1
@@ -179,9 +177,6 @@ class ConstructorView(MapBaseView, ABC):
             ].viewport.y2
         else:
             self.no_more_tiers_available_placeholder_viewport.y2 = self.constructor_cells[ENVIRONMENT][-1].viewport.y2
-
-        self.no_more_tracks_available_label.on_change_screen_resolution(self.screen_resolution)
-        self.no_more_tiers_available_label.on_change_screen_resolution(self.screen_resolution)
 
     @final
     def on_update_opacity(self, new_opacity):

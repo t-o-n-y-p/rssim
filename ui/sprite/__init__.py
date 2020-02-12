@@ -1,9 +1,8 @@
 from abc import ABC, abstractmethod
-from typing import Final, final
 
 from pyglet.sprite import Sprite as PygletSprite
 
-from ui import MAP_CAMERA
+from ui import *
 
 SPRITE_VIEWPORT_EDGE_OFFSET_LIMIT_X: Final = 150
 SPRITE_VIEWPORT_EDGE_OFFSET_LIMIT_Y: Final = 100
@@ -99,15 +98,16 @@ class UISprite(Sprite, ABC):
     def __init__(self, logger, parent_viewport):
         super().__init__(logger=logger)
         self.parent_viewport = parent_viewport
-        self.screen_resolution = (1280, 720)
+        self.screen_resolution = (0, 0)
 
     @abstractmethod
     def get_scale(self):
         pass
 
     @final
-    def on_change_screen_resolution(self, screen_resolution):
-        self.screen_resolution = screen_resolution
+    @window_size_has_changed
+    def on_resize(self, width, height):
+        self.screen_resolution = width, height
         self.position = self.get_position()
         self.scale = self.get_scale()
         if self.sprite is not None:

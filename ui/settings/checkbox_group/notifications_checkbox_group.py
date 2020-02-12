@@ -16,6 +16,7 @@ class NotificationsCheckboxGroup(CheckboxGroup):
         super().__init__(column, row, parent_viewport,
                          logger=getLogger('root.app.settings.view.checkbox_group.notifications_checkbox_group'))
         self.description_label = NotificationsCheckboxGroupDescriptionLabel(parent_viewport=self.viewport)
+        self.on_resize_handlers.append(self.description_label.on_resize)
         # passing parent viewport here, skipping self viewport because self viewport is calculated for description only
         # and checkbox viewports are calculated based on parent viewport
         self.checkboxes \
@@ -28,3 +29,4 @@ class NotificationsCheckboxGroup(CheckboxGroup):
 
         for checkbox in self.checkboxes:
             self.buttons.extend(checkbox.buttons)
+            self.on_resize_handlers.extend(checkbox.on_resize_handlers)

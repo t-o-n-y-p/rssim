@@ -10,11 +10,12 @@ class OnboardingPage(ABC):
         self.parent_viewport = parent_viewport
         self.viewport = Viewport()
         self.is_activated = False
-        self.screen_resolution = (1280, 720)
+        self.screen_resolution = (0, 0)
         USER_DB_CURSOR.execute('SELECT current_locale FROM i18n')
         self.current_locale = USER_DB_CURSOR.fetchone()[0]
         self.help_label = None
         self.opacity = 0
+        self.on_resize_handlers = [self.on_resize, ]
 
     @final
     def on_activate(self):
@@ -29,12 +30,12 @@ class OnboardingPage(ABC):
             self.help_label.delete()
 
     @final
-    def on_change_screen_resolution(self, screen_resolution):
-        self.screen_resolution = screen_resolution
+    @window_size_has_changed
+    def on_resize(self, width, height):
+        self.screen_resolution = width, height
         self.viewport.x1, self.viewport.x2 = self.parent_viewport.x1, self.parent_viewport.x2
         self.viewport.y1 = self.parent_viewport.y1 + get_bottom_bar_height(self.screen_resolution)
         self.viewport.y2 = self.parent_viewport.y2
-        self.help_label.on_change_screen_resolution(self.screen_resolution)
 
     @final
     def on_update_current_locale(self, new_locale):

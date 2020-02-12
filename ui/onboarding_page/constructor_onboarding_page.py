@@ -11,3 +11,4 @@ class ConstructorOnboardingPage(OnboardingPage):
         super().__init__(logger=getLogger('root.app.onboarding.constructor_onboarding_page'),
                          parent_viewport=parent_viewport)
         self.help_label = ConstructorOnboardingLabel(parent_viewport=self.viewport)
+        self.on_resize_handlers.append(self.help_label.on_resize)

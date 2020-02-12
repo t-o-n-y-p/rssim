@@ -37,7 +37,11 @@ class MapSwitcherView(GameBaseView):
         self.buttons = [self.close_map_switcher_button, ]
         for c in self.map_switcher_cells:
             self.buttons.extend(c.buttons)
+            self.on_resize_handlers.extend(c.on_resize_handlers)
 
+        self.on_resize_handlers.extend([
+            self.shader_sprite.on_resize, self.title_label.on_resize
+        ])
         self.on_append_window_handlers()
 
     @view_is_not_active
@@ -63,14 +67,6 @@ class MapSwitcherView(GameBaseView):
         self.title_label.on_update_current_locale(self.current_locale)
         for c in self.map_switcher_cells:
             c.on_update_current_locale(self.current_locale)
-
-    @window_size_has_changed
-    def on_resize(self, width, height):
-        super().on_resize(width, height)
-        self.shader_sprite.on_change_screen_resolution(self.screen_resolution)
-        self.title_label.on_change_screen_resolution(self.screen_resolution)
-        for c in self.map_switcher_cells:
-            c.on_change_screen_resolution(self.screen_resolution)
 
     def on_update_opacity(self, new_opacity):
         super().on_update_opacity(new_opacity)

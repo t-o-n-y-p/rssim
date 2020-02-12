@@ -21,4 +21,5 @@ class LicensePageControl(PageControl):
                       CxFreezeLicensePage(parent_viewport=self.viewport)]
         self.on_mouse_scroll_handlers = []
         for p in self.pages:
-            self.on_mouse_scroll_handlers.append(p.handle_mouse_scroll)
+            self.on_mouse_scroll_handlers.append(p.on_mouse_scroll)
+            self.on_resize_handlers.extend(p.on_resize_handlers)

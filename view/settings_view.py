@@ -105,8 +105,13 @@ class SettingsView(AppBaseView):
                         *self.screen_resolution_control.buttons, *self.display_fps_checkbox.buttons,
                         *self.fade_animations_checkbox.buttons, *self.clock_24h_checkbox.buttons,
                         *self.notifications_checkbox_group.buttons]
-        self.on_append_window_handlers()
         self.shader_sprite = SettingsViewShaderSprite(view=self)
+        self.on_resize_handlers.extend([
+            *self.display_fps_checkbox.on_resize_handlers, *self.fade_animations_checkbox.on_resize_handlers,
+            *self.clock_24h_checkbox.on_resize_handlers, *self.notifications_checkbox_group.on_resize_handlers,
+            * self.screen_resolution_control.on_resize_handlers, self.shader_sprite.on_resize
+        ])
+        self.on_append_window_handlers()
 
     @view_is_not_active
     def on_activate(self):
@@ -161,15 +166,6 @@ class SettingsView(AppBaseView):
         self.fade_animations_checkbox.on_update_current_locale(self.current_locale)
         self.clock_24h_checkbox.on_update_current_locale(self.current_locale)
         self.notifications_checkbox_group.on_update_current_locale(self.current_locale)
-
-    @window_size_has_changed
-    def on_resize(self, width, height):
-        super().on_resize(width, height)
-        self.screen_resolution_control.on_change_screen_resolution(self.screen_resolution)
-        self.display_fps_checkbox.on_change_screen_resolution(self.screen_resolution)
-        self.fade_animations_checkbox.on_change_screen_resolution(self.screen_resolution)
-        self.clock_24h_checkbox.on_change_screen_resolution(self.screen_resolution)
-        self.notifications_checkbox_group.on_change_screen_resolution(self.screen_resolution)
 
     def on_update_opacity(self, new_opacity):
         super().on_update_opacity(new_opacity)

@@ -14,6 +14,7 @@ class MoneyProgressBar(RectangleProgressBar):
         self.inactive_image = load('img/game_progress_bars/progress_bar_inactive.png')
         self.active_image = load('img/game_progress_bars/progress_bar_money_active.png')
         self.text_label = MoneyLabel(parent_viewport=self.viewport)
+        self.on_resize_handlers.append(self.text_label.on_resize)
 
     def get_position(self):
         bottom_bar_height = get_bottom_bar_height(self.screen_resolution)

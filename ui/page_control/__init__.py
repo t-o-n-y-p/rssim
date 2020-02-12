@@ -37,7 +37,7 @@ class PageControl(ABC):
         self.logger = logger
         self.parent_viewport = parent_viewport
         self.viewport = Viewport()
-        self.screen_resolution = (1280, 720)
+        self.screen_resolution = (0, 0)
         USER_DB_CURSOR.execute('SELECT current_locale FROM i18n')
         self.current_locale = USER_DB_CURSOR.fetchone()[0]
         self.pages = []
@@ -50,6 +50,7 @@ class PageControl(ABC):
         self.buttons = [self.previous_page_button, self.next_page_button]
         self.shader_sprite = None
         self.opacity = 0
+        self.on_resize_handlers = [self.on_resize, self.current_page_label.on_resize]
 
     @final
     def on_activate(self):
@@ -71,17 +72,12 @@ class PageControl(ABC):
             b.on_deactivate()
 
     @final
-    def on_change_screen_resolution(self, screen_resolution):
-        self.screen_resolution = screen_resolution
-        if self.shader_sprite is not None:
-            self.shader_sprite.on_change_screen_resolution(self.screen_resolution)
-
+    @window_size_has_changed
+    def on_resize(self, width, height):
+        self.screen_resolution = width, height
         self.viewport.x1, self.viewport.y1 = get_inner_area_rect(self.screen_resolution)[0:2]
         self.viewport.x2 = self.viewport.x1 + get_inner_area_rect(self.screen_resolution)[2]
         self.viewport.y2 = self.viewport.y1 + get_inner_area_rect(self.screen_resolution)[3]
-        self.current_page_label.on_change_screen_resolution(self.screen_resolution)
-        for p in self.pages:
-            p.on_change_screen_resolution(self.screen_resolution)
 
     @final
     def on_update_page_control_buttons(self):

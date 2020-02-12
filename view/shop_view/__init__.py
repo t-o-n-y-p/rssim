@@ -23,6 +23,9 @@ class ShopView(MapBaseView, ABC):
         self.close_shop_details_button = CloseShopDetailsButton(on_click_action=on_close_shop_details,
                                                                 parent_viewport=self.viewport)
         self.buttons = [self.close_shop_details_button, ]
+        self.on_resize_handlers.extend([
+            self.title_label.on_resize, self.shader_sprite.on_resize
+        ])
         self.on_append_window_handlers()
 
     @final
@@ -41,13 +44,6 @@ class ShopView(MapBaseView, ABC):
     def on_update_current_locale(self, new_locale):
         super().on_update_current_locale(new_locale)
         self.title_label.on_update_current_locale(self.current_locale)
-
-    @final
-    @window_size_has_changed
-    def on_resize(self, width, height):
-        super().on_resize(width, height)
-        self.shader_sprite.on_change_screen_resolution(self.screen_resolution)
-        self.title_label.on_change_screen_resolution(self.screen_resolution)
 
     @final
     def on_update_opacity(self, new_opacity):

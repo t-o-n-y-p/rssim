@@ -1,6 +1,5 @@
 from logging import getLogger
 
-from database import USER_DB_CURSOR
 from ui import *
 from ui.button.build_shop_stage_button import BuildShopStageButton
 from ui.label.shop_stage_locked_label import ShopStageLockedLabel
@@ -74,6 +73,13 @@ class ShopStageCell:
         USER_DB_CURSOR.execute('''SELECT money FROM game_progress''')
         self.money = USER_DB_CURSOR.fetchone()[0]
         self.opacity = 0
+        self.on_resize_handlers = [
+            self.on_resize, self.locked_label.on_resize, self.level_placeholder_label.on_resize,
+            self.previous_stage_placeholder_label.on_resize, self.hourly_profit_description_label.on_resize,
+            self.hourly_profit_value_label.on_resize, self.storage_capacity_description_label.on_resize,
+            self.storage_capacity_value_label.on_resize, self.exp_bonus_description_label.on_resize,
+            self.exp_bonus_value_label.on_resize, self.price_label.on_resize, self.under_construction_label.on_resize
+        ]
 
     @cell_is_active
     def on_update_state(self):
@@ -165,26 +171,16 @@ class ShopStageCell:
         for b in self.buttons:
             b.on_deactivate()
 
-    def on_change_screen_resolution(self, screen_resolution):
-        self.screen_resolution = screen_resolution
+    @window_size_has_changed
+    def on_resize(self, width, height):
+        self.screen_resolution = width, height
         bottom_bar_height = get_bottom_bar_height(self.screen_resolution)
-        general_cells_width = get_inner_area_rect(screen_resolution)[2] - bottom_bar_height // 4
+        general_cells_width = get_inner_area_rect(self.screen_resolution)[2] - bottom_bar_height // 4
         self.viewport.x1 = self.parent_viewport.x1 + bottom_bar_height // 8 + general_cells_width // 160 \
                            + int((self.stage_number - 1) / 4 * (general_cells_width - general_cells_width // 80))
         self.viewport.y1 = self.parent_viewport.y1 + bottom_bar_height // 8
         self.viewport.x2 = self.viewport.x1 + (general_cells_width - general_cells_width // 80) // 4
         self.viewport.y2 = self.viewport.y1 + 3 * bottom_bar_height - bottom_bar_height // 8
-        self.locked_label.on_change_screen_resolution(self.screen_resolution)
-        self.level_placeholder_label.on_change_screen_resolution(self.screen_resolution)
-        self.previous_stage_placeholder_label.on_change_screen_resolution(self.screen_resolution)
-        self.under_construction_label.on_change_screen_resolution(self.screen_resolution)
-        self.hourly_profit_description_label.on_change_screen_resolution(self.screen_resolution)
-        self.hourly_profit_value_label.on_change_screen_resolution(self.screen_resolution)
-        self.storage_capacity_description_label.on_change_screen_resolution(self.screen_resolution)
-        self.storage_capacity_value_label.on_change_screen_resolution(self.screen_resolution)
-        self.exp_bonus_description_label.on_change_screen_resolution(self.screen_resolution)
-        self.exp_bonus_value_label.on_change_screen_resolution(self.screen_resolution)
-        self.price_label.on_change_screen_resolution(self.screen_resolution)
 
     def on_update_current_locale(self, new_locale):
         self.current_locale = new_locale

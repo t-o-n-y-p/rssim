@@ -62,12 +62,16 @@ class GameView(GameBaseView):
                                                               parent_viewport=self.viewport)
         self.buttons = [self.pause_game_button, self.resume_game_button, self.open_settings_button,
                         self.open_map_switcher_button]
-        self.on_append_window_handlers()
         self.main_clock_label_24h = MainClockLabel24H(parent_viewport=self.viewport)
         self.main_clock_label_12h = MainClockLabel12H(parent_viewport=self.viewport)
         self.exp_percent = 0
         self.money_percent = 0
         self.shader_sprite = GameViewShaderSprite(view=self)
+        self.on_resize_handlers.extend([
+            *self.exp_progress_bar.on_resize_handlers, *self.money_progress_bar.on_resize_handlers,
+            self.main_clock_label_24h.on_resize, self.main_clock_label_12h.on_resize, self.shader_sprite.on_resize
+        ])
+        self.on_append_window_handlers()
         USER_DB_CURSOR.execute('''SELECT exp, money_target FROM game_progress''')
         self.exp, self.money_target = USER_DB_CURSOR.fetchone()
         CONFIG_DB_CURSOR.execute('''SELECT player_progress FROM player_progress_config 
@@ -120,15 +124,6 @@ class GameView(GameBaseView):
         self.main_clock_label_24h.on_update_current_locale(self.current_locale)
         self.main_clock_label_12h.on_update_current_locale(self.current_locale)
         self.exp_progress_bar.on_update_current_locale(self.current_locale)
-
-    @window_size_has_changed
-    def on_resize(self, width, height):
-        super().on_resize(width, height)
-        self.exp_progress_bar.on_change_screen_resolution(self.screen_resolution)
-        self.money_progress_bar.on_change_screen_resolution(self.screen_resolution)
-        self.shader_sprite.on_change_screen_resolution(self.screen_resolution)
-        self.main_clock_label_24h.on_change_screen_resolution(self.screen_resolution)
-        self.main_clock_label_12h.on_change_screen_resolution(self.screen_resolution)
 
     def on_update_clock_state(self, clock_24h_enabled):
         super().on_update_clock_state(clock_24h_enabled)

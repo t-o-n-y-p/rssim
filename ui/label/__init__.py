@@ -1,13 +1,11 @@
 from abc import ABC, abstractmethod
-from typing import final
 
 from pyglet.text import Label as PygletLabel
 from win32clipboard import OpenClipboard, CloseClipboard, GetClipboardData
 from pyglet.window.key import BACKSPACE, V, MOD_CTRL
 
 from i18n import I18N_RESOURCES
-from database import USER_DB_CURSOR
-from ui import WHITE_RGB, GREY_RGB
+from ui import *
 
 
 def text_label_does_not_exist(fn):
@@ -75,7 +73,7 @@ class Label(ABC):
         self.multiline = False
         self.batch = None
         self.group = None
-        self.screen_resolution = (1280, 720)
+        self.screen_resolution = (0, 0)
 
     @abstractmethod
     def get_x(self):
@@ -113,8 +111,9 @@ class Label(ABC):
         self.text_label = None
 
     @final
-    def on_change_screen_resolution(self, screen_resolution):
-        self.screen_resolution = screen_resolution
+    @window_size_has_changed
+    def on_resize(self, width, height):
+        self.screen_resolution = width, height
         self.x = self.get_x()
         self.y = self.get_y()
         self.font_size = self.get_font_size()
@@ -202,7 +201,7 @@ class InteractiveLabel(ABC):
         self.multiline = False
         self.batch = None
         self.group = None
-        self.screen_resolution = (1280, 720)
+        self.screen_resolution = (0, 0)
         self.text_length_limit = 25
 
     @final
@@ -295,8 +294,9 @@ class InteractiveLabel(ABC):
             CloseClipboard()
 
     @final
-    def on_change_screen_resolution(self, screen_resolution):
-        self.screen_resolution = screen_resolution
+    @window_size_has_changed
+    def on_resize(self, width, height):
+        self.screen_resolution = width, height
         self.x = self.get_x()
         self.y = self.get_y()
         self.font_size = self.get_font_size()

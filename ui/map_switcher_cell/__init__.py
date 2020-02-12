@@ -1,6 +1,5 @@
 from abc import ABC
 
-from database import USER_DB_CURSOR, MAP_SWITCHER_STATE_MATRIX, MAP_LOCKED, MAP_LEVEL_REQUIRED, MAP_PRICE
 from ui import *
 from ui.label.map_switcher_cell_locked_label import MapSwitcherCellLockedLabel
 from ui.label.map_switcher_level_placeholder_label import MapSwitcherLevelPlaceholderLabel
@@ -68,6 +67,10 @@ class MapSwitcherCell(ABC):
         self.unlock_available_label.on_update_args((self.data[MAP_PRICE], ))
         self.title_label = None
         self.icon_labels = []
+        self.on_resize_handlers = [
+            self.on_resize, self.locked_label.on_resize, self.level_placeholder_label.on_resize,
+            self.unlock_available_label.on_resize
+        ]
 
     @final
     @cell_is_not_active
@@ -100,20 +103,15 @@ class MapSwitcherCell(ABC):
                 self.build_map_button.on_activate(instant=True)
 
     @final
-    def on_change_screen_resolution(self, screen_resolution):
-        self.screen_resolution = screen_resolution
+    @window_size_has_changed
+    def on_resize(self, width, height):
+        self.screen_resolution = width, height
         top_bar_height = get_top_bar_height(self.screen_resolution)
         self.viewport.x1 = self.parent_viewport.x1 \
                            + self.map_id * ((self.parent_viewport.x2 - self.parent_viewport.x1) // 2 - 1)
         self.viewport.x2 = self.viewport.x1 + (self.parent_viewport.x2 - self.parent_viewport.x1) // 2 + 1
         self.viewport.y1 = self.parent_viewport.y1
         self.viewport.y2 = self.parent_viewport.y2 - top_bar_height + 2
-        self.locked_label.on_change_screen_resolution(self.screen_resolution)
-        self.level_placeholder_label.on_change_screen_resolution(self.screen_resolution)
-        self.unlock_available_label.on_change_screen_resolution(self.screen_resolution)
-        self.title_label.on_change_screen_resolution(self.screen_resolution)
-        for i in self.icon_labels:
-            i.on_change_screen_resolution(self.screen_resolution)
 
     @final
     def on_update_current_locale(self, new_locale):

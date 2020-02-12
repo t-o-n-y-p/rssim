@@ -39,9 +39,13 @@ class ScheduleRow:
         self.main_sprite_24h = ScheduleRow24HMainLabel(self.column, self.row, parent_viewport=self.viewport)
         self.main_sprite_12h = ScheduleRow12HMainLabel(self.column, self.row, parent_viewport=self.viewport)
         self.arrival_sprite = ScheduleRowArrivalLabel(self.map_id, self.column, self.row, parent_viewport=self.viewport)
-        self.screen_resolution = (1280, 720)
+        self.screen_resolution = (0, 0)
         self.is_activated = False
         self.opacity = 0
+        self.on_resize_handlers = [
+            self.on_resize, self.arrival_sprite.on_resize,
+            self.main_sprite_24h.on_resize, self.main_sprite_12h.on_resize
+        ]
 
     def on_activate(self):
         self.is_activated = True
@@ -69,8 +73,9 @@ class ScheduleRow:
         self.arrival_sprite.on_update_args((self.data[DIRECTION], ))
         self.arrival_sprite.create()
 
-    def on_change_screen_resolution(self, screen_resolution):
-        self.screen_resolution = screen_resolution
+    @window_size_has_changed
+    def on_resize(self, width, height):
+        self.screen_resolution = width, height
         self.viewport.x1 = self.parent_viewport.x1 + get_inner_area_rect(self.screen_resolution)[0] \
                            + (int(6.875 * get_bottom_bar_height(self.screen_resolution))
                               + get_bottom_bar_height(self.screen_resolution) // 4) * self.column
@@ -79,9 +84,6 @@ class ScheduleRow:
                            + get_inner_area_rect(self.screen_resolution)[3] \
                            - (get_inner_area_rect(self.screen_resolution)[3] // (SCHEDULE_ROWS + 1)) * (self.row + 1)
         self.viewport.y1 = self.viewport.y2 - get_inner_area_rect(self.screen_resolution)[3] // (SCHEDULE_ROWS + 1)
-        self.main_sprite_24h.on_change_screen_resolution(self.screen_resolution)
-        self.main_sprite_12h.on_change_screen_resolution(self.screen_resolution)
-        self.arrival_sprite.on_change_screen_resolution(self.screen_resolution)
 
     def on_update_current_locale(self, new_locale):
         self.current_locale = new_locale
