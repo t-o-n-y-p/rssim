@@ -284,22 +284,22 @@ class ConstructorView(MapBaseView, ABC):
     @notifications_available
     @feature_unlocked_notification_enabled
     def on_send_track_unlocked_notification(self, track):
-        self.notifications.append(TrackUnlockedNotification(self.current_locale, track))
+        self.notifications.append(TrackUnlockedNotification(self.current_locale, self.map_id, track))
 
     @final
     @notifications_available
     @feature_unlocked_notification_enabled
     def on_send_environment_unlocked_notification(self, tier):
-        self.notifications.append(EnvironmentUnlockedNotification(self.current_locale, tier))
+        self.notifications.append(EnvironmentUnlockedNotification(self.current_locale, self.map_id, tier))
 
     @final
     @notifications_available
     @construction_completed_notification_enabled
     def on_send_track_construction_completed_notification(self, track):
-        self.notifications.append(TrackConstructionCompletedNotification(self.current_locale, track))
+        self.notifications.append(TrackConstructionCompletedNotification(self.current_locale, self.map_id, track))
 
     @final
     @notifications_available
     @construction_completed_notification_enabled
     def on_send_environment_construction_completed_notification(self, tier):
-        self.notifications.append(EnvironmentConstructionCompletedNotification(self.current_locale, tier))
+        self.notifications.append(EnvironmentConstructionCompletedNotification(self.current_locale, self.map_id, tier))

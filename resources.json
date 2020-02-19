@@ -158,16 +158,16 @@
 		"ru": "Доступен новый путь"
 	},
 	"track_unlocked_notification_message_string": {
-		"en": "Track {0} has just been unlocked. Return to the game to check out the price.",
-		"ru": "Только что открыт путь {0}. Вернись в игру, чтобы узнать цену."
+		"en": "Station: Track {1} [{0}] has just been unlocked. Return to the game to check out the price.",
+		"ru": "Только что открыт Станция: Путь {1} [{0}]. Вернись в игру, чтобы узнать цену."
 	},
 	"environment_unlocked_notification_caption_string": {
 		"en": "New environment available",
 		"ru": "Доступно новое окружение"
 	},
 	"environment_unlocked_notification_message_string": {
-		"en": "Environment Tier {0} has just been unlocked. Return to the game to check out the price.",
-		"ru": "Только что открыто Окружение: Этап {0}. Вернись в игру, чтобы узнать цену."
+		"en": "Environment: Tier {1} [{0}] has just been unlocked. Return to the game to check out the price.",
+		"ru": "Только что открыто Окружение: Этап {1} [{0}]. Вернись в игру, чтобы узнать цену."
 	},
 	"map_unlocked_notification_caption_string": {
 		"en": "New map available",
@@ -186,16 +186,16 @@
 		"ru": "Строительство завершено"
 	},
 	"track_construction_completed_notification_message_string": {
-		"en": "Track {0} is ready to accept trains. Don't miss the first one!",
-		"ru": "Путь {0} готов к приему поездов. Не пропусти первый поезд!"
+		"en": "Station: Track {1} [{0}] is ready to accept trains. Don't miss the first one!",
+		"ru": "Станция: Путь {1} [{0}] готов к приему поездов. Не пропусти первый поезд!"
 	},
 	"environment_construction_completed_notification_caption_string": {
 		"en": "Construction completed",
 		"ru": "Строительство завершено"
 	},
 	"environment_construction_completed_notification_message_string": {
-		"en": "Environment Tier {0} is ready. Check out what's new!",
-		"ru": "Окружение: Этап {0} готово. Посмотри, что изменилось!"
+		"en": "Environment: Tier {1} [{0}] is ready. Check out what's new!",
+		"ru": "Окружение: Этап {1} [{0}] готово. Посмотри, что изменилось!"
 	},
 	"enough_money_track_notification_caption_string": {
 		"en": "Enough savings",
