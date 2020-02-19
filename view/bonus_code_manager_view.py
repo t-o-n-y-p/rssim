@@ -87,21 +87,14 @@ class BonusCodeManagerView(GameBaseView):
     @notifications_available
     @bonus_expired_notification_enabled
     def on_send_exp_bonus_expired_notification(self):
-        exp_bonus_expired_notification = ExpBonusExpiredNotification()
-        exp_bonus_expired_notification.send(self.current_locale)
-        self.controller.parent_controller.parent_controller.on_append_notification(exp_bonus_expired_notification)
+        self.notifications.append(ExpBonusExpiredNotification(self.current_locale))
 
     @notifications_available
     @bonus_expired_notification_enabled
     def on_send_money_bonus_expired_notification(self):
-        money_bonus_expired_notification = MoneyBonusExpiredNotification()
-        money_bonus_expired_notification.send(self.current_locale)
-        self.controller.parent_controller.parent_controller.on_append_notification(money_bonus_expired_notification)
+        self.notifications.append(MoneyBonusExpiredNotification(self.current_locale))
 
     @notifications_available
     @bonus_expired_notification_enabled
     def on_send_construction_time_bonus_expired_notification(self):
-        construction_time_bonus_expired_notification = ConstructionTimeBonusExpiredNotification()
-        construction_time_bonus_expired_notification.send(self.current_locale)
-        self.controller.parent_controller.parent_controller\
-            .on_append_notification(construction_time_bonus_expired_notification)
+        self.notifications.append(ConstructionTimeBonusExpiredNotification(self.current_locale))

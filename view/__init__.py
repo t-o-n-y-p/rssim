@@ -175,13 +175,15 @@ def shader_sprite_exists(fn):
 
 
 # --------------------- CONSTANTS ---------------------
-MINI_MAP_FADE_OUT_TIMER: Final = 1.0        # time since user releases mouse button after which mini-map disappears
+MINI_MAP_FADE_OUT_TIMER: Final = 1.0  # time since user releases mouse button after which mini-map disappears
 ANNOUNCEMENT_PLAYER: Final = Player()
 ANNOUNCEMENT_INTRO: Final = SourceGroup()
 ANNOUNCEMENT_INTRO.add(Sine(duration=0.2, frequency=247))
 ANNOUNCEMENT_INTRO.add(Sine(duration=0.2, frequency=294))
 ANNOUNCEMENT_INTRO.add(Sine(duration=0.2, frequency=349))
 ANNOUNCEMENT_INTRO.add(Sine(duration=0.2, frequency=440))
+
+
 # ------------------- END CONSTANTS -------------------
 
 
@@ -194,6 +196,7 @@ class AppBaseView(ABC):
         self.viewport = Viewport()
         self.opacity = 0
         self.buttons = []
+        self.notifications = []
         self.on_mouse_press_handlers = []
         self.on_mouse_release_handlers = []
         self.on_mouse_motion_handlers = []
@@ -203,6 +206,10 @@ class AppBaseView(ABC):
         self.on_key_press_handlers = []
         self.on_text_handlers = []
         self.on_window_resize_handlers = [self.on_window_resize, ]
+        self.on_window_activate_handlers = [self.on_window_activate, ]
+        self.on_window_show_handlers = [self.on_window_show, ]
+        self.on_window_deactivate_handlers = [self.on_window_deactivate, ]
+        self.on_window_hide_handlers = [self.on_window_hide, ]
         self.screen_resolution = (0, 0)
         USER_DB_CURSOR.execute('SELECT current_locale FROM i18n')
         self.current_locale = USER_DB_CURSOR.fetchone()[0]
@@ -215,7 +222,6 @@ class AppBaseView(ABC):
             self.construction_completed_notification_enabled, self.enough_money_notification_enabled, \
             self.bonus_expired_notification_enabled, self.shop_storage_notification_enabled \
             = (bool(n) for n in USER_DB_CURSOR.fetchone())
-        self.notifications = []
 
     def on_activate(self):
         self.is_activated = True
@@ -262,11 +268,21 @@ class AppBaseView(ABC):
             b.on_update_opacity(self.opacity)
 
     @final
-    def on_disable_notifications(self):
+    def on_window_activate(self):
         self.all_notifications_enabled = False
+        self.notifications.clear()
 
     @final
-    def on_enable_notifications(self):
+    def on_window_show(self):
+        self.all_notifications_enabled = False
+        self.notifications.clear()
+
+    @final
+    def on_window_deactivate(self):
+        self.all_notifications_enabled = True
+
+    @final
+    def on_window_hide(self):
         self.all_notifications_enabled = True
 
     @final
@@ -296,48 +312,68 @@ class AppBaseView(ABC):
     @final
     def on_append_view_handlers(self):
         # appends view handlers
-        self.controller.on_append_view_handlers(on_mouse_motion_handlers=self.on_mouse_motion_handlers,
-                                                on_mouse_press_handlers=self.on_mouse_press_handlers,
-                                                on_mouse_release_handlers=self.on_mouse_release_handlers,
-                                                on_mouse_drag_handlers=self.on_mouse_drag_handlers,
-                                                on_mouse_leave_handlers=self.on_mouse_leave_handlers,
-                                                on_mouse_scroll_handlers=self.on_mouse_scroll_handlers,
-                                                on_key_press_handlers=self.on_key_press_handlers,
-                                                on_text_handlers=self.on_text_handlers)
+        self.controller.on_append_view_handlers(
+            on_mouse_motion_handlers=self.on_mouse_motion_handlers,
+            on_mouse_press_handlers=self.on_mouse_press_handlers,
+            on_mouse_release_handlers=self.on_mouse_release_handlers,
+            on_mouse_drag_handlers=self.on_mouse_drag_handlers,
+            on_mouse_leave_handlers=self.on_mouse_leave_handlers,
+            on_mouse_scroll_handlers=self.on_mouse_scroll_handlers,
+            on_key_press_handlers=self.on_key_press_handlers,
+            on_text_handlers=self.on_text_handlers
+        )
         # appends button handlers
         for b in self.buttons:
-            self.controller.on_append_view_handlers(on_mouse_motion_handlers=(b.on_mouse_motion,),
-                                                    on_mouse_press_handlers=(b.on_mouse_press,),
-                                                    on_mouse_release_handlers=(b.on_mouse_release,),
-                                                    on_mouse_leave_handlers=(b.on_mouse_leave,))
+            self.controller.on_append_view_handlers(
+                on_mouse_motion_handlers=(b.on_mouse_motion,),
+                on_mouse_press_handlers=(b.on_mouse_press,),
+                on_mouse_release_handlers=(b.on_mouse_release,),
+                on_mouse_leave_handlers=(b.on_mouse_leave,)
+            )
 
     @final
     def on_detach_view_handlers(self):
         # detaches view handlers
-        self.controller.on_detach_view_handlers(on_mouse_motion_handlers=self.on_mouse_motion_handlers,
-                                                on_mouse_press_handlers=self.on_mouse_press_handlers,
-                                                on_mouse_release_handlers=self.on_mouse_release_handlers,
-                                                on_mouse_drag_handlers=self.on_mouse_drag_handlers,
-                                                on_mouse_leave_handlers=self.on_mouse_leave_handlers,
-                                                on_mouse_scroll_handlers=self.on_mouse_scroll_handlers,
-                                                on_key_press_handlers=self.on_key_press_handlers,
-                                                on_text_handlers=self.on_text_handlers)
+        self.controller.on_detach_view_handlers(
+            on_mouse_motion_handlers=self.on_mouse_motion_handlers,
+            on_mouse_press_handlers=self.on_mouse_press_handlers,
+            on_mouse_release_handlers=self.on_mouse_release_handlers,
+            on_mouse_drag_handlers=self.on_mouse_drag_handlers,
+            on_mouse_leave_handlers=self.on_mouse_leave_handlers,
+            on_mouse_scroll_handlers=self.on_mouse_scroll_handlers,
+            on_key_press_handlers=self.on_key_press_handlers,
+            on_text_handlers=self.on_text_handlers
+        )
         # detaches button handlers
         for b in self.buttons:
-            self.controller.on_detach_view_handlers(on_mouse_motion_handlers=(b.on_mouse_motion,),
-                                                    on_mouse_press_handlers=(b.on_mouse_press,),
-                                                    on_mouse_release_handlers=(b.on_mouse_release,),
-                                                    on_mouse_leave_handlers=(b.on_mouse_leave,))
+            self.controller.on_detach_view_handlers(
+                on_mouse_motion_handlers=(b.on_mouse_motion,),
+                on_mouse_press_handlers=(b.on_mouse_press,),
+                on_mouse_release_handlers=(b.on_mouse_release,),
+                on_mouse_leave_handlers=(b.on_mouse_leave,)
+            )
 
     @final
     def on_append_window_handlers(self):
-        self.controller.on_append_window_handlers(on_window_resize_handlers=self.on_window_resize_handlers)
+        self.controller.on_append_window_handlers(
+            on_window_resize_handlers=self.on_window_resize_handlers,
+            on_window_activate_handlers=self.on_window_activate_handlers,
+            on_window_show_handlers=self.on_window_show_handlers,
+            on_window_deactivate_handlers=self.on_window_deactivate_handlers,
+            on_window_hide_handlers=self.on_window_hide_handlers
+        )
         for b in self.buttons:
             self.controller.on_append_window_handlers(on_window_resize_handlers=(b.on_window_resize,))
 
     @final
     def on_detach_window_handlers(self):
-        self.controller.on_detach_window_handlers(on_window_resize_handlers=self.on_window_resize_handlers)
+        self.controller.on_detach_window_handlers(
+            on_window_resize_handlers=self.on_window_resize_handlers,
+            on_window_activate_handlers=self.on_window_activate_handlers,
+            on_window_show_handlers=self.on_window_show_handlers,
+            on_window_deactivate_handlers=self.on_window_deactivate_handlers,
+            on_window_hide_handlers=self.on_window_hide_handlers
+        )
         for b in self.buttons:
             self.controller.on_detach_window_handlers(on_window_resize_handlers=(b.on_window_resize,))
 

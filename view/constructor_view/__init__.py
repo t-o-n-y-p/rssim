@@ -284,34 +284,22 @@ class ConstructorView(MapBaseView, ABC):
     @notifications_available
     @feature_unlocked_notification_enabled
     def on_send_track_unlocked_notification(self, track):
-        track_unlocked_notification = TrackUnlockedNotification()
-        track_unlocked_notification.send(self.current_locale, message_args=(track,))
-        self.controller.parent_controller.parent_controller.parent_controller\
-            .on_append_notification(track_unlocked_notification)
+        self.notifications.append(TrackUnlockedNotification(self.current_locale, track))
 
     @final
     @notifications_available
     @feature_unlocked_notification_enabled
     def on_send_environment_unlocked_notification(self, tier):
-        environment_unlocked_notification = EnvironmentUnlockedNotification()
-        environment_unlocked_notification.send(self.current_locale, message_args=(tier,))
-        self.controller.parent_controller.parent_controller.parent_controller\
-            .on_append_notification(environment_unlocked_notification)
+        self.notifications.append(EnvironmentUnlockedNotification(self.current_locale, tier))
 
     @final
     @notifications_available
     @construction_completed_notification_enabled
     def on_send_track_construction_completed_notification(self, track):
-        track_construction_completed_notification = TrackConstructionCompletedNotification()
-        track_construction_completed_notification.send(self.current_locale, message_args=(track,))
-        self.controller.parent_controller.parent_controller.parent_controller\
-            .on_append_notification(track_construction_completed_notification)
+        self.notifications.append(TrackConstructionCompletedNotification(self.current_locale, track))
 
     @final
     @notifications_available
     @construction_completed_notification_enabled
     def on_send_environment_construction_completed_notification(self, tier):
-        environment_construction_completed_notification = EnvironmentConstructionCompletedNotification()
-        environment_construction_completed_notification.send(self.current_locale, message_args=(tier,))
-        self.controller.parent_controller.parent_controller.parent_controller\
-            .on_append_notification(environment_construction_completed_notification)
+        self.notifications.append(EnvironmentConstructionCompletedNotification(self.current_locale, tier))

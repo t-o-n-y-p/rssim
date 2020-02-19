@@ -8,7 +8,6 @@ from ui.map_switcher_cell.passenger_map_switcher_cell import PassengerMapSwitche
 from ui.map_switcher_cell.freight_map_switcher_cell import FreightMapSwitcherCell
 from database import MAP_SWITCHER_STATE_MATRIX, MAP_PRICE, MAP_LOCKED, MAP_LEVEL_REQUIRED
 from notifications.map_unlocked_notification import MapUnlockedNotification
-from i18n import I18N_RESOURCES
 
 
 @final
@@ -96,8 +95,4 @@ class MapSwitcherView(GameBaseView):
     @notifications_available
     @feature_unlocked_notification_enabled
     def on_send_map_unlocked_notification(self, map_id):
-        map_unlocked_notification = MapUnlockedNotification()
-        map_unlocked_notification.send(self.current_locale,
-                                       message_args=(I18N_RESOURCES['map_title_string'][self.current_locale][map_id], ))
-        self.controller.parent_controller.parent_controller\
-            .on_append_notification(map_unlocked_notification)
+        self.notifications.append(MapUnlockedNotification(self.current_locale, map_id))

@@ -186,20 +186,14 @@ class GameView(GameBaseView):
     @notifications_available
     @level_up_notification_enabled
     def on_send_level_up_notification(self):
-        level_up_notification = LevelUpNotification()
-        level_up_notification.send(self.current_locale, message_args=(self.level,))
-        self.controller.parent_controller.on_append_notification(level_up_notification)
+        self.notifications.append(LevelUpNotification(self.current_locale, self.level))
 
     @notifications_available
     @enough_money_notification_enabled
     def on_send_enough_money_track_notification(self):
-        enough_money_track_notification = EnoughMoneyTrackNotification()
-        enough_money_track_notification.send(self.current_locale)
-        self.controller.parent_controller.on_append_notification(enough_money_track_notification)
+        self.notifications.append(EnoughMoneyTrackNotification(self.current_locale))
 
     @notifications_available
     @enough_money_notification_enabled
     def on_send_enough_money_environment_notification(self):
-        enough_money_environment_notification = EnoughMoneyEnvironmentNotification()
-        enough_money_environment_notification.send(self.current_locale)
-        self.controller.parent_controller.on_append_notification(enough_money_environment_notification)
+        self.notifications.append(EnoughMoneyEnvironmentNotification(self.current_locale))

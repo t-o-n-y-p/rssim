@@ -124,7 +124,6 @@ class Launcher:
         # activate app after it is created
         self.app.fade_in_animation.on_activate()
         pyglet.clock.schedule(on_app_update)
-        self.notifications = []
         self.on_mouse_motion_event_counter = 0
         self.on_mouse_motion_cached_movement = [0, 0]
         self.on_mouse_drag_event_counter = 0
@@ -160,27 +159,23 @@ class Launcher:
 
         @WINDOW.event
         def on_activate():
-            self.app.on_disable_notifications()
-            for h in self.notifications:
-                h.destroy()
-
-            self.notifications.clear()
+            for h in self.app.on_window_activate_handlers:
+                h()
 
         @WINDOW.event
         def on_show():
-            self.app.on_disable_notifications()
-            for h in self.notifications:
-                h.destroy()
-
-            self.notifications.clear()
+            for h in self.app.on_window_show_handlers:
+                h()
 
         @WINDOW.event
         def on_deactivate():
-            self.app.on_enable_notifications()
+            for h in self.app.on_window_deactivate_handlers:
+                h()
 
         @WINDOW.event
         def on_hide():
-            self.app.on_enable_notifications()
+            for h in self.app.on_window_hide_handlers:
+                h()
 
         @WINDOW.event
         def on_mouse_press(x, y, button, modifiers):

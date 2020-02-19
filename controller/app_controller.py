@@ -123,9 +123,6 @@ class AppController(AppBaseController):
     def on_activate_game_view(self):
         self.game.on_activate_view()
 
-    def on_append_notification(self, notification):
-        self.loader.notifications.append(notification)
-
     def on_open_license(self):
         self.game_to_main_menu_transition_animation.on_deactivate()
         self.license_to_main_menu_transition_animation.on_deactivate()

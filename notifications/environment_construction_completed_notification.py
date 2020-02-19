@@ -6,7 +6,8 @@ from notifications import Notification
 
 @final
 class EnvironmentConstructionCompletedNotification(Notification):
-    def __init__(self):
-        super().__init__(logger=getLogger('root.notification.environment_construction_completed_notification'))
-        self.caption_key = 'environment_construction_completed_notification_caption_string'
-        self.message_key = 'environment_construction_completed_notification_message_string'
+    def __init__(self, current_locale, tier):
+        super().__init__(logger=getLogger('root.notification.environment_construction_completed_notification'),
+                         caption_key='environment_construction_completed_notification_caption_string',
+                         message_key='environment_construction_completed_notification_message_string',
+                         current_locale=current_locale, message_args=(tier, ))

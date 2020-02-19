@@ -168,16 +168,14 @@ class ShopConstructorView(MapBaseView, ABC):
     @notifications_available
     @shop_storage_notification_enabled
     def on_send_shop_storage_almost_full_notification(self):
-        shop_storage_almost_full_notification = ShopStorageAlmostFullNotification()
-        shop_storage_almost_full_notification.send(self.current_locale, message_args=(self.shop_id + 1, ))
-        self.controller.parent_controller.parent_controller.parent_controller.parent_controller\
-            .on_append_notification(shop_storage_almost_full_notification)
+        self.notifications.append(
+            ShopStorageAlmostFullNotification(self.current_locale, self.shop_id + 1)
+        )
 
     @final
     @notifications_available
     @shop_storage_notification_enabled
     def on_send_shop_storage_full_notification(self):
-        shop_storage_full_notification = ShopStorageFullNotification()
-        shop_storage_full_notification.send(self.current_locale, message_args=(self.shop_id + 1, ))
-        self.controller.parent_controller.parent_controller.parent_controller.parent_controller\
-            .on_append_notification(shop_storage_full_notification)
+        self.notifications.append(
+            ShopStorageFullNotification(self.current_locale, self.shop_id + 1)
+        )
