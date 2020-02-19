@@ -36,7 +36,7 @@ class Checkbox(ABC):
         self.description_label = None
         self.is_activated = False
         self.opacity = 0
-        self.on_resize_handlers = [self.on_resize, ]
+        self.on_window_resize_handlers = [self.on_window_resize, ]
 
     @final
     def on_update_opacity(self, new_opacity):
@@ -63,7 +63,7 @@ class Checkbox(ABC):
 
     @final
     @window_size_has_changed
-    def on_resize(self, width, height):
+    def on_window_resize(self, width, height):
         self.screen_resolution = width, height
         self.viewport.x1 = self.parent_viewport.x1 \
                            + (self.column + 1) * (self.parent_viewport.x2 - self.parent_viewport.x1) // 4

@@ -33,9 +33,9 @@ class BonusCodeActivationView(AppBaseView):
         self.shader_sprite = BonusCodeViewShaderSprite(view=self)
         self.bonus_code_matrix = BONUS_CODE_MATRIX
         self.bonus_code_info_cell = BonusCodeInfoCell(parent_viewport=self.viewport)
-        self.on_resize_handlers.extend([
-            self.bonus_code_interactive_label.on_resize, self.shader_sprite.on_resize,
-            *self.bonus_code_info_cell.on_resize_handlers
+        self.on_window_resize_handlers.extend([
+            self.bonus_code_interactive_label.on_window_resize, self.shader_sprite.on_window_resize,
+            *self.bonus_code_info_cell.on_window_resize_handlers
         ])
         self.on_append_window_handlers()
         self.on_text_handlers.append(self.on_text)

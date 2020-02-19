@@ -16,8 +16,9 @@ class MiniMapView(MapBaseView, ABC):
         self.mini_map_sprite = MiniMapSprite(map_id=self.map_id, parent_viewport=self.viewport)
         self.mini_environment_sprite = MiniEnvironmentSprite(map_id=self.map_id, parent_viewport=self.viewport)
         self.shader_sprite = MiniMapViewShaderSprite(view=self)
-        self.on_resize_handlers.extend([
-            self.shader_sprite.on_resize, self.mini_map_sprite.on_resize, self.mini_environment_sprite.on_resize
+        self.on_window_resize_handlers.extend([
+            self.shader_sprite.on_window_resize, self.mini_map_sprite.on_window_resize,
+            self.mini_environment_sprite.on_window_resize
         ])
         self.on_append_window_handlers()
 

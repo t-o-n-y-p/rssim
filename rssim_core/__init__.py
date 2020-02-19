@@ -251,7 +251,7 @@ class Launcher:
 
         @WINDOW.event
         def on_resize(width, height):
-            for h in self.app.on_resize_handlers:
+            for h in self.app.on_window_resize_handlers:
                 h(width, height)
 
     @staticmethod

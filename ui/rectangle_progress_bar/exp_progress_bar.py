@@ -14,7 +14,7 @@ class ExpProgressBar(RectangleProgressBar):
         self.inactive_image = load('img/game_progress_bars/progress_bar_inactive.png')
         self.active_image = load('img/game_progress_bars/progress_bar_active.png')
         self.text_label = CurrentLevelLabel(parent_viewport=self.viewport)
-        self.on_resize_handlers.append(self.text_label.on_resize)
+        self.on_window_resize_handlers.append(self.text_label.on_window_resize)
 
     def get_position(self):
         bottom_bar_height = get_bottom_bar_height(self.screen_resolution)

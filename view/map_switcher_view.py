@@ -37,10 +37,10 @@ class MapSwitcherView(GameBaseView):
         self.buttons = [self.close_map_switcher_button, ]
         for c in self.map_switcher_cells:
             self.buttons.extend(c.buttons)
-            self.on_resize_handlers.extend(c.on_resize_handlers)
+            self.on_window_resize_handlers.extend(c.on_window_resize_handlers)
 
-        self.on_resize_handlers.extend([
-            self.shader_sprite.on_resize, self.title_label.on_resize
+        self.on_window_resize_handlers.extend([
+            self.shader_sprite.on_window_resize, self.title_label.on_window_resize
         ])
         self.on_append_window_handlers()
 

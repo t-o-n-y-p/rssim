@@ -18,9 +18,9 @@ class BonusCodeManagerView(GameBaseView):
         self.money_bonus_percent_label = MoneyBonusValuePercentLabel(parent_viewport=self.viewport)
         self.exp_bonus_placeholder_label = ExpBonusPlaceholderLabel(parent_viewport=self.viewport)
         self.money_bonus_placeholder_label = MoneyBonusPlaceholderLabel(parent_viewport=self.viewport)
-        self.on_resize_handlers.extend([
-            self.exp_bonus_percent_label.on_resize, self.money_bonus_percent_label.on_resize,
-            self.exp_bonus_placeholder_label.on_resize, self.money_bonus_placeholder_label.on_resize
+        self.on_window_resize_handlers.extend([
+            self.exp_bonus_percent_label.on_window_resize, self.money_bonus_percent_label.on_window_resize,
+            self.exp_bonus_placeholder_label.on_window_resize, self.money_bonus_placeholder_label.on_window_resize
         ])
         self.on_append_window_handlers()
 

@@ -42,9 +42,9 @@ class ScheduleRow:
         self.screen_resolution = (0, 0)
         self.is_activated = False
         self.opacity = 0
-        self.on_resize_handlers = [
-            self.on_resize, self.arrival_sprite.on_resize,
-            self.main_sprite_24h.on_resize, self.main_sprite_12h.on_resize
+        self.on_window_resize_handlers = [
+            self.on_window_resize, self.arrival_sprite.on_window_resize,
+            self.main_sprite_24h.on_window_resize, self.main_sprite_12h.on_window_resize
         ]
 
     def on_activate(self):
@@ -74,7 +74,7 @@ class ScheduleRow:
         self.arrival_sprite.create()
 
     @window_size_has_changed
-    def on_resize(self, width, height):
+    def on_window_resize(self, width, height):
         self.screen_resolution = width, height
         self.viewport.x1 = self.parent_viewport.x1 + get_inner_area_rect(self.screen_resolution)[0] \
                            + (int(6.875 * get_bottom_bar_height(self.screen_resolution))

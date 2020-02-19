@@ -73,12 +73,14 @@ class ShopStageCell:
         USER_DB_CURSOR.execute('''SELECT money FROM game_progress''')
         self.money = USER_DB_CURSOR.fetchone()[0]
         self.opacity = 0
-        self.on_resize_handlers = [
-            self.on_resize, self.locked_label.on_resize, self.level_placeholder_label.on_resize,
-            self.previous_stage_placeholder_label.on_resize, self.hourly_profit_description_label.on_resize,
-            self.hourly_profit_value_label.on_resize, self.storage_capacity_description_label.on_resize,
-            self.storage_capacity_value_label.on_resize, self.exp_bonus_description_label.on_resize,
-            self.exp_bonus_value_label.on_resize, self.price_label.on_resize, self.under_construction_label.on_resize
+        self.on_window_resize_handlers = [
+            self.on_window_resize, self.locked_label.on_window_resize, self.level_placeholder_label.on_window_resize,
+            self.previous_stage_placeholder_label.on_window_resize,
+            self.hourly_profit_description_label.on_window_resize,
+            self.hourly_profit_value_label.on_window_resize, self.storage_capacity_description_label.on_window_resize,
+            self.storage_capacity_value_label.on_window_resize, self.exp_bonus_description_label.on_window_resize,
+            self.exp_bonus_value_label.on_window_resize, self.price_label.on_window_resize,
+            self.under_construction_label.on_window_resize
         ]
 
     @cell_is_active
@@ -172,7 +174,7 @@ class ShopStageCell:
             b.on_deactivate()
 
     @window_size_has_changed
-    def on_resize(self, width, height):
+    def on_window_resize(self, width, height):
         self.screen_resolution = width, height
         bottom_bar_height = get_bottom_bar_height(self.screen_resolution)
         general_cells_width = get_inner_area_rect(self.screen_resolution)[2] - bottom_bar_height // 4

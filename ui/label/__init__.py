@@ -112,7 +112,7 @@ class Label(ABC):
 
     @final
     @window_size_has_changed
-    def on_resize(self, width, height):
+    def on_window_resize(self, width, height):
         self.screen_resolution = width, height
         self.x = self.get_x()
         self.y = self.get_y()
@@ -295,7 +295,7 @@ class InteractiveLabel(ABC):
 
     @final
     @window_size_has_changed
-    def on_resize(self, width, height):
+    def on_window_resize(self, width, height):
         self.screen_resolution = width, height
         self.x = self.get_x()
         self.y = self.get_y()

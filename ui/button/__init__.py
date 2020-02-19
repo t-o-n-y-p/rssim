@@ -300,7 +300,7 @@ class UIButton(Button, ABC):
 
     @final
     @window_size_has_changed
-    def on_resize(self, width, height):
+    def on_window_resize(self, width, height):
         self.screen_resolution = width, height
         self.button_size = self.get_size()
         self.font_size = int(self.base_font_size_property * min(self.button_size))

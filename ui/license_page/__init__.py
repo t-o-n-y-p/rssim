@@ -36,7 +36,7 @@ class LicensePage(ABC):
         self.document = None
         self.license_layout = None
         self.opacity = 0
-        self.on_resize_handlers = [self.on_resize, ]
+        self.on_window_resize_handlers = [self.on_window_resize, ]
 
     @final
     def on_activate(self):
@@ -69,7 +69,7 @@ class LicensePage(ABC):
 
     @final
     @window_size_has_changed
-    def on_resize(self, width, height):
+    def on_window_resize(self, width, height):
         self.screen_resolution = width, height
         self.viewport.x1, self.viewport.x2 = self.parent_viewport.x1, self.parent_viewport.x2
         self.viewport.y1 = self.parent_viewport.y1 + get_bottom_bar_height(self.screen_resolution)

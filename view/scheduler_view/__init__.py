@@ -29,14 +29,14 @@ class SchedulerView(MapBaseView, ABC):
             for j in range(SCHEDULE_ROWS):
                 new_schedule_row = ScheduleRow(self.map_id, i, j, parent_viewport=self.viewport)
                 column.append(new_schedule_row)
-                self.on_resize_handlers.extend(new_schedule_row.on_resize_handlers)
+                self.on_window_resize_handlers.extend(new_schedule_row.on_window_resize_handlers)
 
             self.schedule_rows.append(column)
 
         self.shader_sprite = SchedulerViewShaderSprite(view=self)
-        self.on_resize_handlers.extend([
-            self.left_schedule_caption_label.on_resize, self.right_schedule_caption_label.on_resize,
-            self.shader_sprite.on_resize
+        self.on_window_resize_handlers.extend([
+            self.left_schedule_caption_label.on_window_resize, self.right_schedule_caption_label.on_window_resize,
+            self.shader_sprite.on_window_resize
         ])
         self.on_append_window_handlers()
 

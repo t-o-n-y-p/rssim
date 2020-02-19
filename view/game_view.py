@@ -67,9 +67,10 @@ class GameView(GameBaseView):
         self.exp_percent = 0
         self.money_percent = 0
         self.shader_sprite = GameViewShaderSprite(view=self)
-        self.on_resize_handlers.extend([
-            *self.exp_progress_bar.on_resize_handlers, *self.money_progress_bar.on_resize_handlers,
-            self.main_clock_label_24h.on_resize, self.main_clock_label_12h.on_resize, self.shader_sprite.on_resize
+        self.on_window_resize_handlers.extend([
+            *self.exp_progress_bar.on_window_resize_handlers, *self.money_progress_bar.on_window_resize_handlers,
+            self.main_clock_label_24h.on_window_resize, self.main_clock_label_12h.on_window_resize,
+            self.shader_sprite.on_window_resize
         ])
         self.on_append_window_handlers()
         USER_DB_CURSOR.execute('''SELECT exp, money_target FROM game_progress''')

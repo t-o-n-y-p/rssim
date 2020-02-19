@@ -51,7 +51,7 @@ class ConstructorView(MapBaseView, ABC):
                           on_reset_money_target_action, parent_viewport=self.viewport)
             )
             self.buttons.extend(track_cells[j].buttons)
-            self.on_resize_handlers.extend(track_cells[j].on_resize_handlers)
+            self.on_window_resize_handlers.extend(track_cells[j].on_window_resize_handlers)
 
         for j in range(CONSTRUCTOR_VIEW_ENVIRONMENT_CELLS):
             environment_cells.append(
@@ -59,7 +59,7 @@ class ConstructorView(MapBaseView, ABC):
                                 on_reset_money_target_action, parent_viewport=self.viewport)
             )
             self.buttons.extend(environment_cells[j].buttons)
-            self.on_resize_handlers.extend(environment_cells[j].on_resize_handlers)
+            self.on_window_resize_handlers.extend(environment_cells[j].on_window_resize_handlers)
 
         self.constructor_cells = [track_cells, environment_cells]
         USER_DB_CURSOR.execute('''SELECT money_target_activated FROM constructor WHERE map_id = ?''',
@@ -73,9 +73,9 @@ class ConstructorView(MapBaseView, ABC):
             = NoMoreTracksAvailableLabel(parent_viewport=self.no_more_tracks_available_placeholder_viewport)
         self.no_more_tiers_available_label \
             = NoMoreEnvironmentAvailableLabel(parent_viewport=self.no_more_tiers_available_placeholder_viewport)
-        self.on_resize_handlers.extend([
-            self.shader_sprite.on_resize, self.no_more_tracks_available_label.on_resize,
-            self.no_more_tiers_available_label.on_resize
+        self.on_window_resize_handlers.extend([
+            self.shader_sprite.on_window_resize, self.no_more_tracks_available_label.on_window_resize,
+            self.no_more_tiers_available_label.on_window_resize
         ])
         self.on_append_window_handlers()
 
@@ -156,8 +156,8 @@ class ConstructorView(MapBaseView, ABC):
 
     @final
     @window_size_has_changed
-    def on_resize(self, width, height):
-        super().on_resize(width, height)
+    def on_window_resize(self, width, height):
+        super().on_window_resize(width, height)
         self.no_more_tracks_available_placeholder_viewport.x1 = self.constructor_cells[TRACKS][-1].viewport.x1
         self.no_more_tracks_available_placeholder_viewport.x2 = self.constructor_cells[TRACKS][-1].viewport.x2
         self.no_more_tracks_available_placeholder_viewport.y1 = self.constructor_cells[TRACKS][-1].viewport.y1

@@ -62,7 +62,7 @@ class AppBaseController(ABC):
         self.on_mouse_scroll_handlers = []
         self.on_key_press_handlers = []
         self.on_text_handlers = []
-        self.on_resize_handlers = []
+        self.on_window_resize_handlers = []
         self.child_controllers = []
 
     def on_update_current_locale(self, new_locale):
@@ -221,18 +221,18 @@ class AppBaseController(ABC):
                                                            on_text_handlers=on_text_handlers)
 
     @final
-    def on_append_window_handlers(self, on_resize_handlers=()):
-        self.on_resize_handlers.extend(on_resize_handlers)
+    def on_append_window_handlers(self, on_window_resize_handlers=()):
+        self.on_window_resize_handlers.extend(on_window_resize_handlers)
         if self.parent_controller is not None:
-            self.parent_controller.on_append_window_handlers(on_resize_handlers=on_resize_handlers)
+            self.parent_controller.on_append_window_handlers(on_window_resize_handlers=on_window_resize_handlers)
 
     @final
-    def on_detach_window_handlers(self, on_resize_handlers=()):
-        for handler in on_resize_handlers:
-            self.on_resize_handlers.remove(handler)
+    def on_detach_window_handlers(self, on_window_resize_handlers=()):
+        for handler in on_window_resize_handlers:
+            self.on_window_resize_handlers.remove(handler)
 
         if self.parent_controller is not None:
-            self.parent_controller.on_detach_window_handlers(on_resize_handlers=on_resize_handlers)
+            self.parent_controller.on_detach_window_handlers(on_window_resize_handlers=on_window_resize_handlers)
 
 
 class GameBaseController(AppBaseController, ABC):

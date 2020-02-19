@@ -52,7 +52,7 @@ class MapView(MapBaseView, ABC):
                                                              parent_viewport=self.viewport)
         self.buttons = [self.open_schedule_button, self.open_constructor_button]
         self.shader_sprite = MapViewShaderSprite(view=self)
-        self.on_resize_handlers.append(self.shader_sprite.on_resize)
+        self.on_window_resize_handlers.append(self.shader_sprite.on_window_resize)
         self.on_append_window_handlers()
         self.shop_buttons = []
         CONFIG_DB_CURSOR.execute('''SELECT COUNT(*) FROM shops_config WHERE map_id = ?''', (self.map_id, ))
@@ -113,12 +113,12 @@ class MapView(MapBaseView, ABC):
 
     @final
     @window_size_has_changed
-    def on_resize(self, width, height):
+    def on_window_resize(self, width, height):
         # recalculating base offset before applying new screen resolution
         if self.screen_resolution > (0, 0):
             self.on_recalculate_base_offset_for_new_screen_resolution((width, height))
 
-        super().on_resize(width, height)
+        super().on_window_resize(width, height)
         self.base_offset_lower_left_limit = (self.viewport.x1,
                                              self.viewport.y1 + get_bottom_bar_height(self.screen_resolution))
         self.base_offset_upper_right_limit = (int(self.viewport.x2 - MAP_WIDTH * self.zoom),

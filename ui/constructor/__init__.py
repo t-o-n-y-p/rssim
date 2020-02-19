@@ -89,9 +89,10 @@ class ConstructorCell(ABC):
         self.money = USER_DB_CURSOR.fetchone()[0]
         self.money_target_activated = False
         self.opacity = 0
-        self.on_resize_handlers = [
-            self.on_resize, self.locked_label.on_resize, self.level_required_label.on_resize,
-            self.under_construction_days_label.on_resize, self.under_construction_hours_minutes_label.on_resize
+        self.on_window_resize_handlers = [
+            self.on_window_resize, self.locked_label.on_window_resize, self.level_required_label.on_window_resize,
+            self.under_construction_days_label.on_window_resize,
+            self.under_construction_hours_minutes_label.on_window_resize
         ]
 
     @final
@@ -178,7 +179,7 @@ class ConstructorCell(ABC):
 
     @final
     @window_size_has_changed
-    def on_resize(self, width, height):
+    def on_window_resize(self, width, height):
         self.screen_resolution = width, height
         bottom_bar_height = get_bottom_bar_height(self.screen_resolution)
         inner_area_rect = get_inner_area_rect(self.screen_resolution)

@@ -67,9 +67,10 @@ class AppView(AppBaseView):
         self.ru_locale_button = RULocaleButton(on_click_action=on_set_ru_locale, parent_viewport=self.viewport)
         self.buttons = [self.close_game_button, self.iconify_button, self.fullscreen_button, self.restore_button,
                         self.en_locale_button, self.ru_locale_button]
-        self.on_resize_handlers.extend([
-            *self.fps_display.on_resize_handlers, self.title_label.on_resize, self.shader_sprite.on_resize,
-            self.us_flag_sprite.on_resize, self.ru_flag_sprite.on_resize
+        self.on_window_resize_handlers.extend([
+            *self.fps_display.on_window_resize_handlers, self.title_label.on_window_resize,
+            self.shader_sprite.on_window_resize, self.us_flag_sprite.on_window_resize,
+            self.ru_flag_sprite.on_window_resize
         ])
         self.on_append_window_handlers()
         self.app_window_move_mode = False

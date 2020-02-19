@@ -69,7 +69,7 @@ class ShaderSprite(ABC):
 
     @final
     @window_size_has_changed
-    def on_resize(self, width, height):
+    def on_window_resize(self, width, height):
         self.screen_resolution = width, height
         self.bottom_edge = self.get_bottom_edge()
         self.top_edge = self.get_top_edge()

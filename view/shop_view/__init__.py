@@ -23,8 +23,8 @@ class ShopView(MapBaseView, ABC):
         self.close_shop_details_button = CloseShopDetailsButton(on_click_action=on_close_shop_details,
                                                                 parent_viewport=self.viewport)
         self.buttons = [self.close_shop_details_button, ]
-        self.on_resize_handlers.extend([
-            self.title_label.on_resize, self.shader_sprite.on_resize
+        self.on_window_resize_handlers.extend([
+            self.title_label.on_window_resize, self.shader_sprite.on_window_resize
         ])
         self.on_append_window_handlers()
 

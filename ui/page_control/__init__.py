@@ -50,7 +50,7 @@ class PageControl(ABC):
         self.buttons = [self.previous_page_button, self.next_page_button]
         self.shader_sprite = None
         self.opacity = 0
-        self.on_resize_handlers = [self.on_resize, self.current_page_label.on_resize]
+        self.on_window_resize_handlers = [self.on_window_resize, self.current_page_label.on_window_resize]
 
     @final
     def on_activate(self):
@@ -73,7 +73,7 @@ class PageControl(ABC):
 
     @final
     @window_size_has_changed
-    def on_resize(self, width, height):
+    def on_window_resize(self, width, height):
         self.screen_resolution = width, height
         self.viewport.x1, self.viewport.y1 = get_inner_area_rect(self.screen_resolution)[0:2]
         self.viewport.x2 = self.viewport.x1 + get_inner_area_rect(self.screen_resolution)[2]

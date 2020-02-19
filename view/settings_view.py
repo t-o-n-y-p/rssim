@@ -106,10 +106,12 @@ class SettingsView(AppBaseView):
                         *self.fade_animations_checkbox.buttons, *self.clock_24h_checkbox.buttons,
                         *self.notifications_checkbox_group.buttons]
         self.shader_sprite = SettingsViewShaderSprite(view=self)
-        self.on_resize_handlers.extend([
-            *self.display_fps_checkbox.on_resize_handlers, *self.fade_animations_checkbox.on_resize_handlers,
-            *self.clock_24h_checkbox.on_resize_handlers, *self.notifications_checkbox_group.on_resize_handlers,
-            * self.screen_resolution_control.on_resize_handlers, self.shader_sprite.on_resize
+        self.on_window_resize_handlers.extend([
+            *self.display_fps_checkbox.on_window_resize_handlers,
+            *self.fade_animations_checkbox.on_window_resize_handlers,
+            *self.clock_24h_checkbox.on_window_resize_handlers,
+            *self.notifications_checkbox_group.on_window_resize_handlers,
+            *self.screen_resolution_control.on_window_resize_handlers, self.shader_sprite.on_window_resize
         ])
         self.on_append_window_handlers()
 

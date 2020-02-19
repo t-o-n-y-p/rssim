@@ -10,13 +10,13 @@ class FPSDisplay(PygletFPSDisplay):
         super().__init__(WINDOW)
         self.label = FPSLabel(parent_viewport)
         self.screen_resolution = (0, 0)
-        self.on_resize_handlers = [self.on_resize, self.label.on_resize]
+        self.on_window_resize_handlers = [self.on_window_resize, self.label.on_window_resize]
 
     def set_fps(self, fps):
         self.label.on_update_args((int(fps), ))
 
     @window_size_has_changed
-    def on_resize(self, width, height):
+    def on_window_resize(self, width, height):
         self.screen_resolution = width, height
 
     def on_update_opacity(self, new_opacity):

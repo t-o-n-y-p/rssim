@@ -41,8 +41,8 @@ class MainMenuView(AppBaseView):
                         self.open_settings_button, self.enter_code_button]
         self.open_license_label = OpenLicenseLabel(parent_viewport=self.viewport)
         self.shader_sprite = MainMenuViewShaderSprite(view=self)
-        self.on_resize_handlers.extend([
-            self.shader_sprite.on_resize, self.open_license_label.on_resize
+        self.on_window_resize_handlers.extend([
+            self.shader_sprite.on_window_resize, self.open_license_label.on_window_resize
         ])
         self.on_append_window_handlers()
 

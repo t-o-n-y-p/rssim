@@ -67,9 +67,9 @@ class MapSwitcherCell(ABC):
         self.unlock_available_label.on_update_args((self.data[MAP_PRICE], ))
         self.title_label = None
         self.icon_labels = []
-        self.on_resize_handlers = [
-            self.on_resize, self.locked_label.on_resize, self.level_placeholder_label.on_resize,
-            self.unlock_available_label.on_resize
+        self.on_window_resize_handlers = [
+            self.on_window_resize, self.locked_label.on_window_resize, self.level_placeholder_label.on_window_resize,
+            self.unlock_available_label.on_window_resize
         ]
 
     @final
@@ -104,7 +104,7 @@ class MapSwitcherCell(ABC):
 
     @final
     @window_size_has_changed
-    def on_resize(self, width, height):
+    def on_window_resize(self, width, height):
         self.screen_resolution = width, height
         top_bar_height = get_top_bar_height(self.screen_resolution)
         self.viewport.x1 = self.parent_viewport.x1 \

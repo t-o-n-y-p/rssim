@@ -30,7 +30,7 @@ class RectangleProgressBar(ABC):
         USER_DB_CURSOR.execute('SELECT current_locale FROM i18n')
         self.current_locale = USER_DB_CURSOR.fetchone()[0]
         self.current_percent = 0
-        self.on_resize_handlers = [self.on_resize, ]
+        self.on_window_resize_handlers = [self.on_window_resize, ]
 
     @abstractmethod
     def get_position(self):
@@ -62,7 +62,7 @@ class RectangleProgressBar(ABC):
 
     @final
     @window_size_has_changed
-    def on_resize(self, width, height):
+    def on_window_resize(self, width, height):
         self.screen_resolution = width, height
         self.viewport.x1, self.viewport.y1 = self.get_position()
         self.viewport.x2 = self.viewport.x1 + int(self.inactive_image.width * self.get_scale())

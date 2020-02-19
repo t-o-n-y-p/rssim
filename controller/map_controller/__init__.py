@@ -344,7 +344,7 @@ class MapController(MapBaseController, ABC):
         train = self.model.on_create_train(train_id, cars, track, train_route, state, direction, new_direction,
                                            current_direction, priority, boarding_time, exp, money,
                                            switch_direction_required)
-        train.view.on_resize(*self.view.screen_resolution)
+        train.view.on_window_resize(*self.view.screen_resolution)
         # add new train to the list and dictionary
         self.trains[train_id] = train
         self.trains_list.append(train)

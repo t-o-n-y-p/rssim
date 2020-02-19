@@ -44,10 +44,10 @@ class BonusCodeInfoCell:
             = BonusInfoCellConstructionTimeBonusValueLabel(parent_viewport=self.viewport)
         self.activations_title_label = ActivationsTitleLabel(parent_viewport=self.viewport)
         self.activations_value_label = ActivationsValueLabel(parent_viewport=self.viewport)
-        self.on_resize_handlers = [
-            self.on_resize, self.bonus_title_label.on_resize, self.exp_bonus_value_label.on_resize,
-            self.money_bonus_value_label.on_resize, self.construction_time_bonus_value_label.on_resize,
-            self.activations_title_label.on_resize, self.activations_value_label.on_resize
+        self.on_window_resize_handlers = [
+            self.on_window_resize, self.bonus_title_label.on_window_resize, self.exp_bonus_value_label.on_window_resize,
+            self.money_bonus_value_label.on_window_resize, self.construction_time_bonus_value_label.on_window_resize,
+            self.activations_title_label.on_window_resize, self.activations_value_label.on_window_resize
         ]
         self.screen_resolution = (0, 0)
         self.is_activated = False
@@ -92,7 +92,7 @@ class BonusCodeInfoCell:
         self.activations_value_label.create()
 
     @window_size_has_changed
-    def on_resize(self, width, height):
+    def on_window_resize(self, width, height):
         self.screen_resolution = width, height
         self.viewport.x1 = (self.parent_viewport.x1 + self.parent_viewport.x2) // 2 \
                            - 5 * get_top_bar_height(self.screen_resolution)

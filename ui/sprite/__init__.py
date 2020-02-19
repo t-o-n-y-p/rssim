@@ -106,7 +106,7 @@ class UISprite(Sprite, ABC):
 
     @final
     @window_size_has_changed
-    def on_resize(self, width, height):
+    def on_window_resize(self, width, height):
         self.screen_resolution = width, height
         self.position = self.get_position()
         self.scale = self.get_scale()
