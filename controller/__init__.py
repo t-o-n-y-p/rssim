@@ -35,7 +35,6 @@ def map_view_is_active(fn):
 
 
 # --------------------- CONSTANTS ---------------------
-FRAMES_IN_ONE_HOUR: Final = 14400              # number of frames in 1 in-game hour
 SECTION_TYPE: Final = 0                        # meaning of section[] list's element 0
 SECTION_TRACK_NUMBER_1: Final = 1              # meaning of section[] list's element 1
 SECTION_TRACK_NUMBER_2: Final = 2              # meaning of section[] list's element 2

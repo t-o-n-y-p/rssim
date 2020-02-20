@@ -11,7 +11,7 @@ from controller.bonus_code_manager_controller import BonusCodeManagerController
 from controller.map_switcher_controller import MapSwitcherController
 from controller.map_controller.passenger_map_controller import PassengerMapController
 from controller.map_controller.freight_map_controller import FreightMapController
-from database import PASSENGER_MAP, FREIGHT_MAP
+from database import PASSENGER_MAP, FREIGHT_MAP, FRAMES_IN_ONE_HOUR
 
 
 @final
