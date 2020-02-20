@@ -16,7 +16,7 @@ class GameModel(GameBaseModel):
         self.player_progress = CONFIG_DB_CURSOR.fetchone()[0]
 
     def on_save_state(self):
-        USER_DB_CURSOR.execute('UPDATE epoch_timestamp SET game_time = ?', (self.game_time, ))
+        USER_DB_CURSOR.execute('UPDATE epoch_timestamp SET game_time = ?', (str(self.game_time), ))
         USER_DB_CURSOR.execute('''UPDATE game_progress SET level = ?, exp = ?, money = ?, 
                                   money_target = ?, exp_multiplier = ?, exp_bonus_multiplier = ?, 
                                   money_bonus_multiplier = ?, construction_time_bonus_multiplier = ?''',
