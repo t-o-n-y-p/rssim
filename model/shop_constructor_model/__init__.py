@@ -54,12 +54,12 @@ class ShopConstructorModel(MapBaseModel, ABC):
                                    ))
 
     @final
-    def on_update_time(self):
-        super().on_update_time()
+    def on_update_time(self, dt):
         if self.current_stage > 0 \
                 and self.shop_storage_money < self.shop_stages_state_matrix[self.current_stage][STORAGE_CAPACITY]:
-            self.internal_shop_time += 1
-            if self.internal_shop_time % FRAMES_IN_ONE_HOUR == 0:
+            if self.internal_shop_time // SECONDS_IN_ONE_HOUR \
+                    < (self.internal_shop_time + int(self.game_time_fraction + dt * self.dt_multiplier)) \
+                    // SECONDS_IN_ONE_HOUR:
                 if self.shop_storage_money \
                         < round(self.shop_stages_state_matrix[self.current_stage][STORAGE_CAPACITY]
                                 * SHOP_STORAGE_ALMOST_FULL_THRESHOLD) \
@@ -75,9 +75,12 @@ class ShopConstructorModel(MapBaseModel, ABC):
                                                - self.shop_storage_money)
                 self.view.on_update_storage_money(self.shop_storage_money)
 
+            self.internal_shop_time += int(self.game_time_fraction + dt * self.dt_multiplier)
+
         for stage in self.shop_stages_state_matrix:
             if self.shop_stages_state_matrix[stage][UNDER_CONSTRUCTION]:
-                self.shop_stages_state_matrix[stage][CONSTRUCTION_TIME] -= 1
+                self.shop_stages_state_matrix[stage][CONSTRUCTION_TIME] \
+                    -= int(self.game_time_fraction + dt * self.dt_multiplier)
                 if self.shop_stages_state_matrix[stage][CONSTRUCTION_TIME] <= 0:
                     self.shop_stages_state_matrix[stage][UNDER_CONSTRUCTION] = False
                     self.shop_stages_state_matrix[stage][LOCKED] = False
@@ -97,6 +100,8 @@ class ShopConstructorModel(MapBaseModel, ABC):
                         self.view.on_update_stage_state(stage + 1)
 
                 self.view.on_update_stage_state(stage)
+
+        super().on_update_time(dt)
 
     @final
     def on_level_up(self):

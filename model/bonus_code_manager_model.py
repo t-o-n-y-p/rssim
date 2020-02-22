@@ -19,11 +19,10 @@ class BonusCodeManagerModel(GameBaseModel):
                                     int(self.bonus_code_matrix[code][IS_ACTIVATED]),
                                     self.bonus_code_matrix[code][BONUS_TIME], code))
 
-    def on_update_time(self):
-        super().on_update_time()
+    def on_update_time(self, dt):
         for code in self.bonus_code_matrix:
             if self.bonus_code_matrix[code][IS_ACTIVATED]:
-                self.bonus_code_matrix[code][BONUS_TIME] -= 1
+                self.bonus_code_matrix[code][BONUS_TIME] -= int(self.game_time_fraction + dt * self.dt_multiplier)
                 if self.bonus_code_matrix[code][BONUS_TIME] <= 0:
                     self.bonus_code_matrix[code][IS_ACTIVATED] = False
                     if self.bonus_code_matrix[code][CODE_TYPE] == 'exp_bonus':
@@ -32,6 +31,8 @@ class BonusCodeManagerModel(GameBaseModel):
                         self.controller.parent_controller.on_deactivate_money_bonus_code()
                     elif self.bonus_code_matrix[code][CODE_TYPE] == 'construction_time_bonus':
                         self.controller.parent_controller.on_deactivate_construction_time_bonus_code()
+
+        super().on_update_time(dt)
 
     def on_deactivate_exp_bonus_code(self):
         super().on_deactivate_exp_bonus_code()

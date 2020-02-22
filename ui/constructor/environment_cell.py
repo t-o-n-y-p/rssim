@@ -24,14 +24,16 @@ class EnvironmentCell(ConstructorCell):
             self.level_required_label.delete()
             self.previous_entity_required_label.delete()
             self.unlock_available_label.delete()
-            if self.data[CONSTRUCTION_TIME] >= FRAMES_IN_ONE_DAY:
-                self.under_construction_days_label.on_update_args((self.data[CONSTRUCTION_TIME] // FRAMES_IN_ONE_DAY, ))
+            if self.data[CONSTRUCTION_TIME] >= SECONDS_IN_ONE_DAY:
+                self.under_construction_days_label.on_update_args(
+                    (self.data[CONSTRUCTION_TIME] // SECONDS_IN_ONE_DAY, )
+                )
                 self.under_construction_days_label.create()
                 self.under_construction_hours_minutes_label.delete()
             else:
                 self.under_construction_hours_minutes_label\
-                    .on_update_args((self.data[CONSTRUCTION_TIME] // FRAMES_IN_ONE_HOUR,
-                                     (self.data[CONSTRUCTION_TIME] // FRAMES_IN_ONE_MINUTE) % MINUTES_IN_ONE_HOUR))
+                    .on_update_args((self.data[CONSTRUCTION_TIME] // SECONDS_IN_ONE_HOUR,
+                                     (self.data[CONSTRUCTION_TIME] // SECONDS_IN_ONE_MINUTE) % MINUTES_IN_ONE_HOUR))
                 self.under_construction_hours_minutes_label.create()
                 self.under_construction_days_label.delete()
 

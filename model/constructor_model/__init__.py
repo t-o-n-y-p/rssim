@@ -80,13 +80,13 @@ class ConstructorModel(MapBaseModel, ABC):
                                    ))
 
     @final
-    def on_update_time(self):
-        super().on_update_time()
+    def on_update_time(self, dt):
         # unlocked_track stores track number if some track was unlocked and 0 otherwise
         unlocked_track = 0
         for track in self.construction_state_matrix[TRACKS]:
             if self.construction_state_matrix[TRACKS][track][UNDER_CONSTRUCTION]:
-                self.construction_state_matrix[TRACKS][track][CONSTRUCTION_TIME] -= 1
+                self.construction_state_matrix[TRACKS][track][CONSTRUCTION_TIME] \
+                    -= int(self.game_time_fraction + dt * self.dt_multiplier)
                 if self.construction_state_matrix[TRACKS][track][CONSTRUCTION_TIME] <= 0:
                     unlocked_track = track
                     self.controller.parent_controller.on_unlock_track(track)
@@ -100,7 +100,8 @@ class ConstructorModel(MapBaseModel, ABC):
         unlocked_tier = 0
         for tier in self.construction_state_matrix[ENVIRONMENT]:
             if self.construction_state_matrix[ENVIRONMENT][tier][UNDER_CONSTRUCTION]:
-                self.construction_state_matrix[ENVIRONMENT][tier][CONSTRUCTION_TIME] -= 1
+                self.construction_state_matrix[ENVIRONMENT][tier][CONSTRUCTION_TIME] \
+                    -= int(self.game_time_fraction + dt * self.dt_multiplier)
                 if self.construction_state_matrix[ENVIRONMENT][tier][CONSTRUCTION_TIME] <= 0:
                     unlocked_tier = tier
                     self.construction_state_matrix[ENVIRONMENT][tier][UNDER_CONSTRUCTION] = False
@@ -133,6 +134,8 @@ class ConstructorModel(MapBaseModel, ABC):
             if self.money_target_activated and self.money_target_cell_position[0] == ENVIRONMENT \
                     and self.money_target_cell_position[1] > 0:
                 self.money_target_cell_position[1] -= 1
+
+        super().on_update_time(dt)
 
     @final
     def on_level_up(self):

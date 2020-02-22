@@ -129,11 +129,11 @@ class MapController(MapBaseController, ABC):
         super().on_save_state()
 
     @final
-    def on_update_time(self):
+    def on_update_time(self, dt):
         # train routes are sorted by priority to implement some kind of queue
         self.train_routes_sorted_list = sorted(self.train_routes_sorted_list,
                                                key=attrgetter('model.priority'), reverse=True)
-        super().on_update_time()
+        super().on_update_time(dt)
         # collected trains which has departed successfully should be removed from the game
         for train in self.lifecycle_ended_trains:
             train.view.on_deactivate()

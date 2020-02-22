@@ -53,7 +53,7 @@ RED_RGB: Final = (255, 0, 0)                           # red UI color
 RED_GREY_RGB: Final = (112, 0, 0)
 WHITE_RGB: Final = (255, 255, 255)                     # white UI color
 GREY_RGB: Final = (112, 112, 112)                      # grey UI color
-SCHEDULE_ARRIVAL_TIME_THRESHOLD: Final = [FRAMES_IN_ONE_HOUR, FRAMES_IN_ONE_HOUR * 10]
+SCHEDULE_ARRIVAL_TIME_THRESHOLD: Final = [SECONDS_IN_ONE_HOUR, SECONDS_IN_ONE_HOUR * 10]
 # main surface which harbors all the app
 WINDOW: Final = _create_window()
 # flip the surface so user knows game has launched and is loading now

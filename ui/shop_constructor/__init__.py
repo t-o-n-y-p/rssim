@@ -89,9 +89,12 @@ class ShopStageCell:
             self.locked_label.delete()
             self.level_placeholder_label.delete()
             self.previous_stage_placeholder_label.delete()
-            self.under_construction_label.on_update_args((self.data[CONSTRUCTION_TIME] // FRAMES_IN_ONE_HOUR,
-                                                          (self.data[CONSTRUCTION_TIME] // FRAMES_IN_ONE_MINUTE)
-                                                          % MINUTES_IN_ONE_HOUR))
+            self.under_construction_label.on_update_args(
+                (
+                    self.data[CONSTRUCTION_TIME] // SECONDS_IN_ONE_HOUR,
+                    (self.data[CONSTRUCTION_TIME] // SECONDS_IN_ONE_MINUTE) % MINUTES_IN_ONE_HOUR
+                )
+            )
             self.under_construction_label.create()
             self.hourly_profit_description_label.delete()
             self.hourly_profit_value_label.delete()

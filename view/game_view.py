@@ -83,20 +83,20 @@ class GameView(GameBaseView):
     def on_activate(self):
         super().on_activate()
         self.shader_sprite.create()
+        self.main_clock_label_24h.on_update_args(
+            ((self.game_time // SECONDS_IN_ONE_HOUR + 12) % HOURS_IN_ONE_DAY,
+             (self.game_time // SECONDS_IN_ONE_MINUTE) % MINUTES_IN_ONE_HOUR)
+        )
+        self.main_clock_label_12h.on_update_args(
+            ((self.game_time // SECONDS_IN_ONE_HOUR + 11) % 12 + 1,
+             (self.game_time // SECONDS_IN_ONE_MINUTE) % MINUTES_IN_ONE_HOUR,
+             I18N_RESOURCES['am_pm_string'][self.current_locale][
+                 ((self.game_time // SECONDS_IN_ONE_HOUR) // 12 + 1) % 2
+             ])
+        )
         if self.clock_24h_enabled:
-            self.main_clock_label_24h.on_update_args(
-                ((self.game_time // FRAMES_IN_ONE_HOUR + 12) % HOURS_IN_ONE_DAY,
-                 (self.game_time // FRAMES_IN_ONE_MINUTE) % MINUTES_IN_ONE_HOUR)
-            )
             self.main_clock_label_24h.create()
         else:
-            self.main_clock_label_12h.on_update_args(
-                ((self.game_time // FRAMES_IN_ONE_HOUR + 11) % 12 + 1,
-                 (self.game_time // FRAMES_IN_ONE_MINUTE) % MINUTES_IN_ONE_HOUR,
-                 I18N_RESOURCES['am_pm_string'][self.current_locale][
-                     ((self.game_time // FRAMES_IN_ONE_HOUR) // 12 + 1) % 2
-                     ])
-            )
             self.main_clock_label_12h.create()
 
         self.exp_progress_bar.on_update_text_label_args((self.level,))
@@ -143,17 +143,17 @@ class GameView(GameBaseView):
         self.main_clock_label_24h.on_update_opacity(self.opacity)
         self.main_clock_label_12h.on_update_opacity(self.opacity)
 
-    def on_update_time(self):
-        super().on_update_time()
+    def on_update_time(self, dt):
+        super().on_update_time(dt)
         self.main_clock_label_24h.on_update_args(
-            ((self.game_time // FRAMES_IN_ONE_HOUR + 12) % HOURS_IN_ONE_DAY,
-             (self.game_time // FRAMES_IN_ONE_MINUTE) % MINUTES_IN_ONE_HOUR)
+            ((self.game_time // (SECONDS_IN_ONE_MINUTE * MINUTES_IN_ONE_HOUR) + 12) % HOURS_IN_ONE_DAY,
+             (self.game_time // SECONDS_IN_ONE_MINUTE) % MINUTES_IN_ONE_HOUR)
         )
         self.main_clock_label_12h.on_update_args(
-            ((self.game_time // FRAMES_IN_ONE_HOUR + 11) % 12 + 1,
-             (self.game_time // FRAMES_IN_ONE_MINUTE) % MINUTES_IN_ONE_HOUR,
+            ((self.game_time // (SECONDS_IN_ONE_MINUTE * MINUTES_IN_ONE_HOUR) + 11) % 12 + 1,
+             (self.game_time // SECONDS_IN_ONE_MINUTE) % MINUTES_IN_ONE_HOUR,
              I18N_RESOURCES['am_pm_string'][self.current_locale][
-                 ((self.game_time // FRAMES_IN_ONE_HOUR) // 12 + 1) % 2
+                 ((self.game_time // (SECONDS_IN_ONE_MINUTE * MINUTES_IN_ONE_HOUR)) // 12 + 1) % 2
              ])
         )
 

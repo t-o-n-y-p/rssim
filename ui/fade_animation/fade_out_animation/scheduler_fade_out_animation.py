@@ -10,3 +10,8 @@ class SchedulerFadeOutAnimation(FadeOutAnimation):
                          logger=getLogger(
                              f'root.app.game.map.{scheduler_view.map_id}.scheduler.fade_out_animation'
                          ))
+
+    @fade_animation_needed
+    @fade_animation_is_not_active
+    def on_activate(self):
+        super().on_activate()

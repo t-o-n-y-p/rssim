@@ -52,8 +52,8 @@ class TrainRouteModel(MapBaseModel, ABC):
                                 self.track, self.train_route, self.map_id))
 
     @final
-    def on_update_time(self):
-        super().on_update_time()
+    def on_update_time(self, dt):
+        super().on_update_time(dt)
         if self.opened and len(self.train_route_sections) > 1:
             train_route_busy = False
             for i in range(1, len(self.train_route_sections)):

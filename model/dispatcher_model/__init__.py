@@ -23,8 +23,8 @@ class DispatcherModel(MapBaseModel, ABC):
                                    (int(self.track_busy_status[i]), i, self.map_id))
 
     @final
-    def on_update_time(self):
-        super().on_update_time()
+    def on_update_time(self, dt):
+        super().on_update_time(dt)
         for t in self.trains:
             for track in self.get_track_priority_list(t):
                 if track <= self.unlocked_tracks and not self.track_busy_status[track] \
@@ -53,5 +53,6 @@ class DispatcherModel(MapBaseModel, ABC):
     def on_leave_track(self, track):
         self.track_busy_status[track] = False
 
+    @abstractmethod
     def get_track_priority_list(self, train):
         pass

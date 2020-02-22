@@ -29,12 +29,12 @@ class SchedulerModel(MapBaseModel, ABC):
         self.train_counter, self.next_cycle_start_time = USER_DB_CURSOR.fetchone()
         USER_DB_CURSOR.execute('''SELECT entry_busy_state FROM scheduler WHERE map_id = ?''', (self.map_id, ))
         self.entry_busy_state = [bool(int(t)) for t in USER_DB_CURSOR.fetchone()[0].split(',')]
-        CONFIG_DB_CURSOR.execute('''SELECT schedule_cycle_length, frame_per_car, exp_per_car, money_per_car 
+        CONFIG_DB_CURSOR.execute('''SELECT schedule_cycle_length, seconds_per_car, exp_per_car, money_per_car 
                                     FROM map_config WHERE level = ? AND map_id = ?''', (self.level, self.map_id))
         if (schedule_config := CONFIG_DB_CURSOR.fetchone()) is not None:
-            self.schedule_cycle_length, self.frame_per_car, self.exp_per_car, self.money_per_car = schedule_config
+            self.schedule_cycle_length, self.seconds_per_car, self.exp_per_car, self.money_per_car = schedule_config
         else:
-            self.schedule_cycle_length, self.frame_per_car, self.exp_per_car, self.money_per_car = 0, 0, 0.0, 0.0
+            self.schedule_cycle_length, self.seconds_per_car, self.exp_per_car, self.money_per_car = 0, 0, 0.0, 0.0
 
         USER_DB_CURSOR.execute('''SELECT entry_locked_state FROM map_progress WHERE map_id = ?''', (self.map_id, ))
         self.entry_locked_state = [bool(int(t)) for t in USER_DB_CURSOR.fetchone()[0].split(',')]
@@ -61,8 +61,8 @@ class SchedulerModel(MapBaseModel, ABC):
                                    (self.map_id, *train))
 
     @final
-    def on_update_time(self):
-        super().on_update_time()
+    def on_update_time(self, dt):
+        super().on_update_time(dt)
         # new schedule cycle is created if current schedule end is less than schedule cycle length ahead
         if not self.locked and self.game_time + self.schedule_cycle_length >= self.next_cycle_start_time:
             # trains are added one by one if both direction and new direction are unlocked by user,
@@ -72,7 +72,7 @@ class SchedulerModel(MapBaseModel, ABC):
                     cars = choice(list(range(i[CARS_MIN], i[CARS_MAX] + 1)))
                     train_options = (self.train_counter, self.next_cycle_start_time
                                      + choice(list(range(i[ARRIVAL_TIME_MIN], i[ARRIVAL_TIME_MAX]))),
-                                     i[DIRECTION], i[NEW_DIRECTION], cars, self.frame_per_car * cars,
+                                     i[DIRECTION], i[NEW_DIRECTION], cars, self.seconds_per_car * cars,
                                      self.exp_per_car * cars, self.money_per_car * cars, i[SWITCH_DIRECTION_FLAG])
                     self.base_schedule.append(train_options)
                     self.train_counter = (self.train_counter + 1) % TRAIN_ID_LIMIT
@@ -121,12 +121,12 @@ class SchedulerModel(MapBaseModel, ABC):
                                     WHERE min_level <= ? AND max_level >= ? AND map_id = ?''',
                                  (self.level, self.level, self.map_id))
         self.schedule_options = CONFIG_DB_CURSOR.fetchall()
-        CONFIG_DB_CURSOR.execute('''SELECT schedule_cycle_length, frame_per_car, exp_per_car, money_per_car 
+        CONFIG_DB_CURSOR.execute('''SELECT schedule_cycle_length, seconds_per_car, exp_per_car, money_per_car 
                                     FROM map_config WHERE level = ? AND map_id = ?''', (self.level, self.map_id))
         if (schedule_config := CONFIG_DB_CURSOR.fetchone()) is not None:
-            self.schedule_cycle_length, self.frame_per_car, self.exp_per_car, self.money_per_car = schedule_config
+            self.schedule_cycle_length, self.seconds_per_car, self.exp_per_car, self.money_per_car = schedule_config
         else:
-            self.schedule_cycle_length, self.frame_per_car, self.exp_per_car, self.money_per_car = 0, 0, 0.0, 0.0
+            self.schedule_cycle_length, self.seconds_per_car, self.exp_per_car, self.money_per_car = 0, 0, 0.0, 0.0
 
     @final
     def on_unlock(self):
@@ -136,10 +136,9 @@ class SchedulerModel(MapBaseModel, ABC):
     @final
     def on_unlock_track(self, track):
         self.unlocked_tracks = track
-        directions_to_unlock = [direction_id for direction_id, (track, environment)
-                                in enumerate(MAP_ENTRY_UNLOCK_CONDITIONS[self.map_id])
-                                if track == self.unlocked_tracks and environment <= self.unlocked_environment]
-        for d in directions_to_unlock:
+        for d in [direction_id for direction_id, (track, environment)
+                  in enumerate(MAP_ENTRY_UNLOCK_CONDITIONS[self.map_id])
+                  if track == self.unlocked_tracks and environment <= self.unlocked_environment]:
             self.entry_locked_state[d] = False
             if d % 2 == 0:
                 self.exit_locked_state[d + 1] = False
@@ -151,10 +150,9 @@ class SchedulerModel(MapBaseModel, ABC):
     @final
     def on_unlock_environment(self, tier):
         self.unlocked_environment = tier
-        directions_to_unlock = [direction_id for direction_id, (track, environment)
-                                in enumerate(MAP_ENTRY_UNLOCK_CONDITIONS[self.map_id])
-                                if track <= self.unlocked_tracks and environment == self.unlocked_environment]
-        for d in directions_to_unlock:
+        for d in [direction_id for direction_id, (track, environment)
+                  in enumerate(MAP_ENTRY_UNLOCK_CONDITIONS[self.map_id])
+                  if track <= self.unlocked_tracks and environment == self.unlocked_environment]:
             self.entry_locked_state[d] = False
             if d % 2 == 0:
                 self.exit_locked_state[d + 1] = False
@@ -167,5 +165,6 @@ class SchedulerModel(MapBaseModel, ABC):
         for e in JOINT_ENTRIES[self.map_id][entry_id]:
             self.entry_busy_state[e] = False
 
+    @abstractmethod
     def on_update_min_supported_cars_by_direction(self):
         pass

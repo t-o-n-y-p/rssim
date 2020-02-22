@@ -11,7 +11,7 @@ from controller.bonus_code_manager_controller import BonusCodeManagerController
 from controller.map_switcher_controller import MapSwitcherController
 from controller.map_controller.passenger_map_controller import PassengerMapController
 from controller.map_controller.freight_map_controller import FreightMapController
-from database import PASSENGER_MAP, FREIGHT_MAP, FRAMES_IN_ONE_HOUR
+from database import PASSENGER_MAP, FREIGHT_MAP, SECONDS_IN_ONE_HOUR
 
 
 @final
@@ -46,9 +46,9 @@ class GameController(GameBaseController):
         }
 
     @game_is_not_paused
-    def on_update_time(self):
-        super().on_update_time()
-        if self.model.game_time % (FRAMES_IN_ONE_HOUR * 2) == 0:
+    def on_update_time(self, dt):
+        super().on_update_time(dt)
+        if self.model.game_time % (SECONDS_IN_ONE_HOUR * 2) == 0:
             self.parent_controller.on_save_state()
 
     def on_pause_game(self):

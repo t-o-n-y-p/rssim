@@ -10,3 +10,8 @@ class ShopPlaceholderFadeOutAnimation(FadeOutAnimation):
                          logger=getLogger(
                              f'root.app.game.map.{shop_placeholder_view.map_id}.shop.{shop_placeholder_view.shop_id}.placeholder.fade_out_animation'
                          ))
+
+    @fade_animation_needed
+    @fade_animation_is_not_active
+    def on_activate(self):
+        super().on_activate()

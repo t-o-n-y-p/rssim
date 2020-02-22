@@ -10,3 +10,8 @@ class DispatcherFadeOutAnimation(FadeOutAnimation):
                          logger=getLogger(
                              f'root.app.game.map.{dispatcher_view.map_id}.dispatcher.fade_out_animation'
                          ))
+
+    @fade_animation_needed
+    @fade_animation_is_not_active
+    def on_activate(self):
+        super().on_activate()

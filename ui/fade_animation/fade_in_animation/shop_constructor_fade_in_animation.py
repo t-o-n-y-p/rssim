@@ -10,3 +10,8 @@ class ShopConstructorFadeInAnimation(FadeInAnimation):
                          logger=getLogger(
                              f'root.app.game.map.{shop_constructor_view.map_id}.shop.{shop_constructor_view.shop_id}.constructor.fade_in_animation'
                          ))
+
+    @fade_animation_needed
+    @fade_animation_is_not_active
+    def on_activate(self):
+        super().on_activate()

@@ -10,3 +10,8 @@ class TrainRouteFadeOutAnimation(FadeOutAnimation):
                          logger=getLogger(
                              f'root.app.game.map.{train_route_view.map_id}.train_route.{train_route_view.track}.{train_route_view.train_route}.fade_out_animation'
                          ))
+
+    @fade_animation_needed
+    @fade_animation_is_not_active
+    def on_activate(self):
+        super().on_activate()

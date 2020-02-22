@@ -5,7 +5,6 @@ from hashlib import sha512
 from logging import FileHandler, Formatter, getLogger
 from datetime import datetime
 from sqlite3 import OperationalError
-from time import perf_counter
 
 import pyglet
 from keyring import get_password
@@ -96,7 +95,7 @@ class Launcher:
     def __init__(self):
         def on_app_update(dt):
             self.app.game.on_update_time(dt)
-            self.app.on_fade_animation_update(dt)
+            # self.app.on_fade_animation_update(dt)
             self.app.on_update_view()
 
         self.on_check_for_updates()
@@ -117,7 +116,6 @@ class Launcher:
         gl.glEnable(gl.GL_BLEND)
         gl.glBlendFunc(gl.GL_SRC_ALPHA, gl.GL_ONE_MINUS_SRC_ALPHA)
         self.app = AppController(loader=self)
-        self.app.fade_in_animation.on_activate()
         pyglet.clock.schedule(on_app_update)
         self.on_mouse_motion_event_counter = 0
         self.on_mouse_motion_cached_movement = [0, 0]
@@ -125,6 +123,7 @@ class Launcher:
         self.on_mouse_drag_cached_movement = [0, 0]
         self.on_mouse_scroll_event_counter = 0
         self.on_mouse_scroll_cached_movement = [0, 0]
+        self.app.fade_in_animation.on_activate()
 
         @WINDOW.event
         def on_draw():

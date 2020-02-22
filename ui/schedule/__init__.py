@@ -102,15 +102,15 @@ class ScheduleRow:
     def on_update_main_sprite_args(self):
         self.main_sprite_24h.on_update_args(
             (
-                self.data[TRAIN_ID], (self.data[ARRIVAL_TIME] // FRAMES_IN_ONE_HOUR + 12) % HOURS_IN_ONE_DAY,
-                (self.data[ARRIVAL_TIME] // FRAMES_IN_ONE_MINUTE) % MINUTES_IN_ONE_HOUR, self.data[CARS]
+                self.data[TRAIN_ID], (self.data[ARRIVAL_TIME] // SECONDS_IN_ONE_HOUR + 12) % HOURS_IN_ONE_DAY,
+                (self.data[ARRIVAL_TIME] // SECONDS_IN_ONE_MINUTE) % MINUTES_IN_ONE_HOUR, self.data[CARS]
              )
         )
-        am_pm_index = ((self.data[ARRIVAL_TIME] // FRAMES_IN_ONE_HOUR) // 12 + 1) % 2
+        am_pm_index = ((self.data[ARRIVAL_TIME] // SECONDS_IN_ONE_HOUR) // 12 + 1) % 2
         self.main_sprite_12h.on_update_args(
             (
-                self.data[TRAIN_ID], (self.data[ARRIVAL_TIME] // FRAMES_IN_ONE_HOUR + 11) % 12 + 1,
-                (self.data[ARRIVAL_TIME] // FRAMES_IN_ONE_MINUTE) % MINUTES_IN_ONE_HOUR,
+                self.data[TRAIN_ID], (self.data[ARRIVAL_TIME] // SECONDS_IN_ONE_HOUR + 11) % 12 + 1,
+                (self.data[ARRIVAL_TIME] // SECONDS_IN_ONE_MINUTE) % MINUTES_IN_ONE_HOUR,
                 I18N_RESOURCES['am_pm_string'][self.current_locale][am_pm_index], self.data[CARS]
             )
         )

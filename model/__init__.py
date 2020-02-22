@@ -212,7 +212,7 @@ FULLSCREEN_MODE_TURNED_ON: Final = 1  # database value for fullscreen mode turne
 MAXIMUM_TRACK_NUMBER: Final = (32, 16)  # player can have maximum of 32 tracks on map 0 and 16 tracks on map 1
 MAXIMUM_ENVIRONMENT_TIER: Final = (6, 3)  # environment tier 6 is final for map 0, for map 1 we have 3 tiers
 DEFAULT_PRIORITY: Final = 10000000  # default priority for any new train created
-PASS_THROUGH_BOARDING_TIME: Final = FRAMES_IN_ONE_MINUTE * 2  # default boarding time for pass-through trains
+PASS_THROUGH_BOARDING_TIME: Final = SECONDS_IN_ONE_MINUTE * 2  # default boarding time for pass-through trains
 PASSENGER_CAR_LENGTH: Final = 251  # length of the passenger car in pixels
 FREIGHT_HEAD_TAIL_CAR_LENGTH: Final = 251  # length of the head/tail freight car in pixels
 FREIGHT_MID_CAR_LENGTH: Final = 151  # length of the middle freight car in pixels
@@ -230,6 +230,10 @@ def train_speed_formula(t):
 
 def get_braking_distance(t):
     return integrate.quad(train_speed_formula, 0, t)[0]
+
+
+def get_distance(t1, t2):
+    return integrate.quad(train_speed_formula, min(t1, t2), max(t1, t2))[0]
 
 
 class AppBaseModel(ABC):
