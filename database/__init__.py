@@ -12,7 +12,7 @@ from pyglet.resource import get_settings_path
 
 set_keyring(Windows.WinVaultKeyring())
 # determine if user launches app for the first time, if yes - create game DB
-USER_DB_LOCATION: Final = get_settings_path(sha512('rssim'.encode('utf-8')).hexdigest())
+USER_DB_LOCATION: Final = get_settings_path("Railway Station Simulator")
 __user_db_full_path = path.join(USER_DB_LOCATION, 'user.db')
 if not path.exists(USER_DB_LOCATION):
     makedirs(USER_DB_LOCATION)

@@ -179,8 +179,6 @@ class TrainModel(MapBaseModel, ABC):
                                                 self.speed_state_time))
                 self.speed_state_time -= dt * self.dt_multiplier
 
-            self.logger.debug(f'{self.speed_state=}, {self.speed_state_time=}')
-
         else:
             # after half a minute left, assign exit rain route depending on new direction
             if self.boarding_time - dt * self.dt_multiplier <= SECONDS_IN_ONE_MINUTE // 2 < self.boarding_time:

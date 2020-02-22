@@ -203,8 +203,8 @@ APPROACHING_TRAIN_ROUTE: Final = (
 MAXIMUM_LEVEL: Final = 200  # maximum level the player can reach in the game
 # track mask for entry base routes for all directions
 ENTRY_TRACK_ID: Final = ((0, 0, 100, 100), (0, 0, 0, 100, 0, 200, 0, 300, 0, 400))
-TRAIN_MAXIMUM_SPEED: Final = [28, 8]
-TRAIN_VELOCITY_BASE: Final = 1.050011786
+TRAIN_MAXIMUM_SPEED: Final = (84, 24)
+TRAIN_VELOCITY_BASE: Final = 1.03
 MONEY_LIMIT: Final = 9999999999.0  # max amount of money the player can have
 TRAIN_ID_LIMIT: Final = 1000000  # train ID is limited to 6 digits, 999999 is followed by 0
 FULLSCREEN_MODE_TURNED_OFF: Final = 0  # database value for fullscreen mode turned on
@@ -252,7 +252,6 @@ class GameBaseModel(AppBaseModel, ABC):
         super().__init__(controller, view, logger)
         USER_DB_CURSOR.execute('SELECT * FROM epoch_timestamp')
         self.game_time, self.game_time_fraction, self.dt_multiplier = USER_DB_CURSOR.fetchone()
-        self.dt_multiplier = 15.0  # debug reasons
         USER_DB_CURSOR.execute('''SELECT level, money, exp_bonus_multiplier, money_bonus_multiplier, 
                                   construction_time_bonus_multiplier FROM game_progress''')
         self.level, self.money, self.exp_bonus_multiplier, self.money_bonus_multiplier, \
