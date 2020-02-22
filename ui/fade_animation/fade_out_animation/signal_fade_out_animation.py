@@ -10,8 +10,3 @@ class SignalFadeOutAnimation(FadeOutAnimation):
                          logger=getLogger(
                              f'root.app.game.map.{signal_view.map_id}.signal.{signal_view.track}.{signal_view.base_route}.fade_out_animation'
                          ))
-
-    @fade_animation_needed
-    @fade_animation_is_not_active
-    def on_activate(self):
-        super().on_activate()

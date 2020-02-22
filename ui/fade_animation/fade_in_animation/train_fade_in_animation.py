@@ -10,8 +10,3 @@ class TrainFadeInAnimation(FadeInAnimation):
                          logger=getLogger(
                              f'root.app.game.map.{train_view.map_id}.train.{train_view.train_id}.fade_in_animation'
                          ))
-
-    @fade_animation_needed
-    @fade_animation_is_not_active
-    def on_activate(self):
-        super().on_activate()

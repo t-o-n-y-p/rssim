@@ -90,10 +90,15 @@ class AppBaseController(ABC):
     @final
     def on_update_view(self):
         self.view.on_update()
-        self.fade_in_animation.on_update()
-        self.fade_out_animation.on_update()
         for controller in self.child_controllers:
             controller.on_update_view()
+
+    @final
+    def on_fade_animation_update(self, dt):
+        self.fade_in_animation.on_update(dt)
+        self.fade_out_animation.on_update(dt)
+        for controller in self.child_controllers:
+            controller.on_fade_animation_update(dt)
 
     @final
     def on_apply_shaders_and_draw_vertices(self):
@@ -278,10 +283,10 @@ class GameBaseController(AppBaseController, ABC):
     def __init__(self, parent_controller=None, logger=None):
         super().__init__(parent_controller, logger)
 
-    def on_update_time(self):
-        self.model.on_update_time()
+    def on_update_time(self, dt):
+        self.model.on_update_time(dt)
         for controller in self.child_controllers:
-            controller.on_update_time()
+            controller.on_update_time(dt)
 
     def on_level_up(self):
         self.model.on_level_up()

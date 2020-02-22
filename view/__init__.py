@@ -388,8 +388,10 @@ class GameBaseView(AppBaseView, ABC):
         self.level, self.money, self.exp_bonus_multiplier, self.money_bonus_multiplier, \
             self.construction_time_bonus_multiplier = USER_DB_CURSOR.fetchone()
 
-    def on_update_time(self):
-        self.game_time += 1
+    def on_update_time(self, dt):
+        self.game_time_fraction += dt * self.dt_multiplier
+        self.game_time += int(self.game_time_fraction)
+        self.game_time_fraction %= 1
 
     def on_level_up(self):
         self.level += 1

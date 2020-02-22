@@ -95,14 +95,11 @@ class Launcher:
     @player_progress_was_not_modified
     def __init__(self):
         def on_app_update(dt):
-            # increment in-game time
-            self.app.game.on_update_time()
-            # on_update_view() checks if all views content is up-to-date and opacity is correct
+            self.app.game.on_update_time(dt)
+            self.app.on_fade_animation_update(dt)
             self.app.on_update_view()
 
-        # check if game was updated from previous version (0.9.0 and higher are supported)
         self.on_check_for_updates()
-        # set up the main logger, create log file
         self.logger = getLogger('root')
         current_datetime = datetime.now()
         if not path.exists('logs'):
@@ -119,9 +116,7 @@ class Launcher:
         # set blending mode; this is required to correctly draw transparent textures
         gl.glEnable(gl.GL_BLEND)
         gl.glBlendFunc(gl.GL_SRC_ALPHA, gl.GL_ONE_MINUS_SRC_ALPHA)
-        # create App object
         self.app = AppController(loader=self)
-        # activate app after it is created
         self.app.fade_in_animation.on_activate()
         pyglet.clock.schedule(on_app_update)
         self.on_mouse_motion_event_counter = 0
@@ -130,7 +125,6 @@ class Launcher:
         self.on_mouse_drag_cached_movement = [0, 0]
         self.on_mouse_scroll_event_counter = 0
         self.on_mouse_scroll_cached_movement = [0, 0]
-        self.last_frame_time = perf_counter()
 
         @WINDOW.event
         def on_draw():
@@ -152,10 +146,6 @@ class Launcher:
             self.on_mouse_motion_event_counter = 0
             self.on_mouse_drag_event_counter = 0
             self.on_mouse_scroll_event_counter = 0
-            # while perf_counter() - self.last_frame_time < 1/60:
-            #     pass
-            #
-            # self.last_frame_time = perf_counter()
 
         @WINDOW.event
         def on_activate():
