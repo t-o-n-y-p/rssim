@@ -123,14 +123,12 @@ class TrainModel(MapBaseModel, ABC):
             # update speed and speed state
             # when train reaches stop point, update state to 'stop', speed and speed_factor_position to 0
             if self.cars_position[0] >= self.stop_point:
-                offset = self.cars_position[0] - self.stop_point
-                self.cars_position = [round(p - offset) for p in self.cars_position]
+                self.on_train_move(self.stop_point - self.cars_position[0])
                 self.speed_state = 'stop'
                 self.speed_state_time = 0.0
             # when train needs to stop at stop point and distance is less than braking distance,
             # update state to 'decelerate'
-            elif self.stop_point - self.cars_position[0] < get_braking_distance(self.speed_state_time) \
-                    and self.speed_state in ('accelerate', 'move'):
+            elif self.stop_point - self.cars_position[0] <= get_braking_distance(self.speed_state_time):
                 self.speed_state = 'decelerate'
             # when train needs to stop at stop point and distance is more than braking distance,
             # update state to 'accelerate' if train is not at maximum speed already
@@ -140,8 +138,7 @@ class TrainModel(MapBaseModel, ABC):
             # when train reaches destination point, current train route is complete,
             # update state according to previous state
             if self.cars_position[0] >= self.destination_point:
-                offset = self.cars_position[0] - self.destination_point
-                self.cars_position = [round(p - offset) for p in self.cars_position]
+                self.on_train_move(self.destination_point - self.cars_position[0])
                 # approaching routes are closed by dispatcher, other routes can be closed here
                 if self.state not in ('approaching', 'approaching_pass_through'):
                     self.controller.parent_controller.on_close_train_route(self.track, self.train_route)
@@ -163,7 +160,6 @@ class TrainModel(MapBaseModel, ABC):
                 elif self.state == 'boarding_complete':
                     self.controller.parent_controller.on_train_lifecycle_ended(self.controller)
 
-            self.view.car_position = []
             # update speed depending on speed state
             if self.speed_state == 'accelerate':
                 if self.speed_state_time >= log(TRAIN_MAXIMUM_SPEED[self.map_id] + 1, TRAIN_VELOCITY_BASE):
@@ -183,11 +179,11 @@ class TrainModel(MapBaseModel, ABC):
                                                 self.speed_state_time))
                 self.speed_state_time -= dt * self.dt_multiplier
 
+            self.logger.debug(f'{self.speed_state=}, {self.speed_state_time=}')
+
         else:
-            # if boarding is in progress, decrease boarding time
-            self.boarding_time -= dt * self.dt_multiplier
-            # after one minute left, assign exit rain route depending on new direction
-            if self.boarding_time <= SECONDS_IN_ONE_MINUTE // 2 and self.current_direction != self.new_direction:
+            # after half a minute left, assign exit rain route depending on new direction
+            if self.boarding_time - dt * self.dt_multiplier <= SECONDS_IN_ONE_MINUTE // 2 < self.boarding_time:
                 self.current_direction = self.new_direction
                 self.train_route = EXIT_TRAIN_ROUTE[self.map_id][self.current_direction]
                 if self.switch_direction_required:
@@ -198,6 +194,7 @@ class TrainModel(MapBaseModel, ABC):
                                                                       self.train_id, self.cars)
                 self.on_reconvert_trail_points()
 
+            self.boarding_time -= dt * self.dt_multiplier
             # after boarding time is over, update train state and add exp/money
             if self.boarding_time <= 0:
                 self.state = 'boarding_complete'
@@ -247,6 +244,7 @@ class TrainModel(MapBaseModel, ABC):
 
     @final
     def on_train_move(self, ds):
+        self.view.car_position = []
         self.cars_position[0] += ds
         self.view.car_position.append(self.trail_points_v2.get_head_tail_car_position(self.cars_position[0]))
         for i in range(1, len(self.cars_position) - 1):
