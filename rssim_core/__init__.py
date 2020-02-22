@@ -95,7 +95,7 @@ class Launcher:
     def __init__(self):
         def on_app_update(dt):
             self.app.game.on_update_time(dt)
-            # self.app.on_fade_animation_update(dt)
+            self.app.on_fade_animation_update(dt)
             self.app.on_update_view()
 
         self.on_check_for_updates()
