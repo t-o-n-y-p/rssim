@@ -6,7 +6,6 @@ from ui.onboarding_page.constructor_onboarding_page import ConstructorOnboarding
 from ui.onboarding_page.exp_money_onboarding_page import ExpMoneyOnboardingPage
 from ui.onboarding_page.map_onboarding_page import MapOnboardingPage
 from ui.onboarding_page.map_switcher_onboarding_page import MapSwitcherOnboardingPage
-from ui.onboarding_page.pause_resume_onboarding_page import PauseResumeOnboardingPage
 from ui.onboarding_page.schedule_onboarding_page import ScheduleOnboardingPage
 from ui.onboarding_page.settings_onboarding_page import SettingsOnboardingPage
 from ui.shader_sprite.onboarding_page_control_shader_sprite import OnboardingPageControlShaderSprite
@@ -22,7 +21,6 @@ class OnboardingPageControl(PageControl):
                       ConstructorOnboardingPage(parent_viewport=self.viewport),
                       ExpMoneyOnboardingPage(parent_viewport=self.viewport),
                       ScheduleOnboardingPage(parent_viewport=self.viewport),
-                      PauseResumeOnboardingPage(parent_viewport=self.viewport),
                       ClockOnboardingPage(parent_viewport=self.viewport),
                       SettingsOnboardingPage(parent_viewport=self.viewport)]
         self.shader_sprite = OnboardingPageControlShaderSprite(view=self)

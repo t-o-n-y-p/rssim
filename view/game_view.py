@@ -1,11 +1,8 @@
 from logging import getLogger
 
 from view import *
-from ui.button import create_two_state_button
 from ui.button.open_settings_game_view_button import OpenSettingsGameViewButton
 from ui.button.open_map_switcher_button import OpenMapSwitcherButton
-from ui.button.pause_game_button import PauseGameButton
-from ui.button.resume_game_button import ResumeGameButton
 from notifications.level_up_notification import LevelUpNotification
 from notifications.enough_money_track_notification import EnoughMoneyTrackNotification
 from notifications.enough_money_environment_notification import EnoughMoneyEnvironmentNotification
@@ -20,18 +17,6 @@ from ui.shader_sprite.game_view_shader_sprite import GameViewShaderSprite
 @final
 class GameView(GameBaseView):
     def __init__(self, controller):
-        def on_pause_game(button):
-            button.paired_button.opacity = button.opacity
-            button.on_deactivate(instant=True)
-            button.paired_button.on_activate(instant=True)
-            self.controller.on_pause_game()
-
-        def on_resume_game(button):
-            button.paired_button.opacity = button.opacity
-            button.on_deactivate(instant=True)
-            button.paired_button.on_activate(instant=True)
-            self.controller.on_resume_game()
-
         def on_open_settings(button):
             button.on_deactivate()
             self.controller.parent_controller.on_open_settings_from_game()
@@ -51,17 +36,13 @@ class GameView(GameBaseView):
         self.game_paused = True
         self.exp_progress_bar = ExpProgressBar(parent_viewport=self.viewport)
         self.money_progress_bar = MoneyProgressBar(parent_viewport=self.viewport)
-        self.pause_game_button, self.resume_game_button \
-            = create_two_state_button(PauseGameButton(on_click_action=on_pause_game, parent_viewport=self.viewport),
-                                      ResumeGameButton(on_click_action=on_resume_game, parent_viewport=self.viewport))
         self.open_settings_button = OpenSettingsGameViewButton(on_click_action=on_open_settings,
                                                                parent_viewport=self.viewport)
         self.open_map_switcher_button = OpenMapSwitcherButton(on_click_action=on_open_map_switcher,
                                                               on_hover_action=on_hover_action,
                                                               on_leave_action=on_leave_action,
                                                               parent_viewport=self.viewport)
-        self.buttons = [self.pause_game_button, self.resume_game_button, self.open_settings_button,
-                        self.open_map_switcher_button]
+        self.buttons = [self.open_settings_button, self.open_map_switcher_button]
         self.main_clock_label_24h = MainClockLabel24H(parent_viewport=self.viewport)
         self.main_clock_label_12h = MainClockLabel12H(parent_viewport=self.viewport)
         self.exp_percent = 0
@@ -105,10 +86,6 @@ class GameView(GameBaseView):
         self.money_progress_bar.on_update_text_label_args((int(self.money),))
         self.money_progress_bar.on_activate()
         self.money_progress_bar.on_update_progress_bar_state(self.money, self.money_target)
-        if self.game_paused:
-            self.resume_game_button.on_activate()
-        else:
-            self.pause_game_button.on_activate()
 
     @view_is_active
     def on_deactivate(self):
@@ -168,9 +145,6 @@ class GameView(GameBaseView):
         super().on_update_money(money)
         self.money_progress_bar.on_update_text_label_args((int(self.money), ))
         self.money_progress_bar.on_update_progress_bar_state(self.money, self.money_target)
-
-    def on_pause_game(self):
-        self.game_paused = True
 
     def on_resume_game(self):
         self.game_paused = False

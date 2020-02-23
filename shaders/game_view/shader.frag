@@ -31,7 +31,6 @@ bool is_bottom_bar_button_border()
     return gl_FragCoord[0] == bottom_bar_height - 1                               // constructor button border
            || gl_FragCoord[0] == bottom_bar_height - 2
            || margin == bottom_bar_height || margin == bottom_bar_height - 1      // settings button border
-           || margin == game_time_margin + 1 || margin == game_time_margin + 2    // pause/resume button right border
            || margin == game_time_margin + bottom_bar_height                      // pause/resume button left border
            || margin == game_time_margin + bottom_bar_height - 1
            || margin == game_time_margin + 2 * bottom_bar_height - 2              // schedule button border

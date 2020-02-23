@@ -22,7 +22,6 @@ bool is_app_window_frame(int margin_x, int margin_y, int bottom_bar_height, int 
     = margin_y >= 0 && margin_y < size[1] / 10
       && (margin_x == bottom_bar_height || margin_x == bottom_bar_height - 1
           || margin_x == size[0] / 2 - bottom_bar_height - 1 || margin_x == size[0] / 2 - bottom_bar_height
-          || margin_x == size[0] / 2 - 4 * bottom_bar_height - 1 || margin_x == size[0] / 2 - 4 * bottom_bar_height
           || margin_x == size[0] / 2 - 5 * bottom_bar_height || margin_x == size[0] / 2 - 5 * bottom_bar_height + 1
           || margin_x == size[0] / 2 - 6 * bottom_bar_height + 1
           || margin_x == size[0] / 2 - 6 * bottom_bar_height + 2);
@@ -89,13 +88,9 @@ bool is_highlighted(int margin_x, int margin_y, int bottom_bar_height, int top_b
                && margin_y >= 2 && margin_y <= bottom_bar_height - 2;
     else if (page_number == 5)
         return margin_x >= size[0] / 2 - 5 * bottom_bar_height + 2
-               && margin_x <= size[0] / 2 - 4 * bottom_bar_height - 2
-               && margin_y >= 2 && margin_y <= bottom_bar_height - 2;
-    else if (page_number == 6)
-        return margin_x >= size[0] / 2 - 4 * bottom_bar_height - 1
                && margin_x <= size[0] / 2 - bottom_bar_height - 2
                && margin_y >= 2 && margin_y <= bottom_bar_height - 2;
-    else if (page_number == 7)
+    else if (page_number == 6)
         return margin_x >= size[0] / 2 - bottom_bar_height + 1 && margin_x <= size[0] / 2 - 3
                && margin_y >= 2 && margin_y <= bottom_bar_height - 2;
     else

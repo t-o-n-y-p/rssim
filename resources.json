@@ -290,8 +290,8 @@
 		"ru": "Вернуться в главное меню"
 	},
 	"clock_onboarding_page_string": {
-		"en": "In-game time is displayed in the bottom bar to the right from pause/resume button. \n\n12- and 24-hour formats are available.",
-		"ru": "Внутриигровое время отображается в нижней панели справа от кнопки паузы/возобновления. \n\nДоступны 12- и 24-часовой формат времени."
+		"en": "In-game time is displayed in the bottom bar to the right from schedule button. \n12- and 24-hour formats are available. \nTime acceleration and deceleration is also available.",
+		"ru": "Внутриигровое время отображается в нижней панели справа от кнопки расписания. \nДоступны 12- и 24-часовой формат времени. \nТакже доступна функция ускорения и замедления времени."
 	},
 	"constructor_onboarding_page_string": {
 		"en": "The first bottom bar button opens/closes constructor screen. \nFirst 4 tracks and first 4 environment tiers from queue are displayed on constructor screen. \nFor those which are unlocked, 2 buttons are displayed: the left one turns money target on/off so you can track your money progress with track or environment tier price set as 100%, and the right one puts track or environment tier under construction.",
@@ -309,13 +309,9 @@
 		"en": "Navigation between maps is available using map switcher button. \nClick on it and then pick the map in the \"Select the map\" window.",
 		"ru": "Переходить между картами можно с помощью кнопки переключения карт. \nПосле нажатия на нее нужно выбрать карту в окне \"Выберите карту\"."
 	},
-	"pause_resume_onboarding_page_string": {
-		"en": "The third bottom bar button pauses/resumes the game. \nYou can freeze the in-game time for a while using this button at any moment if required.",
-		"ru": "Третья кнопка в нижней панели приостанавливает/возобновляет игру. \nТы можешь при необходимости приостановить внутриигровое время с помощью этой кнопки."
-	},
 	"schedule_onboarding_page_string": {
-		"en": "The second bottom bar button opens/closes schedule screen. \nIt provides the table for up to 24 approaching trains within the next in-game hour.",
-		"ru": "Вторая кнопка в нижней панели открывает и закрывает экран расписания. \n На нем в виде таблицы отображается до 24 поездов, прибывающих на станцию в ближайший час."
+		"en": "The second bottom bar button opens/closes schedule screen. \nIt provides the table for up to 24 approaching trains within the next hour for passenger map and ten hours for freight map.",
+		"ru": "Вторая кнопка в нижней панели открывает и закрывает экран расписания. \n На нем в виде таблицы отображается до 24 поездов, прибывающих на станцию в ближайший час для пассажирской карты и десять часов - для грузовой."
 	},
 	"settings_onboarding_page_string": {
 		"en": "The last bottom bar button opens settings screen. \n There you can set app window resolution, some other graphics options, in-game clock format and notification options.",

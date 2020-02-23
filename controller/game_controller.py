@@ -51,9 +51,6 @@ class GameController(GameBaseController):
         if self.model.game_time % (SECONDS_IN_ONE_HOUR * 2) == 0:
             self.parent_controller.on_save_state()
 
-    def on_pause_game(self):
-        self.model.on_pause_game()
-
     def on_resume_game(self):
         self.model.on_resume_game()
 

@@ -47,10 +47,6 @@ class GameModel(GameBaseModel):
 
         super().on_add_money(money)
 
-    def on_pause_game(self):
-        self.game_paused = True
-        self.view.on_pause_game()
-
     def on_resume_game(self):
         self.game_paused = False
         self.view.on_resume_game()
