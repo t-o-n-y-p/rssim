@@ -45,6 +45,8 @@ SCHEDULE_ROWS: Final = 12                              # number of schedule rows
 SCHEDULE_COLUMNS: Final = 2                            # number of schedule columns on schedule screen
 SHOP_DETAILS_BUTTON_NORMAL_SIZE = (250, 40)
 # colors
+YELLOW_RGB: Final = (255, 255, 96)                     # yellow UI color
+YELLOW_GREY_RGB: Final = (112, 112, 42)
 ORANGE_RGB: Final = (255, 127, 0)                      # orange UI color
 ORANGE_GREY_RGB: Final = (112, 56, 0)
 GREEN_RGB: Final = (0, 192, 0)                         # green UI color

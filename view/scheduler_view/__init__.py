@@ -2,7 +2,7 @@ from logging import getLogger
 
 from view import *
 from database import BASE_SCHEDULE
-from ui.schedule import ScheduleRow
+from ui.schedule_row import ScheduleRow
 from ui.button.close_schedule_button import CloseScheduleButton
 from ui.shader_sprite.scheduler_view_shader_sprite import SchedulerViewShaderSprite
 from ui.label.schedule_left_caption_label import ScheduleLeftCaptionLabel

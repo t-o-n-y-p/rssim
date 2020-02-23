@@ -80,17 +80,21 @@ class RectangleProgressBar(ABC):
         self.opacity = new_opacity
         if self.opacity <= 0:
             self.text_label.delete()
-            self.inactive_sprite.delete()
-            self.inactive_sprite = None
-            self.active_sprite.delete()
-            self.active_sprite = None
+            try:
+                self.inactive_sprite.delete()
+                self.inactive_sprite = None
+                self.active_sprite.delete()
+                self.active_sprite = None
+            except AttributeError:
+                pass
+
         else:
             self.text_label.on_update_opacity(self.opacity)
-            if self.inactive_sprite is not None:
+            try:
                 self.inactive_sprite.opacity = self.opacity
-
-            if self.active_sprite is not None:
                 self.active_sprite.opacity = self.opacity
+            except AttributeError:
+                pass
 
     @final
     def on_update_text_label_args(self, new_args):

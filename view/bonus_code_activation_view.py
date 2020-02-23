@@ -6,7 +6,7 @@ from ui.label.bonus_code_interactive_label import BonusCodeInteractiveLabel
 from ui.button.activate_bonus_code_button import ActivateBonusCodeButton
 from ui.button.cancel_bonus_code_activation_button import CancelBonusCodeActivationButton
 from ui.shader_sprite.bonus_code_view_shader_sprite import BonusCodeViewShaderSprite
-from ui.bonus_code_info import BonusCodeInfoCell
+from ui.bonus_code_info_cell import BonusCodeInfoCell
 
 
 @final

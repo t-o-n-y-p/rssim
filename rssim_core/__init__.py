@@ -115,6 +115,8 @@ class Launcher:
         # set blending mode; this is required to correctly draw transparent textures
         gl.glEnable(gl.GL_BLEND)
         gl.glBlendFunc(gl.GL_SRC_ALPHA, gl.GL_ONE_MINUS_SRC_ALPHA)
+        gl.glEnable(gl.GL_LINE_SMOOTH)
+        gl.glLineWidth(2.0)
         self.app = AppController(loader=self)
         pyglet.clock.schedule(on_app_update)
         self.on_mouse_motion_event_counter = 0

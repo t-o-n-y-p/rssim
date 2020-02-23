@@ -1,5 +1,6 @@
 from logging import getLogger
 
+from ui.knob.time_speed_knob import TimeSpeedKnob
 from view import *
 from ui.button.open_settings_game_view_button import OpenSettingsGameViewButton
 from ui.button.open_map_switcher_button import OpenMapSwitcherButton
@@ -48,10 +49,11 @@ class GameView(GameBaseView):
         self.exp_percent = 0
         self.money_percent = 0
         self.shader_sprite = GameViewShaderSprite(view=self)
+        self.time_speed_knob = TimeSpeedKnob(parent_viewport=self.viewport)
         self.on_window_resize_handlers.extend([
             *self.exp_progress_bar.on_window_resize_handlers, *self.money_progress_bar.on_window_resize_handlers,
             self.main_clock_label_24h.on_window_resize, self.main_clock_label_12h.on_window_resize,
-            self.shader_sprite.on_window_resize
+            self.shader_sprite.on_window_resize, *self.time_speed_knob.on_window_resize_handlers
         ])
         self.on_append_window_handlers()
         USER_DB_CURSOR.execute('''SELECT exp, money_target FROM game_progress''')
@@ -86,12 +88,14 @@ class GameView(GameBaseView):
         self.money_progress_bar.on_update_text_label_args((int(self.money),))
         self.money_progress_bar.on_activate()
         self.money_progress_bar.on_update_progress_bar_state(self.money, self.money_target)
+        self.time_speed_knob.on_activate()
 
     @view_is_active
     def on_deactivate(self):
         super().on_deactivate()
         self.exp_progress_bar.on_deactivate()
         self.money_progress_bar.on_deactivate()
+        self.time_speed_knob.on_deactivate()
 
     @view_is_active
     def on_update(self):
@@ -102,6 +106,7 @@ class GameView(GameBaseView):
         self.main_clock_label_24h.on_update_current_locale(self.current_locale)
         self.main_clock_label_12h.on_update_current_locale(self.current_locale)
         self.exp_progress_bar.on_update_current_locale(self.current_locale)
+        self.time_speed_knob.on_update_current_locale(self.current_locale)
 
     def on_update_clock_state(self, clock_24h_enabled):
         super().on_update_clock_state(clock_24h_enabled)
@@ -119,6 +124,7 @@ class GameView(GameBaseView):
         self.shader_sprite.on_update_opacity(self.opacity)
         self.main_clock_label_24h.on_update_opacity(self.opacity)
         self.main_clock_label_12h.on_update_opacity(self.opacity)
+        self.time_speed_knob.on_update_opacity(self.opacity)
 
     def on_update_time(self, dt):
         super().on_update_time(dt)
