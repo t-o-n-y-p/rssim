@@ -284,6 +284,11 @@ class GameBaseModel(AppBaseModel, ABC):
         self.view.on_deactivate_construction_time_bonus_code()
 
     @final
+    def on_dt_multiplier_update(self, dt_multiplier):
+        self.dt_multiplier = dt_multiplier
+        self.view.on_dt_multiplier_update(dt_multiplier)
+
+    @final
     def on_pay_money(self, money):
         self.money -= money
         self.view.on_update_money(self.money)

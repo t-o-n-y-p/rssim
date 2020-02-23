@@ -42,7 +42,7 @@ includes = ['pyglet',
             'keyring.backends.SecretService', 'keyring.backends.Windows', 'win32timezone',
             'controller', 'model', 'view', 'textures', 'rssim_core', 'exceptions', 'i18n', 'notifications',
             'ui', 'database', 'ctypes', 'pycparser', 'libfuturize', 'libfuturize.fixes', 'multiprocessing',
-            'past', 'past.translation', 'lib2to3', 'lib2to3.pgen2', 'ctypes']
+            'past', 'past.translation', 'lib2to3', 'lib2to3.pgen2', 'ctypes', 'scipy']
 
 options = {
     'build_exe': {

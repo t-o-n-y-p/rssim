@@ -294,6 +294,12 @@ class GameBaseController(AppBaseController, ABC):
             controller.on_level_up()
 
     @final
+    def on_dt_multiplier_update(self, dt_multiplier):
+        self.model.on_dt_multiplier_update(dt_multiplier)
+        for controller in self.child_controllers:
+            controller.on_dt_multiplier_update(dt_multiplier)
+
+    @final
     def on_add_money(self, money):
         self.model.on_add_money(money)
         for controller in self.child_controllers:

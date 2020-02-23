@@ -47,6 +47,15 @@ def cursor_is_over_the_knob(fn):
     return _handle_if_cursor_is_over_the_knob
 
 
+def next_knob_step_detected(fn):
+    def _handle_if_next_knob_step_detected(*args, **kwargs):
+        if (args[2] - args[4] - args[0].initial_cursor_position[1]) // args[0].knob_sensitivity \
+                != (args[2] - args[0].initial_cursor_position[1]) // args[0].knob_sensitivity:
+            fn(*args, **kwargs)
+
+    return _handle_if_next_knob_step_detected
+
+
 class Knob(ABC):
     def __init__(self, on_value_update_action, parent_viewport, logger):
         self.on_value_update_action = on_value_update_action
@@ -149,7 +158,6 @@ class Knob(ABC):
     def on_mouse_release(self, x, y, button, modifiers):
         self.value_update_mode = False
         WINDOW.set_mouse_cursor(DEFAULT_CURSOR)
-        # self.on_value_update_action(self.current_value_formula())
 
     @final
     @knob_is_active
@@ -159,12 +167,12 @@ class Knob(ABC):
 
     @final
     @value_update_mode_enabled
+    @next_knob_step_detected
     def on_mouse_drag(self, x, y, dx, dy, buttons, modifiers):
-        if (y - dy - self.initial_cursor_position[1]) // self.knob_sensitivity \
-                != (y - self.initial_cursor_position[1]) // self.knob_sensitivity:
-            self.on_current_step_update(
-                self.current_step
-                + (y - self.initial_cursor_position[1]) // self.knob_sensitivity
-                - (y - dy - self.initial_cursor_position[1]) // self.knob_sensitivity
-            )
-            self.value_label.on_update_args((self.current_value_formula(), ))
+        self.on_current_step_update(
+            self.current_step
+            + (y - self.initial_cursor_position[1]) // self.knob_sensitivity
+            - (y - dy - self.initial_cursor_position[1]) // self.knob_sensitivity
+        )
+        self.value_label.on_update_args((self.current_value_formula(), ))
+        self.on_value_update_action(self.current_value_formula())

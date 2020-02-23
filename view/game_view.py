@@ -33,6 +33,11 @@ class GameView(GameBaseView):
         def on_hover_action():
             self.controller.on_map_move_mode_unavailable()
 
+        def on_time_speed_update(dt_multiplier):
+            self.controller.on_dt_multiplier_update(dt_multiplier)
+            USER_DB_CURSOR.execute('''UPDATE epoch_timestamp SET dt_multiplier = ?''', (dt_multiplier,))
+            on_commit()
+
         super().__init__(controller, logger=getLogger('root.app.game.view'))
         self.game_paused = True
         self.exp_progress_bar = ExpProgressBar(parent_viewport=self.viewport)
@@ -49,7 +54,7 @@ class GameView(GameBaseView):
         self.exp_percent = 0
         self.money_percent = 0
         self.shader_sprite = GameViewShaderSprite(view=self)
-        self.time_speed_knob = TimeSpeedKnob(on_value_update_action=None, parent_viewport=self.viewport)
+        self.time_speed_knob = TimeSpeedKnob(on_value_update_action=on_time_speed_update, parent_viewport=self.viewport)
         self.on_window_resize_handlers.extend([
             *self.exp_progress_bar.on_window_resize_handlers, *self.money_progress_bar.on_window_resize_handlers,
             self.main_clock_label_24h.on_window_resize, self.main_clock_label_12h.on_window_resize,
