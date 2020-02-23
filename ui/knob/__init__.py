@@ -26,6 +26,8 @@ class Knob(ABC):
         self.value_step = None
         self.maximum_steps = None
         self.current_step = None
+        USER_DB_CURSOR.execute('SELECT current_locale FROM i18n')
+        self.current_locale = USER_DB_CURSOR.fetchone()[0]
 
     @abstractmethod
     def current_value_formula(self):
@@ -36,7 +38,7 @@ class Knob(ABC):
 
     def on_activate(self):
         self.is_activated = True
-        # self.value_label.create()
+        self.value_label.create()
         self.circle = BATCHES['ui_batch'].add(self.maximum_steps * self.circle_segments_per_step + 3,
                                               GL_LINE_STRIP, GROUPS['button_text'],
                                               ('v2i', self.circle_vertices),
@@ -51,7 +53,7 @@ class Knob(ABC):
 
     def on_update_opacity(self, new_opacity):
         self.opacity = new_opacity
-        # self.value_label.on_update_opacity(self.opacity)
+        self.value_label.on_update_opacity(self.opacity)
         self.circle_colors[3::4] = (self.opacity, ) * (len(self.circle_colors) // 4)
         if self.circle is not None:
             if self.opacity > 0:

@@ -1,8 +1,9 @@
 from logging import getLogger
-from math import cos, sin, radians
+from math import cos, sin, radians, log
 
 from ui import *
 from ui.knob import Knob
+from ui.label.time_speed_value_label import TimeSpeedValueLabel
 
 
 @final
@@ -11,16 +12,23 @@ class TimeSpeedKnob(Knob):
         super().__init__(parent_viewport=parent_viewport, logger=getLogger('root.app.game.view.time_speed_knob'))
         self.main_color = YELLOW_RGB
         self.background_color = YELLOW_GREY_RGB
-        # self.value_label = None
-        # self.on_window_resize_handlers.append(self.value_label.on_window_resize)
+        self.value_label = TimeSpeedValueLabel(parent_viewport=self.viewport)
+        self.on_window_resize_handlers.append(self.value_label.on_window_resize)
         self.start_value = 1.0
         self.maximum_steps = 32
         self.circle_segments_per_step = 3
         self.value_step = pow(16.0, 1 / self.maximum_steps)
-        self.on_current_step_update(29)
+        USER_DB_CURSOR.execute('SELECT dt_multiplier FROM epoch_timestamp')
+        current_value = USER_DB_CURSOR.fetchone()[0]
+        self.value_label.on_update_args((current_value, ))
+        self.on_current_step_update(round(log(current_value, self.value_step)))
 
     def current_value_formula(self):
         return self.start_value * pow(self.value_step, self.current_step)
+
+    def on_update_current_locale(self, new_locale):
+        self.current_locale = new_locale
+        self.value_label.on_update_current_locale(self.current_locale)
 
     @window_size_has_changed
     def on_window_resize(self, width, height):

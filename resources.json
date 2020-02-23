@@ -393,6 +393,10 @@
 		"en": "Select the map",
 		"ru": "Выберите карту"
 	},
+	"time_speed_value_string": {
+		"en": "x{1}.{0}",
+		"ru": "x{1},{0}"
+	},
 	"announcement_track_number_type": {
 		"en": "ordinal",
 		"ru": "cardinal"
