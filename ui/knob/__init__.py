@@ -1,6 +1,6 @@
 from abc import ABC, abstractmethod
 
-from pyglet.gl import GL_LINE_STRIP
+from pyglet.gl import GL_POINTS
 
 from ui import *
 
@@ -15,7 +15,7 @@ class Knob(ABC):
         self.is_activated = False
         self.knob_value_update_mode = False
         self.circle = None
-        self.circle_vertices = ()
+        self.circle_vertices = []
         self.circle_colors = []
         self.circle_segments_per_step = None
         self.value_label = None
@@ -39,10 +39,8 @@ class Knob(ABC):
     def on_activate(self):
         self.is_activated = True
         self.value_label.create()
-        self.circle = BATCHES['ui_batch'].add(self.maximum_steps * self.circle_segments_per_step + 3,
-                                              GL_LINE_STRIP, GROUPS['button_text'],
-                                              ('v2i', self.circle_vertices),
-                                              ('c4B', self.circle_colors))
+        self.circle = BATCHES['ui_batch'].add(self.maximum_steps + 1, GL_POINTS, GROUPS['button_text'],
+                                              ('v2f', self.circle_vertices), ('c4B', self.circle_colors))
 
     def on_deactivate(self):
         self.is_activated = False
@@ -66,19 +64,6 @@ class Knob(ABC):
     def on_current_step_update(self, step):
         self.current_step = step
         self.circle_colors = [
-            *(*self.main_color, self.opacity) * (self.current_step * self.circle_segments_per_step),
-            *(*self.background_color, self.opacity) * ((self.maximum_steps - self.current_step)
-                                                       * self.circle_segments_per_step)
+            *(*self.main_color, self.opacity) * (self.current_step + 1),
+            *(*self.background_color, self.opacity) * (self.maximum_steps - self.current_step)
         ]
-        if self.current_step == 0:
-            self.circle_colors = [
-                *(*self.background_color, self.opacity) * 2, *self.circle_colors, *self.background_color, self.opacity
-            ]
-        elif self.current_step == self.maximum_steps:
-            self.circle_colors = [
-                *(*self.main_color, self.opacity) * 2, *self.circle_colors, *self.main_color, self.opacity
-            ]
-        else:
-            self.circle_colors = [
-                *(*self.main_color, self.opacity) * 2, *self.circle_colors, *self.background_color, self.opacity
-            ]

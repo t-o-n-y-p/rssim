@@ -15,8 +15,7 @@ class TimeSpeedKnob(Knob):
         self.value_label = TimeSpeedValueLabel(parent_viewport=self.viewport)
         self.on_window_resize_handlers.append(self.value_label.on_window_resize)
         self.start_value = 1.0
-        self.maximum_steps = 32
-        self.circle_segments_per_step = 3
+        self.maximum_steps = 24
         self.value_step = pow(16.0, 1 / self.maximum_steps)
         USER_DB_CURSOR.execute('SELECT dt_multiplier FROM epoch_timestamp')
         current_value = USER_DB_CURSOR.fetchone()[0]
@@ -42,26 +41,20 @@ class TimeSpeedKnob(Knob):
             (self.viewport.x1 + self.viewport.x2) / 2,
             (self.viewport.y1 + self.viewport.y2) / 2 - circle_radius // 4
         )
-        pass
-        self.circle_vertices = [
-            round(middle_point[0] + circle_radius * cos(radians(210))),
-            round(middle_point[1] + circle_radius * sin(radians(210)))
-        ]
-        for i in range(self.maximum_steps * self.circle_segments_per_step):
+        self.circle_vertices.clear()
+        for i in range(self.maximum_steps):
             self.circle_vertices.append(
-                round(middle_point[0] + circle_radius * cos(
-                    radians(210 - i / (self.maximum_steps * self.circle_segments_per_step) * 240)
-                ))
+                middle_point[0] + circle_radius * cos(
+                    radians(210 - i / self.maximum_steps * 240)
+                )
             )
             self.circle_vertices.append(
-                round(middle_point[1] + circle_radius * sin(
-                    radians(210 - i / (self.maximum_steps * self.circle_segments_per_step) * 240)
-                ))
+                middle_point[1] + circle_radius * sin(
+                    radians(210 - i / self.maximum_steps * 240)
+                )
             )
 
-        self.circle_vertices.append(round(middle_point[0] + circle_radius * cos(radians(-30))))
-        self.circle_vertices.append(round(middle_point[1] + circle_radius * sin(radians(-30))))
-        self.circle_vertices.append(round(middle_point[0] + circle_radius * cos(radians(-30))))
-        self.circle_vertices.append(round(middle_point[1] + circle_radius * sin(radians(-30))))
+        self.circle_vertices.append(middle_point[0] + circle_radius * cos(radians(-30)))
+        self.circle_vertices.append(middle_point[1] + circle_radius * sin(radians(-30)))
         if self.circle is not None:
             self.circle.vertices = self.circle_vertices

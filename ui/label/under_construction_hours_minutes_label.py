@@ -12,7 +12,7 @@ class UnderConstructionHoursMinutesLabel(LocalizedLabel):
                          parent_viewport=parent_viewport)
         self.arguments = (0, 0)
         self.font_name = 'Arial'
-        self.base_color = ORANGE_RGB
+        self.base_color = YELLOW_RGB
         self.anchor_x = 'left'
         self.batch = BATCHES['ui_batch']
         self.group = GROUPS['button_text']
