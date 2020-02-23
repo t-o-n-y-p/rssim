@@ -8,8 +8,9 @@ from ui.label.time_speed_value_label import TimeSpeedValueLabel
 
 @final
 class TimeSpeedKnob(Knob):
-    def __init__(self, parent_viewport):
-        super().__init__(parent_viewport=parent_viewport, logger=getLogger('root.app.game.view.time_speed_knob'))
+    def __init__(self, on_value_update_action, parent_viewport):
+        super().__init__(on_value_update_action=on_value_update_action, parent_viewport=parent_viewport,
+                         logger=getLogger('root.app.game.view.time_speed_knob'))
         self.main_color = YELLOW_RGB
         self.background_color = YELLOW_GREY_RGB
         self.value_label = TimeSpeedValueLabel(parent_viewport=self.viewport)

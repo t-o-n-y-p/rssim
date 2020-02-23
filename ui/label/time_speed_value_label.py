@@ -31,6 +31,6 @@ class TimeSpeedValueLabel(LocalizedLabel):
 
     def get_formatted_text(self):
         if self.arguments[0] < 10:
-            return self.text.format(round((self.arguments[0] % 1) * 10), int(self.arguments[0]))
+            return self.text.format(int((self.arguments[0] % 1) * 10), int(self.arguments[0]))
 
         return f'x{round(self.arguments[0])}'

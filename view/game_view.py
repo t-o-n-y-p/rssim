@@ -49,7 +49,7 @@ class GameView(GameBaseView):
         self.exp_percent = 0
         self.money_percent = 0
         self.shader_sprite = GameViewShaderSprite(view=self)
-        self.time_speed_knob = TimeSpeedKnob(parent_viewport=self.viewport)
+        self.time_speed_knob = TimeSpeedKnob(on_value_update_action=None, parent_viewport=self.viewport)
         self.on_window_resize_handlers.extend([
             *self.exp_progress_bar.on_window_resize_handlers, *self.money_progress_bar.on_window_resize_handlers,
             self.main_clock_label_24h.on_window_resize, self.main_clock_label_12h.on_window_resize,
@@ -61,6 +61,11 @@ class GameView(GameBaseView):
         CONFIG_DB_CURSOR.execute('''SELECT player_progress FROM player_progress_config 
                                     WHERE level = ?''', (self.level, ))
         self.player_progress = CONFIG_DB_CURSOR.fetchone()[0]
+        self.on_mouse_motion_handlers.append(self.time_speed_knob.on_mouse_motion)
+        self.on_mouse_press_handlers.append(self.time_speed_knob.on_mouse_press)
+        self.on_mouse_release_handlers.append(self.time_speed_knob.on_mouse_release)
+        self.on_mouse_leave_handlers.append(self.time_speed_knob.on_mouse_leave)
+        self.on_mouse_drag_handlers.append(self.time_speed_knob.on_mouse_drag)
 
     @view_is_not_active
     def on_activate(self):
