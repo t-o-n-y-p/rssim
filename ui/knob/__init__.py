@@ -4,6 +4,7 @@ from pyglet.gl import GL_POINTS
 from pyglet.window import mouse
 
 from ui import *
+from ui.label import Label, LocalizedLabel
 
 
 def knob_is_active(fn):
@@ -57,10 +58,16 @@ def next_knob_step_detected(fn):
 
 
 class Knob(ABC):
+    main_color: (int, int, int)
+    background_color: (int, int, int)
+    value_label: Label or LocalizedLabel
+    start_value: float
+    value_step: float
+    maximum_steps: int
+    current_step: int
+
     def __init__(self, on_value_update_action, parent_viewport, logger):
         self.on_value_update_action = on_value_update_action
-        self.main_color = None
-        self.background_color = None
         self.parent_viewport = parent_viewport
         self.logger = logger
         self.viewport = Viewport()
@@ -70,14 +77,9 @@ class Knob(ABC):
         self.circle_vertices = []
         self.circle_colors = []
         self.circle_segments_per_step = None
-        self.value_label = None
         self.on_window_resize_handlers = [self.on_window_resize, ]
         self.screen_resolution = (0, 0)
         self.opacity = 0
-        self.start_value = None
-        self.value_step = None
-        self.maximum_steps = None
-        self.current_step = None
         USER_DB_CURSOR.execute('SELECT current_locale FROM i18n')
         self.current_locale = USER_DB_CURSOR.fetchone()[0]
         self.value_update_mode = False
