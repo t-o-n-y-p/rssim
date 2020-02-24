@@ -13,10 +13,6 @@ class SchedulerController(MapBaseController, ABC):
         self.fade_in_animation = SchedulerFadeInAnimation(self.view)
         self.fade_out_animation = SchedulerFadeOutAnimation(self.view)
 
-    @abstractmethod
-    def create_view_and_model(self):
-        pass
-
     @final
     def on_unlock_track(self, track):
         self.model.on_unlock_track(track)

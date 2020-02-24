@@ -13,10 +13,6 @@ class ConstructorController(MapBaseController, ABC):
         self.fade_in_animation = ConstructorFadeInAnimation(self.view)
         self.fade_out_animation = ConstructorFadeOutAnimation(self.view)
 
-    @abstractmethod
-    def create_view_and_model(self):
-        pass
-
     @final
     def on_put_under_construction(self, construction_type, entity_number):
         self.model.on_put_under_construction(construction_type, entity_number)

@@ -13,7 +13,3 @@ class ShopPlaceholderController(MapBaseController, ABC):
         self.shop_id = shop_id
         self.fade_in_animation = ShopPlaceholderFadeInAnimation(self.view)
         self.fade_out_animation = ShopPlaceholderFadeOutAnimation(self.view)
-
-    @abstractmethod
-    def create_view_and_model(self, shop_id):
-        pass

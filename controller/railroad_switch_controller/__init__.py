@@ -15,10 +15,6 @@ class RailroadSwitchController(MapBaseController, ABC):
         self.fade_in_animation = RailroadSwitchFadeInAnimation(self.view)
         self.fade_out_animation = RailroadSwitchFadeOutAnimation(self.view)
 
-    @abstractmethod
-    def create_view_and_model(self, track_param_1, track_param_2, switch_type):
-        pass
-
     @final
     def on_force_busy_on(self, positions, train_id):
         self.model.on_force_busy_on(positions, train_id)

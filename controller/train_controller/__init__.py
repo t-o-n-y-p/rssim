@@ -14,10 +14,6 @@ class TrainController(MapBaseController, ABC):
         self.fade_in_animation = TrainFadeInAnimation(self.view)
         self.fade_out_animation = TrainFadeOutAnimation(self.view)
 
-    @abstractmethod
-    def create_view_and_model(self, train_id):
-        pass
-
     @final
     def on_set_train_start_point(self, first_car_start_point):
         self.model.on_set_train_start_point(first_car_start_point)

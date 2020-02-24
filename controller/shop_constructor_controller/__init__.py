@@ -14,10 +14,6 @@ class ShopConstructorController(MapBaseController, ABC):
         self.fade_in_animation = ShopConstructorFadeInAnimation(self.view)
         self.fade_out_animation = ShopConstructorFadeOutAnimation(self.view)
 
-    @abstractmethod
-    def create_view_and_model(self, shop_id):
-        pass
-
     @final
     def on_clear_storage(self):
         self.model.on_clear_storage()

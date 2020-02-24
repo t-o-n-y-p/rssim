@@ -26,10 +26,6 @@ class ShopController(MapBaseController, ABC):
         self.child_controllers = [self.placeholder, self.shop_constructor]
 
     @abstractmethod
-    def create_view_and_model(self, shop_id):
-        pass
-
-    @abstractmethod
     def create_placeholder(self, shop_id):
         pass
 

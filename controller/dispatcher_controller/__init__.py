@@ -13,10 +13,6 @@ class DispatcherController(MapBaseController, ABC):
         self.fade_in_animation = DispatcherFadeInAnimation(self.view)
         self.fade_out_animation = DispatcherFadeOutAnimation(self.view)
 
-    @abstractmethod
-    def create_view_and_model(self):
-        pass
-
     @final
     def on_add_train(self, train_controller):
         self.model.on_add_train(train_controller)

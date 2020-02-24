@@ -14,10 +14,6 @@ class SignalController(MapBaseController, ABC):
         self.fade_in_animation = SignalFadeInAnimation(self.view)
         self.fade_out_animation = SignalFadeOutAnimation(self.view)
 
-    @abstractmethod
-    def create_view_and_model(self, track, base_route):
-        pass
-
     @final
     def on_switch_to_green(self):
         self.model.on_switch_to_green()

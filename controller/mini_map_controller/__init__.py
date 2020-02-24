@@ -13,10 +13,6 @@ class MiniMapController(MapBaseController, ABC):
         self.fade_in_animation = MiniMapFadeInAnimation(self.view)
         self.fade_out_animation = MiniMapFadeOutAnimation(self.view)
 
-    @abstractmethod
-    def create_view_and_model(self):
-        pass
-
     @final
     def on_unlock_track(self, track):
         self.view.on_unlock_track(track)

@@ -74,10 +74,6 @@ class MapController(MapBaseController, ABC):
         ]
 
     @abstractmethod
-    def create_view_and_model(self):
-        pass
-
-    @abstractmethod
     def create_scheduler(self):
         pass
 
