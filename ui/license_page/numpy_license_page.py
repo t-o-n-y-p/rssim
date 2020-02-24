@@ -5,30 +5,30 @@ from ui.license_page import LicensePage
 
 
 @final
-class ScipyLicensePage(LicensePage):
+class NumpyLicensePage(LicensePage):
     def __init__(self, parent_viewport):
-        super().__init__(logger=getLogger('root.app.license.view.scipy_license_page'),
+        super().__init__(logger=getLogger('root.app.license.view.numpy_license_page'),
                          parent_viewport=parent_viewport)
-        self.license_text = '''scipy
+        self.license_text = '''numpy
 ================================================
-Copyright (c) 2001-2002 Enthought, Inc.  2003-2019, SciPy Developers.
+Copyright (c) 2005-2019, NumPy Developers.
 All rights reserved.
 
 Redistribution and use in source and binary forms, with or without
-modification, are permitted provided that the following conditions
-are met:
+modification, are permitted provided that the following conditions are
+met:
 
-1. Redistributions of source code must retain the above copyright
-   notice, this list of conditions and the following disclaimer.
+    * Redistributions of source code must retain the above copyright
+       notice, this list of conditions and the following disclaimer.
 
-2. Redistributions in binary form must reproduce the above
-   copyright notice, this list of conditions and the following
-   disclaimer in the documentation and/or other materials provided
-   with the distribution.
+    * Redistributions in binary form must reproduce the above
+       copyright notice, this list of conditions and the following
+       disclaimer in the documentation and/or other materials provided
+       with the distribution.
 
-3. Neither the name of the copyright holder nor the names of its
-   contributors may be used to endorse or promote products derived
-   from this software without specific prior written permission.
+    * Neither the name of the NumPy Developers nor the names of any
+       contributors may be used to endorse or promote products derived
+       from this software without specific prior written permission.
 
 THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
 "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT

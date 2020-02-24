@@ -14,8 +14,8 @@ executables = [Executable('rssim.py',
 include_files = [('db/patch', 'db/patch'), ('db/config.db', 'db/config.db'), ('db/default.db', 'db/default.db'),
                  'img', 'icon.ico', 'font', 'shaders', 'resources.json']
 
-excludes = ['PIL', 'test', 'email', 'html', 'http', 'unittest', 'urllib', 'dbm', 'pydoc_data',
-            'xml', 'xmlrpc', 'jdcal', 'et-xmlfile', 'openpyxl']
+excludes = ['PIL', 'test', 'email', 'html', 'http', 'urllib', 'dbm', 'pydoc_data',
+            'xml', 'xmlrpc', 'jdcal', 'et-xmlfile', 'openpyxl', 'scipy']
 
 includes = ['pyglet',
             'pyglet.app',
@@ -42,7 +42,7 @@ includes = ['pyglet',
             'keyring.backends.SecretService', 'keyring.backends.Windows', 'win32timezone',
             'controller', 'model', 'view', 'textures', 'rssim_core', 'exceptions', 'i18n', 'notifications',
             'ui', 'database', 'ctypes', 'pycparser', 'libfuturize', 'libfuturize.fixes', 'multiprocessing',
-            'past', 'past.translation', 'lib2to3', 'lib2to3.pgen2', 'ctypes', 'scipy']
+            'past', 'past.translation', 'lib2to3', 'lib2to3.pgen2', 'ctypes', 'numpy']
 
 options = {
     'build_exe': {

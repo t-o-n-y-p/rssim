@@ -7,7 +7,7 @@ from ui.license_page.pyshaders_license_page import PyshadersLicensePage
 from ui.license_page.pywin32_license_page import Pywin32LicensePage
 from ui.license_page.cx_freeze_license_page import CxFreezeLicensePage
 from ui.license_page.keyring_license_page import KeyringLicensePage
-from ui.license_page.scipy_license_page import ScipyLicensePage
+from ui.license_page.numpy_license_page import NumpyLicensePage
 
 
 @final
@@ -19,7 +19,7 @@ class LicensePageControl(PageControl):
                       PyshadersLicensePage(parent_viewport=self.viewport),
                       Pywin32LicensePage(parent_viewport=self.viewport),
                       KeyringLicensePage(parent_viewport=self.viewport),
-                      ScipyLicensePage(parent_viewport=self.viewport),
+                      NumpyLicensePage(parent_viewport=self.viewport),
                       CxFreezeLicensePage(parent_viewport=self.viewport)]
         self.on_mouse_scroll_handlers = []
         for p in self.pages:

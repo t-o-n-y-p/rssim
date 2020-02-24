@@ -1,6 +1,6 @@
 from abc import ABC, abstractmethod
 
-from scipy import integrate
+import numpy
 
 from database import *
 
@@ -205,6 +205,7 @@ MAXIMUM_LEVEL: Final = 200  # maximum level the player can reach in the game
 ENTRY_TRACK_ID: Final = ((0, 0, 100, 100), (0, 0, 0, 100, 0, 200, 0, 300, 0, 400))
 TRAIN_MAXIMUM_SPEED: Final = (84, 24)
 TRAIN_VELOCITY_BASE: Final = 1.03
+TRAIN_VELOCITY_INTEGRATION_STEPS: Final = 10000
 MONEY_LIMIT: Final = 9999999999.0  # max amount of money the player can have
 TRAIN_ID_LIMIT: Final = 1000000  # train ID is limited to 6 digits, 999999 is followed by 0
 FULLSCREEN_MODE_TURNED_OFF: Final = 0  # database value for fullscreen mode turned on
@@ -224,16 +225,23 @@ ALLOWED_BONUS_CODE_INPUT = 100
 # ------------------- END CONSTANTS -------------------
 
 
+def integrate(f, a, b, n=TRAIN_VELOCITY_INTEGRATION_STEPS):
+    x = numpy.linspace(a + (b - a) / (2 * n), b - (b - a) / (2 * n), n)
+    fx = f(x)
+    area = numpy.sum(fx) * (b - a) / n
+    return area
+
+
 def train_speed_formula(t):
     return pow(TRAIN_VELOCITY_BASE, t) - 1
 
 
 def get_braking_distance(t):
-    return integrate.quad(train_speed_formula, 0, t)[0]
+    return integrate(train_speed_formula, 0, t)
 
 
 def get_distance(t1, t2):
-    return integrate.quad(train_speed_formula, min(t1, t2), max(t1, t2))[0]
+    return integrate(train_speed_formula, t1, t2)
 
 
 class AppBaseModel(ABC):
