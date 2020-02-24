@@ -1,5 +1,9 @@
 from logging import getLogger
 
+from ui.constructor_placeholder_container.constructor_environment_placeholder_container import \
+    ConstructorEnvironmentPlaceholderContainer
+from ui.constructor_placeholder_container.constructor_track_placeholder_container import \
+    ConstructorTrackPlaceholderContainer
 from view import *
 from ui import *
 from ui.constructor_cell.track_cell import TrackCell
@@ -9,8 +13,6 @@ from notifications.track_unlocked_notification import TrackUnlockedNotification
 from notifications.environment_unlocked_notification import EnvironmentUnlockedNotification
 from notifications.environment_construction_completed_notification import EnvironmentConstructionCompletedNotification
 from notifications.track_construction_completed_notification import TrackConstructionCompletedNotification
-from ui.label.no_more_tracks_available_label import NoMoreTracksAvailableLabel
-from ui.label.no_more_environment_available_label import NoMoreEnvironmentAvailableLabel
 from ui.shader_sprite.constructor_view_shader_sprite import ConstructorViewShaderSprite
 
 
@@ -37,8 +39,6 @@ class ConstructorView(MapBaseView, ABC):
             self.controller.parent_controller.parent_controller.on_update_money_target(0)
 
         super().__init__(controller, map_id, logger=getLogger(f'root.app.game.map.{map_id}.constructor.view'))
-        self.no_more_tracks_available_placeholder_viewport = Viewport()
-        self.no_more_tiers_available_placeholder_viewport = Viewport()
         self.construction_state_matrix = CONSTRUCTION_STATE_MATRIX[self.map_id]
         self.close_constructor_button = CloseConstructorButton(on_click_action=on_close_constructor,
                                                                parent_viewport=self.viewport)
@@ -69,13 +69,18 @@ class ConstructorView(MapBaseView, ABC):
                                (self.map_id, ))
         self.money_target_cell_position = [int(p) for p in USER_DB_CURSOR.fetchone()[0].split(',')]
         self.shader_sprite = ConstructorViewShaderSprite(view=self)
-        self.no_more_tracks_available_label \
-            = NoMoreTracksAvailableLabel(parent_viewport=self.no_more_tracks_available_placeholder_viewport)
-        self.no_more_tiers_available_label \
-            = NoMoreEnvironmentAvailableLabel(parent_viewport=self.no_more_tiers_available_placeholder_viewport)
+        self.constructor_track_placeholder_container = ConstructorTrackPlaceholderContainer(
+            bottom_parent_viewport=self.constructor_cells[TRACKS][-1].viewport,
+            top_parent_viewport=self.constructor_cells[TRACKS][-1].viewport
+        )
+        self.constructor_environment_placeholder_container = ConstructorEnvironmentPlaceholderContainer(
+            bottom_parent_viewport=self.constructor_cells[ENVIRONMENT][-1].viewport,
+            top_parent_viewport=self.constructor_cells[ENVIRONMENT][-1].viewport
+        )
         self.on_window_resize_handlers.extend([
-            self.shader_sprite.on_window_resize, self.no_more_tracks_available_label.on_window_resize,
-            self.no_more_tiers_available_label.on_window_resize
+            self.shader_sprite.on_window_resize,
+            *self.constructor_track_placeholder_container.on_window_resize_handlers,
+            *self.constructor_environment_placeholder_container.on_window_resize_handlers
         ])
         self.on_append_window_handlers()
 
@@ -85,15 +90,17 @@ class ConstructorView(MapBaseView, ABC):
         super().on_activate()
         self.shader_sprite.create()
         if len(self.construction_state_matrix[TRACKS]) < CONSTRUCTOR_VIEW_TRACK_CELLS:
-            self.no_more_tracks_available_label.create()
+            self.constructor_track_placeholder_container.on_activate()
 
         if len(self.construction_state_matrix[ENVIRONMENT]) < CONSTRUCTOR_VIEW_ENVIRONMENT_CELLS:
-            self.no_more_tiers_available_label.create()
+            self.constructor_environment_placeholder_container.on_activate()
 
     @final
     @view_is_active
     def on_deactivate(self):
         super().on_deactivate()
+        self.constructor_track_placeholder_container.on_deactivate()
+        self.constructor_environment_placeholder_container.on_deactivate()
         for j in range(CONSTRUCTOR_VIEW_TRACK_CELLS):
             self.constructor_cells[TRACKS][j].on_deactivate()
 
@@ -146,8 +153,8 @@ class ConstructorView(MapBaseView, ABC):
     @final
     def on_update_current_locale(self, new_locale):
         super().on_update_current_locale(new_locale)
-        self.no_more_tracks_available_label.on_update_current_locale(self.current_locale)
-        self.no_more_tiers_available_label.on_update_current_locale(self.current_locale)
+        self.constructor_track_placeholder_container.on_update_current_locale(self.current_locale)
+        self.constructor_environment_placeholder_container.on_update_current_locale(self.current_locale)
         for j in range(CONSTRUCTOR_VIEW_TRACK_CELLS):
             self.constructor_cells[TRACKS][j].on_update_current_locale(self.current_locale)
 
@@ -155,35 +162,11 @@ class ConstructorView(MapBaseView, ABC):
             self.constructor_cells[ENVIRONMENT][j].on_update_current_locale(self.current_locale)
 
     @final
-    @window_size_has_changed
-    def on_window_resize(self, width, height):
-        super().on_window_resize(width, height)
-        self.no_more_tracks_available_placeholder_viewport.x1 = self.constructor_cells[TRACKS][-1].viewport.x1
-        self.no_more_tracks_available_placeholder_viewport.x2 = self.constructor_cells[TRACKS][-1].viewport.x2
-        self.no_more_tracks_available_placeholder_viewport.y1 = self.constructor_cells[TRACKS][-1].viewport.y1
-        if len(self.construction_state_matrix[TRACKS]) < CONSTRUCTOR_VIEW_TRACK_CELLS:
-            self.no_more_tracks_available_placeholder_viewport.y2 = self.constructor_cells[TRACKS][
-                len(self.construction_state_matrix[TRACKS]) - CONSTRUCTOR_VIEW_TRACK_CELLS
-            ].viewport.y2
-        else:
-            self.no_more_tracks_available_placeholder_viewport.y2 = self.constructor_cells[TRACKS][-1].viewport.y2
-
-        self.no_more_tiers_available_placeholder_viewport.x1 = self.constructor_cells[ENVIRONMENT][-1].viewport.x1
-        self.no_more_tiers_available_placeholder_viewport.x2 = self.constructor_cells[ENVIRONMENT][-1].viewport.x2
-        self.no_more_tiers_available_placeholder_viewport.y1 = self.constructor_cells[ENVIRONMENT][-1].viewport.y1
-        if len(self.construction_state_matrix[ENVIRONMENT]) < CONSTRUCTOR_VIEW_ENVIRONMENT_CELLS:
-            self.no_more_tiers_available_placeholder_viewport.y2 = self.constructor_cells[TRACKS][
-                len(self.construction_state_matrix[ENVIRONMENT]) - CONSTRUCTOR_VIEW_ENVIRONMENT_CELLS
-            ].viewport.y2
-        else:
-            self.no_more_tiers_available_placeholder_viewport.y2 = self.constructor_cells[ENVIRONMENT][-1].viewport.y2
-
-    @final
     def on_update_opacity(self, new_opacity):
         super().on_update_opacity(new_opacity)
         self.shader_sprite.on_update_opacity(self.opacity)
-        self.no_more_tracks_available_label.on_update_opacity(self.opacity)
-        self.no_more_tiers_available_label.on_update_opacity(self.opacity)
+        self.constructor_track_placeholder_container.on_update_opacity(self.opacity)
+        self.constructor_environment_placeholder_container.on_update_opacity(self.opacity)
         for j in range(CONSTRUCTOR_VIEW_TRACK_CELLS):
             self.constructor_cells[TRACKS][j].on_update_opacity(self.opacity)
 
@@ -234,11 +217,10 @@ class ConstructorView(MapBaseView, ABC):
                 self.constructor_cells[TRACKS][j].on_assign_new_data(0, [])
 
             if len(remaining_tracks) < CONSTRUCTOR_VIEW_TRACK_CELLS:
-                self.no_more_tracks_available_placeholder_viewport.y2 = self.constructor_cells[TRACKS][
-                    len(remaining_tracks) - CONSTRUCTOR_VIEW_TRACK_CELLS
-                ].viewport.y2
-                self.no_more_tracks_available_label.on_position_changed()
-                self.no_more_tracks_available_label.create()
+                self.constructor_track_placeholder_container.on_update_top_parent_viewport(
+                    self.constructor_cells[TRACKS][len(remaining_tracks) - CONSTRUCTOR_VIEW_TRACK_CELLS].viewport
+                )
+                self.constructor_track_placeholder_container.on_activate()
 
         elif construction_type == ENVIRONMENT:
             remaining_tiers = sorted(list(self.construction_state_matrix[ENVIRONMENT].keys()))
@@ -256,11 +238,11 @@ class ConstructorView(MapBaseView, ABC):
                 self.constructor_cells[ENVIRONMENT][j].on_assign_new_data(0, [])
 
             if len(remaining_tiers) < CONSTRUCTOR_VIEW_ENVIRONMENT_CELLS:
-                self.no_more_tiers_available_placeholder_viewport.y2 = self.constructor_cells[TRACKS][
-                    len(remaining_tiers) - CONSTRUCTOR_VIEW_ENVIRONMENT_CELLS
-                ].viewport.y2
-                self.no_more_tiers_available_label.on_position_changed()
-                self.no_more_tiers_available_label.create()
+                self.constructor_environment_placeholder_container.on_update_top_parent_viewport(
+                    self.constructor_cells[ENVIRONMENT][len(remaining_tiers) - CONSTRUCTOR_VIEW_ENVIRONMENT_CELLS]
+                        .viewport
+                )
+                self.constructor_environment_placeholder_container.on_activate()
 
     @final
     def on_activate_money_target(self, construction_type, row):

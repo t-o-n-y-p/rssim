@@ -203,6 +203,7 @@ class TrainModel(MapBaseModel, ABC):
                 self.controller.parent_controller.parent_controller\
                     .on_add_money(self.money * self.money_bonus_multiplier)
 
+    @abstractmethod
     def on_set_train_start_point(self, first_car_start_point):
         pass
 
