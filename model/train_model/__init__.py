@@ -1,5 +1,4 @@
 from logging import getLogger
-from math import log
 
 from model import *
 from database import USER_DB_CURSOR
@@ -128,8 +127,11 @@ class TrainModel(MapBaseModel, ABC):
                 self.speed_state_time = 0.0
             # when train needs to stop at stop point and distance is less than braking distance,
             # update state to 'decelerate'
-            elif self.stop_point - self.cars_position[0] <= get_braking_distance(self.speed_state_time):
+            elif (k := get_braking_distance(self.speed_state_time) - (self.stop_point - self.cars_position[0])) >= 0:
                 self.speed_state = 'decelerate'
+                if k > TRAIN_MAXIMUM_SPEED[self.map_id] // 10:
+                    self.speed_state_time = get_speed_state_time(self.stop_point - self.cars_position[0] + 1,
+                                                                 self.map_id)
             # when train needs to stop at stop point and distance is more than braking distance,
             # update state to 'accelerate' if train is not at maximum speed already
             elif self.speed_state != 'move':

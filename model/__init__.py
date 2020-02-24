@@ -1,4 +1,5 @@
 from abc import ABC, abstractmethod
+from math import log
 
 import numpy
 
@@ -242,6 +243,24 @@ def get_braking_distance(t):
 
 def get_distance(t1, t2):
     return integrate(train_speed_formula, t1, t2)
+
+
+def get_speed_state_time(s, map_id):
+    if s > get_braking_distance(log(TRAIN_MAXIMUM_SPEED[map_id] + 1, TRAIN_VELOCITY_BASE)) - 0.000001:
+        return log(TRAIN_MAXIMUM_SPEED[map_id] + 1, TRAIN_VELOCITY_BASE)
+
+    t1 = 0
+    t2 = log(TRAIN_MAXIMUM_SPEED[map_id] + 1, TRAIN_VELOCITY_BASE)
+    current_t = (t1 + t2) / 2
+    while abs(get_braking_distance(current_t) - s) > 0.000001:
+        if get_braking_distance(current_t) > s:
+            t2 = current_t
+        else:
+            t1 = current_t
+
+        current_t = (t1 + t2) / 2
+
+    return current_t
 
 
 class AppBaseModel(ABC):
