@@ -25,7 +25,7 @@ from ui.fps_display import FPSDisplay
 class AppView(AppBaseView):
     def __init__(self, controller):
         def on_close_game(button):
-            self.controller.on_close_game()
+            WINDOW.dispatch_event('on_close')
 
         def on_iconify_game(button):
             WINDOW.minimize()
@@ -34,13 +34,13 @@ class AppView(AppBaseView):
             button.paired_button.opacity = button.opacity
             button.on_deactivate(instant=True)
             button.paired_button.on_activate()
-            self.controller.on_fullscreen_button_click()
+            WINDOW.dispatch_event('on_fullscreen')
 
         def on_app_window_restore(button):
             button.paired_button.opacity = button.opacity
             button.on_deactivate(instant=True)
             button.paired_button.on_activate()
-            self.controller.on_restore_button_click()
+            WINDOW.dispatch_event('on_restore')
 
         def on_set_en_locale(button):
             self.controller.on_update_current_locale(ENGLISH)
@@ -81,13 +81,11 @@ class AppView(AppBaseView):
         self.on_mouse_press_handlers.append(self.on_mouse_press)
         self.on_mouse_release_handlers.append(self.on_mouse_release)
         self.on_mouse_drag_handlers.append(self.on_mouse_drag)
-        USER_DB_CURSOR.execute('SELECT fullscreen FROM graphics')
-        self.fullscreen_mode = bool(USER_DB_CURSOR.fetchone()[0])
         self.fullscreen_mode_available = False
         CONFIG_DB_CURSOR.execute('SELECT app_width, app_height FROM screen_resolution_config')
         self.screen_resolution_config = CONFIG_DB_CURSOR.fetchall()
-        if (windll.user32.GetSystemMetrics(0), windll.user32.GetSystemMetrics(1)) in self.screen_resolution_config:
-            self.fullscreen_mode_available = True
+        self.fullscreen_mode_available \
+            = (windll.user32.GetSystemMetrics(0), windll.user32.GetSystemMetrics(1)) in self.screen_resolution_config
 
     @view_is_not_active
     def on_activate(self):
@@ -97,7 +95,7 @@ class AppView(AppBaseView):
         self.us_flag_sprite.create()
         self.ru_flag_sprite.create()
         if self.fullscreen_mode_available:
-            if self.fullscreen_mode:
+            if WINDOW.fullscreen:
                 self.restore_button.on_activate()
             else:
                 self.fullscreen_button.on_activate()
@@ -125,14 +123,6 @@ class AppView(AppBaseView):
         self.title_label.on_update_opacity(self.opacity)
         self.us_flag_sprite.on_update_opacity(self.opacity)
         self.ru_flag_sprite.on_update_opacity(self.opacity)
-
-    def on_fullscreen_mode_turned_on(self):
-        self.fullscreen_mode = True
-        WINDOW.set_fullscreen(fullscreen=self.fullscreen_mode)
-
-    def on_fullscreen_mode_turned_off(self):
-        self.fullscreen_mode = False
-        WINDOW.set_fullscreen(fullscreen=self.fullscreen_mode)
 
     @game_is_not_fullscreen
     @cursor_is_over_the_app_header

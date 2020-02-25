@@ -125,6 +125,9 @@ class Launcher:
         self.on_mouse_drag_cached_movement = [0, 0]
         self.on_mouse_scroll_event_counter = 0
         self.on_mouse_scroll_cached_movement = [0, 0]
+        self.fullscreen_resolution = (windll.user32.GetSystemMetrics(0), windll.user32.GetSystemMetrics(1))
+        USER_DB_CURSOR.execute('SELECT app_width, app_height FROM graphics')
+        self.windowed_resolution = USER_DB_CURSOR.fetchone()
         self.app.fade_in_animation.on_activate()
 
         @WINDOW.event
@@ -239,6 +242,24 @@ class Launcher:
         def on_resize(width, height):
             for h in self.app.on_window_resize_handlers:
                 h(width, height)
+
+        @WINDOW.event
+        def on_fullscreen():
+            WINDOW.set_size(*self.fullscreen_resolution)
+            WINDOW.set_fullscreen(fullscreen=True)
+            USER_DB_CURSOR.execute('UPDATE graphics SET fullscreen = 1')
+            on_commit()
+
+        @WINDOW.event
+        def on_restore():
+            WINDOW.set_fullscreen(fullscreen=False)
+            WINDOW.set_size(*self.windowed_resolution)
+            USER_DB_CURSOR.execute('UPDATE graphics SET fullscreen = 0')
+            on_commit()
+
+        @WINDOW.event
+        def on_close():
+            self.app.on_save_state()
 
     @staticmethod
     def run():

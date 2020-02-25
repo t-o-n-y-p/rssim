@@ -1,4 +1,3 @@
-from sys import exit
 from logging import getLogger
 
 from controller import *
@@ -97,26 +96,6 @@ class AppController(AppBaseController):
         super().on_update_clock_state(clock_24h_enabled)
         self.model.on_save_and_commit_clock_state(clock_24h_enabled)
 
-    def on_fullscreen_button_click(self):
-        WINDOW.set_size(*self.model.fullscreen_resolution)
-        if self.model.fullscreen_mode_available:
-            self.on_fullscreen_mode_turned_on()
-
-    def on_restore_button_click(self):
-        self.on_fullscreen_mode_turned_off()
-        WINDOW.set_size(*self.settings.model.windowed_resolution)
-
-    def on_fullscreen_mode_turned_on(self):
-        self.model.on_fullscreen_mode_turned_on()
-
-    def on_fullscreen_mode_turned_off(self):
-        self.model.on_fullscreen_mode_turned_off()
-
-    def on_close_game(self):
-        self.fade_out_animation.on_activate()
-        self.on_save_state()
-        exit()
-
     def on_activate_main_menu_view(self):
         self.main_menu.on_activate_view()
 
@@ -210,6 +189,7 @@ class AppController(AppBaseController):
         self.on_change_enough_money_notification_state(enough_money_notification_enabled)
         self.on_change_bonus_expired_notification_state(bonus_expired_notification_enabled)
         self.on_change_shop_storage_notification_state(shop_storage_notification_enabled)
+        self.loader.windowed_resolution = windowed_resolution
         if not WINDOW.fullscreen:
             WINDOW.set_size(*windowed_resolution)
 

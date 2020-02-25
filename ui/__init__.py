@@ -17,6 +17,8 @@ def window_size_has_changed(fn):
 
 
 def _create_window():
+    Window.register_event_type('on_fullscreen')
+    Window.register_event_type('on_restore')
     CONFIG_DB_CURSOR.execute('SELECT app_width, app_height FROM screen_resolution_config')
     screen_resolution_config = CONFIG_DB_CURSOR.fetchall()
     monitor_resolution_config = (windll.user32.GetSystemMetrics(0), windll.user32.GetSystemMetrics(1))
