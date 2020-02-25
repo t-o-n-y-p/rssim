@@ -20,9 +20,6 @@ class AppModel(AppBaseModel):
         else:
             self.fullscreen_mode_available = False
 
-    def on_save_state(self):
-        pass
-
     @staticmethod
     def on_save_and_commit_locale(new_locale):
         USER_DB_CURSOR.execute('UPDATE i18n SET current_locale = ?', (new_locale, ))

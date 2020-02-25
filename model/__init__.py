@@ -269,10 +269,6 @@ class AppBaseModel(ABC):
         self.view = view
         self.controller = controller
 
-    @abstractmethod
-    def on_save_state(self):
-        pass
-
 
 class GameBaseModel(AppBaseModel, ABC):
     def __init__(self, controller, view, logger):
@@ -283,6 +279,10 @@ class GameBaseModel(AppBaseModel, ABC):
                                   construction_time_bonus_multiplier FROM game_progress''')
         self.level, self.money, self.exp_bonus_multiplier, self.money_bonus_multiplier, \
             self.construction_time_bonus_multiplier = USER_DB_CURSOR.fetchone()
+
+    @abstractmethod
+    def on_save_state(self):
+        pass
 
     def on_update_time(self, dt):
         self.game_time_fraction += dt * self.dt_multiplier

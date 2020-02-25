@@ -73,11 +73,6 @@ class AppBaseController(ABC):
         for controller in self.child_controllers:
             controller.on_update_current_locale(new_locale)
 
-    def on_save_state(self):
-        self.model.on_save_state()
-        for controller in self.child_controllers:
-            controller.on_save_state()
-
     def on_update_clock_state(self, clock_24h_enabled):
         self.view.on_update_clock_state(clock_24h_enabled)
         for controller in self.child_controllers:
@@ -282,6 +277,11 @@ class AppBaseController(ABC):
 class GameBaseController(AppBaseController, ABC):
     def __init__(self, parent_controller=None, logger=None):
         super().__init__(parent_controller, logger)
+
+    def on_save_state(self):
+        self.model.on_save_state()
+        for controller in self.child_controllers:
+            controller.on_save_state()
 
     def on_update_time(self, dt):
         self.model.on_update_time(dt)

@@ -259,7 +259,8 @@ class Launcher:
 
         @WINDOW.event
         def on_close():
-            self.app.on_save_state()
+            self.app.game.on_save_state()
+            on_commit()
 
     @staticmethod
     def run():

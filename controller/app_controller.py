@@ -1,7 +1,6 @@
 from logging import getLogger
 
 from controller import *
-from database import on_commit
 from ui import WINDOW
 from model.app_model import AppModel
 from view.app_view import AppView
@@ -87,10 +86,6 @@ class AppController(AppBaseController):
     def on_update_current_locale(self, new_locale):
         super().on_update_current_locale(new_locale)
         self.model.on_save_and_commit_locale(new_locale)
-
-    def on_save_state(self):
-        super().on_save_state()
-        on_commit()
 
     def on_update_clock_state(self, clock_24h_enabled):
         super().on_update_clock_state(clock_24h_enabled)

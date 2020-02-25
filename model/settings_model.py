@@ -20,9 +20,6 @@ class SettingsModel(AppBaseModel):
             self.bonus_expired_notification_enabled, self.shop_storage_notification_enabled \
             = (bool(t) for t in USER_DB_CURSOR.fetchone())
 
-    def on_save_state(self):
-        pass
-
     def on_save_and_commit_state(self):
         USER_DB_CURSOR.execute('''UPDATE graphics SET app_width = ?, app_height = ?, display_fps = ?, 
                                   fade_animations_enabled = ?''',

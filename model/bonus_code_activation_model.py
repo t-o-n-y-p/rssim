@@ -11,10 +11,6 @@ class BonusCodeActivationModel(AppBaseModel):
         USER_DB_CURSOR.execute('''SELECT bonus_codes_abuse_counter FROM game_progress''')
         self.bonus_code_abuse_counter = USER_DB_CURSOR.fetchone()[0]
 
-    def on_save_state(self):
-        USER_DB_CURSOR.execute('''UPDATE game_progress SET bonus_codes_abuse_counter = ?''',
-                               (self.bonus_code_abuse_counter, ))
-
     def on_increment_bonus_code_abuse_counter(self, value):
         self.bonus_code_abuse_counter += value
         self.on_save_and_commit_bonus_code_abuse_counter()
