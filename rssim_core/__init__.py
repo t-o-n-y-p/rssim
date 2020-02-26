@@ -76,9 +76,6 @@ LOG_LEVEL_OFF: Final = 30                              # integer log level high 
 LOG_LEVEL_INFO: Final = 20                             # integer log level which includes basic logs
 LOG_LEVEL_DEBUG: Final = 10                            # integer log level which includes all possible logs
 DATABASE_SHA512: Final = '6209abedffeb31420423738ad9d2e79ba670ac615a06c7606d4a4641f431c20837cc47f2afca96b6ffeabb8699403f0062ca77239f2d1c07b3773309b46368f7'
-MAXIMUM_MOUSE_MOTION_EVENTS_PER_FRAME: Final = 1
-MAXIMUM_MOUSE_DRAG_EVENTS_PER_FRAME: Final = 1
-MAXIMUM_MOUSE_SCROLL_EVENTS_PER_FRAME: Final = 1
 # app version tuple members
 MAJOR: Final = 0
 MINOR: Final = 1
@@ -141,112 +138,6 @@ class Launcher:
             WINDOW.on_mouse_motion_event_counter = 0
             WINDOW.on_mouse_drag_event_counter = 0
             WINDOW.on_mouse_scroll_event_counter = 0
-
-        @WINDOW.event
-        def on_activate():
-            for h in WINDOW.on_window_activate_handlers:
-                h()
-
-        @WINDOW.event
-        def on_show():
-            for h in WINDOW.on_window_show_handlers:
-                h()
-
-        @WINDOW.event
-        def on_deactivate():
-            for h in WINDOW.on_window_deactivate_handlers:
-                h()
-
-        @WINDOW.event
-        def on_hide():
-            for h in WINDOW.on_window_hide_handlers:
-                h()
-
-        @WINDOW.event
-        def on_mouse_press(x, y, button, modifiers):
-            for h in WINDOW.on_mouse_press_handlers:
-                h(x, y, button, modifiers)
-
-        @WINDOW.event
-        def on_mouse_release(x, y, button, modifiers):
-            for h in WINDOW.on_mouse_release_handlers:
-                h(x, y, button, modifiers)
-
-        @WINDOW.event
-        def on_mouse_motion(x, y, dx, dy):
-            if WINDOW.on_mouse_motion_event_counter < MAXIMUM_MOUSE_MOTION_EVENTS_PER_FRAME:
-                WINDOW.on_mouse_motion_event_counter += 1
-                dx += WINDOW.on_mouse_motion_cached_movement[0]
-                dy += WINDOW.on_mouse_motion_cached_movement[1]
-                WINDOW.on_mouse_motion_cached_movement = [0, 0]
-                for h in WINDOW.on_mouse_motion_handlers:
-                    h(x, y, dx, dy)
-
-            else:
-                WINDOW.on_mouse_motion_cached_movement[0] += dx
-                WINDOW.on_mouse_motion_cached_movement[1] += dy
-
-        @WINDOW.event
-        def on_mouse_drag(x, y, dx, dy, buttons, modifiers):
-            if WINDOW.on_mouse_drag_event_counter < MAXIMUM_MOUSE_DRAG_EVENTS_PER_FRAME:
-                WINDOW.on_mouse_drag_event_counter += 1
-                dx += WINDOW.on_mouse_drag_cached_movement[0]
-                dy += WINDOW.on_mouse_drag_cached_movement[1]
-                WINDOW.on_mouse_drag_cached_movement = [0, 0]
-                for h in WINDOW.on_mouse_drag_handlers:
-                    h(x, y, dx, dy, buttons, modifiers)
-
-            else:
-                WINDOW.on_mouse_drag_cached_movement[0] += dx
-                WINDOW.on_mouse_drag_cached_movement[1] += dy
-
-        @WINDOW.event
-        def on_mouse_leave(x, y):
-            for h in WINDOW.on_mouse_leave_handlers:
-                h(x, y)
-
-        @WINDOW.event
-        def on_mouse_scroll(x, y, scroll_x, scroll_y):
-            if WINDOW.on_mouse_scroll_event_counter < MAXIMUM_MOUSE_SCROLL_EVENTS_PER_FRAME:
-                WINDOW.on_mouse_scroll_event_counter += 1
-                scroll_x += WINDOW.on_mouse_scroll_cached_movement[0]
-                scroll_y += WINDOW.on_mouse_scroll_cached_movement[1]
-                WINDOW.on_mouse_scroll_cached_movement = [0, 0]
-                for h in WINDOW.on_mouse_scroll_handlers:
-                    h(x, y, scroll_x, scroll_y)
-
-            else:
-                WINDOW.on_mouse_scroll_cached_movement[0] += scroll_x
-                WINDOW.on_mouse_scroll_cached_movement[1] += scroll_y
-
-        @WINDOW.event
-        def on_key_press(symbol, modifiers):
-            for h in WINDOW.on_key_press_handlers:
-                h(symbol, modifiers)
-
-        @WINDOW.event
-        def on_text(text):
-            for h in WINDOW.on_text_handlers:
-                h(text)
-
-        @WINDOW.event
-        def on_resize(width, height):
-            for h in WINDOW.on_window_resize_handlers:
-                h(width, height)
-
-        @WINDOW.event
-        def on_fullscreen():
-            WINDOW.set_size(*WINDOW.fullscreen_resolution)
-            WINDOW.set_fullscreen(fullscreen=True)
-            USER_DB_CURSOR.execute('UPDATE graphics SET fullscreen = 1')
-            on_commit()
-
-        @WINDOW.event
-        def on_restore():
-            WINDOW.set_fullscreen(fullscreen=False)
-            WINDOW.set_size(*WINDOW.windowed_resolution)
-            USER_DB_CURSOR.execute('UPDATE graphics SET fullscreen = 0')
-            on_commit()
 
         @WINDOW.event
         def on_close():

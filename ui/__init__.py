@@ -1,11 +1,9 @@
-from ctypes import windll
-
-from pyglet.window.win32 import Win32Window
 from pyglet.graphics import Batch, OrderedGroup
 
 from database import *
 from camera.map_camera import MapCamera
 from camera.ui_camera import UICamera
+from event_dispatcher import WINDOW
 
 
 def window_size_has_changed(fn):
@@ -14,52 +12,6 @@ def window_size_has_changed(fn):
             fn(*args, **kwargs)
 
     return _update_sprites_if_window_size_has_changed
-
-
-class Window(Win32Window):
-    def __init__(self, *args, **kwargs):
-        super().__init__(*args, **kwargs)
-        self.on_mouse_press_handlers = []
-        self.on_mouse_release_handlers = []
-        self.on_mouse_motion_handlers = []
-        self.on_mouse_drag_handlers = []
-        self.on_mouse_leave_handlers = []
-        self.on_mouse_scroll_handlers = []
-        self.on_key_press_handlers = []
-        self.on_text_handlers = []
-        self.on_window_resize_handlers = []
-        self.on_window_activate_handlers = []
-        self.on_window_show_handlers = []
-        self.on_window_deactivate_handlers = []
-        self.on_window_hide_handlers = []
-        self.on_mouse_motion_event_counter = 0
-        self.on_mouse_motion_cached_movement = [0, 0]
-        self.on_mouse_drag_event_counter = 0
-        self.on_mouse_drag_cached_movement = [0, 0]
-        self.on_mouse_scroll_event_counter = 0
-        self.on_mouse_scroll_cached_movement = [0, 0]
-        self.fullscreen_resolution = (windll.user32.GetSystemMetrics(0), windll.user32.GetSystemMetrics(1))
-        USER_DB_CURSOR.execute('SELECT app_width, app_height FROM graphics')
-        self.windowed_resolution = USER_DB_CURSOR.fetchone()
-
-
-def _create_window():
-    Window.register_event_type('on_fullscreen')
-    Window.register_event_type('on_restore')
-    CONFIG_DB_CURSOR.execute('SELECT app_width, app_height FROM screen_resolution_config')
-    screen_resolution_config = CONFIG_DB_CURSOR.fetchall()
-    monitor_resolution_config = (windll.user32.GetSystemMetrics(0), windll.user32.GetSystemMetrics(1))
-    USER_DB_CURSOR.execute('SELECT fullscreen FROM graphics')
-    if bool(USER_DB_CURSOR.fetchone()[0]) and monitor_resolution_config in screen_resolution_config:
-        window = Window(width=monitor_resolution_config[0], height=monitor_resolution_config[1],
-                        caption='Railway Station Simulator', style='borderless', fullscreen=False, vsync=False)
-        window.set_fullscreen(True)
-        return window
-
-    USER_DB_CURSOR.execute('SELECT app_width, app_height FROM graphics')
-    screen_resolution = USER_DB_CURSOR.fetchone()
-    return Window(width=screen_resolution[0], height=screen_resolution[1],
-                  caption='Railway Station Simulator', style='borderless', fullscreen=False, vsync=False)
 
 
 # --------------------- CONSTANTS ---------------------
@@ -85,10 +37,6 @@ RED_GREY_RGB: Final = (112, 0, 0)
 WHITE_RGB: Final = (255, 255, 255)                     # white UI color
 GREY_RGB: Final = (112, 112, 112)                      # grey UI color
 SCHEDULE_ARRIVAL_TIME_THRESHOLD: Final = [SECONDS_IN_ONE_HOUR, SECONDS_IN_ONE_HOUR * 10]
-# main surface which harbors all the app
-WINDOW: Final = _create_window()
-# flip the surface so user knows game has launched and is loading now
-WINDOW.flip()
 # large portions of sprites which can be drawn together
 BATCHES: Final = {'main_batch': Batch(),
                   'mini_map_batch': Batch(),

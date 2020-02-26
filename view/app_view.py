@@ -1,3 +1,4 @@
+from ctypes import windll
 from logging import getLogger
 
 from win32api import GetCursorPos
