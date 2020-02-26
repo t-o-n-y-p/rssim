@@ -1,6 +1,6 @@
 from ctypes import windll
 
-from pyglet.window import Window
+from pyglet.window.win32 import Win32Window
 from pyglet.graphics import Batch, OrderedGroup
 
 from database import *
@@ -14,6 +14,33 @@ def window_size_has_changed(fn):
             fn(*args, **kwargs)
 
     return _update_sprites_if_window_size_has_changed
+
+
+class Window(Win32Window):
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.on_mouse_press_handlers = []
+        self.on_mouse_release_handlers = []
+        self.on_mouse_motion_handlers = []
+        self.on_mouse_drag_handlers = []
+        self.on_mouse_leave_handlers = []
+        self.on_mouse_scroll_handlers = []
+        self.on_key_press_handlers = []
+        self.on_text_handlers = []
+        self.on_window_resize_handlers = []
+        self.on_window_activate_handlers = []
+        self.on_window_show_handlers = []
+        self.on_window_deactivate_handlers = []
+        self.on_window_hide_handlers = []
+        self.on_mouse_motion_event_counter = 0
+        self.on_mouse_motion_cached_movement = [0, 0]
+        self.on_mouse_drag_event_counter = 0
+        self.on_mouse_drag_cached_movement = [0, 0]
+        self.on_mouse_scroll_event_counter = 0
+        self.on_mouse_scroll_cached_movement = [0, 0]
+        self.fullscreen_resolution = (windll.user32.GetSystemMetrics(0), windll.user32.GetSystemMetrics(1))
+        USER_DB_CURSOR.execute('SELECT app_width, app_height FROM graphics')
+        self.windowed_resolution = USER_DB_CURSOR.fetchone()
 
 
 def _create_window():

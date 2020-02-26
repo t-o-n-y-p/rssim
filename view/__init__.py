@@ -311,71 +311,83 @@ class AppBaseView(ABC):
 
     @final
     def on_append_view_handlers(self):
-        # appends view handlers
-        self.controller.on_append_view_handlers(
-            on_mouse_motion_handlers=self.on_mouse_motion_handlers,
-            on_mouse_press_handlers=self.on_mouse_press_handlers,
-            on_mouse_release_handlers=self.on_mouse_release_handlers,
-            on_mouse_drag_handlers=self.on_mouse_drag_handlers,
-            on_mouse_leave_handlers=self.on_mouse_leave_handlers,
-            on_mouse_scroll_handlers=self.on_mouse_scroll_handlers,
-            on_key_press_handlers=self.on_key_press_handlers,
-            on_text_handlers=self.on_text_handlers
-        )
-        # appends button handlers
+        WINDOW.on_mouse_press_handlers.extend(self.on_mouse_press_handlers)
+        WINDOW.on_mouse_release_handlers.extend(self.on_mouse_release_handlers)
+        WINDOW.on_mouse_motion_handlers.extend(self.on_mouse_motion_handlers)
+        WINDOW.on_mouse_drag_handlers.extend(self.on_mouse_drag_handlers)
+        WINDOW.on_mouse_leave_handlers.extend(self.on_mouse_leave_handlers)
+        WINDOW.on_mouse_scroll_handlers.extend(self.on_mouse_scroll_handlers)
+        WINDOW.on_key_press_handlers.extend(self.on_key_press_handlers)
+        WINDOW.on_text_handlers.extend(self.on_text_handlers)
         for b in self.buttons:
-            self.controller.on_append_view_handlers(
-                on_mouse_motion_handlers=(b.on_mouse_motion,),
-                on_mouse_press_handlers=(b.on_mouse_press,),
-                on_mouse_release_handlers=(b.on_mouse_release,),
-                on_mouse_leave_handlers=(b.on_mouse_leave,)
-            )
+            WINDOW.on_mouse_motion_handlers.append(b.on_mouse_motion)
+            WINDOW.on_mouse_press_handlers.append(b.on_mouse_press)
+            WINDOW.on_mouse_release_handlers.append(b.on_mouse_release)
+            WINDOW.on_mouse_leave_handlers.append(b.on_mouse_leave)
 
     @final
     def on_detach_view_handlers(self):
         # detaches view handlers
-        self.controller.on_detach_view_handlers(
-            on_mouse_motion_handlers=self.on_mouse_motion_handlers,
-            on_mouse_press_handlers=self.on_mouse_press_handlers,
-            on_mouse_release_handlers=self.on_mouse_release_handlers,
-            on_mouse_drag_handlers=self.on_mouse_drag_handlers,
-            on_mouse_leave_handlers=self.on_mouse_leave_handlers,
-            on_mouse_scroll_handlers=self.on_mouse_scroll_handlers,
-            on_key_press_handlers=self.on_key_press_handlers,
-            on_text_handlers=self.on_text_handlers
-        )
+        for h in self.on_mouse_press_handlers:
+            WINDOW.on_mouse_press_handlers.remove(h)
+
+        for h in self.on_mouse_release_handlers:
+            WINDOW.on_mouse_release_handlers.remove(h)
+
+        for h in self.on_mouse_motion_handlers:
+            WINDOW.on_mouse_motion_handlers.remove(h)
+
+        for h in self.on_mouse_drag_handlers:
+            WINDOW.on_mouse_drag_handlers.remove(h)
+
+        for h in self.on_mouse_leave_handlers:
+            WINDOW.on_mouse_leave_handlers.remove(h)
+
+        for h in self.on_mouse_scroll_handlers:
+            WINDOW.on_mouse_scroll_handlers.remove(h)
+
+        for h in self.on_key_press_handlers:
+            WINDOW.on_key_press_handlers.remove(h)
+
+        for h in self.on_text_handlers:
+            WINDOW.on_text_handlers.remove(h)
+
         # detaches button handlers
         for b in self.buttons:
-            self.controller.on_detach_view_handlers(
-                on_mouse_motion_handlers=(b.on_mouse_motion,),
-                on_mouse_press_handlers=(b.on_mouse_press,),
-                on_mouse_release_handlers=(b.on_mouse_release,),
-                on_mouse_leave_handlers=(b.on_mouse_leave,)
-            )
+            WINDOW.on_mouse_motion_handlers.remove(b.on_mouse_motion)
+            WINDOW.on_mouse_press_handlers.remove(b.on_mouse_press)
+            WINDOW.on_mouse_release_handlers.remove(b.on_mouse_release)
+            WINDOW.on_mouse_leave_handlers.remove(b.on_mouse_leave)
 
     @final
     def on_append_window_handlers(self):
-        self.controller.on_append_window_handlers(
-            on_window_resize_handlers=self.on_window_resize_handlers,
-            on_window_activate_handlers=self.on_window_activate_handlers,
-            on_window_show_handlers=self.on_window_show_handlers,
-            on_window_deactivate_handlers=self.on_window_deactivate_handlers,
-            on_window_hide_handlers=self.on_window_hide_handlers
-        )
+        WINDOW.on_window_resize_handlers.extend(self.on_window_resize_handlers)
+        WINDOW.on_window_activate_handlers.extend(self.on_window_activate_handlers)
+        WINDOW.on_window_show_handlers.extend(self.on_window_show_handlers)
+        WINDOW.on_window_deactivate_handlers.extend(self.on_window_deactivate_handlers)
+        WINDOW.on_window_hide_handlers.extend(self.on_window_hide_handlers)
         for b in self.buttons:
-            self.controller.on_append_window_handlers(on_window_resize_handlers=(b.on_window_resize,))
+            WINDOW.on_window_resize_handlers.append(b.on_window_resize)
 
     @final
     def on_detach_window_handlers(self):
-        self.controller.on_detach_window_handlers(
-            on_window_resize_handlers=self.on_window_resize_handlers,
-            on_window_activate_handlers=self.on_window_activate_handlers,
-            on_window_show_handlers=self.on_window_show_handlers,
-            on_window_deactivate_handlers=self.on_window_deactivate_handlers,
-            on_window_hide_handlers=self.on_window_hide_handlers
-        )
+        for h in self.on_window_resize_handlers:
+            WINDOW.on_window_resize_handlers.remove(h)
+
+        for h in self.on_window_activate_handlers:
+            WINDOW.on_window_activate_handlers.remove(h)
+
+        for h in self.on_window_show_handlers:
+            WINDOW.on_window_show_handlers.remove(h)
+
+        for h in self.on_window_deactivate_handlers:
+            WINDOW.on_window_deactivate_handlers.remove(h)
+
+        for h in self.on_window_hide_handlers:
+            WINDOW.on_window_hide_handlers.remove(h)
+
         for b in self.buttons:
-            self.controller.on_detach_window_handlers(on_window_resize_handlers=(b.on_window_resize,))
+            WINDOW.on_window_resize_handlers.remove(b.on_window_resize)
 
 
 class GameBaseView(AppBaseView, ABC):

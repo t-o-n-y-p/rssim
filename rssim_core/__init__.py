@@ -119,15 +119,6 @@ class Launcher:
         gl.glPointSize(2.5)
         self.app = AppController(loader=self)
         pyglet.clock.schedule(on_app_update)
-        self.on_mouse_motion_event_counter = 0
-        self.on_mouse_motion_cached_movement = [0, 0]
-        self.on_mouse_drag_event_counter = 0
-        self.on_mouse_drag_cached_movement = [0, 0]
-        self.on_mouse_scroll_event_counter = 0
-        self.on_mouse_scroll_cached_movement = [0, 0]
-        self.fullscreen_resolution = (windll.user32.GetSystemMetrics(0), windll.user32.GetSystemMetrics(1))
-        USER_DB_CURSOR.execute('SELECT app_width, app_height FROM graphics')
-        self.windowed_resolution = USER_DB_CURSOR.fetchone()
         self.app.fade_in_animation.on_activate()
 
         @WINDOW.event
@@ -147,105 +138,105 @@ class Launcher:
             self.app.on_apply_shaders_and_draw_vertices()
             # draw ui batch: text labels, buttons
             BATCHES['ui_batch'].draw()
-            self.on_mouse_motion_event_counter = 0
-            self.on_mouse_drag_event_counter = 0
-            self.on_mouse_scroll_event_counter = 0
+            WINDOW.on_mouse_motion_event_counter = 0
+            WINDOW.on_mouse_drag_event_counter = 0
+            WINDOW.on_mouse_scroll_event_counter = 0
 
         @WINDOW.event
         def on_activate():
-            for h in self.app.on_window_activate_handlers:
+            for h in WINDOW.on_window_activate_handlers:
                 h()
 
         @WINDOW.event
         def on_show():
-            for h in self.app.on_window_show_handlers:
+            for h in WINDOW.on_window_show_handlers:
                 h()
 
         @WINDOW.event
         def on_deactivate():
-            for h in self.app.on_window_deactivate_handlers:
+            for h in WINDOW.on_window_deactivate_handlers:
                 h()
 
         @WINDOW.event
         def on_hide():
-            for h in self.app.on_window_hide_handlers:
+            for h in WINDOW.on_window_hide_handlers:
                 h()
 
         @WINDOW.event
         def on_mouse_press(x, y, button, modifiers):
-            for h in self.app.on_mouse_press_handlers:
+            for h in WINDOW.on_mouse_press_handlers:
                 h(x, y, button, modifiers)
 
         @WINDOW.event
         def on_mouse_release(x, y, button, modifiers):
-            for h in self.app.on_mouse_release_handlers:
+            for h in WINDOW.on_mouse_release_handlers:
                 h(x, y, button, modifiers)
 
         @WINDOW.event
         def on_mouse_motion(x, y, dx, dy):
-            if self.on_mouse_motion_event_counter < MAXIMUM_MOUSE_MOTION_EVENTS_PER_FRAME:
-                self.on_mouse_motion_event_counter += 1
-                dx += self.on_mouse_motion_cached_movement[0]
-                dy += self.on_mouse_motion_cached_movement[1]
-                self.on_mouse_motion_cached_movement = [0, 0]
-                for h in self.app.on_mouse_motion_handlers:
+            if WINDOW.on_mouse_motion_event_counter < MAXIMUM_MOUSE_MOTION_EVENTS_PER_FRAME:
+                WINDOW.on_mouse_motion_event_counter += 1
+                dx += WINDOW.on_mouse_motion_cached_movement[0]
+                dy += WINDOW.on_mouse_motion_cached_movement[1]
+                WINDOW.on_mouse_motion_cached_movement = [0, 0]
+                for h in WINDOW.on_mouse_motion_handlers:
                     h(x, y, dx, dy)
 
             else:
-                self.on_mouse_motion_cached_movement[0] += dx
-                self.on_mouse_motion_cached_movement[1] += dy
+                WINDOW.on_mouse_motion_cached_movement[0] += dx
+                WINDOW.on_mouse_motion_cached_movement[1] += dy
 
         @WINDOW.event
         def on_mouse_drag(x, y, dx, dy, buttons, modifiers):
-            if self.on_mouse_drag_event_counter < MAXIMUM_MOUSE_DRAG_EVENTS_PER_FRAME:
-                self.on_mouse_drag_event_counter += 1
-                dx += self.on_mouse_drag_cached_movement[0]
-                dy += self.on_mouse_drag_cached_movement[1]
-                self.on_mouse_drag_cached_movement = [0, 0]
-                for h in self.app.on_mouse_drag_handlers:
+            if WINDOW.on_mouse_drag_event_counter < MAXIMUM_MOUSE_DRAG_EVENTS_PER_FRAME:
+                WINDOW.on_mouse_drag_event_counter += 1
+                dx += WINDOW.on_mouse_drag_cached_movement[0]
+                dy += WINDOW.on_mouse_drag_cached_movement[1]
+                WINDOW.on_mouse_drag_cached_movement = [0, 0]
+                for h in WINDOW.on_mouse_drag_handlers:
                     h(x, y, dx, dy, buttons, modifiers)
 
             else:
-                self.on_mouse_drag_cached_movement[0] += dx
-                self.on_mouse_drag_cached_movement[1] += dy
+                WINDOW.on_mouse_drag_cached_movement[0] += dx
+                WINDOW.on_mouse_drag_cached_movement[1] += dy
 
         @WINDOW.event
         def on_mouse_leave(x, y):
-            for h in self.app.on_mouse_leave_handlers:
+            for h in WINDOW.on_mouse_leave_handlers:
                 h(x, y)
 
         @WINDOW.event
         def on_mouse_scroll(x, y, scroll_x, scroll_y):
-            if self.on_mouse_scroll_event_counter < MAXIMUM_MOUSE_SCROLL_EVENTS_PER_FRAME:
-                self.on_mouse_scroll_event_counter += 1
-                scroll_x += self.on_mouse_scroll_cached_movement[0]
-                scroll_y += self.on_mouse_scroll_cached_movement[1]
-                self.on_mouse_scroll_cached_movement = [0, 0]
-                for h in self.app.on_mouse_scroll_handlers:
+            if WINDOW.on_mouse_scroll_event_counter < MAXIMUM_MOUSE_SCROLL_EVENTS_PER_FRAME:
+                WINDOW.on_mouse_scroll_event_counter += 1
+                scroll_x += WINDOW.on_mouse_scroll_cached_movement[0]
+                scroll_y += WINDOW.on_mouse_scroll_cached_movement[1]
+                WINDOW.on_mouse_scroll_cached_movement = [0, 0]
+                for h in WINDOW.on_mouse_scroll_handlers:
                     h(x, y, scroll_x, scroll_y)
 
             else:
-                self.on_mouse_scroll_cached_movement[0] += scroll_x
-                self.on_mouse_scroll_cached_movement[1] += scroll_y
+                WINDOW.on_mouse_scroll_cached_movement[0] += scroll_x
+                WINDOW.on_mouse_scroll_cached_movement[1] += scroll_y
 
         @WINDOW.event
         def on_key_press(symbol, modifiers):
-            for h in self.app.on_key_press_handlers:
+            for h in WINDOW.on_key_press_handlers:
                 h(symbol, modifiers)
 
         @WINDOW.event
         def on_text(text):
-            for h in self.app.on_text_handlers:
+            for h in WINDOW.on_text_handlers:
                 h(text)
 
         @WINDOW.event
         def on_resize(width, height):
-            for h in self.app.on_window_resize_handlers:
+            for h in WINDOW.on_window_resize_handlers:
                 h(width, height)
 
         @WINDOW.event
         def on_fullscreen():
-            WINDOW.set_size(*self.fullscreen_resolution)
+            WINDOW.set_size(*WINDOW.fullscreen_resolution)
             WINDOW.set_fullscreen(fullscreen=True)
             USER_DB_CURSOR.execute('UPDATE graphics SET fullscreen = 1')
             on_commit()
@@ -253,7 +244,7 @@ class Launcher:
         @WINDOW.event
         def on_restore():
             WINDOW.set_fullscreen(fullscreen=False)
-            WINDOW.set_size(*self.windowed_resolution)
+            WINDOW.set_size(*WINDOW.windowed_resolution)
             USER_DB_CURSOR.execute('UPDATE graphics SET fullscreen = 0')
             on_commit()
 

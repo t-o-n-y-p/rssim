@@ -184,7 +184,7 @@ class AppController(AppBaseController):
         self.on_change_enough_money_notification_state(enough_money_notification_enabled)
         self.on_change_bonus_expired_notification_state(bonus_expired_notification_enabled)
         self.on_change_shop_storage_notification_state(shop_storage_notification_enabled)
-        self.loader.windowed_resolution = windowed_resolution
+        WINDOW.windowed_resolution = windowed_resolution
         if not WINDOW.fullscreen:
             WINDOW.set_size(*windowed_resolution)
 
