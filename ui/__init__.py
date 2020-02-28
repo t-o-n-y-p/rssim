@@ -3,7 +3,7 @@ from pyglet.graphics import Batch, OrderedGroup
 from database import *
 from camera.map_camera import MapCamera
 from camera.ui_camera import UICamera
-from event_dispatcher import WINDOW
+from event_dispatcher.window import WINDOW
 
 
 def window_size_has_changed(fn):

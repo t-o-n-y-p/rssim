@@ -91,12 +91,6 @@ class AppController(AppBaseController):
         super().on_update_clock_state(clock_24h_enabled)
         self.model.on_save_and_commit_clock_state(clock_24h_enabled)
 
-    def on_activate_main_menu_view(self):
-        self.main_menu.on_activate_view()
-
-    def on_activate_game_view(self):
-        self.game.on_activate_view()
-
     def on_open_license(self):
         self.game_to_main_menu_transition_animation.on_deactivate()
         self.license_to_main_menu_transition_animation.on_deactivate()
