@@ -13,149 +13,341 @@ from pyglet.resource import get_settings_path
 set_keyring(Windows.WinVaultKeyring())
 # determine if user launches app for the first time, if yes - create game DB
 USER_DB_LOCATION: Final = get_settings_path("Railway Station Simulator")
-__user_db_full_path = path.join(USER_DB_LOCATION, 'user.db')
+_user_db_full_path = path.join(USER_DB_LOCATION, 'user.db')
 if not path.exists(USER_DB_LOCATION):
     makedirs(USER_DB_LOCATION)
 
-if not path.exists(__user_db_full_path):
-    copyfile('db/default.db', __user_db_full_path)
+if not path.exists(_user_db_full_path):
+    copyfile('db/default.db', _user_db_full_path)
     try:
         delete_password(sha512('user_db'.encode('utf-8')).hexdigest(), sha512('user_db'.encode('utf-8')).hexdigest())
     except PasswordDeleteError:
         pass
 
-    with open(__user_db_full_path, 'rb') as f1:
+    with open(_user_db_full_path, 'rb') as f1:
         data = f1.read()[::-1]
         set_password(sha512('user_db'.encode('utf-8')).hexdigest(), sha512('user_db'.encode('utf-8')).hexdigest(),
                      sha512(data[::3] + data[1::3] + data[2::3]).hexdigest())
 
 # create database connections and cursors
-USER_DB_CONNECTION: Final = connect(path.join(USER_DB_LOCATION, 'user.db'))
-USER_DB_CURSOR: Final = USER_DB_CONNECTION.cursor()
-__config_db_connection = connect('db/config.db')
-CONFIG_DB_CURSOR: Final = __config_db_connection.cursor()
+_user_db_connection: Final = connect(path.join(USER_DB_LOCATION, 'user.db'))
+USER_DB_CURSOR: Final = _user_db_connection.cursor()
+_config_db_connection: Final = connect('db/config.db')
+CONFIG_DB_CURSOR: Final = _config_db_connection.cursor()
 
-# time
-SECONDS_IN_ONE_MINUTE: Final = 60
-MINUTES_IN_ONE_HOUR: Final = 60
-SECONDS_IN_ONE_HOUR: Final = SECONDS_IN_ONE_MINUTE * MINUTES_IN_ONE_HOUR
-HOURS_IN_ONE_DAY: Final = 24
-SECONDS_IN_ONE_DAY: Final = SECONDS_IN_ONE_MINUTE * MINUTES_IN_ONE_HOUR * HOURS_IN_ONE_DAY
-
-TRACKS: Final = 0
-ENVIRONMENT: Final = 1
-
-PASSENGER_MAP: Final = 0
-FREIGHT_MAP: Final = 1
-
-CONSTRUCTOR_VIEW_TRACK_CELLS: Final = 4                # number of cells for tracks on constructor screen
-CONSTRUCTOR_VIEW_ENVIRONMENT_CELLS: Final = 4          # number of cells for environment tiers on constructor screen
-# bonus code matrix properties
-CODE_TYPE: Final = 0
-BONUS_VALUE: Final = 1
-REQUIRED_LEVEL: Final = 2
-MAXIMUM_BONUS_TIME: Final = 3
-ACTIVATION_AVAILABLE: Final = 4
-ACTIVATIONS_LEFT: Final = 5
-IS_ACTIVATED: Final = 6
-BONUS_TIME: Final = 7
-
-BONUS_CODE_MATRIX = {}
-CONFIG_DB_CURSOR.execute('''SELECT * FROM bonus_codes_config''')
-for line in CONFIG_DB_CURSOR.fetchall():
-    BONUS_CODE_MATRIX[line[0]] = [*line[1:]]
-    USER_DB_CURSOR.execute('''SELECT activation_available, activations_left, is_activated, bonus_time
-                              FROM bonus_codes WHERE sha512_hash = ?''', (line[0],))
-    BONUS_CODE_MATRIX[line[0]].extend(USER_DB_CURSOR.fetchone())
-    BONUS_CODE_MATRIX[line[0]][ACTIVATION_AVAILABLE] = bool(BONUS_CODE_MATRIX[line[0]][ACTIVATION_AVAILABLE])
-    BONUS_CODE_MATRIX[line[0]][IS_ACTIVATED] = bool(BONUS_CODE_MATRIX[line[0]][IS_ACTIVATED])
-
-# base_schedule matrix properties
-TRAIN_ID: Final = 0                            # property #0 indicates train identification number
-ARRIVAL_TIME: Final = 1                        # property #1 indicates arrival time
-DIRECTION: Final = 2                           # property #2 indicates direction
-NEW_DIRECTION: Final = 3                       # property #3 indicates new direction
-CARS: Final = 4                                # property #4 indicates number of cars
-STOP_TIME: Final = 5                           # property #5 indicates how much stop time left
-EXP: Final = 6                                 # property #6 indicates how much exp the train gives
-MONEY: Final = 7                               # property #7 indicates how much money the train gives
-SWITCH_DIRECTION_REQUIRED: Final = 8
-
-# schedule options matrix properties
-ARRIVAL_TIME_MIN: Final = 0             # property #1 indicates min arrival time offset from the beginning of the cycle
-ARRIVAL_TIME_MAX: Final = 1             # property #0 indicates max arrival time offset from the beginning of the cycle
-# property #2 indicates direction
-# property #3 indicates new direction
-CARS_MIN: Final = 4                     # property #4 indicates min number of cars
-CARS_MAX: Final = 5                     # property #5 indicates max number of cars
-SWITCH_DIRECTION_FLAG = 6
-
-BASE_SCHEDULE = [(), ()]
-for m in (PASSENGER_MAP, FREIGHT_MAP):
-    USER_DB_CURSOR.execute('''SELECT train_id, arrival, direction, new_direction, 
-                              cars, boarding_time, exp, money, switch_direction_required 
-                              FROM base_schedule WHERE map_id = ?''', (m, ))
-    BASE_SCHEDULE[m] = USER_DB_CURSOR.fetchall()
-
-CONSTRUCTION_STATE_MATRIX = [[{}, {}], [{}, {}]]
-for m in (PASSENGER_MAP, FREIGHT_MAP):
-    USER_DB_CURSOR.execute('''SELECT track_number, locked, under_construction, construction_time, 
-                              unlock_condition_from_level, unlock_condition_from_previous_track, 
-                              unlock_condition_from_environment, unlock_available FROM tracks 
-                              WHERE locked = 1 AND map_id = ?''', (m, ))
-    track_info_fetched = USER_DB_CURSOR.fetchall()
-    for info in track_info_fetched:
-        CONSTRUCTION_STATE_MATRIX[m][TRACKS][info[0]] = [bool(info[1]), bool(info[2]), info[3], bool(info[4]),
-                                                         bool(info[5]), bool(info[6]), bool(info[7])]
-        CONFIG_DB_CURSOR.execute('''SELECT price, max_construction_time, level, environment_tier FROM track_config 
-                                    WHERE track_number = ? AND map_id = ?''', (info[0], m))
-        CONSTRUCTION_STATE_MATRIX[m][TRACKS][info[0]].extend(CONFIG_DB_CURSOR.fetchone())
-
-    USER_DB_CURSOR.execute('''SELECT tier, locked, under_construction, construction_time, 
-                              unlock_condition_from_level, unlock_condition_from_previous_environment,
-                              unlock_available FROM environment WHERE locked = 1 AND map_id = ?''', (m, ))
-    environment_info_fetched = USER_DB_CURSOR.fetchall()
-    for info in environment_info_fetched:
-        CONSTRUCTION_STATE_MATRIX[m][ENVIRONMENT][info[0]] = [bool(info[1]), bool(info[2]), info[3],
-                                                              bool(info[4]), bool(info[5]), 1, bool(info[6])]
-        CONFIG_DB_CURSOR.execute('''SELECT price, max_construction_time, level FROM environment_config 
-                                    WHERE tier = ? AND map_id = ?''', (info[0], m))
-        CONSTRUCTION_STATE_MATRIX[m][ENVIRONMENT][info[0]].extend(CONFIG_DB_CURSOR.fetchone())
-
-# track, environment and shop stage state matrix properties
-LOCKED: Final = 0                                      # property #0 indicates if track/env. is locked
-UNDER_CONSTRUCTION: Final = 1                          # property #1 indicates if track/env. is under construction
-CONSTRUCTION_TIME: Final = 2                           # property #2 indicates construction time left
-UNLOCK_CONDITION_FROM_LEVEL: Final = 3                 # property #3 indicates if unlock condition from level is met
-UNLOCK_CONDITION_FROM_PREVIOUS_TRACK: Final = 4        # property #4 indicates if unlock previous track condition is met
-UNLOCK_CONDITION_FROM_PREVIOUS_ENVIRONMENT: Final = 4  # property #4 indicates if unlock previous env. condition is met
-UNLOCK_CONDITION_FROM_PREVIOUS_STAGE: Final = 4        # property #4 indicates if unlock previous stage condition is met
-UNLOCK_CONDITION_FROM_ENVIRONMENT: Final = 5           # indicates if unlock environment condition is met (tracks only)
-UNLOCK_AVAILABLE: Final = 6                            # property #6 indicates if all unlock conditions are met
-PRICE: Final = 7                                       # property #7 indicates track/env. price
-MAX_CONSTRUCTION_TIME: Final = 8
-LEVEL_REQUIRED: Final = 9                              # property #9 indicates required level for this track/env.
-ENVIRONMENT_REQUIRED: Final = 10                       # property #10 indicates required environment tier (tracks only)
-HOURLY_PROFIT: Final = 11
-STORAGE_CAPACITY: Final = 12
-EXP_BONUS: Final = 13
-
-MAP_SWITCHER_STATE_MATRIX = [[], []]
-for m in (PASSENGER_MAP, FREIGHT_MAP):
-    USER_DB_CURSOR.execute('''SELECT locked FROM map_progress WHERE map_id = ?''', (m, ))
-    MAP_SWITCHER_STATE_MATRIX[m].append(bool(USER_DB_CURSOR.fetchone()[0]))
-    CONFIG_DB_CURSOR.execute('''SELECT level_required, price FROM map_progress_config WHERE map_id = ?''', (m, ))
-    MAP_SWITCHER_STATE_MATRIX[m].extend(CONFIG_DB_CURSOR.fetchone())
-
-MAP_LOCKED: Final = 0
-MAP_LEVEL_REQUIRED: Final = 1
-MAP_PRICE: Final = 2
+# define column titles for all tables
+# ---------------------------------
+LOG_OPTIONS_LOG_LEVEL: Final = 0
+# ---------------------------------
+I18N_CURRENT_LOCALE: Final = 0
+I18N_CLOCK_24H: Final = 1
+# ---------------------------------
+NOTIFICATION_SETTINGS_LEVEL_UP_NOTIFICATION_ENABLED: Final = 0
+NOTIFICATION_SETTINGS_FEATURE_UNLOCKED_NOTIFICATION_ENABLED: Final = 1
+NOTIFICATION_SETTINGS_CONSTRUCTION_COMPLETED_NOTIFICATION_ENABLED: Final = 2
+NOTIFICATION_SETTINGS_ENOUGH_MONEY_NOTIFICATION_ENABLED: Final = 3
+NOTIFICATION_SETTINGS_BONUS_EXPIRED_NOTIFICATION_ENABLED: Final = 4
+NOTIFICATION_SETTINGS_SHOP_STORAGE_NOTIFICATION_ENABLED: Final = 5
+# ---------------------------------
+GRAPHICS_APP_WIDTH: Final = 0
+GRAPHICS_APP_HEIGHT: Final = 1
+GRAPHICS_FULLSCREEN: Final = 2
+GRAPHICS_DISPLAY_FPS: Final = 3
+GRAPHICS_LAST_KNOWN_MAP_ID: Final = 4
+GRAPHICS_FADE_ANIMATIONS_ENABLED: Final = 5
+# ---------------------------------
+MAP_POSITION_SETTINGS_MAP_ID: Final = 0
+MAP_POSITION_SETTINGS_LAST_KNOWN_BASE_OFFSET: Final = 1
+MAP_POSITION_SETTINGS_LAST_KNOWN_ZOOM: Final = 2
+# ---------------------------------
+GAME_PROGRESS_LEVEL: Final = 0
+GAME_PROGRESS_EXP: Final = 1
+GAME_PROGRESS_MONEY: Final = 2
+GAME_PROGRESS_MONEY_TARGET: Final = 3
+GAME_PROGRESS_ONBOARDING_REQUIRED: Final = 4
+GAME_PROGRESS_EXP_MULTIPLIER: Final = 5
+GAME_PROGRESS_EXP_BONUS_MULTIPLIER: Final = 6
+GAME_PROGRESS_MONEY_BONUS_MULTIPLIER: Final = 7
+GAME_PROGRESS_CONSTRUCTION_TIME_BONUS_MULTIPLIER: Final = 8
+GAME_PROGRESS_BONUS_CODES_LOCKED: Final = 9
+GAME_PROGRESS_BONUS_CODES_ABUSE_COUNTER: Final = 10
+# ---------------------------------
+MAP_PROGRESS_MAP_ID: Final = 0
+MAP_PROGRESS_LOCKED: Final = 1
+MAP_PROGRESS_UNLOCKED_TRACKS: Final = 2
+MAP_PROGRESS_UNLOCKED_ENVIRONMENT: Final = 3
+MAP_PROGRESS_MIN_SUPPORTED_CARS_BY_DIRECTION: Final = 4
+MAP_PROGRESS_UNLOCKED_CAR_COLLECTIONS: Final = 5
+MAP_PROGRESS_ENTRY_LOCKED_STATE: Final = 6
+# ---------------------------------
+EPOCH_TIMESTAMP_GAME_TIME: Final = 0
+EPOCH_TIMESTAMP_GAME_TIME_FRACTION: Final = 1
+EPOCH_TIMESTAMP_DT_MULTIPLIER: Final = 2
+# ---------------------------------
+CONSTRUCTOR_MAP_ID: Final = 0
+CONSTRUCTOR_MONEY_TARGET_ACTIVATED: Final = 1
+CONSTRUCTOR_MONEY_TARGET_CELL_POSITION: Final = 2
+# ---------------------------------
+SCHEDULER_MAP_ID: Final = 0
+SCHEDULER_TRAIN_COUNTER: Final = 1
+SCHEDULER_NEXT_CYCLE_START_TIME: Final = 2
+SCHEDULER_ENTRY_BUSY_STATE: Final = 3
+# ---------------------------------
+BASE_SCHEDULE_MAP_ID: Final = 0
+BASE_SCHEDULE_TRAIN_ID: Final = 1
+BASE_SCHEDULE_ARRIVAL: Final = 2
+BASE_SCHEDULE_DIRECTION: Final = 3
+BASE_SCHEDULE_NEW_DIRECTION: Final = 4
+BASE_SCHEDULE_CARS: Final = 5
+BASE_SCHEDULE_BOARDING_TIME: Final = 6
+BASE_SCHEDULE_EXP: Final = 7
+BASE_SCHEDULE_MONEY: Final = 8
+BASE_SCHEDULE_SWITCH_DIRECTION_REQUIRED: Final = 9
+# ---------------------------------
+TRAINS_MAP_ID: Final = 0
+TRAINS_TRAIN_ID: Final = 1
+TRAINS_CARS: Final = 2
+TRAINS_TRAIN_ROUTE_TRACK_NUMBER: Final = 3
+TRAINS_TRAIN_ROUTE_TYPE: Final = 4
+TRAINS_STATE: Final = 5
+TRAINS_DIRECTION: Final = 6
+TRAINS_NEW_DIRECTION: Final = 7
+TRAINS_CURRENT_DIRECTION: Final = 8
+TRAINS_SPEED_STATE: Final = 9
+TRAINS_SPEED_STATE_TIME: Final = 10
+TRAINS_PRIORITY: Final = 11
+TRAINS_BOARDING_TIME: Final = 12
+TRAINS_EXP: Final = 13
+TRAINS_MONEY: Final = 14
+TRAINS_CARS_POSITION: Final = 15
+TRAINS_CARS_POSITION_ABS: Final = 16
+TRAINS_STOP_POINT: Final = 17
+TRAINS_DESTINATION_POINT: Final = 18
+TRAINS_CAR_IMAGE_COLLECTION: Final = 19
+TRAINS_SWITCH_DIRECTION_REQUIRED: Final = 20
+# ---------------------------------
+SIGNALS_MAP_ID: Final = 0
+SIGNALS_TRACK: Final = 1
+SIGNALS_BASE_ROUTE: Final = 2
+SIGNALS_STATE: Final = 3
+SIGNALS_LOCKED: Final = 4
+# ---------------------------------
+TRAIN_ROUTES_MAP_ID: Final = 0
+TRAIN_ROUTES_TRACK: Final = 1
+TRAIN_ROUTES_TRAIN_ROUTE: Final = 2
+TRAIN_ROUTES_OPENED: Final = 3
+TRAIN_ROUTES_LAST_OPENED_BY: Final = 4
+TRAIN_ROUTES_CURRENT_CHECKPOINT: Final = 5
+TRAIN_ROUTES_PRIORITY: Final = 6
+TRAIN_ROUTES_CARS: Final = 7
+TRAIN_ROUTES_TRAIN_ROUTE_SECTION_BUSY_STATE: Final = 8
+# ---------------------------------
+SWITCHES_MAP_ID: Final = 0
+SWITCHES_TRACK_PARAM_1: Final = 1
+SWITCHES_TRACK_PARAM_2: Final = 2
+SWITCHES_SWITCH_TYPE: Final = 3
+SWITCHES_BUSY: Final = 4
+SWITCHES_FORCE_BUSY: Final = 5
+SWITCHES_LAST_ENTERED_BY: Final = 6
+SWITCHES_CURRENT_POSITION: Final = 7
+SWITCHES_LOCKED: Final = 8
+# ---------------------------------
+CROSSOVERS_MAP_ID: Final = 0
+CROSSOVERS_TRACK_PARAM_1: Final = 1
+CROSSOVERS_TRACK_PARAM_2: Final = 2
+CROSSOVERS_CROSSOVER_TYPE: Final = 3
+CROSSOVERS_BUSY_1_1: Final = 4
+CROSSOVERS_BUSY_1_2: Final = 5
+CROSSOVERS_BUSY_2_1: Final = 6
+CROSSOVERS_BUSY_2_2: Final = 7
+CROSSOVERS_FORCE_BUSY_1_1: Final = 8
+CROSSOVERS_FORCE_BUSY_1_2: Final = 9
+CROSSOVERS_FORCE_BUSY_2_1: Final = 10
+CROSSOVERS_FORCE_BUSY_2_2: Final = 11
+CROSSOVERS_LAST_ENTERED_BY_1_1: Final = 12
+CROSSOVERS_LAST_ENTERED_BY_1_2: Final = 13
+CROSSOVERS_LAST_ENTERED_BY_2_1: Final = 14
+CROSSOVERS_LAST_ENTERED_BY_2_2: Final = 15
+CROSSOVERS_CURRENT_POSITION_1: Final = 16
+CROSSOVERS_CURRENT_POSITION_2: Final = 17
+CROSSOVERS_LOCKED: Final = 18
+# ---------------------------------
+TRACKS_MAP_ID: Final = 0
+TRACKS_TRACK_NUMBER: Final = 1
+TRACKS_LOCKED: Final = 2
+TRACKS_UNDER_CONSTRUCTION: Final = 3
+TRACKS_CONSTRUCTION_TIME: Final = 4
+TRACKS_BUSY: Final = 5
+TRACKS_UNLOCK_CONDITION_FROM_LEVEL: Final = 6
+TRACKS_UNLOCK_CONDITION_FROM_PREVIOUS_TRACK: Final = 7
+TRACKS_UNLOCK_CONDITION_FROM_ENVIRONMENT: Final = 8
+TRACKS_UNLOCK_AVAILABLE: Final = 9
+# ---------------------------------
+ENVIRONMENT_MAP_ID: Final = 0
+ENVIRONMENT_TIER: Final = 1
+ENVIRONMENT_LOCKED: Final = 2
+ENVIRONMENT_UNDER_CONSTRUCTION: Final = 3
+ENVIRONMENT_CONSTRUCTION_TIME: Final = 4
+ENVIRONMENT_UNLOCK_CONDITION_FROM_LEVEL: Final = 5
+ENVIRONMENT_UNLOCK_CONDITION_FROM_PREVIOUS_ENVIRONMENT: Final = 6
+ENVIRONMENT_UNLOCK_AVAILABLE: Final = 7
+# ---------------------------------
+SHOPS_MAP_ID: Final = 0
+SHOPS_SHOP_ID: Final = 1
+SHOPS_CURRENT_STAGE: Final = 2
+SHOPS_SHOP_STORAGE_MONEY: Final = 3
+SHOPS_INTERNAL_SHOP_TIME: Final = 4
+# ---------------------------------
+SHOP_STAGES_MAP_ID: Final = 0
+SHOP_STAGES_SHOP_ID: Final = 1
+SHOP_STAGES_STAGE_NUMBER: Final = 2
+SHOP_STAGES_LOCKED: Final = 3
+SHOP_STAGES_UNDER_CONSTRUCTION: Final = 4
+SHOP_STAGES_CONSTRUCTION_TIME: Final = 5
+SHOP_STAGES_UNLOCK_AVAILABLE: Final = 6
+SHOP_STAGES_UNLOCK_CONDITION_FROM_LEVEL: Final = 7
+SHOP_STAGES_UNLOCK_CONDITION_FROM_PREVIOUS_STAGE: Final = 8
+# ---------------------------------
+BONUS_CODES_SHA512_HASH: Final = 0
+BONUS_CODES_ACTIVATION_AVAILABLE: Final = 1
+BONUS_CODES_ACTIVATIONS_LEFT: Final = 2
+BONUS_CODES_IS_ACTIVATED: Final = 3
+BONUS_CODES_BONUS_TIME: Final = 4
+# ---------------------------------
+VERSION_MAJOR: Final = 0
+VERSION_MINOR: Final = 1
+VERSION_PATCH: Final = 2
+# ---------------------------------
+SCREEN_RESOLUTION_CONFIG_APP_WIDTH: Final = 0
+SCREEN_RESOLUTION_CONFIG_APP_HEIGHT: Final = 1
+SCREEN_RESOLUTION_CONFIG_MANUAL_SETUP: Final = 2
+# ---------------------------------
+PLAYER_PROGRESS_CONFIG_LEVEL: Final = 0
+PLAYER_PROGRESS_CONFIG_PLAYER_PROGRESS: Final = 1
+# ---------------------------------
+MAP_CONFIG_MAP_ID: Final = 0
+MAP_CONFIG_LEVEL: Final = 1
+MAP_CONFIG_SECONDS_PER_CAR: Final = 2
+MAP_CONFIG_EXP_PER_CAR: Final = 3
+MAP_CONFIG_MONEY_PER_CAR: Final = 4
+MAP_CONFIG_SCHEDULE_CYCLE_LENGTH: Final = 5
+# ---------------------------------
+MAP_PROGRESS_CONFIG_MAP_ID: Final = 0
+MAP_PROGRESS_CONFIG_LEVEL_REQUIRED: Final = 1
+MAP_PROGRESS_CONFIG_PRICE: Final = 2
+MAP_PROGRESS_CONFIG_UNLOCKED_TRACKS_BY_DEFAULT: Final = 3
+# ---------------------------------
+SCHEDULE_OPTIONS_MAP_ID: Final = 0
+SCHEDULE_OPTIONS_MIN_LEVEL: Final = 1
+SCHEDULE_OPTIONS_MAX_LEVEL: Final = 2
+SCHEDULE_OPTIONS_ARRIVAL_TIME_MIN: Final = 3
+SCHEDULE_OPTIONS_ARRIVAL_TIME_MAX: Final = 4
+SCHEDULE_OPTIONS_DIRECTION: Final = 5
+SCHEDULE_OPTIONS_NEW_DIRECTION: Final = 6
+SCHEDULE_OPTIONS_CARS_MIN: Final = 7
+SCHEDULE_OPTIONS_CARS_MAX: Final = 8
+SCHEDULE_OPTIONS_SWITCH_DIRECTION_REQUIRED: Final = 9
+# ---------------------------------
+SIGNAL_CONFIG_MAP_ID: Final = 0
+SIGNAL_CONFIG_TRACK: Final = 1
+SIGNAL_CONFIG_BASE_ROUTE: Final = 2
+SIGNAL_CONFIG_X: Final = 3
+SIGNAL_CONFIG_Y: Final = 4
+SIGNAL_CONFIG_ROTATION: Final = 5
+SIGNAL_CONFIG_TRACK_UNLOCKED_WITH: Final = 6
+SIGNAL_CONFIG_ENVIRONMENT_UNLOCKED_WITH: Final = 7
+# ---------------------------------
+TRAIN_ROUTE_CONFIG_MAP_ID: Final = 0
+TRAIN_ROUTE_CONFIG_TRACK: Final = 1
+TRAIN_ROUTE_CONFIG_TRAIN_ROUTE: Final = 2
+TRAIN_ROUTE_CONFIG_START_POINT_V2: Final = 3
+TRAIN_ROUTE_CONFIG_STOP_POINT_V2: Final = 4
+TRAIN_ROUTE_CONFIG_DESTINATION_POINT_V2: Final = 5
+TRAIN_ROUTE_CONFIG_TRAIL_POINTS_V2_PART_1_START: Final = 6
+TRAIN_ROUTE_CONFIG_TRAIL_POINTS_V2_PART_1_END: Final = 7
+TRAIN_ROUTE_CONFIG_TRAIL_POINTS_V2_PART_2_HEAD_TAIL: Final = 8
+TRAIN_ROUTE_CONFIG_TRAIL_POINTS_V2_PART_2_MID: Final = 9
+TRAIN_ROUTE_CONFIG_CHECKPOINTS_V2: Final = 10
+# ---------------------------------
+TRAIN_ROUTE_SECTIONS_MAP_ID: Final = 0
+TRAIN_ROUTE_SECTIONS_TRACK: Final = 1
+TRAIN_ROUTE_SECTIONS_TRAIN_ROUTE: Final = 2
+TRAIN_ROUTE_SECTIONS_TRACK_PARAM_1: Final = 3
+TRAIN_ROUTE_SECTIONS_TRACK_PARAM_2: Final = 4
+TRAIN_ROUTE_SECTIONS_SECTION_TYPE: Final = 5
+TRAIN_ROUTE_SECTIONS_POSITION_1: Final = 6
+TRAIN_ROUTE_SECTIONS_POSITION_2: Final = 7
+TRAIN_ROUTE_SECTIONS_SECTION_NUMBER: Final = 8
+# ---------------------------------
+SWITCHES_CONFIG_MAP_ID: Final = 0
+SWITCHES_CONFIG_TRACK_PARAM_1: Final = 1
+SWITCHES_CONFIG_TRACK_PARAM_2: Final = 2
+SWITCHES_CONFIG_SWITCH_TYPE: Final = 3
+SWITCHES_CONFIG_OFFSET_X: Final = 4
+SWITCHES_CONFIG_OFFSET_Y: Final = 5
+SWITCHES_CONFIG_REGION_X: Final = 6
+SWITCHES_CONFIG_REGION_Y: Final = 7
+SWITCHES_CONFIG_REGION_W: Final = 8
+SWITCHES_CONFIG_REGION_H: Final = 9
+SWITCHES_CONFIG_TRACK_UNLOCKED_WITH: Final = 10
+SWITCHES_CONFIG_ENVIRONMENT_UNLOCKED_WITH: Final = 11
+# ---------------------------------
+CROSSOVERS_CONFIG_MAP_ID: Final = 0
+CROSSOVERS_CONFIG_TRACK_PARAM_1: Final = 1
+CROSSOVERS_CONFIG_TRACK_PARAM_2: Final = 2
+CROSSOVERS_CONFIG_CROSSOVER_TYPE: Final = 3
+CROSSOVERS_CONFIG_OFFSET_X: Final = 4
+CROSSOVERS_CONFIG_OFFSET_Y: Final = 5
+CROSSOVERS_CONFIG_REGION_X: Final = 6
+CROSSOVERS_CONFIG_REGION_Y: Final = 7
+CROSSOVERS_CONFIG_REGION_W: Final = 8
+CROSSOVERS_CONFIG_REGION_H: Final = 9
+CROSSOVERS_CONFIG_TRACK_UNLOCKED_WITH: Final = 10
+CROSSOVERS_CONFIG_ENVIRONMENT_UNLOCKED_WITH: Final = 11
+# ---------------------------------
+TRACK_CONFIG_MAP_ID: Final = 0
+TRACK_CONFIG_TRACK_NUMBER: Final = 1
+TRACK_CONFIG_SUPPORTED_CARS_MIN: Final = 2
+TRACK_CONFIG_SUPPORTED_CARS_MAX: Final = 3
+TRACK_CONFIG_PRICE: Final = 4
+TRACK_CONFIG_MAX_CONSTRUCTION_TIME: Final = 5
+TRACK_CONFIG_LEVEL: Final = 6
+TRACK_CONFIG_ENVIRONMENT_TIER: Final = 7
+# ---------------------------------
+ENVIRONMENT_CONFIG_MAP_ID: Final = 0
+ENVIRONMENT_CONFIG_TIER: Final = 1
+ENVIRONMENT_CONFIG_PRICE: Final = 2
+ENVIRONMENT_CONFIG_MAX_CONSTRUCTION_TIME: Final = 3
+ENVIRONMENT_CONFIG_LEVEL: Final = 4
+# ---------------------------------
+SHOPS_CONFIG_MAP_ID: Final = 0
+SHOPS_CONFIG_SHOP_ID: Final = 1
+SHOPS_CONFIG_TRACK_REQUIRED: Final = 2
+SHOPS_CONFIG_LEVEL_REQUIRED: Final = 3
+SHOPS_CONFIG_BUTTON_X: Final = 4
+SHOPS_CONFIG_BUTTON_Y: Final = 5
+# ---------------------------------
+SHOP_PROGRESS_CONFIG_MAP_ID: Final = 0
+SHOP_PROGRESS_CONFIG_STAGE_NUMBER: Final = 1
+SHOP_PROGRESS_CONFIG_LEVEL_REQUIRED: Final = 2
+SHOP_PROGRESS_CONFIG_PRICE: Final = 3
+SHOP_PROGRESS_CONFIG_MAX_CONSTRUCTION_TIME: Final = 4
+SHOP_PROGRESS_CONFIG_HOURLY_PROFIT: Final = 5
+SHOP_PROGRESS_CONFIG_STORAGE_CAPACITY: Final = 6
+SHOP_PROGRESS_CONFIG_EXP_BONUS: Final = 7
+# ---------------------------------
+BONUS_CODES_CONFIG_SHA512_HASH: Final = 0
+BONUS_CODES_CONFIG_CODE_TYPE: Final = 1
+BONUS_CODES_CONFIG_BONUS_VALUE: Final = 2
+BONUS_CODES_CONFIG_LEVEL_REQUIRED: Final = 3
+BONUS_CODES_CONFIG_MAX_BONUS_TIME: Final = 4
+# ---------------------------------
 
 
 def on_commit():
     delete_password(sha512('user_db'.encode('utf-8')).hexdigest(), sha512('user_db'.encode('utf-8')).hexdigest())
-    USER_DB_CONNECTION.commit()
-    with open(__user_db_full_path, 'rb') as f:
+    _user_db_connection.commit()
+    with open(_user_db_full_path, 'rb') as f:
         data1 = f.read()[::-1]
         set_password(sha512('user_db'.encode('utf-8')).hexdigest(), sha512('user_db'.encode('utf-8')).hexdigest(),
                      sha512(data1[::3] + data1[1::3] + data1[2::3]).hexdigest())
