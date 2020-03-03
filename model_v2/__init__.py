@@ -60,3 +60,35 @@ class ModelV2:
         self.base_schedule = [
             list(t) for t in USER_DB_CURSOR.fetchall()
         ]
+        USER_DB_CURSOR.execute('''SELECT * FROM trains''')
+        self.trains = [
+            [
+                t[TRAINS_MAP_ID],
+                t[TRAINS_TRAIN_ID],
+                t[TRAINS_CARS],
+                t[TRAINS_TRAIN_ROUTE_TRACK_NUMBER],
+                t[TRAINS_TRAIN_ROUTE_TYPE],
+                t[TRAINS_STATE],
+                t[TRAINS_DIRECTION],
+                t[TRAINS_NEW_DIRECTION],
+                t[TRAINS_CURRENT_DIRECTION],
+                t[TRAINS_SPEED_STATE],
+                t[TRAINS_SPEED_STATE_TIME],
+                t[TRAINS_PRIORITY],
+                t[TRAINS_BOARDING_TIME],
+                t[TRAINS_EXP],
+                t[TRAINS_MONEY],
+                [
+                    float(p) for p in t[TRAINS_CARS_POSITION].split(',')
+                ] if t[TRAINS_CARS_POSITION] is not None
+                else [],
+                [
+                    [float(p) for p in s.split(',')] for s in t[TRAINS_CARS_POSITION_ABS].split('|')
+                ] if t[TRAINS_CARS_POSITION_ABS] is not None
+                else [],
+                t[TRAINS_STOP_POINT],
+                t[TRAINS_DESTINATION_POINT],
+                t[TRAINS_CAR_IMAGE_COLLECTION],
+                t[TRAINS_SWITCH_DIRECTION_REQUIRED]
+            ] for t in USER_DB_CURSOR.fetchall()
+        ]
