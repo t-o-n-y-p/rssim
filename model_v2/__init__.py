@@ -5,26 +5,74 @@ from database import *
 class ModelV2:
     def __init__(self):
         self.view_model = None
+        self.game_paused = True
+        self.log_options = self._get_log_options()
+        self.i18n = self._get_i18n()
+        self.notification_settings = self._get_notification_settings()
+        self.graphics = self._get_graphics()
+        self.map_position_settings = self._get_map_position_settings()
+        self.game_progress = self._get_game_progress()
+        self.map_progress = self._get_map_progress()
+        self.epoch_timestamp = self._get_epoch_timestamp()
+        self.constructor = self._get_constructor()
+        self.scheduler = self._get_scheduler()
+        self.base_schedule = self._get_base_schedule()
+        self.trains = self._get_trains()
+        self.signals = self._get_signals()
+        self.train_routes = self._get_train_routes()
+        self.switches = self._get_switches()
+        self.crossovers = self._get_crossovers()
+        self.tracks = self._get_tracks()
+        self.environment = self._get_environment()
+        self.shops = self._get_shops()
+        self.shop_stages = self._get_shop_stages()
+        self.bonus_codes = self._get_bonus_codes()
+        self.version = self._get_version()
+
+    # --------------------------------------------------------------------------------------------------------------
+    # Methods for reading the player progress database
+    # --------------------------------------------------------------------------------------------------------------
+
+    @staticmethod
+    def _get_log_options():
         USER_DB_CURSOR.execute('''SELECT * FROM log_options''')
-        self.log_options = list(USER_DB_CURSOR.fetchall()[0])
+        return list(USER_DB_CURSOR.fetchall()[0])
+
+    @staticmethod
+    def _get_i18n():
         USER_DB_CURSOR.execute('''SELECT * FROM i18n''')
-        self.i18n = list(USER_DB_CURSOR.fetchall()[0])
+        return list(USER_DB_CURSOR.fetchall()[0])
+
+    @staticmethod
+    def _get_notification_settings():
         USER_DB_CURSOR.execute('''SELECT * FROM notification_settings''')
-        self.notification_settings = list(USER_DB_CURSOR.fetchall()[0])
+        return list(USER_DB_CURSOR.fetchall()[0])
+
+    @staticmethod
+    def _get_graphics():
         USER_DB_CURSOR.execute('''SELECT * FROM graphics''')
-        self.graphics = list(USER_DB_CURSOR.fetchall()[0])
+        return list(USER_DB_CURSOR.fetchall()[0])
+
+    @staticmethod
+    def _get_map_position_settings():
         USER_DB_CURSOR.execute('''SELECT * FROM map_position_settings''')
-        self.map_position_settings = [
+        return [
             [
                 m[MAP_POSITION_SETTINGS_MAP_ID],
                 [int(p) for p in m[MAP_POSITION_SETTINGS_LAST_KNOWN_BASE_OFFSET].split(',')],
                 m[MAP_POSITION_SETTINGS_LAST_KNOWN_ZOOM]
             ] for m in USER_DB_CURSOR.fetchall()
         ]
+
+    @staticmethod
+    def _get_game_progress():
         USER_DB_CURSOR.execute('''SELECT * FROM game_progress''')
-        self.game_progress = list(USER_DB_CURSOR.fetchall()[0])
+        return list(USER_DB_CURSOR.fetchall()[0])
+
+    @staticmethod
+    def _get_map_progress():
         USER_DB_CURSOR.execute('''SELECT * FROM map_progress''')
-        self.map_progress = [
+        return [
             [
                 m[MAP_PROGRESS_MAP_ID],
                 m[MAP_PROGRESS_LOCKED],
@@ -37,18 +85,27 @@ class ModelV2:
                 [int(e) for e in m[MAP_PROGRESS_ENTRY_LOCKED_STATE].split(',')]
             ] for m in USER_DB_CURSOR.fetchall()
         ]
+
+    @staticmethod
+    def _get_epoch_timestamp():
         USER_DB_CURSOR.execute('''SELECT * FROM epoch_timestamp''')
-        self.epoch_timestamp = list(USER_DB_CURSOR.fetchall()[0])
+        return list(USER_DB_CURSOR.fetchall()[0])
+
+    @staticmethod
+    def _get_constructor():
         USER_DB_CURSOR.execute('''SELECT * FROM constructor''')
-        self.constructor = [
+        return [
             [
                 m[CONSTRUCTOR_MAP_ID],
                 m[CONSTRUCTOR_MONEY_TARGET_ACTIVATED],
                 [int(p) for p in m[CONSTRUCTOR_MONEY_TARGET_CELL_POSITION].split(',')]
             ] for m in USER_DB_CURSOR.fetchall()
         ]
+
+    @staticmethod
+    def _get_scheduler():
         USER_DB_CURSOR.execute('''SELECT * FROM scheduler''')
-        self.scheduler = [
+        return [
             [
                 m[SCHEDULER_MAP_ID],
                 m[SCHEDULER_TRAIN_COUNTER],
@@ -56,12 +113,18 @@ class ModelV2:
                 [int(s) for s in m[SCHEDULER_ENTRY_BUSY_STATE].split(',')]
             ] for m in USER_DB_CURSOR.fetchall()
         ]
+
+    @staticmethod
+    def _get_base_schedule():
         USER_DB_CURSOR.execute('''SELECT * FROM base_schedule''')
-        self.base_schedule = [
+        return [
             list(t) for t in USER_DB_CURSOR.fetchall()
         ]
+
+    @staticmethod
+    def _get_trains():
         USER_DB_CURSOR.execute('''SELECT * FROM trains''')
-        self.trains = [
+        return [
             [
                 t[TRAINS_MAP_ID],
                 t[TRAINS_TRAIN_ID],
@@ -92,3 +155,81 @@ class ModelV2:
                 t[TRAINS_SWITCH_DIRECTION_REQUIRED]
             ] for t in USER_DB_CURSOR.fetchall()
         ]
+
+    @staticmethod
+    def _get_signals():
+        USER_DB_CURSOR.execute('''SELECT * FROM signals''')
+        return [
+            list(s) for s in USER_DB_CURSOR.fetchall()
+        ]
+
+    @staticmethod
+    def _get_train_routes():
+        USER_DB_CURSOR.execute('''SELECT * FROM train_routes''')
+        return [
+            [
+                r[TRAIN_ROUTES_MAP_ID],
+                r[TRAIN_ROUTES_TRACK],
+                r[TRAIN_ROUTES_TRAIN_ROUTE],
+                r[TRAIN_ROUTES_OPENED],
+                r[TRAIN_ROUTES_LAST_OPENED_BY],
+                r[TRAIN_ROUTES_CURRENT_CHECKPOINT],
+                r[TRAIN_ROUTES_PRIORITY],
+                r[TRAIN_ROUTES_CARS],
+                [int(s) for s in r[TRAIN_ROUTES_TRAIN_ROUTE_SECTION_BUSY_STATE].split(',')]
+            ] for r in USER_DB_CURSOR.fetchall()
+        ]
+
+    @staticmethod
+    def _get_switches():
+        USER_DB_CURSOR.execute('''SELECT * FROM switches''')
+        return [
+            list(s) for s in USER_DB_CURSOR.fetchall()
+        ]
+
+    @staticmethod
+    def _get_crossovers():
+        USER_DB_CURSOR.execute('''SELECT * FROM crossovers''')
+        return [
+            list(s) for s in USER_DB_CURSOR.fetchall()
+        ]
+
+    @staticmethod
+    def _get_tracks():
+        USER_DB_CURSOR.execute('''SELECT * FROM tracks''')
+        return [
+            list(s) for s in USER_DB_CURSOR.fetchall()
+        ]
+
+    @staticmethod
+    def _get_environment():
+        USER_DB_CURSOR.execute('''SELECT * FROM environment''')
+        return [
+            list(s) for s in USER_DB_CURSOR.fetchall()
+        ]
+
+    @staticmethod
+    def _get_shops():
+        USER_DB_CURSOR.execute('''SELECT * FROM shops''')
+        return [
+            list(s) for s in USER_DB_CURSOR.fetchall()
+        ]
+
+    @staticmethod
+    def _get_shop_stages():
+        USER_DB_CURSOR.execute('''SELECT * FROM shop_stages''')
+        return [
+            list(s) for s in USER_DB_CURSOR.fetchall()
+        ]
+
+    @staticmethod
+    def _get_bonus_codes():
+        USER_DB_CURSOR.execute('''SELECT * FROM bonus_codes''')
+        return [
+            list(s) for s in USER_DB_CURSOR.fetchall()
+        ]
+
+    @staticmethod
+    def _get_version():
+        USER_DB_CURSOR.execute('''SELECT * FROM version''')
+        return list(USER_DB_CURSOR.fetchall()[0])
