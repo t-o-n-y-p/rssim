@@ -97,7 +97,7 @@ class Launcher:
             self.app.game.on_update_time(dt)
             self.app.on_fade_animation_update(dt)
             self.app.on_update_view()
-            MIDI_PLAYER.play()
+            # MIDI_PLAYER.play()
 
         self.on_check_for_updates()
         self.logger = getLogger('root')

@@ -14,7 +14,8 @@ NOTE_OFF_MESSAGE_ID: Final = 0x80
 
 
 class MusicTrack:
-    def __init__(self, score_sheet, tempo=120):
+    def __init__(self, score_sheet, logger, tempo=120):
+        self.logger = logger
         self.is_playing = False
         self.playback_finish_callback = None
         self.tempo = tempo
@@ -33,12 +34,14 @@ class MusicTrack:
 
         self.messages = sorted(self.messages, key=itemgetter(MESSAGE_TIME))
 
+    @final
     def on_tempo_update(self, tempo):
         for m in self.messages:
             m[MESSAGE_TIME] /= (tempo / self.tempo)
 
         self.tempo = tempo
 
+    @final
     def play(self, volume_multiplier):
         if not self.is_playing and len(self.messages) > 0:
             self.is_playing = True
