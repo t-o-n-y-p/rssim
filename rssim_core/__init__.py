@@ -13,7 +13,7 @@ from pyglet import gl
 from database import USER_DB_LOCATION, USER_DB_CURSOR, on_commit
 from exceptions import VideoAdapterNotSupportedException, MonitorNotSupportedException, HackingDetectedException, \
     UpdateIncompatibleException
-from ui import MIN_RESOLUTION_WIDTH, MIN_RESOLUTION_HEIGHT, WINDOW, BATCHES, MAP_CAMERA
+from ui import MIN_RESOLUTION_WIDTH, MIN_RESOLUTION_HEIGHT, WINDOW, BATCHES, MAP_CAMERA, MIDI_PLAYER
 from controller.app_controller import AppController
 
 
@@ -97,6 +97,7 @@ class Launcher:
             self.app.game.on_update_time(dt)
             self.app.on_fade_animation_update(dt)
             self.app.on_update_view()
+            MIDI_PLAYER.play()
 
         self.on_check_for_updates()
         self.logger = getLogger('root')

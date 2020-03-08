@@ -6,6 +6,7 @@ from pyglet.graphics import Batch, OrderedGroup
 from database import *
 from camera.map_camera import MapCamera
 from camera.ui_camera import UICamera
+from midi_player import MIDIPlayer
 
 
 def window_size_has_changed(fn):
@@ -36,6 +37,7 @@ def _create_window():
 # --------------------- CONSTANTS ---------------------
 MAP_CAMERA: Final = MapCamera()
 UI_CAMERA: Final = UICamera()
+MIDI_PLAYER: Final = MIDIPlayer()
 MAP_ZOOM_STEP = 0.5
 MAP_WIDTH: Final = 8192                                # full-size map width
 MAP_HEIGHT: Final = 4096                               # full-size map height

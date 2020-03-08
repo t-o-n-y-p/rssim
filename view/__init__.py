@@ -1,7 +1,5 @@
 from abc import ABC
 
-from pyglet.media import Player, SourceGroup
-from pyglet.media.synthesis import Sine
 from pyglet.window import mouse
 
 from ui import *
@@ -176,14 +174,6 @@ def shader_sprite_exists(fn):
 
 # --------------------- CONSTANTS ---------------------
 MINI_MAP_FADE_OUT_TIMER: Final = 1.0  # time since user releases mouse button after which mini-map disappears
-ANNOUNCEMENT_PLAYER: Final = Player()
-ANNOUNCEMENT_INTRO: Final = SourceGroup()
-ANNOUNCEMENT_INTRO.add(Sine(duration=0.2, frequency=247))
-ANNOUNCEMENT_INTRO.add(Sine(duration=0.2, frequency=294))
-ANNOUNCEMENT_INTRO.add(Sine(duration=0.2, frequency=349))
-ANNOUNCEMENT_INTRO.add(Sine(duration=0.2, frequency=440))
-
-
 # ------------------- END CONSTANTS -------------------
 
 
