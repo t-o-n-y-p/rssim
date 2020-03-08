@@ -69,13 +69,13 @@ def player_progress_was_not_modified(fn):
 
 
 # --------------------- CONSTANTS ---------------------
-CURRENT_VERSION: Final = (0, 10, 3)                    # current app version
-MIN_UPDATE_COMPATIBLE_VERSION: Final = (0, 10, 3)      # game cannot be updated from version earlier than this
+CURRENT_VERSION: Final = (0, 10, 4)                    # current app version
+MIN_UPDATE_COMPATIBLE_VERSION: Final = (0, 10, 4)      # game cannot be updated from version earlier than this
 REQUIRED_TEXTURE_SIZE: Final = 8192                    # maximum texture resolution presented in the app
 LOG_LEVEL_OFF: Final = 30                              # integer log level high enough to cut off all logs
 LOG_LEVEL_INFO: Final = 20                             # integer log level which includes basic logs
 LOG_LEVEL_DEBUG: Final = 10                            # integer log level which includes all possible logs
-DATABASE_SHA512: Final = '6209abedffeb31420423738ad9d2e79ba670ac615a06c7606d4a4641f431c20837cc47f2afca96b6ffeabb8699403f0062ca77239f2d1c07b3773309b46368f7'
+DATABASE_SHA512: Final = '0757ed3f9a3971a4a05a17824d2ed512dfaffdc1525ed3a00c03b8a6ecd67576957c90534ac7944e08a7c177551b0b6e1b4540d2c66e99d055ed2880dff1b905'
 MAXIMUM_MOUSE_MOTION_EVENTS_PER_FRAME: Final = 1
 MAXIMUM_MOUSE_DRAG_EVENTS_PER_FRAME: Final = 1
 MAXIMUM_MOUSE_SCROLL_EVENTS_PER_FRAME: Final = 1
