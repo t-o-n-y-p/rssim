@@ -38,6 +38,9 @@ class DispatcherModel(MapBaseModel, ABC):
                     self.controller.parent_controller\
                         .on_open_train_route(track, ENTRY_TRAIN_ROUTE[self.map_id][t.model.direction],
                                              t.train_id, t.model.cars)
+                    self.controller.parent_controller.on_announcement_add(announcement_time=self.game_time,
+                                                                          announcement_type=ARRIVAL_ANNOUNCEMENT,
+                                                                          arguments=(t.train_id, track))
                     self.trains.remove(t)
                     break
 

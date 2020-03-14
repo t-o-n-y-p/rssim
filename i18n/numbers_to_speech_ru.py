@@ -170,7 +170,7 @@ ONE_WORD_ORDINAL: Final = {
 
 
 @value_between_1_and_99
-def to_cardinal(value):
+def to_cardinal(value, case):
     try:
         return ONE_WORD_CARDINAL[value]
     except KeyError:

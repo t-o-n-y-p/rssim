@@ -151,16 +151,23 @@ MAP_LOCKED: Final = 0
 MAP_LEVEL_REQUIRED: Final = 1
 MAP_PRICE: Final = 2
 
-NARRATOR_QUEUE = [[], []]
-for m in (PASSENGER_MAP, FREIGHT_MAP):
-    USER_DB_CURSOR.execute('''SELECT game_time, locked, announcement_type, announcement_text 
-                              FROM narrator WHERE map_id = ?''', (m, ))
-    NARRATOR_QUEUE[m] = USER_DB_CURSOR.fetchall()
-
 ANNOUNCEMENT_TIME: Final = 0
 ANNOUNCEMENT_LOCKED: Final = 1
 ANNOUNCEMENT_TYPE: Final = 2
-ANNOUNCEMENT_TEXT: Final = 3
+ANNOUNCEMENT_ARGUMENTS: Final = 3
+
+NARRATOR_QUEUE = [[], []]
+for m in (PASSENGER_MAP, FREIGHT_MAP):
+    USER_DB_CURSOR.execute('''SELECT game_time, locked, announcement_type, arguments 
+                              FROM narrator WHERE map_id = ?''', (m, ))
+    NARRATOR_QUEUE[m] = USER_DB_CURSOR.fetchall()
+    for a in NARRATOR_QUEUE[m]:
+        a[ANNOUNCEMENT_ARGUMENTS] = [int(arg) for arg in a[ANNOUNCEMENT_ARGUMENTS].split(',')]
+
+ARRIVAL_ANNOUNCEMENT: Final = 'arrival'
+ARRIVAL_FINISHED_ANNOUNCEMENT: Final = 'arrival_finished'
+DEPARTURE_ANNOUNCEMENT: Final = 'departure'
+PASS_THROUGH_ANNOUNCEMENT: Final = 'pass_through'
 
 
 def on_commit():

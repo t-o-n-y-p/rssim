@@ -397,19 +397,15 @@
 		"en": "x{1}.{0}",
 		"ru": "x{1},{0}"
 	},
-	"announcement_track_number_type": {
-		"en": "ordinal",
-		"ru": "cardinal"
-	},
-	"train_arriving_announcement_string": {
+	"arrival_announcement_string": {
 		"en": "Train number {0} is arriving at track {1}",
 		"ru": "Поезд номер {0} прибывает на {1} путь"
 	},
-	"train_arrived_announcement_string": {
+	"arrival_finished_announcement_string": {
 		"en": "Train number {0} has arrived at track {1}",
 		"ru": "Поезд номер {0} прибыл на {1} путь"
 	},
-	"train_departing_announcement_string": {
+	"departure_announcement_string": {
 		"en": {
 			"other": "Train number {0} is departing from track {1}"
 		},
@@ -418,7 +414,7 @@
 			"other": "Поезд номер {0} отправляется с {1} пути"
 		}
 	},
-	"train_pass_through_announcement_string": {
+	"pass_through_announcement_string": {
 		"en": "Attention please! Train is about to pass through the track {0}",
 		"ru": "Внимание! Внимание! По {0} пути пройдет поезд"
 	}

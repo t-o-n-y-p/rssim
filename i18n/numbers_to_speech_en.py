@@ -1,7 +1,7 @@
+from logging import getLogger
 from typing import Final
 
 from i18n import value_between_1_and_99
-
 
 ONE_WORD_CARDINAL: Final = {
     1: 'one',
@@ -35,7 +35,7 @@ ONE_WORD_CARDINAL: Final = {
 
 
 @value_between_1_and_99
-def to_cardinal(value):
+def to_cardinal(value, case):
     try:
         return ONE_WORD_CARDINAL[value]
     except KeyError:

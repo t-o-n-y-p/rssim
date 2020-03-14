@@ -405,3 +405,7 @@ class MapController(MapBaseController, ABC):
     @final
     def on_deactivate_mini_map(self):
         self.mini_map.fade_out_animation.on_activate()
+
+    @final
+    def on_announcement_add(self, announcement_time, announcement_type, arguments):
+        self.narrator.on_announcement_add(announcement_time, announcement_type, arguments)

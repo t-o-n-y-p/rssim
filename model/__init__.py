@@ -223,10 +223,6 @@ CAR_COLLECTION_UNLOCK_TRACK_LIST: Final = ((6, 10, 14, 18, 21, 22, 26, 30), (4, 
 # threshold for shop storage notification (0 - empty, 1 - full)
 SHOP_STORAGE_ALMOST_FULL_THRESHOLD: Final = 0.9
 ALLOWED_BONUS_CODE_INPUT: Final = 100
-ARRIVAL_ANNOUNCEMENT: Final = 'arrival'
-ARRIVAL_FINISHED_ANNOUNCEMENT: Final = 'arrival_finished'
-DEPARTURE_ANNOUNCEMENT: Final = 'departure'
-PASS_THROUGH_ANNOUNCEMENT: Final = 'pass_through'
 # ------------------- END CONSTANTS -------------------
 
 
@@ -275,7 +271,7 @@ def get_announcement_types_enabled(dt_multiplier):
 
 
 def get_announcement_types_diff(dt_multiplier_1, dt_multiplier_2):
-    return [a for a in get_announcement_types_enabled(min(dt_multiplier_1, dt_multiplier_2))
+    return [announcement for announcement in get_announcement_types_enabled(min(dt_multiplier_1, dt_multiplier_2))
             if a not in get_announcement_types_enabled(max(dt_multiplier_1, dt_multiplier_2))]
 
 

@@ -39,7 +39,7 @@ def _create_speaker():
     speaker = win32com.client.Dispatch('SAPI.SpVoice')
     USER_DB_CURSOR.execute('''SELECT voice_id FROM sound''')
     speaker.Voice = list(speaker.GetVoices())[USER_DB_CURSOR.fetchone()[0]]
-    speaker.Volume = 0
+    # speaker.Volume = 0
     return speaker
 
 
