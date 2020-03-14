@@ -222,7 +222,11 @@ FREIGHT_MID_CAR_LENGTH: Final = 151  # length of the middle freight car in pixel
 CAR_COLLECTION_UNLOCK_TRACK_LIST: Final = ((6, 10, 14, 18, 21, 22, 26, 30), (4, 8, 12, 16))
 # threshold for shop storage notification (0 - empty, 1 - full)
 SHOP_STORAGE_ALMOST_FULL_THRESHOLD: Final = 0.9
-ALLOWED_BONUS_CODE_INPUT = 100
+ALLOWED_BONUS_CODE_INPUT: Final = 100
+ARRIVAL_ANNOUNCEMENT: Final = 'arrival'
+ARRIVAL_FINISHED_ANNOUNCEMENT: Final = 'arrival_finished'
+DEPARTURE_ANNOUNCEMENT: Final = 'departure'
+PASS_THROUGH_ANNOUNCEMENT: Final = 'pass_through'
 # ------------------- END CONSTANTS -------------------
 
 
@@ -261,6 +265,18 @@ def get_speed_state_time(s, map_id):
         current_t = (t1 + t2) / 2
 
     return current_t
+
+
+def get_announcement_types_enabled(dt_multiplier):
+    if dt_multiplier >= 10.0:
+        return ARRIVAL_ANNOUNCEMENT, DEPARTURE_ANNOUNCEMENT, PASS_THROUGH_ANNOUNCEMENT
+    else:
+        return get_announcement_types_enabled(16.0) + (ARRIVAL_FINISHED_ANNOUNCEMENT, )
+
+
+def get_announcement_types_diff(dt_multiplier_1, dt_multiplier_2):
+    return [a for a in get_announcement_types_enabled(min(dt_multiplier_1, dt_multiplier_2))
+            if a not in get_announcement_types_enabled(max(dt_multiplier_1, dt_multiplier_2))]
 
 
 class AppBaseModel(ABC):
@@ -310,7 +326,6 @@ class GameBaseModel(AppBaseModel, ABC):
         self.construction_time_bonus_multiplier = 1.0
         self.view.on_deactivate_construction_time_bonus_code()
 
-    @final
     def on_dt_multiplier_update(self, dt_multiplier):
         self.dt_multiplier = dt_multiplier
         self.view.on_dt_multiplier_update(dt_multiplier)

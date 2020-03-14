@@ -151,6 +151,17 @@ MAP_LOCKED: Final = 0
 MAP_LEVEL_REQUIRED: Final = 1
 MAP_PRICE: Final = 2
 
+NARRATOR_QUEUE = [[], []]
+for m in (PASSENGER_MAP, FREIGHT_MAP):
+    USER_DB_CURSOR.execute('''SELECT game_time, locked, announcement_type, announcement_text 
+                              FROM narrator WHERE map_id = ?''', (m, ))
+    NARRATOR_QUEUE[m] = USER_DB_CURSOR.fetchall()
+
+ANNOUNCEMENT_TIME: Final = 0
+ANNOUNCEMENT_LOCKED: Final = 1
+ANNOUNCEMENT_TYPE: Final = 2
+ANNOUNCEMENT_TEXT: Final = 3
+
 
 def on_commit():
     delete_password(sha512('user_db'.encode('utf-8')).hexdigest(), sha512('user_db'.encode('utf-8')).hexdigest())

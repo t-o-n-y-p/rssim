@@ -1,5 +1,6 @@
 from ctypes import windll
 
+import win32com.client
 from pyglet.window import Window
 from pyglet.graphics import Batch, OrderedGroup
 
@@ -34,18 +35,27 @@ def _create_window():
                   caption='Railway Station Simulator', style='borderless', fullscreen=False, vsync=False)
 
 
+def _create_speaker():
+    speaker = win32com.client.Dispatch('SAPI.SpVoice')
+    USER_DB_CURSOR.execute('''SELECT voice_id FROM sound''')
+    speaker.Voice = list(speaker.GetVoices())[USER_DB_CURSOR.fetchone()[0]]
+    speaker.Volume = 0
+    return speaker
+
+
 # --------------------- CONSTANTS ---------------------
 MAP_CAMERA: Final = MapCamera()
 UI_CAMERA: Final = UICamera()
 MIDI_PLAYER: Final = MIDIPlayer()
-MAP_ZOOM_STEP = 0.5
+SPEAKER: Final = _create_speaker()
+MAP_ZOOM_STEP: Final = 0.5
 MAP_WIDTH: Final = 8192                                # full-size map width
 MAP_HEIGHT: Final = 4096                               # full-size map height
 MIN_RESOLUTION_WIDTH: Final = 1280                     # minimum screen resolution width supported by the app UI
 MIN_RESOLUTION_HEIGHT: Final = 720                     # minimum screen resolution height supported by the app UI
 SCHEDULE_ROWS: Final = 12                              # number of schedule rows on schedule screen
 SCHEDULE_COLUMNS: Final = 2                            # number of schedule columns on schedule screen
-SHOP_DETAILS_BUTTON_NORMAL_SIZE = (250, 40)
+SHOP_DETAILS_BUTTON_NORMAL_SIZE: Final = (250, 40)
 # colors
 YELLOW_RGB: Final = (255, 255, 96)                     # yellow UI color
 YELLOW_GREY_RGB: Final = (112, 112, 42)

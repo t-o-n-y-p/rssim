@@ -11,3 +11,9 @@ class NarratorController(MapBaseController, ABC):
         self.view, self.model = self.create_view_and_model()
         self.fade_in_animation = NarratorFadeInAnimation(self.view)
         self.fade_out_animation = NarratorFadeOutAnimation(self.view)
+
+    def on_announcement_playback_finish(self):
+        self.model.on_announcement_playback_finish()
+
+    def on_announcement_add(self, announcement_time, announcement_type, announcement_text):
+        self.model.on_announcement_add(announcement_time, announcement_type, announcement_text)

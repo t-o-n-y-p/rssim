@@ -27,7 +27,7 @@ class MIDIPlayer:
         self.music_track = None
         self.narrator_intro = None
         USER_DB_CURSOR.execute('''SELECT master_volume FROM sound''')
-        self.master_volume = USER_DB_CURSOR.fetchone()[0]
+        self.master_volume = round(USER_DB_CURSOR.fetchone()[0] / 100 * 255)
         self.opacity = 0
         self.music_tracks_opacity = 0
 
