@@ -34,7 +34,7 @@ class NarratorModel(MapBaseModel, ABC):
                 self.playback_start_time = self.game_time
                 self.view.on_narrator_intro_play()
 
-            if self.game_time >= self.playback_start_time + 1 and self.is_playing_announcement:
+            if self.game_time >= self.playback_start_time + self.dt_multiplier and self.is_playing_announcement:
                 self.view.on_announcement_play(self.narrator_queue[0])
                 self.narrator_queue.pop(0)
 

@@ -35,8 +35,8 @@ class NarratorView(MapBaseView, ABC):
         if announcement[ANNOUNCEMENT_TYPE] == PASS_THROUGH_ANNOUNCEMENT:
             SPEAKER.Speak(
                 I18N_RESOURCES[announcement[ANNOUNCEMENT_TYPE] + '_announcement_string'][self.current_locale]
-                .format(
-                    self.track_number_converters[self.current_locale](announcement[ANNOUNCEMENT_ARGUMENTS][0], DATIVE)),
+                .format(self.track_number_converters[self.current_locale](announcement[ANNOUNCEMENT_ARGUMENTS][0],
+                                                                          DATIVE)),
                 1
             )
         elif announcement[ANNOUNCEMENT_TYPE] in (ARRIVAL_ANNOUNCEMENT, ARRIVAL_FINISHED_ANNOUNCEMENT):

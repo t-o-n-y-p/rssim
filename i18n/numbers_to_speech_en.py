@@ -1,4 +1,3 @@
-from logging import getLogger
 from typing import Final
 
 from i18n import value_between_1_and_99

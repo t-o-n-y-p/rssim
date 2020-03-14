@@ -10,7 +10,7 @@ with codecs.open('resources.json', 'r', 'utf-8-sig') as resource_file:
 def value_between_1_and_99(fn):
     def _convert_numbers(*args, **kwargs):
         if 0 < args[0] < 100:
-            fn(*args, **kwargs)
+            return fn(*args, **kwargs)
 
     return _convert_numbers
 
