@@ -35,9 +35,9 @@ class CheckboxGroup(ABC):
             checkbox.on_activate()
 
     @final
-    def on_init_state(self, checkbox_state_list):
+    def on_change_state(self, checkbox_state_list):
         for i in range(len(self.checkboxes)):
-            self.checkboxes[i].on_init_state(checkbox_state_list[i])
+            self.checkboxes[i].on_change_state(checkbox_state_list[i])
 
     @final
     def on_deactivate(self):

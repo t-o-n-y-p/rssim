@@ -10,15 +10,11 @@ from database import USER_DB_CURSOR
 class Checkbox(ABC):
     def __init__(self, column, row, on_update_state_action, parent_viewport, logger):
         def on_check(button):
-            button.paired_button.opacity = button.opacity
-            button.on_deactivate(instant=True)
-            button.paired_button.on_activate()
+            self.on_change_state(True)
             self.on_update_state_action(True)
 
         def on_uncheck(button):
-            button.paired_button.opacity = button.opacity
-            button.on_deactivate(instant=True)
-            button.paired_button.on_activate()
+            self.on_change_state(False)
             self.on_update_state_action(False)
 
         self.logger = logger
@@ -49,10 +45,14 @@ class Checkbox(ABC):
         self.description_label.create()
 
     @final
-    def on_init_state(self, initial_state):
-        if initial_state:
+    def on_change_state(self, state):
+        if state:
+            self.checked_checkbox_button.opacity = self.opacity
             self.checked_checkbox_button.on_activate()
+            self.unchecked_checkbox_button.on_deactivate(instant=True)
         else:
+            self.checked_checkbox_button.on_deactivate(instant=True)
+            self.unchecked_checkbox_button.opacity = self.opacity
             self.unchecked_checkbox_button.on_activate()
 
     @final

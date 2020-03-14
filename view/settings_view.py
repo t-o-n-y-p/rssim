@@ -127,25 +127,29 @@ class SettingsView(AppBaseView):
         USER_DB_CURSOR.execute('SELECT display_fps, fade_animations_enabled FROM graphics')
         self.temp_display_fps, self.temp_fade_animations_enabled = (bool(n) for n in USER_DB_CURSOR.fetchone())
         self.display_fps_checkbox.on_activate()
-        self.display_fps_checkbox.on_init_state(self.temp_display_fps)
+        self.display_fps_checkbox.on_change_state(self.temp_display_fps)
         self.fade_animations_checkbox.on_activate()
-        self.fade_animations_checkbox.on_init_state(self.temp_fade_animations_enabled)
+        self.fade_animations_checkbox.on_change_state(self.temp_fade_animations_enabled)
         USER_DB_CURSOR.execute('SELECT clock_24h FROM i18n')
         self.temp_clock_24h_enabled = bool(USER_DB_CURSOR.fetchone()[0])
         self.clock_24h_checkbox.on_activate()
-        self.clock_24h_checkbox.on_init_state(self.temp_clock_24h_enabled)
+        self.clock_24h_checkbox.on_change_state(self.temp_clock_24h_enabled)
         USER_DB_CURSOR.execute('SELECT * FROM notification_settings')
         self.temp_level_up_notification_enabled, self.temp_feature_unlocked_notification_enabled, \
             self.temp_construction_completed_notification_enabled, self.temp_enough_money_notification_enabled, \
             self.temp_bonus_expired_notification_enabled, self.temp_shop_storage_notification_enabled \
             = (bool(n) for n in USER_DB_CURSOR.fetchone())
         self.notifications_checkbox_group.on_activate()
-        self.notifications_checkbox_group.on_init_state([self.temp_level_up_notification_enabled,
-                                                         self.temp_feature_unlocked_notification_enabled,
-                                                         self.temp_construction_completed_notification_enabled,
-                                                         self.temp_enough_money_notification_enabled,
-                                                         self.temp_bonus_expired_notification_enabled,
-                                                         self.temp_shop_storage_notification_enabled])
+        self.notifications_checkbox_group.on_change_state(
+            [
+                self.temp_level_up_notification_enabled,
+                self.temp_feature_unlocked_notification_enabled,
+                self.temp_construction_completed_notification_enabled,
+                self.temp_enough_money_notification_enabled,
+                self.temp_bonus_expired_notification_enabled,
+                self.temp_shop_storage_notification_enabled
+            ]
+        )
         self.shader_sprite.create()
 
     @view_is_active
@@ -182,3 +186,8 @@ class SettingsView(AppBaseView):
         self.temp_windowed_resolution = windowed_resolution
         self.available_windowed_resolutions_position \
             = self.available_windowed_resolutions.index(self.temp_windowed_resolution)
+
+    def on_update_clock_state(self, clock_24h_enabled):
+        super().on_update_clock_state(clock_24h_enabled)
+        self.temp_clock_24h_enabled = clock_24h_enabled
+        self.clock_24h_checkbox.on_change_state(self.temp_clock_24h_enabled)
