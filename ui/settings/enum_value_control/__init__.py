@@ -14,7 +14,8 @@ class EnumValueControl(ABC):
             self.temp_value_label.on_update_args(self.possible_values_list[self.choice_state])
             self.on_update_state_action(self.choice_state)
             if self.choice_state >= len(self.possible_values_list) - 1:
-                button.on_deactivate(instant=True)
+                button.on_disable()
+                button.state = 'normal'
 
             if self.choice_state > 0:
                 button.paired_button.on_activate(instant=True)
@@ -24,7 +25,8 @@ class EnumValueControl(ABC):
             self.temp_value_label.on_update_args(self.possible_values_list[self.choice_state])
             self.on_update_state_action(self.choice_state)
             if self.choice_state <= 0:
-                button.on_deactivate(instant=True)
+                button.on_disable()
+                button.state = 'normal'
 
             if self.choice_state < len(self.possible_values_list) - 1:
                 button.paired_button.on_activate(instant=True)
@@ -68,14 +70,14 @@ class EnumValueControl(ABC):
         if self.choice_state > 0:
             self.decrement_button.on_activate()
         else:
-            self.decrement_button.on_deactivate(instant=True)
+            self.decrement_button.on_disable()
             self.decrement_button.state = 'normal'
 
         if self.choice_state < len(self.possible_values_list) - 1:
             self.increment_button.on_activate()
         else:
-            self.increment_button.on_deactivate(instant=True)
-            self.decrement_button.state = 'normal'
+            self.increment_button.on_disable()
+            self.increment_button.state = 'normal'
 
     @final
     @window_size_has_changed
