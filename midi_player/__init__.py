@@ -2,6 +2,7 @@ import ctypes
 from abc import ABC
 
 from score import *
+from database import USER_DB_CURSOR
 
 
 MIDI_DEVICE: Final = ctypes.c_void_p()
@@ -23,33 +24,38 @@ class Instrument(ABC):
 @final
 class MIDIPlayer:
     def __init__(self):
-        self.music_tracks = []
-        self.narrator_intros = []
-        self.master_volume = 255
-        self.opacity = 255
-        self.music_tracks_opacity = 255
+        self.music_track = None
+        self.narrator_intro = None
+        USER_DB_CURSOR.execute('''SELECT master_volume FROM sound''')
+        self.master_volume = USER_DB_CURSOR.fetchone()[0]
+        self.opacity = 0
+        self.music_tracks_opacity = 0
 
     def add_track(self, music_track):
         music_track.playback_finish_callback = self.on_music_track_playback_finish
-        self.music_tracks.append(music_track)
+        self.music_track = music_track
 
     def add_narrator_intro(self, narrator_intro):
         narrator_intro.playback_finish_callback = self.on_narrator_intro_playback_finish
-        self.narrator_intros.append(narrator_intro)
+        self.narrator_intro = narrator_intro
 
     def play(self):
-        for t in self.music_tracks:
-            t.play((self.master_volume / 255) * (self.opacity / 255) * (self.music_tracks_opacity / 255))
+        try:
+            self.music_track.play((self.master_volume / 255) * (self.opacity / 255) * (self.music_tracks_opacity / 255))
+        except AttributeError:
+            pass
 
-        for i in self.narrator_intros:
-            i.play((self.master_volume / 255) * (self.opacity / 255))
+        try:
+            self.narrator_intro.play((self.master_volume / 255) * (self.opacity / 255))
+        except AttributeError:
+            pass
 
     def on_master_volume_update(self, new_volume):
         self.master_volume = new_volume
         ctypes.windll.winmm.midiOutSetVolume(MIDI_DEVICE, self.master_volume << 8 | self.master_volume)
 
-    def on_music_track_playback_finish(self, music_track):
-        self.music_tracks.remove(music_track)
+    def on_music_track_playback_finish(self):
+        self.music_track = None
 
-    def on_narrator_intro_playback_finish(self, narrator_intro):
-        self.narrator_intros.remove(narrator_intro)
+    def on_narrator_intro_playback_finish(self):
+        self.narrator_intro = None

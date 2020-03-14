@@ -75,7 +75,7 @@ REQUIRED_TEXTURE_SIZE: Final = 8192                    # maximum texture resolut
 LOG_LEVEL_OFF: Final = 30                              # integer log level high enough to cut off all logs
 LOG_LEVEL_INFO: Final = 20                             # integer log level which includes basic logs
 LOG_LEVEL_DEBUG: Final = 10                            # integer log level which includes all possible logs
-DATABASE_SHA512: Final = '0757ed3f9a3971a4a05a17824d2ed512dfaffdc1525ed3a00c03b8a6ecd67576957c90534ac7944e08a7c177551b0b6e1b4540d2c66e99d055ed2880dff1b905'
+DATABASE_SHA512: Final = 'e56b3b96141834f53e2d22311a1d010305772ccf15cc16ff4e7a8751ea5b4fe86c4b5efe528112d210bb090b09255627f5c09fbb6c3b56c87b2b4760b7a2de84'
 MAXIMUM_MOUSE_MOTION_EVENTS_PER_FRAME: Final = 1
 MAXIMUM_MOUSE_DRAG_EVENTS_PER_FRAME: Final = 1
 MAXIMUM_MOUSE_SCROLL_EVENTS_PER_FRAME: Final = 1
@@ -97,7 +97,7 @@ class Launcher:
             self.app.game.on_update_time(dt)
             self.app.on_fade_animation_update(dt)
             self.app.on_update_view()
-            # MIDI_PLAYER.play()
+            MIDI_PLAYER.play()
 
         self.on_check_for_updates()
         self.logger = getLogger('root')

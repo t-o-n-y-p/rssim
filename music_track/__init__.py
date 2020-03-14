@@ -57,5 +57,5 @@ class MusicTrack:
                 self.messages.pop(0)
                 if len(self.messages) == 0:
                     self.is_playing = False
-                    self.playback_finish_callback(self)
+                    self.playback_finish_callback()
                     break
