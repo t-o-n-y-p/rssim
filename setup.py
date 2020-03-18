@@ -15,7 +15,9 @@ include_files = [('db/patch', 'db/patch'), ('db/config.db', 'db/config.db'), ('d
                  'img', 'icon.ico', 'font', 'shaders', 'resources.json']
 
 excludes = ['PIL', 'test', 'email', 'html', 'http', 'urllib', 'dbm', 'pydoc_data',
-            'xml', 'xmlrpc', 'jdcal', 'et-xmlfile', 'openpyxl', 'scipy']
+            'xml', 'xmlrpc', 'jdcal', 'et-xmlfile', 'openpyxl', 'scipy',
+            'numpy.distutils', 'numpy.doc', 'numpy.f2py', 'numpy.fft',
+            'numpy.random', 'numpy.testing', 'numpy.tests']
 
 includes = ['pyglet',
             'pyglet.app',
@@ -42,7 +44,7 @@ includes = ['pyglet',
             'keyring.backends.SecretService', 'keyring.backends.Windows', 'win32timezone',
             'controller', 'model', 'view', 'textures', 'rssim_core', 'exceptions', 'i18n', 'notifications',
             'ui', 'database', 'ctypes', 'pycparser', 'libfuturize', 'libfuturize.fixes', 'multiprocessing',
-            'past', 'past.translation', 'lib2to3', 'lib2to3.pgen2', 'ctypes', 'numpy']
+            'past', 'past.translation', 'lib2to3', 'lib2to3.pgen2', 'ctypes', 'numpy.core']
 
 options = {
     'build_exe': {
