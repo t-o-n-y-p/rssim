@@ -41,6 +41,8 @@ def _create_speaker():
     speaker.Voice = speaker.GetVoices().Item(USER_DB_CURSOR.fetchone()[0])
     speaker.Rate = -1
     speaker.Priority = 2
+    # SpVoice hangs during the first speech, so we fake the first one to avoid hanging at the real one
+    speaker.Speak(' ', 1)
     # speaker.Volume = 0
     return speaker
 
