@@ -226,11 +226,9 @@ ALLOWED_BONUS_CODE_INPUT: Final = 100
 # ------------------- END CONSTANTS -------------------
 
 
-def integrate(f, a, b, n=TRAIN_VELOCITY_INTEGRATION_STEPS):
-    x = numpy.linspace(a + (b - a) / (2 * n), b - (b - a) / (2 * n), n)
-    fx = f(x)
-    area = numpy.sum(fx) * (b - a) / n
-    return area
+def integrate(v, t1, t2, n=TRAIN_VELOCITY_INTEGRATION_STEPS):
+    t = numpy.linspace(t1 + (t2 - t1) / (2 * n), t2 - (t2 - t1) / (2 * n), n)
+    return numpy.sum(v(t)) * (t2 - t1) / n
 
 
 def train_speed_formula(t):
