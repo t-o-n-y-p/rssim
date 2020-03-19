@@ -28,8 +28,10 @@ class TrainView(MapBaseView, ABC):
                                (self.train_id, self.map_id))
         self.cars, self.state, self.direction, self.car_image_collection = USER_DB_CURSOR.fetchone()
 
-    def on_train_init(self, cars, state, direction, car_image_collection):
-        self.cars, self.state, self.direction, self.car_image_collection = cars, state, direction, car_image_collection
+    def on_train_init(self, cars, state, direction, car_image_collection, game_time, game_time_fraction, dt_multiplier):
+        self.cars, self.state, self.direction, self.car_image_collection, \
+            self.game_time, self.game_time_fraction, self.dt_multiplier \
+            = cars, state, direction, car_image_collection, game_time, game_time_fraction, dt_multiplier
 
     @final
     @view_is_not_active

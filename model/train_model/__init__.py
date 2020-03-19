@@ -65,17 +65,19 @@ class TrainModel(MapBaseModel, ABC):
     @final
     def on_train_init(self, cars, track, train_route, state, direction, new_direction, current_direction,
                       priority, boarding_time, exp, money, car_image_collection, switch_direction_required,
-                      exp_bonus_multiplier, money_bonus_multiplier):
+                      exp_bonus_multiplier, money_bonus_multiplier, game_time, game_time_fraction, dt_multiplier):
         self.cars, self.track, self.train_route, self.state, self.direction, self.new_direction, \
             self.current_direction, self.priority, self.boarding_time, \
             self.exp, self.money, self.car_image_collection, self.switch_direction_required, \
-            self.exp_bonus_multiplier, self.money_bonus_multiplier \
+            self.exp_bonus_multiplier, self.money_bonus_multiplier, self.game_time, self.game_time_fraction, \
+            self.dt_multiplier \
             = cars, track, train_route, state, direction, new_direction, current_direction, \
             priority, boarding_time, exp, money, car_image_collection, switch_direction_required, \
-            exp_bonus_multiplier, money_bonus_multiplier
+            exp_bonus_multiplier, money_bonus_multiplier, game_time, game_time_fraction, dt_multiplier
         self.speed_state = 'move'
         self.speed_state_time = log(TRAIN_MAXIMUM_SPEED[self.map_id] + 1, TRAIN_VELOCITY_BASE)
-        self.view.on_train_init(self.cars, self.state, self.direction, self.car_image_collection)
+        self.view.on_train_init(self.cars, self.state, self.direction, self.car_image_collection,
+                                self.game_time, self.game_time_fraction, self.dt_multiplier)
 
     @final
     def on_save_state(self):
@@ -152,6 +154,11 @@ class TrainModel(MapBaseModel, ABC):
                         self.state = 'boarding_in_progress_pass_through'
                     else:
                         self.state = 'boarding_in_progress'
+                        self.controller.parent_controller.on_announcement_add(
+                            announcement_time=int(self.game_time + self.boarding_time),
+                            announcement_type=DEPARTURE_ANNOUNCEMENT,
+                            train_id=self.train_id, track_number=self.track
+                        )
 
                     self.view.state = self.state
                     # when boarding is started, convert trail points to 2D Cartesian

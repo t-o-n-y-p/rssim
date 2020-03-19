@@ -270,7 +270,7 @@ def get_announcement_types_enabled(dt_multiplier):
 
 def get_announcement_types_diff(dt_multiplier_1, dt_multiplier_2):
     return [announcement for announcement in get_announcement_types_enabled(min(dt_multiplier_1, dt_multiplier_2))
-            if a not in get_announcement_types_enabled(max(dt_multiplier_1, dt_multiplier_2))]
+            if announcement not in get_announcement_types_enabled(max(dt_multiplier_1, dt_multiplier_2))]
 
 
 class AppBaseModel(ABC):

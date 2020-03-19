@@ -20,5 +20,6 @@ class FreightMapModel(MapModel):
         controller.model.on_train_init(cars, track, train_route, state, direction, new_direction, current_direction,
                                        priority, boarding_time, exp, money, choice(self.unlocked_car_collections),
                                        switch_direction_required, self.exp_bonus_multiplier,
-                                       self.money_bonus_multiplier)
+                                       self.money_bonus_multiplier, self.game_time, self.game_time_fraction,
+                                       self.dt_multiplier)
         return controller
