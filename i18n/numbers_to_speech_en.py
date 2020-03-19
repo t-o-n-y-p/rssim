@@ -39,4 +39,4 @@ def to_cardinal(value, case):
         return ONE_WORD_CARDINAL[value]
     except KeyError:
         nearest_one_word_number = max(k for k in ONE_WORD_CARDINAL if k < value)
-        return ONE_WORD_CARDINAL[nearest_one_word_number] + '-' + to_cardinal(value - nearest_one_word_number)
+        return ONE_WORD_CARDINAL[nearest_one_word_number] + '-' + to_cardinal(value - nearest_one_word_number, case)
