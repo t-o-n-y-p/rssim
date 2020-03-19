@@ -30,15 +30,12 @@ class NarratorView(MapBaseView, ABC):
     def on_update_time(self, dt):
         super().on_update_time(dt)
         if len(self.narrator_queue) > 0:
-            self.logger.debug(f'{self.game_time=}')
-            self.logger.debug(f'{self.narrator_queue[0]=}')
-            self.logger.debug(f'{self.is_playing_announcement=}')
             if self.game_time >= self.narrator_queue[0][ANNOUNCEMENT_TIME] and not self.is_playing_announcement:
                 self.is_playing_announcement = True
                 self.playback_start_time = self.game_time
                 MIDI_PLAYER.add_narrator_intro(NarratorIntro())
 
-            if self.game_time >= self.playback_start_time + self.dt_multiplier and self.is_playing_announcement:
+            if self.game_time >= self.playback_start_time + self.dt_multiplier * 1.5 and self.is_playing_announcement:
                 self.on_announcement_play(self.narrator_queue[0])
                 self.narrator_queue.pop(0)
 
@@ -51,15 +48,15 @@ class NarratorView(MapBaseView, ABC):
                 I18N_RESOURCES[announcement[ANNOUNCEMENT_TYPE] + '_announcement_string'][self.current_locale]
                 .format(self.track_number_converters[self.current_locale](announcement[ANNOUNCEMENT_TRACK_NUMBER],
                                                                           DATIVE)),
-                1
+                9
             )
         elif announcement[ANNOUNCEMENT_TYPE] in (ARRIVAL_ANNOUNCEMENT, ARRIVAL_FINISHED_ANNOUNCEMENT):
             SPEAKER.Speak(
                 I18N_RESOURCES[announcement[ANNOUNCEMENT_TYPE] + '_announcement_string'][self.current_locale]
-                .format(' '.join(str(announcement[ANNOUNCEMENT_TRAIN_ID])),
+                .format(announcement[ANNOUNCEMENT_TRAIN_ID],
                         self.track_number_converters[self.current_locale](announcement[ANNOUNCEMENT_TRACK_NUMBER],
                                                                           NOMINATIVE)),
-                1
+                9
             )
         elif announcement[ANNOUNCEMENT_TYPE] == DEPARTURE_ANNOUNCEMENT:
             track_number_category = 'other'
@@ -69,8 +66,8 @@ class NarratorView(MapBaseView, ABC):
             SPEAKER.Speak(
                 I18N_RESOURCES[announcement[ANNOUNCEMENT_TYPE] + '_announcement_string']
                 [self.current_locale][track_number_category]
-                .format(' '.join(str(announcement[ANNOUNCEMENT_TRAIN_ID])),
+                .format(announcement[ANNOUNCEMENT_TRAIN_ID],
                         self.track_number_converters[self.current_locale](announcement[ANNOUNCEMENT_TRACK_NUMBER],
                                                                           GENITIVE)),
-                1
+                9
             )

@@ -398,20 +398,20 @@
 		"ru": "x{1},{0}"
 	},
 	"arrival_announcement_string": {
-		"en": "Train number {0} is arriving at track {1}",
-		"ru": "Поезд номер {0} прибывает на {1} путь"
+		"en": "Train number <spell>{0}</spell> is arriving at track {1}",
+		"ru": "Поезд номер <spell>{0}</spell> прибывает на {1} путь"
 	},
 	"arrival_finished_announcement_string": {
-		"en": "Train number {0} has arrived at track {1}",
-		"ru": "Поезд номер {0} прибыл на {1} путь"
+		"en": "Train number <spell>{0}</spell> has arrived at track {1}",
+		"ru": "Поезд номер <spell>{0}</spell> прибыл на {1} путь"
 	},
 	"departure_announcement_string": {
 		"en": {
-			"other": "Train number {0} is departing from track {1}"
+			"other": "Train number <spell>{0}</spell> is departing from track {1}"
 		},
 		"ru": {
-			"two": "Поезд номер {0} отправляется со {1} пути",
-			"other": "Поезд номер {0} отправляется с {1} пути"
+			"two": "Поезд номер <spell>{0}</spell> отправляется со {1} пути",
+			"other": "Поезд номер <spell>{0}</spell> отправляется с {1} пути"
 		}
 	},
 	"pass_through_announcement_string": {
