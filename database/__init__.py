@@ -13,18 +13,18 @@ from pyglet.resource import get_settings_path
 set_keyring(Windows.WinVaultKeyring())
 # determine if user launches app for the first time, if yes - create game DB
 USER_DB_LOCATION: Final = get_settings_path("Railway Station Simulator")
-__user_db_full_path = path.join(USER_DB_LOCATION, 'user.db')
+_user_db_full_path = path.join(USER_DB_LOCATION, 'user.db')
 if not path.exists(USER_DB_LOCATION):
     makedirs(USER_DB_LOCATION)
 
-if not path.exists(__user_db_full_path):
-    copyfile('db/default.db', __user_db_full_path)
+if not path.exists(_user_db_full_path):
+    copyfile('db/default.db', _user_db_full_path)
     try:
         delete_password(sha512('user_db'.encode('utf-8')).hexdigest(), sha512('user_db'.encode('utf-8')).hexdigest())
     except PasswordDeleteError:
         pass
 
-    with open(__user_db_full_path, 'rb') as f1:
+    with open(_user_db_full_path, 'rb') as f1:
         data = f1.read()[::-1]
         set_password(sha512('user_db'.encode('utf-8')).hexdigest(), sha512('user_db'.encode('utf-8')).hexdigest(),
                      sha512(data[::3] + data[1::3] + data[2::3]).hexdigest())
@@ -32,8 +32,8 @@ if not path.exists(__user_db_full_path):
 # create database connections and cursors
 USER_DB_CONNECTION: Final = connect(path.join(USER_DB_LOCATION, 'user.db'))
 USER_DB_CURSOR: Final = USER_DB_CONNECTION.cursor()
-__config_db_connection = connect('db/config.db')
-CONFIG_DB_CURSOR: Final = __config_db_connection.cursor()
+_config_db_connection = connect('db/config.db')
+CONFIG_DB_CURSOR: Final = _config_db_connection.cursor()
 
 # time
 SECONDS_IN_ONE_MINUTE: Final = 60
@@ -151,18 +151,17 @@ MAP_LOCKED: Final = 0
 MAP_LEVEL_REQUIRED: Final = 1
 MAP_PRICE: Final = 2
 
+NARRATOR_QUEUE = [[], []]
+for m in (PASSENGER_MAP, FREIGHT_MAP):
+    USER_DB_CURSOR.execute('''SELECT game_time, locked, announcement_type, train_id, track_number 
+                              FROM narrator WHERE map_id = ?''', (m, ))
+    NARRATOR_QUEUE[m] = USER_DB_CURSOR.fetchall()
+
 ANNOUNCEMENT_TIME: Final = 0
 ANNOUNCEMENT_LOCKED: Final = 1
 ANNOUNCEMENT_TYPE: Final = 2
-ANNOUNCEMENT_ARGUMENTS: Final = 3
-
-NARRATOR_QUEUE = [[], []]
-for m in (PASSENGER_MAP, FREIGHT_MAP):
-    USER_DB_CURSOR.execute('''SELECT game_time, locked, announcement_type, arguments 
-                              FROM narrator WHERE map_id = ?''', (m, ))
-    NARRATOR_QUEUE[m] = USER_DB_CURSOR.fetchall()
-    for a in NARRATOR_QUEUE[m]:
-        a[ANNOUNCEMENT_ARGUMENTS] = [int(arg) for arg in a[ANNOUNCEMENT_ARGUMENTS].split(',')]
+ANNOUNCEMENT_TRAIN_ID: Final = 3
+ANNOUNCEMENT_TRACK_NUMBER: Final = 4
 
 ARRIVAL_ANNOUNCEMENT: Final = 'arrival'
 ARRIVAL_FINISHED_ANNOUNCEMENT: Final = 'arrival_finished'
@@ -173,7 +172,7 @@ PASS_THROUGH_ANNOUNCEMENT: Final = 'pass_through'
 def on_commit():
     delete_password(sha512('user_db'.encode('utf-8')).hexdigest(), sha512('user_db'.encode('utf-8')).hexdigest())
     USER_DB_CONNECTION.commit()
-    with open(__user_db_full_path, 'rb') as f:
+    with open(_user_db_full_path, 'rb') as f:
         data1 = f.read()[::-1]
         set_password(sha512('user_db'.encode('utf-8')).hexdigest(), sha512('user_db'.encode('utf-8')).hexdigest(),
                      sha512(data1[::3] + data1[1::3] + data1[2::3]).hexdigest())

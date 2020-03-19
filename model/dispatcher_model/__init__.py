@@ -40,7 +40,7 @@ class DispatcherModel(MapBaseModel, ABC):
                                              t.train_id, t.model.cars)
                     self.controller.parent_controller.on_announcement_add(announcement_time=self.game_time,
                                                                           announcement_type=ARRIVAL_ANNOUNCEMENT,
-                                                                          arguments=(t.train_id, track))
+                                                                          train_id=t.train_id, track_number=track)
                     self.trains.remove(t)
                     break
 
