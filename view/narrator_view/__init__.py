@@ -30,8 +30,6 @@ class NarratorView(MapBaseView, ABC):
     def on_update_time(self, dt):
         super().on_update_time(dt)
         if len(self.narrator_queue) > 0:
-            self.logger.debug(f'{self.game_time=}')
-            self.logger.debug(f'{self.narrator_queue=}')
             if self.game_time >= self.narrator_queue[0][ANNOUNCEMENT_TIME] and not self.is_playing_announcement:
                 self.is_playing_announcement = True
                 self.playback_start_time = self.game_time
