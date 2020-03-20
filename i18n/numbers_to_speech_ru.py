@@ -34,137 +34,164 @@ ONE_WORD_ORDINAL: Final = {
     ONE_WORD_CARDINAL[1]: {
         NOMINATIVE: 'первый',
         GENITIVE: 'первого',
-        DATIVE: 'первому'
+        DATIVE: 'первому',
+        PREPOSITIONAL: 'первом'
     },
     ONE_WORD_CARDINAL[2]: {
         NOMINATIVE: 'второй',
         GENITIVE: 'второго',
-        DATIVE: 'второму'
+        DATIVE: 'второму',
+        PREPOSITIONAL: 'втором'
     },
     ONE_WORD_CARDINAL[3]: {
         NOMINATIVE: 'третий',
         GENITIVE: 'третьего',
-        DATIVE: 'третьему'
+        DATIVE: 'третьему',
+        PREPOSITIONAL: 'третьем'
     },
     ONE_WORD_CARDINAL[4]: {
         NOMINATIVE: 'четвёртый',
         GENITIVE: 'четвёртого',
-        DATIVE: 'четвёртому'
+        DATIVE: 'четвёртому',
+        PREPOSITIONAL: 'четвёртом'
     },
     ONE_WORD_CARDINAL[5]: {
         NOMINATIVE: 'пятый',
         GENITIVE: 'пятого',
-        DATIVE: 'пятому'
+        DATIVE: 'пятому',
+        PREPOSITIONAL: 'пятом'
     },
     ONE_WORD_CARDINAL[6]: {
         NOMINATIVE: 'шестой',
         GENITIVE: 'шестого',
-        DATIVE: 'шестому'
+        DATIVE: 'шестому',
+        PREPOSITIONAL: 'шестом'
     },
     ONE_WORD_CARDINAL[7]: {
         NOMINATIVE: 'седьмой',
         GENITIVE: 'седьмого',
-        DATIVE: 'седьмому'
+        DATIVE: 'седьмому',
+        PREPOSITIONAL: 'седьмом'
     },
     ONE_WORD_CARDINAL[8]: {
         NOMINATIVE: 'восьмой',
         GENITIVE: 'восьмого',
-        DATIVE: 'восьмому'
+        DATIVE: 'восьмому',
+        PREPOSITIONAL: 'восьмом'
     },
     ONE_WORD_CARDINAL[9]: {
         NOMINATIVE: 'девятый',
         GENITIVE: 'девятого',
-        DATIVE: 'девятому'
+        DATIVE: 'девятому',
+        PREPOSITIONAL: 'девятом'
     },
     ONE_WORD_CARDINAL[10]: {
         NOMINATIVE: 'десятый',
         GENITIVE: 'десятого',
-        DATIVE: 'десятому'
+        DATIVE: 'десятому',
+        PREPOSITIONAL: 'десятом'
     },
     ONE_WORD_CARDINAL[11]: {
         NOMINATIVE: 'одиннадцатый',
         GENITIVE: 'одиннадцатого',
-        DATIVE: 'одиннадцатому'
+        DATIVE: 'одиннадцатому',
+        PREPOSITIONAL: 'одиннадцатом'
     },
     ONE_WORD_CARDINAL[12]: {
         NOMINATIVE: 'двенадцатый',
         GENITIVE: 'двенадцатого',
-        DATIVE: 'двенадцатому'
+        DATIVE: 'двенадцатому',
+        PREPOSITIONAL: 'двенадцатом'
     },
     ONE_WORD_CARDINAL[13]: {
         NOMINATIVE: 'тринадцатый',
         GENITIVE: 'тринадцатого',
-        DATIVE: 'тринадцатому'
+        DATIVE: 'тринадцатому',
+        PREPOSITIONAL: 'тринадцатом'
     },
     ONE_WORD_CARDINAL[14]: {
         NOMINATIVE: 'четырнадцатый',
         GENITIVE: 'четырнадцатого',
-        DATIVE: 'четырнадцатому'
+        DATIVE: 'четырнадцатому',
+        PREPOSITIONAL: 'четырнадцатом'
     },
     ONE_WORD_CARDINAL[15]: {
         NOMINATIVE: 'пятнадцатый',
         GENITIVE: 'пятнадцатого',
-        DATIVE: 'пятнадцатому'
+        DATIVE: 'пятнадцатому',
+        PREPOSITIONAL: 'пятнадцатом'
     },
     ONE_WORD_CARDINAL[16]: {
         NOMINATIVE: 'шестнадцатый',
         GENITIVE: 'шестнадцатого',
-        DATIVE: 'шестнадцатому'
+        DATIVE: 'шестнадцатому',
+        PREPOSITIONAL: 'шестнадцатом'
     },
     ONE_WORD_CARDINAL[17]: {
         NOMINATIVE: 'семнадцатый',
         GENITIVE: 'семнадцатого',
-        DATIVE: 'семнадцатому'
+        DATIVE: 'семнадцатому',
+        PREPOSITIONAL: 'семнадцатом'
     },
     ONE_WORD_CARDINAL[18]: {
         NOMINATIVE: 'восемнадцатый',
         GENITIVE: 'восемнадцатого',
-        DATIVE: 'восемнадцатому'
+        DATIVE: 'восемнадцатому',
+        PREPOSITIONAL: 'восемнадцатом'
     },
     ONE_WORD_CARDINAL[19]: {
         NOMINATIVE: 'девятнадцатый',
         GENITIVE: 'девятнадцатого',
-        DATIVE: 'девятнадцатому'
+        DATIVE: 'девятнадцатому',
+        PREPOSITIONAL: 'девятнадцатом'
     },
     ONE_WORD_CARDINAL[20]: {
         NOMINATIVE: 'двадцатый',
         GENITIVE: 'двадцатого',
-        DATIVE: 'двадцатому'
+        DATIVE: 'двадцатому',
+        PREPOSITIONAL: 'двадцатом'
     },
     ONE_WORD_CARDINAL[30]: {
         NOMINATIVE: 'тридцатый',
         GENITIVE: 'тридцатого',
-        DATIVE: 'тридцатому'
+        DATIVE: 'тридцатому',
+        PREPOSITIONAL: 'тридцатом'
     },
     ONE_WORD_CARDINAL[40]: {
         NOMINATIVE: 'сороковой',
         GENITIVE: 'сорокового',
-        DATIVE: 'сороковому'
+        DATIVE: 'сороковому',
+        PREPOSITIONAL: 'сороковом'
     },
     ONE_WORD_CARDINAL[50]: {
         NOMINATIVE: 'пятидесятый',
         GENITIVE: 'пятидесятого',
-        DATIVE: 'пятидесятому'
+        DATIVE: 'пятидесятому',
+        PREPOSITIONAL: 'пятидесятом'
     },
     ONE_WORD_CARDINAL[60]: {
         NOMINATIVE: 'шестидесятый',
         GENITIVE: 'шестидесятого',
-        DATIVE: 'шестидесятому'
+        DATIVE: 'шестидесятому',
+        PREPOSITIONAL: 'шестидесятом'
     },
     ONE_WORD_CARDINAL[70]: {
         NOMINATIVE: 'семидесятый',
         GENITIVE: 'семидесятого',
-        DATIVE: 'семидесятому'
+        DATIVE: 'семидесятому',
+        PREPOSITIONAL: 'семидесятом'
     },
     ONE_WORD_CARDINAL[80]: {
         NOMINATIVE: 'восьмидесятый',
         GENITIVE: 'восьмидесятого',
-        DATIVE: 'восьмидесятому'
+        DATIVE: 'восьмидесятому',
+        PREPOSITIONAL: 'восьмидесятом'
     },
     ONE_WORD_CARDINAL[90]: {
         NOMINATIVE: 'девяностый',
         GENITIVE: 'девяностого',
-        DATIVE: 'девяностому'
+        DATIVE: 'девяностому',
+        PREPOSITIONAL: 'девяностом'
     }
 }
 
@@ -175,7 +202,7 @@ def to_cardinal(value, case):
         return ONE_WORD_CARDINAL[value]
     except KeyError:
         nearest_one_word_number = max(k for k in ONE_WORD_CARDINAL if k < value)
-        return ONE_WORD_CARDINAL[nearest_one_word_number] + '-' + to_cardinal(value - nearest_one_word_number, case)
+        return ONE_WORD_CARDINAL[nearest_one_word_number] + ' ' + to_cardinal(value - nearest_one_word_number, case)
 
 
 @value_between_1_and_99

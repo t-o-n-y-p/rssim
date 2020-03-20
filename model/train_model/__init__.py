@@ -159,6 +159,19 @@ class TrainModel(MapBaseModel, ABC):
                             announcement_type=DEPARTURE_ANNOUNCEMENT,
                             train_id=self.train_id, track_number=self.track
                         )
+                        if self.boarding_time >= SECONDS_IN_ONE_MINUTE * 5:
+                            self.controller.parent_controller.on_announcement_add(
+                                announcement_time=self.game_time,
+                                announcement_type=ARRIVAL_FINISHED_ANNOUNCEMENT,
+                                train_id=self.train_id, track_number=self.track
+                            )
+                            
+                        if self.boarding_time >= SECONDS_IN_ONE_MINUTE * 10:
+                            self.controller.parent_controller.on_announcement_add(
+                                announcement_time=int(self.game_time + self.boarding_time - SECONDS_IN_ONE_MINUTE * 5),
+                                announcement_type=FIVE_MINUTES_LEFT_ANNOUNCEMENT,
+                                train_id=self.train_id, track_number=self.track
+                            )
 
                     self.view.state = self.state
                     # when boarding is started, convert trail points to 2D Cartesian

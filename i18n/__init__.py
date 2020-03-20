@@ -18,6 +18,7 @@ def value_between_1_and_99(fn):
 NOMINATIVE: Final = 'nominative'
 GENITIVE: Final = 'genitive'
 DATIVE: Final = 'dative'
+PREPOSITIONAL: Final = 'prepositional'
 
 ENGLISH: Final = 'en'
 RUSSIAN: Final = 'ru'

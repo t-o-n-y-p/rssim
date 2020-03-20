@@ -31,6 +31,17 @@ class DispatcherModel(MapBaseModel, ABC):
                         and t.model.cars in range(self.supported_cars_by_track[track][0],
                                                   self.supported_cars_by_track[track][1] + 1):
                     self.track_busy_status[track] = True
+                    if t.model.state == 'approaching':
+                        self.controller.parent_controller.on_announcement_add(
+                            announcement_time=self.game_time, announcement_type=ARRIVAL_ANNOUNCEMENT,
+                            train_id=t.train_id, track_number=track
+                        )
+                    else:
+                        self.controller.parent_controller.on_announcement_add(
+                            announcement_time=self.game_time, announcement_type=PASS_THROUGH_ANNOUNCEMENT,
+                            train_id=None, track_number=track
+                        )
+
                     t.model.state = 'pending_boarding'
                     self.controller.parent_controller.on_close_train_route(t.model.track, t.model.train_route)
                     t.model.track = track
@@ -38,9 +49,6 @@ class DispatcherModel(MapBaseModel, ABC):
                     self.controller.parent_controller\
                         .on_open_train_route(track, ENTRY_TRAIN_ROUTE[self.map_id][t.model.direction],
                                              t.train_id, t.model.cars)
-                    self.controller.parent_controller.on_announcement_add(announcement_time=self.game_time,
-                                                                          announcement_type=ARRIVAL_ANNOUNCEMENT,
-                                                                          train_id=t.train_id, track_number=track)
                     self.trains.remove(t)
                     break
 

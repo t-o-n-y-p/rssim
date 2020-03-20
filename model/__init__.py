@@ -265,7 +265,7 @@ def get_announcement_types_enabled(dt_multiplier):
     if dt_multiplier >= 10.0:
         return ARRIVAL_ANNOUNCEMENT, DEPARTURE_ANNOUNCEMENT, PASS_THROUGH_ANNOUNCEMENT
     else:
-        return get_announcement_types_enabled(16.0) + (ARRIVAL_FINISHED_ANNOUNCEMENT, )
+        return get_announcement_types_enabled(16.0) + (ARRIVAL_FINISHED_ANNOUNCEMENT, FIVE_MINUTES_LEFT_ANNOUNCEMENT)
 
 
 def get_announcement_types_diff(dt_multiplier_1, dt_multiplier_2):

@@ -398,24 +398,28 @@
 		"ru": "x{1},{0}"
 	},
 	"arrival_announcement_string": {
-		"en": "Train number <spell>{0}</spell> is arriving at track {1}",
-		"ru": "Поезд номер <spell>{0}</spell> прибывает на {1} путь"
+		"en": "Train number <spell>{0}</spell> is arriving at track {1}.",
+		"ru": "Поезд номер <spell>{0}</spell> прибывает на {1} путь."
 	},
 	"arrival_finished_announcement_string": {
-		"en": "Train number <spell>{0}</spell> has arrived at track {1}",
-		"ru": "Поезд номер <spell>{0}</spell> прибыл на {1} путь"
+		"en": "Train number <spell>{0}</spell> has arrived at track {1}.",
+		"ru": "Поезд номер <spell>{0}</spell> прибыл на {1} путь."
 	},
 	"departure_announcement_string": {
 		"en": {
-			"other": "Train number <spell>{0}</spell> is departing from track {1}"
+			"other": "Train number <spell>{0}</spell> is departing from track {1}."
 		},
 		"ru": {
-			"two": "Поезд номер <spell>{0}</spell> отправляется со {1} пути",
-			"other": "Поезд номер <spell>{0}</spell> отправляется с {1} пути"
+			"two": "Поезд номер <spell>{0}</spell> отправляется со {1} пути.",
+			"other": "Поезд номер <spell>{0}</spell> отправляется с {1} пути."
 		}
 	},
 	"pass_through_announcement_string": {
-		"en": "Attention please! Train is about to pass through the track {0}",
-		"ru": "Внимание! Внимание! По {0} пути пройдет поезд"
+		"en": "Attention please! Train is about to pass through the track {0}.",
+		"ru": "Внимание! Внимание! По {0} пути пройдет поезд."
+	},
+	"five_minutes_left_announcement_string": {
+		"en": "Train number <spell>{0}</spell> leaves in five minutes. The train is now on track {1}.",
+		"ru": "До отправления поезда номер <spell>{0}</spell> осталось пять минут. Поезд находится на {1} пути."
 	}
 }

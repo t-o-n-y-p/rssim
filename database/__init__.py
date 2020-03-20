@@ -167,6 +167,7 @@ ARRIVAL_ANNOUNCEMENT: Final = 'arrival'
 ARRIVAL_FINISHED_ANNOUNCEMENT: Final = 'arrival_finished'
 DEPARTURE_ANNOUNCEMENT: Final = 'departure'
 PASS_THROUGH_ANNOUNCEMENT: Final = 'pass_through'
+FIVE_MINUTES_LEFT_ANNOUNCEMENT: Final = 'five_minutes_left'
 
 
 def on_commit():
