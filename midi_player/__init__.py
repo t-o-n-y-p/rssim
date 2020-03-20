@@ -27,9 +27,9 @@ class MIDIPlayer:
         self.music_track = None
         self.narrator_intro = None
         USER_DB_CURSOR.execute('''SELECT master_volume FROM sound''')
-        self.master_volume = round(USER_DB_CURSOR.fetchone()[0] / 100 * 255)
-        self.opacity = 255
-        self.music_tracks_opacity = 0
+        self.master_volume = USER_DB_CURSOR.fetchone()[0]
+        self.narrator_intro_opacity = 255
+        self.music_track_opacity = 0
 
     def add_track(self, music_track):
         music_track.playback_finish_callback = self.on_music_track_playback_finish
@@ -41,18 +41,24 @@ class MIDIPlayer:
 
     def play(self):
         try:
-            self.music_track.play((self.master_volume / 255) * (self.opacity / 255) * (self.music_tracks_opacity / 255))
+            self.music_track.play((self.master_volume / 100) * (self.music_track_opacity / 255))
         except AttributeError:
             pass
 
         try:
-            self.narrator_intro.play((self.master_volume / 255) * (self.opacity / 255))
+            self.narrator_intro.play((self.master_volume / 100) * (self.narrator_intro_opacity / 255))
         except AttributeError:
             pass
 
     def on_master_volume_update(self, new_volume):
         self.master_volume = new_volume
         ctypes.windll.winmm.midiOutSetVolume(MIDI_DEVICE, self.master_volume << 8 | self.master_volume)
+
+    def on_music_track_opacity_update(self, new_opacity):
+        self.music_track_opacity = new_opacity
+
+    def on_narrator_intro_opacity_update(self, new_opacity):
+        self.narrator_intro_opacity = new_opacity
 
     def on_music_track_playback_finish(self):
         self.music_track = None

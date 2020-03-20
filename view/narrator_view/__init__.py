@@ -14,6 +14,8 @@ class NarratorView(MapBaseView, ABC):
         self.is_speaking = False
         self.is_playing_announcement = False
         self.playback_start_time = 0
+        USER_DB_CURSOR.execute('''SELECT master_volume FROM sound''')
+        self.master_volume = USER_DB_CURSOR.fetchone()[0]
         self.track_number_converters = {
             ENGLISH: numbers_to_speech_en.to_cardinal,
             RUSSIAN: numbers_to_speech_ru.to_ordinal
@@ -27,13 +29,24 @@ class NarratorView(MapBaseView, ABC):
             self.is_playing_announcement = False
 
     @final
+    def on_update_opacity(self, new_opacity):
+        super().on_update_opacity(new_opacity)
+        MIDI_PLAYER.on_narrator_intro_opacity_update(self.opacity)
+        SPEAKER.Volume = round(self.opacity / 255 * self.master_volume)
+        if self.opacity <= 0:
+            SPEAKER.Speak('<silence msec="1"/>', 11)
+            self.is_speaking = False
+            self.is_playing_announcement = False
+
+    @final
     def on_update_time(self, dt):
         super().on_update_time(dt)
         if len(self.narrator_queue) > 0:
             if self.game_time >= self.narrator_queue[0][ANNOUNCEMENT_TIME] and not self.is_playing_announcement:
                 self.is_playing_announcement = True
                 self.playback_start_time = self.game_time
-                MIDI_PLAYER.add_narrator_intro(NarratorIntro())
+                if self.is_activated:
+                    MIDI_PLAYER.add_narrator_intro(NarratorIntro())
 
             if self.game_time >= self.playback_start_time + self.dt_multiplier * 1.5 and self.is_playing_announcement:
                 self.on_announcement_play(self.narrator_queue[0])
