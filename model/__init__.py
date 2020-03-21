@@ -261,18 +261,6 @@ def get_speed_state_time(s, map_id):
     return current_t
 
 
-def get_announcement_types_enabled(dt_multiplier):
-    if dt_multiplier >= 10.0:
-        return ARRIVAL_ANNOUNCEMENT, DEPARTURE_ANNOUNCEMENT, PASS_THROUGH_ANNOUNCEMENT
-    else:
-        return get_announcement_types_enabled(16.0) + (ARRIVAL_FINISHED_ANNOUNCEMENT, FIVE_MINUTES_LEFT_ANNOUNCEMENT)
-
-
-def get_announcement_types_diff(dt_multiplier_1, dt_multiplier_2):
-    return [announcement for announcement in get_announcement_types_enabled(min(dt_multiplier_1, dt_multiplier_2))
-            if announcement not in get_announcement_types_enabled(max(dt_multiplier_1, dt_multiplier_2))]
-
-
 class AppBaseModel(ABC):
     def __init__(self, controller, view, logger):
         self.logger = logger

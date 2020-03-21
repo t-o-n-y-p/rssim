@@ -25,9 +25,9 @@ if not path.exists(_user_db_full_path):
         pass
 
     with open(_user_db_full_path, 'rb') as f1:
-        data = f1.read()[::-1]
+        _data = f1.read()[::-1]
         set_password(sha512('user_db'.encode('utf-8')).hexdigest(), sha512('user_db'.encode('utf-8')).hexdigest(),
-                     sha512(data[::3] + data[1::3] + data[2::3]).hexdigest())
+                     sha512(_data[::3] + _data[1::3] + _data[2::3]).hexdigest())
 
 # create database connections and cursors
 USER_DB_CONNECTION: Final = connect(path.join(USER_DB_LOCATION, 'user.db'))
@@ -41,6 +41,9 @@ MINUTES_IN_ONE_HOUR: Final = 60
 SECONDS_IN_ONE_HOUR: Final = SECONDS_IN_ONE_MINUTE * MINUTES_IN_ONE_HOUR
 HOURS_IN_ONE_DAY: Final = 24
 SECONDS_IN_ONE_DAY: Final = SECONDS_IN_ONE_MINUTE * MINUTES_IN_ONE_HOUR * HOURS_IN_ONE_DAY
+
+TRUE: Final = 1
+FALSE: Final = 0
 
 TRACKS: Final = 0
 ENVIRONMENT: Final = 1
@@ -62,13 +65,13 @@ BONUS_TIME: Final = 7
 
 BONUS_CODE_MATRIX = {}
 CONFIG_DB_CURSOR.execute('''SELECT * FROM bonus_codes_config''')
-for line in CONFIG_DB_CURSOR.fetchall():
-    BONUS_CODE_MATRIX[line[0]] = [*line[1:]]
+for _line in CONFIG_DB_CURSOR.fetchall():
+    BONUS_CODE_MATRIX[_line[0]] = [*_line[1:]]
     USER_DB_CURSOR.execute('''SELECT activation_available, activations_left, is_activated, bonus_time
-                              FROM bonus_codes WHERE sha512_hash = ?''', (line[0],))
-    BONUS_CODE_MATRIX[line[0]].extend(USER_DB_CURSOR.fetchone())
-    BONUS_CODE_MATRIX[line[0]][ACTIVATION_AVAILABLE] = bool(BONUS_CODE_MATRIX[line[0]][ACTIVATION_AVAILABLE])
-    BONUS_CODE_MATRIX[line[0]][IS_ACTIVATED] = bool(BONUS_CODE_MATRIX[line[0]][IS_ACTIVATED])
+                              FROM bonus_codes WHERE sha512_hash = ?''', (_line[0],))
+    BONUS_CODE_MATRIX[_line[0]].extend(USER_DB_CURSOR.fetchone())
+    BONUS_CODE_MATRIX[_line[0]][ACTIVATION_AVAILABLE] = bool(BONUS_CODE_MATRIX[_line[0]][ACTIVATION_AVAILABLE])
+    BONUS_CODE_MATRIX[_line[0]][IS_ACTIVATED] = bool(BONUS_CODE_MATRIX[_line[0]][IS_ACTIVATED])
 
 # base_schedule matrix properties
 TRAIN_ID: Final = 0                            # property #0 indicates train identification number
@@ -91,36 +94,36 @@ CARS_MAX: Final = 5                     # property #5 indicates max number of ca
 SWITCH_DIRECTION_FLAG = 6
 
 BASE_SCHEDULE = [(), ()]
-for m in (PASSENGER_MAP, FREIGHT_MAP):
+for _m in (PASSENGER_MAP, FREIGHT_MAP):
     USER_DB_CURSOR.execute('''SELECT train_id, arrival, direction, new_direction, 
                               cars, boarding_time, exp, money, switch_direction_required 
-                              FROM base_schedule WHERE map_id = ?''', (m, ))
-    BASE_SCHEDULE[m] = USER_DB_CURSOR.fetchall()
+                              FROM base_schedule WHERE map_id = ?''', (_m,))
+    BASE_SCHEDULE[_m] = USER_DB_CURSOR.fetchall()
 
 CONSTRUCTION_STATE_MATRIX = [[{}, {}], [{}, {}]]
-for m in (PASSENGER_MAP, FREIGHT_MAP):
+for _m in (PASSENGER_MAP, FREIGHT_MAP):
     USER_DB_CURSOR.execute('''SELECT track_number, locked, under_construction, construction_time, 
                               unlock_condition_from_level, unlock_condition_from_previous_track, 
                               unlock_condition_from_environment, unlock_available FROM tracks 
-                              WHERE locked = 1 AND map_id = ?''', (m, ))
-    track_info_fetched = USER_DB_CURSOR.fetchall()
-    for info in track_info_fetched:
-        CONSTRUCTION_STATE_MATRIX[m][TRACKS][info[0]] = [bool(info[1]), bool(info[2]), info[3], bool(info[4]),
-                                                         bool(info[5]), bool(info[6]), bool(info[7])]
+                              WHERE locked = 1 AND map_id = ?''', (_m,))
+    _track_info_fetched = USER_DB_CURSOR.fetchall()
+    for _info in _track_info_fetched:
+        CONSTRUCTION_STATE_MATRIX[_m][TRACKS][_info[0]] = [bool(_info[1]), bool(_info[2]), _info[3], bool(_info[4]),
+                                                           bool(_info[5]), bool(_info[6]), bool(_info[7])]
         CONFIG_DB_CURSOR.execute('''SELECT price, max_construction_time, level, environment_tier FROM track_config 
-                                    WHERE track_number = ? AND map_id = ?''', (info[0], m))
-        CONSTRUCTION_STATE_MATRIX[m][TRACKS][info[0]].extend(CONFIG_DB_CURSOR.fetchone())
+                                    WHERE track_number = ? AND map_id = ?''', (_info[0], _m))
+        CONSTRUCTION_STATE_MATRIX[_m][TRACKS][_info[0]].extend(CONFIG_DB_CURSOR.fetchone())
 
     USER_DB_CURSOR.execute('''SELECT tier, locked, under_construction, construction_time, 
                               unlock_condition_from_level, unlock_condition_from_previous_environment,
-                              unlock_available FROM environment WHERE locked = 1 AND map_id = ?''', (m, ))
-    environment_info_fetched = USER_DB_CURSOR.fetchall()
-    for info in environment_info_fetched:
-        CONSTRUCTION_STATE_MATRIX[m][ENVIRONMENT][info[0]] = [bool(info[1]), bool(info[2]), info[3],
-                                                              bool(info[4]), bool(info[5]), 1, bool(info[6])]
+                              unlock_available FROM environment WHERE locked = 1 AND map_id = ?''', (_m,))
+    _environment_info_fetched = USER_DB_CURSOR.fetchall()
+    for _info in _environment_info_fetched:
+        CONSTRUCTION_STATE_MATRIX[_m][ENVIRONMENT][_info[0]] = [bool(_info[1]), bool(_info[2]), _info[3],
+                                                                bool(_info[4]), bool(_info[5]), 1, bool(_info[6])]
         CONFIG_DB_CURSOR.execute('''SELECT price, max_construction_time, level FROM environment_config 
-                                    WHERE tier = ? AND map_id = ?''', (info[0], m))
-        CONSTRUCTION_STATE_MATRIX[m][ENVIRONMENT][info[0]].extend(CONFIG_DB_CURSOR.fetchone())
+                                    WHERE tier = ? AND map_id = ?''', (_info[0], _m))
+        CONSTRUCTION_STATE_MATRIX[_m][ENVIRONMENT][_info[0]].extend(CONFIG_DB_CURSOR.fetchone())
 
 # track, environment and shop stage state matrix properties
 LOCKED: Final = 0                                      # property #0 indicates if track/env. is locked
@@ -141,21 +144,21 @@ STORAGE_CAPACITY: Final = 12
 EXP_BONUS: Final = 13
 
 MAP_SWITCHER_STATE_MATRIX = [[], []]
-for m in (PASSENGER_MAP, FREIGHT_MAP):
-    USER_DB_CURSOR.execute('''SELECT locked FROM map_progress WHERE map_id = ?''', (m, ))
-    MAP_SWITCHER_STATE_MATRIX[m].append(bool(USER_DB_CURSOR.fetchone()[0]))
-    CONFIG_DB_CURSOR.execute('''SELECT level_required, price FROM map_progress_config WHERE map_id = ?''', (m, ))
-    MAP_SWITCHER_STATE_MATRIX[m].extend(CONFIG_DB_CURSOR.fetchone())
+for _m in (PASSENGER_MAP, FREIGHT_MAP):
+    USER_DB_CURSOR.execute('''SELECT locked FROM map_progress WHERE map_id = ?''', (_m,))
+    MAP_SWITCHER_STATE_MATRIX[_m].append(bool(USER_DB_CURSOR.fetchone()[0]))
+    CONFIG_DB_CURSOR.execute('''SELECT level_required, price FROM map_progress_config WHERE map_id = ?''', (_m,))
+    MAP_SWITCHER_STATE_MATRIX[_m].extend(CONFIG_DB_CURSOR.fetchone())
 
 MAP_LOCKED: Final = 0
 MAP_LEVEL_REQUIRED: Final = 1
 MAP_PRICE: Final = 2
 
 NARRATOR_QUEUE = [[], []]
-for m in (PASSENGER_MAP, FREIGHT_MAP):
+for _m in (PASSENGER_MAP, FREIGHT_MAP):
     USER_DB_CURSOR.execute('''SELECT game_time, locked, announcement_type, train_id, track_number 
-                              FROM narrator WHERE map_id = ?''', (m, ))
-    NARRATOR_QUEUE[m] = USER_DB_CURSOR.fetchall()
+                              FROM narrator WHERE map_id = ?''', (_m,))
+    NARRATOR_QUEUE[_m].extend(USER_DB_CURSOR.fetchall())
 
 ANNOUNCEMENT_TIME: Final = 0
 ANNOUNCEMENT_LOCKED: Final = 1
@@ -168,6 +171,18 @@ ARRIVAL_FINISHED_ANNOUNCEMENT: Final = 'arrival_finished'
 DEPARTURE_ANNOUNCEMENT: Final = 'departure'
 PASS_THROUGH_ANNOUNCEMENT: Final = 'pass_through'
 FIVE_MINUTES_LEFT_ANNOUNCEMENT: Final = 'five_minutes_left'
+
+
+def get_announcement_types_enabled(dt_multiplier):
+    if dt_multiplier >= 10.0:
+        return ARRIVAL_ANNOUNCEMENT, DEPARTURE_ANNOUNCEMENT, PASS_THROUGH_ANNOUNCEMENT
+    else:
+        return get_announcement_types_enabled(16.0) + (ARRIVAL_FINISHED_ANNOUNCEMENT, FIVE_MINUTES_LEFT_ANNOUNCEMENT)
+
+
+def get_announcement_types_diff(dt_multiplier_1, dt_multiplier_2):
+    return [announcement for announcement in get_announcement_types_enabled(min(dt_multiplier_1, dt_multiplier_2))
+            if announcement not in get_announcement_types_enabled(max(dt_multiplier_1, dt_multiplier_2))]
 
 
 def on_commit():

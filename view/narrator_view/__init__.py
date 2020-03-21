@@ -10,7 +10,6 @@ from database import NARRATOR_QUEUE
 class NarratorView(MapBaseView, ABC):
     def __init__(self, controller, map_id):
         super().__init__(controller, map_id, logger=getLogger(f'root.app.game.map.{map_id}.narrator.view'))
-        self.narrator_queue = NARRATOR_QUEUE[self.map_id]
         self.is_speaking = False
         self.is_playing_announcement = False
         self.playback_start_time = 0
@@ -21,6 +20,21 @@ class NarratorView(MapBaseView, ABC):
             RUSSIAN: numbers_to_speech_ru.to_ordinal
         }
         self.on_append_window_handlers()
+
+    @final
+    @view_is_not_active
+    def on_activate(self):
+        super().on_activate()
+        for announcement in [a for a in NARRATOR_QUEUE[self.map_id]
+                             if a[ANNOUNCEMENT_TYPE] in get_announcement_types_enabled(self.dt_multiplier)]:
+            announcement[ANNOUNCEMENT_LOCKED] = FALSE
+
+    @final
+    @view_is_active
+    def on_deactivate(self):
+        super().on_deactivate()
+        for announcement in NARRATOR_QUEUE[self.map_id]:
+            announcement[ANNOUNCEMENT_LOCKED] = TRUE
 
     @final
     def on_update(self):
@@ -41,16 +55,19 @@ class NarratorView(MapBaseView, ABC):
     @final
     def on_update_time(self, dt):
         super().on_update_time(dt)
-        if len(self.narrator_queue) > 0:
-            if self.game_time >= self.narrator_queue[0][ANNOUNCEMENT_TIME] and not self.is_playing_announcement:
+        if len(NARRATOR_QUEUE[self.map_id]) > 0:
+            if self.game_time >= NARRATOR_QUEUE[self.map_id][0][ANNOUNCEMENT_TIME] and not self.is_playing_announcement:
                 self.is_playing_announcement = True
                 self.playback_start_time = self.game_time
                 if self.is_activated:
                     MIDI_PLAYER.add_narrator_intro(NarratorIntro())
 
-            if self.game_time >= self.playback_start_time + self.dt_multiplier * 1.5 and self.is_playing_announcement:
-                self.on_announcement_play(self.narrator_queue[0])
-                self.narrator_queue.pop(0)
+            self.logger.debug(f'{self.is_playing_announcement=}')
+            self.logger.debug(f'{self.is_speaking=}')
+            if self.game_time >= self.playback_start_time + self.dt_multiplier * 1.5 and self.is_playing_announcement \
+                    and not self.is_speaking:
+                self.on_announcement_play(NARRATOR_QUEUE[self.map_id][0])
+                NARRATOR_QUEUE[self.map_id].pop(0)
 
     @final
     @view_is_active

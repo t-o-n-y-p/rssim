@@ -18,11 +18,9 @@ class NarratorModel(MapBaseModel, ABC):
     @final
     def on_update_time(self, dt):
         NARRATOR_QUEUE[self.map_id] = sorted(NARRATOR_QUEUE[self.map_id], key=itemgetter(ANNOUNCEMENT_TIME))
-        self.logger.debug(f'{self.game_time=}')
-        self.logger.debug(f'{NARRATOR_QUEUE[self.map_id]=}')
         while len(NARRATOR_QUEUE[self.map_id]) > 0 \
                 and self.game_time >= NARRATOR_QUEUE[self.map_id][0][ANNOUNCEMENT_TIME] \
-                and (NARRATOR_QUEUE[self.map_id][0][ANNOUNCEMENT_LOCKED] or not self.view.is_activated):
+                and NARRATOR_QUEUE[self.map_id][0][ANNOUNCEMENT_LOCKED]:
             NARRATOR_QUEUE[self.map_id].pop(0)
 
         super().on_update_time(dt)
@@ -39,8 +37,11 @@ class NarratorModel(MapBaseModel, ABC):
     @final
     def on_announcement_add(self, announcement_time, announcement_type, train_id, track_number):
         NARRATOR_QUEUE[self.map_id].append(
-            (
-                announcement_time, int(announcement_type not in get_announcement_types_enabled(self.dt_multiplier)),
+            [
+                announcement_time, int(
+                    not(announcement_type in get_announcement_types_enabled(self.dt_multiplier)
+                        and self.view.is_activated)
+                ),
                 announcement_type, train_id, track_number
-            )
+            ]
         )
