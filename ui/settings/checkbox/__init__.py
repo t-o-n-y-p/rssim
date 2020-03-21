@@ -10,12 +10,12 @@ from database import USER_DB_CURSOR
 class Checkbox(ABC):
     def __init__(self, column, row, on_update_state_action, parent_viewport, logger):
         def on_check(button):
-            self.on_change_state(True)
-            self.on_update_state_action(True)
+            self.on_change_state(TRUE)
+            self.on_update_state_action(TRUE)
 
         def on_uncheck(button):
-            self.on_change_state(False)
-            self.on_update_state_action(False)
+            self.on_change_state(FALSE)
+            self.on_update_state_action(FALSE)
 
         self.logger = logger
         self.column, self.row = column, row

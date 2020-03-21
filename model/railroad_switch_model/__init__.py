@@ -16,7 +16,7 @@ class RailroadSwitchModel(MapBaseModel, ABC):
         USER_DB_CURSOR.execute('''SELECT busy, force_busy FROM switches 
                                   WHERE track_param_1 = ? AND track_param_2 = ? AND switch_type = ? AND map_id = ?''',
                                (self.track_param_1, self.track_param_2, self.switch_type, self.map_id))
-        self.busy, self.force_busy = (bool(t) for t in USER_DB_CURSOR.fetchone())
+        self.busy, self.force_busy = USER_DB_CURSOR.fetchone()
         USER_DB_CURSOR.execute('''SELECT last_entered_by, current_position FROM switches 
                                   WHERE track_param_1 = ? AND track_param_2 = ? AND switch_type = ? AND map_id = ?''',
                                (self.track_param_1, self.track_param_2, self.switch_type, self.map_id))
@@ -29,30 +29,29 @@ class RailroadSwitchModel(MapBaseModel, ABC):
         USER_DB_CURSOR.execute('''SELECT locked FROM switches 
                                   WHERE track_param_1 = ? AND track_param_2 = ? AND switch_type = ? AND map_id = ?''',
                                (self.track_param_1, self.track_param_2, self.switch_type, self.map_id))
-        self.locked = bool(USER_DB_CURSOR.fetchone()[0])
+        self.locked = USER_DB_CURSOR.fetchone()[0]
 
     @final
     def on_save_state(self):
         USER_DB_CURSOR.execute('''UPDATE switches SET busy = ?, force_busy = ?, 
                                   last_entered_by = ?, current_position = ?, locked = ? 
                                   WHERE track_param_1 = ? AND track_param_2 = ? AND switch_type = ? AND map_id = ?''',
-                               (int(self.busy), int(self.force_busy), self.last_entered_by, self.current_position,
-                                int(self.locked), self.track_param_1, self.track_param_2, self.switch_type,
-                                self.map_id))
+                               (self.busy, self.force_busy, self.last_entered_by, self.current_position,
+                                self.locked, self.track_param_1, self.track_param_2, self.switch_type, self.map_id))
 
     @final
     def on_force_busy_on(self, positions, train_id):
-        self.force_busy = True
-        self.busy = True
+        self.force_busy = TRUE
+        self.busy = TRUE
         self.last_entered_by = train_id
         self.current_position = positions[0]
         self.view.on_change_current_position(self.current_position)
         for listener in self.state_change_listeners:
-            self.controller.parent_controller.on_update_train_route_section_status(listener, status=True)
+            self.controller.parent_controller.on_update_train_route_section_status(listener, status=TRUE)
 
     @final
     def on_force_busy_off(self):
-        self.force_busy = False
-        self.busy = False
+        self.force_busy = FALSE
+        self.busy = FALSE
         for listener in self.state_change_listeners:
-            self.controller.parent_controller.on_update_train_route_section_status(listener, status=False)
+            self.controller.parent_controller.on_update_train_route_section_status(listener, status=FALSE)

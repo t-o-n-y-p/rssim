@@ -2,7 +2,6 @@ from logging import getLogger
 from operator import itemgetter
 
 from model import *
-from database import NARRATOR_QUEUE
 
 
 class NarratorModel(MapBaseModel, ABC):

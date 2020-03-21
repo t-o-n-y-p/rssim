@@ -39,7 +39,7 @@ class FadeAnimation(ABC):
         self.is_activated = False
         self.on_deactivate_listener = None
         USER_DB_CURSOR.execute('SELECT fade_animations_enabled FROM graphics')
-        self.fade_animations_enabled = bool(USER_DB_CURSOR.fetchone()[0])
+        self.fade_animations_enabled = USER_DB_CURSOR.fetchone()[0]
 
     @abstractmethod
     def on_activate(self):

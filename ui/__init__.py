@@ -23,7 +23,7 @@ def _create_window():
     screen_resolution_config = CONFIG_DB_CURSOR.fetchall()
     monitor_resolution_config = (windll.user32.GetSystemMetrics(0), windll.user32.GetSystemMetrics(1))
     USER_DB_CURSOR.execute('SELECT fullscreen FROM graphics')
-    if bool(USER_DB_CURSOR.fetchone()[0]) and monitor_resolution_config in screen_resolution_config:
+    if USER_DB_CURSOR.fetchone()[0] and monitor_resolution_config in screen_resolution_config:
         window = Window(width=monitor_resolution_config[0], height=monitor_resolution_config[1],
                         caption='Railway Station Simulator', style='borderless', fullscreen=False, vsync=False)
         window.set_fullscreen(True)

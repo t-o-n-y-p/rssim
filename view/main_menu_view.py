@@ -52,7 +52,7 @@ class MainMenuView(AppBaseView):
         self.shader_sprite.create()
         self.open_license_label.create()
         USER_DB_CURSOR.execute('SELECT onboarding_required, bonus_codes_locked FROM game_progress')
-        onboarding_required, bonus_codes_locked = tuple(map(bool, USER_DB_CURSOR.fetchone()))
+        onboarding_required, bonus_codes_locked = USER_DB_CURSOR.fetchone()
         if onboarding_required:
             self.create_station_button.on_activate()
         else:

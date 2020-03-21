@@ -30,7 +30,7 @@ class RailroadSwitchView(MapBaseView, ABC):
                                   WHERE track_param_1 = ? AND track_param_2 = ? AND switch_type = ? 
                                   AND map_id = ?''',
                                (self.track_param_1, self.track_param_2, self.switch_type, self.map_id))
-        self.locked = bool(USER_DB_CURSOR.fetchone()[0])
+        self.locked = USER_DB_CURSOR.fetchone()[0]
         self.sprite = RailroadSwitchSprite(self.map_id, self.track_param_1, self.track_param_2, self.switch_type,
                                            parent_viewport=self.viewport)
         self.sprite.on_update_texture(self.images[self.current_position])

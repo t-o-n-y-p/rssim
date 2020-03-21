@@ -1,7 +1,6 @@
 from logging import getLogger
 
 from view import *
-from database import BONUS_CODE_MATRIX
 from ui.label.bonus_code_interactive_label import BonusCodeInteractiveLabel
 from ui.button.activate_bonus_code_button import ActivateBonusCodeButton
 from ui.button.cancel_bonus_code_activation_button import CancelBonusCodeActivationButton
@@ -31,7 +30,6 @@ class BonusCodeActivationView(AppBaseView):
                                               parent_viewport=self.viewport)
         self.buttons = [self.activate_bonus_code_button, self.cancel_bonus_code_activation_button]
         self.shader_sprite = BonusCodeViewShaderSprite(view=self)
-        self.bonus_code_matrix = BONUS_CODE_MATRIX
         self.bonus_code_info_cell = BonusCodeInfoCell(parent_viewport=self.viewport)
         self.on_window_resize_handlers.extend([
             self.bonus_code_interactive_label.on_window_resize, self.shader_sprite.on_window_resize,
@@ -90,21 +88,23 @@ class BonusCodeActivationView(AppBaseView):
 
     def on_check_bonus_code_availability(self):
         if (user_input_hash := sha512(self.bonus_code_interactive_label.text.encode('utf-8')).hexdigest()) \
-                in self.bonus_code_matrix:
+                in BONUS_CODE_MATRIX:
             activated_bonus_counter = 0
-            for code in self.bonus_code_matrix:
-                if self.bonus_code_matrix[code][CODE_TYPE] == self.bonus_code_matrix[user_input_hash][CODE_TYPE]:
-                    activated_bonus_counter += int(self.bonus_code_matrix[code][IS_ACTIVATED])
+            for code in BONUS_CODE_MATRIX:
+                if BONUS_CODE_MATRIX[code][CODE_TYPE] == BONUS_CODE_MATRIX[user_input_hash][CODE_TYPE]:
+                    activated_bonus_counter += BONUS_CODE_MATRIX[code][IS_ACTIVATED]
 
-            if self.bonus_code_matrix[user_input_hash][ACTIVATIONS_LEFT] > 0 \
-                    and self.bonus_code_matrix[user_input_hash][REQUIRED_LEVEL] <= self.level \
-                    and self.bonus_code_matrix[user_input_hash][ACTIVATION_AVAILABLE] and activated_bonus_counter == 0:
+            if BONUS_CODE_MATRIX[user_input_hash][ACTIVATIONS_LEFT] > 0 \
+                    and BONUS_CODE_MATRIX[user_input_hash][REQUIRED_LEVEL] <= self.level \
+                    and BONUS_CODE_MATRIX[user_input_hash][ACTIVATION_AVAILABLE] and activated_bonus_counter == 0:
                 self.controller.on_reset_bonus_code_abuse_counter()
                 self.activate_bonus_code_button.on_activate()
                 self.bonus_code_info_cell.on_activate()
-                self.bonus_code_info_cell.on_assign_data(self.bonus_code_matrix[user_input_hash][CODE_TYPE],
-                                                         abs(self.bonus_code_matrix[user_input_hash][BONUS_VALUE] - 1),
-                                                         self.bonus_code_matrix[user_input_hash][ACTIVATIONS_LEFT])
+                self.bonus_code_info_cell.on_assign_data(
+                    BONUS_CODE_MATRIX[user_input_hash][CODE_TYPE],
+                    abs(BONUS_CODE_MATRIX[user_input_hash][BONUS_VALUE] - 1),
+                    BONUS_CODE_MATRIX[user_input_hash][ACTIVATIONS_LEFT]
+                )
             else:
                 self.activate_bonus_code_button.on_disable()
                 self.bonus_code_info_cell.on_deactivate(instant=True)

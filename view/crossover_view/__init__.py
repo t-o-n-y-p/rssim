@@ -36,7 +36,7 @@ class CrossoverView(MapBaseView, ABC):
                                   WHERE track_param_1 = ? AND track_param_2 = ? AND crossover_type = ? 
                                   AND map_id = ?''',
                                (self.track_param_1, self.track_param_2, self.crossover_type, self.map_id))
-        self.locked = bool(USER_DB_CURSOR.fetchone()[0])
+        self.locked = USER_DB_CURSOR.fetchone()[0]
         self.sprite = CrossoverSprite(self.map_id, self.track_param_1, self.track_param_2, self.crossover_type,
                                       parent_viewport=self.viewport)
         self.sprite.on_update_texture(self.images[self.current_position_1][self.current_position_2])

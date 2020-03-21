@@ -204,14 +204,13 @@ class AppBaseView(ABC):
         USER_DB_CURSOR.execute('SELECT current_locale FROM i18n')
         self.current_locale = USER_DB_CURSOR.fetchone()[0]
         USER_DB_CURSOR.execute('SELECT clock_24h FROM i18n')
-        self.clock_24h_enabled = bool(USER_DB_CURSOR.fetchone()[0])
+        self.clock_24h_enabled = USER_DB_CURSOR.fetchone()[0]
         self.all_notifications_enabled = False
         self.shader_sprite = None
         USER_DB_CURSOR.execute('SELECT * FROM notification_settings')
         self.level_up_notification_enabled, self.feature_unlocked_notification_enabled, \
             self.construction_completed_notification_enabled, self.enough_money_notification_enabled, \
-            self.bonus_expired_notification_enabled, self.shop_storage_notification_enabled \
-            = (bool(n) for n in USER_DB_CURSOR.fetchone())
+            self.bonus_expired_notification_enabled, self.shop_storage_notification_enabled = USER_DB_CURSOR.fetchone()
 
     def on_activate(self):
         self.is_activated = True

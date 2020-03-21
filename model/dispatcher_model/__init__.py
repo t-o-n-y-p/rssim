@@ -11,7 +11,7 @@ class DispatcherModel(MapBaseModel, ABC):
         USER_DB_CURSOR.execute('''SELECT unlocked_tracks FROM map_progress WHERE map_id = ?''', (self.map_id, ))
         self.unlocked_tracks = USER_DB_CURSOR.fetchone()[0]
         USER_DB_CURSOR.execute('SELECT busy FROM tracks WHERE map_id = ?', (self.map_id, ))
-        self.track_busy_status = [True, *[bool(t[0]) for t in USER_DB_CURSOR.fetchall()]]
+        self.track_busy_status = [TRUE, *[t[0] for t in USER_DB_CURSOR.fetchall()]]
         CONFIG_DB_CURSOR.execute('''SELECT supported_cars_min, supported_cars_max 
                                     FROM track_config WHERE map_id = ?''', (self.map_id, ))
         self.supported_cars_by_track = ((0, 20), *CONFIG_DB_CURSOR.fetchall())
@@ -20,7 +20,7 @@ class DispatcherModel(MapBaseModel, ABC):
     def on_save_state(self):
         for i in range(1, len(self.track_busy_status)):
             USER_DB_CURSOR.execute('UPDATE tracks SET busy = ? WHERE track_number = ? AND map_id = ?',
-                                   (int(self.track_busy_status[i]), i, self.map_id))
+                                   (self.track_busy_status[i], i, self.map_id))
 
     @final
     def on_update_time(self, dt):
@@ -30,7 +30,7 @@ class DispatcherModel(MapBaseModel, ABC):
                 if track <= self.unlocked_tracks and not self.track_busy_status[track] \
                         and t.model.cars in range(self.supported_cars_by_track[track][0],
                                                   self.supported_cars_by_track[track][1] + 1):
-                    self.track_busy_status[track] = True
+                    self.track_busy_status[track] = TRUE
                     if t.model.state == 'approaching':
                         self.controller.parent_controller.on_announcement_add(
                             announcement_time=self.game_time, announcement_type=ARRIVAL_ANNOUNCEMENT,
@@ -62,7 +62,7 @@ class DispatcherModel(MapBaseModel, ABC):
 
     @final
     def on_leave_track(self, track):
-        self.track_busy_status[track] = False
+        self.track_busy_status[track] = FALSE
 
     @abstractmethod
     def get_track_priority_list(self, train):

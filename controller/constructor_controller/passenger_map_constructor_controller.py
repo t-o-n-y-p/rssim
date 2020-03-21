@@ -14,5 +14,4 @@ class PassengerMapConstructorController(ConstructorController):
     def create_view_and_model(self):
         view = PassengerMapConstructorView(controller=self)
         model = PassengerMapConstructorModel(controller=self, view=view)
-        view.construction_state_matrix = model.construction_state_matrix
         return view, model

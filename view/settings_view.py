@@ -62,9 +62,9 @@ class SettingsView(AppBaseView):
 
         super().__init__(controller, logger=getLogger('root.app.settings.view'))
         self.temp_windowed_resolution = (0, 0)
-        self.temp_display_fps = False
-        self.temp_fade_animations_enabled = False
-        self.temp_clock_24h_enabled = False
+        self.temp_display_fps = FALSE
+        self.temp_fade_animations_enabled = FALSE
+        self.temp_clock_24h_enabled = FALSE
         self.display_fps_checkbox \
             = DisplayFPSCheckbox(column=-1, row=-1, on_update_state_action=on_update_display_fps_state,
                                  parent_viewport=self.viewport)
@@ -73,12 +73,12 @@ class SettingsView(AppBaseView):
                                             parent_viewport=self.viewport)
         self.clock_24h_checkbox = Clock24HCheckbox(column=-1, row=-5, on_update_state_action=on_update_clock_24h_state,
                                                    parent_viewport=self.viewport)
-        self.temp_level_up_notification_enabled = False
-        self.temp_feature_unlocked_notification_enabled = False
-        self.temp_construction_completed_notification_enabled = False
-        self.temp_enough_money_notification_enabled = False
-        self.temp_bonus_expired_notification_enabled = False
-        self.temp_shop_storage_notification_enabled = False
+        self.temp_level_up_notification_enabled = FALSE
+        self.temp_feature_unlocked_notification_enabled = FALSE
+        self.temp_construction_completed_notification_enabled = FALSE
+        self.temp_enough_money_notification_enabled = FALSE
+        self.temp_bonus_expired_notification_enabled = FALSE
+        self.temp_shop_storage_notification_enabled = FALSE
         self.notifications_checkbox_group \
             = NotificationsCheckboxGroup(column=1, row=6,
                                          on_update_state_actions=[on_update_level_up_notifications_state,
@@ -125,20 +125,20 @@ class SettingsView(AppBaseView):
         self.screen_resolution_control.on_activate()
         self.screen_resolution_control.on_init_state(self.available_windowed_resolutions_position)
         USER_DB_CURSOR.execute('SELECT display_fps, fade_animations_enabled FROM graphics')
-        self.temp_display_fps, self.temp_fade_animations_enabled = (bool(n) for n in USER_DB_CURSOR.fetchone())
+        self.temp_display_fps, self.temp_fade_animations_enabled = USER_DB_CURSOR.fetchone()
         self.display_fps_checkbox.on_activate()
         self.display_fps_checkbox.on_change_state(self.temp_display_fps)
         self.fade_animations_checkbox.on_activate()
         self.fade_animations_checkbox.on_change_state(self.temp_fade_animations_enabled)
         USER_DB_CURSOR.execute('SELECT clock_24h FROM i18n')
-        self.temp_clock_24h_enabled = bool(USER_DB_CURSOR.fetchone()[0])
+        self.temp_clock_24h_enabled = USER_DB_CURSOR.fetchone()[0]
         self.clock_24h_checkbox.on_activate()
         self.clock_24h_checkbox.on_change_state(self.temp_clock_24h_enabled)
         USER_DB_CURSOR.execute('SELECT * FROM notification_settings')
         self.temp_level_up_notification_enabled, self.temp_feature_unlocked_notification_enabled, \
             self.temp_construction_completed_notification_enabled, self.temp_enough_money_notification_enabled, \
             self.temp_bonus_expired_notification_enabled, self.temp_shop_storage_notification_enabled \
-            = (bool(n) for n in USER_DB_CURSOR.fetchone())
+            = USER_DB_CURSOR.fetchone()
         self.notifications_checkbox_group.on_activate()
         self.notifications_checkbox_group.on_change_state(
             [

@@ -12,7 +12,6 @@ class MapModel(MapBaseModel, ABC):
         USER_DB_CURSOR.execute('''SELECT locked, unlocked_tracks, unlocked_environment 
                                   FROM map_progress WHERE map_id = ?''', (self.map_id, ))
         self.locked, self.unlocked_tracks, self.unlocked_environment = USER_DB_CURSOR.fetchone()
-        self.locked = bool(self.locked)
         USER_DB_CURSOR.execute('''SELECT unlocked_car_collections FROM map_progress WHERE map_id = ?''',
                                (self.map_id, ))
         self.unlocked_car_collections = [int(c) for c in USER_DB_CURSOR.fetchone()[0].split(',')]
@@ -30,7 +29,7 @@ class MapModel(MapBaseModel, ABC):
     def on_save_state(self):
         USER_DB_CURSOR.execute('''UPDATE map_progress SET locked = ?, unlocked_tracks = ?, unlocked_environment = ?, 
                                   unlocked_car_collections = ? WHERE map_id = ?''',
-                               (int(self.locked), self.unlocked_tracks, self.unlocked_environment,
+                               (self.locked, self.unlocked_tracks, self.unlocked_environment,
                                 ','.join(str(c) for c in self.unlocked_car_collections), self.map_id))
 
     @final

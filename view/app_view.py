@@ -82,7 +82,7 @@ class AppView(AppBaseView):
         self.on_mouse_release_handlers.append(self.on_mouse_release)
         self.on_mouse_drag_handlers.append(self.on_mouse_drag)
         USER_DB_CURSOR.execute('SELECT fullscreen FROM graphics')
-        self.fullscreen_mode = bool(USER_DB_CURSOR.fetchone()[0])
+        self.fullscreen_mode = USER_DB_CURSOR.fetchone()[0]
         self.fullscreen_mode_available = False
         CONFIG_DB_CURSOR.execute('SELECT app_width, app_height FROM screen_resolution_config')
         self.screen_resolution_config = CONFIG_DB_CURSOR.fetchall()
@@ -106,7 +106,7 @@ class AppView(AppBaseView):
             self.fullscreen_button.on_disable()
 
         USER_DB_CURSOR.execute('SELECT display_fps FROM graphics')
-        if bool(USER_DB_CURSOR.fetchone()[0]):
+        if USER_DB_CURSOR.fetchone()[0]:
             self.fps_display.on_activate()
 
     @view_is_active
@@ -127,11 +127,11 @@ class AppView(AppBaseView):
         self.ru_flag_sprite.on_update_opacity(self.opacity)
 
     def on_fullscreen_mode_turned_on(self):
-        self.fullscreen_mode = True
+        self.fullscreen_mode = TRUE
         WINDOW.set_fullscreen(fullscreen=self.fullscreen_mode)
 
     def on_fullscreen_mode_turned_off(self):
-        self.fullscreen_mode = False
+        self.fullscreen_mode = FALSE
         WINDOW.set_fullscreen(fullscreen=self.fullscreen_mode)
 
     @game_is_not_fullscreen

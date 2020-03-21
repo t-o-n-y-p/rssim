@@ -27,8 +27,7 @@ class CrossoverModel(MapBaseModel, ABC):
             self.force_busy[self.track_param_1][self.track_param_1], \
             self.force_busy[self.track_param_1][self.track_param_2], \
             self.force_busy[self.track_param_2][self.track_param_1], \
-            self.force_busy[self.track_param_2][self.track_param_2] \
-            = (bool(p) for p in USER_DB_CURSOR.fetchone())
+            self.force_busy[self.track_param_2][self.track_param_2] = USER_DB_CURSOR.fetchone()
         USER_DB_CURSOR.execute('''SELECT last_entered_by_1_1, last_entered_by_1_2, 
                                   last_entered_by_2_1, last_entered_by_2_2, 
                                   current_position_1, current_position_2 FROM crossovers 
@@ -68,7 +67,7 @@ class CrossoverModel(MapBaseModel, ABC):
                                   WHERE track_param_1 = ? AND track_param_2 = ? AND crossover_type = ? 
                                   AND map_id = ?''',
                                (self.track_param_1, self.track_param_2, self.crossover_type, self.map_id))
-        self.locked = bool(USER_DB_CURSOR.fetchone()[0])
+        self.locked = USER_DB_CURSOR.fetchone()[0]
 
     @final
     def on_save_state(self):
@@ -78,26 +77,24 @@ class CrossoverModel(MapBaseModel, ABC):
                                   last_entered_by_2_2 = ?, current_position_1 = ?, current_position_2 = ?, locked = ?
                                   WHERE track_param_1 = ? AND track_param_2 = ? AND crossover_type = ? 
                                   AND map_id = ?''',
-                               (*(int(i) for i in (
-                                   self.busy[self.track_param_1][self.track_param_1],
-                                   self.busy[self.track_param_1][self.track_param_2],
-                                   self.busy[self.track_param_2][self.track_param_1],
-                                   self.busy[self.track_param_2][self.track_param_2],
-                                   self.force_busy[self.track_param_1][self.track_param_1],
-                                   self.force_busy[self.track_param_1][self.track_param_2],
-                                   self.force_busy[self.track_param_2][self.track_param_1],
-                                   self.force_busy[self.track_param_2][self.track_param_2])
-                                ),
+                               (self.busy[self.track_param_1][self.track_param_1],
+                                self.busy[self.track_param_1][self.track_param_2],
+                                self.busy[self.track_param_2][self.track_param_1],
+                                self.busy[self.track_param_2][self.track_param_2],
+                                self.force_busy[self.track_param_1][self.track_param_1],
+                                self.force_busy[self.track_param_1][self.track_param_2],
+                                self.force_busy[self.track_param_2][self.track_param_1],
+                                self.force_busy[self.track_param_2][self.track_param_2],
                                 self.last_entered_by[self.track_param_1][self.track_param_1],
                                 self.last_entered_by[self.track_param_1][self.track_param_2],
                                 self.last_entered_by[self.track_param_2][self.track_param_1],
                                 self.last_entered_by[self.track_param_2][self.track_param_2],
-                                self.current_position_1, self.current_position_2, int(self.locked),
+                                self.current_position_1, self.current_position_2, self.locked,
                                 self.track_param_1, self.track_param_2, self.crossover_type, self.map_id))
 
     @final
     def on_force_busy_on(self, positions, train_id):
-        self.force_busy[positions[0]][positions[1]] = True
+        self.force_busy[positions[0]][positions[1]] = TRUE
         # if second position is not equal to first, no other train can fit inside,
         # so all 4 possible crossover routes are busy
         if positions[0] != positions[1]:
@@ -124,7 +121,7 @@ class CrossoverModel(MapBaseModel, ABC):
 
     @final
     def on_force_busy_off(self, positions):
-        self.force_busy[positions[0]][positions[1]] = False
+        self.force_busy[positions[0]][positions[1]] = FALSE
         # if second position is not equal to first, no other train can fit inside,
         # so all 4 possible crossover routes are not busy now
         if positions[0] != positions[1]:
@@ -150,13 +147,13 @@ class CrossoverModel(MapBaseModel, ABC):
 
     @final
     def on_busy_notify(self, position_1, position_2, train_id):
-        self.busy[position_1][position_2] = True
+        self.busy[position_1][position_2] = TRUE
         self.last_entered_by[position_1][position_2] = train_id
         for listener in self.state_change_listeners[position_1][position_2]:
-            self.controller.parent_controller.on_update_train_route_section_status(listener, status=True)
+            self.controller.parent_controller.on_update_train_route_section_status(listener, status=TRUE)
 
     @final
     def on_leave_notify(self, position_1, position_2):
-        self.busy[position_1][position_2] = False
+        self.busy[position_1][position_2] = FALSE
         for listener in self.state_change_listeners[position_1][position_2]:
-            self.controller.parent_controller.on_update_train_route_section_status(listener, status=False)
+            self.controller.parent_controller.on_update_train_route_section_status(listener, status=FALSE)

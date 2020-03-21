@@ -14,5 +14,4 @@ class FreightMapConstructorController(ConstructorController):
     def create_view_and_model(self):
         view = FreightMapConstructorView(controller=self)
         model = FreightMapConstructorModel(controller=self, view=view)
-        view.construction_state_matrix = model.construction_state_matrix
         return view, model

@@ -15,13 +15,12 @@ class SignalModel(MapBaseModel, ABC):
                                   WHERE track = ? AND base_route = ? AND map_id = ?''',
                                (self.track, self.base_route, self.map_id))
         self.state, self.locked = USER_DB_CURSOR.fetchone()
-        self.locked = bool(self.locked)
 
     @final
     def on_save_state(self):
         USER_DB_CURSOR.execute('''UPDATE signals SET state = ?, locked = ? 
                                   WHERE track = ? AND base_route = ? AND map_id = ?''',
-                               (self.state, int(self.locked), self.track, self.base_route, self.map_id))
+                               (self.state, self.locked, self.track, self.base_route, self.map_id))
 
     @final
     def on_switch_to_green(self):

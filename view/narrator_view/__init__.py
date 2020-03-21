@@ -4,7 +4,6 @@ from i18n import I18N_RESOURCES, ENGLISH, numbers_to_speech_en, RUSSIAN, numbers
     GENITIVE, PREPOSITIONAL
 from music_track.narrator_intro import NarratorIntro
 from view import *
-from database import NARRATOR_QUEUE
 
 
 class NarratorView(MapBaseView, ABC):

@@ -36,11 +36,11 @@ class ConstructorViewShaderSprite(ShaderSprite):
                           - self.view.constructor_cells[TRACKS][j].viewport.y1)
             if self.view.constructor_cells[TRACKS][j].data is not None:
                 if len(self.view.constructor_cells[TRACKS][j].data) > 0:
-                    cell_unlock_available.append(int(self.view.constructor_cells[TRACKS][j].data[UNLOCK_AVAILABLE]))
+                    cell_unlock_available.append(self.view.constructor_cells[TRACKS][j].data[UNLOCK_AVAILABLE])
                 else:
-                    cell_unlock_available.append(False)
+                    cell_unlock_available.append(FALSE)
             else:
-                cell_unlock_available.append(False)
+                cell_unlock_available.append(FALSE)
 
             cell_data_length.append(len(self.view.constructor_cells[TRACKS][j].data))
 
@@ -54,12 +54,12 @@ class ConstructorViewShaderSprite(ShaderSprite):
             if self.view.constructor_cells[ENVIRONMENT][j].data is not None:
                 if len(self.view.constructor_cells[ENVIRONMENT][j].data) > 0:
                     cell_unlock_available.append(
-                        int(self.view.constructor_cells[ENVIRONMENT][j].data[UNLOCK_AVAILABLE])
+                        self.view.constructor_cells[ENVIRONMENT][j].data[UNLOCK_AVAILABLE]
                     )
                 else:
-                    cell_unlock_available.append(False)
+                    cell_unlock_available.append(FALSE)
             else:
-                cell_unlock_available.append(False)
+                cell_unlock_available.append(FALSE)
 
             cell_data_length.append(len(self.view.constructor_cells[ENVIRONMENT][j].data))
 

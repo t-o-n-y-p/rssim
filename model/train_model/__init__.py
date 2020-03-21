@@ -28,7 +28,7 @@ class TrainModel(MapBaseModel, ABC):
         self.destination_point = 0
         self.trail_points_v2 = None
         self.car_image_collection = 0
-        self.switch_direction_required = False
+        self.switch_direction_required = FALSE
 
     @final
     def on_train_setup(self):
@@ -44,7 +44,6 @@ class TrainModel(MapBaseModel, ABC):
             self.boarding_time, self.exp, self.money, cars_position_parsed, cars_position_abs_parsed, \
             self.stop_point, self.destination_point, self.car_image_collection, self.switch_direction_required \
             = USER_DB_CURSOR.fetchone()
-        self.switch_direction_required = bool(self.switch_direction_required)
         if cars_position_parsed is not None:
             self.cars_position = [float(p) for p in cars_position_parsed.split(',')]
             self.view.car_position = []
@@ -100,7 +99,7 @@ class TrainModel(MapBaseModel, ABC):
                                 self.speed_state, self.speed_state_time, self.priority, self.boarding_time,
                                 self.exp, self.money, cars_position_string, cars_position_abs_string,
                                 self.stop_point, self.destination_point, self.car_image_collection,
-                                int(self.switch_direction_required)))
+                                self.switch_direction_required))
 
     @final
     def on_update_time(self, dt):
@@ -257,7 +256,7 @@ class TrainModel(MapBaseModel, ABC):
 
     @final
     def on_switch_direction(self):
-        self.switch_direction_required = False
+        self.switch_direction_required = FALSE
         self.cars_position_abs = list(reversed(self.cars_position_abs))
         self.view.car_position = []
         for i in self.cars_position_abs:

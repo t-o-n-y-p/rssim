@@ -14,7 +14,6 @@ class SignalView(MapBaseView, ABC):
                                   WHERE track = ? AND base_route = ? AND map_id = ?''',
                                (self.track, self.base_route, self.map_id))
         self.state, self.locked = USER_DB_CURSOR.fetchone()
-        self.locked = bool(self.locked)
         self.on_append_window_handlers()
 
     @final

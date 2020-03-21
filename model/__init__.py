@@ -209,8 +209,6 @@ TRAIN_VELOCITY_BASE: Final = 1.03
 TRAIN_VELOCITY_INTEGRATION_STEPS: Final = 10000
 MONEY_LIMIT: Final = 9999999999.0  # max amount of money the player can have
 TRAIN_ID_LIMIT: Final = 1000000  # train ID is limited to 6 digits, 999999 is followed by 0
-FULLSCREEN_MODE_TURNED_OFF: Final = 0  # database value for fullscreen mode turned on
-FULLSCREEN_MODE_TURNED_ON: Final = 1  # database value for fullscreen mode turned off
 MAXIMUM_TRACK_NUMBER: Final = (32, 16)  # player can have maximum of 32 tracks on map 0 and 16 tracks on map 1
 MAXIMUM_ENVIRONMENT_TIER: Final = (6, 3)  # environment tier 6 is final for map 0, for map 1 we have 3 tiers
 DEFAULT_PRIORITY: Final = 10000000  # default priority for any new train created
@@ -336,9 +334,9 @@ class GameBaseModel(AppBaseModel, ABC):
 class MapBaseModel(GameBaseModel, ABC):
     def __init__(self, controller, view, map_id, logger):
         super().__init__(controller, view, logger)
-        self.locked = True
+        self.locked = TRUE
         self.map_id = map_id
 
     def on_unlock(self):
-        self.locked = False
+        self.locked = FALSE
         self.view.on_unlock()

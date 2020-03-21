@@ -70,8 +70,6 @@ for _line in CONFIG_DB_CURSOR.fetchall():
     USER_DB_CURSOR.execute('''SELECT activation_available, activations_left, is_activated, bonus_time
                               FROM bonus_codes WHERE sha512_hash = ?''', (_line[0],))
     BONUS_CODE_MATRIX[_line[0]].extend(USER_DB_CURSOR.fetchone())
-    BONUS_CODE_MATRIX[_line[0]][ACTIVATION_AVAILABLE] = bool(BONUS_CODE_MATRIX[_line[0]][ACTIVATION_AVAILABLE])
-    BONUS_CODE_MATRIX[_line[0]][IS_ACTIVATED] = bool(BONUS_CODE_MATRIX[_line[0]][IS_ACTIVATED])
 
 # base_schedule matrix properties
 TRAIN_ID: Final = 0                            # property #0 indicates train identification number
@@ -85,8 +83,8 @@ MONEY: Final = 7                               # property #7 indicates how much 
 SWITCH_DIRECTION_REQUIRED: Final = 8
 
 # schedule options matrix properties
-ARRIVAL_TIME_MIN: Final = 0             # property #1 indicates min arrival time offset from the beginning of the cycle
-ARRIVAL_TIME_MAX: Final = 1             # property #0 indicates max arrival time offset from the beginning of the cycle
+ARRIVAL_TIME_MIN: Final = 0             # property #0 indicates min arrival time offset from the beginning of the cycle
+ARRIVAL_TIME_MAX: Final = 1             # property #1 indicates max arrival time offset from the beginning of the cycle
 # property #2 indicates direction
 # property #3 indicates new direction
 CARS_MIN: Final = 4                     # property #4 indicates min number of cars
@@ -108,8 +106,7 @@ for _m in (PASSENGER_MAP, FREIGHT_MAP):
                               WHERE locked = 1 AND map_id = ?''', (_m,))
     _track_info_fetched = USER_DB_CURSOR.fetchall()
     for _info in _track_info_fetched:
-        CONSTRUCTION_STATE_MATRIX[_m][TRACKS][_info[0]] = [bool(_info[1]), bool(_info[2]), _info[3], bool(_info[4]),
-                                                           bool(_info[5]), bool(_info[6]), bool(_info[7])]
+        CONSTRUCTION_STATE_MATRIX[_m][TRACKS][_info[0]] = list(_info[1:])
         CONFIG_DB_CURSOR.execute('''SELECT price, max_construction_time, level, environment_tier FROM track_config 
                                     WHERE track_number = ? AND map_id = ?''', (_info[0], _m))
         CONSTRUCTION_STATE_MATRIX[_m][TRACKS][_info[0]].extend(CONFIG_DB_CURSOR.fetchone())
@@ -119,8 +116,7 @@ for _m in (PASSENGER_MAP, FREIGHT_MAP):
                               unlock_available FROM environment WHERE locked = 1 AND map_id = ?''', (_m,))
     _environment_info_fetched = USER_DB_CURSOR.fetchall()
     for _info in _environment_info_fetched:
-        CONSTRUCTION_STATE_MATRIX[_m][ENVIRONMENT][_info[0]] = [bool(_info[1]), bool(_info[2]), _info[3],
-                                                                bool(_info[4]), bool(_info[5]), 1, bool(_info[6])]
+        CONSTRUCTION_STATE_MATRIX[_m][ENVIRONMENT][_info[0]] = [*_info[1:6], 1, _info[6]]
         CONFIG_DB_CURSOR.execute('''SELECT price, max_construction_time, level FROM environment_config 
                                     WHERE tier = ? AND map_id = ?''', (_info[0], _m))
         CONSTRUCTION_STATE_MATRIX[_m][ENVIRONMENT][_info[0]].extend(CONFIG_DB_CURSOR.fetchone())
@@ -146,7 +142,7 @@ EXP_BONUS: Final = 13
 MAP_SWITCHER_STATE_MATRIX = [[], []]
 for _m in (PASSENGER_MAP, FREIGHT_MAP):
     USER_DB_CURSOR.execute('''SELECT locked FROM map_progress WHERE map_id = ?''', (_m,))
-    MAP_SWITCHER_STATE_MATRIX[_m].append(bool(USER_DB_CURSOR.fetchone()[0]))
+    MAP_SWITCHER_STATE_MATRIX[_m].append(USER_DB_CURSOR.fetchone()[0])
     CONFIG_DB_CURSOR.execute('''SELECT level_required, price FROM map_progress_config WHERE map_id = ?''', (_m,))
     MAP_SWITCHER_STATE_MATRIX[_m].extend(CONFIG_DB_CURSOR.fetchone())
 

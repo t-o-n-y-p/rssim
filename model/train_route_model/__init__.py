@@ -14,11 +14,10 @@ class TrainRouteModel(MapBaseModel, ABC):
                                   FROM train_routes WHERE track = ? AND train_route = ? AND map_id = ?''',
                                (self.track, self.train_route, self.map_id))
         self.opened, self.last_opened_by, self.current_checkpoint, self.priority, self.cars = USER_DB_CURSOR.fetchone()
-        self.opened = bool(self.opened)
         USER_DB_CURSOR.execute('''SELECT train_route_section_busy_state FROM train_routes
                                   WHERE track = ? AND train_route = ? AND map_id = ?''',
                                (self.track, self.train_route, self.map_id))
-        self.train_route_section_busy_state = [bool(int(s)) for s in USER_DB_CURSOR.fetchone()[0].split(',')]
+        self.train_route_section_busy_state = [int(s) for s in USER_DB_CURSOR.fetchone()[0].split(',')]
         CONFIG_DB_CURSOR.execute('''SELECT start_point_v2, stop_point_v2, destination_point_v2, checkpoints_v2 
                                     FROM train_route_config WHERE track = ? AND train_route = ? AND map_id = ?''',
                                  (self.track, self.train_route, self.map_id))
@@ -47,8 +46,8 @@ class TrainRouteModel(MapBaseModel, ABC):
         USER_DB_CURSOR.execute('''UPDATE train_routes SET opened = ?, last_opened_by = ?, current_checkpoint = ?,
                                   priority = ?, cars = ?, train_route_section_busy_state = ? 
                                   WHERE track = ? AND train_route = ? AND map_id = ?''',
-                               (int(self.opened), self.last_opened_by, self.current_checkpoint, self.priority,
-                                self.cars, ','.join(str(int(t)) for t in self.train_route_section_busy_state),
+                               (self.opened, self.last_opened_by, self.current_checkpoint, self.priority,
+                                self.cars, ','.join(str(t) for t in self.train_route_section_busy_state),
                                 self.track, self.train_route, self.map_id))
 
     @final
@@ -68,13 +67,13 @@ class TrainRouteModel(MapBaseModel, ABC):
                         self.train_route_sections[i],
                         self.train_route_section_positions[i],
                         self.last_opened_by)
-                    self.train_route_section_busy_state[i] = True
+                    self.train_route_section_busy_state[i] = TRUE
 
-                self.train_route_section_busy_state[-1] = True
+                self.train_route_section_busy_state[-1] = TRUE
 
     @final
     def on_open_train_route(self, train_id, cars):
-        self.opened = True
+        self.opened = TRUE
         self.last_opened_by = train_id
         self.cars = cars
         self.current_checkpoint = 0
@@ -84,13 +83,13 @@ class TrainRouteModel(MapBaseModel, ABC):
         if self.start_point_v2 is not None:
             self.controller.parent_controller.on_set_train_start_point(train_id, self.start_point_v2[cars])
 
-        self.train_route_section_busy_state[0] = True
+        self.train_route_section_busy_state[0] = TRUE
 
     @final
     def on_close_train_route(self):
-        self.opened = False
+        self.opened = FALSE
         self.current_checkpoint = 0
-        self.train_route_section_busy_state[-1] = False
+        self.train_route_section_busy_state[-1] = FALSE
         self.cars = 0
 
     @final
@@ -99,7 +98,7 @@ class TrainRouteModel(MapBaseModel, ABC):
         self.controller.parent_controller.on_train_route_section_force_busy_off(
             self.train_route_sections[self.current_checkpoint],
             self.train_route_section_positions[self.current_checkpoint])
-        self.train_route_section_busy_state[self.current_checkpoint] = False
+        self.train_route_section_busy_state[self.current_checkpoint] = FALSE
         if self.current_checkpoint == 0:
             self.controller.parent_controller.on_switch_signal_to_red(self.signal_track, self.signal_base_route)
             # for entry train route, section 0 is base entry, notify Map controller about entry state update

@@ -35,7 +35,7 @@ class ScheduleRow:
         self.current_locale = USER_DB_CURSOR.fetchone()[0]
         self.data = None
         USER_DB_CURSOR.execute('SELECT clock_24h FROM i18n')
-        self.clock_24h_enabled = bool(USER_DB_CURSOR.fetchone()[0])
+        self.clock_24h_enabled = USER_DB_CURSOR.fetchone()[0]
         self.main_sprite_24h = ScheduleRow24HMainLabel(self.column, self.row, parent_viewport=self.viewport)
         self.main_sprite_12h = ScheduleRow12HMainLabel(self.column, self.row, parent_viewport=self.viewport)
         self.arrival_sprite = ScheduleRowArrivalLabel(self.map_id, self.column, self.row, parent_viewport=self.viewport)
