@@ -56,14 +56,14 @@ class NarratorView(MapBaseView, ABC):
     def on_update_time(self, dt):
         super().on_update_time(dt)
         if len(NARRATOR_QUEUE[self.map_id]) > 0:
+            # self.logger.debug(f'{self.game_time=}')
+            # self.logger.debug(f'{NARRATOR_QUEUE[self.map_id]=}')
             if self.game_time >= NARRATOR_QUEUE[self.map_id][0][ANNOUNCEMENT_TIME] and not self.is_playing_announcement:
                 self.is_playing_announcement = True
                 self.playback_start_time = self.game_time
                 if self.is_activated:
                     MIDI_PLAYER.add_narrator_intro(NarratorIntro())
 
-            self.logger.debug(f'{self.is_playing_announcement=}')
-            self.logger.debug(f'{self.is_speaking=}')
             if self.game_time >= self.playback_start_time + self.dt_multiplier * 1.5 and self.is_playing_announcement \
                     and not self.is_speaking:
                 self.on_announcement_play(NARRATOR_QUEUE[self.map_id][0])

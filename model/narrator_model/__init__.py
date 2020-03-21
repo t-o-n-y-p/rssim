@@ -18,8 +18,11 @@ class NarratorModel(MapBaseModel, ABC):
     @final
     def on_update_time(self, dt):
         NARRATOR_QUEUE[self.map_id] = sorted(NARRATOR_QUEUE[self.map_id], key=itemgetter(ANNOUNCEMENT_TIME))
+        # self.logger.debug(f'{self.game_time + int(self.game_time_fraction + dt * self.dt_multiplier)=}')
+        # self.logger.debug(f'{NARRATOR_QUEUE[self.map_id]=}')
         while len(NARRATOR_QUEUE[self.map_id]) > 0 \
-                and self.game_time >= NARRATOR_QUEUE[self.map_id][0][ANNOUNCEMENT_TIME] \
+                and self.game_time + int(self.game_time_fraction + dt * self.dt_multiplier) \
+                >= NARRATOR_QUEUE[self.map_id][0][ANNOUNCEMENT_TIME] \
                 and NARRATOR_QUEUE[self.map_id][0][ANNOUNCEMENT_LOCKED]:
             NARRATOR_QUEUE[self.map_id].pop(0)
 
@@ -27,10 +30,16 @@ class NarratorModel(MapBaseModel, ABC):
 
     @final
     def on_dt_multiplier_update(self, dt_multiplier):
+        print(f'{self.dt_multiplier=}, {dt_multiplier=}')
+        print([announcement for announcement in NARRATOR_QUEUE[self.map_id]
+               if announcement[ANNOUNCEMENT_TYPE] in get_announcement_types_diff(self.dt_multiplier, dt_multiplier)])
         for announcement in [announcement for announcement in NARRATOR_QUEUE[self.map_id]
                              if announcement[ANNOUNCEMENT_TYPE]
                              in get_announcement_types_diff(self.dt_multiplier, dt_multiplier)]:
-            announcement[ANNOUNCEMENT_LOCKED] = int(self.dt_multiplier > dt_multiplier)
+            announcement[ANNOUNCEMENT_LOCKED] = int(self.dt_multiplier < dt_multiplier)
+
+        print([announcement for announcement in NARRATOR_QUEUE[self.map_id]
+               if announcement[ANNOUNCEMENT_TYPE] in get_announcement_types_diff(self.dt_multiplier, dt_multiplier)])
 
         super().on_dt_multiplier_update(dt_multiplier)
 

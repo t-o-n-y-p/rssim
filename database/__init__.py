@@ -158,7 +158,7 @@ NARRATOR_QUEUE = [[], []]
 for _m in (PASSENGER_MAP, FREIGHT_MAP):
     USER_DB_CURSOR.execute('''SELECT game_time, locked, announcement_type, train_id, track_number 
                               FROM narrator WHERE map_id = ?''', (_m,))
-    NARRATOR_QUEUE[_m].extend(USER_DB_CURSOR.fetchall())
+    NARRATOR_QUEUE[_m] = [list(a) for a in USER_DB_CURSOR.fetchall()]
 
 ANNOUNCEMENT_TIME: Final = 0
 ANNOUNCEMENT_LOCKED: Final = 1
@@ -174,10 +174,12 @@ FIVE_MINUTES_LEFT_ANNOUNCEMENT: Final = 'five_minutes_left'
 
 
 def get_announcement_types_enabled(dt_multiplier):
-    if dt_multiplier >= 10.0:
-        return ARRIVAL_ANNOUNCEMENT, DEPARTURE_ANNOUNCEMENT, PASS_THROUGH_ANNOUNCEMENT
-    else:
-        return get_announcement_types_enabled(16.0) + (ARRIVAL_FINISHED_ANNOUNCEMENT, FIVE_MINUTES_LEFT_ANNOUNCEMENT)
+    if round(dt_multiplier, 1) > 8.0:
+        return ARRIVAL_ANNOUNCEMENT, PASS_THROUGH_ANNOUNCEMENT
+    elif round(dt_multiplier, 1) > 4.0:
+        return get_announcement_types_enabled(12) + (DEPARTURE_ANNOUNCEMENT, )
+
+    return get_announcement_types_enabled(6) + (ARRIVAL_FINISHED_ANNOUNCEMENT, FIVE_MINUTES_LEFT_ANNOUNCEMENT)
 
 
 def get_announcement_types_diff(dt_multiplier_1, dt_multiplier_2):
