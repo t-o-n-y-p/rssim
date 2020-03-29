@@ -1,5 +1,5 @@
 from logging import getLogger
-from math import cos, sin, radians, log
+from math import log
 
 from ui import *
 from ui.knob import Knob
@@ -37,25 +37,4 @@ class TimeSpeedKnob(Knob):
         self.viewport.x2 = self.parent_viewport.x2 - get_bottom_bar_height(self.screen_resolution)
         self.viewport.y1 = self.parent_viewport.y1
         self.viewport.y2 = self.parent_viewport.y1 + get_bottom_bar_height(self.screen_resolution)
-        circle_radius = 11 * get_bottom_bar_height(self.screen_resolution) / 32
-        middle_point = (
-            (self.viewport.x1 + self.viewport.x2) / 2,
-            (self.viewport.y1 + self.viewport.y2) / 2 - circle_radius // 4
-        )
-        self.circle_vertices.clear()
-        for i in range(self.maximum_steps):
-            self.circle_vertices.append(
-                middle_point[0] + circle_radius * cos(
-                    radians(210 - i / self.maximum_steps * 240)
-                )
-            )
-            self.circle_vertices.append(
-                middle_point[1] + circle_radius * sin(
-                    radians(210 - i / self.maximum_steps * 240)
-                )
-            )
-
-        self.circle_vertices.append(middle_point[0] + circle_radius * cos(radians(-30)))
-        self.circle_vertices.append(middle_point[1] + circle_radius * sin(radians(-30)))
-        if self.circle is not None:
-            self.circle.vertices = self.circle_vertices
+        self.on_circle_resize()

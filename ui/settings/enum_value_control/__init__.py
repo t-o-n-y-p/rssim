@@ -4,7 +4,6 @@ from ui import *
 from ui.button import create_two_state_button
 from ui.button.increment_button import IncrementButton
 from ui.button.decrement_button import DecrementButton
-from database import USER_DB_CURSOR
 
 
 class EnumValueControl(ABC):

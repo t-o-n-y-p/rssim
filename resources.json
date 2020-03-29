@@ -421,5 +421,9 @@
 	"five_minutes_left_announcement_string": {
 		"en": "Train number <spell>{0}</spell> leaves in five minutes. The train is now on track {1}.",
 		"ru": "До отправления поезда номер <spell>{0}</spell> осталось пять минут. Поезд находится на {1} пути."
+	},
+	"master_volume_description_string": {
+		"en": "Volume",
+		"ru": "Громкость"
 	}
 }
