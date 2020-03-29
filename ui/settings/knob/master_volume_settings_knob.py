@@ -1,10 +1,12 @@
 from logging import getLogger
 
+from ui import *
 from ui.knob.master_volume_knob import MasterVolumeKnob
 from ui.label.master_volume_description_label import MasterVolumeDescriptionLabel
 from ui.settings.knob import SettingsKnob
 
 
+@final
 class MasterVolumeSettingsKnob(SettingsKnob):
     def __init__(self, column, row, on_update_state_action, parent_viewport):
         super().__init__(column, row, on_update_state_action, parent_viewport,
@@ -18,3 +20,6 @@ class MasterVolumeSettingsKnob(SettingsKnob):
         self.on_mouse_press_handlers.append(self.knob.on_mouse_press)
         self.on_mouse_release_handlers.append(self.knob.on_mouse_release)
         self.on_mouse_drag_handlers.append(self.knob.on_mouse_drag)
+
+    def on_init_state(self, value):
+        self.knob.on_init_state(value)

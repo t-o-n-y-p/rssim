@@ -92,6 +92,10 @@ class Knob(ABC):
     def current_value_formula(self):
         pass
 
+    @abstractmethod
+    def on_init_state(self, value):
+        pass
+
     def on_update_current_locale(self, new_locale):
         pass
 
@@ -173,7 +177,9 @@ class Knob(ABC):
     @next_knob_step_detected
     def on_mouse_drag(self, x, y, dx, dy, buttons, modifiers):
         self.on_current_step_update(
-            self.current_step + dy // self.knob_sensitivity
+            self.current_step
+            + (y - self.initial_cursor_position[1]) // self.knob_sensitivity
+            - (y - dy - self.initial_cursor_position[1]) // self.knob_sensitivity
         )
         self.value_label.on_update_args((self.current_value_formula(), ))
         self.on_value_update_action(self.current_value_formula())

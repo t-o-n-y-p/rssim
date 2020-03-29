@@ -17,13 +17,14 @@ class MasterVolumeKnob(Knob):
         self.start_value = 0
         self.maximum_steps = 25
         self.value_step = 100 // self.maximum_steps
-        USER_DB_CURSOR.execute('SELECT master_volume FROM sound')
-        current_value = USER_DB_CURSOR.fetchone()[0]
-        self.value_label.on_update_args((current_value, ))
-        self.on_current_step_update(current_value // self.value_step)
+        self.on_init_state(self.start_value)
 
     def current_value_formula(self):
         return self.start_value + self.value_step * self.current_step
+
+    def on_init_state(self, value):
+        self.value_label.on_update_args((value, ))
+        self.on_current_step_update(value // self.value_step)
 
     @window_size_has_changed
     def on_window_resize(self, width, height):

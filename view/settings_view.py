@@ -62,13 +62,14 @@ class SettingsView(AppBaseView):
             self.temp_shop_storage_notification_enabled = new_state
 
         def on_update_master_volume(master_volume):
-            pass
+            self.temp_master_volume = master_volume
 
         super().__init__(controller, logger=getLogger('root.app.settings.view'))
         self.temp_windowed_resolution = (0, 0)
         self.temp_display_fps = FALSE
         self.temp_fade_animations_enabled = FALSE
         self.temp_clock_24h_enabled = FALSE
+        self.temp_master_volume = 0
         self.display_fps_checkbox \
             = DisplayFPSCheckbox(column=-1, row=-1, on_update_state_action=on_update_display_fps_state,
                                  parent_viewport=self.viewport)
@@ -164,7 +165,10 @@ class SettingsView(AppBaseView):
                 self.temp_shop_storage_notification_enabled
             ]
         )
+        USER_DB_CURSOR.execute('''SELECT master_volume FROM sound''')
+        self.temp_master_volume = USER_DB_CURSOR.fetchone()[0]
         self.master_volume_knob.on_activate()
+        self.master_volume_knob.on_init_state(self.temp_master_volume)
         self.shader_sprite.create()
 
     @view_is_active

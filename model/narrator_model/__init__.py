@@ -29,16 +29,16 @@ class NarratorModel(MapBaseModel, ABC):
 
     @final
     def on_dt_multiplier_update(self, dt_multiplier):
-        print(f'{self.dt_multiplier=}, {dt_multiplier=}')
-        print([announcement for announcement in NARRATOR_QUEUE[self.map_id]
-               if announcement[ANNOUNCEMENT_TYPE] in get_announcement_types_diff(self.dt_multiplier, dt_multiplier)])
+        # print(f'{self.dt_multiplier=}, {dt_multiplier=}')
+        # print([announcement for announcement in NARRATOR_QUEUE[self.map_id]
+        #        if announcement[ANNOUNCEMENT_TYPE] in get_announcement_types_diff(self.dt_multiplier, dt_multiplier)])
         for announcement in [announcement for announcement in NARRATOR_QUEUE[self.map_id]
                              if announcement[ANNOUNCEMENT_TYPE]
                              in get_announcement_types_diff(self.dt_multiplier, dt_multiplier)]:
             announcement[ANNOUNCEMENT_LOCKED] = int(self.dt_multiplier < dt_multiplier)
 
-        print([announcement for announcement in NARRATOR_QUEUE[self.map_id]
-               if announcement[ANNOUNCEMENT_TYPE] in get_announcement_types_diff(self.dt_multiplier, dt_multiplier)])
+        # print([announcement for announcement in NARRATOR_QUEUE[self.map_id]
+        #        if announcement[ANNOUNCEMENT_TYPE] in get_announcement_types_diff(self.dt_multiplier, dt_multiplier)])
 
         super().on_dt_multiplier_update(dt_multiplier)
 

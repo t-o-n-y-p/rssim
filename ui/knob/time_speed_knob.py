@@ -19,12 +19,14 @@ class TimeSpeedKnob(Knob):
         self.maximum_steps = 24
         self.value_step = pow(16.0, 1 / self.maximum_steps)
         USER_DB_CURSOR.execute('SELECT dt_multiplier FROM epoch_timestamp')
-        current_value = USER_DB_CURSOR.fetchone()[0]
-        self.value_label.on_update_args((current_value, ))
-        self.on_current_step_update(round(log(current_value, self.value_step)))
+        self.on_init_state(USER_DB_CURSOR.fetchone()[0])
 
     def current_value_formula(self):
         return self.start_value * pow(self.value_step, self.current_step)
+
+    def on_init_state(self, value):
+        self.value_label.on_update_args((value, ))
+        self.on_current_step_update(round(log(value, self.value_step)))
 
     def on_update_current_locale(self, new_locale):
         self.current_locale = new_locale
