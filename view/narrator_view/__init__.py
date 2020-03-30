@@ -109,3 +109,7 @@ class NarratorView(MapBaseView, ABC):
                     )
                 ), 9
             )
+
+    @final
+    def on_master_volume_update(self, new_master_volume):
+        self.master_volume = new_master_volume

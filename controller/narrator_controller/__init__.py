@@ -15,3 +15,7 @@ class NarratorController(MapBaseController, ABC):
     @final
     def on_announcement_add(self, announcement_time, announcement_type, train_id, track_number):
         self.model.on_announcement_add(announcement_time, announcement_type, train_id, track_number)
+
+    @final
+    def on_master_volume_update(self, new_master_volume):
+        self.view.on_master_volume_update(new_master_volume)

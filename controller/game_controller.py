@@ -3,6 +3,7 @@ from itertools import chain
 
 from controller import *
 from model.game_model import GameModel
+from ui import MIDI_PLAYER
 from view.game_view import GameView
 from ui.fade_animation.fade_in_animation.game_fade_in_animation import GameFadeInAnimation
 from ui.fade_animation.fade_out_animation.game_fade_out_animation import GameFadeOutAnimation
@@ -117,3 +118,8 @@ class GameController(GameBaseController):
     def on_unlock_map(self, map_id):
         self.maps[map_id].on_unlock()
         self.map_switcher.on_unlock_map(map_id)
+
+    def on_master_volume_update(self, new_master_volume):
+        MIDI_PLAYER.on_master_volume_update(new_master_volume)
+        for m in self.maps:
+            m.on_master_volume_update(new_master_volume)

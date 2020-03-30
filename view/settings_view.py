@@ -16,15 +16,14 @@ from ui.shader_sprite.settings_view_shader_sprite import SettingsViewShaderSprit
 class SettingsView(AppBaseView):
     def __init__(self, controller):
         def on_accept_changes(button):
-            self.controller.parent_controller\
-                .on_accept_changes(self.temp_windowed_resolution, self.temp_display_fps,
-                                   self.temp_fade_animations_enabled, self.temp_clock_24h_enabled,
-                                   self.temp_level_up_notification_enabled,
-                                   self.temp_feature_unlocked_notification_enabled,
-                                   self.temp_construction_completed_notification_enabled,
-                                   self.temp_enough_money_notification_enabled,
-                                   self.temp_bonus_expired_notification_enabled,
-                                   self.temp_shop_storage_notification_enabled)
+            self.controller.parent_controller.on_accept_changes(
+                self.temp_windowed_resolution, self.temp_display_fps,
+                self.temp_fade_animations_enabled, self.temp_clock_24h_enabled,
+                self.temp_level_up_notification_enabled, self.temp_feature_unlocked_notification_enabled,
+                self.temp_construction_completed_notification_enabled, self.temp_enough_money_notification_enabled,
+                self.temp_bonus_expired_notification_enabled, self.temp_shop_storage_notification_enabled,
+                self.temp_master_volume
+            )
             self.controller.on_save_and_commit_state()
             self.controller.parent_controller.on_close_settings()
 

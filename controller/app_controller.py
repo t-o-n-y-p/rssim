@@ -197,11 +197,13 @@ class AppController(AppBaseController):
     def on_accept_changes(self, windowed_resolution, display_fps, fade_animations_enabled, clock_24h_enabled,
                           level_up_notification_enabled, feature_unlocked_notification_enabled,
                           construction_completed_notification_enabled, enough_money_notification_enabled,
-                          bonus_expired_notification_enabled, shop_storage_notification_enabled):
-        self.settings.on_accept_changes(windowed_resolution, display_fps, fade_animations_enabled, clock_24h_enabled,
-                                        level_up_notification_enabled, feature_unlocked_notification_enabled,
-                                        construction_completed_notification_enabled, enough_money_notification_enabled,
-                                        bonus_expired_notification_enabled, shop_storage_notification_enabled)
+                          bonus_expired_notification_enabled, shop_storage_notification_enabled, master_volume):
+        self.settings.on_accept_changes(
+            windowed_resolution, display_fps, fade_animations_enabled, clock_24h_enabled,
+            level_up_notification_enabled, feature_unlocked_notification_enabled,
+            construction_completed_notification_enabled, enough_money_notification_enabled,
+            bonus_expired_notification_enabled, shop_storage_notification_enabled, master_volume
+        )
         self.on_update_fade_animation_state(fade_animations_enabled)
         self.on_update_clock_state(clock_24h_enabled)
         self.on_change_level_up_notification_state(level_up_notification_enabled)
@@ -210,6 +212,7 @@ class AppController(AppBaseController):
         self.on_change_enough_money_notification_state(enough_money_notification_enabled)
         self.on_change_bonus_expired_notification_state(bonus_expired_notification_enabled)
         self.on_change_shop_storage_notification_state(shop_storage_notification_enabled)
+        self.on_master_volume_update(master_volume)
         if not WINDOW.fullscreen:
             WINDOW.set_size(*windowed_resolution)
 
@@ -220,3 +223,6 @@ class AppController(AppBaseController):
 
     def on_save_and_commit_bonus_code_abuse(self):
         self.model.on_save_and_commit_bonus_code_abuse()
+
+    def on_master_volume_update(self, new_master_volume):
+        self.game.on_master_volume_update(new_master_volume)

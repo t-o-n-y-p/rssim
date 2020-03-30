@@ -50,8 +50,8 @@ class MIDIPlayer:
         except AttributeError:
             pass
 
-    def on_master_volume_update(self, new_volume):
-        self.master_volume = new_volume
+    def on_master_volume_update(self, new_master_volume):
+        self.master_volume = new_master_volume
         ctypes.windll.winmm.midiOutSetVolume(MIDI_DEVICE, self.master_volume << 8 | self.master_volume)
 
     def on_music_track_opacity_update(self, new_opacity):
