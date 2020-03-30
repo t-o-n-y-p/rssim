@@ -5,10 +5,10 @@ from score import *
 from database import USER_DB_CURSOR
 
 
-MIDI_DEVICE: Final = ctypes.c_void_p()
-ctypes.windll.winmm.midiOutOpen(ctypes.byref(MIDI_DEVICE), 0, 0, 0, 0)
-ctypes.windll.winmm.midiOutSetVolume(MIDI_DEVICE, 65535)
-PROGRAM_CHANGE_MESSAGE_ID: Final = 0xC0
+_MIDI_DEVICE: Final = ctypes.c_void_p()
+ctypes.windll.winmm.midiOutOpen(ctypes.byref(_MIDI_DEVICE), 0, 0, 0, 0)
+ctypes.windll.winmm.midiOutSetVolume(_MIDI_DEVICE, 65535)
+_PROGRAM_CHANGE_MESSAGE_ID: Final = 0xC0
 
 
 class Instrument(ABC):
@@ -18,7 +18,7 @@ class Instrument(ABC):
     @classmethod
     def assign_to_channel(cls):
         ctypes.windll.winmm.midiOutShortMsg(
-            MIDI_DEVICE, cls.instrument_id << 8 | PROGRAM_CHANGE_MESSAGE_ID | cls.channel_id
+            _MIDI_DEVICE, cls.instrument_id << 8 | _PROGRAM_CHANGE_MESSAGE_ID | cls.channel_id
         )
 
 
@@ -42,12 +42,12 @@ class MIDIPlayer:
 
     def play(self):
         try:
-            self.music_track.play((self.master_volume / 100) * (self.music_track_opacity / 255))
+            self.music_track.play(_MIDI_DEVICE, (self.master_volume / 100) * (self.music_track_opacity / 255))
         except AttributeError:
             pass
 
         try:
-            self.narrator_intro.play((self.master_volume / 100) * (self.narrator_intro_opacity / 255))
+            self.narrator_intro.play(_MIDI_DEVICE, (self.master_volume / 100) * (self.narrator_intro_opacity / 255))
         except AttributeError:
             pass
 
@@ -65,3 +65,11 @@ class MIDIPlayer:
 
     def on_narrator_intro_playback_finish(self):
         self.narrator_intro = None
+
+    @staticmethod
+    def on_mute():
+        ctypes.windll.winmm.midiOutSetVolume(_MIDI_DEVICE, 0)
+
+    @staticmethod
+    def on_unmute():
+        ctypes.windll.winmm.midiOutSetVolume(_MIDI_DEVICE, 65535)

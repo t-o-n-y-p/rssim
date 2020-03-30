@@ -1,6 +1,5 @@
 from ctypes import windll
 
-import win32com.client
 from pyglet.window import Window
 from pyglet.graphics import Batch, OrderedGroup
 
@@ -8,6 +7,7 @@ from database import *
 from camera.map_camera import MapCamera
 from camera.ui_camera import UICamera
 from midi_player import MIDIPlayer
+from speaker import Speaker
 
 
 def window_size_has_changed(fn):
@@ -35,23 +35,11 @@ def _create_window():
                   caption='Railway Station Simulator', style='borderless', fullscreen=False, vsync=False)
 
 
-def _create_speaker():
-    speaker = win32com.client.Dispatch('SAPI.SpVoice')
-    USER_DB_CURSOR.execute('''SELECT voice_id FROM sound''')
-    speaker.Voice = speaker.GetVoices().Item(USER_DB_CURSOR.fetchone()[0])
-    speaker.Rate = -1
-    speaker.Priority = 2
-    # SpVoice hangs during the first speech, so we fake the first one to avoid hanging at the real one
-    speaker.Speak('<silence msec="10"/>', 9)
-    speaker.Volume = 0
-    return speaker
-
-
 # --------------------- CONSTANTS ---------------------
 MAP_CAMERA: Final = MapCamera()
 UI_CAMERA: Final = UICamera()
 MIDI_PLAYER: Final = MIDIPlayer()
-SPEAKER: Final = _create_speaker()
+SPEAKER: Final = Speaker()
 MAP_ZOOM_STEP: Final = 0.5
 MAP_WIDTH: Final = 8192                                # full-size map width
 MAP_HEIGHT: Final = 4096                               # full-size map height

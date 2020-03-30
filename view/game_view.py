@@ -140,23 +140,23 @@ class GameView(GameBaseView):
 
     def on_window_activate(self):
         super().on_window_activate()
-        MIDI_PLAYER.on_master_volume_update(self.master_volume)
-        SPEAKER.Volume = self.master_volume
+        MIDI_PLAYER.on_unmute()
+        SPEAKER.on_unmute()
 
     def on_window_show(self):
         super().on_window_show()
-        MIDI_PLAYER.on_master_volume_update(self.master_volume)
-        SPEAKER.Volume = self.master_volume
+        MIDI_PLAYER.on_unmute()
+        SPEAKER.on_unmute()
 
     def on_window_deactivate(self):
         super().on_window_deactivate()
-        MIDI_PLAYER.on_master_volume_update(0)
-        SPEAKER.Volume = 0
+        MIDI_PLAYER.on_mute()
+        SPEAKER.on_mute()
 
     def on_window_hide(self):
         super().on_window_hide()
-        MIDI_PLAYER.on_master_volume_update(0)
-        SPEAKER.Volume = 0
+        MIDI_PLAYER.on_mute()
+        SPEAKER.on_mute()
 
     def on_update_time(self, dt):
         super().on_update_time(dt)
@@ -213,3 +213,4 @@ class GameView(GameBaseView):
     def on_master_volume_update(self, new_master_volume):
         self.master_volume = new_master_volume
         MIDI_PLAYER.on_master_volume_update(self.master_volume)
+        SPEAKER.on_master_volume_update(self.master_volume)

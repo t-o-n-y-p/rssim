@@ -3,7 +3,6 @@ from operator import itemgetter
 from time import perf_counter
 
 from score import *
-from midi_player import MIDI_DEVICE
 
 MESSAGE_VOLUME: Final = 0
 MESSAGE_PAYLOAD: Final = 1
@@ -42,7 +41,7 @@ class MusicTrack:
         self.tempo = tempo
 
     @final
-    def play(self, volume_multiplier):
+    def play(self, midi_device, volume_multiplier):
         if not self.is_playing and len(self.messages) > 0:
             self.is_playing = True
             self.playback_start_time = perf_counter()
@@ -50,7 +49,7 @@ class MusicTrack:
         if self.is_playing:
             while self.messages[0][MESSAGE_TIME] <= perf_counter() - self.playback_start_time:
                 ctypes.windll.winmm.midiOutShortMsg(
-                    MIDI_DEVICE,
+                    midi_device,
                     round(self.messages[0][MESSAGE_VOLUME] * volume_multiplier) << 16
                     | self.messages[0][MESSAGE_PAYLOAD]
                 )
