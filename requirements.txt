@@ -1,4 +1,4 @@
-pyglet==1.5.1
+pyglet==1.5.2
 pywin32==227
 pyshaders==1.4.1
 cx_Freeze==6.1
