@@ -31,7 +31,7 @@ class NarratorView(MapBaseView, ABC):
 
     @final
     def on_update(self):
-        if not SPEAKER.is_speaking() and self.is_speaking:
+        if SPEAKER.is_not_speaking() and self.is_speaking:
             self.is_speaking = False
             self.is_playing_announcement = False
 
@@ -61,7 +61,7 @@ class NarratorView(MapBaseView, ABC):
                 except com_error:
                     NARRATOR_QUEUE[self.map_id].pop(0)
 
-            if self.game_time >= self.playback_start_time + self.dt_multiplier * 1.5 and self.is_playing_announcement \
+            if self.game_time >= self.playback_start_time + self.dt_multiplier * 1.2 and self.is_playing_announcement \
                     and not self.is_speaking:
                 self.on_announcement_play(NARRATOR_QUEUE[self.map_id][0])
                 NARRATOR_QUEUE[self.map_id].pop(0)
@@ -69,5 +69,5 @@ class NarratorView(MapBaseView, ABC):
     @final
     @view_is_active
     def on_announcement_play(self, announcement):
-        self.is_speaking = True
         SPEAKER.on_announcement_play(announcement, self.current_locale)
+        self.is_speaking = True

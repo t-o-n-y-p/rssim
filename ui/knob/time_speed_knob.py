@@ -16,8 +16,8 @@ class TimeSpeedKnob(Knob):
         self.value_label = TimeSpeedValueLabel(parent_viewport=self.viewport)
         self.on_window_resize_handlers.append(self.value_label.on_window_resize)
         self.start_value = 1.0
-        self.maximum_steps = 24
-        self.value_step = pow(16.0, 1 / self.maximum_steps)
+        self.maximum_steps = 20
+        self.value_step = pow(12.0, 1 / self.maximum_steps)
         USER_DB_CURSOR.execute('SELECT dt_multiplier FROM epoch_timestamp')
         self.on_init_state(USER_DB_CURSOR.fetchone()[0])
 

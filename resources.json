@@ -402,29 +402,29 @@
 		"ru": "<voice required=\"Language=419\"><silence msec=\"10\"/></voice>"
 	},
 	"arrival_announcement_string": {
-		"en": "<voice required=\"Language=409\"><volume level=\"{0}\"><rate absspeed=\"-1\">Train number <silence msec=\"100\"/><rate absspeed=\"-2\"><spell>{2}</spell></rate><silence msec=\"100\"/> is arriving at track <silence msec=\"100\"/>{1}.</rate></volume></voice>",
-		"ru": "<voice required=\"Language=419\"><volume level=\"{0}\"><rate absspeed=\"-1\">Поезд номер <silence msec=\"100\"/><rate absspeed=\"-2\"><spell>{2}</spell></rate><silence msec=\"100\"/> прибывает на <silence msec=\"100\"/>{1}<silence msec=\"100\"/> путь.</rate></volume></voice>"
+		"en": "<voice required=\"Language=409\"><volume level=\"{0}\"><rate absspeed=\"-1\">Train number <silence msec=\"100\"/>{2}<silence msec=\"100\"/> is arriving at track <silence msec=\"100\"/>{1}.</rate></volume></voice>",
+		"ru": "<voice required=\"Language=419\"><volume level=\"{0}\"><rate absspeed=\"-1\">Поезд номер <silence msec=\"100\"/>{2}<silence msec=\"100\"/> прибывает на <silence msec=\"100\"/>{1}<silence msec=\"100\"/> путь.</rate></volume></voice>"
 	},
 	"arrival_finished_announcement_string": {
-		"en": "<voice required=\"Language=409\"><volume level=\"{0}\"><rate absspeed=\"-1\">Train number <silence msec=\"100\"/><rate absspeed=\"-2\"><spell>{2}</spell></rate><silence msec=\"100\"/> has arrived at track <silence msec=\"100\"/>{1}.</rate></volume></voice>",
-		"ru": "<voice required=\"Language=419\"><volume level=\"{0}\"><rate absspeed=\"-1\">Поезд номер <silence msec=\"100\"/><rate absspeed=\"-2\"><spell>{2}</spell></rate><silence msec=\"100\"/> прибыл на <silence msec=\"100\"/>{1}<silence msec=\"100\"/> путь.</rate></volume></voice>"
+		"en": "<voice required=\"Language=409\"><volume level=\"{0}\"><rate absspeed=\"-1\">Train number <silence msec=\"100\"/>{2}<silence msec=\"100\"/> has arrived at track <silence msec=\"100\"/>{1}.</rate></volume></voice>",
+		"ru": "<voice required=\"Language=419\"><volume level=\"{0}\"><rate absspeed=\"-1\">Поезд номер <silence msec=\"100\"/>{2}<silence msec=\"100\"/> прибыл на <silence msec=\"100\"/>{1}<silence msec=\"100\"/> путь.</rate></volume></voice>"
 	},
 	"departure_announcement_string": {
 		"en": {
-			"other": "<voice required=\"Language=409\"><volume level=\"{0}\"><rate absspeed=\"-1\">Train number <silence msec=\"100\"/><rate absspeed=\"-2\"><spell>{2}</spell></rate><silence msec=\"100\"/> is departing from track <silence msec=\"100\"/>{1}.</rate></volume></voice>"
+			"other": "<voice required=\"Language=409\"><volume level=\"{0}\"><rate absspeed=\"-1\">Train number <silence msec=\"100\"/>{2}<silence msec=\"100\"/> is departing from track <silence msec=\"100\"/>{1}.</rate></volume></voice>"
 		},
 		"ru": {
-			"two": "<voice required=\"Language=419\"><volume level=\"{0}\"><rate absspeed=\"-1\">Поезд номер <silence msec=\"100\"/><rate absspeed=\"-2\"><spell>{2}</spell></rate><silence msec=\"100\"/> отправляется со <silence msec=\"100\"/>{1}<silence msec=\"100\"/> пути.</rate></volume></voice>",
-			"other": "<voice required=\"Language=419\"><volume level=\"{0}\"><rate absspeed=\"-1\">Поезд номер <silence msec=\"100\"/><rate absspeed=\"-2\"><spell>{2}</spell></rate><silence msec=\"100\"/> отправляется с <silence msec=\"100\"/>{1}<silence msec=\"100\"/> пути.</rate></volume></voice>"
+			"two": "<voice required=\"Language=419\"><volume level=\"{0}\"><rate absspeed=\"-1\">Поезд номер <silence msec=\"100\"/>{2}<silence msec=\"100\"/> отправляется со <silence msec=\"100\"/>{1}<silence msec=\"100\"/> пути.</rate></volume></voice>",
+			"other": "<voice required=\"Language=419\"><volume level=\"{0}\"><rate absspeed=\"-1\">Поезд номер <silence msec=\"100\"/>{2}<silence msec=\"100\"/> отправляется с <silence msec=\"100\"/>{1}<silence msec=\"100\"/> пути.</rate></volume></voice>"
 		}
 	},
 	"pass_through_announcement_string": {
 		"en": "<voice required=\"Language=409\"><volume level=\"{0}\"><rate absspeed=\"-1\">Attention please! Train is about to pass through the track <silence msec=\"100\"/>{1}.</rate></volume></voice>",
-		"ru": "<voice required=\"Language=419\"><volume level=\"{0}\"><rate absspeed=\"-1\">Внимание! Внимание! По <silence msec=\"100\"/>{1}<silence msec=\"100\"/> пути пройдет поезд.</rate></volume></voice>"
+		"ru": "<voice required=\"Language=419\"><volume level=\"{0}\"><rate absspeed=\"-1>Внимание! Внимание! По <silence msec=\"100\"/>{1}<silence msec=\"100\"/> пути пройдет поезд.</rate></volume></voice>"
 	},
 	"five_minutes_left_announcement_string": {
-		"en": "<voice required=\"Language=409\"><volume level=\"{0}\"><rate absspeed=\"-1\">Train number <silence msec=\"100\"/><rate absspeed=\"-2\"><spell>{2}</spell></rate><silence msec=\"100\"/> leaves in five minutes. The train is now on track <silence msec=\"100\"/>{1}.</rate></volume></voice>",
-		"ru": "<voice required=\"Language=419\"><volume level=\"{0}\"><rate absspeed=\"-1\">До отправления поезда номер <silence msec=\"100\"/><rate absspeed=\"-2\"><spell>{2}</spell></rate><silence msec=\"100\"/> остаётся пять минут. Поезд находится на <silence msec=\"100\"/>{1}<silence msec=\"100\"/> пути.</rate></volume></voice>"
+		"en": "<voice required=\"Language=409\"><volume level=\"{0}\"><rate absspeed=\"-1\">Train number <silence msec=\"100\"/>{2}<silence msec=\"100\"/> leaves in five minutes. The train is now on track <silence msec=\"100\"/>{1}.</rate></volume></voice>",
+		"ru": "<voice required=\"Language=419\"><volume level=\"{0}\"><rate absspeed=\"-1\">До отправления поезда номер <silence msec=\"100\"/>{2}<silence msec=\"100\"/> остаётся пять минут. Поезд находится на <silence msec=\"100\"/>{1}<silence msec=\"100\"/> пути.</rate></volume></voice>"
 	},
 	"master_volume_description_string": {
 		"en": "Volume",

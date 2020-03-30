@@ -170,12 +170,12 @@ FIVE_MINUTES_LEFT_ANNOUNCEMENT: Final = 'five_minutes_left'
 
 
 def get_announcement_types_enabled(dt_multiplier):
-    if round(dt_multiplier, 1) > 8.0:
+    if round(dt_multiplier, 1) > 6.0:
         return ARRIVAL_ANNOUNCEMENT, PASS_THROUGH_ANNOUNCEMENT
-    elif round(dt_multiplier, 1) > 4.0:
-        return get_announcement_types_enabled(12) + (DEPARTURE_ANNOUNCEMENT, )
+    elif round(dt_multiplier, 1) > 3.0:
+        return get_announcement_types_enabled(9) + (DEPARTURE_ANNOUNCEMENT, )
 
-    return get_announcement_types_enabled(6) + (ARRIVAL_FINISHED_ANNOUNCEMENT, FIVE_MINUTES_LEFT_ANNOUNCEMENT)
+    return get_announcement_types_enabled(4.5) + (ARRIVAL_FINISHED_ANNOUNCEMENT, FIVE_MINUTES_LEFT_ANNOUNCEMENT)
 
 
 def get_announcement_types_diff(dt_multiplier_1, dt_multiplier_2):
