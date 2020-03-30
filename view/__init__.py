@@ -256,21 +256,17 @@ class AppBaseView(ABC):
         for b in self.buttons:
             b.on_update_opacity(self.opacity)
 
-    @final
     def on_window_activate(self):
         self.all_notifications_enabled = False
         self.notifications.clear()
 
-    @final
     def on_window_show(self):
         self.all_notifications_enabled = False
         self.notifications.clear()
 
-    @final
     def on_window_deactivate(self):
         self.all_notifications_enabled = True
 
-    @final
     def on_window_hide(self):
         self.all_notifications_enabled = True
 

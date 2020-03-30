@@ -7,6 +7,7 @@ from database import USER_DB_CURSOR
 
 MIDI_DEVICE: Final = ctypes.c_void_p()
 ctypes.windll.winmm.midiOutOpen(ctypes.byref(MIDI_DEVICE), 0, 0, 0, 0)
+ctypes.windll.winmm.midiOutSetVolume(MIDI_DEVICE, 65535)
 PROGRAM_CHANGE_MESSAGE_ID: Final = 0xC0
 
 
@@ -52,7 +53,6 @@ class MIDIPlayer:
 
     def on_master_volume_update(self, new_master_volume):
         self.master_volume = new_master_volume
-        ctypes.windll.winmm.midiOutSetVolume(MIDI_DEVICE, self.master_volume << 8 | self.master_volume)
 
     def on_music_track_opacity_update(self, new_opacity):
         self.music_track_opacity = new_opacity

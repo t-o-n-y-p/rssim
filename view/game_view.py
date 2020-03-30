@@ -66,6 +66,8 @@ class GameView(GameBaseView):
         CONFIG_DB_CURSOR.execute('''SELECT player_progress FROM player_progress_config 
                                     WHERE level = ?''', (self.level, ))
         self.player_progress = CONFIG_DB_CURSOR.fetchone()[0]
+        USER_DB_CURSOR.execute('''SELECT master_volume FROM sound''')
+        self.master_volume = USER_DB_CURSOR.fetchone()[0]
         self.on_mouse_motion_handlers.append(self.time_speed_knob.on_mouse_motion)
         self.on_mouse_press_handlers.append(self.time_speed_knob.on_mouse_press)
         self.on_mouse_release_handlers.append(self.time_speed_knob.on_mouse_release)
@@ -136,6 +138,26 @@ class GameView(GameBaseView):
         self.main_clock_label_12h.on_update_opacity(self.opacity)
         self.time_speed_knob.on_update_opacity(self.opacity)
 
+    def on_window_activate(self):
+        super().on_window_activate()
+        MIDI_PLAYER.on_master_volume_update(self.master_volume)
+        SPEAKER.Volume = self.master_volume
+
+    def on_window_show(self):
+        super().on_window_show()
+        MIDI_PLAYER.on_master_volume_update(self.master_volume)
+        SPEAKER.Volume = self.master_volume
+
+    def on_window_deactivate(self):
+        super().on_window_deactivate()
+        MIDI_PLAYER.on_master_volume_update(0)
+        SPEAKER.Volume = 0
+
+    def on_window_hide(self):
+        super().on_window_hide()
+        MIDI_PLAYER.on_master_volume_update(0)
+        SPEAKER.Volume = 0
+
     def on_update_time(self, dt):
         super().on_update_time(dt)
         self.main_clock_label_24h.on_update_args(
@@ -187,3 +209,7 @@ class GameView(GameBaseView):
     @enough_money_notification_enabled
     def on_send_enough_money_environment_notification(self):
         self.notifications.append(EnoughMoneyEnvironmentNotification(self.current_locale))
+
+    def on_master_volume_update(self, new_master_volume):
+        self.master_volume = new_master_volume
+        MIDI_PLAYER.on_master_volume_update(self.master_volume)

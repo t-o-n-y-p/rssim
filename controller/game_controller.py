@@ -120,6 +120,6 @@ class GameController(GameBaseController):
         self.map_switcher.on_unlock_map(map_id)
 
     def on_master_volume_update(self, new_master_volume):
-        MIDI_PLAYER.on_master_volume_update(new_master_volume)
+        self.view.on_master_volume_update(new_master_volume)
         for m in self.maps:
             m.on_master_volume_update(new_master_volume)
