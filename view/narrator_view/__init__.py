@@ -12,6 +12,8 @@ class NarratorView(MapBaseView, ABC):
         self.is_speaking = False
         self.is_playing_announcement = False
         self.playback_start_time = 0
+        USER_DB_CURSOR.execute('SELECT announcements_enabled FROM sound')
+        self.announcements_enabled = USER_DB_CURSOR.fetchone()[0]
         self.on_append_window_handlers()
 
     @final
@@ -50,7 +52,8 @@ class NarratorView(MapBaseView, ABC):
         if len(NARRATOR_QUEUE[self.map_id]) > 0:
             # self.logger.debug(f'{self.game_time=}')
             # self.logger.debug(f'{NARRATOR_QUEUE[self.map_id]=}')
-            if self.game_time >= NARRATOR_QUEUE[self.map_id][0][ANNOUNCEMENT_TIME] and not self.is_playing_announcement:
+            if self.game_time >= NARRATOR_QUEUE[self.map_id][0][ANNOUNCEMENT_TIME] \
+                    and not self.is_playing_announcement and self.announcements_enabled:
                 try:
                     SPEAKER.find_voice(self.current_locale)
                     self.is_playing_announcement = True
@@ -71,3 +74,7 @@ class NarratorView(MapBaseView, ABC):
     def on_announcement_play(self, announcement):
         SPEAKER.on_announcement_play(announcement, self.current_locale)
         self.is_speaking = True
+
+    @final
+    def on_update_announcements_state(self, new_state):
+        self.announcements_enabled = new_state

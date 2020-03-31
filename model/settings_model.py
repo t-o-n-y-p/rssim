@@ -19,8 +19,8 @@ class SettingsModel(AppBaseModel):
             self.construction_completed_notification_enabled, self.enough_money_notification_enabled, \
             self.bonus_expired_notification_enabled, self.shop_storage_notification_enabled \
             = USER_DB_CURSOR.fetchone()
-        USER_DB_CURSOR.execute('''SELECT master_volume FROM sound''')
-        self.master_volume = USER_DB_CURSOR.fetchone()[0]
+        USER_DB_CURSOR.execute('''SELECT master_volume, announcements_enabled FROM sound''')
+        self.master_volume, self.announcements_enabled = USER_DB_CURSOR.fetchone()
 
     def on_save_state(self):
         pass
@@ -41,13 +41,15 @@ class SettingsModel(AppBaseModel):
                                 )
                                )
         USER_DB_CURSOR.execute('UPDATE i18n SET clock_24h = ?', (self.clock_24h_enabled, ))
-        USER_DB_CURSOR.execute('UPDATE sound SET master_volume = ?', (self.master_volume, ))
+        USER_DB_CURSOR.execute('''UPDATE sound SET master_volume = ?, announcements_enabled = ?''',
+                               (self.master_volume, self.announcements_enabled))
         on_commit()
 
     def on_accept_changes(self, windowed_resolution, display_fps, fade_animations_enabled, clock_24h_enabled,
                           level_up_notification_enabled, feature_unlocked_notification_enabled,
                           construction_completed_notification_enabled, enough_money_notification_enabled,
-                          bonus_expired_notification_enabled, shop_storage_notification_enabled, master_volume):
+                          bonus_expired_notification_enabled, shop_storage_notification_enabled,
+                          master_volume, announcements_enabled):
         self.windowed_resolution = windowed_resolution
         self.display_fps = display_fps
         self.fade_animations_enabled = fade_animations_enabled
@@ -59,3 +61,4 @@ class SettingsModel(AppBaseModel):
         self.bonus_expired_notification_enabled = bonus_expired_notification_enabled
         self.shop_storage_notification_enabled = shop_storage_notification_enabled
         self.master_volume = master_volume
+        self.announcements_enabled = announcements_enabled

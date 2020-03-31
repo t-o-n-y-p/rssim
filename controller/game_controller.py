@@ -120,3 +120,7 @@ class GameController(GameBaseController):
 
     def on_master_volume_update(self, new_master_volume):
         self.view.on_master_volume_update(new_master_volume)
+
+    def on_update_announcements_state(self, new_state):
+        for m in self.maps:
+            m.on_update_announcements_state(new_state)

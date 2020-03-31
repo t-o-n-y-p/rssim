@@ -15,7 +15,7 @@ class MasterVolumeKnob(Knob):
         self.value_label = MasterVolumeValueLabel(parent_viewport=self.viewport)
         self.on_window_resize_handlers.append(self.value_label.on_window_resize)
         self.start_value = 0
-        self.maximum_steps = 25
+        self.maximum_steps = 20
         self.value_step = 100 // self.maximum_steps
         self.on_init_state(self.start_value)
 

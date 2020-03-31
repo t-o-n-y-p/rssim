@@ -429,5 +429,9 @@
 	"master_volume_description_string": {
 		"en": "Volume",
 		"ru": "Громкость"
+	},
+	"announcements_enabled_description_string": {
+		"en": "Announcements",
+		"ru": "Объявления"
 	}
 }

@@ -409,3 +409,7 @@ class MapController(MapBaseController, ABC):
     @final
     def on_announcement_add(self, announcement_time, announcement_type, train_id, track_number):
         self.narrator.on_announcement_add(announcement_time, announcement_type, train_id, track_number)
+
+    @final
+    def on_update_announcements_state(self, new_state):
+        self.narrator.on_update_announcements_state(new_state)

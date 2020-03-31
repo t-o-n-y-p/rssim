@@ -1,5 +1,6 @@
 from logging import getLogger
 
+from ui.settings.checkbox.announcements_enabled_checkbox import AnnouncementsEnabledCheckbox
 from ui.settings.knob.master_volume_settings_knob import MasterVolumeSettingsKnob
 from view import *
 from ui.button.accept_settings_button import AcceptSettingsButton
@@ -22,7 +23,7 @@ class SettingsView(AppBaseView):
                 self.temp_level_up_notification_enabled, self.temp_feature_unlocked_notification_enabled,
                 self.temp_construction_completed_notification_enabled, self.temp_enough_money_notification_enabled,
                 self.temp_bonus_expired_notification_enabled, self.temp_shop_storage_notification_enabled,
-                self.temp_master_volume
+                self.temp_master_volume, self.temp_announcements_enabled
             )
             self.controller.on_save_and_commit_state()
             self.controller.parent_controller.on_close_settings()
@@ -63,23 +64,30 @@ class SettingsView(AppBaseView):
         def on_update_master_volume(master_volume):
             self.temp_master_volume = master_volume
 
+        def on_update_announcements_state(new_state):
+            self.temp_announcements_enabled = new_state
+
         super().__init__(controller, logger=getLogger('root.app.settings.view'))
         self.temp_windowed_resolution = (0, 0)
         self.temp_display_fps = FALSE
         self.temp_fade_animations_enabled = FALSE
         self.temp_clock_24h_enabled = FALSE
         self.temp_master_volume = 0
+        self.temp_announcements_enabled = TRUE
         self.display_fps_checkbox \
-            = DisplayFPSCheckbox(column=-1, row=-1, on_update_state_action=on_update_display_fps_state,
+            = DisplayFPSCheckbox(column=-1, row=2, on_update_state_action=on_update_display_fps_state,
                                  parent_viewport=self.viewport)
         self.fade_animations_checkbox = FadeAnimationsEnabledCheckbox(
-            column=-1, row=-3, on_update_state_action=on_update_fade_animations_state, parent_viewport=self.viewport
+            column=-1, row=0, on_update_state_action=on_update_fade_animations_state, parent_viewport=self.viewport
         )
         self.clock_24h_checkbox = Clock24HCheckbox(
-            column=-1, row=-5, on_update_state_action=on_update_clock_24h_state, parent_viewport=self.viewport
+            column=-1, row=-2, on_update_state_action=on_update_clock_24h_state, parent_viewport=self.viewport
         )
         self.master_volume_knob = MasterVolumeSettingsKnob(
-            column=-1, row=-9, on_update_state_action=on_update_master_volume, parent_viewport=self.viewport
+            column=-1, row=-5, on_update_state_action=on_update_master_volume, parent_viewport=self.viewport
+        )
+        self.announcements_checkbox = AnnouncementsEnabledCheckbox(
+            column=-1, row=-8, on_update_state_action=on_update_announcements_state, parent_viewport=self.viewport
         )
         self.temp_level_up_notification_enabled = FALSE
         self.temp_feature_unlocked_notification_enabled = FALSE
@@ -102,7 +110,7 @@ class SettingsView(AppBaseView):
         self.available_windowed_resolutions = CONFIG_DB_CURSOR.fetchall()
         self.available_windowed_resolutions_position = 0
         self.screen_resolution_control \
-            = ScreenResolutionControl(column=-1, row=5, possible_values_list=self.available_windowed_resolutions,
+            = ScreenResolutionControl(column=-1, row=8, possible_values_list=self.available_windowed_resolutions,
                                       on_update_state_action=on_update_windowed_resolution_state,
                                       parent_viewport=self.viewport)
         self.accept_settings_button = AcceptSettingsButton(on_click_action=on_accept_changes,
@@ -112,7 +120,7 @@ class SettingsView(AppBaseView):
         self.buttons = [self.accept_settings_button, self.reject_settings_button,
                         *self.screen_resolution_control.buttons, *self.display_fps_checkbox.buttons,
                         *self.fade_animations_checkbox.buttons, *self.clock_24h_checkbox.buttons,
-                        *self.notifications_checkbox_group.buttons]
+                        *self.notifications_checkbox_group.buttons, *self.announcements_checkbox.buttons]
         self.shader_sprite = SettingsViewShaderSprite(view=self)
         self.on_mouse_motion_handlers.extend(self.master_volume_knob.on_mouse_motion_handlers)
         self.on_mouse_press_handlers.extend(self.master_volume_knob.on_mouse_press_handlers)
@@ -125,6 +133,7 @@ class SettingsView(AppBaseView):
             *self.notifications_checkbox_group.on_window_resize_handlers,
             *self.screen_resolution_control.on_window_resize_handlers,
             *self.master_volume_knob.on_window_resize_handlers,
+            *self.announcements_checkbox.on_window_resize_handlers,
             self.shader_sprite.on_window_resize
         ])
         self.on_append_window_handlers()
@@ -164,10 +173,12 @@ class SettingsView(AppBaseView):
                 self.temp_shop_storage_notification_enabled
             ]
         )
-        USER_DB_CURSOR.execute('''SELECT master_volume FROM sound''')
-        self.temp_master_volume = USER_DB_CURSOR.fetchone()[0]
+        USER_DB_CURSOR.execute('''SELECT master_volume, announcements_enabled FROM sound''')
+        self.temp_master_volume, self.temp_announcements_enabled = USER_DB_CURSOR.fetchone()
         self.master_volume_knob.on_activate()
         self.master_volume_knob.on_init_state(self.temp_master_volume)
+        self.announcements_checkbox.on_activate()
+        self.announcements_checkbox.on_change_state(self.temp_announcements_enabled)
         self.shader_sprite.create()
 
     @view_is_active
@@ -179,6 +190,7 @@ class SettingsView(AppBaseView):
         self.clock_24h_checkbox.on_deactivate()
         self.notifications_checkbox_group.on_deactivate()
         self.master_volume_knob.on_deactivate()
+        self.announcements_checkbox.on_deactivate()
 
     @view_is_active
     def on_update(self):
@@ -192,6 +204,7 @@ class SettingsView(AppBaseView):
         self.clock_24h_checkbox.on_update_current_locale(self.current_locale)
         self.notifications_checkbox_group.on_update_current_locale(self.current_locale)
         self.master_volume_knob.on_update_current_locale(self.current_locale)
+        self.announcements_checkbox.on_update_current_locale(self.current_locale)
 
     def on_update_opacity(self, new_opacity):
         super().on_update_opacity(new_opacity)
@@ -202,6 +215,7 @@ class SettingsView(AppBaseView):
         self.clock_24h_checkbox.on_update_opacity(self.opacity)
         self.notifications_checkbox_group.on_update_opacity(self.opacity)
         self.master_volume_knob.on_update_opacity(self.opacity)
+        self.announcements_checkbox.on_update_opacity(self.opacity)
 
     def on_change_temp_windowed_resolution(self, windowed_resolution):
         self.temp_windowed_resolution = windowed_resolution

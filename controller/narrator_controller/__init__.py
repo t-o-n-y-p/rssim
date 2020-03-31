@@ -15,3 +15,7 @@ class NarratorController(MapBaseController, ABC):
     @final
     def on_announcement_add(self, announcement_time, announcement_type, train_id, track_number):
         self.model.on_announcement_add(announcement_time, announcement_type, train_id, track_number)
+
+    @final
+    def on_update_announcements_state(self, new_state):
+        self.view.on_update_announcements_state(new_state)
