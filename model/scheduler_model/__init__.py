@@ -22,9 +22,9 @@ class SchedulerModel(MapBaseModel, ABC):
                                     WHERE min_level <= ? AND max_level >= ? AND map_id = ?''',
                                  (self.level, self.level, self.map_id))
         self.schedule_options = CONFIG_DB_CURSOR.fetchall()
-        USER_DB_CURSOR.execute('''SELECT train_counter, next_cycle_start_time FROM scheduler WHERE map_id = ?''',
+        USER_DB_CURSOR.execute('''SELECT next_cycle_start_time FROM scheduler WHERE map_id = ?''',
                                (self.map_id, ))
-        self.train_counter, self.next_cycle_start_time = USER_DB_CURSOR.fetchone()
+        self.next_cycle_start_time = USER_DB_CURSOR.fetchone()[0]
         USER_DB_CURSOR.execute('''SELECT entry_busy_state FROM scheduler WHERE map_id = ?''', (self.map_id, ))
         self.entry_busy_state = [int(t) for t in USER_DB_CURSOR.fetchone()[0].split(',')]
         CONFIG_DB_CURSOR.execute('''SELECT schedule_cycle_length, seconds_per_car, exp_per_car, money_per_car 
@@ -43,10 +43,10 @@ class SchedulerModel(MapBaseModel, ABC):
 
     @final
     def on_save_state(self):
-        USER_DB_CURSOR.execute('''UPDATE scheduler SET train_counter = ?, next_cycle_start_time = ?, 
+        USER_DB_CURSOR.execute('''UPDATE scheduler SET next_cycle_start_time = ?, 
                                   entry_busy_state = ? WHERE map_id = ?''',
-                               (self.train_counter, self.next_cycle_start_time,
-                                ','.join(str(t) for t in self.entry_busy_state), self.map_id))
+                               (self.next_cycle_start_time, ','.join(str(t) for t in self.entry_busy_state),
+                                self.map_id))
         USER_DB_CURSOR.execute('''UPDATE map_progress SET entry_locked_state = ?, min_supported_cars_by_direction = ? 
                                   WHERE map_id = ?''',
                                (','.join(str(t) for t in self.entry_locked_state),
@@ -58,6 +58,10 @@ class SchedulerModel(MapBaseModel, ABC):
             USER_DB_CURSOR.execute('INSERT INTO base_schedule VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)',
                                    (self.map_id, *train))
 
+        for train_id in TRAIN_ID_POOL[self.map_id]:
+            USER_DB_CURSOR.execute('''UPDATE train_numbers SET expiration_time = ? WHERE train_id = ? AND map_id = ?''',
+                                   (TRAIN_ID_POOL[self.map_id][train_id], train_id, self.map_id))
+
     @final
     def on_update_time(self, dt):
         super().on_update_time(dt)
@@ -68,12 +72,16 @@ class SchedulerModel(MapBaseModel, ABC):
             for i in self.schedule_options:
                 if not self.entry_locked_state[i[DIRECTION]] and not self.exit_locked_state[i[NEW_DIRECTION]]:
                     cars = choice(list(range(i[CARS_MIN], i[CARS_MAX] + 1)))
-                    train_options = (self.train_counter, self.next_cycle_start_time
+                    train_id = choice(
+                        [train_id for train_id, expiration_time in TRAIN_ID_POOL[self.map_id].items()
+                         if expiration_time <= self.game_time]
+                    )
+                    train_options = (train_id, self.next_cycle_start_time
                                      + choice(list(range(i[ARRIVAL_TIME_MIN], i[ARRIVAL_TIME_MAX]))),
                                      i[DIRECTION], i[NEW_DIRECTION], cars, self.seconds_per_car * cars,
                                      self.exp_per_car * cars, self.money_per_car * cars, i[SWITCH_DIRECTION_FLAG])
                     BASE_SCHEDULE[self.map_id].append(train_options)
-                    self.train_counter = (self.train_counter + 1) % TRAIN_ID_LIMIT
+                    TRAIN_ID_POOL[self.map_id][train_id] = self.game_time + SECONDS_IN_ONE_DAY
 
             self.next_cycle_start_time += self.schedule_cycle_length
             BASE_SCHEDULE[self.map_id].sort(key=itemgetter(ARRIVAL_TIME))

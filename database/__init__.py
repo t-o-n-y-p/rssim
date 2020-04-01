@@ -168,14 +168,19 @@ DEPARTURE_ANNOUNCEMENT: Final = 'departure'
 PASS_THROUGH_ANNOUNCEMENT: Final = 'pass_through'
 FIVE_MINUTES_LEFT_ANNOUNCEMENT: Final = 'five_minutes_left'
 
+TRAIN_ID_POOL = [{}, {}]
+for _m in (PASSENGER_MAP, FREIGHT_MAP):
+    USER_DB_CURSOR.execute('''SELECT train_id, expiration_time FROM train_numbers WHERE map_id = ?''', (_m, ))
+    TRAIN_ID_POOL[_m] = {n[0]: n[1] for n in USER_DB_CURSOR.fetchall()}
+
 
 def get_announcement_types_enabled(dt_multiplier):
-    if round(dt_multiplier, 1) > 6.0:
+    if round(dt_multiplier, 1) > 8.0:
         return ARRIVAL_ANNOUNCEMENT, PASS_THROUGH_ANNOUNCEMENT
-    elif round(dt_multiplier, 1) > 3.0:
-        return get_announcement_types_enabled(9) + (DEPARTURE_ANNOUNCEMENT, )
+    elif round(dt_multiplier, 1) > 4.0:
+        return get_announcement_types_enabled(12) + (DEPARTURE_ANNOUNCEMENT, )
 
-    return get_announcement_types_enabled(4.5) + (ARRIVAL_FINISHED_ANNOUNCEMENT, FIVE_MINUTES_LEFT_ANNOUNCEMENT)
+    return get_announcement_types_enabled(6) + (ARRIVAL_FINISHED_ANNOUNCEMENT, FIVE_MINUTES_LEFT_ANNOUNCEMENT)
 
 
 def get_announcement_types_diff(dt_multiplier_1, dt_multiplier_2):
