@@ -58,9 +58,9 @@ class SchedulerModel(MapBaseModel, ABC):
             USER_DB_CURSOR.execute('INSERT INTO base_schedule VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)',
                                    (self.map_id, *train))
 
-        for train_id in TRAIN_ID_POOL[self.map_id]:
+        for train_id, expiration_time in TRAIN_ID_POOL[self.map_id].items():
             USER_DB_CURSOR.execute('''UPDATE train_numbers SET expiration_time = ? WHERE train_id = ? AND map_id = ?''',
-                                   (TRAIN_ID_POOL[self.map_id][train_id], train_id, self.map_id))
+                                   (expiration_time, train_id, self.map_id))
 
     @final
     def on_update_time(self, dt):
