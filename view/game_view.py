@@ -1,5 +1,6 @@
 from logging import getLogger
 
+from notifications.voice_not_found_notification import VoiceNotFoundNotification
 from ui.knob.time_speed_knob import TimeSpeedKnob
 from view import *
 from ui.button.open_settings_game_view_button import OpenSettingsGameViewButton
@@ -40,6 +41,7 @@ class GameView(GameBaseView):
 
         super().__init__(controller, logger=getLogger('root.app.game.view'))
         self.game_paused = True
+        self.voice_not_found_notification_needed = True
         self.exp_progress_bar = ExpProgressBar(parent_viewport=self.viewport)
         self.money_progress_bar = MoneyProgressBar(parent_viewport=self.viewport)
         self.open_settings_button = OpenSettingsGameViewButton(on_click_action=on_open_settings,
@@ -195,22 +197,28 @@ class GameView(GameBaseView):
         self.money_target = money_target
         self.money_progress_bar.on_update_progress_bar_state(self.money, self.money_target)
 
-    @notifications_available
+    @game_progress_notifications_available
     @level_up_notification_enabled
     def on_send_level_up_notification(self):
-        self.notifications.append(LevelUpNotification(self.current_locale, self.level))
+        self.game_progress_notifications.append(LevelUpNotification(self.current_locale, self.level))
 
-    @notifications_available
+    @game_progress_notifications_available
     @enough_money_notification_enabled
     def on_send_enough_money_track_notification(self):
-        self.notifications.append(EnoughMoneyTrackNotification(self.current_locale))
+        self.game_progress_notifications.append(EnoughMoneyTrackNotification(self.current_locale))
 
-    @notifications_available
+    @game_progress_notifications_available
     @enough_money_notification_enabled
     def on_send_enough_money_environment_notification(self):
-        self.notifications.append(EnoughMoneyEnvironmentNotification(self.current_locale))
+        self.game_progress_notifications.append(EnoughMoneyEnvironmentNotification(self.current_locale))
 
     def on_master_volume_update(self, new_master_volume):
         self.master_volume = new_master_volume
         MIDI_PLAYER.on_master_volume_update(self.master_volume)
         SPEAKER.on_master_volume_update(self.master_volume)
+
+    @voice_not_found_notification_enabled
+    @voice_not_found_notification_needed
+    def on_send_voice_not_found_notification(self):
+        self.voice_not_found_notification_needed = False
+        self.malfunction_notifications.append(VoiceNotFoundNotification(self.current_locale))

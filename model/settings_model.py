@@ -17,8 +17,8 @@ class SettingsModel(AppBaseModel):
         USER_DB_CURSOR.execute('SELECT * FROM notification_settings')
         self.level_up_notification_enabled, self.feature_unlocked_notification_enabled, \
             self.construction_completed_notification_enabled, self.enough_money_notification_enabled, \
-            self.bonus_expired_notification_enabled, self.shop_storage_notification_enabled \
-            = USER_DB_CURSOR.fetchone()
+            self.bonus_expired_notification_enabled, self.shop_storage_notification_enabled,\
+            self.voice_not_found_notification_enabled = USER_DB_CURSOR.fetchone()
         USER_DB_CURSOR.execute('''SELECT master_volume, announcements_enabled FROM sound''')
         self.master_volume, self.announcements_enabled = USER_DB_CURSOR.fetchone()
 

@@ -95,6 +95,7 @@ class SettingsView(AppBaseView):
         self.temp_enough_money_notification_enabled = FALSE
         self.temp_bonus_expired_notification_enabled = FALSE
         self.temp_shop_storage_notification_enabled = FALSE
+        self.temp_voice_not_found_notification_enabled = FALSE
         self.notifications_checkbox_group \
             = NotificationsCheckboxGroup(column=1, row=6,
                                          on_update_state_actions=[on_update_level_up_notifications_state,
@@ -160,8 +161,8 @@ class SettingsView(AppBaseView):
         USER_DB_CURSOR.execute('SELECT * FROM notification_settings')
         self.temp_level_up_notification_enabled, self.temp_feature_unlocked_notification_enabled, \
             self.temp_construction_completed_notification_enabled, self.temp_enough_money_notification_enabled, \
-            self.temp_bonus_expired_notification_enabled, self.temp_shop_storage_notification_enabled \
-            = USER_DB_CURSOR.fetchone()
+            self.temp_bonus_expired_notification_enabled, self.temp_shop_storage_notification_enabled, \
+            self.temp_voice_not_found_notification_enabled = USER_DB_CURSOR.fetchone()
         self.notifications_checkbox_group.on_activate()
         self.notifications_checkbox_group.on_change_state(
             [

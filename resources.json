@@ -433,5 +433,13 @@
 	"announcements_enabled_description_string": {
 		"en": "Announcements",
 		"ru": "Объявления"
+	},
+	"voice_not_found_notification_caption_string": {
+		"en": "Error playing announcements",
+		"ru": "Ошибка воспроизведения объявлений"
+	},
+	"voice_not_found_notification_message_string": {
+		"en": "Text-to-speech pack is not installed. Open your system settings to install the language pack.",
+		"ru": "Пакет преобразования текста в речь не установлен. Откройте системные настройки, чтобы установить языковой пакет."
 	}
 }

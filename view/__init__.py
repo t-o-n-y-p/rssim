@@ -97,9 +97,9 @@ def signal_is_displayed_on_map(fn):
     return _handle_if_signal_is_displayed_on_map
 
 
-def notifications_available(fn):
+def game_progress_notifications_available(fn):
     def _send_notifications_if_they_are_enabled(*args, **kwargs):
-        if args[0].all_notifications_enabled:
+        if args[0].game_progress_notifications_enabled:
             fn(*args, **kwargs)
 
     return _send_notifications_if_they_are_enabled
@@ -145,6 +145,22 @@ def construction_completed_notification_enabled(fn):
     return _send_notification_if_construction_completed_notification_enabled
 
 
+def voice_not_found_notification_enabled(fn):
+    def _send_notification_if_voice_not_found_notification_enabled(*args, **kwargs):
+        if args[0].voice_not_found_notification_enabled:
+            fn(*args, **kwargs)
+
+    return _send_notification_if_voice_not_found_notification_enabled
+
+
+def voice_not_found_notification_needed(fn):
+    def _send_notification_if_voice_not_found_notification_needed(*args, **kwargs):
+        if args[0].voice_not_found_notification_needed:
+            fn(*args, **kwargs)
+
+    return _send_notification_if_voice_not_found_notification_needed
+
+
 def shop_storage_notification_enabled(fn):
     def _send_notification_if_shop_storage_notification_enabled(*args, **kwargs):
         if args[0].shop_storage_notification_enabled:
@@ -186,7 +202,8 @@ class AppBaseView(ABC):
         self.viewport = Viewport()
         self.opacity = 0
         self.buttons = []
-        self.notifications = []
+        self.game_progress_notifications = []
+        self.malfunction_notifications = []
         self.on_mouse_press_handlers = []
         self.on_mouse_release_handlers = []
         self.on_mouse_motion_handlers = []
@@ -201,16 +218,15 @@ class AppBaseView(ABC):
         self.on_window_deactivate_handlers = [self.on_window_deactivate, ]
         self.on_window_hide_handlers = [self.on_window_hide, ]
         self.screen_resolution = (0, 0)
-        USER_DB_CURSOR.execute('SELECT current_locale FROM i18n')
-        self.current_locale = USER_DB_CURSOR.fetchone()[0]
-        USER_DB_CURSOR.execute('SELECT clock_24h FROM i18n')
-        self.clock_24h_enabled = USER_DB_CURSOR.fetchone()[0]
-        self.all_notifications_enabled = False
+        USER_DB_CURSOR.execute('SELECT current_locale, clock_24h FROM i18n')
+        self.current_locale, self.clock_24h_enabled = USER_DB_CURSOR.fetchone()
+        self.game_progress_notifications_enabled = False
         self.shader_sprite = None
         USER_DB_CURSOR.execute('SELECT * FROM notification_settings')
         self.level_up_notification_enabled, self.feature_unlocked_notification_enabled, \
             self.construction_completed_notification_enabled, self.enough_money_notification_enabled, \
-            self.bonus_expired_notification_enabled, self.shop_storage_notification_enabled = USER_DB_CURSOR.fetchone()
+            self.bonus_expired_notification_enabled, self.shop_storage_notification_enabled,\
+            self.voice_not_found_notification_enabled = USER_DB_CURSOR.fetchone()
 
     def on_activate(self):
         self.is_activated = True
@@ -257,18 +273,18 @@ class AppBaseView(ABC):
             b.on_update_opacity(self.opacity)
 
     def on_window_activate(self):
-        self.all_notifications_enabled = False
-        self.notifications.clear()
+        self.game_progress_notifications_enabled = False
+        self.game_progress_notifications.clear()
 
     def on_window_show(self):
-        self.all_notifications_enabled = False
-        self.notifications.clear()
+        self.game_progress_notifications_enabled = False
+        self.game_progress_notifications.clear()
 
     def on_window_deactivate(self):
-        self.all_notifications_enabled = True
+        self.game_progress_notifications_enabled = True
 
     def on_window_hide(self):
-        self.all_notifications_enabled = True
+        self.game_progress_notifications_enabled = True
 
     @final
     def on_change_level_up_notification_state(self, notification_state):
@@ -293,6 +309,11 @@ class AppBaseView(ABC):
     @final
     def on_change_shop_storage_notification_state(self, notification_state):
         self.shop_storage_notification_enabled = notification_state
+
+    @final
+    def on_clear_all_notifications(self):
+        self.game_progress_notifications.clear()
+        self.malfunction_notifications.clear()
 
     @final
     def on_append_view_handlers(self):

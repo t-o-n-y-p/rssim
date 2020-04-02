@@ -124,3 +124,6 @@ class GameController(GameBaseController):
     def on_update_announcements_state(self, new_state):
         for m in self.maps:
             m.on_update_announcements_state(new_state)
+
+    def on_send_voice_not_found_notification(self):
+        self.view.on_send_voice_not_found_notification()

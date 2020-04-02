@@ -92,7 +92,7 @@ class MapSwitcherView(GameBaseView):
     def on_unlock_map(map_id):
         MAP_SWITCHER_STATE_MATRIX[map_id][MAP_LOCKED] = FALSE
 
-    @notifications_available
+    @game_progress_notifications_available
     @feature_unlocked_notification_enabled
     def on_send_map_unlocked_notification(self, map_id):
-        self.notifications.append(MapUnlockedNotification(self.current_locale, map_id))
+        self.game_progress_notifications.append(MapUnlockedNotification(self.current_locale, map_id))

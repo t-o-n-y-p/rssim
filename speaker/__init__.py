@@ -24,6 +24,7 @@ class Speaker:
             ENGLISH: numbers_to_speech_en.to_cardinal,
             RUSSIAN: numbers_to_speech_ru.to_ordinal
         }
+        self.is_muted = False
 
     def on_announcement_play(self, announcement, locale):
         announcement_resource_location \
@@ -76,9 +77,11 @@ class Speaker:
         self.master_volume = new_master_volume
 
     def on_mute(self):
+        self.is_muted = True
         self.speaker.Volume = 0
 
     def on_unmute(self):
+        self.is_muted = False
         self.speaker.Volume = 100
 
     def find_voice(self, locale):

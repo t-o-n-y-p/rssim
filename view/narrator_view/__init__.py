@@ -63,6 +63,7 @@ class NarratorView(MapBaseView, ABC):
 
                 except com_error:
                     NARRATOR_QUEUE[self.map_id].pop(0)
+                    self.controller.parent_controller.parent_controller.on_send_voice_not_found_notification()
 
             if self.game_time >= self.playback_start_time + self.dt_multiplier * 1.2 and self.is_playing_announcement \
                     and not self.is_speaking:

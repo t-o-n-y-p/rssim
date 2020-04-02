@@ -84,17 +84,17 @@ class BonusCodeManagerView(GameBaseView):
             self.money_bonus_percent_label.delete()
             self.money_bonus_placeholder_label.create()
 
-    @notifications_available
+    @game_progress_notifications_available
     @bonus_expired_notification_enabled
     def on_send_exp_bonus_expired_notification(self):
-        self.notifications.append(ExpBonusExpiredNotification(self.current_locale))
+        self.game_progress_notifications.append(ExpBonusExpiredNotification(self.current_locale))
 
-    @notifications_available
+    @game_progress_notifications_available
     @bonus_expired_notification_enabled
     def on_send_money_bonus_expired_notification(self):
-        self.notifications.append(MoneyBonusExpiredNotification(self.current_locale))
+        self.game_progress_notifications.append(MoneyBonusExpiredNotification(self.current_locale))
 
-    @notifications_available
+    @game_progress_notifications_available
     @bonus_expired_notification_enabled
     def on_send_construction_time_bonus_expired_notification(self):
-        self.notifications.append(ConstructionTimeBonusExpiredNotification(self.current_locale))
+        self.game_progress_notifications.append(ConstructionTimeBonusExpiredNotification(self.current_locale))

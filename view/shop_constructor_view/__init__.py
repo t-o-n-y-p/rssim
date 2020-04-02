@@ -165,17 +165,17 @@ class ShopConstructorView(MapBaseView, ABC):
                                           self.shop_stages_state_matrix[self.current_stage][STORAGE_CAPACITY])
 
     @final
-    @notifications_available
+    @game_progress_notifications_available
     @shop_storage_notification_enabled
     def on_send_shop_storage_almost_full_notification(self):
-        self.notifications.append(
+        self.game_progress_notifications.append(
             ShopStorageAlmostFullNotification(self.current_locale, self.shop_id + 1)
         )
 
     @final
-    @notifications_available
+    @game_progress_notifications_available
     @shop_storage_notification_enabled
     def on_send_shop_storage_full_notification(self):
-        self.notifications.append(
+        self.game_progress_notifications.append(
             ShopStorageFullNotification(self.current_locale, self.shop_id + 1)
         )
