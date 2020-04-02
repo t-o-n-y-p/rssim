@@ -112,11 +112,6 @@ class AppController(AppBaseController):
     def on_fullscreen_mode_turned_off(self):
         self.model.on_fullscreen_mode_turned_off()
 
-    def on_close_game(self):
-        self.fade_out_animation.on_activate()
-        self.on_save_state()
-        exit()
-
     def on_activate_main_menu_view(self):
         self.main_menu.on_activate_view()
 

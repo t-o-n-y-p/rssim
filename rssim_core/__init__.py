@@ -241,6 +241,12 @@ class Launcher:
             for h in self.app.on_window_resize_handlers:
                 h(width, height)
 
+        @WINDOW.event
+        def on_close():
+            self.app.fade_out_animation.on_activate()
+            self.app.on_save_state()
+            self.app.on_clear_all_notifications()
+
     @staticmethod
     def run():
         pyglet.app.run()

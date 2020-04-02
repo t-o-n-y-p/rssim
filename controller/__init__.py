@@ -161,6 +161,12 @@ class AppBaseController(ABC):
             controller.on_change_voice_not_found_notification_state(notification_state)
 
     @final
+    def on_clear_all_notifications(self):
+        self.view.on_clear_all_notifications()
+        for controller in self.child_controllers:
+            controller.on_clear_all_notifications()
+
+    @final
     def on_update_fade_animation_state(self, new_state):
         self.fade_in_animation.on_update_fade_animation_state(new_state)
         self.fade_out_animation.on_update_fade_animation_state(new_state)

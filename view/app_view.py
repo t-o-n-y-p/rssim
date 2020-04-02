@@ -25,7 +25,7 @@ from ui.fps_display import FPSDisplay
 class AppView(AppBaseView):
     def __init__(self, controller):
         def on_close_game(button):
-            self.controller.on_close_game()
+            WINDOW.dispatch_event('on_close')
 
         def on_iconify_game(button):
             WINDOW.minimize()
