@@ -31,6 +31,7 @@ class MIDIPlayer:
         self.master_volume = USER_DB_CURSOR.fetchone()[0]
         self.narrator_intro_opacity = 255
         self.music_track_opacity = 0
+        self.is_muted = False
 
     def add_track(self, music_track):
         music_track.playback_finish_callback = self.on_music_track_playback_finish
@@ -66,10 +67,10 @@ class MIDIPlayer:
     def on_narrator_intro_playback_finish(self):
         self.narrator_intro = None
 
-    @staticmethod
-    def on_mute():
+    def on_mute(self):
+        self.is_muted = True
         ctypes.windll.winmm.midiOutSetVolume(_MIDI_DEVICE, 0)
 
-    @staticmethod
-    def on_unmute():
+    def on_unmute(self):
+        self.is_muted = False
         ctypes.windll.winmm.midiOutSetVolume(_MIDI_DEVICE, 65535)

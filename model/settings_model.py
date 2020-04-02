@@ -33,11 +33,11 @@ class SettingsModel(AppBaseModel):
                                   feature_unlocked_notification_enabled = ?, 
                                   construction_completed_notification_enabled = ?, 
                                   enough_money_notification_enabled = ?, bonus_expired_notification_enabled = ?,
-                                  shop_storage_notification_enabled = ?''',
+                                  shop_storage_notification_enabled = ?, voice_not_found_notification_enabled = ?''',
                                (self.level_up_notification_enabled, self.feature_unlocked_notification_enabled,
                                 self.construction_completed_notification_enabled,
                                 self.enough_money_notification_enabled, self.bonus_expired_notification_enabled,
-                                self.shop_storage_notification_enabled
+                                self.shop_storage_notification_enabled, self.voice_not_found_notification_enabled
                                 )
                                )
         USER_DB_CURSOR.execute('UPDATE i18n SET clock_24h = ?', (self.clock_24h_enabled, ))
@@ -49,7 +49,7 @@ class SettingsModel(AppBaseModel):
                           level_up_notification_enabled, feature_unlocked_notification_enabled,
                           construction_completed_notification_enabled, enough_money_notification_enabled,
                           bonus_expired_notification_enabled, shop_storage_notification_enabled,
-                          master_volume, announcements_enabled):
+                          voice_not_found_notification_enabled, master_volume, announcements_enabled):
         self.windowed_resolution = windowed_resolution
         self.display_fps = display_fps
         self.fade_animations_enabled = fade_animations_enabled
@@ -60,5 +60,6 @@ class SettingsModel(AppBaseModel):
         self.enough_money_notification_enabled = enough_money_notification_enabled
         self.bonus_expired_notification_enabled = bonus_expired_notification_enabled
         self.shop_storage_notification_enabled = shop_storage_notification_enabled
+        self.voice_not_found_notification_enabled = voice_not_found_notification_enabled
         self.master_volume = master_volume
         self.announcements_enabled = announcements_enabled

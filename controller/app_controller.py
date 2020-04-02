@@ -198,13 +198,13 @@ class AppController(AppBaseController):
                           level_up_notification_enabled, feature_unlocked_notification_enabled,
                           construction_completed_notification_enabled, enough_money_notification_enabled,
                           bonus_expired_notification_enabled, shop_storage_notification_enabled,
-                          master_volume, announcements_enabled):
+                          voice_not_found_notification_enabled, master_volume, announcements_enabled):
         self.settings.on_accept_changes(
             windowed_resolution, display_fps, fade_animations_enabled, clock_24h_enabled,
             level_up_notification_enabled, feature_unlocked_notification_enabled,
             construction_completed_notification_enabled, enough_money_notification_enabled,
             bonus_expired_notification_enabled, shop_storage_notification_enabled,
-            master_volume, announcements_enabled
+            voice_not_found_notification_enabled, master_volume, announcements_enabled
         )
         self.on_update_fade_animation_state(fade_animations_enabled)
         self.on_update_clock_state(clock_24h_enabled)
@@ -214,6 +214,7 @@ class AppController(AppBaseController):
         self.on_change_enough_money_notification_state(enough_money_notification_enabled)
         self.on_change_bonus_expired_notification_state(bonus_expired_notification_enabled)
         self.on_change_shop_storage_notification_state(shop_storage_notification_enabled)
+        self.on_change_voice_not_found_notification_state(voice_not_found_notification_enabled)
         self.on_master_volume_update(master_volume)
         self.on_update_announcements_state(announcements_enabled)
         if not WINDOW.fullscreen:

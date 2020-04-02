@@ -311,6 +311,10 @@ class AppBaseView(ABC):
         self.shop_storage_notification_enabled = notification_state
 
     @final
+    def on_change_voice_not_found_notification_state(self, notification_state):
+        self.voice_not_found_notification_enabled = notification_state
+
+    @final
     def on_clear_all_notifications(self):
         self.game_progress_notifications.clear()
         self.malfunction_notifications.clear()

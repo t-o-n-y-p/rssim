@@ -105,7 +105,7 @@
 		"en": "Game resolution in window mode:",
 		"ru": "Разрешение игры в оконном режиме:"
 	},
-	"notification_description_string": {
+	"game_progress_notifications_description_string": {
 		"en": "Send notifications while in background when:",
 		"ru": "Отправлять нотификации, пока игра в фоне, когда:"
 	},
@@ -441,5 +441,13 @@
 	"voice_not_found_notification_message_string": {
 		"en": "Text-to-speech pack is not installed. Open your system settings to install the language pack.",
 		"ru": "Пакет преобразования текста в речь не установлен. Откройте системные настройки, чтобы установить языковой пакет."
+	},
+	"malfunction_notifications_description_string": {
+		"en": "Send notifications when:",
+		"ru": "Отправлять нотификации, когда:"
+	},
+	"voice_not_found_notification_description_string": {
+		"en": "error playing announcements has occurred",
+		"ru": "произошла ошибка проигрывания объявлений"
 	}
 }

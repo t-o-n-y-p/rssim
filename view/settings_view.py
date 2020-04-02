@@ -1,6 +1,7 @@
 from logging import getLogger
 
 from ui.settings.checkbox.announcements_enabled_checkbox import AnnouncementsEnabledCheckbox
+from ui.settings.checkbox_group.malfunction_notifications_checkbox_group import MalfunctionNotificationsCheckboxGroup
 from ui.settings.knob.master_volume_settings_knob import MasterVolumeSettingsKnob
 from view import *
 from ui.button.accept_settings_button import AcceptSettingsButton
@@ -9,7 +10,7 @@ from ui.settings.enum_value_control.screen_resolution_control import ScreenResol
 from ui.settings.checkbox.display_fps_checkbox import DisplayFPSCheckbox
 from ui.settings.checkbox.fade_animations_enabled_checkbox import FadeAnimationsEnabledCheckbox
 from ui.settings.checkbox.clock_24h_checkbox import Clock24HCheckbox
-from ui.settings.checkbox_group.notifications_checkbox_group import NotificationsCheckboxGroup
+from ui.settings.checkbox_group.game_progress_notifications_checkbox_group import GameProgressNotificationsCheckboxGroup
 from ui.shader_sprite.settings_view_shader_sprite import SettingsViewShaderSprite
 
 
@@ -23,6 +24,7 @@ class SettingsView(AppBaseView):
                 self.temp_level_up_notification_enabled, self.temp_feature_unlocked_notification_enabled,
                 self.temp_construction_completed_notification_enabled, self.temp_enough_money_notification_enabled,
                 self.temp_bonus_expired_notification_enabled, self.temp_shop_storage_notification_enabled,
+                self.temp_voice_not_found_notification_enabled,
                 self.temp_master_volume, self.temp_announcements_enabled
             )
             self.controller.on_save_and_commit_state()
@@ -61,6 +63,9 @@ class SettingsView(AppBaseView):
         def on_update_shop_storage_notifications_state(new_state):
             self.temp_shop_storage_notification_enabled = new_state
 
+        def on_update_voice_not_found_notifications_state(new_state):
+            self.temp_voice_not_found_notification_enabled = new_state
+
         def on_update_master_volume(master_volume):
             self.temp_master_volume = master_volume
 
@@ -96,15 +101,21 @@ class SettingsView(AppBaseView):
         self.temp_bonus_expired_notification_enabled = FALSE
         self.temp_shop_storage_notification_enabled = FALSE
         self.temp_voice_not_found_notification_enabled = FALSE
-        self.notifications_checkbox_group \
-            = NotificationsCheckboxGroup(column=1, row=6,
-                                         on_update_state_actions=[on_update_level_up_notifications_state,
-                                                                  on_update_feature_unlocked_notifications_state,
-                                                                  on_update_construction_completed_notifications_state,
-                                                                  on_update_enough_money_notifications_state,
-                                                                  on_update_bonus_expired_notifications_state,
-                                                                  on_update_shop_storage_notifications_state],
-                                         parent_viewport=self.viewport)
+        self.game_progress_notifications_checkbox_group = GameProgressNotificationsCheckboxGroup(
+            column=1, row=9, on_update_state_actions=[
+                on_update_level_up_notifications_state,
+                on_update_feature_unlocked_notifications_state,
+                on_update_construction_completed_notifications_state,
+                on_update_enough_money_notifications_state,
+                on_update_bonus_expired_notifications_state,
+                on_update_shop_storage_notifications_state
+            ], parent_viewport=self.viewport
+        )
+        self.malfunction_notifications_checkbox_group = MalfunctionNotificationsCheckboxGroup(
+            column=1, row=-7, on_update_state_actions=[
+                on_update_voice_not_found_notifications_state
+            ], parent_viewport=self.viewport
+        )
         CONFIG_DB_CURSOR.execute('''SELECT app_width, app_height FROM screen_resolution_config 
                                     WHERE manual_setup = 1 AND app_width <= ?''',
                                  (windll.user32.GetSystemMetrics(0),))
@@ -121,7 +132,9 @@ class SettingsView(AppBaseView):
         self.buttons = [self.accept_settings_button, self.reject_settings_button,
                         *self.screen_resolution_control.buttons, *self.display_fps_checkbox.buttons,
                         *self.fade_animations_checkbox.buttons, *self.clock_24h_checkbox.buttons,
-                        *self.notifications_checkbox_group.buttons, *self.announcements_checkbox.buttons]
+                        *self.game_progress_notifications_checkbox_group.buttons,
+                        *self.malfunction_notifications_checkbox_group.buttons,
+                        *self.announcements_checkbox.buttons]
         self.shader_sprite = SettingsViewShaderSprite(view=self)
         self.on_mouse_motion_handlers.extend(self.master_volume_knob.on_mouse_motion_handlers)
         self.on_mouse_press_handlers.extend(self.master_volume_knob.on_mouse_press_handlers)
@@ -131,7 +144,8 @@ class SettingsView(AppBaseView):
             *self.display_fps_checkbox.on_window_resize_handlers,
             *self.fade_animations_checkbox.on_window_resize_handlers,
             *self.clock_24h_checkbox.on_window_resize_handlers,
-            *self.notifications_checkbox_group.on_window_resize_handlers,
+            *self.game_progress_notifications_checkbox_group.on_window_resize_handlers,
+            *self.malfunction_notifications_checkbox_group.on_window_resize_handlers,
             *self.screen_resolution_control.on_window_resize_handlers,
             *self.master_volume_knob.on_window_resize_handlers,
             *self.announcements_checkbox.on_window_resize_handlers,
@@ -163,8 +177,8 @@ class SettingsView(AppBaseView):
             self.temp_construction_completed_notification_enabled, self.temp_enough_money_notification_enabled, \
             self.temp_bonus_expired_notification_enabled, self.temp_shop_storage_notification_enabled, \
             self.temp_voice_not_found_notification_enabled = USER_DB_CURSOR.fetchone()
-        self.notifications_checkbox_group.on_activate()
-        self.notifications_checkbox_group.on_change_state(
+        self.game_progress_notifications_checkbox_group.on_activate()
+        self.game_progress_notifications_checkbox_group.on_change_state(
             [
                 self.temp_level_up_notification_enabled,
                 self.temp_feature_unlocked_notification_enabled,
@@ -172,6 +186,12 @@ class SettingsView(AppBaseView):
                 self.temp_enough_money_notification_enabled,
                 self.temp_bonus_expired_notification_enabled,
                 self.temp_shop_storage_notification_enabled
+            ]
+        )
+        self.malfunction_notifications_checkbox_group.on_activate()
+        self.malfunction_notifications_checkbox_group.on_change_state(
+            [
+                self.temp_voice_not_found_notification_enabled
             ]
         )
         USER_DB_CURSOR.execute('''SELECT master_volume, announcements_enabled FROM sound''')
@@ -189,7 +209,8 @@ class SettingsView(AppBaseView):
         self.display_fps_checkbox.on_deactivate()
         self.fade_animations_checkbox.on_deactivate()
         self.clock_24h_checkbox.on_deactivate()
-        self.notifications_checkbox_group.on_deactivate()
+        self.game_progress_notifications_checkbox_group.on_deactivate()
+        self.malfunction_notifications_checkbox_group.on_deactivate()
         self.master_volume_knob.on_deactivate()
         self.announcements_checkbox.on_deactivate()
 
@@ -203,7 +224,8 @@ class SettingsView(AppBaseView):
         self.display_fps_checkbox.on_update_current_locale(self.current_locale)
         self.fade_animations_checkbox.on_update_current_locale(self.current_locale)
         self.clock_24h_checkbox.on_update_current_locale(self.current_locale)
-        self.notifications_checkbox_group.on_update_current_locale(self.current_locale)
+        self.game_progress_notifications_checkbox_group.on_update_current_locale(self.current_locale)
+        self.malfunction_notifications_checkbox_group.on_update_current_locale(self.current_locale)
         self.master_volume_knob.on_update_current_locale(self.current_locale)
         self.announcements_checkbox.on_update_current_locale(self.current_locale)
 
@@ -214,7 +236,8 @@ class SettingsView(AppBaseView):
         self.display_fps_checkbox.on_update_opacity(self.opacity)
         self.fade_animations_checkbox.on_update_opacity(self.opacity)
         self.clock_24h_checkbox.on_update_opacity(self.opacity)
-        self.notifications_checkbox_group.on_update_opacity(self.opacity)
+        self.game_progress_notifications_checkbox_group.on_update_opacity(self.opacity)
+        self.malfunction_notifications_checkbox_group.on_update_opacity(self.opacity)
         self.master_volume_knob.on_update_opacity(self.opacity)
         self.announcements_checkbox.on_update_opacity(self.opacity)
 
