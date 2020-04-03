@@ -251,6 +251,10 @@ def get_map_environment_primary(map_id, tiers):
     return resource.texture(f'primary_m{map_id}e{tiers}.dds')
 
 
+def get_map_environment_secondary(map_id, tracks, tiers):
+    return resource.texture(f'secondary_m{map_id}t{tracks}e{tiers}.dds')
+
+
 @final
 class Viewport:
     def __init__(self):
