@@ -247,8 +247,8 @@ def get_map_tracks(map_id, tracks):
     return resource.texture(f'tracks_m{map_id}t{tracks}.dds')
 
 
-def get_map_environment(map_id, tiers, layer):
-    return resource.texture(f'environment_m{map_id}e{tiers}l{layer}.dds')
+def get_map_environment_primary(map_id, tiers):
+    return resource.texture(f'primary_m{map_id}e{tiers}.dds')
 
 
 @final

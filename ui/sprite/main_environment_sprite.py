@@ -13,7 +13,7 @@ class MainEnvironmentSprite(MapSprite):
         )
         USER_DB_CURSOR.execute('''SELECT unlocked_environment FROM map_progress WHERE map_id = ?''', (self.map_id, ))
         unlocked_environment = USER_DB_CURSOR.fetchone()[0]
-        self.texture = get_map_environment(map_id=self.map_id, tiers=unlocked_environment, layer=1)
+        self.texture = get_map_environment_primary(map_id=self.map_id, tiers=unlocked_environment)
         self.batch = BATCHES['main_batch']
         self.group = GROUPS['environment']
 
@@ -21,4 +21,4 @@ class MainEnvironmentSprite(MapSprite):
         return 0, 0
 
     def on_unlock_environment(self, tier):
-        self.on_update_texture(get_map_environment(map_id=self.map_id, tiers=tier, layer=1))
+        self.on_update_texture(get_map_environment_primary(map_id=self.map_id, tiers=tier))
