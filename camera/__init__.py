@@ -4,10 +4,7 @@ from pyglet.gl import glTranslatef, glScalef
 
 
 class Camera(ABC):
-    """ A simple 2D camera that contains the speed and offset."""
-
     def __init__(self, scroll_speed=1, min_zoom=1, max_zoom=4):
-        assert min_zoom <= max_zoom, "Minimum zoom must not be greater than maximum zoom"
         self.scroll_speed = scroll_speed
         self.max_zoom = max_zoom
         self.min_zoom = min_zoom

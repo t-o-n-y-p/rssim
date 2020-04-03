@@ -7,32 +7,37 @@ from ui.sprite.railroad_switch_sprite import RailroadSwitchSprite
 
 class RailroadSwitchView(MapBaseView, ABC):
     def __init__(self, controller, map_id, track_param_1, track_param_2, switch_type):
-        super().__init__(controller, map_id, logger=getLogger(
+        super().__init__(
+            controller, map_id, logger=getLogger(
                 f'root.app.game.map.{map_id}.railroad_switch.{track_param_1}.{track_param_2}.{switch_type}.view'
             )
         )
         self.track_param_1, self.track_param_2, self.switch_type = track_param_1, track_param_2, switch_type
-        CONFIG_DB_CURSOR.execute('''SELECT region_x, region_y, region_w, region_h FROM switches_config
-                                    WHERE track_param_1 = ? AND track_param_2 = ? AND switch_type = ? 
-                                    AND map_id = ?''',
-                                 (self.track_param_1, self.track_param_2, self.switch_type, self.map_id))
+        CONFIG_DB_CURSOR.execute(
+            '''SELECT region_x, region_y, region_w, region_h FROM switches_config
+            WHERE track_param_1 = ? AND track_param_2 = ? AND switch_type = ? AND map_id = ?''',
+            (self.track_param_1, self.track_param_2, self.switch_type, self.map_id)
+        )
         self.switch_region = CONFIG_DB_CURSOR.fetchone()
-        USER_DB_CURSOR.execute('''SELECT current_position FROM switches 
-                                  WHERE track_param_1 = ? AND track_param_2 = ? AND switch_type = ? 
-                                  AND map_id = ?''',
-                               (self.track_param_1, self.track_param_2, self.switch_type, self.map_id))
+        USER_DB_CURSOR.execute(
+            '''SELECT current_position FROM switches 
+            WHERE track_param_1 = ? AND track_param_2 = ? AND switch_type = ? AND map_id = ?''',
+            (self.track_param_1, self.track_param_2, self.switch_type, self.map_id)
+        )
         self.current_position = USER_DB_CURSOR.fetchone()[0]
         self.images = {
             self.track_param_1: SWITCHES_STRAIGHT.get_region(*self.switch_region),
             self.track_param_2: SWITCHES_DIVERGING.get_region(*self.switch_region)
         }
-        USER_DB_CURSOR.execute('''SELECT locked FROM switches 
-                                  WHERE track_param_1 = ? AND track_param_2 = ? AND switch_type = ? 
-                                  AND map_id = ?''',
-                               (self.track_param_1, self.track_param_2, self.switch_type, self.map_id))
+        USER_DB_CURSOR.execute(
+            '''SELECT locked FROM switches 
+            WHERE track_param_1 = ? AND track_param_2 = ? AND switch_type = ? AND map_id = ?''',
+            (self.track_param_1, self.track_param_2, self.switch_type, self.map_id)
+        )
         self.locked = USER_DB_CURSOR.fetchone()[0]
-        self.sprite = RailroadSwitchSprite(self.map_id, self.track_param_1, self.track_param_2, self.switch_type,
-                                           parent_viewport=self.viewport)
+        self.sprite = RailroadSwitchSprite(
+            self.map_id, self.track_param_1, self.track_param_2, self.switch_type, parent_viewport=self.viewport
+        )
         self.sprite.on_update_texture(self.images[self.current_position])
         self.on_append_window_handlers()
 

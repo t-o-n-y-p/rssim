@@ -7,19 +7,23 @@ from ui.label.shop_level_placeholder_label import ShopLevelPlaceholderLabel
 
 class ShopPlaceholderView(MapBaseView, ABC):
     def __init__(self, controller, map_id, shop_id):
-        super().__init__(controller, map_id,
-                         logger=getLogger(f'root.app.game.map.{map_id}.shop.{shop_id}.placeholder.view'),
-                         child_window=True)
+        super().__init__(
+            controller, map_id, logger=getLogger(f'root.app.game.map.{map_id}.shop.{shop_id}.placeholder.view'),
+            child_window=True
+        )
         self.shop_id = shop_id
         self.lock_label = ShopLockedLabel(parent_viewport=self.viewport)
         self.description_label = ShopLevelPlaceholderLabel(parent_viewport=self.viewport)
-        CONFIG_DB_CURSOR.execute('''SELECT level_required FROM shops_config
-                                    WHERE map_id = ? AND shop_id = ?''', (self.map_id, self.shop_id))
+        CONFIG_DB_CURSOR.execute(
+            '''SELECT level_required FROM shops_config WHERE map_id = ? AND shop_id = ?''', (self.map_id, self.shop_id)
+        )
         self.level_required = CONFIG_DB_CURSOR.fetchone()[0]
         self.description_label.on_update_args((self.level_required, ))
-        self.on_window_resize_handlers.extend([
-            self.lock_label.on_window_resize, self.description_label.on_window_resize
-        ])
+        self.on_window_resize_handlers.extend(
+            [
+                self.lock_label.on_window_resize, self.description_label.on_window_resize
+            ]
+        )
         self.on_append_window_handlers()
 
     @final

@@ -18,9 +18,10 @@ class BonusCodeInteractiveLabel(InteractiveLabel):
         return (self.parent_viewport.x1 + self.parent_viewport.x2) // 2
 
     def get_y(self):
-        return (self.parent_viewport.y1 + get_bottom_bar_height(self.screen_resolution)
-                + self.parent_viewport.y2 - get_top_bar_height(self.screen_resolution)) // 2 \
-               + 5 * get_bottom_bar_height(self.screen_resolution) // 8
+        return (
+            self.parent_viewport.y1 + get_bottom_bar_height(self.screen_resolution)
+            + self.parent_viewport.y2 - get_top_bar_height(self.screen_resolution)
+        ) // 2 + 5 * get_bottom_bar_height(self.screen_resolution) // 8
 
     def get_font_size(self):
         return get_top_bar_height(self.screen_resolution)

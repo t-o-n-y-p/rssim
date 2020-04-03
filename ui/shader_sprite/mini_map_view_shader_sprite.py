@@ -20,9 +20,11 @@ class MiniMapViewShaderSprite(ShaderSprite):
 
     def set_uniforms(self):
         self.shader.uniforms.mini_map_opacity = self.view.opacity
-        self.shader.uniforms.mini_map_position_size = (*get_mini_map_position(self.screen_resolution),
-                                                       get_mini_map_width(self.screen_resolution),
-                                                       get_mini_map_height(self.screen_resolution))
-        self.shader.uniforms.mini_map_frame_position_size \
-            = (*self.view.get_mini_map_frame_position(),
-               self.view.get_mini_map_frame_width(), self.view.get_mini_map_frame_height())
+        self.shader.uniforms.mini_map_position_size = (
+            *get_mini_map_position(self.screen_resolution),
+            get_mini_map_width(self.screen_resolution), get_mini_map_height(self.screen_resolution)
+        )
+        self.shader.uniforms.mini_map_frame_position_size = (
+            *self.view.get_mini_map_frame_position(),
+            self.view.get_mini_map_frame_width(), self.view.get_mini_map_frame_height()
+        )

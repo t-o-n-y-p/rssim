@@ -7,9 +7,10 @@ from ui import *
 @final
 class PageControlCounterLabel(LocalizedLabel):
     def __init__(self, parent_viewport):
-        super().__init__(logger=getLogger('root.page_control_counter_label'),
-                         i18n_resources_key='page_control_label_string',
-                         parent_viewport=parent_viewport)
+        super().__init__(
+            logger=getLogger('root.page_control_counter_label'),
+            i18n_resources_key='page_control_label_string', parent_viewport=parent_viewport
+        )
         self.arguments = (0, 0)
         self.font_name = 'Arial'
         self.base_color = WHITE_RGB

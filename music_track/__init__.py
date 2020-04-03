@@ -50,8 +50,8 @@ class MusicTrack:
             while self.messages[0][MESSAGE_TIME] <= perf_counter() - self.playback_start_time:
                 ctypes.windll.winmm.midiOutShortMsg(
                     midi_device,
-                    round(self.messages[0][MESSAGE_VOLUME] * volume_multiplier) << 16
-                    | self.messages[0][MESSAGE_PAYLOAD]
+                    round(self.messages[0][MESSAGE_VOLUME] * volume_multiplier)
+                    << 16 | self.messages[0][MESSAGE_PAYLOAD]
                 )
                 self.messages.pop(0)
                 if len(self.messages) == 0:

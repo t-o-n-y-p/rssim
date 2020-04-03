@@ -36,12 +36,16 @@ class GameController(GameBaseController):
         self.child_controllers = [self.bonus_code_manager, self.map_switcher, *self.maps]
         self.map_transition_animations = {
             PASSENGER_MAP: {
-                FREIGHT_MAP: TransitionAnimation(fade_out_animation=self.maps[PASSENGER_MAP].fade_out_animation,
-                                                 fade_in_animation=self.maps[FREIGHT_MAP].fade_in_animation)
+                FREIGHT_MAP: TransitionAnimation(
+                    fade_out_animation=self.maps[PASSENGER_MAP].fade_out_animation,
+                    fade_in_animation=self.maps[FREIGHT_MAP].fade_in_animation
+                )
             },
             FREIGHT_MAP: {
-                PASSENGER_MAP: TransitionAnimation(fade_out_animation=self.maps[FREIGHT_MAP].fade_out_animation,
-                                                   fade_in_animation=self.maps[PASSENGER_MAP].fade_in_animation)
+                PASSENGER_MAP: TransitionAnimation(
+                    fade_out_animation=self.maps[FREIGHT_MAP].fade_out_animation,
+                    fade_in_animation=self.maps[PASSENGER_MAP].fade_in_animation
+                )
             }
         }
 
@@ -61,9 +65,8 @@ class GameController(GameBaseController):
         self.model.on_add_exp(exp)
 
     def on_deactivate_money_target_for_inactive_maps(self, active_map_id):
-        for m in self.maps:
-            if m.map_id != active_map_id:
-                m.on_deactivate_money_target()
+        for m in [m for m in self.maps if m.map_id != active_map_id]:
+            m.on_deactivate_money_target()
 
     def on_add_exp_bonus(self, exp_bonus):
         self.model.on_add_exp_bonus(exp_bonus)

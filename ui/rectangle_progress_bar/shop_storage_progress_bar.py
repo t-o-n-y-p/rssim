@@ -17,10 +17,12 @@ class ShopStorageProgressBar(RectangleProgressBar):
         self.on_window_resize_handlers.append(self.text_label.on_window_resize)
 
     def get_position(self):
-        bottom_bar_height = get_bottom_bar_height(self.screen_resolution)
-        return (self.parent_viewport.x1 + int(6.875 * bottom_bar_height) * 2
-                - bottom_bar_height - 5 * bottom_bar_height,
-                self.parent_viewport.y1 + 3 * bottom_bar_height + bottom_bar_height // 8)
+        return (
+            self.parent_viewport.x1 + int(6.875 * get_bottom_bar_height(self.screen_resolution)) * 2
+            - get_bottom_bar_height(self.screen_resolution) - 5 * get_bottom_bar_height(self.screen_resolution),
+            self.parent_viewport.y1 + 3 * get_bottom_bar_height(self.screen_resolution)
+            + get_bottom_bar_height(self.screen_resolution) // 8
+        )
 
     def get_scale(self):
         return get_bottom_bar_height(self.screen_resolution) / 80 * (4/3)

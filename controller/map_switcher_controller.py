@@ -10,8 +10,9 @@ from view.map_switcher_view import MapSwitcherView
 @final
 class MapSwitcherController(GameBaseController):
     def __init__(self, game_controller):
-        super().__init__(parent_controller=game_controller,
-                         logger=getLogger(f'root.app.game.map_switcher.controller'))
+        super().__init__(
+            parent_controller=game_controller, logger=getLogger(f'root.app.game.map_switcher.controller')
+        )
         self.view = MapSwitcherView(controller=self)
         self.model = MapSwitcherModel(controller=self, view=self.view)
         self.fade_in_animation = MapSwitcherFadeInAnimation(self.view)

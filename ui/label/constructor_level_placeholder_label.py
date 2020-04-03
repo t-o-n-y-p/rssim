@@ -7,9 +7,10 @@ from ui import *
 @final
 class ConstructorLevelPlaceholderLabel(LocalizedLabel):
     def __init__(self, parent_viewport):
-        super().__init__(logger=getLogger('root.constructor_level_placeholder_label'),
-                         i18n_resources_key='unlock_condition_from_level_description_string',
-                         parent_viewport=parent_viewport)
+        super().__init__(
+            logger=getLogger('root.constructor_level_placeholder_label'),
+            i18n_resources_key='unlock_condition_from_level_description_string', parent_viewport=parent_viewport
+        )
         self.arguments = (0,)
         self.font_name = 'Arial'
         self.base_color = GREY_RGB

@@ -24,9 +24,10 @@ class Checkbox(ABC):
         USER_DB_CURSOR.execute('SELECT current_locale FROM i18n')
         self.current_locale = USER_DB_CURSOR.fetchone()[0]
         self.on_update_state_action = on_update_state_action
-        self.checked_checkbox_button, self.unchecked_checkbox_button \
-            = create_two_state_button(CheckedCheckboxButton(on_click_action=on_uncheck, parent_viewport=self.viewport),
-                                      UncheckedCheckboxButton(on_click_action=on_check, parent_viewport=self.viewport))
+        self.checked_checkbox_button, self.unchecked_checkbox_button = create_two_state_button(
+            CheckedCheckboxButton(on_click_action=on_uncheck, parent_viewport=self.viewport),
+            UncheckedCheckboxButton(on_click_action=on_check, parent_viewport=self.viewport)
+        )
         self.buttons = [self.checked_checkbox_button, self.unchecked_checkbox_button]
         self.screen_resolution = (0, 0)
         self.description_label = None
@@ -65,15 +66,19 @@ class Checkbox(ABC):
     @window_size_has_changed
     def on_window_resize(self, width, height):
         self.screen_resolution = width, height
-        self.viewport.x1 = self.parent_viewport.x1 \
-                           + (self.column + 1) * (self.parent_viewport.x2 - self.parent_viewport.x1) // 4
+        self.viewport.x1 \
+            = self.parent_viewport.x1 + (self.column + 1) * (self.parent_viewport.x2 - self.parent_viewport.x1) // 4
         self.viewport.x2 = self.viewport.x1 + (self.parent_viewport.x2 - self.parent_viewport.x1) // 2
-        mid_line = (self.parent_viewport.y1 + get_bottom_bar_height(self.screen_resolution)
-                    + self.parent_viewport.y2 - get_top_bar_height(self.screen_resolution)) // 2
-        self.viewport.y1 = mid_line + self.row * (5 * get_top_bar_height(self.screen_resolution) // 8) \
-                           - get_top_bar_height(self.screen_resolution) // 2
-        self.viewport.y2 = mid_line + self.row * (5 * get_top_bar_height(self.screen_resolution) // 8) \
-                           + get_top_bar_height(self.screen_resolution) // 2
+        mid_line = (
+            self.parent_viewport.y1 + get_bottom_bar_height(self.screen_resolution)
+            + self.parent_viewport.y2 - get_top_bar_height(self.screen_resolution)
+        ) // 2
+        self.viewport.y1 \
+            = mid_line + self.row * (5 * get_top_bar_height(self.screen_resolution) // 8) \
+            - get_top_bar_height(self.screen_resolution) // 2
+        self.viewport.y2 \
+            = mid_line + self.row * (5 * get_top_bar_height(self.screen_resolution) // 8) \
+            + get_top_bar_height(self.screen_resolution) // 2
 
     @final
     def on_update_current_locale(self, new_locale):

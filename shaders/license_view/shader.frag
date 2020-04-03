@@ -9,13 +9,10 @@ uniform int button_w[3];
 uniform int button_h[3];
 uniform int number_of_buttons = 3;
 
-bool is_button_border()
-{
+bool is_button_border() {
     int margin_x, margin_y;
-    for(int i = 0; i < number_of_buttons; i++)
-    {
-        if (is_button_activated[i] == 1)
-        {
+    for(int i = 0; i < number_of_buttons; i++) {
+        if (is_button_activated[i] == 1) {
             margin_x = int(gl_FragCoord[0]) - button_x[i];
             margin_y = int(gl_FragCoord[1]) - button_y[i];
             if ((margin_x >= 0 && margin_x <= button_w[i] - 1
@@ -32,8 +29,7 @@ bool is_button_border()
     return false;
 }
 
-void main()
-{
+void main() {
     // button borders are filled with red
     if (is_button_border())
         color_frag = vec4(1.0, 0.0, 0.0, float(license_opacity) / 255.0);

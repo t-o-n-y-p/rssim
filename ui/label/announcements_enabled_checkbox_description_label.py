@@ -7,9 +7,10 @@ from ui import *
 @final
 class AnnouncementsEnabledCheckboxDescriptionLabel(LocalizedLabel):
     def __init__(self, parent_viewport):
-        super().__init__(logger=getLogger('root.announcements_enabled_checkbox_description_label'),
-                         i18n_resources_key='announcements_enabled_description_string',
-                         parent_viewport=parent_viewport)
+        super().__init__(
+            logger=getLogger('root.announcements_enabled_checkbox_description_label'),
+            i18n_resources_key='announcements_enabled_description_string', parent_viewport=parent_viewport
+        )
         self.font_name = 'Arial'
         self.base_color = WHITE_RGB
         self.anchor_x = 'left'

@@ -7,8 +7,10 @@ from ui import *
 @final
 class ShopLevelPlaceholderLabel(LocalizedLabel):
     def __init__(self, parent_viewport):
-        super().__init__(logger=getLogger('root.shop_level_placeholder_label'),
-                         i18n_resources_key='shop_placeholder_description_string', parent_viewport=parent_viewport)
+        super().__init__(
+            logger=getLogger('root.shop_level_placeholder_label'),
+            i18n_resources_key='shop_placeholder_description_string', parent_viewport=parent_viewport
+        )
         self.arguments = (0,)
         self.font_name = 'Arial'
         self.base_color = GREY_RGB

@@ -13,13 +13,10 @@ uniform int button_h[5];
 uniform int number_of_buttons = 5;
 
 
-bool is_button_border()
-{
+bool is_button_border() {
     int button_margin_x, button_margin_y;
-    for(int i = 0; i < number_of_buttons; i++)
-    {
-        if (is_button_activated[i] == 1)
-        {
+    for(int i = 0; i < number_of_buttons; i++) {
+        if (is_button_activated[i] == 1) {
             button_margin_x = int(gl_FragCoord[0]) - button_x[i];
             button_margin_y = int(gl_FragCoord[1]) - button_y[i];
             if ((button_margin_x >= 0 && button_margin_x <= button_w[i] - 1
@@ -36,22 +33,18 @@ bool is_button_border()
     return false;
 }
 
-int is_vertical_line(int margin_x, int margin_y, int vertical_line_width)
-{
-    for (int i=0; i<=8; i+=2)
-    {
+int is_vertical_line(int margin_x, int margin_y, int vertical_line_width) {
+    for (int i=0; i<=8; i+=2) {
         int baseline = int(i * (shop_stages_cells_size[0] - vertical_line_width) / 8);
         if (margin_x >= baseline && margin_x <= baseline + vertical_line_width - 1
-            && margin_y >= 0 && margin_y <= shop_stages_cells_size[1] - 1)
-        {
+            && margin_y >= 0 && margin_y <= shop_stages_cells_size[1] - 1) {
             if (i == 0)
                 return 1;
             else
                 return int(i / 2);
         }
     }
-    for (int i=1; i<=7; i+=2)
-    {
+    for (int i=1; i<=7; i+=2) {
         int baseline = int(i * (shop_stages_cells_size[0] - vertical_line_width) / 8);
         if (margin_x >= baseline && margin_x <= baseline + vertical_line_width - 1
             && ((margin_y >= 0 && margin_y <= vertical_line_width * 3 - 1
@@ -62,13 +55,11 @@ int is_vertical_line(int margin_x, int margin_y, int vertical_line_width)
     return -1;
 }
 
-int is_grey_horizontal_line(int margin_x, int margin_y, int vertical_line_width)
-{
+int is_grey_horizontal_line(int margin_x, int margin_y, int vertical_line_width) {
     if (margin_x >= 0 && margin_x <= shop_stages_cells_size[0] - 1
         && ((margin_y >= 0 && margin_y <= vertical_line_width - 1)
             || (margin_y >= shop_stages_cells_size[1] - vertical_line_width
-                && margin_y <= shop_stages_cells_size[1] - 1)))
-    {
+                && margin_y <= shop_stages_cells_size[1] - 1))) {
         int stage_value = -1;
         for (int i=4; i>=1; i--)
             if (margin_x < int(i * (shop_stages_cells_size[0] - vertical_line_width) / 4))
@@ -80,13 +71,11 @@ int is_grey_horizontal_line(int margin_x, int margin_y, int vertical_line_width)
         return -1;
 }
 
-int is_light_blue_horizontal_line(int margin_x, int margin_y, int vertical_line_width)
-{
+int is_light_blue_horizontal_line(int margin_x, int margin_y, int vertical_line_width) {
     if (margin_x >= 0 && margin_x <= shop_stages_cells_size[0] - 1
         && ((margin_y >= vertical_line_width && margin_y <= vertical_line_width * 3 - 1)
             || (margin_y >= shop_stages_cells_size[1] - vertical_line_width * 3
-                && margin_y <= shop_stages_cells_size[1] - vertical_line_width - 1)))
-    {
+                && margin_y <= shop_stages_cells_size[1] - vertical_line_width - 1))) {
         int stage_value = -1;
         for (int i=4; i>=1; i--)
             if (margin_x < int(i * (shop_stages_cells_size[0] - vertical_line_width) / 4))
@@ -98,21 +87,17 @@ int is_light_blue_horizontal_line(int margin_x, int margin_y, int vertical_line_
         return -1;
 }
 
-void main()
-{
+void main() {
     int margin_x = int(gl_FragCoord[0]) - shop_stages_cells_position[0];
     int margin_y = int(gl_FragCoord[1]) - shop_stages_cells_position[1];
     int vertical_line_width = int(shop_stages_cells_size[0] / 80);
     int number_of_stage_vertical_line = is_vertical_line(margin_x, margin_y, vertical_line_width);
-    if (number_of_stage_vertical_line < 0)
-    {
+    if (number_of_stage_vertical_line < 0) {
         int number_of_stage_horizontal_line = is_grey_horizontal_line(margin_x, margin_y, vertical_line_width);
-        if (number_of_stage_horizontal_line < 0)
-        {
+        if (number_of_stage_horizontal_line < 0) {
             int number_of_light_blue_stage_horizontal_line
             = is_light_blue_horizontal_line(margin_x, margin_y, vertical_line_width);
-            if (number_of_light_blue_stage_horizontal_line < 0)
-            {
+            if (number_of_light_blue_stage_horizontal_line < 0) {
                 if (is_button_border())
                     color_frag = vec4(1.0, 0.0, 0.0, float(shop_constructor_opacity) / 255.0);
                 else

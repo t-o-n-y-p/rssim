@@ -7,20 +7,23 @@ from ui.sprite.crossover_sprite import CrossoverSprite
 
 class CrossoverView(MapBaseView, ABC):
     def __init__(self, controller, map_id, track_param_1, track_param_2, crossover_type):
-        super().__init__(controller, map_id, logger=getLogger(
+        super().__init__(
+            controller, map_id, logger=getLogger(
                 f'root.app.game.map.{map_id}.crossover.{track_param_1}.{track_param_2}.{crossover_type}.view'
             )
         )
         self.track_param_1, self.track_param_2, self.crossover_type = track_param_1, track_param_2, crossover_type
-        CONFIG_DB_CURSOR.execute('''SELECT region_x, region_y, region_w, region_h FROM crossovers_config
-                                    WHERE track_param_1 = ? AND track_param_2 = ? AND crossover_type = ? 
-                                    AND map_id = ?''',
-                                 (self.track_param_1, self.track_param_2, self.crossover_type, self.map_id))
+        CONFIG_DB_CURSOR.execute(
+            '''SELECT region_x, region_y, region_w, region_h FROM crossovers_config
+            WHERE track_param_1 = ? AND track_param_2 = ? AND crossover_type = ? AND map_id = ?''',
+            (self.track_param_1, self.track_param_2, self.crossover_type, self.map_id)
+        )
         self.crossover_region = CONFIG_DB_CURSOR.fetchone()
-        USER_DB_CURSOR.execute('''SELECT current_position_1, current_position_2 FROM crossovers 
-                                  WHERE track_param_1 = ? AND track_param_2 = ? AND crossover_type = ? 
-                                  AND map_id = ?''',
-                               (self.track_param_1, self.track_param_2, self.crossover_type, self.map_id))
+        USER_DB_CURSOR.execute(
+            '''SELECT current_position_1, current_position_2 FROM crossovers 
+            WHERE track_param_1 = ? AND track_param_2 = ? AND crossover_type = ? AND map_id = ?''',
+            (self.track_param_1, self.track_param_2, self.crossover_type, self.map_id)
+        )
         self.current_position_1, self.current_position_2 = USER_DB_CURSOR.fetchone()
         self.images = {
             self.track_param_1: {
@@ -32,13 +35,15 @@ class CrossoverView(MapBaseView, ABC):
                 self.track_param_2: SWITCHES_STRAIGHT.get_region(*self.crossover_region)
             }
         }
-        USER_DB_CURSOR.execute('''SELECT locked FROM crossovers 
-                                  WHERE track_param_1 = ? AND track_param_2 = ? AND crossover_type = ? 
-                                  AND map_id = ?''',
-                               (self.track_param_1, self.track_param_2, self.crossover_type, self.map_id))
+        USER_DB_CURSOR.execute(
+            '''SELECT locked FROM crossovers 
+            WHERE track_param_1 = ? AND track_param_2 = ? AND crossover_type = ? AND map_id = ?''',
+            (self.track_param_1, self.track_param_2, self.crossover_type, self.map_id)
+        )
         self.locked = USER_DB_CURSOR.fetchone()[0]
-        self.sprite = CrossoverSprite(self.map_id, self.track_param_1, self.track_param_2, self.crossover_type,
-                                      parent_viewport=self.viewport)
+        self.sprite = CrossoverSprite(
+            self.map_id, self.track_param_1, self.track_param_2, self.crossover_type, parent_viewport=self.viewport
+        )
         self.sprite.on_update_texture(self.images[self.current_position_1][self.current_position_2])
         self.on_append_window_handlers()
 

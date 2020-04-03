@@ -14,15 +14,18 @@ from ui.shader_sprite.onboarding_page_control_shader_sprite import OnboardingPag
 @final
 class OnboardingPageControl(PageControl):
     def __init__(self, parent_viewport):
-        super().__init__(logger=getLogger('root.app.onboarding.view.onboarding_page_control'),
-                         parent_viewport=parent_viewport)
-        self.pages = [MapOnboardingPage(parent_viewport=self.viewport),
-                      MapSwitcherOnboardingPage(parent_viewport=self.viewport),
-                      ConstructorOnboardingPage(parent_viewport=self.viewport),
-                      ExpMoneyOnboardingPage(parent_viewport=self.viewport),
-                      ScheduleOnboardingPage(parent_viewport=self.viewport),
-                      ClockOnboardingPage(parent_viewport=self.viewport),
-                      SettingsOnboardingPage(parent_viewport=self.viewport)]
+        super().__init__(
+            logger=getLogger('root.app.onboarding.view.onboarding_page_control'), parent_viewport=parent_viewport
+        )
+        self.pages = [
+            MapOnboardingPage(parent_viewport=self.viewport),
+            MapSwitcherOnboardingPage(parent_viewport=self.viewport),
+            ConstructorOnboardingPage(parent_viewport=self.viewport),
+            ExpMoneyOnboardingPage(parent_viewport=self.viewport),
+            ScheduleOnboardingPage(parent_viewport=self.viewport),
+            ClockOnboardingPage(parent_viewport=self.viewport),
+            SettingsOnboardingPage(parent_viewport=self.viewport)
+        ]
         self.shader_sprite = OnboardingPageControlShaderSprite(view=self)
         self.on_window_resize_handlers.append(self.shader_sprite.on_window_resize)
         for p in self.pages:

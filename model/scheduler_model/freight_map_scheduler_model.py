@@ -11,8 +11,10 @@ class FreightMapSchedulerModel(SchedulerModel):
         super().__init__(controller, view, map_id=FREIGHT_MAP)
 
     def on_update_min_supported_cars_by_direction(self):
-        CONFIG_DB_CURSOR.execute('''SELECT supported_cars_min FROM track_config 
-                                    WHERE track_number = ? AND map_id = ?''', (self.unlocked_tracks, self.map_id))
+        CONFIG_DB_CURSOR.execute(
+            '''SELECT supported_cars_min FROM track_config WHERE track_number = ? AND map_id = ?''',
+            (self.unlocked_tracks, self.map_id)
+        )
         min_supported_cars_for_track = CONFIG_DB_CURSOR.fetchone()[0]
         for direction in range(len(FREIGHT_MAP_MAIN_PRIORITY_TRACKS)):
             for new_direction in range(len(FREIGHT_MAP_MAIN_PRIORITY_TRACKS[direction])):

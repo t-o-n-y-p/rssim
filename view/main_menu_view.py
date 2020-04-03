@@ -29,21 +29,28 @@ class MainMenuView(AppBaseView):
             self.controller.parent_controller.on_open_bonus_code()
 
         super().__init__(controller, logger=getLogger('root.app.main_menu.view'))
-        self.create_station_button = CreateStationButton(on_click_action=on_create_station,
-                                                         parent_viewport=self.viewport)
-        self.back_to_the_station_button = BackToTheStationButton(on_click_action=on_back_to_the_station,
-                                                                 parent_viewport=self.viewport)
+        self.create_station_button = CreateStationButton(
+            on_click_action=on_create_station, parent_viewport=self.viewport
+        )
+        self.back_to_the_station_button = BackToTheStationButton(
+            on_click_action=on_back_to_the_station, parent_viewport=self.viewport
+        )
         self.open_license_button = OpenLicenseButton(on_click_action=on_open_license, parent_viewport=self.viewport)
-        self.open_settings_button = OpenSettingsMainMenuViewButton(on_click_action=on_open_settings,
-                                                                   parent_viewport=self.viewport)
+        self.open_settings_button = OpenSettingsMainMenuViewButton(
+            on_click_action=on_open_settings, parent_viewport=self.viewport
+        )
         self.enter_code_button = EnterCodeButton(on_click_action=on_open_bonus_code, parent_viewport=self.viewport)
-        self.buttons = [self.create_station_button, self.back_to_the_station_button, self.open_license_button,
-                        self.open_settings_button, self.enter_code_button]
+        self.buttons = [
+            self.create_station_button, self.back_to_the_station_button, self.open_license_button,
+            self.open_settings_button, self.enter_code_button
+        ]
         self.open_license_label = OpenLicenseLabel(parent_viewport=self.viewport)
         self.shader_sprite = MainMenuViewShaderSprite(view=self)
-        self.on_window_resize_handlers.extend([
-            self.shader_sprite.on_window_resize, self.open_license_label.on_window_resize
-        ])
+        self.on_window_resize_handlers.extend(
+            [
+                self.shader_sprite.on_window_resize, self.open_license_label.on_window_resize
+            ]
+        )
         self.on_append_window_handlers()
 
     @view_is_not_active

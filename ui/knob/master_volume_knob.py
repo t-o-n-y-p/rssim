@@ -8,8 +8,10 @@ from ui.label.master_volume_value_label import MasterVolumeValueLabel
 @final
 class MasterVolumeKnob(Knob):
     def __init__(self, on_value_update_action, parent_viewport):
-        super().__init__(on_value_update_action=on_value_update_action, parent_viewport=parent_viewport,
-                         logger=getLogger('root.app.game.view.master_volume_knob'))
+        super().__init__(
+            on_value_update_action=on_value_update_action, parent_viewport=parent_viewport,
+            logger=getLogger('root.app.game.view.master_volume_knob')
+        )
         self.main_color = RED_RGB
         self.background_color = RED_GREY_RGB
         self.value_label = MasterVolumeValueLabel(parent_viewport=self.viewport)

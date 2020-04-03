@@ -15,15 +15,18 @@ class OnboardingView(AppBaseView):
 
         super().__init__(controller, logger=getLogger('root.app.onboarding.view'))
         self.onboarding_page_control = OnboardingPageControl(parent_viewport=self.viewport)
-        self.skip_onboarding_button = SkipOnboardingButton(on_click_action=on_skip_onboarding,
-                                                           parent_viewport=self.viewport)
+        self.skip_onboarding_button = SkipOnboardingButton(
+            on_click_action=on_skip_onboarding, parent_viewport=self.viewport
+        )
         self.buttons = [*self.onboarding_page_control.buttons, self.skip_onboarding_button]
         self.shader_sprite = OnboardingViewShaderSprite(view=self)
         self.skip_onboarding_label = SkipOnboardingLabel(parent_viewport=self.viewport)
-        self.on_window_resize_handlers.extend([
-            *self.onboarding_page_control.on_window_resize_handlers,
-            self.shader_sprite.on_window_resize, self.skip_onboarding_label.on_window_resize
-        ])
+        self.on_window_resize_handlers.extend(
+            [
+                *self.onboarding_page_control.on_window_resize_handlers,
+                self.shader_sprite.on_window_resize, self.skip_onboarding_label.on_window_resize
+            ]
+        )
         self.on_append_window_handlers()
 
     @view_is_not_active

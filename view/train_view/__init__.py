@@ -23,9 +23,10 @@ class TrainView(MapBaseView, ABC):
         self.on_append_window_handlers()
 
     def on_train_setup(self):
-        USER_DB_CURSOR.execute('''SELECT cars, state, direction, car_image_collection 
-                                  FROM trains WHERE train_id = ? AND map_id = ?''',
-                               (self.train_id, self.map_id))
+        USER_DB_CURSOR.execute(
+            '''SELECT cars, state, direction, car_image_collection FROM trains WHERE train_id = ? AND map_id = ?''',
+            (self.train_id, self.map_id)
+        )
         self.cars, self.state, self.direction, self.car_image_collection = USER_DB_CURSOR.fetchone()
 
     def on_train_init(self, cars, state, direction, car_image_collection, game_time, game_time_fraction, dt_multiplier):
@@ -46,8 +47,9 @@ class TrainView(MapBaseView, ABC):
             else:
                 self.car_sprites[i].on_update_texture(self.car_mid_image[self.car_image_collection])
 
-            self.boarding_light_sprites.append(BoardingLightsSprite(self.map_id, self.train_id,
-                                                                    parent_viewport=self.viewport))
+            self.boarding_light_sprites.append(
+                BoardingLightsSprite(self.map_id, self.train_id, parent_viewport=self.viewport)
+            )
             self.boarding_light_sprites[i].on_update_texture(self.boarding_light_image[self.car_image_collection])
 
     @final

@@ -43,10 +43,12 @@ class PageControl(ABC):
         self.pages = []
         self.current_page = 0
         self.current_page_label = PageControlCounterLabel(parent_viewport=self.viewport)
-        self.previous_page_button = PreviousPageButton(on_click_action=on_navigate_to_previous_page,
-                                                       parent_viewport=self.viewport)
-        self.next_page_button = NextPageButton(on_click_action=on_navigate_to_next_page,
-                                               parent_viewport=self.viewport)
+        self.previous_page_button = PreviousPageButton(
+            on_click_action=on_navigate_to_previous_page, parent_viewport=self.viewport
+        )
+        self.next_page_button = NextPageButton(
+            on_click_action=on_navigate_to_next_page, parent_viewport=self.viewport
+        )
         self.buttons = [self.previous_page_button, self.next_page_button]
         self.shader_sprite = None
         self.opacity = 0

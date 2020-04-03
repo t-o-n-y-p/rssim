@@ -26,8 +26,10 @@ if not path.exists(_user_db_full_path):
 
     with open(_user_db_full_path, 'rb') as f1:
         _data = f1.read()[::-1]
-        set_password(sha512('user_db'.encode('utf-8')).hexdigest(), sha512('user_db'.encode('utf-8')).hexdigest(),
-                     sha512(_data[::3] + _data[1::3] + _data[2::3]).hexdigest())
+        set_password(
+            sha512('user_db'.encode('utf-8')).hexdigest(), sha512('user_db'.encode('utf-8')).hexdigest(),
+            sha512(_data[::3] + _data[1::3] + _data[2::3]).hexdigest()
+        )
 
 # create database connections and cursors
 USER_DB_CONNECTION: Final = connect(path.join(USER_DB_LOCATION, 'user.db'))
@@ -67,8 +69,10 @@ BONUS_CODE_MATRIX = {}
 CONFIG_DB_CURSOR.execute('''SELECT * FROM bonus_codes_config''')
 for _line in CONFIG_DB_CURSOR.fetchall():
     BONUS_CODE_MATRIX[_line[0]] = [*_line[1:]]
-    USER_DB_CURSOR.execute('''SELECT activation_available, activations_left, is_activated, bonus_time
-                              FROM bonus_codes WHERE sha512_hash = ?''', (_line[0],))
+    USER_DB_CURSOR.execute(
+        '''SELECT activation_available, activations_left, is_activated, bonus_time 
+        FROM bonus_codes WHERE sha512_hash = ?''', (_line[0],)
+    )
     BONUS_CODE_MATRIX[_line[0]].extend(USER_DB_CURSOR.fetchone())
 
 # base_schedule matrix properties
@@ -93,32 +97,41 @@ SWITCH_DIRECTION_FLAG = 6
 
 BASE_SCHEDULE = [(), ()]
 for _m in (PASSENGER_MAP, FREIGHT_MAP):
-    USER_DB_CURSOR.execute('''SELECT train_id, arrival, direction, new_direction, 
-                              cars, boarding_time, exp, money, switch_direction_required 
-                              FROM base_schedule WHERE map_id = ?''', (_m,))
+    USER_DB_CURSOR.execute(
+        '''SELECT train_id, arrival, direction, new_direction, 
+        cars, boarding_time, exp, money, switch_direction_required 
+        FROM base_schedule WHERE map_id = ?''', (_m,)
+    )
     BASE_SCHEDULE[_m] = USER_DB_CURSOR.fetchall()
 
 CONSTRUCTION_STATE_MATRIX = [[{}, {}], [{}, {}]]
 for _m in (PASSENGER_MAP, FREIGHT_MAP):
-    USER_DB_CURSOR.execute('''SELECT track_number, locked, under_construction, construction_time, 
-                              unlock_condition_from_level, unlock_condition_from_previous_track, 
-                              unlock_condition_from_environment, unlock_available FROM tracks 
-                              WHERE locked = 1 AND map_id = ?''', (_m,))
+    USER_DB_CURSOR.execute(
+        '''SELECT track_number, locked, under_construction, construction_time, unlock_condition_from_level, 
+        unlock_condition_from_previous_track, unlock_condition_from_environment, unlock_available FROM tracks 
+        WHERE locked = 1 AND map_id = ?''', (_m,)
+    )
     _track_info_fetched = USER_DB_CURSOR.fetchall()
     for _info in _track_info_fetched:
         CONSTRUCTION_STATE_MATRIX[_m][TRACKS][_info[0]] = list(_info[1:])
-        CONFIG_DB_CURSOR.execute('''SELECT price, max_construction_time, level, environment_tier FROM track_config 
-                                    WHERE track_number = ? AND map_id = ?''', (_info[0], _m))
+        CONFIG_DB_CURSOR.execute(
+            '''SELECT price, max_construction_time, level, environment_tier FROM track_config 
+            WHERE track_number = ? AND map_id = ?''', (_info[0], _m)
+        )
         CONSTRUCTION_STATE_MATRIX[_m][TRACKS][_info[0]].extend(CONFIG_DB_CURSOR.fetchone())
 
-    USER_DB_CURSOR.execute('''SELECT tier, locked, under_construction, construction_time, 
-                              unlock_condition_from_level, unlock_condition_from_previous_environment,
-                              unlock_available FROM environment WHERE locked = 1 AND map_id = ?''', (_m,))
+    USER_DB_CURSOR.execute(
+        '''SELECT tier, locked, under_construction, construction_time, unlock_condition_from_level, 
+        unlock_condition_from_previous_environment, unlock_available FROM environment 
+        WHERE locked = 1 AND map_id = ?''', (_m,)
+    )
     _environment_info_fetched = USER_DB_CURSOR.fetchall()
     for _info in _environment_info_fetched:
         CONSTRUCTION_STATE_MATRIX[_m][ENVIRONMENT][_info[0]] = [*_info[1:6], 1, _info[6]]
-        CONFIG_DB_CURSOR.execute('''SELECT price, max_construction_time, level FROM environment_config 
-                                    WHERE tier = ? AND map_id = ?''', (_info[0], _m))
+        CONFIG_DB_CURSOR.execute(
+            '''SELECT price, max_construction_time, level FROM environment_config WHERE tier = ? AND map_id = ?''',
+            (_info[0], _m)
+        )
         CONSTRUCTION_STATE_MATRIX[_m][ENVIRONMENT][_info[0]].extend(CONFIG_DB_CURSOR.fetchone())
 
 # track, environment and shop stage state matrix properties
@@ -152,8 +165,9 @@ MAP_PRICE: Final = 2
 
 NARRATOR_QUEUE = [[], []]
 for _m in (PASSENGER_MAP, FREIGHT_MAP):
-    USER_DB_CURSOR.execute('''SELECT game_time, locked, announcement_type, train_id, track_number 
-                              FROM narrator WHERE map_id = ?''', (_m,))
+    USER_DB_CURSOR.execute(
+        '''SELECT game_time, locked, announcement_type, train_id, track_number FROM narrator WHERE map_id = ?''', (_m,)
+    )
     NARRATOR_QUEUE[_m] = [list(a) for a in USER_DB_CURSOR.fetchall()]
 
 ANNOUNCEMENT_TIME: Final = 0
@@ -184,8 +198,10 @@ def get_announcement_types_enabled(dt_multiplier):
 
 
 def get_announcement_types_diff(dt_multiplier_1, dt_multiplier_2):
-    return [announcement for announcement in get_announcement_types_enabled(min(dt_multiplier_1, dt_multiplier_2))
-            if announcement not in get_announcement_types_enabled(max(dt_multiplier_1, dt_multiplier_2))]
+    return [
+        announcement for announcement in get_announcement_types_enabled(min(dt_multiplier_1, dt_multiplier_2))
+        if announcement not in get_announcement_types_enabled(max(dt_multiplier_1, dt_multiplier_2))
+    ]
 
 
 def on_commit():
@@ -193,20 +209,24 @@ def on_commit():
     USER_DB_CONNECTION.commit()
     with open(_user_db_full_path, 'rb') as f:
         data1 = f.read()[::-1]
-        set_password(sha512('user_db'.encode('utf-8')).hexdigest(), sha512('user_db'.encode('utf-8')).hexdigest(),
-                     sha512(data1[::3] + data1[1::3] + data1[2::3]).hexdigest())
+        set_password(
+            sha512('user_db'.encode('utf-8')).hexdigest(), sha512('user_db'.encode('utf-8')).hexdigest(),
+            sha512(data1[::3] + data1[1::3] + data1[2::3]).hexdigest()
+        )
 
 
 @final
 class TrailPointsV2:
     def __init__(self, map_id, track, train_route):
-        CONFIG_DB_CURSOR.execute('''SELECT trail_points_v2_part_1_start, trail_points_v2_part_1_end
-                                    FROM train_route_config WHERE track = ? AND train_route = ? AND map_id = ?''',
-                                 (track, train_route, map_id))
+        CONFIG_DB_CURSOR.execute(
+            '''SELECT trail_points_v2_part_1_start, trail_points_v2_part_1_end FROM train_route_config 
+            WHERE track = ? AND train_route = ? AND map_id = ?''', (track, train_route, map_id)
+        )
         self.part_1_start, part_1_end = (tuple(float(p) for p in s.split(',')) for s in CONFIG_DB_CURSOR.fetchone())
-        CONFIG_DB_CURSOR.execute('''SELECT trail_points_v2_part_2_head_tail, trail_points_v2_part_2_mid
-                                    FROM train_route_config WHERE track = ? AND train_route = ? AND map_id = ?''',
-                                 (track, train_route, map_id))
+        CONFIG_DB_CURSOR.execute(
+            '''SELECT trail_points_v2_part_2_head_tail, trail_points_v2_part_2_mid FROM train_route_config 
+            WHERE track = ? AND train_route = ? AND map_id = ?''', (track, train_route, map_id)
+        )
         self.part_2_head_tail, self.part_2_mid = CONFIG_DB_CURSOR.fetchone()
         if self.part_2_head_tail is not None:
             self.part_2_head_tail = tuple(
@@ -234,9 +254,11 @@ class TrailPointsV2:
             return self.part_1_start[0] + self.multiplier * index, *self.part_1_start[1:]
         elif index < self.part_2_length:
             index -= self.part_1_length
-            return tuple(self.part_2_head_tail[int(index)][i]
-                         + (self.part_2_head_tail[int(index) + 1][i] - self.part_2_head_tail[int(index)][i])
-                         * (index % 1) for i in range(3))
+            return tuple(
+                self.part_2_head_tail[int(index)][i]
+                + (self.part_2_head_tail[int(index) + 1][i] - self.part_2_head_tail[int(index)][i])
+                * (index % 1) for i in range(3)
+            )
         else:
             index -= self.part_2_length
             return self.part_3_start[0] + self.multiplier * index, *self.part_3_start[1:]
@@ -246,9 +268,11 @@ class TrailPointsV2:
             return self.part_1_start[0] + self.multiplier * index, *self.part_1_start[1:]
         elif index < self.part_2_length:
             index -= self.part_1_length
-            return tuple(self.part_2_mid[int(index)][i]
-                         + (self.part_2_mid[int(index) + 1][i] - self.part_2_mid[int(index)][i])
-                         * (index % 1) for i in range(3))
+            return tuple(
+                self.part_2_mid[int(index)][i]
+                + (self.part_2_mid[int(index) + 1][i] - self.part_2_mid[int(index)][i])
+                * (index % 1) for i in range(3)
+            )
         else:
             index -= self.part_2_length
             return self.part_3_start[0] + self.multiplier * index, *self.part_3_start[1:]

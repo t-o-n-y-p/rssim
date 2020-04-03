@@ -7,9 +7,10 @@ from ui import *
 @final
 class ScheduleRowArrivalLabel(LocalizedLabel):
     def __init__(self, map_id, column, row, parent_viewport):
-        super().__init__(logger=getLogger('root.schedule_row_arrival_label'),
-                         i18n_resources_key='departed_from_string',
-                         parent_viewport=parent_viewport)
+        super().__init__(
+            logger=getLogger('root.schedule_row_arrival_label'),
+            i18n_resources_key='departed_from_string', parent_viewport=parent_viewport
+        )
         self.map_id = map_id
         self.arguments = (0, )
         self.font_name = 'Perfo'

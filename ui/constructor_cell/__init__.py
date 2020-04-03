@@ -37,8 +37,10 @@ def unlock_available(fn):
 
 
 class ConstructorCell(ABC):
-    def __init__(self, construction_type, row, on_buy_construction_action, on_set_money_target_action,
-                 on_reset_money_target_action, parent_viewport):
+    def __init__(
+            self, construction_type, row, on_buy_construction_action, on_set_money_target_action,
+            on_reset_money_target_action, parent_viewport
+    ):
         def on_set_money_target(button):
             button.paired_button.opacity = button.opacity
             button.on_deactivate(instant=True)
@@ -78,11 +80,10 @@ class ConstructorCell(ABC):
         self.unlock_available_label = None
         self.under_construction_days_label = UnderConstructionDaysLabel(parent_viewport=self.viewport)
         self.under_construction_hours_minutes_label = UnderConstructionHoursMinutesLabel(parent_viewport=self.viewport)
-        self.enable_money_target_button, self.disable_money_target_button \
-            = create_two_state_button(SetMoneyTargetButton(on_click_action=on_set_money_target,
-                                                           parent_viewport=self.viewport),
-                                      ResetMoneyTargetButton(on_click_action=on_reset_money_target,
-                                                             parent_viewport=self.viewport))
+        self.enable_money_target_button, self.disable_money_target_button = create_two_state_button(
+            SetMoneyTargetButton(on_click_action=on_set_money_target, parent_viewport=self.viewport),
+            ResetMoneyTargetButton(on_click_action=on_reset_money_target, parent_viewport=self.viewport)
+        )
         self.build_button = BuildConstructionButton(on_click_action=on_buy_construction, parent_viewport=self.viewport)
         self.buttons = [self.enable_money_target_button, self.disable_money_target_button, self.build_button]
         USER_DB_CURSOR.execute('''SELECT money FROM game_progress''')
@@ -183,8 +184,8 @@ class ConstructorCell(ABC):
         self.screen_resolution = width, height
         bottom_bar_height = get_bottom_bar_height(self.screen_resolution)
         inner_area_rect = get_inner_area_rect(self.screen_resolution)
-        self.viewport.x1 = inner_area_rect[0] \
-                           + self.construction_type * (int(6.875 * bottom_bar_height) + bottom_bar_height // 4)
+        self.viewport.x1 \
+            = inner_area_rect[0] + self.construction_type * (int(6.875 * bottom_bar_height) + bottom_bar_height // 4)
         self.viewport.x2 = self.viewport.x1 + int(6.875 * bottom_bar_height)
         if self.construction_type == TRACKS:
             self.viewport.y1 = inner_area_rect[1] \

@@ -15,11 +15,11 @@ class BuildMapButton(UIButton):
         self.on_click_action = on_click_action
 
     def get_position(self):
-        return ((self.parent_viewport.x1 + self.parent_viewport.x2) // 2 - get_top_bar_height(self.screen_resolution),
-                (self.parent_viewport.y1 + self.parent_viewport.y2) // 2
-                - 5 * get_top_bar_height(self.screen_resolution) // 4
-                )
+        return (
+            (self.parent_viewport.x1 + self.parent_viewport.x2) // 2 - get_top_bar_height(self.screen_resolution),
+            (self.parent_viewport.y1 + self.parent_viewport.y2) // 2
+            - 5 * get_top_bar_height(self.screen_resolution) // 4
+        )
 
     def get_size(self):
-        return (get_bottom_bar_height(self.screen_resolution),
-                get_bottom_bar_height(self.screen_resolution))
+        return get_bottom_bar_height(self.screen_resolution), get_bottom_bar_height(self.screen_resolution)

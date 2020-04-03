@@ -18,11 +18,13 @@ class SettingsController(AppBaseController):
         self.fade_in_animation = SettingsFadeInAnimation(self.view)
         self.fade_out_animation = SettingsFadeOutAnimation(self.view)
 
-    def on_accept_changes(self, windowed_resolution, display_fps, fade_animations_enabled, clock_24h_enabled,
-                          level_up_notification_enabled, feature_unlocked_notification_enabled,
-                          construction_completed_notification_enabled, enough_money_notification_enabled,
-                          bonus_expired_notification_enabled, shop_storage_notification_enabled,
-                          voice_not_found_notification_enabled, master_volume, announcements_enabled):
+    def on_accept_changes(
+            self, windowed_resolution, display_fps, fade_animations_enabled, clock_24h_enabled,
+            level_up_notification_enabled, feature_unlocked_notification_enabled,
+            construction_completed_notification_enabled, enough_money_notification_enabled,
+            bonus_expired_notification_enabled, shop_storage_notification_enabled,
+            voice_not_found_notification_enabled, master_volume, announcements_enabled
+    ):
         self.model.on_accept_changes(
             windowed_resolution, display_fps, fade_animations_enabled, clock_24h_enabled,
             level_up_notification_enabled, feature_unlocked_notification_enabled,

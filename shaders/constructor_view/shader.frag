@@ -11,13 +11,10 @@ uniform int cell_unlock_available[8];
 uniform int number_of_cells = 8;
 uniform int data_length[8];
 
-bool is_cell_border()
-{
+bool is_cell_border() {
     int margin_x, margin_y;
-    for(int i = 0; i < number_of_cells; i++)
-    {
-        if (data_length[i] > 0)
-        {
+    for(int i = 0; i < number_of_cells; i++) {
+        if (data_length[i] > 0) {
             margin_x = int(gl_FragCoord[0]) - cell_x[i];
             margin_y = int(gl_FragCoord[1]) - cell_y[i];
             if ((margin_x >= 0 && margin_x <= cell_w[i] - 1
@@ -34,13 +31,10 @@ bool is_cell_border()
     return false;
 }
 
-bool is_cell_button_border()
-{
+bool is_cell_button_border() {
     int margin_x, margin_y;
-    for(int i = 0; i < number_of_cells; i++)
-    {
-        if (cell_unlock_available[i] == 1)
-        {
+    for(int i = 0; i < number_of_cells; i++) {
+        if (cell_unlock_available[i] == 1) {
             margin_x = int(gl_FragCoord[0]) - cell_x[i];
             margin_y = int(gl_FragCoord[1]) - cell_y[i];
             if (margin_y >= 0 && margin_y <= cell_h[i] - 1
@@ -54,8 +48,7 @@ bool is_cell_button_border()
     return false;
 }
 
-void main()
-{
+void main() {
     float base_opacity = 0.97;
     // cell and button borders are red
     if (is_cell_border() || is_cell_button_border())

@@ -44,12 +44,13 @@ class GameView(GameBaseView):
         self.voice_not_found_notification_needed = True
         self.exp_progress_bar = ExpProgressBar(parent_viewport=self.viewport)
         self.money_progress_bar = MoneyProgressBar(parent_viewport=self.viewport)
-        self.open_settings_button = OpenSettingsGameViewButton(on_click_action=on_open_settings,
-                                                               parent_viewport=self.viewport)
-        self.open_map_switcher_button = OpenMapSwitcherButton(on_click_action=on_open_map_switcher,
-                                                              on_hover_action=on_hover_action,
-                                                              on_leave_action=on_leave_action,
-                                                              parent_viewport=self.viewport)
+        self.open_settings_button = OpenSettingsGameViewButton(
+            on_click_action=on_open_settings, parent_viewport=self.viewport
+        )
+        self.open_map_switcher_button = OpenMapSwitcherButton(
+            on_click_action=on_open_map_switcher, on_hover_action=on_hover_action,
+            on_leave_action=on_leave_action, parent_viewport=self.viewport
+        )
         self.buttons = [self.open_settings_button, self.open_map_switcher_button]
         self.main_clock_label_24h = MainClockLabel24H(parent_viewport=self.viewport)
         self.main_clock_label_12h = MainClockLabel12H(parent_viewport=self.viewport)
@@ -57,16 +58,19 @@ class GameView(GameBaseView):
         self.money_percent = 0
         self.shader_sprite = GameViewShaderSprite(view=self)
         self.time_speed_knob = TimeSpeedKnob(on_value_update_action=on_time_speed_update, parent_viewport=self.viewport)
-        self.on_window_resize_handlers.extend([
-            *self.exp_progress_bar.on_window_resize_handlers, *self.money_progress_bar.on_window_resize_handlers,
-            self.main_clock_label_24h.on_window_resize, self.main_clock_label_12h.on_window_resize,
-            self.shader_sprite.on_window_resize, *self.time_speed_knob.on_window_resize_handlers
-        ])
+        self.on_window_resize_handlers.extend(
+            [
+                *self.exp_progress_bar.on_window_resize_handlers, *self.money_progress_bar.on_window_resize_handlers,
+                self.main_clock_label_24h.on_window_resize, self.main_clock_label_12h.on_window_resize,
+                self.shader_sprite.on_window_resize, *self.time_speed_knob.on_window_resize_handlers
+            ]
+        )
         self.on_append_window_handlers()
         USER_DB_CURSOR.execute('''SELECT exp, money_target FROM game_progress''')
         self.exp, self.money_target = USER_DB_CURSOR.fetchone()
-        CONFIG_DB_CURSOR.execute('''SELECT player_progress FROM player_progress_config 
-                                    WHERE level = ?''', (self.level, ))
+        CONFIG_DB_CURSOR.execute(
+            '''SELECT player_progress FROM player_progress_config WHERE level = ?''', (self.level, )
+        )
         self.player_progress = CONFIG_DB_CURSOR.fetchone()[0]
         USER_DB_CURSOR.execute('''SELECT master_volume FROM sound''')
         self.master_volume = USER_DB_CURSOR.fetchone()[0]
@@ -81,15 +85,19 @@ class GameView(GameBaseView):
         super().on_activate()
         self.shader_sprite.create()
         self.main_clock_label_24h.on_update_args(
-            ((self.game_time // SECONDS_IN_ONE_HOUR + 12) % HOURS_IN_ONE_DAY,
-             (self.game_time // SECONDS_IN_ONE_MINUTE) % MINUTES_IN_ONE_HOUR)
+            (
+                (self.game_time // SECONDS_IN_ONE_HOUR + 12) % HOURS_IN_ONE_DAY,
+                (self.game_time // SECONDS_IN_ONE_MINUTE) % MINUTES_IN_ONE_HOUR
+            )
         )
         self.main_clock_label_12h.on_update_args(
-            ((self.game_time // SECONDS_IN_ONE_HOUR + 11) % 12 + 1,
-             (self.game_time // SECONDS_IN_ONE_MINUTE) % MINUTES_IN_ONE_HOUR,
-             I18N_RESOURCES['am_pm_string'][self.current_locale][
-                 ((self.game_time // SECONDS_IN_ONE_HOUR) // 12 + 1) % 2
-             ])
+            (
+                (self.game_time // SECONDS_IN_ONE_HOUR + 11) % 12 + 1,
+                (self.game_time // SECONDS_IN_ONE_MINUTE) % MINUTES_IN_ONE_HOUR,
+                I18N_RESOURCES['am_pm_string'][self.current_locale][
+                    ((self.game_time // SECONDS_IN_ONE_HOUR) // 12 + 1) % 2
+                ]
+            )
         )
         if self.clock_24h_enabled:
             self.main_clock_label_24h.create()
@@ -163,22 +171,27 @@ class GameView(GameBaseView):
     def on_update_time(self, dt):
         super().on_update_time(dt)
         self.main_clock_label_24h.on_update_args(
-            ((self.game_time // (SECONDS_IN_ONE_MINUTE * MINUTES_IN_ONE_HOUR) + 12) % HOURS_IN_ONE_DAY,
-             (self.game_time // SECONDS_IN_ONE_MINUTE) % MINUTES_IN_ONE_HOUR)
+            (
+                (self.game_time // (SECONDS_IN_ONE_MINUTE * MINUTES_IN_ONE_HOUR) + 12) % HOURS_IN_ONE_DAY,
+                (self.game_time // SECONDS_IN_ONE_MINUTE) % MINUTES_IN_ONE_HOUR
+            )
         )
         self.main_clock_label_12h.on_update_args(
-            ((self.game_time // (SECONDS_IN_ONE_MINUTE * MINUTES_IN_ONE_HOUR) + 11) % 12 + 1,
-             (self.game_time // SECONDS_IN_ONE_MINUTE) % MINUTES_IN_ONE_HOUR,
-             I18N_RESOURCES['am_pm_string'][self.current_locale][
-                 ((self.game_time // (SECONDS_IN_ONE_MINUTE * MINUTES_IN_ONE_HOUR)) // 12 + 1) % 2
-             ])
+            (
+                (self.game_time // (SECONDS_IN_ONE_MINUTE * MINUTES_IN_ONE_HOUR) + 11) % 12 + 1,
+                (self.game_time // SECONDS_IN_ONE_MINUTE) % MINUTES_IN_ONE_HOUR,
+                I18N_RESOURCES['am_pm_string'][self.current_locale][
+                    ((self.game_time // (SECONDS_IN_ONE_MINUTE * MINUTES_IN_ONE_HOUR)) // 12 + 1) % 2
+                ]
+            )
         )
 
     def on_level_up(self):
         self.level += 1
         self.exp_progress_bar.on_update_text_label_args((self.level, ))
-        CONFIG_DB_CURSOR.execute('''SELECT player_progress FROM player_progress_config 
-                                    WHERE level = ?''', (self.level, ))
+        CONFIG_DB_CURSOR.execute(
+            '''SELECT player_progress FROM player_progress_config WHERE level = ?''', (self.level, )
+        )
         self.player_progress = CONFIG_DB_CURSOR.fetchone()[0]
 
     def on_update_money(self, money):

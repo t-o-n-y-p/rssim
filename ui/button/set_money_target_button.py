@@ -15,9 +15,7 @@ class SetMoneyTargetButton(UIButton):
         self.on_click_action = on_click_action
 
     def get_position(self):
-        return (self.parent_viewport.x2 - get_bottom_bar_height(self.screen_resolution) * 2 + 2,
-                self.parent_viewport.y1)
+        return self.parent_viewport.x2 - get_bottom_bar_height(self.screen_resolution) * 2 + 2, self.parent_viewport.y1
 
     def get_size(self):
-        return (get_bottom_bar_height(self.screen_resolution),
-                get_bottom_bar_height(self.screen_resolution))
+        return get_bottom_bar_height(self.screen_resolution), get_bottom_bar_height(self.screen_resolution)

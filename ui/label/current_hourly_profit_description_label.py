@@ -7,8 +7,10 @@ from ui import *
 @final
 class CurrentHourlyProfitDescriptionLabel(LocalizedLabel):
     def __init__(self, parent_viewport):
-        super().__init__(logger=getLogger('root.current_hourly_profit_description_label'),
-                         i18n_resources_key='current_hourly_profit_string', parent_viewport=parent_viewport)
+        super().__init__(
+            logger=getLogger('root.current_hourly_profit_description_label'),
+            i18n_resources_key='current_hourly_profit_string', parent_viewport=parent_viewport
+        )
         self.font_name = 'Arial'
         self.base_color = WHITE_RGB
         self.anchor_x = 'left'
@@ -24,8 +26,7 @@ class CurrentHourlyProfitDescriptionLabel(LocalizedLabel):
                + 2 * get_bottom_bar_height(self.screen_resolution) // 3
 
     def get_font_size(self):
-        bottom_bar_height = get_bottom_bar_height(self.screen_resolution)
-        return bottom_bar_height // 5
+        return get_bottom_bar_height(self.screen_resolution) // 5
 
     def get_width(self):
         return None

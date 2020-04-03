@@ -30,10 +30,12 @@ class ConstructorViewShaderSprite(ShaderSprite):
         for j in range(CONSTRUCTOR_VIEW_TRACK_CELLS):
             cell_x.append(self.view.constructor_cells[TRACKS][j].viewport.x1)
             cell_y.append(self.view.constructor_cells[TRACKS][j].viewport.y1)
-            cell_w.append(self.view.constructor_cells[TRACKS][j].viewport.x2
-                          - self.view.constructor_cells[TRACKS][j].viewport.x1)
-            cell_h.append(self.view.constructor_cells[TRACKS][j].viewport.y2
-                          - self.view.constructor_cells[TRACKS][j].viewport.y1)
+            cell_w.append(
+                self.view.constructor_cells[TRACKS][j].viewport.x2 - self.view.constructor_cells[TRACKS][j].viewport.x1
+            )
+            cell_h.append(
+                self.view.constructor_cells[TRACKS][j].viewport.y2 - self.view.constructor_cells[TRACKS][j].viewport.y1
+            )
             if self.view.constructor_cells[TRACKS][j].data is not None:
                 if len(self.view.constructor_cells[TRACKS][j].data) > 0:
                     cell_unlock_available.append(self.view.constructor_cells[TRACKS][j].data[UNLOCK_AVAILABLE])
@@ -47,10 +49,14 @@ class ConstructorViewShaderSprite(ShaderSprite):
         for j in range(CONSTRUCTOR_VIEW_ENVIRONMENT_CELLS):
             cell_x.append(self.view.constructor_cells[ENVIRONMENT][j].viewport.x1)
             cell_y.append(self.view.constructor_cells[ENVIRONMENT][j].viewport.y1)
-            cell_w.append(self.view.constructor_cells[ENVIRONMENT][j].viewport.x2
-                          - self.view.constructor_cells[ENVIRONMENT][j].viewport.x1)
-            cell_h.append(self.view.constructor_cells[ENVIRONMENT][j].viewport.y2
-                          - self.view.constructor_cells[ENVIRONMENT][j].viewport.y1)
+            cell_w.append(
+                self.view.constructor_cells[ENVIRONMENT][j].viewport.x2
+                - self.view.constructor_cells[ENVIRONMENT][j].viewport.x1
+            )
+            cell_h.append(
+                self.view.constructor_cells[ENVIRONMENT][j].viewport.y2
+                - self.view.constructor_cells[ENVIRONMENT][j].viewport.y1
+            )
             if self.view.constructor_cells[ENVIRONMENT][j].data is not None:
                 if len(self.view.constructor_cells[ENVIRONMENT][j].data) > 0:
                     cell_unlock_available.append(

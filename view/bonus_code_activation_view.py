@@ -13,7 +13,8 @@ class BonusCodeActivationView(AppBaseView):
     def __init__(self, controller):
         def on_activate_bonus_code(button):
             self.controller.parent_controller.on_activate_new_bonus_code(
-                sha512(self.bonus_code_interactive_label.text.encode('utf-8')).hexdigest())
+                sha512(self.bonus_code_interactive_label.text.encode('utf-8')).hexdigest()
+            )
             self.controller.parent_controller.on_close_bonus_code()
 
         def on_cancel_bonus_code_activation(button):
@@ -23,18 +24,21 @@ class BonusCodeActivationView(AppBaseView):
         USER_DB_CURSOR.execute('SELECT level FROM game_progress')
         self.level = USER_DB_CURSOR.fetchone()[0]
         self.bonus_code_interactive_label = BonusCodeInteractiveLabel(parent_viewport=self.viewport)
-        self.activate_bonus_code_button = ActivateBonusCodeButton(on_click_action=on_activate_bonus_code,
-                                                                  parent_viewport=self.viewport)
-        self.cancel_bonus_code_activation_button \
-            = CancelBonusCodeActivationButton(on_click_action=on_cancel_bonus_code_activation,
-                                              parent_viewport=self.viewport)
+        self.activate_bonus_code_button = ActivateBonusCodeButton(
+            on_click_action=on_activate_bonus_code, parent_viewport=self.viewport
+        )
+        self.cancel_bonus_code_activation_button = CancelBonusCodeActivationButton(
+            on_click_action=on_cancel_bonus_code_activation, parent_viewport=self.viewport
+        )
         self.buttons = [self.activate_bonus_code_button, self.cancel_bonus_code_activation_button]
         self.shader_sprite = BonusCodeViewShaderSprite(view=self)
         self.bonus_code_info_cell = BonusCodeInfoCell(parent_viewport=self.viewport)
-        self.on_window_resize_handlers.extend([
-            self.bonus_code_interactive_label.on_window_resize, self.shader_sprite.on_window_resize,
-            *self.bonus_code_info_cell.on_window_resize_handlers
-        ])
+        self.on_window_resize_handlers.extend(
+            [
+                self.bonus_code_interactive_label.on_window_resize, self.shader_sprite.on_window_resize,
+                *self.bonus_code_info_cell.on_window_resize_handlers
+            ]
+        )
         self.on_append_window_handlers()
         self.on_text_handlers.append(self.on_text)
         self.on_key_press_handlers.append(self.on_key_press)

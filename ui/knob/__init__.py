@@ -104,8 +104,10 @@ class Knob(ABC):
     def on_activate(self):
         self.is_activated = True
         self.value_label.create()
-        self.circle = BATCHES['ui_batch'].add(self.maximum_steps + 1, GL_POINTS, GROUPS['button_text'],
-                                              ('v2f', self.circle_vertices), ('c4B', self.circle_colors))
+        self.circle = BATCHES['ui_batch'].add(
+            self.maximum_steps + 1, GL_POINTS, GROUPS['button_text'],
+            ('v2f', self.circle_vertices), ('c4B', self.circle_colors)
+        )
 
     @final
     @knob_is_active

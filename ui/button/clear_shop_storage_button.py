@@ -15,11 +15,12 @@ class ClearShopStorageButton(UIButton):
         self.on_click_action = on_click_action
 
     def get_position(self):
-        return (self.parent_viewport.x2 - get_bottom_bar_height(self.screen_resolution) // 8
-                - get_bottom_bar_height(self.screen_resolution),
-                self.parent_viewport.y1 + get_bottom_bar_height(self.screen_resolution) // 8
-                + 3 * get_bottom_bar_height(self.screen_resolution))
+        return (
+            self.parent_viewport.x2 - get_bottom_bar_height(self.screen_resolution) // 8
+            - get_bottom_bar_height(self.screen_resolution),
+            self.parent_viewport.y1 + get_bottom_bar_height(self.screen_resolution) // 8
+            + 3 * get_bottom_bar_height(self.screen_resolution)
+        )
 
     def get_size(self):
-        return (get_bottom_bar_height(self.screen_resolution),
-                get_bottom_bar_height(self.screen_resolution))
+        return get_bottom_bar_height(self.screen_resolution), get_bottom_bar_height(self.screen_resolution)

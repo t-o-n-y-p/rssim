@@ -7,9 +7,10 @@ from ui import *
 @final
 class ScheduleRow24HMainLabel(LocalizedLabel):
     def __init__(self, column, row, parent_viewport):
-        super().__init__(logger=getLogger('root.schedule_row_24h_main_label'),
-                         i18n_resources_key='24h_schedule_row_string',
-                         parent_viewport=parent_viewport)
+        super().__init__(
+            logger=getLogger('root.schedule_row_24h_main_label'),
+            i18n_resources_key='24h_schedule_row_string', parent_viewport=parent_viewport
+        )
         self.arguments = (0, 0, 0, 0)
         self.font_name = 'Perfo'
         self.bold = True

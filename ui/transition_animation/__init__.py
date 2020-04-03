@@ -21,9 +21,12 @@ def transition_animation_is_not_active(fn):
 @final
 class TransitionAnimation:
     def __init__(self, fade_out_animation, fade_in_animation):
-        self.logger = getLogger('root.{}->{}_transition_animation'
-                                .format(fade_out_animation.animation_object.__class__.__name__,
-                                        fade_in_animation.animation_object.__class__.__name__))
+        self.logger = getLogger(
+            'root.{}->{}_transition_animation'.format(
+                fade_out_animation.animation_object.__class__.__name__,
+                fade_in_animation.animation_object.__class__.__name__
+            )
+        )
         self.fade_out_animation, self.fade_in_animation = fade_out_animation, fade_in_animation
         self.is_activated = False
 

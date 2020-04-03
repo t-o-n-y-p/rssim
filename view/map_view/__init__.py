@@ -39,17 +39,20 @@ class MapView(MapBaseView, ABC):
         self.main_map_sprite = MainMapSprite(map_id=self.map_id, parent_viewport=self.viewport)
         self.environment_sprite = MainEnvironmentSprite(map_id=self.map_id, parent_viewport=self.viewport)
         self.mini_map_timer = 0.0
-        USER_DB_CURSOR.execute('''SELECT last_known_base_offset FROM map_position_settings WHERE map_id = ?''',
-                               (self.map_id,))
+        USER_DB_CURSOR.execute(
+            '''SELECT last_known_base_offset FROM map_position_settings WHERE map_id = ?''', (self.map_id,)
+        )
         self.base_offset = tuple(int(p) for p in USER_DB_CURSOR.fetchone()[0].split(','))
-        USER_DB_CURSOR.execute('''SELECT last_known_zoom FROM map_position_settings WHERE map_id = ?''',
-                               (self.map_id, ))
+        USER_DB_CURSOR.execute(
+            '''SELECT last_known_zoom FROM map_position_settings WHERE map_id = ?''', (self.map_id, )
+        )
         self.zoom = USER_DB_CURSOR.fetchone()[0]
         self.base_offset_lower_left_limit = (0, 0)
         self.base_offset_upper_right_limit = (0, 0)
         self.open_schedule_button = OpenScheduleButton(on_click_action=on_open_schedule, parent_viewport=self.viewport)
-        self.open_constructor_button = OpenConstructorButton(on_click_action=on_open_constructor,
-                                                             parent_viewport=self.viewport)
+        self.open_constructor_button = OpenConstructorButton(
+            on_click_action=on_open_constructor, parent_viewport=self.viewport
+        )
         self.buttons = [self.open_schedule_button, self.open_constructor_button]
         self.shader_sprite = MapViewShaderSprite(view=self)
         self.on_window_resize_handlers.append(self.shader_sprite.on_window_resize)
@@ -57,13 +60,14 @@ class MapView(MapBaseView, ABC):
         self.shop_buttons = []
         CONFIG_DB_CURSOR.execute('''SELECT COUNT(*) FROM shops_config WHERE map_id = ?''', (self.map_id, ))
         for shop_id in range(CONFIG_DB_CURSOR.fetchone()[0]):
-            self.shop_buttons.append(OpenShopDetailsButton(map_id=self.map_id, shop_id=shop_id,
-                                                           on_click_action=on_open_shop_details,
-                                                           on_hover_action=on_hover_action,
-                                                           on_leave_action=on_leave_action))
+            self.shop_buttons.append(
+                OpenShopDetailsButton(
+                    map_id=self.map_id, shop_id=shop_id, on_click_action=on_open_shop_details,
+                    on_hover_action=on_hover_action, on_leave_action=on_leave_action
+                )
+            )
 
-        CONFIG_DB_CURSOR.execute('''SELECT track_required FROM shops_config 
-                                    WHERE map_id = ?''', (self.map_id, ))
+        CONFIG_DB_CURSOR.execute('''SELECT track_required FROM shops_config WHERE map_id = ?''', (self.map_id, ))
         self.shops_track_required_state = tuple(s[0] for s in CONFIG_DB_CURSOR.fetchall())
         self.buttons.extend(self.shop_buttons)
         for b in self.shop_buttons:
@@ -76,13 +80,15 @@ class MapView(MapBaseView, ABC):
         self.on_mouse_release_handlers.append(self.on_mouse_release)
         self.on_mouse_drag_handlers.append(self.on_mouse_drag)
         self.on_mouse_scroll_handlers.append(self.on_mouse_scroll)
-        USER_DB_CURSOR.execute('''SELECT SUM(t.constructions_locked) FROM (
-                                      SELECT COUNT(track_number) AS constructions_locked FROM tracks 
-                                      WHERE locked = 1 AND map_id = ?
-                                      UNION
-                                      SELECT COUNT(tier) AS constructions_locked FROM environment 
-                                      WHERE locked = 1 AND map_id = ?
-                                  ) AS t''', (self.map_id, self.map_id))
+        USER_DB_CURSOR.execute(
+            '''SELECT SUM(t.constructions_locked) FROM (
+                    SELECT COUNT(track_number) AS constructions_locked FROM tracks 
+                    WHERE locked = 1 AND map_id = ?
+                    UNION
+                    SELECT COUNT(tier) AS constructions_locked FROM environment 
+                    WHERE locked = 1 AND map_id = ?
+            ) AS t''', (self.map_id, self.map_id)
+        )
         self.constructions_locked = USER_DB_CURSOR.fetchone()[0]
         self.is_mini_map_timer_activated = False
 
@@ -119,11 +125,13 @@ class MapView(MapBaseView, ABC):
             self.on_recalculate_base_offset_for_new_screen_resolution((width, height))
 
         super().on_window_resize(width, height)
-        self.base_offset_lower_left_limit = (self.viewport.x1,
-                                             self.viewport.y1 + get_bottom_bar_height(self.screen_resolution))
-        self.base_offset_upper_right_limit = (int(self.viewport.x2 - MAP_WIDTH * self.zoom),
-                                              int(self.viewport.y2 - MAP_HEIGHT * self.zoom
-                                                  - get_top_bar_height(self.screen_resolution)))
+        self.base_offset_lower_left_limit = (
+            self.viewport.x1, self.viewport.y1 + get_bottom_bar_height(self.screen_resolution)
+        )
+        self.base_offset_upper_right_limit = (
+            int(self.viewport.x2 - MAP_WIDTH * self.zoom),
+            int(self.viewport.y2 - MAP_HEIGHT * self.zoom - get_top_bar_height(self.screen_resolution))
+        )
         self.check_base_offset_limits()
         self.controller.on_save_and_commit_last_known_base_offset()
 
@@ -176,9 +184,10 @@ class MapView(MapBaseView, ABC):
         self.controller.on_activate_mini_map()
         MAP_CAMERA.zoom -= scroll_y * MAP_ZOOM_STEP
         self.on_recalculate_base_offset_for_new_zoom(MAP_CAMERA.zoom)
-        self.base_offset_upper_right_limit = (int(self.viewport.x2 - MAP_WIDTH * MAP_CAMERA.zoom),
-                                              int(self.viewport.y2 - MAP_HEIGHT * MAP_CAMERA.zoom
-                                                  - get_top_bar_height(self.screen_resolution)))
+        self.base_offset_upper_right_limit = (
+            int(self.viewport.x2 - MAP_WIDTH * MAP_CAMERA.zoom),
+            int(self.viewport.y2 - MAP_HEIGHT * MAP_CAMERA.zoom - get_top_bar_height(self.screen_resolution))
+        )
         self.check_base_offset_limits()
         self.controller.on_save_and_commit_last_known_base_offset()
         self.zoom = MAP_CAMERA.zoom
@@ -242,8 +251,10 @@ class MapView(MapBaseView, ABC):
 
     @final
     def on_recalculate_base_offset_for_new_screen_resolution(self, screen_resolution):
-        self.base_offset = (self.base_offset[0] + (screen_resolution[0] - self.screen_resolution[0]) // 2,
-                            self.base_offset[1] + (screen_resolution[1] - self.screen_resolution[1]) // 2)
+        self.base_offset = (
+            self.base_offset[0] + (screen_resolution[0] - self.screen_resolution[0]) // 2,
+            self.base_offset[1] + (screen_resolution[1] - self.screen_resolution[1]) // 2
+        )
 
     @final
     def on_recalculate_base_offset_for_new_zoom(self, new_zoom):

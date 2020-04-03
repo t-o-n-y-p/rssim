@@ -76,13 +76,15 @@ class ScheduleRow:
     @window_size_has_changed
     def on_window_resize(self, width, height):
         self.screen_resolution = width, height
-        self.viewport.x1 = self.parent_viewport.x1 + get_inner_area_rect(self.screen_resolution)[0] \
-                           + (int(6.875 * get_bottom_bar_height(self.screen_resolution))
-                              + get_bottom_bar_height(self.screen_resolution) // 4) * self.column
+        self.viewport.x1 = self.parent_viewport.x1 + get_inner_area_rect(self.screen_resolution)[0] + (
+            int(6.875 * get_bottom_bar_height(self.screen_resolution))
+            + get_bottom_bar_height(self.screen_resolution) // 4
+        ) * self.column
         self.viewport.x2 = self.viewport.x1 + int(6.875 * get_bottom_bar_height(self.screen_resolution))
-        self.viewport.y2 = self.parent_viewport.y1 + get_inner_area_rect(self.screen_resolution)[1] \
-                           + get_inner_area_rect(self.screen_resolution)[3] \
-                           - (get_inner_area_rect(self.screen_resolution)[3] // (SCHEDULE_ROWS + 1)) * (self.row + 1)
+        self.viewport.y2 \
+            = self.parent_viewport.y1 + get_inner_area_rect(self.screen_resolution)[1] \
+            + get_inner_area_rect(self.screen_resolution)[3] \
+            - (get_inner_area_rect(self.screen_resolution)[3] // (SCHEDULE_ROWS + 1)) * (self.row + 1)
         self.viewport.y1 = self.viewport.y2 - get_inner_area_rect(self.screen_resolution)[3] // (SCHEDULE_ROWS + 1)
 
     def on_update_current_locale(self, new_locale):
@@ -104,7 +106,7 @@ class ScheduleRow:
             (
                 self.data[TRAIN_ID], (self.data[ARRIVAL_TIME] // SECONDS_IN_ONE_HOUR + 12) % HOURS_IN_ONE_DAY,
                 (self.data[ARRIVAL_TIME] // SECONDS_IN_ONE_MINUTE) % MINUTES_IN_ONE_HOUR, self.data[CARS]
-             )
+            )
         )
         am_pm_index = ((self.data[ARRIVAL_TIME] // SECONDS_IN_ONE_HOUR) // 12 + 1) % 2
         self.main_sprite_12h.on_update_args(

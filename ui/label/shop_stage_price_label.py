@@ -32,5 +32,5 @@ class ShopStagePriceLabel(Label):
         money_str = self.text.format(*self.arguments)
         if len(money_str) < 7:
             return money_str
-        else:
-            return ' '.join((money_str[0:len(money_str) - 6], money_str[len(money_str) - 6:len(money_str)]))
+
+        return ' '.join((money_str[0:len(money_str) - 6], money_str[len(money_str) - 6:len(money_str)]))

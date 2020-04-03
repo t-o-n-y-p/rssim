@@ -39,33 +39,40 @@ class ConstructorView(MapBaseView, ABC):
             self.controller.parent_controller.parent_controller.on_update_money_target(0)
 
         super().__init__(controller, map_id, logger=getLogger(f'root.app.game.map.{map_id}.constructor.view'))
-        self.close_constructor_button = CloseConstructorButton(on_click_action=on_close_constructor,
-                                                               parent_viewport=self.viewport)
+        self.close_constructor_button = CloseConstructorButton(
+            on_click_action=on_close_constructor, parent_viewport=self.viewport
+        )
         self.buttons = [self.close_constructor_button, ]
         track_cells = []
         environment_cells = []
         for j in range(CONSTRUCTOR_VIEW_TRACK_CELLS):
             track_cells.append(
-                TrackCell(TRACKS, j, on_buy_construction_action, on_set_money_target_action,
-                          on_reset_money_target_action, parent_viewport=self.viewport)
+                TrackCell(
+                    TRACKS, j, on_buy_construction_action, on_set_money_target_action,
+                    on_reset_money_target_action, parent_viewport=self.viewport
+                )
             )
             self.buttons.extend(track_cells[j].buttons)
             self.on_window_resize_handlers.extend(track_cells[j].on_window_resize_handlers)
 
         for j in range(CONSTRUCTOR_VIEW_ENVIRONMENT_CELLS):
             environment_cells.append(
-                EnvironmentCell(ENVIRONMENT, j, on_buy_construction_action, on_set_money_target_action,
-                                on_reset_money_target_action, parent_viewport=self.viewport)
+                EnvironmentCell(
+                    ENVIRONMENT, j, on_buy_construction_action, on_set_money_target_action,
+                    on_reset_money_target_action, parent_viewport=self.viewport
+                )
             )
             self.buttons.extend(environment_cells[j].buttons)
             self.on_window_resize_handlers.extend(environment_cells[j].on_window_resize_handlers)
 
         self.constructor_cells = [track_cells, environment_cells]
-        USER_DB_CURSOR.execute('''SELECT money_target_activated FROM constructor WHERE map_id = ?''',
-                               (self.map_id, ))
+        USER_DB_CURSOR.execute(
+            '''SELECT money_target_activated FROM constructor WHERE map_id = ?''', (self.map_id, )
+        )
         self.money_target_activated = USER_DB_CURSOR.fetchone()[0]
-        USER_DB_CURSOR.execute('''SELECT money_target_cell_position FROM constructor WHERE map_id = ?''',
-                               (self.map_id, ))
+        USER_DB_CURSOR.execute(
+            '''SELECT money_target_cell_position FROM constructor WHERE map_id = ?''', (self.map_id, )
+        )
         self.money_target_cell_position = [int(p) for p in USER_DB_CURSOR.fetchone()[0].split(',')]
         self.shader_sprite = ConstructorViewShaderSprite(view=self)
         self.constructor_track_placeholder_container = ConstructorTrackPlaceholderContainer(
@@ -76,11 +83,13 @@ class ConstructorView(MapBaseView, ABC):
             bottom_parent_viewport=self.constructor_cells[ENVIRONMENT][-1].viewport,
             top_parent_viewport=self.constructor_cells[ENVIRONMENT][-1].viewport
         )
-        self.on_window_resize_handlers.extend([
-            self.shader_sprite.on_window_resize,
-            *self.constructor_track_placeholder_container.on_window_resize_handlers,
-            *self.constructor_environment_placeholder_container.on_window_resize_handlers
-        ])
+        self.on_window_resize_handlers.extend(
+            [
+                self.shader_sprite.on_window_resize,
+                *self.constructor_track_placeholder_container.on_window_resize_handlers,
+                *self.constructor_environment_placeholder_container.on_window_resize_handlers
+            ]
+        )
         self.on_append_window_handlers()
 
     @final
@@ -113,9 +122,9 @@ class ConstructorView(MapBaseView, ABC):
         for j in range(min(len(remaining_tracks), CONSTRUCTOR_VIEW_TRACK_CELLS)):
             if not self.constructor_cells[TRACKS][j].is_activated:
                 self.constructor_cells[TRACKS][j].on_activate()
-                self.constructor_cells[TRACKS][j]\
-                    .on_assign_new_data(remaining_tracks[j],
-                                        CONSTRUCTION_STATE_MATRIX[self.map_id][TRACKS][remaining_tracks[j]])
+                self.constructor_cells[TRACKS][j].on_assign_new_data(
+                    remaining_tracks[j], CONSTRUCTION_STATE_MATRIX[self.map_id][TRACKS][remaining_tracks[j]]
+                )
                 if self.money_target_activated and self.money_target_cell_position == [TRACKS, j]:
                     self.constructor_cells[TRACKS][j].on_activate_money_target()
                 else:
@@ -133,9 +142,9 @@ class ConstructorView(MapBaseView, ABC):
         for j in range(min(len(remaining_tiers), CONSTRUCTOR_VIEW_ENVIRONMENT_CELLS)):
             if not self.constructor_cells[ENVIRONMENT][j].is_activated:
                 self.constructor_cells[ENVIRONMENT][j].on_activate()
-                self.constructor_cells[ENVIRONMENT][j]\
-                    .on_assign_new_data(remaining_tiers[j],
-                                        CONSTRUCTION_STATE_MATRIX[self.map_id][ENVIRONMENT][remaining_tiers[j]])
+                self.constructor_cells[ENVIRONMENT][j].on_assign_new_data(
+                    remaining_tiers[j], CONSTRUCTION_STATE_MATRIX[self.map_id][ENVIRONMENT][remaining_tiers[j]]
+                )
                 if self.money_target_activated and self.money_target_cell_position == [ENVIRONMENT, j]:
                     self.constructor_cells[ENVIRONMENT][j].on_activate_money_target()
                 else:
@@ -204,9 +213,9 @@ class ConstructorView(MapBaseView, ABC):
             remaining_tracks = sorted(list(CONSTRUCTION_STATE_MATRIX[self.map_id][TRACKS].keys()))
             remaining_tracks.remove(entity_number)
             for j in range(min(len(remaining_tracks), CONSTRUCTOR_VIEW_TRACK_CELLS)):
-                self.constructor_cells[TRACKS][j] \
-                    .on_assign_new_data(remaining_tracks[j],
-                                        CONSTRUCTION_STATE_MATRIX[self.map_id][TRACKS][remaining_tracks[j]])
+                self.constructor_cells[TRACKS][j].on_assign_new_data(
+                    remaining_tracks[j], CONSTRUCTION_STATE_MATRIX[self.map_id][TRACKS][remaining_tracks[j]]
+                )
                 if self.money_target_activated and self.money_target_cell_position == [TRACKS, j]:
                     self.constructor_cells[TRACKS][j].on_activate_money_target()
                 else:
@@ -225,9 +234,9 @@ class ConstructorView(MapBaseView, ABC):
             remaining_tiers = sorted(list(CONSTRUCTION_STATE_MATRIX[self.map_id][ENVIRONMENT].keys()))
             remaining_tiers.remove(entity_number)
             for j in range(min(len(remaining_tiers), CONSTRUCTOR_VIEW_ENVIRONMENT_CELLS)):
-                self.constructor_cells[ENVIRONMENT][j] \
-                    .on_assign_new_data(remaining_tiers[j],
-                                        CONSTRUCTION_STATE_MATRIX[self.map_id][ENVIRONMENT][remaining_tiers[j]])
+                self.constructor_cells[ENVIRONMENT][j].on_assign_new_data(
+                    remaining_tiers[j], CONSTRUCTION_STATE_MATRIX[self.map_id][ENVIRONMENT][remaining_tiers[j]]
+                )
                 if self.money_target_activated and self.money_target_cell_position == [ENVIRONMENT, j]:
                     self.constructor_cells[ENVIRONMENT][j].on_activate_money_target()
                 else:
@@ -238,8 +247,9 @@ class ConstructorView(MapBaseView, ABC):
 
             if len(remaining_tiers) < CONSTRUCTOR_VIEW_ENVIRONMENT_CELLS:
                 self.constructor_environment_placeholder_container.on_update_top_parent_viewport(
-                    self.constructor_cells[ENVIRONMENT][len(remaining_tiers) - CONSTRUCTOR_VIEW_ENVIRONMENT_CELLS]
-                        .viewport
+                    self.constructor_cells[ENVIRONMENT][
+                        len(remaining_tiers) - CONSTRUCTOR_VIEW_ENVIRONMENT_CELLS
+                    ].viewport
                 )
                 self.constructor_environment_placeholder_container.on_activate()
 
@@ -277,10 +287,14 @@ class ConstructorView(MapBaseView, ABC):
     @game_progress_notifications_available
     @construction_completed_notification_enabled
     def on_send_track_construction_completed_notification(self, track):
-        self.game_progress_notifications.append(TrackConstructionCompletedNotification(self.current_locale, self.map_id, track))
+        self.game_progress_notifications.append(
+            TrackConstructionCompletedNotification(self.current_locale, self.map_id, track)
+        )
 
     @final
     @game_progress_notifications_available
     @construction_completed_notification_enabled
     def on_send_environment_construction_completed_notification(self, tier):
-        self.game_progress_notifications.append(EnvironmentConstructionCompletedNotification(self.current_locale, self.map_id, tier))
+        self.game_progress_notifications.append(
+            EnvironmentConstructionCompletedNotification(self.current_locale, self.map_id, tier)
+        )

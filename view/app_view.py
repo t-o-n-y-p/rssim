@@ -58,20 +58,23 @@ class AppView(AppBaseView):
         self.ru_flag_sprite = RUFlagSprite(parent_viewport=self.viewport)
         self.close_game_button = CloseGameButton(on_click_action=on_close_game, parent_viewport=self.viewport)
         self.iconify_button = IconifyButton(on_click_action=on_iconify_game, parent_viewport=self.viewport)
-        self.fullscreen_button, self.restore_button \
-            = create_two_state_button(FullscreenButton(on_click_action=on_app_window_fullscreen,
-                                                       parent_viewport=self.viewport),
-                                      RestoreButton(on_click_action=on_app_window_restore,
-                                                    parent_viewport=self.viewport))
+        self.fullscreen_button, self.restore_button = create_two_state_button(
+            FullscreenButton(on_click_action=on_app_window_fullscreen, parent_viewport=self.viewport),
+            RestoreButton(on_click_action=on_app_window_restore, parent_viewport=self.viewport)
+        )
         self.en_locale_button = ENLocaleButton(on_click_action=on_set_en_locale, parent_viewport=self.viewport)
         self.ru_locale_button = RULocaleButton(on_click_action=on_set_ru_locale, parent_viewport=self.viewport)
-        self.buttons = [self.close_game_button, self.iconify_button, self.fullscreen_button, self.restore_button,
-                        self.en_locale_button, self.ru_locale_button]
-        self.on_window_resize_handlers.extend([
-            *self.fps_display.on_window_resize_handlers, self.title_label.on_window_resize,
-            self.shader_sprite.on_window_resize, self.us_flag_sprite.on_window_resize,
-            self.ru_flag_sprite.on_window_resize
-        ])
+        self.buttons = [
+            self.close_game_button, self.iconify_button, self.fullscreen_button, self.restore_button,
+            self.en_locale_button, self.ru_locale_button
+        ]
+        self.on_window_resize_handlers.extend(
+            [
+                *self.fps_display.on_window_resize_handlers, self.title_label.on_window_resize,
+                self.shader_sprite.on_window_resize, self.us_flag_sprite.on_window_resize,
+                self.ru_flag_sprite.on_window_resize
+            ]
+        )
         self.on_append_window_handlers()
         self.app_window_move_mode = False
         self.app_window_move_offset = (0, 0)
@@ -151,8 +154,10 @@ class AppView(AppBaseView):
     def on_mouse_drag(self, x, y, dx, dy, buttons, modifiers):
         self.absolute_mouse_pos = GetCursorPos()
         self.game_window_position = GetWindowRect(self.game_window_handler)
-        SetWindowPos(self.game_window_handler, HWND_TOP,
-                     self.absolute_mouse_pos[0] - self.app_window_move_offset[0],
-                     self.absolute_mouse_pos[1] - self.app_window_move_offset[1],
-                     self.game_window_position[2] - self.game_window_position[0],
-                     self.game_window_position[3] - self.game_window_position[1], SWP_NOREDRAW)
+        SetWindowPos(
+            self.game_window_handler, HWND_TOP,
+            self.absolute_mouse_pos[0] - self.app_window_move_offset[0],
+            self.absolute_mouse_pos[1] - self.app_window_move_offset[1],
+            self.game_window_position[2] - self.game_window_position[0],
+            self.game_window_position[3] - self.game_window_position[1], SWP_NOREDRAW
+        )

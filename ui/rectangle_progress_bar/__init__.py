@@ -45,14 +45,18 @@ class RectangleProgressBar(ABC):
         self.is_activated = True
         self.text_label.create()
         if self.inactive_sprite is None:
-            self.inactive_sprite = Sprite(self.inactive_image, x=self.viewport.x1, y=self.viewport.y1,
-                                          batch=BATCHES['ui_batch'], group=GROUPS['button_background'])
+            self.inactive_sprite = Sprite(
+                self.inactive_image, x=self.viewport.x1, y=self.viewport.y1,
+                batch=BATCHES['ui_batch'], group=GROUPS['button_background']
+            )
             self.inactive_sprite.scale = self.get_scale()
             self.inactive_sprite.opacity = self.opacity
 
         if self.active_sprite is None:
-            self.active_sprite = Sprite(self.active_image, x=self.viewport.x1, y=self.viewport.y1,
-                                        batch=BATCHES['ui_batch'], group=GROUPS['button_text'])
+            self.active_sprite = Sprite(
+                self.active_image, x=self.viewport.x1, y=self.viewport.y1,
+                batch=BATCHES['ui_batch'], group=GROUPS['button_text']
+            )
             self.active_sprite.scale = self.get_scale()
             self.active_sprite.opacity = self.opacity
 
@@ -111,13 +115,13 @@ class RectangleProgressBar(ABC):
                 self.current_percent = 100
 
         if self.current_percent == 0:
-            image_region = self.active_image\
-                .get_region(self.active_image.height // 2,
-                            self.active_image.height // 2, 1, 1)
+            image_region = self.active_image.get_region(
+                self.active_image.height // 2, self.active_image.height // 2, 1, 1
+            )
         else:
-            image_region = self.active_image\
-                .get_region(0, 0, self.current_percent * self.active_image.width // 100,
-                            self.active_image.height)
+            image_region = self.active_image.get_region(
+                0, 0, self.current_percent * self.active_image.width // 100, self.active_image.height
+            )
 
         self.active_sprite.image = image_region
 

@@ -49,9 +49,10 @@ class ShaderSprite(ABC):
     @final
     @shader_sprite_does_not_exist
     def create(self):
-        self.sprite = self.batch.add(4, GL_QUADS, self.group,
-                                     ('v2f/static', (-1.0, self.bottom_edge, -1.0, self.top_edge,
-                                                     1.0, self.top_edge, 1.0, self.bottom_edge)))
+        self.sprite = self.batch.add(
+            4, GL_QUADS, self.group,
+            ('v2f/static', (-1.0, self.bottom_edge, -1.0, self.top_edge, 1.0, self.top_edge, 1.0, self.bottom_edge))
+        )
 
     @final
     @shader_sprite_exists
@@ -74,8 +75,9 @@ class ShaderSprite(ABC):
         self.bottom_edge = self.get_bottom_edge()
         self.top_edge = self.get_top_edge()
         if self.sprite is not None:
-            self.sprite.vertices = (-1.0, self.bottom_edge, -1.0, self.top_edge,
-                                    1.0, self.top_edge, 1.0, self.bottom_edge)
+            self.sprite.vertices = (
+                -1.0, self.bottom_edge, -1.0, self.top_edge, 1.0, self.top_edge, 1.0, self.bottom_edge
+            )
 
     @final
     def on_update_opacity(self, new_opacity):

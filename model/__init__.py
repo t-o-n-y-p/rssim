@@ -176,34 +176,45 @@ PASSENGER_MAP_PASS_THROUGH_PRIORITY_TRACKS: Final = (
 # base route types
 ENTRY_BASE_ROUTE: Final = (
     ('left_entry_base_route', 'right_entry_base_route', 'left_side_entry_base_route', 'right_side_entry_base_route'),
-    ('left_entry_base_route', 'right_entry_base_route',
-     'left_entry_base_route', 'right_side_1_entry_base_route',
-     'left_entry_base_route', 'right_side_2_entry_base_route',
-     'left_entry_base_route', 'right_side_3_entry_base_route',
-     'left_entry_base_route', 'right_side_4_entry_base_route')
+    (
+        'left_entry_base_route', 'right_entry_base_route',
+        'left_entry_base_route', 'right_side_1_entry_base_route',
+        'left_entry_base_route', 'right_side_2_entry_base_route',
+        'left_entry_base_route', 'right_side_3_entry_base_route',
+        'left_entry_base_route', 'right_side_4_entry_base_route'
+    )
 )
 # train route types
 ENTRY_TRAIN_ROUTE: Final = (
     ('left_entry', 'right_entry', 'left_side_entry', 'right_side_entry'),
-    ('left_entry', 'right_entry', 'left_entry', 'right_side_1_entry', 'left_entry', 'right_side_2_entry',
-     'left_entry', 'right_side_3_entry', 'left_entry', 'right_side_4_entry')
+    (
+        'left_entry', 'right_entry', 'left_entry', 'right_side_1_entry', 'left_entry', 'right_side_2_entry',
+        'left_entry', 'right_side_3_entry', 'left_entry', 'right_side_4_entry'
+    )
 )
 EXIT_TRAIN_ROUTE: Final = (
     ('right_exit', 'left_exit', 'right_side_exit', 'left_side_exit'),
-    ('right_exit', 'left_exit', 'right_side_1_exit', 'left_exit', 'right_side_2_exit', 'left_exit',
-     'right_side_3_exit', 'left_exit', 'right_side_4_exit', 'left_exit')
+    (
+        'right_exit', 'left_exit', 'right_side_1_exit', 'left_exit', 'right_side_2_exit', 'left_exit',
+        'right_side_3_exit', 'left_exit', 'right_side_4_exit', 'left_exit'
+    )
 )
 APPROACHING_TRAIN_ROUTE: Final = (
     ('left_approaching', 'right_approaching', 'left_side_approaching', 'right_side_approaching'),
-    ('left_approaching', 'right_approaching',
-     'left_side_1_approaching', 'right_side_1_approaching',
-     'left_side_2_approaching', 'right_side_2_approaching',
-     'left_side_3_approaching', 'right_side_3_approaching',
-     'left_side_4_approaching', 'right_side_4_approaching')
+    (
+        'left_approaching', 'right_approaching',
+        'left_side_1_approaching', 'right_side_1_approaching',
+        'left_side_2_approaching', 'right_side_2_approaching',
+        'left_side_3_approaching', 'right_side_3_approaching',
+        'left_side_4_approaching', 'right_side_4_approaching'
+    )
 )
 MAXIMUM_LEVEL: Final = 200  # maximum level the player can reach in the game
 # track mask for entry base routes for all directions
-ENTRY_TRACK_ID: Final = ((0, 0, 100, 100), (0, 0, 0, 100, 0, 200, 0, 300, 0, 400))
+ENTRY_TRACK_ID: Final = (
+    (0, 0, 100, 100),
+    (0, 0, 0, 100, 0, 200, 0, 300, 0, 400)
+)
 TRAIN_MAXIMUM_SPEED: Final = (84, 24)
 TRAIN_VELOCITY_BASE: Final = 1.03
 TRAIN_VELOCITY_INTEGRATION_STEPS: Final = 10000
@@ -216,7 +227,10 @@ PASSENGER_CAR_LENGTH: Final = 251  # length of the passenger car in pixels
 FREIGHT_HEAD_TAIL_CAR_LENGTH: Final = 251  # length of the head/tail freight car in pixels
 FREIGHT_MID_CAR_LENGTH: Final = 151  # length of the middle freight car in pixels
 # when any track from this list is unlocked, new car collection is added
-CAR_COLLECTION_UNLOCK_TRACK_LIST: Final = ((6, 10, 14, 18, 21, 22, 26, 30), (4, 8, 12, 16))
+CAR_COLLECTION_UNLOCK_TRACK_LIST: Final = (
+    (6, 10, 14, 18, 21, 22, 26, 30),
+    (4, 8, 12, 16)
+)
 # threshold for shop storage notification (0 - empty, 1 - full)
 SHOP_STORAGE_ALMOST_FULL_THRESHOLD: Final = 0.9
 ALLOWED_BONUS_CODE_INPUT: Final = 100
@@ -274,8 +288,10 @@ class GameBaseModel(AppBaseModel, ABC):
         super().__init__(controller, view, logger)
         USER_DB_CURSOR.execute('SELECT * FROM epoch_timestamp')
         self.game_time, self.game_time_fraction, self.dt_multiplier = USER_DB_CURSOR.fetchone()
-        USER_DB_CURSOR.execute('''SELECT level, money, exp_bonus_multiplier, money_bonus_multiplier, 
-                                  construction_time_bonus_multiplier FROM game_progress''')
+        USER_DB_CURSOR.execute(
+            '''SELECT level, money, exp_bonus_multiplier, money_bonus_multiplier, 
+            construction_time_bonus_multiplier FROM game_progress'''
+        )
         self.level, self.money, self.exp_bonus_multiplier, self.money_bonus_multiplier, \
             self.construction_time_bonus_multiplier = USER_DB_CURSOR.fetchone()
 

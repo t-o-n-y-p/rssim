@@ -12,15 +12,18 @@ class DispatcherModel(MapBaseModel, ABC):
         self.unlocked_tracks = USER_DB_CURSOR.fetchone()[0]
         USER_DB_CURSOR.execute('SELECT busy FROM tracks WHERE map_id = ?', (self.map_id, ))
         self.track_busy_status = [TRUE, *[t[0] for t in USER_DB_CURSOR.fetchall()]]
-        CONFIG_DB_CURSOR.execute('''SELECT supported_cars_min, supported_cars_max 
-                                    FROM track_config WHERE map_id = ?''', (self.map_id, ))
+        CONFIG_DB_CURSOR.execute(
+            '''SELECT supported_cars_min, supported_cars_max FROM track_config WHERE map_id = ?''', (self.map_id, )
+        )
         self.supported_cars_by_track = ((0, 20), *CONFIG_DB_CURSOR.fetchall())
 
     @final
     def on_save_state(self):
         for i in range(1, len(self.track_busy_status)):
-            USER_DB_CURSOR.execute('UPDATE tracks SET busy = ? WHERE track_number = ? AND map_id = ?',
-                                   (self.track_busy_status[i], i, self.map_id))
+            USER_DB_CURSOR.execute(
+                'UPDATE tracks SET busy = ? WHERE track_number = ? AND map_id = ?',
+                (self.track_busy_status[i], i, self.map_id)
+            )
 
     @final
     def on_update_time(self, dt):
@@ -46,9 +49,9 @@ class DispatcherModel(MapBaseModel, ABC):
                     self.controller.parent_controller.on_close_train_route(t.model.track, t.model.train_route)
                     t.model.track = track
                     t.model.train_route = ENTRY_TRAIN_ROUTE[self.map_id][t.model.direction]
-                    self.controller.parent_controller\
-                        .on_open_train_route(track, ENTRY_TRAIN_ROUTE[self.map_id][t.model.direction],
-                                             t.train_id, t.model.cars)
+                    self.controller.parent_controller.on_open_train_route(
+                        track, ENTRY_TRAIN_ROUTE[self.map_id][t.model.direction], t.train_id, t.model.cars
+                    )
                     self.trains.remove(t)
                     break
 

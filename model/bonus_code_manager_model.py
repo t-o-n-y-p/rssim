@@ -10,12 +10,14 @@ class BonusCodeManagerModel(GameBaseModel):
 
     def on_save_state(self):
         for code in BONUS_CODE_MATRIX:
-            USER_DB_CURSOR.execute('''UPDATE bonus_codes SET activation_available = ?, activations_left = ?, 
-                                      is_activated = ?, bonus_time = ? WHERE sha512_hash = ?''',
-                                   (BONUS_CODE_MATRIX[code][ACTIVATION_AVAILABLE],
-                                    BONUS_CODE_MATRIX[code][ACTIVATIONS_LEFT],
-                                    BONUS_CODE_MATRIX[code][IS_ACTIVATED],
-                                    BONUS_CODE_MATRIX[code][BONUS_TIME], code))
+            USER_DB_CURSOR.execute(
+                '''UPDATE bonus_codes SET activation_available = ?, activations_left = ?, is_activated = ?, 
+                bonus_time = ? WHERE sha512_hash = ?''',
+                (
+                    BONUS_CODE_MATRIX[code][ACTIVATION_AVAILABLE], BONUS_CODE_MATRIX[code][ACTIVATIONS_LEFT],
+                    BONUS_CODE_MATRIX[code][IS_ACTIVATED], BONUS_CODE_MATRIX[code][BONUS_TIME], code
+                )
+            )
 
     def on_update_time(self, dt):
         for code in BONUS_CODE_MATRIX:

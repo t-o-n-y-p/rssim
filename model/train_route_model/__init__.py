@@ -6,49 +6,58 @@ from database import USER_DB_CURSOR, CONFIG_DB_CURSOR, TrailPointsV2
 
 class TrainRouteModel(MapBaseModel, ABC):
     def __init__(self, controller, view, map_id, track, train_route):
-        super().__init__(controller, view, map_id,
-                         logger=getLogger(f'root.app.game.map.{map_id}.train_route.{track}.{train_route}.model'))
+        super().__init__(
+            controller, view, map_id,
+            logger=getLogger(f'root.app.game.map.{map_id}.train_route.{track}.{train_route}.model')
+        )
         self.track = track
         self.train_route = train_route
-        USER_DB_CURSOR.execute('''SELECT opened, last_opened_by, current_checkpoint, priority, cars 
-                                  FROM train_routes WHERE track = ? AND train_route = ? AND map_id = ?''',
-                               (self.track, self.train_route, self.map_id))
+        USER_DB_CURSOR.execute(
+            '''SELECT opened, last_opened_by, current_checkpoint, priority, cars FROM train_routes 
+            WHERE track = ? AND train_route = ? AND map_id = ?''', (self.track, self.train_route, self.map_id)
+        )
         self.opened, self.last_opened_by, self.current_checkpoint, self.priority, self.cars = USER_DB_CURSOR.fetchone()
-        USER_DB_CURSOR.execute('''SELECT train_route_section_busy_state FROM train_routes
-                                  WHERE track = ? AND train_route = ? AND map_id = ?''',
-                               (self.track, self.train_route, self.map_id))
+        USER_DB_CURSOR.execute(
+            '''SELECT train_route_section_busy_state FROM train_routes 
+            WHERE track = ? AND train_route = ? AND map_id = ?''', (self.track, self.train_route, self.map_id)
+        )
         self.train_route_section_busy_state = [int(s) for s in USER_DB_CURSOR.fetchone()[0].split(',')]
-        CONFIG_DB_CURSOR.execute('''SELECT start_point_v2, stop_point_v2, destination_point_v2, checkpoints_v2 
-                                    FROM train_route_config WHERE track = ? AND train_route = ? AND map_id = ?''',
-                                 (self.track, self.train_route, self.map_id))
-        fetched_data = list(CONFIG_DB_CURSOR.fetchone())
-        for i in range(len(fetched_data)):
+        CONFIG_DB_CURSOR.execute(
+            '''SELECT start_point_v2, stop_point_v2, destination_point_v2, checkpoints_v2 FROM train_route_config 
+            WHERE track = ? AND train_route = ? AND map_id = ?''', (self.track, self.train_route, self.map_id)
+        )
+        for i in range(len(fetched_data := list(CONFIG_DB_CURSOR.fetchone()))):
             if fetched_data[i] is not None:
                 fetched_data[i] = tuple(int(p) for p in fetched_data[i].split(','))
 
         self.start_point_v2, self.stop_point_v2, self.destination_point_v2, self.checkpoints_v2 = fetched_data
         self.trail_points_v2 = TrailPointsV2(self.map_id, self.track, self.train_route)
-        CONFIG_DB_CURSOR.execute('''SELECT section_type, track_param_1, track_param_2 
-                                    FROM train_route_sections WHERE track = ? and train_route = ? AND map_id = ?''',
-                                 (self.track, self.train_route, self.map_id))
+        CONFIG_DB_CURSOR.execute(
+            '''SELECT section_type, track_param_1, track_param_2 FROM train_route_sections 
+            WHERE track = ? and train_route = ? AND map_id = ?''', (self.track, self.train_route, self.map_id)
+        )
         self.train_route_sections = CONFIG_DB_CURSOR.fetchall()
         self.signal_base_route, self.signal_track = None, None
         if len(self.train_route_sections) > 1:
             self.signal_base_route, self.signal_track = self.train_route_sections[0][:2]
 
-        CONFIG_DB_CURSOR.execute('''SELECT position_1, position_2 
-                                    FROM train_route_sections WHERE track = ? and train_route = ? AND map_id = ?''',
-                                 (self.track, self.train_route, self.map_id))
+        CONFIG_DB_CURSOR.execute(
+            '''SELECT position_1, position_2 FROM train_route_sections 
+            WHERE track = ? and train_route = ? AND map_id = ?''', (self.track, self.train_route, self.map_id)
+        )
         self.train_route_section_positions = CONFIG_DB_CURSOR.fetchall()
 
     @final
     def on_save_state(self):
-        USER_DB_CURSOR.execute('''UPDATE train_routes SET opened = ?, last_opened_by = ?, current_checkpoint = ?,
-                                  priority = ?, cars = ?, train_route_section_busy_state = ? 
-                                  WHERE track = ? AND train_route = ? AND map_id = ?''',
-                               (self.opened, self.last_opened_by, self.current_checkpoint, self.priority,
-                                self.cars, ','.join(str(t) for t in self.train_route_section_busy_state),
-                                self.track, self.train_route, self.map_id))
+        USER_DB_CURSOR.execute(
+            '''UPDATE train_routes SET opened = ?, last_opened_by = ?, current_checkpoint = ?, priority = ?, cars = ?, 
+            train_route_section_busy_state = ? WHERE track = ? AND train_route = ? AND map_id = ?''',
+            (
+                self.opened, self.last_opened_by, self.current_checkpoint, self.priority, self.cars,
+                ','.join(str(t) for t in self.train_route_section_busy_state),
+                self.track, self.train_route, self.map_id
+            )
+        )
 
     @final
     def on_update_time(self, dt):
@@ -60,13 +69,15 @@ class TrainRouteModel(MapBaseModel, ABC):
 
             if self.train_route_section_busy_state[0] and not train_route_busy:
                 self.controller.parent_controller.on_switch_signal_to_green(self.signal_track, self.signal_base_route)
-                self.controller.parent_controller.on_set_train_stop_point(self.last_opened_by,
-                                                                          self.destination_point_v2[self.cars])
+                self.controller.parent_controller.on_set_train_stop_point(
+                    self.last_opened_by, self.destination_point_v2[self.cars]
+                )
                 for i in range(1, len(self.train_route_sections) - 1):
                     self.controller.parent_controller.on_train_route_section_force_busy_on(
                         self.train_route_sections[i],
                         self.train_route_section_positions[i],
-                        self.last_opened_by)
+                        self.last_opened_by
+                    )
                     self.train_route_section_busy_state[i] = TRUE
 
                 self.train_route_section_busy_state[-1] = TRUE

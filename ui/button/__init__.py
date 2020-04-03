@@ -132,29 +132,35 @@ class Button(ABC):
         # 2 pixels are left for red button border,
         # that's why background position starts from (button_position + 2)
         if self.vertex_list is None and not self.invisible:
-            self.vertex_list \
-                = self.batch.add(4, gl.GL_QUADS, GROUPS['button_background'],
-                                 ('v2i', (self.position[0] + 2, self.position[1] + 2,
-                                          self.position[0] + self.button_size[0] - 2, self.position[1] + 2,
-                                          self.position[0] + self.button_size[0] - 2,
-                                          self.position[1] + self.button_size[1] - 2,
-                                          self.position[0] + 2, self.position[1] + self.button_size[1] - 2)
-                                  ),
-                                 ('c4f', ((*BUTTON_BACKGROUND_RGB[self.state][self.transparent],
-                                           BUTTON_BACKGROUND_ALPHA[self.state][self.transparent]
-                                           * float(self.opacity) / 255.0)
-                                          * 4)
-                                  )
-                                 )
+            self.vertex_list = self.batch.add(
+                4, gl.GL_QUADS, GROUPS['button_background'],
+                (
+                    'v2i', (
+                        self.position[0] + 2, self.position[1] + 2,
+                        self.position[0] + self.button_size[0] - 2, self.position[1] + 2,
+                        self.position[0] + self.button_size[0] - 2,
+                        self.position[1] + self.button_size[1] - 2,
+                        self.position[0] + 2, self.position[1] + self.button_size[1] - 2
+                    )
+                ),
+                (
+                    'c4f', (
+                        (
+                            *BUTTON_BACKGROUND_RGB[self.state][self.transparent],
+                            BUTTON_BACKGROUND_ALPHA[self.state][self.transparent] * float(self.opacity) / 255.0
+                        ) * 4
+                    )
+                )
+            )
 
         if self.text_label is None:
             if self.text not in (None, ''):
-                self.text_label = Label(self.text, font_name=self.font_name, bold=self.is_bold,
-                                        font_size=self.font_size, color=(*WHITE_RGB, self.opacity),
-                                        x=self.position[0] + self.button_size[0] // 2,
-                                        y=self.position[1] + self.button_size[1] // 2,
-                                        anchor_x='center', anchor_y='center', batch=self.batch,
-                                        group=GROUPS['button_text'])
+                self.text_label = Label(
+                    self.text, font_name=self.font_name, bold=self.is_bold,
+                    font_size=self.font_size, color=(*WHITE_RGB, self.opacity),
+                    x=self.position[0] + self.button_size[0] // 2, y=self.position[1] + self.button_size[1] // 2,
+                    anchor_x='center', anchor_y='center', batch=self.batch, group=GROUPS['button_text']
+                )
         else:
             self.text_label.color = (*WHITE_RGB, self.opacity)
 
@@ -186,12 +192,12 @@ class Button(ABC):
 
         if self.text_label is None:
             if self.text not in (None, ''):
-                self.text_label = Label(self.text, font_name=self.font_name, bold=self.is_bold,
-                                        font_size=self.font_size, color=(*GREY_RGB, self.opacity),
-                                        x=self.position[0] + self.button_size[0] // 2,
-                                        y=self.position[1] + self.button_size[1] // 2,
-                                        anchor_x='center', anchor_y='center', batch=self.batch,
-                                        group=GROUPS['button_text'])
+                self.text_label = Label(
+                    self.text, font_name=self.font_name, bold=self.is_bold,
+                    font_size=self.font_size, color=(*GREY_RGB, self.opacity),
+                    x=self.position[0] + self.button_size[0] // 2, y=self.position[1] + self.button_size[1] // 2,
+                    anchor_x='center', anchor_y='center', batch=self.batch, group=GROUPS['button_text']
+                )
         else:
             self.text_label.color = (*GREY_RGB, self.opacity)
 
@@ -208,9 +214,12 @@ class Button(ABC):
             if self.state != 'pressed':
                 self.state = 'hover'
                 if self.vertex_list is not None:
-                    self.vertex_list.colors = ((*BUTTON_BACKGROUND_RGB[self.state][self.transparent],
-                                                BUTTON_BACKGROUND_ALPHA[self.state][self.transparent]
-                                                * float(self.opacity) / 255.0) * 4)
+                    self.vertex_list.colors = (
+                        (
+                            *BUTTON_BACKGROUND_RGB[self.state][self.transparent],
+                            BUTTON_BACKGROUND_ALPHA[self.state][self.transparent] * float(self.opacity) / 255.0
+                        ) * 4
+                    )
 
                 WINDOW.set_mouse_cursor(HAND_CURSOR)
                 if self.on_hover_action is not None:
@@ -221,9 +230,12 @@ class Button(ABC):
             if self.state != 'normal':
                 self.state = 'normal'
                 if self.vertex_list is not None:
-                    self.vertex_list.colors = ((*BUTTON_BACKGROUND_RGB[self.state][self.transparent],
-                                                BUTTON_BACKGROUND_ALPHA[self.state][self.transparent]
-                                                * float(self.opacity) / 255.0) * 4)
+                    self.vertex_list.colors = (
+                        (
+                            *BUTTON_BACKGROUND_RGB[self.state][self.transparent],
+                            BUTTON_BACKGROUND_ALPHA[self.state][self.transparent] * float(self.opacity) / 255.0
+                        ) * 4
+                    )
 
                 WINDOW.set_mouse_cursor(DEFAULT_CURSOR)
                 if self.on_leave_action is not None:
@@ -236,9 +248,12 @@ class Button(ABC):
     def on_mouse_press(self, x, y, button, modifiers):
         self.state = 'pressed'
         if self.vertex_list is not None:
-            self.vertex_list.colors = ((*BUTTON_BACKGROUND_RGB[self.state][self.transparent],
-                                        BUTTON_BACKGROUND_ALPHA[self.state][self.transparent]
-                                        * float(self.opacity) / 255.0) * 4)
+            self.vertex_list.colors = (
+                (
+                    *BUTTON_BACKGROUND_RGB[self.state][self.transparent],
+                    BUTTON_BACKGROUND_ALPHA[self.state][self.transparent] * float(self.opacity) / 255.0
+                ) * 4
+            )
 
     @final
     @button_is_activated
@@ -248,9 +263,12 @@ class Button(ABC):
     def on_mouse_release(self, x, y, button, modifiers):
         self.state = 'hover'
         if self.vertex_list is not None:
-            self.vertex_list.colors = ((*BUTTON_BACKGROUND_RGB[self.state][self.transparent],
-                                        BUTTON_BACKGROUND_ALPHA[self.state][self.transparent]
-                                        * float(self.opacity) / 255.0) * 4)
+            self.vertex_list.colors = (
+                (
+                    *BUTTON_BACKGROUND_RGB[self.state][self.transparent],
+                    BUTTON_BACKGROUND_ALPHA[self.state][self.transparent] * float(self.opacity) / 255.0
+                ) * 4
+            )
 
         WINDOW.set_mouse_cursor(DEFAULT_CURSOR)
         self.on_click_action(self)
@@ -260,9 +278,12 @@ class Button(ABC):
     def on_mouse_leave(self, x, y):
         self.state = 'normal'
         if self.vertex_list is not None:
-            self.vertex_list.colors = ((*BUTTON_BACKGROUND_RGB[self.state][self.transparent],
-                                        BUTTON_BACKGROUND_ALPHA[self.state][self.transparent]
-                                        * float(self.opacity) / 255.0) * 4)
+            self.vertex_list.colors = (
+                (
+                    *BUTTON_BACKGROUND_RGB[self.state][self.transparent],
+                    BUTTON_BACKGROUND_ALPHA[self.state][self.transparent] * float(self.opacity) / 255.0
+                ) * 4
+            )
 
         WINDOW.set_mouse_cursor(DEFAULT_CURSOR)
         if self.on_leave_action is not None:
@@ -282,8 +303,9 @@ class Button(ABC):
 
         else:
             if self.vertex_list is not None:
-                self.vertex_list.colors[3::4] \
-                    = ((BUTTON_BACKGROUND_ALPHA[self.state][self.transparent] * float(self.opacity) / 255.0,) * 4)
+                self.vertex_list.colors[3::4] = (
+                    (BUTTON_BACKGROUND_ALPHA[self.state][self.transparent] * float(self.opacity) / 255.0,) * 4
+                )
 
             if self.text_label is not None:
                 self.text_label.color = (*self.text_label.color[0:3], self.opacity)
@@ -309,11 +331,12 @@ class UIButton(Button, ABC):
             # move the button background to the new position
             # 2 pixels are left for red button border,
             # that's why background position starts from (button_position + 2)
-            self.vertex_list.vertices = (self.position[0] + 2, self.position[1] + 2,
-                                         self.position[0] + self.button_size[0] - 2, self.position[1] + 2,
-                                         self.position[0] + self.button_size[0] - 2,
-                                         self.position[1] + self.button_size[1] - 2,
-                                         self.position[0] + 2, self.position[1] + self.button_size[1] - 2)
+            self.vertex_list.vertices = (
+                self.position[0] + 2, self.position[1] + 2,
+                self.position[0] + self.button_size[0] - 2, self.position[1] + 2,
+                self.position[0] + self.button_size[0] - 2, self.position[1] + self.button_size[1] - 2,
+                self.position[0] + 2, self.position[1] + self.button_size[1] - 2
+            )
         # move the text label to the center of the button
         if self.text_label is not None:
             self.text_label.begin_update()

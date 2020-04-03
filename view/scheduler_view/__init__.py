@@ -18,8 +18,9 @@ class SchedulerView(MapBaseView, ABC):
         self.arrival_time_threshold = SCHEDULE_ARRIVAL_TIME_THRESHOLD[self.map_id]
         self.left_schedule_caption_label = ScheduleLeftCaptionLabel(parent_viewport=self.viewport)
         self.right_schedule_caption_label = ScheduleRightCaptionLabel(parent_viewport=self.viewport)
-        self.close_schedule_button = CloseScheduleButton(on_click_action=on_close_schedule,
-                                                         parent_viewport=self.viewport)
+        self.close_schedule_button = CloseScheduleButton(
+            on_click_action=on_close_schedule, parent_viewport=self.viewport
+        )
         self.buttons.append(self.close_schedule_button)
         self.schedule_rows = []
         for i in range(SCHEDULE_COLUMNS):
@@ -32,10 +33,12 @@ class SchedulerView(MapBaseView, ABC):
             self.schedule_rows.append(column)
 
         self.shader_sprite = SchedulerViewShaderSprite(view=self)
-        self.on_window_resize_handlers.extend([
-            self.left_schedule_caption_label.on_window_resize, self.right_schedule_caption_label.on_window_resize,
-            self.shader_sprite.on_window_resize
-        ])
+        self.on_window_resize_handlers.extend(
+            [
+                self.left_schedule_caption_label.on_window_resize, self.right_schedule_caption_label.on_window_resize,
+                self.shader_sprite.on_window_resize
+            ]
+        )
         self.on_append_window_handlers()
 
     @final
@@ -96,12 +99,14 @@ class SchedulerView(MapBaseView, ABC):
     def on_release_train(self, index):
         for i in range(index, SCHEDULE_ROWS * SCHEDULE_COLUMNS - 1):
             if self.schedule_rows[(i + 1) // SCHEDULE_ROWS][(i + 1) % SCHEDULE_ROWS].is_activated:
-                self.schedule_rows[i // SCHEDULE_ROWS][i % SCHEDULE_ROWS]\
-                    .on_assign_data(BASE_SCHEDULE[self.map_id][i + 1])
+                self.schedule_rows[i // SCHEDULE_ROWS][i % SCHEDULE_ROWS].on_assign_data(
+                    BASE_SCHEDULE[self.map_id][i + 1]
+                )
             else:
                 self.schedule_rows[i // SCHEDULE_ROWS][i % SCHEDULE_ROWS].on_deactivate(instant=True)
                 break
 
         if self.schedule_rows[SCHEDULE_COLUMNS - 1][SCHEDULE_ROWS - 1].is_activated:
-            self.schedule_rows[SCHEDULE_COLUMNS - 1][SCHEDULE_ROWS - 1]\
-                .on_assign_data(BASE_SCHEDULE[self.map_id][SCHEDULE_ROWS * SCHEDULE_COLUMNS])
+            self.schedule_rows[SCHEDULE_COLUMNS - 1][SCHEDULE_ROWS - 1].on_assign_data(
+                BASE_SCHEDULE[self.map_id][SCHEDULE_ROWS * SCHEDULE_COLUMNS]
+            )

@@ -7,8 +7,9 @@ from ui.license_page import LicensePage
 @final
 class KeyringLicensePage(LicensePage):
     def __init__(self, parent_viewport):
-        super().__init__(logger=getLogger('root.app.license.view.keyring_license_page'),
-                         parent_viewport=parent_viewport)
+        super().__init__(
+            logger=getLogger('root.app.license.view.keyring_license_page'), parent_viewport=parent_viewport
+        )
         self.license_text = '''keyring
 ================================================
 Copyright Jason R. Coombs

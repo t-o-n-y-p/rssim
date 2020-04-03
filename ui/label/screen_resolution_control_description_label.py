@@ -7,9 +7,10 @@ from ui import *
 @final
 class ScreenResolutionControlDescriptionLabel(LocalizedLabel):
     def __init__(self, parent_viewport):
-        super().__init__(logger=getLogger('root.screen_resolution_control_description_label'),
-                         i18n_resources_key='windowed_resolution_description_string',
-                         parent_viewport=parent_viewport)
+        super().__init__(
+            logger=getLogger('root.screen_resolution_control_description_label'),
+            i18n_resources_key='windowed_resolution_description_string', parent_viewport=parent_viewport
+        )
         self.font_name = 'Arial'
         self.base_color = WHITE_RGB
         self.anchor_x = 'center'

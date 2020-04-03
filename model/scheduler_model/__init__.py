@@ -9,26 +9,33 @@ from database import USER_DB_CURSOR, CONFIG_DB_CURSOR
 class SchedulerModel(MapBaseModel, ABC):
     def __init__(self, controller, view, map_id):
         super().__init__(controller, view, map_id, logger=getLogger(f'root.app.game.map.{map_id}.scheduler.model'))
-        USER_DB_CURSOR.execute('''SELECT locked, unlocked_tracks, unlocked_environment 
-                                  FROM map_progress WHERE map_id = ?''', (self.map_id, ))
+        USER_DB_CURSOR.execute(
+            '''SELECT locked, unlocked_tracks, unlocked_environment FROM map_progress WHERE map_id = ?''',
+            (self.map_id, )
+        )
         self.locked, self.unlocked_tracks, self.unlocked_environment = USER_DB_CURSOR.fetchone()
-        USER_DB_CURSOR.execute('''SELECT min_supported_cars_by_direction 
-                                  FROM map_progress WHERE map_id = ?''', (self.map_id, ))
+        USER_DB_CURSOR.execute(
+            '''SELECT min_supported_cars_by_direction FROM map_progress WHERE map_id = ?''', (self.map_id, )
+        )
         self.min_supported_cars_by_direction = [
             [int(c) for c in s.split(',')] for s in USER_DB_CURSOR.fetchone()[0].split('|')
         ]
-        CONFIG_DB_CURSOR.execute('''SELECT arrival_time_min, arrival_time_max, direction, new_direction, 
-                                    cars_min, cars_max, switch_direction_required FROM schedule_options 
-                                    WHERE min_level <= ? AND max_level >= ? AND map_id = ?''',
-                                 (self.level, self.level, self.map_id))
+        CONFIG_DB_CURSOR.execute(
+            '''SELECT arrival_time_min, arrival_time_max, direction, new_direction, cars_min, cars_max, 
+            switch_direction_required FROM schedule_options WHERE min_level <= ? AND max_level >= ? AND map_id = ?''',
+            (self.level, self.level, self.map_id)
+        )
         self.schedule_options = CONFIG_DB_CURSOR.fetchall()
-        USER_DB_CURSOR.execute('''SELECT next_cycle_start_time FROM scheduler WHERE map_id = ?''',
-                               (self.map_id, ))
+        USER_DB_CURSOR.execute(
+            '''SELECT next_cycle_start_time FROM scheduler WHERE map_id = ?''', (self.map_id, )
+        )
         self.next_cycle_start_time = USER_DB_CURSOR.fetchone()[0]
         USER_DB_CURSOR.execute('''SELECT entry_busy_state FROM scheduler WHERE map_id = ?''', (self.map_id, ))
         self.entry_busy_state = [int(t) for t in USER_DB_CURSOR.fetchone()[0].split(',')]
-        CONFIG_DB_CURSOR.execute('''SELECT schedule_cycle_length, seconds_per_car, exp_per_car, money_per_car 
-                                    FROM map_config WHERE level = ? AND map_id = ?''', (self.level, self.map_id))
+        CONFIG_DB_CURSOR.execute(
+            '''SELECT schedule_cycle_length, seconds_per_car, exp_per_car, money_per_car 
+            FROM map_config WHERE level = ? AND map_id = ?''', (self.level, self.map_id)
+        )
         if (schedule_config := CONFIG_DB_CURSOR.fetchone()) is not None:
             self.schedule_cycle_length, self.seconds_per_car, self.exp_per_car, self.money_per_car = schedule_config
         else:
@@ -43,24 +50,32 @@ class SchedulerModel(MapBaseModel, ABC):
 
     @final
     def on_save_state(self):
-        USER_DB_CURSOR.execute('''UPDATE scheduler SET next_cycle_start_time = ?, 
-                                  entry_busy_state = ? WHERE map_id = ?''',
-                               (self.next_cycle_start_time, ','.join(str(t) for t in self.entry_busy_state),
-                                self.map_id))
-        USER_DB_CURSOR.execute('''UPDATE map_progress SET entry_locked_state = ?, min_supported_cars_by_direction = ? 
-                                  WHERE map_id = ?''',
-                               (','.join(str(t) for t in self.entry_locked_state),
-                                '|'.join([','.join(str(c) for c in self.min_supported_cars_by_direction[direction])
-                                          for direction in range(len(self.min_supported_cars_by_direction))]),
-                                self.map_id))
+        USER_DB_CURSOR.execute(
+            '''UPDATE scheduler SET next_cycle_start_time = ?, entry_busy_state = ? WHERE map_id = ?''',
+            (self.next_cycle_start_time, ','.join(str(t) for t in self.entry_busy_state), self.map_id)
+        )
+        USER_DB_CURSOR.execute(
+            '''UPDATE map_progress SET entry_locked_state = ?, min_supported_cars_by_direction = ? WHERE map_id = ?''',
+            (
+                ','.join(str(t) for t in self.entry_locked_state),
+                '|'.join([
+                    ','.join(str(c) for c in self.min_supported_cars_by_direction[direction])
+                    for direction in range(len(self.min_supported_cars_by_direction))
+                ]),
+                self.map_id
+            )
+        )
         USER_DB_CURSOR.execute('''DELETE FROM base_schedule WHERE map_id = ?''', (self.map_id, ))
         for train in BASE_SCHEDULE[self.map_id]:
-            USER_DB_CURSOR.execute('INSERT INTO base_schedule VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)',
-                                   (self.map_id, *train))
+            USER_DB_CURSOR.execute(
+                'INSERT INTO base_schedule VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)', (self.map_id, *train)
+            )
 
         for train_id, expiration_time in TRAIN_ID_POOL[self.map_id].items():
-            USER_DB_CURSOR.execute('''UPDATE train_numbers SET expiration_time = ? WHERE train_id = ? AND map_id = ?''',
-                                   (expiration_time, train_id, self.map_id))
+            USER_DB_CURSOR.execute(
+                '''UPDATE train_numbers SET expiration_time = ? WHERE train_id = ? AND map_id = ?''',
+                (expiration_time, train_id, self.map_id)
+            )
 
     @final
     def on_update_time(self, dt):
@@ -76,10 +91,13 @@ class SchedulerModel(MapBaseModel, ABC):
                         [train_id for train_id, expiration_time in TRAIN_ID_POOL[self.map_id].items()
                          if expiration_time <= self.game_time]
                     )
-                    train_options = (train_id, self.next_cycle_start_time
-                                     + choice(list(range(i[ARRIVAL_TIME_MIN], i[ARRIVAL_TIME_MAX]))),
-                                     i[DIRECTION], i[NEW_DIRECTION], cars, self.seconds_per_car * cars,
-                                     self.exp_per_car * cars, self.money_per_car * cars, i[SWITCH_DIRECTION_FLAG])
+                    train_options = (
+                        train_id,
+                        self.next_cycle_start_time
+                        + choice(list(range(i[ARRIVAL_TIME_MIN], i[ARRIVAL_TIME_MAX]))),
+                        i[DIRECTION], i[NEW_DIRECTION], cars, self.seconds_per_car * cars,
+                        self.exp_per_car * cars, self.money_per_car * cars, i[SWITCH_DIRECTION_FLAG]
+                    )
                     BASE_SCHEDULE[self.map_id].append(train_options)
                     TRAIN_ID_POOL[self.map_id][train_id] = self.game_time + SECONDS_IN_ONE_DAY
 
@@ -97,18 +115,19 @@ class SchedulerModel(MapBaseModel, ABC):
                         self.entry_busy_state[e] = TRUE
 
                     if i[CARS] < self.min_supported_cars_by_direction[i[DIRECTION]][i[NEW_DIRECTION]]:
-                        self.controller.parent_controller\
-                            .on_create_train(i[TRAIN_ID], i[CARS], ENTRY_TRACK_ID[self.map_id][i[DIRECTION]],
-                                             APPROACHING_TRAIN_ROUTE[self.map_id][i[DIRECTION]],
-                                             'approaching_pass_through', i[DIRECTION], i[DIRECTION], i[DIRECTION],
-                                             DEFAULT_PRIORITY, PASS_THROUGH_BOARDING_TIME, 0.0, 0.0, FALSE)
+                        self.controller.parent_controller.on_create_train(
+                            i[TRAIN_ID], i[CARS], ENTRY_TRACK_ID[self.map_id][i[DIRECTION]],
+                            APPROACHING_TRAIN_ROUTE[self.map_id][i[DIRECTION]], 'approaching_pass_through',
+                            i[DIRECTION], i[DIRECTION], i[DIRECTION], DEFAULT_PRIORITY, PASS_THROUGH_BOARDING_TIME,
+                            0.0, 0.0, FALSE
+                        )
                     else:
-                        self.controller.parent_controller\
-                            .on_create_train(i[TRAIN_ID], i[CARS], ENTRY_TRACK_ID[self.map_id][i[DIRECTION]],
-                                             APPROACHING_TRAIN_ROUTE[self.map_id][i[DIRECTION]], 'approaching',
-                                             i[DIRECTION], i[NEW_DIRECTION], i[DIRECTION],
-                                             DEFAULT_PRIORITY, i[STOP_TIME], i[EXP], i[MONEY],
-                                             i[SWITCH_DIRECTION_REQUIRED])
+                        self.controller.parent_controller.on_create_train(
+                            i[TRAIN_ID], i[CARS], ENTRY_TRACK_ID[self.map_id][i[DIRECTION]],
+                            APPROACHING_TRAIN_ROUTE[self.map_id][i[DIRECTION]], 'approaching',
+                            i[DIRECTION], i[NEW_DIRECTION], i[DIRECTION], DEFAULT_PRIORITY, i[STOP_TIME],
+                            i[EXP], i[MONEY], i[SWITCH_DIRECTION_REQUIRED]
+                        )
 
                     index = BASE_SCHEDULE[self.map_id].index(i)
                     self.view.on_release_train(index)
@@ -122,13 +141,16 @@ class SchedulerModel(MapBaseModel, ABC):
     @final
     def on_level_up(self):
         super().on_level_up()
-        CONFIG_DB_CURSOR.execute('''SELECT arrival_time_min, arrival_time_max, direction, new_direction, 
-                                    cars_min, cars_max, switch_direction_required FROM schedule_options 
-                                    WHERE min_level <= ? AND max_level >= ? AND map_id = ?''',
-                                 (self.level, self.level, self.map_id))
+        CONFIG_DB_CURSOR.execute(
+            '''SELECT arrival_time_min, arrival_time_max, direction, new_direction, 
+            cars_min, cars_max, switch_direction_required FROM schedule_options 
+            WHERE min_level <= ? AND max_level >= ? AND map_id = ?''', (self.level, self.level, self.map_id)
+        )
         self.schedule_options = CONFIG_DB_CURSOR.fetchall()
-        CONFIG_DB_CURSOR.execute('''SELECT schedule_cycle_length, seconds_per_car, exp_per_car, money_per_car 
-                                    FROM map_config WHERE level = ? AND map_id = ?''', (self.level, self.map_id))
+        CONFIG_DB_CURSOR.execute(
+            '''SELECT schedule_cycle_length, seconds_per_car, exp_per_car, money_per_car FROM map_config 
+            WHERE level = ? AND map_id = ?''', (self.level, self.map_id)
+        )
         if (schedule_config := CONFIG_DB_CURSOR.fetchone()) is not None:
             self.schedule_cycle_length, self.seconds_per_car, self.exp_per_car, self.money_per_car = schedule_config
         else:

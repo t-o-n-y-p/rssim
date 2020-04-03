@@ -127,8 +127,9 @@ class MapController(MapBaseController, ABC):
     @final
     def on_update_time(self, dt):
         # train routes are sorted by priority to implement some kind of queue
-        self.train_routes_sorted_list = sorted(self.train_routes_sorted_list,
-                                               key=attrgetter('model.priority'), reverse=True)
+        self.train_routes_sorted_list = sorted(
+            self.train_routes_sorted_list, key=attrgetter('model.priority'), reverse=True
+        )
         super().on_update_time(dt)
         # collected trains which has departed successfully should be removed from the game
         for train in self.lifecycle_ended_trains:
@@ -335,11 +336,14 @@ class MapController(MapBaseController, ABC):
         self.train_routes[track][train_route].on_close_train_route()
 
     @final
-    def on_create_train(self, train_id, cars, track, train_route, state, direction, new_direction,
-                        current_direction, priority, boarding_time, exp, money, switch_direction_required):
-        train = self.model.on_create_train(train_id, cars, track, train_route, state, direction, new_direction,
-                                           current_direction, priority, boarding_time, exp, money,
-                                           switch_direction_required)
+    def on_create_train(
+            self, train_id, cars, track, train_route, state, direction, new_direction,
+            current_direction, priority, boarding_time, exp, money, switch_direction_required
+    ):
+        train = self.model.on_create_train(
+            train_id, cars, track, train_route, state, direction, new_direction,
+            current_direction, priority, boarding_time, exp, money, switch_direction_required
+        )
         train.view.on_window_resize(*self.view.screen_resolution)
         # add new train to the list and dictionary
         self.trains[train_id] = train

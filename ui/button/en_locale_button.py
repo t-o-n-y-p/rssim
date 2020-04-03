@@ -15,9 +15,7 @@ class ENLocaleButton(UIButton):
         self.on_click_action = on_click_action
 
     def get_position(self):
-        return (self.parent_viewport.x1,
-                self.parent_viewport.y2 - get_top_bar_height(self.screen_resolution))
+        return self.parent_viewport.x1, self.parent_viewport.y2 - get_top_bar_height(self.screen_resolution)
 
     def get_size(self):
-        return (get_top_bar_height(self.screen_resolution),
-                get_top_bar_height(self.screen_resolution))
+        return get_top_bar_height(self.screen_resolution), get_top_bar_height(self.screen_resolution)

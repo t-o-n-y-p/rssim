@@ -16,10 +16,12 @@ class MiniMapView(MapBaseView, ABC):
         self.mini_map_sprite = MiniMapSprite(map_id=self.map_id, parent_viewport=self.viewport)
         self.mini_environment_sprite = MiniEnvironmentSprite(map_id=self.map_id, parent_viewport=self.viewport)
         self.shader_sprite = MiniMapViewShaderSprite(view=self)
-        self.on_window_resize_handlers.extend([
-            self.shader_sprite.on_window_resize, self.mini_map_sprite.on_window_resize,
-            self.mini_environment_sprite.on_window_resize
-        ])
+        self.on_window_resize_handlers.extend(
+            [
+                self.shader_sprite.on_window_resize, self.mini_map_sprite.on_window_resize,
+                self.mini_environment_sprite.on_window_resize
+            ]
+        )
         self.on_append_window_handlers()
 
     @final
@@ -53,21 +55,27 @@ class MiniMapView(MapBaseView, ABC):
 
     @final
     def get_mini_map_frame_position(self):
-        return (ceil(MAP_CAMERA.position[0] / MAP_WIDTH
-                     * get_mini_map_width(self.screen_resolution) / MAP_CAMERA.zoom)
-                + get_mini_map_position(self.screen_resolution)[0],
-                ceil((get_bottom_bar_height(self.screen_resolution)
-                      + MAP_CAMERA.position[1]) / MAP_HEIGHT
-                     * get_mini_map_height(self.screen_resolution) / MAP_CAMERA.zoom)
-                + get_mini_map_position(self.screen_resolution)[1])
+        return (
+            ceil(MAP_CAMERA.position[0] / MAP_WIDTH * get_mini_map_width(self.screen_resolution) / MAP_CAMERA.zoom)
+            + get_mini_map_position(self.screen_resolution)[0],
+            ceil(
+                (get_bottom_bar_height(self.screen_resolution) + MAP_CAMERA.position[1]) / MAP_HEIGHT
+                * get_mini_map_height(self.screen_resolution) / MAP_CAMERA.zoom
+            ) + get_mini_map_position(self.screen_resolution)[1]
+        )
 
     @final
     def get_mini_map_frame_height(self):
-        return int((self.viewport.y2 - self.viewport.y1
-                    - get_bottom_bar_height(self.screen_resolution) - get_top_bar_height(self.screen_resolution))
-                   / (MAP_HEIGHT * MAP_CAMERA.zoom) * get_mini_map_height(self.screen_resolution))
+        return int(
+            (
+                self.viewport.y2 - self.viewport.y1 - get_bottom_bar_height(self.screen_resolution)
+                - get_top_bar_height(self.screen_resolution)
+            ) / (MAP_HEIGHT * MAP_CAMERA.zoom) * get_mini_map_height(self.screen_resolution)
+        )
 
     @final
     def get_mini_map_frame_width(self):
-        return int((self.viewport.x2 - self.viewport.x1) / (MAP_WIDTH * MAP_CAMERA.zoom)
-                   * get_mini_map_width(self.screen_resolution))
+        return int(
+            (self.viewport.x2 - self.viewport.x1) / (MAP_WIDTH * MAP_CAMERA.zoom)
+            * get_mini_map_width(self.screen_resolution)
+        )

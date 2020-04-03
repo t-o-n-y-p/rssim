@@ -7,8 +7,10 @@ from ui.sprite import MapSprite
 @final
 class CarSprite(MapSprite):
     def __init__(self, map_id, train_id, parent_viewport):
-        super().__init__(map_id, logger=getLogger(f'root.app.game.map.{map_id}.train.{train_id}.car_sprite'),
-                         parent_viewport=parent_viewport)
+        super().__init__(
+            map_id, logger=getLogger(f'root.app.game.map.{map_id}.train.{train_id}.car_sprite'),
+            parent_viewport=parent_viewport
+        )
         self.car_offset = (0, 0)
         self.batch = BATCHES['main_batch']
         self.group = GROUPS['train']

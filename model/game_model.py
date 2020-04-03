@@ -11,19 +11,24 @@ class GameModel(GameBaseModel):
         self.game_paused = True
         USER_DB_CURSOR.execute('''SELECT exp, money_target, exp_multiplier FROM game_progress''')
         self.exp, self.money_target, self.exp_multiplier = USER_DB_CURSOR.fetchone()
-        CONFIG_DB_CURSOR.execute('''SELECT player_progress FROM player_progress_config 
-                                    WHERE level = ?''', (self.level, ))
+        CONFIG_DB_CURSOR.execute(
+            '''SELECT player_progress FROM player_progress_config WHERE level = ?''', (self.level, )
+        )
         self.player_progress = CONFIG_DB_CURSOR.fetchone()[0]
 
     def on_save_state(self):
-        USER_DB_CURSOR.execute('''UPDATE epoch_timestamp SET game_time = ?, game_time_fraction = ?''',
-                               (self.game_time, self.game_time_fraction))
-        USER_DB_CURSOR.execute('''UPDATE game_progress SET level = ?, exp = ?, money = ?, 
-                                  money_target = ?, exp_multiplier = ?, exp_bonus_multiplier = ?, 
-                                  money_bonus_multiplier = ?, construction_time_bonus_multiplier = ?''',
-                               (self.level, self.exp, self.money, self.money_target, self.exp_multiplier,
-                                self.exp_bonus_multiplier, self.money_bonus_multiplier,
-                                self.construction_time_bonus_multiplier))
+        USER_DB_CURSOR.execute(
+            '''UPDATE epoch_timestamp SET game_time = ?, game_time_fraction = ?''',
+            (self.game_time, self.game_time_fraction)
+        )
+        USER_DB_CURSOR.execute(
+            '''UPDATE game_progress SET level = ?, exp = ?, money = ?, money_target = ?, exp_multiplier = ?, 
+            exp_bonus_multiplier = ?, money_bonus_multiplier = ?, construction_time_bonus_multiplier = ?''',
+            (
+                self.level, self.exp, self.money, self.money_target, self.exp_multiplier, self.exp_bonus_multiplier,
+                self.money_bonus_multiplier, self.construction_time_bonus_multiplier
+            )
+        )
 
     def on_level_up(self):
         super().on_level_up()
@@ -31,8 +36,9 @@ class GameModel(GameBaseModel):
         if self.level == MAXIMUM_LEVEL:
             self.exp = 0.0
 
-        CONFIG_DB_CURSOR.execute('''SELECT player_progress FROM player_progress_config 
-                                    WHERE level = ?''', (self.level, ))
+        CONFIG_DB_CURSOR.execute(
+            '''SELECT player_progress FROM player_progress_config WHERE level = ?''', (self.level, )
+        )
         self.player_progress = CONFIG_DB_CURSOR.fetchone()[0]
         self.view.on_send_level_up_notification()
 

@@ -7,8 +7,10 @@ from ui.fade_animation.fade_out_animation.train_route_fade_out_animation import 
 
 class TrainRouteController(MapBaseController, ABC):
     def __init__(self, map_id, parent_controller, track, train_route):
-        super().__init__(map_id, parent_controller,
-                         logger=getLogger(f'root.app.game.map.{map_id}.train_route.{track}.{train_route}.controller'))
+        super().__init__(
+            map_id, parent_controller,
+            logger=getLogger(f'root.app.game.map.{map_id}.train_route.{track}.{train_route}.controller')
+        )
         self.view, self.model = self.create_view_and_model(track, train_route)
         self.track, self.train_route = track, train_route
         self.fade_in_animation = TrainRouteFadeInAnimation(self.view)

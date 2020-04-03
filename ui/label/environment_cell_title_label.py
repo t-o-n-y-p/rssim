@@ -7,8 +7,10 @@ from ui import *
 @final
 class EnvironmentCellTitleLabel(LocalizedLabel):
     def __init__(self, parent_viewport):
-        super().__init__(logger=getLogger('root.environment_cell_title_label'),
-                         i18n_resources_key='title_environment_string', parent_viewport=parent_viewport)
+        super().__init__(
+            logger=getLogger('root.environment_cell_title_label'),
+            i18n_resources_key='title_environment_string', parent_viewport=parent_viewport
+        )
         self.arguments = (0,)
         self.font_name = 'Arial'
         self.base_color = WHITE_RGB

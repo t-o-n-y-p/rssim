@@ -7,8 +7,10 @@ from ui import *
 @final
 class BonusInfoCellMoneyBonusValueLabel(LocalizedLabel):
     def __init__(self, parent_viewport):
-        super().__init__(logger=getLogger('root.money_bonus_value_label'),
-                         i18n_resources_key='money_bonus_value_label_string', parent_viewport=parent_viewport)
+        super().__init__(
+            logger=getLogger('root.money_bonus_value_label'),
+            i18n_resources_key='money_bonus_value_label_string', parent_viewport=parent_viewport
+        )
         self.arguments = (0, )
         self.font_name = 'Arial'
         self.base_color = GREEN_RGB

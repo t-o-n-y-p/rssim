@@ -38,15 +38,19 @@ class SettingsKnob(ABC):
     @window_size_has_changed
     def on_window_resize(self, width, height):
         self.screen_resolution = width, height
-        self.viewport.x1 = self.parent_viewport.x1 \
-                           + (self.column + 1) * (self.parent_viewport.x2 - self.parent_viewport.x1) // 4 \
-                           + 2 * get_bottom_bar_height(self.screen_resolution)
-        self.viewport.x2 = self.viewport.x1 + (self.parent_viewport.x2 - self.parent_viewport.x1) // 2 \
-                           - 4 * get_bottom_bar_height(self.screen_resolution)
-        mid_line = (self.parent_viewport.y1 + get_bottom_bar_height(self.screen_resolution)
-                    + self.parent_viewport.y2 - get_top_bar_height(self.screen_resolution)) // 2
-        self.viewport.y1 = mid_line + self.row * (5 * get_top_bar_height(self.screen_resolution) // 8) \
-                           - get_top_bar_height(self.screen_resolution)
+        self.viewport.x1 \
+            = self.parent_viewport.x1 + (self.column + 1) * (self.parent_viewport.x2 - self.parent_viewport.x1) // 4 \
+            + 2 * get_bottom_bar_height(self.screen_resolution)
+        self.viewport.x2 \
+            = self.viewport.x1 + (self.parent_viewport.x2 - self.parent_viewport.x1) // 2 \
+            - 4 * get_bottom_bar_height(self.screen_resolution)
+        mid_line = (
+            self.parent_viewport.y1 + get_bottom_bar_height(self.screen_resolution)
+            + self.parent_viewport.y2 - get_top_bar_height(self.screen_resolution)
+        ) // 2
+        self.viewport.y1 \
+            = mid_line + self.row * (5 * get_top_bar_height(self.screen_resolution) // 8) \
+            - get_top_bar_height(self.screen_resolution)
         self.viewport.y2 = self.viewport.y1 + get_bottom_bar_height(self.screen_resolution)
 
     @final

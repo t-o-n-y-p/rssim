@@ -40,8 +40,9 @@ class BonusCodeInfoCell:
         self.bonus_title_label = BonusTitleLabel(parent_viewport=self.viewport)
         self.exp_bonus_value_label = BonusInfoCellExpBonusValueLabel(parent_viewport=self.viewport)
         self.money_bonus_value_label = BonusInfoCellMoneyBonusValueLabel(parent_viewport=self.viewport)
-        self.construction_time_bonus_value_label \
-            = BonusInfoCellConstructionTimeBonusValueLabel(parent_viewport=self.viewport)
+        self.construction_time_bonus_value_label = BonusInfoCellConstructionTimeBonusValueLabel(
+            parent_viewport=self.viewport
+        )
         self.activations_title_label = ActivationsTitleLabel(parent_viewport=self.viewport)
         self.activations_value_label = ActivationsValueLabel(parent_viewport=self.viewport)
         self.on_window_resize_handlers = [
@@ -94,18 +95,22 @@ class BonusCodeInfoCell:
     @window_size_has_changed
     def on_window_resize(self, width, height):
         self.screen_resolution = width, height
-        self.viewport.x1 = (self.parent_viewport.x1 + self.parent_viewport.x2) // 2 \
-                           - 5 * get_top_bar_height(self.screen_resolution)
-        self.viewport.x2 = (self.parent_viewport.x1 + self.parent_viewport.x2) // 2 \
-                           + 5 * get_top_bar_height(self.screen_resolution)
-        self.viewport.y1 = (self.parent_viewport.y1 + get_bottom_bar_height(self.screen_resolution)
-                            + self.parent_viewport.y2 - get_top_bar_height(self.screen_resolution)) // 2\
-                           - 5 * get_bottom_bar_height(self.screen_resolution) // 8 \
-                           - get_bottom_bar_height(self.screen_resolution) // 2
-        self.viewport.y2 = (self.parent_viewport.y1 + get_bottom_bar_height(self.screen_resolution)
-                            + self.parent_viewport.y2 - get_top_bar_height(self.screen_resolution)) // 2\
-                           - 5 * get_bottom_bar_height(self.screen_resolution) // 8 \
-                           + get_bottom_bar_height(self.screen_resolution) // 2
+        self.viewport.x1 \
+            = (self.parent_viewport.x1 + self.parent_viewport.x2) // 2 - 5 * get_top_bar_height(self.screen_resolution)
+        self.viewport.x2 \
+            = (self.parent_viewport.x1 + self.parent_viewport.x2) // 2 + 5 * get_top_bar_height(self.screen_resolution)
+        self.viewport.y1 \
+            = (
+                      self.parent_viewport.y1 + get_bottom_bar_height(self.screen_resolution)
+                      + self.parent_viewport.y2 - get_top_bar_height(self.screen_resolution)
+            ) // 2 - 5 * get_bottom_bar_height(self.screen_resolution) // 8 \
+            - get_bottom_bar_height(self.screen_resolution) // 2
+        self.viewport.y2 \
+            = (
+                      self.parent_viewport.y1 + get_bottom_bar_height(self.screen_resolution)
+                      + self.parent_viewport.y2 - get_top_bar_height(self.screen_resolution)
+            ) // 2 - 5 * get_bottom_bar_height(self.screen_resolution) // 8 \
+            + get_bottom_bar_height(self.screen_resolution) // 2
 
     def on_update_current_locale(self, new_locale):
         self.current_locale = new_locale

@@ -105,11 +105,12 @@ class Launcher:
         if not path.exists('logs'):
             mkdir('logs')
 
-        logs_handler = FileHandler('logs/logs_{0}_{1:0>2}-{2:0>2}-{3:0>2}-{4:0>6}.log'
-                                   .format(str(current_datetime.date()), current_datetime.time().hour,
-                                           current_datetime.time().minute, current_datetime.time().second,
-                                           current_datetime.time().microsecond),
-                                   encoding='utf8')
+        logs_handler = FileHandler(
+            'logs/logs_{0}_{1:0>2}-{2:0>2}-{3:0>2}-{4:0>6}.log'.format(
+                str(current_datetime.date()), current_datetime.time().hour, current_datetime.time().minute,
+                current_datetime.time().second, current_datetime.time().microsecond
+            ), encoding='utf8'
+        )
         logs_handler.setFormatter(Formatter('%(asctime)s - %(name)s - %(levelname)s - %(message)s'))
         self.logger.addHandler(logs_handler)
         self.logger.setLevel(LOG_LEVEL_DEBUG)
@@ -260,10 +261,12 @@ class Launcher:
         logger = getLogger('update_log')
         # create .update_log file
         current_datetime = datetime.now()
-        logs_handler = FileHandler('logs/logs_{0}_{1:0>2}-{2:0>2}-{3:0>2}-{4:0>6}.update_log'
-                                   .format(str(current_datetime.date()), current_datetime.time().hour,
-                                           current_datetime.time().minute, current_datetime.time().second,
-                                           current_datetime.time().microsecond))
+        logs_handler = FileHandler(
+            'logs/logs_{0}_{1:0>2}-{2:0>2}-{3:0>2}-{4:0>6}.update_log'.format(
+                str(current_datetime.date()), current_datetime.time().hour, current_datetime.time().minute,
+                current_datetime.time().second, current_datetime.time().microsecond
+            )
+        )
         logs_handler.setFormatter(Formatter('%(asctime)s - %(name)s - %(levelname)s - %(message)s'))
         logger.addHandler(logs_handler)
         # for now log level is set to DEBUG, but can also be set to LOG_LEVEL_INFO

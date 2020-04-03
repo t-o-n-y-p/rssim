@@ -7,8 +7,9 @@ from ui.fade_animation.fade_out_animation.dispatcher_fade_out_animation import D
 
 class DispatcherController(MapBaseController, ABC):
     def __init__(self, map_id, parent_controller):
-        super().__init__(map_id, parent_controller,
-                         logger=getLogger(f'root.app.game.map.{map_id}.dispatcher.controller'))
+        super().__init__(
+            map_id, parent_controller, logger=getLogger(f'root.app.game.map.{map_id}.dispatcher.controller')
+        )
         self.view, self.model = self.create_view_and_model()
         self.fade_in_animation = DispatcherFadeInAnimation(self.view)
         self.fade_out_animation = DispatcherFadeOutAnimation(self.view)

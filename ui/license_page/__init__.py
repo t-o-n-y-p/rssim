@@ -44,19 +44,21 @@ class LicensePage(ABC):
         if self.document is None:
             self.document = FormattedDocument(text=self.license_text)
 
-        self.document.set_style(0, len(self.document.text), {
-            'font_name': 'Arial',
-            'font_size': get_bottom_bar_height(self.screen_resolution) // 5,
-            'bold': False,
-            'italic': False,
-            'color': (*WHITE_RGB, self.opacity),
-            'align': 'center'
-        })
-        self.license_layout = IncrementalTextLayout(document=self.document,
-                                                    width=self.viewport.x2 - self.viewport.x1,
-                                                    height=self.viewport.y2 - self.viewport.y1,
-                                                    multiline=True, batch=BATCHES['ui_batch'],
-                                                    group=GROUPS['button_text'])
+        self.document.set_style(
+            0, len(self.document.text), {
+                'font_name': 'Arial',
+                'font_size': get_bottom_bar_height(self.screen_resolution) // 5,
+                'bold': False,
+                'italic': False,
+                'color': (*WHITE_RGB, self.opacity),
+                'align': 'center'
+            }
+        )
+        self.license_layout = IncrementalTextLayout(
+            document=self.document, width=self.viewport.x2 - self.viewport.x1,
+            height=self.viewport.y2 - self.viewport.y1, multiline=True, batch=BATCHES['ui_batch'],
+            group=GROUPS['button_text']
+        )
         self.license_layout.x, self.license_layout.y = self.viewport.x1, self.viewport.y1
 
     @final
@@ -78,9 +80,11 @@ class LicensePage(ABC):
             self.license_layout.x, self.license_layout.y = self.viewport.x1, self.viewport.y1
             self.license_layout.width = self.viewport.x2 - self.viewport.x1
             self.license_layout.height = self.viewport.y2 - self.viewport.y1
-            self.document.set_style(0, len(self.document.text), {
-                'font_size': get_bottom_bar_height(self.screen_resolution) // 5
-            })
+            self.document.set_style(
+                0, len(self.document.text), {
+                    'font_size': get_bottom_bar_height(self.screen_resolution) // 5
+                }
+            )
 
     def on_update_current_locale(self, new_locale):
         pass
@@ -99,6 +103,8 @@ class LicensePage(ABC):
             self.license_layout = None
         else:
             if self.document is not None:
-                self.document.set_style(0, len(self.document.text), {
-                    'color': (*WHITE_RGB, self.opacity)
-                })
+                self.document.set_style(
+                    0, len(self.document.text), {
+                        'color': (*WHITE_RGB, self.opacity)
+                    }
+                )

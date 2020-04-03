@@ -8,8 +8,10 @@ from textures import get_full_map_e
 @final
 class MainEnvironmentSprite(MapSprite):
     def __init__(self, map_id, parent_viewport):
-        super().__init__(map_id, logger=getLogger(f'root.app.game.map.{map_id}.main_environment_sprite'),
-                         parent_viewport=parent_viewport)
+        super().__init__(
+            map_id, logger=getLogger(f'root.app.game.map.{map_id}.main_environment_sprite'),
+            parent_viewport=parent_viewport
+        )
         USER_DB_CURSOR.execute('''SELECT unlocked_environment FROM map_progress WHERE map_id = ?''', (self.map_id, ))
         unlocked_environment = USER_DB_CURSOR.fetchone()[0]
         self.texture = get_full_map_e(map_id=self.map_id, tiers=unlocked_environment)

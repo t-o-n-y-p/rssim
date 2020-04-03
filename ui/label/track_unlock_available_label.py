@@ -7,9 +7,10 @@ from ui import *
 @final
 class TrackUnlockAvailableLabel(LocalizedLabel):
     def __init__(self, parent_viewport):
-        super().__init__(logger=getLogger('root.track_unlock_available_label'),
-                         i18n_resources_key='unlock_available_track_description_string',
-                         parent_viewport=parent_viewport)
+        super().__init__(
+            logger=getLogger('root.track_unlock_available_label'),
+            i18n_resources_key='unlock_available_track_description_string', parent_viewport=parent_viewport
+        )
         self.arguments = (0,)
         self.font_name = 'Arial'
         self.base_color = GREEN_RGB

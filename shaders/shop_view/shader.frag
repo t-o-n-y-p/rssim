@@ -6,8 +6,7 @@ uniform ivec2 shop_window_position = ivec2(0, 0);
 uniform ivec2 shop_window_size = ivec2(0, 0);
 uniform int top_bar_height = 36;
 
-bool is_shop_window_border(int margin_x, int margin_y)
-{
+bool is_shop_window_border(int margin_x, int margin_y) {
     bool is_side_border = margin_y >= 0 && margin_y <= shop_window_size[1] - 1
          && (margin_x == 0 || margin_x == 1
              || margin_x == shop_window_size[0] - 2 || margin_x == shop_window_size[0] - 1);
@@ -17,8 +16,7 @@ bool is_shop_window_border(int margin_x, int margin_y)
     return is_side_border || is_top_bottom_border;
 }
 
-bool is_top_bar_border(int margin_x, int margin_y)
-{
+bool is_top_bar_border(int margin_x, int margin_y) {
     bool is_top_bar_border = margin_x >= 0 && margin_x <= shop_window_size[0] - 1
          && (margin_y == shop_window_size[1] - top_bar_height || margin_y == shop_window_size[1] - top_bar_height + 1);
     bool is_close_button_border = margin_y > shop_window_size[1] - top_bar_height + 1 && margin_y < shop_window_size[1]
@@ -27,14 +25,12 @@ bool is_top_bar_border(int margin_x, int margin_y)
     return is_top_bar_border || is_close_button_border;
 }
 
-bool is_inside_shop_window(int margin_x, int margin_y)
-{
+bool is_inside_shop_window(int margin_x, int margin_y) {
     return margin_x >= 2 && margin_x <= shop_window_size[0] - 3 && margin_y >= 2 && margin_y <= shop_window_size[1] - 3;
 }
 
 
-void main()
-{
+void main() {
     int margin_x = int(gl_FragCoord[0]) - shop_window_position[0];
     int margin_y = int(gl_FragCoord[1]) - shop_window_position[1];
     // borders are filled with red

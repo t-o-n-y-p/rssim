@@ -7,8 +7,10 @@ from ui import *
 @final
 class BonusInfoCellExpBonusValueLabel(LocalizedLabel):
     def __init__(self, parent_viewport):
-        super().__init__(logger=getLogger('root.exp_bonus_value_label'),
-                         i18n_resources_key='exp_bonus_value_label_string', parent_viewport=parent_viewport)
+        super().__init__(
+            logger=getLogger('root.exp_bonus_value_label'),
+            i18n_resources_key='exp_bonus_value_label_string', parent_viewport=parent_viewport
+        )
         self.arguments = (0, )
         self.font_name = 'Arial'
         self.base_color = ORANGE_RGB

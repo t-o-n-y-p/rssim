@@ -79,9 +79,9 @@ class SettingsView(AppBaseView):
         self.temp_clock_24h_enabled = FALSE
         self.temp_master_volume = 0
         self.temp_announcements_enabled = TRUE
-        self.display_fps_checkbox \
-            = DisplayFPSCheckbox(column=-1, row=2, on_update_state_action=on_update_display_fps_state,
-                                 parent_viewport=self.viewport)
+        self.display_fps_checkbox = DisplayFPSCheckbox(
+            column=-1, row=2, on_update_state_action=on_update_display_fps_state, parent_viewport=self.viewport
+        )
         self.fade_animations_checkbox = FadeAnimationsEnabledCheckbox(
             column=-1, row=0, on_update_state_action=on_update_fade_animations_state, parent_viewport=self.viewport
         )
@@ -116,41 +116,48 @@ class SettingsView(AppBaseView):
                 on_update_voice_not_found_notifications_state
             ], parent_viewport=self.viewport
         )
-        CONFIG_DB_CURSOR.execute('''SELECT app_width, app_height FROM screen_resolution_config 
-                                    WHERE manual_setup = 1 AND app_width <= ?''',
-                                 (windll.user32.GetSystemMetrics(0),))
+        CONFIG_DB_CURSOR.execute(
+            '''SELECT app_width, app_height FROM screen_resolution_config WHERE manual_setup = 1 AND app_width <= ?''',
+            (windll.user32.GetSystemMetrics(0),)
+        )
         self.available_windowed_resolutions = CONFIG_DB_CURSOR.fetchall()
         self.available_windowed_resolutions_position = 0
-        self.screen_resolution_control \
-            = ScreenResolutionControl(column=-1, row=8, possible_values_list=self.available_windowed_resolutions,
-                                      on_update_state_action=on_update_windowed_resolution_state,
-                                      parent_viewport=self.viewport)
-        self.accept_settings_button = AcceptSettingsButton(on_click_action=on_accept_changes,
-                                                           parent_viewport=self.viewport)
-        self.reject_settings_button = RejectSettingsButton(on_click_action=on_reject_changes,
-                                                           parent_viewport=self.viewport)
-        self.buttons = [self.accept_settings_button, self.reject_settings_button,
-                        *self.screen_resolution_control.buttons, *self.display_fps_checkbox.buttons,
-                        *self.fade_animations_checkbox.buttons, *self.clock_24h_checkbox.buttons,
-                        *self.game_progress_notifications_checkbox_group.buttons,
-                        *self.malfunction_notifications_checkbox_group.buttons,
-                        *self.announcements_checkbox.buttons]
+        self.screen_resolution_control = ScreenResolutionControl(
+            column=-1, row=8, possible_values_list=self.available_windowed_resolutions,
+            on_update_state_action=on_update_windowed_resolution_state, parent_viewport=self.viewport
+        )
+        self.accept_settings_button = AcceptSettingsButton(
+            on_click_action=on_accept_changes, parent_viewport=self.viewport
+        )
+        self.reject_settings_button = RejectSettingsButton(
+            on_click_action=on_reject_changes, parent_viewport=self.viewport
+        )
+        self.buttons = [
+            self.accept_settings_button, self.reject_settings_button,
+            *self.screen_resolution_control.buttons, *self.display_fps_checkbox.buttons,
+            *self.fade_animations_checkbox.buttons, *self.clock_24h_checkbox.buttons,
+            *self.game_progress_notifications_checkbox_group.buttons,
+            *self.malfunction_notifications_checkbox_group.buttons,
+            *self.announcements_checkbox.buttons
+        ]
         self.shader_sprite = SettingsViewShaderSprite(view=self)
         self.on_mouse_motion_handlers.extend(self.master_volume_knob.on_mouse_motion_handlers)
         self.on_mouse_press_handlers.extend(self.master_volume_knob.on_mouse_press_handlers)
         self.on_mouse_release_handlers.extend(self.master_volume_knob.on_mouse_release_handlers)
         self.on_mouse_drag_handlers.extend(self.master_volume_knob.on_mouse_drag_handlers)
-        self.on_window_resize_handlers.extend([
-            *self.display_fps_checkbox.on_window_resize_handlers,
-            *self.fade_animations_checkbox.on_window_resize_handlers,
-            *self.clock_24h_checkbox.on_window_resize_handlers,
-            *self.game_progress_notifications_checkbox_group.on_window_resize_handlers,
-            *self.malfunction_notifications_checkbox_group.on_window_resize_handlers,
-            *self.screen_resolution_control.on_window_resize_handlers,
-            *self.master_volume_knob.on_window_resize_handlers,
-            *self.announcements_checkbox.on_window_resize_handlers,
-            self.shader_sprite.on_window_resize
-        ])
+        self.on_window_resize_handlers.extend(
+            [
+                *self.display_fps_checkbox.on_window_resize_handlers,
+                *self.fade_animations_checkbox.on_window_resize_handlers,
+                *self.clock_24h_checkbox.on_window_resize_handlers,
+                *self.game_progress_notifications_checkbox_group.on_window_resize_handlers,
+                *self.malfunction_notifications_checkbox_group.on_window_resize_handlers,
+                *self.screen_resolution_control.on_window_resize_handlers,
+                *self.master_volume_knob.on_window_resize_handlers,
+                *self.announcements_checkbox.on_window_resize_handlers,
+                self.shader_sprite.on_window_resize
+            ]
+        )
         self.on_append_window_handlers()
 
     @view_is_not_active
@@ -158,8 +165,9 @@ class SettingsView(AppBaseView):
         super().on_activate()
         USER_DB_CURSOR.execute('SELECT app_width, app_height FROM graphics')
         self.temp_windowed_resolution = USER_DB_CURSOR.fetchone()
-        self.available_windowed_resolutions_position \
-            = self.available_windowed_resolutions.index(self.temp_windowed_resolution)
+        self.available_windowed_resolutions_position = self.available_windowed_resolutions.index(
+            self.temp_windowed_resolution
+        )
         self.screen_resolution_control.on_activate()
         self.screen_resolution_control.on_init_state(self.available_windowed_resolutions_position)
         USER_DB_CURSOR.execute('SELECT display_fps, fade_animations_enabled FROM graphics')
@@ -243,8 +251,9 @@ class SettingsView(AppBaseView):
 
     def on_change_temp_windowed_resolution(self, windowed_resolution):
         self.temp_windowed_resolution = windowed_resolution
-        self.available_windowed_resolutions_position \
-            = self.available_windowed_resolutions.index(self.temp_windowed_resolution)
+        self.available_windowed_resolutions_position = self.available_windowed_resolutions.index(
+            self.temp_windowed_resolution
+        )
 
     def on_update_clock_state(self, clock_24h_enabled):
         super().on_update_clock_state(clock_24h_enabled)

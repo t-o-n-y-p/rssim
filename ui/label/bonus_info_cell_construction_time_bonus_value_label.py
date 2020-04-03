@@ -7,9 +7,10 @@ from ui import *
 @final
 class BonusInfoCellConstructionTimeBonusValueLabel(LocalizedLabel):
     def __init__(self, parent_viewport):
-        super().__init__(logger=getLogger('root.construction_time_bonus_value_label'),
-                         i18n_resources_key='construction_time_bonus_value_label_string',
-                         parent_viewport=parent_viewport)
+        super().__init__(
+            logger=getLogger('root.construction_time_bonus_value_label'),
+            i18n_resources_key='construction_time_bonus_value_label_string', parent_viewport=parent_viewport
+        )
         self.arguments = (0, )
         self.font_name = 'Arial'
         self.base_color = YELLOW_RGB

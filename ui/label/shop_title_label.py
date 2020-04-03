@@ -7,8 +7,10 @@ from ui import *
 @final
 class ShopTitleLabel(LocalizedLabel):
     def __init__(self, parent_viewport):
-        super().__init__(logger=getLogger('root.shop_title_label'),
-                         i18n_resources_key='shop_details_title_string', parent_viewport=parent_viewport)
+        super().__init__(
+            logger=getLogger('root.shop_title_label'),
+            i18n_resources_key='shop_details_title_string', parent_viewport=parent_viewport
+        )
         self.arguments = (0,)
         self.font_name = 'Arial'
         self.base_color = WHITE_RGB

@@ -9,8 +9,10 @@ from ui.settings.knob import SettingsKnob
 @final
 class MasterVolumeSettingsKnob(SettingsKnob):
     def __init__(self, column, row, on_update_state_action, parent_viewport):
-        super().__init__(column, row, on_update_state_action, parent_viewport,
-                         logger=getLogger('root.app.settings.view.settings_knob.master_volume_settings_knob'))
+        super().__init__(
+            column, row, on_update_state_action, parent_viewport,
+            logger=getLogger('root.app.settings.view.settings_knob.master_volume_settings_knob')
+        )
         self.description_label = MasterVolumeDescriptionLabel(parent_viewport=self.viewport)
         self.knob = MasterVolumeKnob(on_value_update_action=on_update_state_action, parent_viewport=self.viewport)
         self.on_window_resize_handlers.extend(

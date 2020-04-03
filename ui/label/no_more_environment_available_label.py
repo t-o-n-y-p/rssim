@@ -7,9 +7,10 @@ from ui import *
 @final
 class NoMoreEnvironmentAvailableLabel(LocalizedLabel):
     def __init__(self, parent_viewport):
-        super().__init__(logger=getLogger('root.no_more_environment_available_label'),
-                         i18n_resources_key='no_more_tiers_available_placeholder_string',
-                         parent_viewport=parent_viewport)
+        super().__init__(
+            logger=getLogger('root.no_more_environment_available_label'),
+            i18n_resources_key='no_more_tiers_available_placeholder_string', parent_viewport=parent_viewport
+        )
         self.font_name = 'Arial'
         self.base_color = GREY_RGB
         self.anchor_x = 'center'

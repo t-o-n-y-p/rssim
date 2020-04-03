@@ -11,21 +11,26 @@ class ShopView(MapBaseView, ABC):
         def on_close_shop_details(button):
             self.controller.parent_controller.on_close_shop_details(self.shop_id)
 
-        super().__init__(controller, map_id, logger=getLogger(f'root.app.game.map.{map_id}.shop.{shop_id}.view'),
-                         child_window=True)
+        super().__init__(
+            controller, map_id, logger=getLogger(f'root.app.game.map.{map_id}.shop.{shop_id}.view'), child_window=True
+        )
         self.shop_id = shop_id
-        CONFIG_DB_CURSOR.execute('''SELECT level_required FROM shops_config
-                                    WHERE map_id = ? AND shop_id = ?''', (self.map_id, self.shop_id))
+        CONFIG_DB_CURSOR.execute(
+            '''SELECT level_required FROM shops_config WHERE map_id = ? AND shop_id = ?''', (self.map_id, self.shop_id)
+        )
         self.level_required = CONFIG_DB_CURSOR.fetchone()[0]
         self.shader_sprite = ShopViewShaderSprite(view=self)
         self.title_label = ShopTitleLabel(parent_viewport=self.viewport)
         self.title_label.on_update_args((self.shop_id + 1, ))
-        self.close_shop_details_button = CloseShopDetailsButton(on_click_action=on_close_shop_details,
-                                                                parent_viewport=self.viewport)
+        self.close_shop_details_button = CloseShopDetailsButton(
+            on_click_action=on_close_shop_details, parent_viewport=self.viewport
+        )
         self.buttons = [self.close_shop_details_button, ]
-        self.on_window_resize_handlers.extend([
-            self.title_label.on_window_resize, self.shader_sprite.on_window_resize
-        ])
+        self.on_window_resize_handlers.extend(
+            [
+                self.title_label.on_window_resize, self.shader_sprite.on_window_resize
+            ]
+        )
         self.on_append_window_handlers()
 
     @final

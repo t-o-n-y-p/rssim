@@ -19,5 +19,4 @@ class SwitchMapButton(UIButton):
         return self.parent_viewport.x1, self.parent_viewport.y1
 
     def get_size(self):
-        return (self.parent_viewport.x2 - self.parent_viewport.x1,
-                self.parent_viewport.y2 - self.parent_viewport.y1)
+        return self.parent_viewport.x2 - self.parent_viewport.x1, self.parent_viewport.y2 - self.parent_viewport.y1

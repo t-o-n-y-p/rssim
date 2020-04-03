@@ -25,8 +25,10 @@ def cell_is_not_active(fn):
 
 
 class MapSwitcherCell(ABC):
-    def __init__(self, map_id, on_buy_map_action, on_switch_map_action, on_set_money_target_action,
-                 on_reset_money_target_action, parent_viewport, logger):
+    def __init__(
+            self, map_id, on_buy_map_action, on_switch_map_action, on_set_money_target_action,
+            on_reset_money_target_action, parent_viewport, logger
+    ):
         def on_set_money_target(button):
             pass
 
@@ -107,8 +109,8 @@ class MapSwitcherCell(ABC):
     def on_window_resize(self, width, height):
         self.screen_resolution = width, height
         top_bar_height = get_top_bar_height(self.screen_resolution)
-        self.viewport.x1 = self.parent_viewport.x1 \
-                           + self.map_id * ((self.parent_viewport.x2 - self.parent_viewport.x1) // 2 - 1)
+        self.viewport.x1 \
+            = self.parent_viewport.x1 + self.map_id * ((self.parent_viewport.x2 - self.parent_viewport.x1) // 2 - 1)
         self.viewport.x2 = self.viewport.x1 + (self.parent_viewport.x2 - self.parent_viewport.x1) // 2 + 1
         self.viewport.y1 = self.parent_viewport.y1
         self.viewport.y2 = self.parent_viewport.y2 - top_bar_height + 2

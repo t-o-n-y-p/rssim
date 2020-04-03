@@ -7,9 +7,12 @@ from ui.fade_animation.fade_out_animation.railroad_switch_fade_out_animation imp
 
 class RailroadSwitchController(MapBaseController, ABC):
     def __init__(self, map_id, parent_controller, track_param_1, track_param_2, switch_type):
-        logger_name \
-            = f'root.app.game.map.{map_id}.railroad_switch.{track_param_1}.{track_param_2}.{switch_type}.controller'
-        super().__init__(map_id, parent_controller, logger=getLogger(logger_name))
+        super().__init__(
+            map_id, parent_controller,
+            logger=getLogger(
+                f'root.app.game.map.{map_id}.railroad_switch.{track_param_1}.{track_param_2}.{switch_type}.controller'
+            )
+        )
         self.view, self.model = self.create_view_and_model(track_param_1, track_param_2, switch_type)
         self.track_param_1, self.track_param_2, self.switch_type = track_param_1, track_param_2, switch_type
         self.fade_in_animation = RailroadSwitchFadeInAnimation(self.view)

@@ -19,10 +19,12 @@ class LicenseView(AppBaseView):
         self.buttons = [*self.license_page_control.buttons, self.close_license_button]
         self.close_license_label = CloseLicenseLabel(parent_viewport=self.viewport)
         self.shader_sprite = LicenseViewShaderSprite(view=self)
-        self.on_window_resize_handlers.extend([
-            *self.license_page_control.on_window_resize_handlers,
-            self.close_license_label.on_window_resize, self.shader_sprite.on_window_resize
-        ])
+        self.on_window_resize_handlers.extend(
+            [
+                *self.license_page_control.on_window_resize_handlers,
+                self.close_license_label.on_window_resize, self.shader_sprite.on_window_resize
+            ]
+        )
         self.on_append_window_handlers()
         self.on_mouse_scroll_handlers.extend(self.license_page_control.on_mouse_scroll_handlers)
 

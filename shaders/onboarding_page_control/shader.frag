@@ -7,8 +7,7 @@ uniform ivec2 size = ivec2(0, 0);
 uniform int page_number = 0;
 
 
-bool is_app_window_frame(int margin_x, int margin_y, int bottom_bar_height, int top_bar_height)
-{
+bool is_app_window_frame(int margin_x, int margin_y, int bottom_bar_height, int top_bar_height) {
     bool is_app_window_main_frame_border
     = (margin_x >= 0 && margin_x < size[0] / 2
        && (margin_y == 0 || margin_y == 1 || margin_y == size[1] - 2 || margin_y == size[1] - 1)
@@ -48,8 +47,7 @@ bool is_app_window_frame(int margin_x, int margin_y, int bottom_bar_height, int 
            || is_top_bar_button_border || is_map_switcher_button_border;
 }
 
-bool is_highlighted(int margin_x, int margin_y, int bottom_bar_height, int top_bar_height)
-{
+bool is_highlighted(int margin_x, int margin_y, int bottom_bar_height, int top_bar_height) {
     if (page_number == 0)
         return ((margin_x >= 2 && margin_x <= size[0] / 2 - 3
                 && margin_y >= bottom_bar_height + 1 && margin_y <= size[1] - top_bar_height - 1)
@@ -62,8 +60,7 @@ bool is_highlighted(int margin_x, int margin_y, int bottom_bar_height, int top_b
                && margin_x <= size[0] / 4 - top_bar_height + bottom_bar_height - 2
                && margin_y >= size[1] - 3 * top_bar_height / 2 - bottom_bar_height + 2
                && margin_y <= size[1] - 3 * top_bar_height / 2 - 2;
-    else if (page_number == 2)
-    {
+    else if (page_number == 2) {
         ivec2 cell_size = ivec2(int(6.875 * bottom_bar_height), bottom_bar_height);
         int interval_between_cells = int(bottom_bar_height / 4);
         int general_height = 4 * cell_size[1] + 3 * interval_between_cells;
@@ -97,10 +94,8 @@ bool is_highlighted(int margin_x, int margin_y, int bottom_bar_height, int top_b
         return false;
 }
 
-bool is_constructor_cell(int margin_x, int margin_y, int bottom_bar_height, int top_bar_height)
-{
-    if (page_number == 2)
-    {
+bool is_constructor_cell(int margin_x, int margin_y, int bottom_bar_height, int top_bar_height) {
+    if (page_number == 2) {
         ivec2 cell_size = ivec2(int(6.875 * bottom_bar_height), bottom_bar_height);
         int interval_between_cells = int(bottom_bar_height / 4);
         int general_height = 4 * cell_size[1] + 3 * interval_between_cells;
@@ -135,8 +130,7 @@ bool is_constructor_cell(int margin_x, int margin_y, int bottom_bar_height, int 
         return false;
 }
 
-void main()
-{
+void main() {
     int margin_x = int(gl_FragCoord[0]) - position[0];
     int margin_y = int(gl_FragCoord[1]) - position[1];
     int bottom_bar_height = int(size[1] / 10);

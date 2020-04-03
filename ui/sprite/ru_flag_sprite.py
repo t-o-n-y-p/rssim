@@ -15,9 +15,11 @@ class RUFlagSprite(UISprite):
         self.usage = 'static'
 
     def get_position(self):
-        return (self.parent_viewport.x1 + get_top_bar_height(self.screen_resolution) // 2
-                + get_top_bar_height(self.screen_resolution) - 2,
-                self.parent_viewport.y2 - get_top_bar_height(self.screen_resolution) // 2)
+        return (
+            self.parent_viewport.x1 + get_top_bar_height(self.screen_resolution) // 2
+            + get_top_bar_height(self.screen_resolution) - 2,
+            self.parent_viewport.y2 - get_top_bar_height(self.screen_resolution) // 2
+        )
 
     def get_scale(self):
         return 0.6 * get_top_bar_height(self.screen_resolution) / float(self.texture.width)

@@ -98,11 +98,12 @@ class Label(ABC):
     @final
     @text_label_does_not_exist
     def create(self):
-        self.text_label = PygletLabel(self.get_formatted_text(), font_name=self.font_name, bold=self.bold,
-                                      font_size=self.font_size, color=(*self.base_color, self.opacity),
-                                      x=self.x, y=self.y, width=self.width,
-                                      anchor_x=self.anchor_x, anchor_y=self.anchor_y, align=self.align,
-                                      multiline=self.multiline, batch=self.batch, group=self.group)
+        self.text_label = PygletLabel(
+            self.get_formatted_text(), font_name=self.font_name, bold=self.bold, font_size=self.font_size,
+            color=(*self.base_color, self.opacity), x=self.x, y=self.y, width=self.width,
+            anchor_x=self.anchor_x, anchor_y=self.anchor_y, align=self.align, multiline=self.multiline,
+            batch=self.batch, group=self.group
+        )
 
     @final
     @text_label_exists
@@ -231,13 +232,12 @@ class InteractiveLabel(ABC):
     @final
     @interactive_label_does_not_exist
     def create(self):
-        self.placeholder_label = PygletLabel(self.get_formatted_placeholder_text(),
-                                             font_name=self.font_name, bold=self.bold, font_size=self.font_size,
-                                             color=(*self.placeholder_color, self.opacity),
-                                             x=self.x, y=self.y, width=self.width,
-                                             anchor_x=self.anchor_x, anchor_y=self.anchor_y,
-                                             align=self.align, multiline=self.multiline,
-                                             batch=self.batch, group=self.group)
+        self.placeholder_label = PygletLabel(
+            self.get_formatted_placeholder_text(), font_name=self.font_name, bold=self.bold, font_size=self.font_size,
+            color=(*self.placeholder_color, self.opacity), x=self.x, y=self.y, width=self.width,
+            anchor_x=self.anchor_x, anchor_y=self.anchor_y, align=self.align, multiline=self.multiline,
+            batch=self.batch, group=self.group
+        )
 
     @final
     @interactive_label_exists
@@ -256,11 +256,12 @@ class InteractiveLabel(ABC):
             self.placeholder_label.delete()
             self.placeholder_label = None
             self.text = text[:self.text_length_limit]
-            self.text_label = PygletLabel(self.text, font_name=self.font_name, bold=self.bold,
-                                          font_size=self.font_size, color=(*self.base_color, self.opacity),
-                                          x=self.x, y=self.y, width=self.width,
-                                          anchor_x=self.anchor_x, anchor_y=self.anchor_y, align=self.align,
-                                          multiline=self.multiline, batch=self.batch, group=self.group)
+            self.text_label = PygletLabel(
+                self.text, font_name=self.font_name, bold=self.bold, font_size=self.font_size,
+                color=(*self.base_color, self.opacity), x=self.x, y=self.y, width=self.width,
+                anchor_x=self.anchor_x, anchor_y=self.anchor_y, align=self.align, multiline=self.multiline,
+                batch=self.batch, group=self.group
+            )
         else:
             self.text = (self.text + text)[:self.text_length_limit]
             self.text_label.text = self.text
@@ -272,14 +273,12 @@ class InteractiveLabel(ABC):
                 self.text_label.delete()
                 self.text_label = None
                 self.text = ''
-                self.placeholder_label = PygletLabel(self.get_formatted_placeholder_text(),
-                                                     font_name=self.font_name, bold=self.bold,
-                                                     font_size=self.font_size,
-                                                     color=(*self.placeholder_color, self.opacity),
-                                                     x=self.x, y=self.y, width=self.width,
-                                                     anchor_x=self.anchor_x, anchor_y=self.anchor_y,
-                                                     align=self.align, multiline=self.multiline,
-                                                     batch=self.batch, group=self.group)
+                self.placeholder_label = PygletLabel(
+                    self.get_formatted_placeholder_text(), font_name=self.font_name, bold=self.bold,
+                    font_size=self.font_size, color=(*self.placeholder_color, self.opacity), x=self.x, y=self.y,
+                    width=self.width, anchor_x=self.anchor_x, anchor_y=self.anchor_y, align=self.align,
+                    multiline=self.multiline, batch=self.batch, group=self.group
+                )
             elif len(self.text) > 1:
                 self.text = self.text[:-1]
                 self.text_label.text = self.text

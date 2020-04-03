@@ -7,8 +7,9 @@ from ui.fade_animation.fade_out_animation.constructor_fade_out_animation import 
 
 class ConstructorController(MapBaseController, ABC):
     def __init__(self, map_id, parent_controller):
-        super().__init__(map_id, parent_controller,
-                         logger=getLogger(f'root.app.game.map.{map_id}.constructor.controller'))
+        super().__init__(
+            map_id, parent_controller, logger=getLogger(f'root.app.game.map.{map_id}.constructor.controller')
+        )
         self.view, self.model = self.create_view_and_model()
         self.fade_in_animation = ConstructorFadeInAnimation(self.view)
         self.fade_out_animation = ConstructorFadeOutAnimation(self.view)

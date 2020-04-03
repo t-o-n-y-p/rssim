@@ -46,13 +46,11 @@ class FreightMapController(MapController):
         signals = {}
         signals_list = []
         CONFIG_DB_CURSOR.execute('''SELECT DISTINCT track FROM signal_config WHERE map_id = ?''', (FREIGHT_MAP,))
-        signal_index = CONFIG_DB_CURSOR.fetchall()
-        for i in signal_index:
+        for i in CONFIG_DB_CURSOR.fetchall():
             signals[i[0]] = {}
 
         CONFIG_DB_CURSOR.execute('''SELECT track, base_route FROM signal_config WHERE map_id = ?''', (FREIGHT_MAP,))
-        signal_ids = CONFIG_DB_CURSOR.fetchall()
-        for i in signal_ids:
+        for i in CONFIG_DB_CURSOR.fetchall():
             signals[i[0]][i[1]] = FreightMapSignalController(self, *i)
             signals_list.append(signals[i[0]][i[1]])
 
@@ -61,16 +59,16 @@ class FreightMapController(MapController):
     def create_train_routes(self):
         train_routes = {}
         train_routes_sorted_list = []
-        CONFIG_DB_CURSOR.execute('''SELECT DISTINCT track FROM train_route_config WHERE map_id = ?''',
-                                 (FREIGHT_MAP,))
-        train_route_index = CONFIG_DB_CURSOR.fetchall()
-        for i in train_route_index:
+        CONFIG_DB_CURSOR.execute(
+            '''SELECT DISTINCT track FROM train_route_config WHERE map_id = ?''', (FREIGHT_MAP,)
+        )
+        for i in CONFIG_DB_CURSOR.fetchall():
             train_routes[i[0]] = {}
 
-        CONFIG_DB_CURSOR.execute('''SELECT track, train_route FROM train_route_config WHERE map_id = ?''',
-                                 (FREIGHT_MAP,))
-        train_route_ids = CONFIG_DB_CURSOR.fetchall()
-        for i in train_route_ids:
+        CONFIG_DB_CURSOR.execute(
+            '''SELECT track, train_route FROM train_route_config WHERE map_id = ?''', (FREIGHT_MAP,)
+        )
+        for i in CONFIG_DB_CURSOR.fetchall():
             train_routes[i[0]][i[1]] = FreightTrainRouteController(self, *i)
             train_routes_sorted_list.append(train_routes[i[0]][i[1]])
 
@@ -80,20 +78,19 @@ class FreightMapController(MapController):
         switches = {}
         switches_list = []
         USER_DB_CURSOR.execute('''SELECT DISTINCT track_param_1 FROM switches WHERE map_id = ?''', (FREIGHT_MAP,))
-        switch_track_param_1 = USER_DB_CURSOR.fetchall()
-        for i in switch_track_param_1:
+        for i in USER_DB_CURSOR.fetchall():
             switches[i[0]] = {}
 
-        USER_DB_CURSOR.execute('''SELECT DISTINCT track_param_1, track_param_2 FROM switches WHERE map_id = ?''',
-                               (FREIGHT_MAP,))
-        switch_track_param_2 = USER_DB_CURSOR.fetchall()
-        for i in switch_track_param_2:
+        USER_DB_CURSOR.execute(
+            '''SELECT DISTINCT track_param_1, track_param_2 FROM switches WHERE map_id = ?''', (FREIGHT_MAP,)
+        )
+        for i in USER_DB_CURSOR.fetchall():
             switches[i[0]][i[1]] = {}
 
-        USER_DB_CURSOR.execute('''SELECT track_param_1, track_param_2, switch_type FROM switches WHERE map_id = ?''',
-                               (FREIGHT_MAP,))
-        switch_types = USER_DB_CURSOR.fetchall()
-        for i in switch_types:
+        USER_DB_CURSOR.execute(
+            '''SELECT track_param_1, track_param_2, switch_type FROM switches WHERE map_id = ?''', (FREIGHT_MAP,)
+        )
+        for i in USER_DB_CURSOR.fetchall():
             switches[i[0]][i[1]][i[2]] = FreightMapRailroadSwitchController(self, *i)
             switches_list.append(switches[i[0]][i[1]][i[2]])
 
@@ -103,20 +100,19 @@ class FreightMapController(MapController):
         crossovers = {}
         crossovers_list = []
         USER_DB_CURSOR.execute('''SELECT DISTINCT track_param_1 FROM crossovers WHERE map_id = ?''', (FREIGHT_MAP,))
-        crossovers_track_param_1 = USER_DB_CURSOR.fetchall()
-        for i in crossovers_track_param_1:
+        for i in USER_DB_CURSOR.fetchall():
             crossovers[i[0]] = {}
 
-        USER_DB_CURSOR.execute('''SELECT DISTINCT track_param_1, track_param_2 FROM crossovers WHERE map_id = ?''',
-                               (FREIGHT_MAP,))
-        crossovers_track_param_2 = USER_DB_CURSOR.fetchall()
-        for i in crossovers_track_param_2:
+        USER_DB_CURSOR.execute(
+            '''SELECT DISTINCT track_param_1, track_param_2 FROM crossovers WHERE map_id = ?''', (FREIGHT_MAP,)
+        )
+        for i in USER_DB_CURSOR.fetchall():
             crossovers[i[0]][i[1]] = {}
 
-        USER_DB_CURSOR.execute('''SELECT track_param_1, track_param_2, crossover_type 
-                                  FROM crossovers WHERE map_id = ?''', (FREIGHT_MAP,))
-        crossovers_types = USER_DB_CURSOR.fetchall()
-        for i in crossovers_types:
+        USER_DB_CURSOR.execute(
+            '''SELECT track_param_1, track_param_2, crossover_type FROM crossovers WHERE map_id = ?''', (FREIGHT_MAP,)
+        )
+        for i in USER_DB_CURSOR.fetchall():
             crossovers[i[0]][i[1]][i[2]] = FreightMapCrossoverController(self, *i)
             crossovers_list.append(crossovers[i[0]][i[1]][i[2]])
 
@@ -126,11 +122,12 @@ class FreightMapController(MapController):
         trains = {}
         trains_list = []
         USER_DB_CURSOR.execute('''SELECT train_id FROM trains WHERE map_id = ?''', (FREIGHT_MAP,))
-        train_ids = USER_DB_CURSOR.fetchall()
-        if train_ids is not None:
-            for i in train_ids:
+        try:
+            for i in USER_DB_CURSOR.fetchall():
                 trains[i[0]] = FreightTrainController(self, i[0])
                 trains_list.append(trains[i[0]])
+        except TypeError:
+            pass
 
         return trains, trains_list
 

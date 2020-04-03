@@ -32,9 +32,10 @@ class NarratorModel(MapBaseModel, ABC):
         # print(f'{self.dt_multiplier=}, {dt_multiplier=}')
         # print([announcement for announcement in NARRATOR_QUEUE[self.map_id]
         #        if announcement[ANNOUNCEMENT_TYPE] in get_announcement_types_diff(self.dt_multiplier, dt_multiplier)])
-        for announcement in [announcement for announcement in NARRATOR_QUEUE[self.map_id]
-                             if announcement[ANNOUNCEMENT_TYPE]
-                             in get_announcement_types_diff(self.dt_multiplier, dt_multiplier)]:
+        for announcement in [
+            announcement for announcement in NARRATOR_QUEUE[self.map_id]
+            if announcement[ANNOUNCEMENT_TYPE] in get_announcement_types_diff(self.dt_multiplier, dt_multiplier)
+        ]:
             announcement[ANNOUNCEMENT_LOCKED] = int(self.dt_multiplier < dt_multiplier)
 
         # print([announcement for announcement in NARRATOR_QUEUE[self.map_id]
@@ -47,8 +48,10 @@ class NarratorModel(MapBaseModel, ABC):
         NARRATOR_QUEUE[self.map_id].append(
             [
                 announcement_time, int(
-                    not(announcement_type in get_announcement_types_enabled(self.dt_multiplier)
-                        and self.view.is_activated)
+                    not(
+                            announcement_type in get_announcement_types_enabled(self.dt_multiplier)
+                            and self.view.is_activated
+                    )
                 ),
                 announcement_type, train_id, track_number
             ]

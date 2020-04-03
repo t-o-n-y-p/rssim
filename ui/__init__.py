@@ -99,17 +99,22 @@ def get_bottom_bar_height(screen_resolution):
 
 def get_inner_area_rect(screen_resolution):
     bottom_bar_height = get_bottom_bar_height(screen_resolution)
-    inner_area_size = ((int(6.875 * bottom_bar_height) * 2 + bottom_bar_height // 4,
-                        19 * bottom_bar_height // 4))
-    inner_area_position = ((screen_resolution[0] - inner_area_size[0]) // 2,
-                           (screen_resolution[1] - inner_area_size[1] - 3 * bottom_bar_height // 2) // 2
-                           + bottom_bar_height)
+    inner_area_size = (
+        (int(6.875 * bottom_bar_height) * 2 + bottom_bar_height // 4,
+        19 * bottom_bar_height // 4)
+    )
+    inner_area_position = (
+        (screen_resolution[0] - inner_area_size[0]) // 2,
+        (screen_resolution[1] - inner_area_size[1] - 3 * bottom_bar_height // 2) // 2 + bottom_bar_height
+    )
     return *inner_area_position, *inner_area_size
 
 
 def get_mini_map_position(screen_resolution):
-    return (screen_resolution[0] - get_mini_map_width(screen_resolution) - 8,
-            screen_resolution[1] - get_top_bar_height(screen_resolution) - 6 - get_mini_map_height(screen_resolution))
+    return (
+        screen_resolution[0] - get_mini_map_width(screen_resolution) - 8,
+        screen_resolution[1] - get_top_bar_height(screen_resolution) - 6 - get_mini_map_height(screen_resolution)
+    )
 
 
 def get_mini_map_width(screen_resolution):

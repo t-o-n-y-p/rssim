@@ -7,8 +7,10 @@ from ui import *
 @final
 class MainClockLabel12H(LocalizedLabel):
     def __init__(self, parent_viewport):
-        super().__init__(logger=getLogger('root.main_clock_label_12h'),
-                         i18n_resources_key='12h_main_clock_string', parent_viewport=parent_viewport)
+        super().__init__(
+            logger=getLogger('root.main_clock_label_12h'),
+            i18n_resources_key='12h_main_clock_string', parent_viewport=parent_viewport
+        )
         self.arguments = (12, 0, 'PM')
         self.font_name = 'Perfo'
         self.bold = True

@@ -49,15 +49,19 @@ class CheckboxGroup(ABC):
     @window_size_has_changed
     def on_window_resize(self, width, height):
         self.screen_resolution = width, height
-        self.viewport.x1 = self.parent_viewport.x1 \
-                           + (self.column + 1) * (self.parent_viewport.x2 - self.parent_viewport.x1) // 4
+        self.viewport.x1 \
+            = self.parent_viewport.x1 + (self.column + 1) * (self.parent_viewport.x2 - self.parent_viewport.x1) // 4
         self.viewport.x2 = self.viewport.x1 + (self.parent_viewport.x2 - self.parent_viewport.x1) // 2
-        mid_line = (self.parent_viewport.y1 + get_bottom_bar_height(self.screen_resolution)
-                    + self.parent_viewport.y2 - get_top_bar_height(self.screen_resolution)) // 2
-        self.viewport.y1 = mid_line + self.row * (5 * get_top_bar_height(self.screen_resolution) // 8) \
-                           - get_top_bar_height(self.screen_resolution) // 2
-        self.viewport.y2 = mid_line + self.row * (5 * get_top_bar_height(self.screen_resolution) // 8) \
-                           + get_top_bar_height(self.screen_resolution) // 2
+        mid_line = (
+            self.parent_viewport.y1 + get_bottom_bar_height(self.screen_resolution)
+            + self.parent_viewport.y2 - get_top_bar_height(self.screen_resolution)
+        ) // 2
+        self.viewport.y1 \
+            = mid_line + self.row * (5 * get_top_bar_height(self.screen_resolution) // 8) \
+            - get_top_bar_height(self.screen_resolution) // 2
+        self.viewport.y2 \
+            = mid_line + self.row * (5 * get_top_bar_height(self.screen_resolution) // 8) \
+            + get_top_bar_height(self.screen_resolution) // 2
 
     @final
     def on_update_current_locale(self, new_locale):

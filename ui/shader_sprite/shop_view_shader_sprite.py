@@ -21,6 +21,8 @@ class ShopViewShaderSprite(ShaderSprite):
     def set_uniforms(self):
         self.shader.uniforms.shop_window_opacity = self.view.opacity
         self.shader.uniforms.shop_window_position = (self.view.viewport.x1, self.view.viewport.y1)
-        self.shader.uniforms.shop_window_size = (self.view.viewport.x2 - self.view.viewport.x1,
-                                                 self.view.viewport.y2 - self.view.viewport.y1)
+        self.shader.uniforms.shop_window_size = (
+            self.view.viewport.x2 - self.view.viewport.x1,
+            self.view.viewport.y2 - self.view.viewport.y1
+        )
         self.shader.uniforms.top_bar_height = get_top_bar_height(self.screen_resolution)

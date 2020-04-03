@@ -21,13 +21,16 @@ class ShopConstructorView(MapBaseView, ABC):
         def on_buy_stage_action(stage_number):
             self.controller.on_put_stage_under_construction(stage_number)
 
-        super().__init__(controller, map_id,
-                         logger=getLogger(f'root.app.game.map.{map_id}.shop.{shop_id}.constructor.view'),
-                         child_window=True)
+        super().__init__(
+            controller, map_id, logger=getLogger(f'root.app.game.map.{map_id}.shop.{shop_id}.constructor.view'),
+            child_window=True
+        )
         self.shop_id = shop_id
         self.shop_stages_state_matrix = {}
-        USER_DB_CURSOR.execute('''SELECT current_stage, shop_storage_money
-                                  FROM shops WHERE map_id = ? AND shop_id = ?''', (self.map_id, self.shop_id))
+        USER_DB_CURSOR.execute(
+            '''SELECT current_stage, shop_storage_money
+            FROM shops WHERE map_id = ? AND shop_id = ?''', (self.map_id, self.shop_id)
+        )
         self.current_stage, self.shop_storage_money = USER_DB_CURSOR.fetchone()
         self.shop_stages_cells_position = (0, 0)
         self.shop_stages_cells_size = (0, 0)
@@ -37,21 +40,25 @@ class ShopConstructorView(MapBaseView, ABC):
         self.hourly_profit_value_label = CurrentHourlyProfitValueLabel(parent_viewport=self.viewport)
         self.exp_bonus_value_label = CurrentExpBonusValueLabel(parent_viewport=self.viewport)
         self.shop_storage_progress_bar = ShopStorageProgressBar(parent_viewport=self.viewport)
-        self.clear_shop_storage_button = ClearShopStorageButton(on_click_action=on_clear_storage,
-                                                                parent_viewport=self.viewport)
+        self.clear_shop_storage_button = ClearShopStorageButton(
+            on_click_action=on_clear_storage, parent_viewport=self.viewport
+        )
         self.buttons = [self.clear_shop_storage_button, ]
         self.shop_stage_cells = {}
         for i in range(1, 5):
-            self.shop_stage_cells[i] = ShopStageCell(stage_number=i, on_buy_stage_action=on_buy_stage_action,
-                                                     parent_viewport=self.viewport)
+            self.shop_stage_cells[i] = ShopStageCell(
+                stage_number=i, on_buy_stage_action=on_buy_stage_action, parent_viewport=self.viewport
+            )
             self.buttons.append(self.shop_stage_cells[i].build_button)
             self.on_window_resize_handlers.extend(self.shop_stage_cells[i].on_window_resize_handlers)
 
-        self.on_window_resize_handlers.extend([
-            self.shader_sprite.on_window_resize, self.current_hourly_profit_label.on_window_resize,
-            self.current_exp_bonus_label.on_window_resize, self.hourly_profit_value_label.on_window_resize,
-            self.exp_bonus_value_label.on_window_resize, *self.shop_storage_progress_bar.on_window_resize_handlers
-        ])
+        self.on_window_resize_handlers.extend(
+            [
+                self.shader_sprite.on_window_resize, self.current_hourly_profit_label.on_window_resize,
+                self.current_exp_bonus_label.on_window_resize, self.hourly_profit_value_label.on_window_resize,
+                self.exp_bonus_value_label.on_window_resize, *self.shop_storage_progress_bar.on_window_resize_handlers
+            ]
+        )
         self.on_append_window_handlers()
 
     @final
@@ -69,11 +76,12 @@ class ShopConstructorView(MapBaseView, ABC):
             self.shop_storage_progress_bar.on_update_progress_bar_state(self.shop_storage_money, 0)
         else:
             self.exp_bonus_value_label.on_update_args((self.shop_stages_state_matrix[self.current_stage][EXP_BONUS],))
-            self.hourly_profit_value_label\
-                .on_update_args((self.shop_stages_state_matrix[self.current_stage][HOURLY_PROFIT], ))
-            self.shop_storage_progress_bar\
-                .on_update_progress_bar_state(self.shop_storage_money,
-                                              self.shop_stages_state_matrix[self.current_stage][STORAGE_CAPACITY])
+            self.hourly_profit_value_label.on_update_args(
+                (self.shop_stages_state_matrix[self.current_stage][HOURLY_PROFIT], )
+            )
+            self.shop_storage_progress_bar.on_update_progress_bar_state(
+                self.shop_storage_money, self.shop_stages_state_matrix[self.current_stage][STORAGE_CAPACITY]
+            )
 
         self.hourly_profit_value_label.create()
         self.exp_bonus_value_label.create()
@@ -107,12 +115,14 @@ class ShopConstructorView(MapBaseView, ABC):
     @window_size_has_changed
     def on_window_resize(self, width, height):
         super().on_window_resize(width, height)
-        self.shop_stages_cells_position = (self.viewport.x1 + get_top_bar_height(self.screen_resolution) // 4,
-                                           self.viewport.y1 + get_top_bar_height(self.screen_resolution) // 4)
-        self.shop_stages_cells_size = ((self.viewport.x2 - self.viewport.x1)
-                                       - get_top_bar_height(self.screen_resolution) // 2,
-                                       3 * get_bottom_bar_height(self.screen_resolution)
-                                       - get_bottom_bar_height(self.screen_resolution) // 8)
+        self.shop_stages_cells_position = (
+            self.viewport.x1 + get_top_bar_height(self.screen_resolution) // 4,
+            self.viewport.y1 + get_top_bar_height(self.screen_resolution) // 4
+        )
+        self.shop_stages_cells_size = (
+            (self.viewport.x2 - self.viewport.x1) - get_top_bar_height(self.screen_resolution) // 2,
+            3 * get_bottom_bar_height(self.screen_resolution) - get_bottom_bar_height(self.screen_resolution) // 8
+        )
 
     @final
     def on_update_opacity(self, new_opacity):
@@ -143,9 +153,9 @@ class ShopConstructorView(MapBaseView, ABC):
         if self.is_activated:
             self.shop_storage_progress_bar.on_update_text_label_args((self.shop_storage_money, ))
             if self.current_stage > 0:
-                self.shop_storage_progress_bar\
-                    .on_update_progress_bar_state(self.shop_storage_money,
-                                                  self.shop_stages_state_matrix[self.current_stage][STORAGE_CAPACITY])
+                self.shop_storage_progress_bar.on_update_progress_bar_state(
+                    self.shop_storage_money, self.shop_stages_state_matrix[self.current_stage][STORAGE_CAPACITY]
+                )
             else:
                 self.shop_storage_progress_bar.on_update_progress_bar_state(self.shop_storage_money, 0)
 
@@ -157,12 +167,13 @@ class ShopConstructorView(MapBaseView, ABC):
     @final
     def on_unlock_stage(self, stage):
         self.current_stage = stage
-        self.hourly_profit_value_label\
-            .on_update_args((self.shop_stages_state_matrix[self.current_stage][HOURLY_PROFIT],))
+        self.hourly_profit_value_label.on_update_args(
+            (self.shop_stages_state_matrix[self.current_stage][HOURLY_PROFIT],)
+        )
         self.exp_bonus_value_label.on_update_args((self.shop_stages_state_matrix[self.current_stage][EXP_BONUS],))
-        self.shop_storage_progress_bar \
-            .on_update_progress_bar_state(self.shop_storage_money,
-                                          self.shop_stages_state_matrix[self.current_stage][STORAGE_CAPACITY])
+        self.shop_storage_progress_bar.on_update_progress_bar_state(
+            self.shop_storage_money, self.shop_stages_state_matrix[self.current_stage][STORAGE_CAPACITY]
+        )
 
     @final
     @game_progress_notifications_available

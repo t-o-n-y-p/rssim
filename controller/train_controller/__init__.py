@@ -7,8 +7,9 @@ from ui.fade_animation.fade_out_animation.train_fade_out_animation import TrainF
 
 class TrainController(MapBaseController, ABC):
     def __init__(self, map_id, parent_controller, train_id):
-        super().__init__(map_id, parent_controller,
-                         logger=getLogger(f'root.app.game.map.{map_id}.train.{train_id}.controller'))
+        super().__init__(
+            map_id, parent_controller, logger=getLogger(f'root.app.game.map.{map_id}.train.{train_id}.controller')
+        )
         self.view, self.model = self.create_view_and_model(train_id)
         self.train_id = train_id
         self.fade_in_animation = TrainFadeInAnimation(self.view)

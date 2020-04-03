@@ -61,8 +61,9 @@ class ShopStageCell:
         self.previous_stage_placeholder_label = ShopStagePreviousStagePlaceholderLabel(parent_viewport=self.viewport)
         self.hourly_profit_description_label = ShopStageHourlyProfitDescriptionLabel(parent_viewport=self.viewport)
         self.hourly_profit_value_label = ShopStageHourlyProfitValueLabel(parent_viewport=self.viewport)
-        self.storage_capacity_description_label \
-            = ShopStageStorageCapacityDescriptionLabel(parent_viewport=self.viewport)
+        self.storage_capacity_description_label = ShopStageStorageCapacityDescriptionLabel(
+            parent_viewport=self.viewport
+        )
         self.storage_capacity_value_label = ShopStageStorageCapacityValueLabel(parent_viewport=self.viewport)
         self.exp_bonus_description_label = ShopStageExpBonusDescriptionLabel(parent_viewport=self.viewport)
         self.exp_bonus_value_label = ShopStageExpBonusValueLabel(parent_viewport=self.viewport)
@@ -181,8 +182,9 @@ class ShopStageCell:
         self.screen_resolution = width, height
         bottom_bar_height = get_bottom_bar_height(self.screen_resolution)
         general_cells_width = get_inner_area_rect(self.screen_resolution)[2] - bottom_bar_height // 4
-        self.viewport.x1 = self.parent_viewport.x1 + bottom_bar_height // 8 + general_cells_width // 160 \
-                           + int((self.stage_number - 1) / 4 * (general_cells_width - general_cells_width // 80))
+        self.viewport.x1 \
+            = self.parent_viewport.x1 + bottom_bar_height // 8 + general_cells_width // 160 \
+            + int((self.stage_number - 1) / 4 * (general_cells_width - general_cells_width // 80))
         self.viewport.y1 = self.parent_viewport.y1 + bottom_bar_height // 8
         self.viewport.x2 = self.viewport.x1 + (general_cells_width - general_cells_width // 80) // 4
         self.viewport.y2 = self.viewport.y1 + 3 * bottom_bar_height - bottom_bar_height // 8

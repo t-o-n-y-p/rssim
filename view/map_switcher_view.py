@@ -27,20 +27,23 @@ class MapSwitcherView(GameBaseView):
         super().__init__(controller, logger=getLogger(f'root.app.game.map_switcher.view'), child_window=True)
         self.shader_sprite = MapSwitcherViewShaderSprite(view=self)
         self.title_label = MapSwitcherTitleLabel(parent_viewport=self.viewport)
-        self.close_map_switcher_button = CloseMapSwitcherButton(on_click_action=on_close_map_switcher,
-                                                                parent_viewport=self.viewport)
-        self.map_switcher_cells = [PassengerMapSwitcherCell(on_buy_map, on_switch_map, None, None,
-                                                            parent_viewport=self.viewport),
-                                   FreightMapSwitcherCell(on_buy_map, on_switch_map, None, None,
-                                                          parent_viewport=self.viewport)]
+        self.close_map_switcher_button = CloseMapSwitcherButton(
+            on_click_action=on_close_map_switcher, parent_viewport=self.viewport
+        )
+        self.map_switcher_cells = [
+            PassengerMapSwitcherCell(on_buy_map, on_switch_map, None, None, parent_viewport=self.viewport),
+            FreightMapSwitcherCell(on_buy_map, on_switch_map, None, None, parent_viewport=self.viewport)
+        ]
         self.buttons = [self.close_map_switcher_button, ]
         for c in self.map_switcher_cells:
             self.buttons.extend(c.buttons)
             self.on_window_resize_handlers.extend(c.on_window_resize_handlers)
 
-        self.on_window_resize_handlers.extend([
-            self.shader_sprite.on_window_resize, self.title_label.on_window_resize
-        ])
+        self.on_window_resize_handlers.extend(
+            [
+                self.shader_sprite.on_window_resize, self.title_label.on_window_resize
+            ]
+        )
         self.on_append_window_handlers()
 
     @view_is_not_active

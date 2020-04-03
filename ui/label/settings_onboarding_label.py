@@ -7,9 +7,10 @@ from ui import *
 @final
 class SettingsOnboardingLabel(LocalizedLabel):
     def __init__(self, parent_viewport):
-        super().__init__(logger=getLogger('root.settings_onboarding_label'),
-                         i18n_resources_key='settings_onboarding_page_string',
-                         parent_viewport=parent_viewport)
+        super().__init__(
+            logger=getLogger('root.settings_onboarding_label'),
+            i18n_resources_key='settings_onboarding_page_string', parent_viewport=parent_viewport
+        )
         self.font_name = 'Arial'
         self.base_color = WHITE_RGB
         self.anchor_x = 'center'

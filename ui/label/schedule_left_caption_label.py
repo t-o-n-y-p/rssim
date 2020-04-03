@@ -7,9 +7,10 @@ from ui import *
 @final
 class ScheduleLeftCaptionLabel(LocalizedLabel):
     def __init__(self, parent_viewport):
-        super().__init__(logger=getLogger('root.schedule_left_caption_label'),
-                         i18n_resources_key='schedule_caption_string',
-                         parent_viewport=parent_viewport)
+        super().__init__(
+            logger=getLogger('root.schedule_left_caption_label'),
+            i18n_resources_key='schedule_caption_string', parent_viewport=parent_viewport
+        )
         self.font_name = 'Perfo'
         self.bold = True
         self.base_color = ORANGE_RGB

@@ -6,8 +6,9 @@ from ui.fade_animation.fade_out_animation import *
 @final
 class MapFadeOutAnimation(FadeOutAnimation):
     def __init__(self, map_view):
-        super().__init__(animation_object=map_view,
-                         logger=getLogger(f'root.app.game.map.{map_view.map_id}.fade_out_animation'))
+        super().__init__(
+            animation_object=map_view, logger=getLogger(f'root.app.game.map.{map_view.map_id}.fade_out_animation')
+        )
         self.constructor_fade_out_animation = None
         self.scheduler_fade_out_animation = None
         self.dispatcher_fade_out_animation = None

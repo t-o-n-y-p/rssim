@@ -393,8 +393,10 @@ class GameBaseView(AppBaseView, ABC):
         super().__init__(controller, logger, child_window)
         USER_DB_CURSOR.execute('SELECT * FROM epoch_timestamp')
         self.game_time, self.game_time_fraction, self.dt_multiplier = USER_DB_CURSOR.fetchone()
-        USER_DB_CURSOR.execute('''SELECT level, money, exp_bonus_multiplier, money_bonus_multiplier,  
-                                  construction_time_bonus_multiplier FROM game_progress''')
+        USER_DB_CURSOR.execute(
+            '''SELECT level, money, exp_bonus_multiplier, money_bonus_multiplier,  
+            construction_time_bonus_multiplier FROM game_progress'''
+        )
         self.level, self.money, self.exp_bonus_multiplier, self.money_bonus_multiplier, \
             self.construction_time_bonus_multiplier = USER_DB_CURSOR.fetchone()
 

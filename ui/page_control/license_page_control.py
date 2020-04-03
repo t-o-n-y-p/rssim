@@ -13,14 +13,17 @@ from ui.license_page.numpy_license_page import NumpyLicensePage
 @final
 class LicensePageControl(PageControl):
     def __init__(self, parent_viewport):
-        super().__init__(logger=getLogger('root.app.license.view.license_page_control'),
-                         parent_viewport=parent_viewport)
-        self.pages = [PygletLicensePage(parent_viewport=self.viewport),
-                      PyshadersLicensePage(parent_viewport=self.viewport),
-                      Pywin32LicensePage(parent_viewport=self.viewport),
-                      KeyringLicensePage(parent_viewport=self.viewport),
-                      NumpyLicensePage(parent_viewport=self.viewport),
-                      CxFreezeLicensePage(parent_viewport=self.viewport)]
+        super().__init__(
+            logger=getLogger('root.app.license.view.license_page_control'), parent_viewport=parent_viewport
+        )
+        self.pages = [
+            PygletLicensePage(parent_viewport=self.viewport),
+            PyshadersLicensePage(parent_viewport=self.viewport),
+            Pywin32LicensePage(parent_viewport=self.viewport),
+            KeyringLicensePage(parent_viewport=self.viewport),
+            NumpyLicensePage(parent_viewport=self.viewport),
+            CxFreezeLicensePage(parent_viewport=self.viewport)
+        ]
         self.on_mouse_scroll_handlers = []
         for p in self.pages:
             self.on_mouse_scroll_handlers.append(p.on_mouse_scroll)
