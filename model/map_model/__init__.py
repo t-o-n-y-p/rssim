@@ -2,7 +2,7 @@ from random import choice, seed
 from logging import getLogger
 
 from model import *
-from textures import MAXIMUM_CAR_COLLECTIONS
+from ui import MAXIMUM_CAR_COLLECTIONS
 from database import USER_DB_CURSOR, CONFIG_DB_CURSOR, on_commit
 
 

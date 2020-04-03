@@ -2,7 +2,7 @@ from typing import final
 
 from view.train_view import TrainView
 from database import FREIGHT_MAP
-from textures import FREIGHT_CAR_HEAD_IMAGE, FREIGHT_CAR_MID_IMAGE, FREIGHT_CAR_TAIL_IMAGE, \
+from ui import FREIGHT_CAR_HEAD_IMAGE, FREIGHT_CAR_MID_IMAGE, FREIGHT_CAR_TAIL_IMAGE, \
     FREIGHT_BOARDING_LIGHT_IMAGE
 
 

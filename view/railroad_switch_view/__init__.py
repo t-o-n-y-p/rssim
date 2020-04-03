@@ -1,7 +1,6 @@
 from logging import getLogger
 
 from view import *
-from textures import SWITCHES_STRAIGHT, SWITCHES_DIVERGING
 from ui.sprite.railroad_switch_sprite import RailroadSwitchSprite
 
 

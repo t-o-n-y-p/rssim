@@ -2,7 +2,7 @@ from typing import final
 
 from view.train_view import TrainView
 from database import PASSENGER_MAP
-from textures import PASSENGER_CAR_HEAD_IMAGE, PASSENGER_CAR_MID_IMAGE, PASSENGER_CAR_TAIL_IMAGE, \
+from ui import PASSENGER_CAR_HEAD_IMAGE, PASSENGER_CAR_MID_IMAGE, PASSENGER_CAR_TAIL_IMAGE, \
     PASSENGER_BOARDING_LIGHT_IMAGE
 
 

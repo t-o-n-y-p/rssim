@@ -2,7 +2,6 @@ from logging import getLogger
 
 from ui import *
 from ui.sprite import UISprite
-from textures import FLAG_RU
 
 
 @final

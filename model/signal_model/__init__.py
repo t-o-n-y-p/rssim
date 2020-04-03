@@ -2,7 +2,7 @@ from logging import getLogger
 
 from model import *
 from database import USER_DB_CURSOR
-from textures import GREEN_SIGNAL, RED_SIGNAL
+from ui import GREEN_SIGNAL, RED_SIGNAL
 
 
 class SignalModel(MapBaseModel, ABC):
