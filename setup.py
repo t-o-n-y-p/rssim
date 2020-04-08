@@ -33,7 +33,7 @@ includes = [
     'keyring.backends', 'keyring.backends._OS_X_API', 'keyring.backends.chainer', 'keyring.backends.fail',
     'keyring.backends.kwallet', 'keyring.backends.null', 'keyring.backends.OS_X',
     'keyring.backends.SecretService', 'keyring.backends.Windows', 'win32timezone',
-    'controller', 'model', 'view', 'textures', 'rssim_core', 'exceptions', 'i18n', 'notifications',
+    'controller', 'model', 'view', 'rssim_core', 'exceptions', 'i18n', 'notifications',
     'ui', 'database', 'ctypes', 'pycparser', 'libfuturize', 'libfuturize.fixes', 'multiprocessing',
     'past', 'past.translation', 'lib2to3', 'lib2to3.pgen2', 'ctypes', 'numpy.core'
 ]
