@@ -1,7 +1,8 @@
 from logging import getLogger
+from typing import final
 
+from ui import WHITE_RGB, GROUPS, BATCHES, get_bottom_bar_height, get_top_bar_height
 from ui.label import LocalizedLabel
-from ui import *
 
 
 @final
@@ -9,7 +10,8 @@ class ConstructionCompletedNotificationCheckboxDescriptionLabel(LocalizedLabel):
     def __init__(self, parent_viewport):
         super().__init__(
             logger=getLogger('root.construction_completed_notification_checkbox_description_label'),
-            i18n_resources_key='construction_completed_notification_description_string', parent_viewport=parent_viewport
+            i18n_resources_key='construction_completed_notification_description_string',
+            parent_viewport=parent_viewport
         )
         self.font_name = 'Arial'
         self.base_color = WHITE_RGB

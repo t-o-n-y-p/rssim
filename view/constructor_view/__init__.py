@@ -1,11 +1,13 @@
+from abc import ABC
 from logging import getLogger
+from typing import final
 
+from database import CONSTRUCTOR_VIEW_ENVIRONMENT_CELLS, ENVIRONMENT, CONSTRUCTION_STATE_MATRIX, \
+    CONSTRUCTOR_VIEW_TRACK_CELLS, TRACKS, USER_DB_CURSOR, PRICE, TRUE, FALSE
 from ui.constructor_placeholder_container.constructor_environment_placeholder_container import \
     ConstructorEnvironmentPlaceholderContainer
 from ui.constructor_placeholder_container.constructor_track_placeholder_container import \
     ConstructorTrackPlaceholderContainer
-from view import *
-from ui import *
 from ui.constructor_cell.track_cell import TrackCell
 from ui.constructor_cell.environment_cell import EnvironmentCell
 from ui.button.close_constructor_button import CloseConstructorButton
@@ -14,6 +16,8 @@ from notifications.environment_unlocked_notification import EnvironmentUnlockedN
 from notifications.environment_construction_completed_notification import EnvironmentConstructionCompletedNotification
 from notifications.track_construction_completed_notification import TrackConstructionCompletedNotification
 from ui.shader_sprite.constructor_view_shader_sprite import ConstructorViewShaderSprite
+from view import MapBaseView, construction_completed_notification_enabled, game_progress_notifications_available, \
+    feature_unlocked_notification_enabled, view_is_not_active, view_is_active
 
 
 class ConstructorView(MapBaseView, ABC):

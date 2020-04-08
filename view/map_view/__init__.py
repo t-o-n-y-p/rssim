@@ -1,14 +1,19 @@
+from abc import ABC
 from logging import getLogger
 from time import perf_counter
+from typing import final
 
-from view import *
-from database import CONFIG_DB_CURSOR
+from database import CONFIG_DB_CURSOR, USER_DB_CURSOR
+from ui import MAP_CAMERA, get_top_bar_height, MAP_HEIGHT, MAP_WIDTH, MAP_ZOOM_STEP, get_bottom_bar_height, \
+    window_size_has_changed
 from ui.button.open_schedule_button import OpenScheduleButton
 from ui.button.open_constructor_button import OpenConstructorButton
 from ui.button.open_shop_details_button import OpenShopDetailsButton
 from ui.shader_sprite.map_view_shader_sprite import MapViewShaderSprite
 from ui.sprite.main_map_sprite import MainMapSprite
 from ui.sprite.main_environment_sprite import MainEnvironmentSprite
+from view import map_move_mode_available, cursor_is_on_the_map, map_move_mode_enabled, MINI_MAP_FADE_OUT_TIMER, \
+    MapBaseView, view_is_not_active, view_is_active, left_mouse_button
 
 
 class MapView(MapBaseView, ABC):
@@ -163,7 +168,7 @@ class MapView(MapBaseView, ABC):
     @map_move_mode_enabled
     def on_mouse_drag(self, x, y, dx, dy, buttons, modifiers):
         self.controller.on_activate_mini_map()
-        self.base_offset = (self.base_offset[0] + dx, self.base_offset[1] + dy)
+        self.base_offset = (self.base_offset[0] + dx, self.base_offset[1] + dy)     # noqa
         self.check_base_offset_limits()
 
     @final
@@ -252,7 +257,7 @@ class MapView(MapBaseView, ABC):
     @final
     def on_recalculate_base_offset_for_new_screen_resolution(self, screen_resolution):
         self.base_offset = (
-            self.base_offset[0] + (screen_resolution[0] - self.screen_resolution[0]) // 2,
+            self.base_offset[0] + (screen_resolution[0] - self.screen_resolution[0]) // 2,      # noqa
             self.base_offset[1] + (screen_resolution[1] - self.screen_resolution[1]) // 2
         )
 
@@ -260,7 +265,7 @@ class MapView(MapBaseView, ABC):
     def on_recalculate_base_offset_for_new_zoom(self, new_zoom):
         multiplier = new_zoom / self.zoom
         self.base_offset = (
-            int(multiplier * self.base_offset[0] - (multiplier - 1) * (self.viewport.x1 + self.viewport.x2) // 2),
+            int(multiplier * self.base_offset[0] - (multiplier - 1) * (self.viewport.x1 + self.viewport.x2) // 2),          # noqa
             int(multiplier * self.base_offset[1] - (multiplier - 1) * (self.viewport.y1 + self.viewport.y2) // 2)
         )
 

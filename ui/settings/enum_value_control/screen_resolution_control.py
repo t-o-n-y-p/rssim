@@ -1,8 +1,9 @@
 from logging import getLogger
+from typing import final
 
-from ui.settings.enum_value_control import *
 from ui.label.screen_resolution_control_description_label import ScreenResolutionControlDescriptionLabel
 from ui.label.temp_screen_resolution_value_label import TempScreenResolutionValueLabel
+from ui.settings.enum_value_control import EnumValueControl
 
 
 @final

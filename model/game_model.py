@@ -1,7 +1,8 @@
 from logging import getLogger
+from typing import final
 
-from model import *
-from database import USER_DB_CURSOR, CONFIG_DB_CURSOR
+from database import USER_DB_CURSOR, CONFIG_DB_CURSOR, TRACKS, ENVIRONMENT
+from model import GameBaseModel, MAXIMUM_LEVEL, maximum_level_not_reached
 
 
 @final

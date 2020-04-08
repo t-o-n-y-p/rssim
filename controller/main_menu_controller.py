@@ -1,6 +1,7 @@
 from logging import getLogger
+from typing import final
 
-from controller import *
+from controller import AppBaseController
 from model.main_menu_model import MainMenuModel
 from view.main_menu_view import MainMenuView
 from ui.fade_animation.fade_in_animation.main_menu_fade_in_animation import MainMenuFadeInAnimation

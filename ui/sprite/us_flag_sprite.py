@@ -1,6 +1,7 @@
 from logging import getLogger
+from typing import final
 
-from ui import *
+from ui import get_top_bar_height, GROUPS, BATCHES, FLAG_US
 from ui.sprite import UISprite
 
 

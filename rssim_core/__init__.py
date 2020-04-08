@@ -10,7 +10,7 @@ import pyglet
 from keyring import get_password
 from pyglet import gl
 
-from database import USER_DB_LOCATION, USER_DB_CURSOR, on_commit
+from database import USER_DB_LOCATION, USER_DB_CURSOR, on_commit, CURRENT_VERSION
 from exceptions import VideoAdapterNotSupportedException, MonitorNotSupportedException, HackingDetectedException, \
     UpdateIncompatibleException
 from ui import MIN_RESOLUTION_WIDTH, MIN_RESOLUTION_HEIGHT, WINDOW, BATCHES, MAP_CAMERA, MIDI_PLAYER
@@ -69,7 +69,6 @@ def player_progress_was_not_modified(fn):
 
 
 # --------------------- CONSTANTS ---------------------
-CURRENT_VERSION: Final = (0, 11, 0)                    # current app version
 MIN_UPDATE_COMPATIBLE_VERSION: Final = (0, 11, 0)      # game cannot be updated from version earlier than this
 REQUIRED_TEXTURE_SIZE: Final = 8192                    # maximum texture resolution presented in the app
 LOG_LEVEL_OFF: Final = 30                              # integer log level high enough to cut off all logs

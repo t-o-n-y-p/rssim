@@ -1,6 +1,8 @@
 from abc import ABC
+from typing import final
 
-from ui import *
+from database import MAP_LOCKED, MAP_LEVEL_REQUIRED, MAP_PRICE, MAP_SWITCHER_STATE_MATRIX, USER_DB_CURSOR
+from ui import Viewport, get_top_bar_height, window_size_has_changed
 from ui.label.map_switcher_cell_locked_label import MapSwitcherCellLockedLabel
 from ui.label.map_switcher_level_placeholder_label import MapSwitcherLevelPlaceholderLabel
 from ui.label.map_switcher_unlock_available_label import MapSwitcherUnlockAvailableLabel

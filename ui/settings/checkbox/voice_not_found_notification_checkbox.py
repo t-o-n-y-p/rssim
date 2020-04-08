@@ -1,8 +1,9 @@
 from logging import getLogger
+from typing import final
 
 from ui.label.voice_not_found_notification_ckeckbox_description_label import \
     VoiceNotFoundNotificationCheckboxDescriptionLabel
-from ui.settings.checkbox import *
+from ui.settings.checkbox import Checkbox
 
 
 @final

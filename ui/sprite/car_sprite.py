@@ -1,6 +1,7 @@
 from logging import getLogger
+from typing import final
 
-from ui import *
+from ui import GROUPS, BATCHES
 from ui.sprite import MapSprite
 
 

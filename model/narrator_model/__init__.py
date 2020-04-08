@@ -1,7 +1,11 @@
+from abc import ABC
 from logging import getLogger
 from operator import itemgetter
+from typing import final
 
-from model import *
+from database import USER_DB_CURSOR, NARRATOR_QUEUE, ANNOUNCEMENT_TIME, ANNOUNCEMENT_LOCKED, ANNOUNCEMENT_TYPE, \
+    get_announcement_types_diff, get_announcement_types_enabled
+from model import MapBaseModel
 
 
 class NarratorModel(MapBaseModel, ABC):

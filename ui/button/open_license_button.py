@@ -1,6 +1,7 @@
 from logging import getLogger
+from typing import final
 
-from ui import *
+from ui import get_bottom_bar_height
 from ui.button import UIButton
 
 

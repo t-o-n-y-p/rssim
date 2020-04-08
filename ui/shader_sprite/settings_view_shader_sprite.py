@@ -1,8 +1,8 @@
 from logging import getLogger
+from typing import final
 
 from pyshaders import from_files_names
 
-from ui import *
 from ui.shader_sprite import ShaderSprite
 
 

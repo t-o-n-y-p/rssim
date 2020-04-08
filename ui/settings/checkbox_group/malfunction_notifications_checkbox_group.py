@@ -1,9 +1,10 @@
 from logging import getLogger
+from typing import final
 
 from ui.label.malfunction_notifications_checkbox_group_description_label import \
     MalfunctionNotificationsCheckboxGroupDescriptionLabel
 from ui.settings.checkbox.voice_not_found_notification_checkbox import VoiceNotFoundNotificationCheckbox
-from ui.settings.checkbox_group import *
+from ui.settings.checkbox_group import CheckboxGroup
 
 
 @final

@@ -1,4 +1,8 @@
-from ui import *
+from typing import final
+
+from database import UNDER_CONSTRUCTION, SECONDS_IN_ONE_DAY, SECONDS_IN_ONE_HOUR, SECONDS_IN_ONE_MINUTE, \
+    MINUTES_IN_ONE_HOUR, CONSTRUCTION_TIME, UNLOCK_AVAILABLE, UNLOCK_CONDITION_FROM_LEVEL, \
+    UNLOCK_CONDITION_FROM_PREVIOUS_ENVIRONMENT
 from ui.constructor_cell import ConstructorCell
 from ui.label.environment_cell_title_label import EnvironmentCellTitleLabel
 from ui.label.previous_environment_required_label import PreviousEnvironmentRequiredLabel

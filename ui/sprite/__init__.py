@@ -1,8 +1,9 @@
 from abc import ABC, abstractmethod
+from typing import final, Final
 
 from pyglet.sprite import Sprite as PygletSprite
 
-from ui import *
+from ui import MAP_CAMERA, window_size_has_changed
 
 SPRITE_VIEWPORT_EDGE_OFFSET_LIMIT_X: Final = 150
 SPRITE_VIEWPORT_EDGE_OFFSET_LIMIT_Y: Final = 100

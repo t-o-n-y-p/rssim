@@ -1,9 +1,10 @@
 from logging import getLogger
+from typing import final
 
 from pyglet.image import load
 
+from ui import get_bottom_bar_height
 from ui.rectangle_progress_bar import RectangleProgressBar
-from ui import *
 from ui.label.shop_storage_label import ShopStorageLabel
 
 

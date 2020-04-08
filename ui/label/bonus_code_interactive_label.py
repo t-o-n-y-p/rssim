@@ -1,7 +1,8 @@
 from logging import getLogger
+from typing import final
 
+from ui import BATCHES, GROUPS, get_bottom_bar_height, get_top_bar_height
 from ui.label import InteractiveLabel
-from ui import *
 from i18n import I18N_RESOURCES
 
 

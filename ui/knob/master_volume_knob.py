@@ -1,6 +1,7 @@
 from logging import getLogger
+from typing import final
 
-from ui import *
+from ui import RED_RGB, RED_GREY_RGB, window_size_has_changed, get_bottom_bar_height
 from ui.knob import Knob
 from ui.label.master_volume_value_label import MasterVolumeValueLabel
 

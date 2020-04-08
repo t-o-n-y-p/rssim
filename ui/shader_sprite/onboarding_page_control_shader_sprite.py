@@ -1,9 +1,10 @@
 from logging import getLogger
+from typing import final
 
 from pyshaders import from_files_names
 
+from ui import get_inner_area_rect
 from ui.shader_sprite import ShaderSprite
-from ui import *
 
 
 @final

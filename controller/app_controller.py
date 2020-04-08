@@ -1,6 +1,7 @@
 from logging import getLogger
+from typing import final
 
-from controller import *
+from controller import AppBaseController
 from database import on_commit
 from ui import WINDOW
 from model.app_model import AppModel

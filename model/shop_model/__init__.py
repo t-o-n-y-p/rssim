@@ -1,7 +1,8 @@
+from abc import ABC
 from logging import getLogger
 
-from model import *
 from database import CONFIG_DB_CURSOR
+from model import MapBaseModel
 
 
 class ShopModel(MapBaseModel, ABC):

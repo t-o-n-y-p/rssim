@@ -1,10 +1,11 @@
 from abc import ABC
+from typing import final
 
 from pyglet.text.document import FormattedDocument
 from pyglet.text.layout import IncrementalTextLayout
 
-from ui import *
 from database import USER_DB_CURSOR
+from ui import WHITE_RGB, get_bottom_bar_height, window_size_has_changed, GROUPS, BATCHES, Viewport
 
 
 def page_is_active(fn):

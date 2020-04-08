@@ -1,6 +1,8 @@
+from abc import ABC
 from logging import getLogger
+from typing import final
 
-from controller import *
+from controller import MapBaseController
 from ui.fade_animation.fade_in_animation.shop_constructor_fade_in_animation import ShopConstructorFadeInAnimation
 from ui.fade_animation.fade_out_animation.shop_constructor_fade_out_animation import ShopConstructorFadeOutAnimation
 

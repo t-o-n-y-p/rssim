@@ -1,6 +1,8 @@
+from typing import final
+
 from pyglet.window import FPSDisplay as PygletFPSDisplay
 
-from ui import *
+from ui import WINDOW, window_size_has_changed
 from ui.label.fps_label import FPSLabel
 
 

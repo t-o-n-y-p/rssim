@@ -1,13 +1,15 @@
 from logging import getLogger
+from typing import final
 
-from view import *
 from ui.button.close_map_switcher_button import CloseMapSwitcherButton
 from ui.label.map_switcher_title_label import MapSwitcherTitleLabel
 from ui.shader_sprite.map_switcher_view_shader_sprite import MapSwitcherViewShaderSprite
 from ui.map_switcher_cell.passenger_map_switcher_cell import PassengerMapSwitcherCell
 from ui.map_switcher_cell.freight_map_switcher_cell import FreightMapSwitcherCell
-from database import MAP_SWITCHER_STATE_MATRIX, MAP_PRICE, MAP_LOCKED, MAP_LEVEL_REQUIRED
+from database import MAP_SWITCHER_STATE_MATRIX, MAP_PRICE, MAP_LOCKED, MAP_LEVEL_REQUIRED, FALSE
 from notifications.map_unlocked_notification import MapUnlockedNotification
+from view import feature_unlocked_notification_enabled, game_progress_notifications_available, GameBaseView, \
+    view_is_not_active, view_is_active
 
 
 @final

@@ -1,7 +1,8 @@
 from logging import getLogger
+from typing import final
 
-from model import *
-from database import on_commit
+from database import on_commit, USER_DB_CURSOR
+from model import AppBaseModel, ALLOWED_BONUS_CODE_INPUT
 
 
 @final

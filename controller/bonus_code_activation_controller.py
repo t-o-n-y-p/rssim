@@ -1,6 +1,7 @@
 from logging import getLogger
+from typing import final
 
-from controller import *
+from controller import AppBaseController
 from model.bonus_code_activation_model import BonusCodeActivationModel
 from view.bonus_code_activation_view import BonusCodeActivationView
 from ui.fade_animation.fade_in_animation.bonus_code_activation_fade_in_animation \

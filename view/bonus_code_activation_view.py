@@ -1,11 +1,15 @@
+from hashlib import sha512
 from logging import getLogger
+from typing import final
 
-from view import *
+from database import ACTIVATIONS_LEFT, BONUS_CODE_MATRIX, BONUS_VALUE, CODE_TYPE, ACTIVATION_AVAILABLE, \
+    REQUIRED_LEVEL, IS_ACTIVATED, USER_DB_CURSOR
 from ui.label.bonus_code_interactive_label import BonusCodeInteractiveLabel
 from ui.button.activate_bonus_code_button import ActivateBonusCodeButton
 from ui.button.cancel_bonus_code_activation_button import CancelBonusCodeActivationButton
 from ui.shader_sprite.bonus_code_view_shader_sprite import BonusCodeViewShaderSprite
 from ui.bonus_code_info_cell import BonusCodeInfoCell
+from view import AppBaseView, view_is_not_active, view_is_active
 
 
 @final

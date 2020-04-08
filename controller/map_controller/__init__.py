@@ -1,7 +1,10 @@
+from abc import ABC, abstractmethod
 from logging import getLogger
 from operator import attrgetter
+from typing import final
 
-from controller import *
+from controller import MapBaseController, TRAIN_ROUTE_DATA_TRACK_NUMBER, TRAIN_ROUTE_DATA_TYPE, \
+    TRAIN_ROUTE_DATA_SECTION_NUMBER, SECTION_TYPE, SECTION_TRACK_NUMBER_1, SECTION_TRACK_NUMBER_2
 from ui.fade_animation.fade_in_animation.map_fade_in_animation import MapFadeInAnimation
 from ui.fade_animation.fade_out_animation.map_fade_out_animation import MapFadeOutAnimation
 

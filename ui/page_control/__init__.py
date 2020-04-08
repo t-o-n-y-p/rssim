@@ -1,6 +1,7 @@
 from abc import ABC
+from typing import final
 
-from ui import *
+from ui import get_inner_area_rect, window_size_has_changed, Viewport
 from ui.button.previous_page_button import PreviousPageButton
 from ui.button.next_page_button import NextPageButton
 from ui.label.page_control_counter_label import PageControlCounterLabel

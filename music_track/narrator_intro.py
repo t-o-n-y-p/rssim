@@ -1,7 +1,10 @@
+from fractions import Fraction
 from logging import getLogger
+from typing import final, Final
 
 from midi_player.instruments import Harp
-from music_track import *
+from music_track import MusicTrack
+from score import ScoreSheet, Staff, Bar, Note, G4, H4, D5, G5, QUARTER_DOTTED, THIRTY_SECOND
 
 
 @final

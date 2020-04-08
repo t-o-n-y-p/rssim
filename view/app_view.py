@@ -1,12 +1,14 @@
+from ctypes import windll
 from logging import getLogger
+from typing import final
 
 from win32api import GetCursorPos
 from win32gui import GetActiveWindow, GetWindowRect, SetWindowPos
 from win32con import HWND_TOP, SWP_NOREDRAW
 
+from database import USER_DB_CURSOR, CONFIG_DB_CURSOR, TRUE, FALSE
 from i18n import ENGLISH, RUSSIAN
-from view import *
-from ui import *
+from ui import WINDOW
 from ui.button import create_two_state_button
 from ui.button.close_game_button import CloseGameButton
 from ui.button.iconify_button import IconifyButton
@@ -19,6 +21,8 @@ from ui.shader_sprite.app_view_shader_sprite import AppViewShaderSprite
 from ui.sprite.us_flag_sprite import USFlagSprite
 from ui.sprite.ru_flag_sprite import RUFlagSprite
 from ui.fps_display import FPSDisplay
+from view import app_window_move_mode_enabled, cursor_is_over_the_app_header, game_is_not_fullscreen, AppBaseView, \
+    view_is_not_active, view_is_active, left_mouse_button
 
 
 @final

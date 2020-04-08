@@ -1,4 +1,8 @@
-from ui.fade_animation import *
+from abc import ABC
+from typing import final
+
+from ui.fade_animation import FadeAnimation, fade_animation_needed, fade_animation_is_not_active, \
+    fade_animation_is_active
 
 
 class FadeOutAnimation(FadeAnimation, ABC):

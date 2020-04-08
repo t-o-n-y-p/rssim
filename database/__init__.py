@@ -31,6 +31,9 @@ if not path.exists(_user_db_full_path):
             sha512(_data[::3] + _data[1::3] + _data[2::3]).hexdigest()
         )
 
+
+CURRENT_VERSION: Final = (0, 11, 0)                    # current app version
+
 # create database connections and cursors
 USER_DB_CONNECTION: Final = connect(path.join(USER_DB_LOCATION, 'user.db'))
 USER_DB_CURSOR: Final = USER_DB_CONNECTION.cursor()
@@ -230,14 +233,14 @@ class TrailPointsV2:
         self.part_2_head_tail, self.part_2_mid = CONFIG_DB_CURSOR.fetchone()
         if self.part_2_head_tail is not None:
             self.part_2_head_tail = tuple(
-                tuple(float(p) for p in s.split(',')) for s in self.part_2_head_tail.split('|')
+                tuple(float(p) for p in s.split(',')) for s in self.part_2_head_tail.split('|')     # noqa
             )
 
         if self.part_2_mid is None:
             self.part_2_mid = self.part_2_head_tail
         else:
             self.part_2_mid = tuple(
-                tuple(float(p) for p in s.split(',')) for s in self.part_2_mid.split('|')
+                tuple(float(p) for p in s.split(',')) for s in self.part_2_mid.split('|')           # noqa
             )
 
         self.part_1_length = round(part_1_end[0] - self.part_1_start[0])

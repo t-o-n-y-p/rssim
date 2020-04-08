@@ -1,14 +1,15 @@
 from logging import getLogger
+from typing import final
 
 from ui.label.game_progress_notifications_checkbox_group_description_label import \
     GameProgressNotificationsCheckboxGroupDescriptionLabel
-from ui.settings.checkbox_group import *
 from ui.settings.checkbox.level_up_notification_checkbox import LevelUpNotificationCheckbox
 from ui.settings.checkbox.feature_unlocked_notification_checkbox import FeatureUnlockedNotificationCheckbox
 from ui.settings.checkbox.construction_completed_notification_checkbox import ConstructionCompletedNotificationCheckbox
 from ui.settings.checkbox.enough_money_notification_checkbox import EnoughMoneyNotificationCheckbox
 from ui.settings.checkbox.bonus_expired_notification_checkbox import BonusExpiredNotificationCheckbox
 from ui.settings.checkbox.shop_storage_notification_checkbox import ShopStorageNotificationCheckbox
+from ui.settings.checkbox_group import CheckboxGroup
 
 
 @final

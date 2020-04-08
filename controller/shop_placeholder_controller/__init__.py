@@ -1,6 +1,7 @@
+from abc import ABC
 from logging import getLogger
 
-from controller import *
+from controller import MapBaseController
 from ui.fade_animation.fade_in_animation.shop_placeholder_fade_in_animation import ShopPlaceholderFadeInAnimation
 from ui.fade_animation.fade_out_animation.shop_placeholder_fade_out_animation import ShopPlaceholderFadeOutAnimation
 

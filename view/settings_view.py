@@ -1,9 +1,11 @@
+from ctypes import windll
 from logging import getLogger
+from typing import final
 
+from database import USER_DB_CURSOR, CONFIG_DB_CURSOR, FALSE, TRUE
 from ui.settings.checkbox.announcements_enabled_checkbox import AnnouncementsEnabledCheckbox
 from ui.settings.checkbox_group.malfunction_notifications_checkbox_group import MalfunctionNotificationsCheckboxGroup
 from ui.settings.knob.master_volume_settings_knob import MasterVolumeSettingsKnob
-from view import *
 from ui.button.accept_settings_button import AcceptSettingsButton
 from ui.button.reject_settings_button import RejectSettingsButton
 from ui.settings.enum_value_control.screen_resolution_control import ScreenResolutionControl
@@ -12,6 +14,7 @@ from ui.settings.checkbox.fade_animations_enabled_checkbox import FadeAnimations
 from ui.settings.checkbox.clock_24h_checkbox import Clock24HCheckbox
 from ui.settings.checkbox_group.game_progress_notifications_checkbox_group import GameProgressNotificationsCheckboxGroup
 from ui.shader_sprite.settings_view_shader_sprite import SettingsViewShaderSprite
+from view import AppBaseView, view_is_not_active, view_is_active
 
 
 @final

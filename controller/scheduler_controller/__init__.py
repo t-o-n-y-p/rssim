@@ -1,6 +1,8 @@
+from abc import ABC
 from logging import getLogger
+from typing import final
 
-from controller import *
+from controller import MapBaseController
 from ui.fade_animation.fade_in_animation.scheduler_fade_in_animation import SchedulerFadeInAnimation
 from ui.fade_animation.fade_out_animation.scheduler_fade_out_animation import SchedulerFadeOutAnimation
 

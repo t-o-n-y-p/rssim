@@ -1,6 +1,9 @@
 from logging import getLogger
+from typing import final
 
-from ui import *
+from database import CONFIG_DB_CURSOR, USER_DB_CURSOR
+from ui import get_map_tracks, MAP_HEIGHT, GROUPS, BATCHES
+
 from ui.sprite import MapSprite
 
 

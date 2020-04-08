@@ -1,7 +1,10 @@
+from typing import final
+
 from camera import Camera
 from database import USER_DB_CURSOR
 
 
+@final
 class MapCamera(Camera):
     def __init__(self):
         super().__init__(min_zoom=0.5, max_zoom=1.0)

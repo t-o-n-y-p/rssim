@@ -1,6 +1,5 @@
 from typing import final
 
-
 from controller.mini_map_controller import MiniMapController
 from model.mini_map_model.passenger_mini_map_model import PassengerMiniMapModel
 from view.mini_map_view.passenger_mini_map_view import PassengerMiniMapView

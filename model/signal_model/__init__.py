@@ -1,7 +1,9 @@
+from abc import ABC
 from logging import getLogger
+from typing import final
 
-from model import *
 from database import USER_DB_CURSOR
+from model import MapBaseModel
 from ui import GREEN_SIGNAL, RED_SIGNAL
 
 

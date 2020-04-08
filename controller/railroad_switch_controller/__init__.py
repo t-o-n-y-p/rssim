@@ -1,6 +1,8 @@
+from abc import ABC
 from logging import getLogger
+from typing import final
 
-from controller import *
+from controller import MapBaseController
 from ui.fade_animation.fade_in_animation.railroad_switch_fade_in_animation import RailroadSwitchFadeInAnimation
 from ui.fade_animation.fade_out_animation.railroad_switch_fade_out_animation import RailroadSwitchFadeOutAnimation
 

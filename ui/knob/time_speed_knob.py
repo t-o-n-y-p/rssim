@@ -1,7 +1,9 @@
 from logging import getLogger
 from math import log
+from typing import final
 
-from ui import *
+from database import USER_DB_CURSOR
+from ui import YELLOW_RGB, YELLOW_GREY_RGB, window_size_has_changed, get_bottom_bar_height
 from ui.knob import Knob
 from ui.label.time_speed_value_label import TimeSpeedValueLabel
 

@@ -1,9 +1,14 @@
+from abc import ABC, abstractmethod
 from random import choice
 from operator import itemgetter
 from logging import getLogger
+from typing import final
 
-from model import *
-from database import USER_DB_CURSOR, CONFIG_DB_CURSOR
+from database import USER_DB_CURSOR, CONFIG_DB_CURSOR, BASE_SCHEDULE, TRAIN_ID_POOL, DIRECTION, NEW_DIRECTION, \
+    CARS_MIN, CARS_MAX, ARRIVAL_TIME_MIN, ARRIVAL_TIME_MAX, SWITCH_DIRECTION_FLAG, SECONDS_IN_ONE_DAY, ARRIVAL_TIME, \
+    TRUE, FALSE, CARS, TRAIN_ID, STOP_TIME, EXP, MONEY, SWITCH_DIRECTION_REQUIRED
+from model import MapBaseModel, JOINT_ENTRIES, MAP_ENTRY_UNLOCK_CONDITIONS, ENTRY_TRACK_ID, APPROACHING_TRAIN_ROUTE, \
+    DEFAULT_PRIORITY, PASS_THROUGH_BOARDING_TIME
 
 
 class SchedulerModel(MapBaseModel, ABC):

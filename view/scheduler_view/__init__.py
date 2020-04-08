@@ -1,11 +1,16 @@
+from abc import ABC
 from logging import getLogger
+from typing import final
 
-from view import *
+from database import BASE_SCHEDULE, ARRIVAL_TIME
+from ui import SCHEDULE_COLUMNS, SCHEDULE_ROWS, SCHEDULE_ARRIVAL_TIME_THRESHOLD
+
 from ui.schedule_row import ScheduleRow
 from ui.button.close_schedule_button import CloseScheduleButton
 from ui.shader_sprite.scheduler_view_shader_sprite import SchedulerViewShaderSprite
 from ui.label.schedule_left_caption_label import ScheduleLeftCaptionLabel
 from ui.label.schedule_right_caption_label import ScheduleRightCaptionLabel
+from view import MapBaseView, view_is_not_active, view_is_active
 
 
 class SchedulerView(MapBaseView, ABC):

@@ -3,7 +3,7 @@ import sys
 
 from cx_Freeze import setup, Executable
 
-from rssim_core import CURRENT_VERSION
+from database import CURRENT_VERSION
 
 
 executables = [Executable('rssim.py', targetName='rssim.exe', base='Win32GUI', icon='icon.ico')]

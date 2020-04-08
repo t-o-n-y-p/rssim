@@ -1,6 +1,6 @@
 from logging import getLogger
+from typing import final
 
-from view import *
 from ui.label.money_bonus_value_percent_label import MoneyBonusValuePercentLabel
 from ui.label.exp_bonus_value_percent_label import ExpBonusValuePercentLabel
 from ui.label.exp_bonus_placeholder_label import ExpBonusPlaceholderLabel
@@ -8,6 +8,8 @@ from ui.label.money_bonus_placeholder_label import MoneyBonusPlaceholderLabel
 from notifications.exp_bonus_expired_notification import ExpBonusExpiredNotification
 from notifications.money_bonus_expired_notification import MoneyBonusExpiredNotification
 from notifications.construction_time_bonus_expired_notification import ConstructionTimeBonusExpiredNotification
+from view import bonus_expired_notification_enabled, game_progress_notifications_available, GameBaseView, \
+    view_is_not_active, view_is_active
 
 
 @final

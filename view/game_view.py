@@ -1,8 +1,11 @@
 from logging import getLogger
+from typing import final
 
+from database import CONFIG_DB_CURSOR, MINUTES_IN_ONE_HOUR, SECONDS_IN_ONE_MINUTE, HOURS_IN_ONE_DAY, \
+    SECONDS_IN_ONE_HOUR, USER_DB_CURSOR, on_commit
 from notifications.voice_not_found_notification import VoiceNotFoundNotification
+from ui import SPEAKER, MIDI_PLAYER
 from ui.knob.time_speed_knob import TimeSpeedKnob
-from view import *
 from ui.button.open_settings_game_view_button import OpenSettingsGameViewButton
 from ui.button.open_map_switcher_button import OpenMapSwitcherButton
 from notifications.level_up_notification import LevelUpNotification
@@ -14,6 +17,9 @@ from ui.label.main_clock_label_12h import MainClockLabel12H
 from ui.rectangle_progress_bar.exp_progress_bar import ExpProgressBar
 from ui.rectangle_progress_bar.money_progress_bar import MoneyProgressBar
 from ui.shader_sprite.game_view_shader_sprite import GameViewShaderSprite
+from view import voice_not_found_notification_needed, voice_not_found_notification_enabled, \
+    enough_money_notification_enabled, game_progress_notifications_available, level_up_notification_enabled, \
+    GameBaseView, view_is_not_active, view_is_active
 
 
 @final

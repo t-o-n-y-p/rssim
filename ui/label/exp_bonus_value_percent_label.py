@@ -1,7 +1,8 @@
 from logging import getLogger
+from typing import final
 
+from ui import ORANGE_RGB, BATCHES, GROUPS, get_bottom_bar_height
 from ui.label import Label
-from ui import *
 
 
 @final

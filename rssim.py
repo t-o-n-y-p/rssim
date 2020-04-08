@@ -4,7 +4,8 @@ from datetime import datetime
 from traceback import print_tb
 from ctypes import windll
 
-from exceptions import *
+from exceptions import VideoAdapterNotSupportedException, MonitorNotSupportedException, UpdateIncompatibleException, \
+    HackingDetectedException
 from rssim_core import Launcher
 from ui import WINDOW
 

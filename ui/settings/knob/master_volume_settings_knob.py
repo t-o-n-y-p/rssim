@@ -1,6 +1,6 @@
 from logging import getLogger
+from typing import final
 
-from ui import *
 from ui.knob.master_volume_knob import MasterVolumeKnob
 from ui.label.master_volume_description_label import MasterVolumeDescriptionLabel
 from ui.settings.knob import SettingsKnob

@@ -1,8 +1,9 @@
 from logging import getLogger
 from math import modf
+from typing import final
 
+from ui import ORANGE_RGB, BATCHES, GROUPS, get_bottom_bar_height
 from ui.label import LocalizedLabel
-from ui import *
 
 
 @final

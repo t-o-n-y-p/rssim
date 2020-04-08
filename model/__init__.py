@@ -1,9 +1,10 @@
 from abc import ABC, abstractmethod
 from math import log
+from typing import Final, final
 
 import numpy
 
-from database import *
+from database import USER_DB_CURSOR, SECONDS_IN_ONE_MINUTE, TRUE, FALSE
 
 
 def fullscreen_mode_available(fn):

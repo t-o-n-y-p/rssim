@@ -1,7 +1,8 @@
 from logging import getLogger
+from typing import final
 
 from ui.label.announcements_enabled_checkbox_description_label import AnnouncementsEnabledCheckboxDescriptionLabel
-from ui.settings.checkbox import *
+from ui.settings.checkbox import Checkbox
 
 
 @final

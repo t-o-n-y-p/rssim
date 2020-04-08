@@ -1,9 +1,14 @@
+from abc import ABC
 from logging import getLogger
+from typing import final
 
 from win32com.universal import com_error
 
+from database import NARRATOR_QUEUE, ANNOUNCEMENT_TIME, ANNOUNCEMENT_LOCKED, get_announcement_types_enabled, \
+    ANNOUNCEMENT_TYPE, USER_DB_CURSOR, TRUE, FALSE
 from music_track.narrator_intro import NarratorIntro
-from view import *
+from ui import SPEAKER, MIDI_PLAYER
+from view import MapBaseView, view_is_not_active, view_is_active
 
 
 class NarratorView(MapBaseView, ABC):

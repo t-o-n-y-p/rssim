@@ -1,6 +1,7 @@
 from logging import getLogger
+from typing import final
 
-from controller import *
+from controller import GameBaseController
 from ui.fade_animation.fade_in_animation.map_switcher_fade_in_animation import MapSwitcherFadeInAnimation
 from ui.fade_animation.fade_out_animation.map_switcher_fade_out_animation import MapSwitcherFadeOutAnimation
 from model.map_switcher_model import MapSwitcherModel

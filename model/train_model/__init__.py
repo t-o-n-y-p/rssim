@@ -1,7 +1,12 @@
+from abc import ABC, abstractmethod
 from logging import getLogger
+from math import log
+from typing import final
 
-from model import *
-from database import USER_DB_CURSOR
+from database import USER_DB_CURSOR, FALSE, SECONDS_IN_ONE_MINUTE, DEPARTURE_ANNOUNCEMENT, \
+    ARRIVAL_FINISHED_ANNOUNCEMENT, FIVE_MINUTES_LEFT_ANNOUNCEMENT
+from model import MapBaseModel, TRAIN_MAXIMUM_SPEED, TRAIN_VELOCITY_BASE, get_braking_distance, get_speed_state_time, \
+    get_distance, EXIT_TRAIN_ROUTE
 
 
 class TrainModel(MapBaseModel, ABC):

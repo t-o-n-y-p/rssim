@@ -1,9 +1,10 @@
 from abc import ABC
+from typing import final, Final
 
 from pyglet.window import mouse
 
-from ui import *
 from database import USER_DB_CURSOR
+from ui import WINDOW, get_inner_area_rect, window_size_has_changed, Viewport, get_top_bar_height, get_bottom_bar_height
 
 
 def view_is_active(fn):

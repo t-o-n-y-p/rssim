@@ -1,9 +1,10 @@
 from abc import ABC, abstractmethod
+from typing import final
 
 from pyglet.sprite import Sprite
 
-from ui import *
 from database import USER_DB_CURSOR
+from ui import window_size_has_changed, GROUPS, BATCHES, Viewport
 
 
 def progress_bar_is_active(fn):

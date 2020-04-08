@@ -5,8 +5,8 @@ import win32com.client
 from database import USER_DB_CURSOR, ANNOUNCEMENT_TYPE, PASS_THROUGH_ANNOUNCEMENT, ANNOUNCEMENT_TRACK_NUMBER, \
     ARRIVAL_ANNOUNCEMENT, ARRIVAL_FINISHED_ANNOUNCEMENT, ANNOUNCEMENT_TRAIN_ID, DEPARTURE_ANNOUNCEMENT, \
     FIVE_MINUTES_LEFT_ANNOUNCEMENT
-from i18n import *
-from i18n import numbers_to_speech_en, numbers_to_speech_ru
+from i18n import numbers_to_speech_en, numbers_to_speech_ru, ENGLISH, RUSSIAN, I18N_RESOURCES, DATIVE, NOMINATIVE, \
+    GENITIVE, PREPOSITIONAL
 
 
 @final

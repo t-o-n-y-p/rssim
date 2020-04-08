@@ -1,6 +1,7 @@
 from logging import getLogger
+from typing import final
 
-from model import *
+from model import AppBaseModel
 
 
 @final

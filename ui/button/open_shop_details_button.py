@@ -1,7 +1,8 @@
 from logging import getLogger
+from typing import final
 
-from ui import *
 from database import CONFIG_DB_CURSOR
+from ui import SHOP_DETAILS_BUTTON_NORMAL_SIZE, MAP_CAMERA
 from ui.button import MapButton
 
 

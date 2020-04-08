@@ -1,7 +1,9 @@
+from abc import ABC
 from logging import getLogger
+from typing import final
 
-from model import *
-from database import USER_DB_CURSOR, CONFIG_DB_CURSOR
+from database import USER_DB_CURSOR, CONFIG_DB_CURSOR, TRUE, FALSE
+from model import MapBaseModel
 
 
 class RailroadSwitchModel(MapBaseModel, ABC):

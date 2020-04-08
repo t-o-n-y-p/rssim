@@ -1,11 +1,13 @@
 from abc import ABC, abstractmethod
+from typing import Final, final
 
 from pyglet import gl
 from pyglet.text import Label
 from pyglet.window import mouse
 
-from ui import *
 from database import USER_DB_CURSOR
+from ui import GROUPS, WHITE_RGB, GREY_RGB, WINDOW, HAND_CURSOR, DEFAULT_CURSOR, window_size_has_changed, BATCHES, \
+    UI_CAMERA, MAP_CAMERA
 
 
 def button_is_not_activated(fn):

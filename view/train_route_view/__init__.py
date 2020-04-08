@@ -1,6 +1,8 @@
+from abc import ABC
 from logging import getLogger
+from typing import final
 
-from view import *
+from view import MapBaseView, view_is_not_active, view_is_active
 
 
 class TrainRouteView(MapBaseView, ABC):

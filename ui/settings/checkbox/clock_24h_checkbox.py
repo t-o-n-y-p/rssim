@@ -1,7 +1,8 @@
 from logging import getLogger
+from typing import final
 
-from ui.settings.checkbox import *
 from ui.label.clock_24h_checkbox_description_label import Clock24HCheckboxDescriptionLabel
+from ui.settings.checkbox import Checkbox
 
 
 @final

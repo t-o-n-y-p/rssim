@@ -1,8 +1,10 @@
 from logging import getLogger
+from typing import final
 
-from ui import *
-from database import USER_DB_CURSOR
+from database import USER_DB_CURSOR, CARS, MINUTES_IN_ONE_HOUR, SECONDS_IN_ONE_MINUTE, ARRIVAL_TIME, \
+    SECONDS_IN_ONE_HOUR, TRAIN_ID, HOURS_IN_ONE_DAY, DIRECTION
 from i18n import I18N_RESOURCES
+from ui import SCHEDULE_ROWS, get_inner_area_rect, get_bottom_bar_height, window_size_has_changed, Viewport
 from ui.label.schedule_row_24h_main_label import ScheduleRow24HMainLabel
 from ui.label.schedule_row_12h_main_label import ScheduleRow12HMainLabel
 from ui.label.schedule_row_arrival_label import ScheduleRowArrivalLabel

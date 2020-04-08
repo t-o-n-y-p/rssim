@@ -1,9 +1,13 @@
 from logging import getLogger
+from typing import final
 
 from pyshaders import from_files_names
 
+from database import CONSTRUCTOR_VIEW_ENVIRONMENT_CELLS, CONSTRUCTOR_VIEW_TRACK_CELLS, ENVIRONMENT, UNLOCK_AVAILABLE, \
+    TRACKS, FALSE
+from ui import get_top_bar_height, get_bottom_bar_height
+
 from ui.shader_sprite import ShaderSprite
-from ui import *
 
 
 @final

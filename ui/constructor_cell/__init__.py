@@ -1,7 +1,10 @@
 from abc import ABC, abstractmethod
 from logging import getLogger
+from typing import final
 
-from ui import *
+from database import USER_DB_CURSOR, UNLOCK_AVAILABLE, UNDER_CONSTRUCTION, PRICE, LEVEL_REQUIRED, \
+    ENVIRONMENT_REQUIRED, TRACKS, ENVIRONMENT, CONSTRUCTOR_VIEW_TRACK_CELLS, CONSTRUCTOR_VIEW_ENVIRONMENT_CELLS
+from ui import Viewport, get_bottom_bar_height, get_inner_area_rect, window_size_has_changed
 from ui.button import create_two_state_button
 from ui.button.build_construction_button import BuildConstructionButton
 from ui.button.set_money_target_button import SetMoneyTargetButton

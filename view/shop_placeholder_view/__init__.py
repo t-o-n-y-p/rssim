@@ -1,8 +1,11 @@
+from abc import ABC
 from logging import getLogger
+from typing import final
 
-from view import *
+from database import CONFIG_DB_CURSOR
 from ui.label.shop_locked_label import ShopLockedLabel
 from ui.label.shop_level_placeholder_label import ShopLevelPlaceholderLabel
+from view import MapBaseView, view_is_not_active, view_is_active
 
 
 class ShopPlaceholderView(MapBaseView, ABC):

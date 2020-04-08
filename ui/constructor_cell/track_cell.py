@@ -1,4 +1,8 @@
-from ui import *
+from typing import final
+
+from database import UNDER_CONSTRUCTION, CONSTRUCTION_TIME, SECONDS_IN_ONE_DAY, SECONDS_IN_ONE_MINUTE, \
+    MINUTES_IN_ONE_HOUR, SECONDS_IN_ONE_HOUR, UNLOCK_AVAILABLE, UNLOCK_CONDITION_FROM_LEVEL, \
+    UNLOCK_CONDITION_FROM_ENVIRONMENT, UNLOCK_CONDITION_FROM_PREVIOUS_TRACK
 from ui.constructor_cell import ConstructorCell
 from ui.label.track_cell_title_label import TrackCellTitleLabel
 from ui.label.previous_track_required_label import PreviousTrackRequiredLabel

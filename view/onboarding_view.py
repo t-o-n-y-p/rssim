@@ -1,10 +1,11 @@
 from logging import getLogger
+from typing import final
 
-from view import *
 from ui.page_control.onboarding_page_control import OnboardingPageControl
 from ui.button.skip_onboarding_button import SkipOnboardingButton
 from ui.shader_sprite.onboarding_view_shader_sprite import OnboardingViewShaderSprite
 from ui.label.skip_onboarding_label import SkipOnboardingLabel
+from view import AppBaseView, view_is_not_active, view_is_active
 
 
 @final

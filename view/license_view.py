@@ -1,10 +1,11 @@
 from logging import getLogger
+from typing import final
 
-from view import *
 from ui.page_control.license_page_control import LicensePageControl
 from ui.button.close_license_button import CloseLicenseButton
 from ui.label.close_license_label import CloseLicenseLabel
 from ui.shader_sprite.license_view_shader_sprite import LicenseViewShaderSprite
+from view import AppBaseView, view_is_not_active, view_is_active
 
 
 @final

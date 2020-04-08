@@ -1,11 +1,16 @@
+from abc import ABC
 from logging import getLogger
 from math import ceil
+from typing import final
 
+from database import USER_DB_CURSOR
+from ui import get_mini_map_width, MAP_CAMERA, MAP_WIDTH, get_mini_map_height, MAP_HEIGHT, get_top_bar_height, \
+    get_bottom_bar_height, get_mini_map_position
 
-from view import *
 from ui.sprite.mini_map_sprite import MiniMapSprite
 from ui.sprite.mini_environment_sprite import MiniEnvironmentSprite
 from ui.shader_sprite.mini_map_view_shader_sprite import MiniMapViewShaderSprite
+from view import MapBaseView, view_is_not_active, view_is_active
 
 
 class MiniMapView(MapBaseView, ABC):

@@ -1,7 +1,9 @@
+from abc import ABC, abstractmethod
 from logging import getLogger
+from typing import final
 
-from model import *
-from database import USER_DB_CURSOR, CONFIG_DB_CURSOR
+from database import USER_DB_CURSOR, CONFIG_DB_CURSOR, TRUE, FALSE, ARRIVAL_ANNOUNCEMENT, PASS_THROUGH_ANNOUNCEMENT
+from model import MapBaseModel, ENTRY_TRAIN_ROUTE
 
 
 class DispatcherModel(MapBaseModel, ABC):

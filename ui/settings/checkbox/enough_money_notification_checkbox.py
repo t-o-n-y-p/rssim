@@ -1,8 +1,9 @@
 from logging import getLogger
+from typing import final
 
-from ui.settings.checkbox import *
 from ui.label.enough_money_notification_checkbox_description_label \
     import EnoughMoneyNotificationCheckboxDescriptionLabel
+from ui.settings.checkbox import Checkbox
 
 
 @final

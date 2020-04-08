@@ -1,6 +1,7 @@
 from logging import getLogger
+from typing import final
 
-from controller import *
+from controller import AppBaseController
 from model.license_model import LicenseModel
 from view.license_view import LicenseView
 from ui.fade_animation.fade_in_animation.license_fade_in_animation import LicenseFadeInAnimation

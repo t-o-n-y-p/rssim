@@ -1,6 +1,6 @@
 from logging import getLogger
+from typing import final
 
-from ui import *
 from ui.button import UIButton
 
 

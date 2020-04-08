@@ -1,6 +1,9 @@
 from logging import getLogger
+from typing import final
 
-from model import *
+from database import BONUS_CODE_MATRIX, USER_DB_CURSOR, ACTIVATION_AVAILABLE, ACTIVATIONS_LEFT, IS_ACTIVATED, \
+    BONUS_TIME, CODE_TYPE, MAXIMUM_BONUS_TIME, BONUS_VALUE, TRUE, FALSE
+from model import GameBaseModel
 
 
 @final

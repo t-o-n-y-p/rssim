@@ -1,8 +1,9 @@
 from logging import getLogger
+from typing import final
 
-from ui.settings.checkbox import *
 from ui.label.feature_unlocked_notification_checkbox_description_label \
     import FeatureUnlockedNotificationCheckboxDescriptionLabel
+from ui.settings.checkbox import Checkbox
 
 
 @final

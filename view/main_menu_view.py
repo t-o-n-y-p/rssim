@@ -1,6 +1,7 @@
 from logging import getLogger
+from typing import final
 
-from view import *
+from database import USER_DB_CURSOR
 from ui.button.create_station_button import CreateStationButton
 from ui.button.back_to_the_station_button import BackToTheStationButton
 from ui.button.open_license_button import OpenLicenseButton
@@ -8,6 +9,7 @@ from ui.button.open_settings_main_menu_view_button import OpenSettingsMainMenuVi
 from ui.label.open_license_label import OpenLicenseLabel
 from ui.button.enter_code_button import EnterCodeButton
 from ui.shader_sprite.main_menu_view_shader_sprite import MainMenuViewShaderSprite
+from view import AppBaseView, view_is_not_active, view_is_active
 
 
 @final

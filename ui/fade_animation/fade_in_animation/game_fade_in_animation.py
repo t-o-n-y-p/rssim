@@ -1,6 +1,8 @@
 from logging import getLogger
+from typing import final
 
-from ui.fade_animation.fade_in_animation import *
+from ui.fade_animation import fade_animation_needed, fade_animation_is_not_active
+from ui.fade_animation.fade_in_animation import FadeInAnimation
 from database import USER_DB_CURSOR
 
 

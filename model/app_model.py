@@ -1,8 +1,9 @@
 from ctypes import windll
 from logging import getLogger
+from typing import final
 
-from model import *
-from database import USER_DB_CURSOR, CONFIG_DB_CURSOR, on_commit
+from database import USER_DB_CURSOR, CONFIG_DB_CURSOR, on_commit, TRUE, FALSE
+from model import AppBaseModel, fullscreen_mode_available
 
 
 @final

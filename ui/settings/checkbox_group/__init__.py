@@ -1,7 +1,8 @@
 from abc import ABC
+from typing import final
 
-from ui import *
 from database import USER_DB_CURSOR
+from ui import get_top_bar_height, get_bottom_bar_height, window_size_has_changed, Viewport
 
 
 class CheckboxGroup(ABC):

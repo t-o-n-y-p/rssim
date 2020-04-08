@@ -1,9 +1,12 @@
+from abc import ABC
 from logging import getLogger
+from typing import final
 
-from view import *
+from database import CONFIG_DB_CURSOR
 from ui.button.close_shop_details_button import CloseShopDetailsButton
 from ui.label.shop_title_label import ShopTitleLabel
 from ui.shader_sprite.shop_view_shader_sprite import ShopViewShaderSprite
+from view import MapBaseView, view_is_not_active, view_is_active
 
 
 class ShopView(MapBaseView, ABC):

@@ -1,6 +1,7 @@
 from logging import getLogger
+from typing import final
 
-from controller import *
+from controller import GameBaseController
 from model.bonus_code_manager_model import BonusCodeManagerModel
 from view.bonus_code_manager_view import BonusCodeManagerView
 from ui.fade_animation.fade_in_animation.bonus_code_manager_fade_in_animation import BonusCodeManagerFadeInAnimation

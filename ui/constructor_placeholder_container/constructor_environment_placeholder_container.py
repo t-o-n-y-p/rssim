@@ -1,6 +1,6 @@
 from logging import getLogger
+from typing import final
 
-from ui import *
 from ui.constructor_placeholder_container import ConstructorPlaceholderContainer
 from ui.label.no_more_environment_available_label import NoMoreEnvironmentAvailableLabel
 

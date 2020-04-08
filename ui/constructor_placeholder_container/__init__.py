@@ -1,6 +1,8 @@
 from abc import ABC
+from typing import final
 
-from ui import *
+from database import USER_DB_CURSOR
+from ui import Viewport, window_size_has_changed
 from ui.label import LocalizedLabel
 
 

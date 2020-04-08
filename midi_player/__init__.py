@@ -1,7 +1,7 @@
 import ctypes
 from abc import ABC
+from typing import Final, final
 
-from score import *
 from database import USER_DB_CURSOR
 
 
@@ -11,15 +11,16 @@ ctypes.windll.winmm.midiOutSetVolume(_MIDI_DEVICE, 65535)
 _PROGRAM_CHANGE_MESSAGE_ID: Final = 0xC0
 
 
+def assign_to_channel(cls):
+    ctypes.windll.winmm.midiOutShortMsg(
+        _MIDI_DEVICE, cls.instrument_id << 8 | _PROGRAM_CHANGE_MESSAGE_ID | cls.channel_id
+    )
+    return cls
+
+
 class Instrument(ABC):
     instrument_id: int
     channel_id: int
-
-    @classmethod
-    def assign_to_channel(cls):
-        ctypes.windll.winmm.midiOutShortMsg(
-            _MIDI_DEVICE, cls.instrument_id << 8 | _PROGRAM_CHANGE_MESSAGE_ID | cls.channel_id
-        )
 
 
 @final

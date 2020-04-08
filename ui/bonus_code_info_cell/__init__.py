@@ -1,7 +1,8 @@
 from logging import getLogger
+from typing import final
 
-from ui import *
 from database import USER_DB_CURSOR
+from ui import Viewport, window_size_has_changed, get_top_bar_height, get_bottom_bar_height
 from ui.label.bonus_title_label import BonusTitleLabel
 from ui.label.activations_title_label import ActivationsTitleLabel
 from ui.label.bonus_info_cell_exp_bonus_value_label import BonusInfoCellExpBonusValueLabel

@@ -1,5 +1,6 @@
-from i18n import *
+from typing import Final
 
+from i18n import value_between_1_and_99, NOMINATIVE, GENITIVE, DATIVE, PREPOSITIONAL
 
 ONE_WORD_CARDINAL: Final = {
     1: 'один',

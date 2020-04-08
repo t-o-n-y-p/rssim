@@ -1,7 +1,8 @@
 from logging import getLogger
+from typing import final
 
-from ui.settings.checkbox import *
 from ui.label.level_up_notification_checkbox_description_label import LevelUpNotificationCheckboxDescriptionLabel
+from ui.settings.checkbox import Checkbox
 
 
 @final

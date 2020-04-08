@@ -1,7 +1,8 @@
 from logging import getLogger
+from typing import final
 
-from ui.settings.checkbox import *
 from ui.label.display_fps_checkbox_description_label import DisplayFPSCheckboxDescriptionLabel
+from ui.settings.checkbox import Checkbox
 
 
 @final

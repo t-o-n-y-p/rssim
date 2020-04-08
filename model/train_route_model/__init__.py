@@ -1,7 +1,9 @@
+from abc import ABC
 from logging import getLogger
+from typing import final
 
-from model import *
-from database import USER_DB_CURSOR, CONFIG_DB_CURSOR, TrailPointsV2
+from database import USER_DB_CURSOR, CONFIG_DB_CURSOR, TrailPointsV2, TRUE, FALSE
+from model import MapBaseModel, train_has_passed_train_route_section, ENTRY_BASE_ROUTE
 
 
 class TrainRouteModel(MapBaseModel, ABC):

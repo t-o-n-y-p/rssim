@@ -1,7 +1,8 @@
-from logging import getLogger
 from itertools import chain
+from logging import getLogger
+from typing import final
 
-from controller import *
+from controller import GameBaseController, game_is_not_paused, view_is_active
 from model.game_model import GameModel
 from view.game_view import GameView
 from ui.fade_animation.fade_in_animation.game_fade_in_animation import GameFadeInAnimation

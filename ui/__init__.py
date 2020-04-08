@@ -1,12 +1,13 @@
 from ctypes import windll
+from typing import Final, final
 
 from pyglet import resource
 from pyglet.window import Window
 from pyglet.graphics import Batch, OrderedGroup
 
-from database import *
 from camera.map_camera import MapCamera
 from camera.ui_camera import UICamera
+from database import CONFIG_DB_CURSOR, USER_DB_CURSOR, SECONDS_IN_ONE_HOUR
 from midi_player import MIDIPlayer
 from speaker import Speaker
 

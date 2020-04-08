@@ -1,6 +1,8 @@
+from abc import ABC, abstractmethod
 from logging import getLogger
+from typing import final
 
-from controller import *
+from controller import MapBaseController
 from ui.transition_animation import TransitionAnimation
 from ui.fade_animation.fade_in_animation.shop_fade_in_animation import ShopFadeInAnimation
 from ui.fade_animation.fade_out_animation.shop_fade_out_animation import ShopFadeOutAnimation

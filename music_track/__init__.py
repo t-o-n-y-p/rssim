@@ -1,8 +1,10 @@
 import ctypes
+from fractions import Fraction
 from operator import itemgetter
 from time import perf_counter
+from typing import Final, final
 
-from score import *
+from score import NOTE_VOLUME, NOTE_TONE, NOTE_INSTRUMENT, NOTE_OFFSET, NOTE_DURATION
 
 MESSAGE_VOLUME: Final = 0
 MESSAGE_PAYLOAD: Final = 1

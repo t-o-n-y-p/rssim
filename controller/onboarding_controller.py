@@ -1,6 +1,7 @@
 from logging import getLogger
+from typing import final
 
-from controller import *
+from controller import AppBaseController
 from model.onboarding_model import OnboardingModel
 from view.onboarding_view import OnboardingView
 from ui.fade_animation.fade_in_animation.onboarding_fade_in_animation import OnboardingFadeInAnimation

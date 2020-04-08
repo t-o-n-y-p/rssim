@@ -1,6 +1,9 @@
 from abc import ABC
+from typing import final
 
-from ui import *
+from database import USER_DB_CURSOR
+from ui import get_top_bar_height, get_bottom_bar_height, window_size_has_changed, Viewport
+
 from ui.button import create_two_state_button
 from ui.button.increment_button import IncrementButton
 from ui.button.decrement_button import DecrementButton

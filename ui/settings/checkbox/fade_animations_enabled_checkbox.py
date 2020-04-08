@@ -1,7 +1,8 @@
 from logging import getLogger
+from typing import final
 
-from ui.settings.checkbox import *
 from ui.label.fade_animations_enabled_checkbox_description_label import FadeAnimationsEnabledCheckboxDescriptionLabel
+from ui.settings.checkbox import Checkbox
 
 
 @final

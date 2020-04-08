@@ -1,6 +1,7 @@
+from abc import ABC
 from logging import getLogger
 
-from model import *
+from model import MapBaseModel
 
 
 class MiniMapModel(MapBaseModel, ABC):

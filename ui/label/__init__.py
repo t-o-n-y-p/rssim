@@ -1,11 +1,13 @@
 from abc import ABC, abstractmethod
+from typing import final
 
 from pyglet.text import Label as PygletLabel
 from win32clipboard import OpenClipboard, CloseClipboard, GetClipboardData
 from pyglet.window.key import BACKSPACE, V, MOD_CTRL
 
+from database import USER_DB_CURSOR
 from i18n import I18N_RESOURCES
-from ui import *
+from ui import WHITE_RGB, window_size_has_changed, GREY_RGB
 
 
 def text_label_does_not_exist(fn):

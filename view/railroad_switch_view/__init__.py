@@ -1,7 +1,12 @@
+from abc import ABC
 from logging import getLogger
+from typing import final
 
-from view import *
+from database import USER_DB_CURSOR, CONFIG_DB_CURSOR
+from ui import SWITCHES_DIVERGING, SWITCHES_STRAIGHT
+
 from ui.sprite.railroad_switch_sprite import RailroadSwitchSprite
+from view import MapBaseView, view_is_not_active, view_is_active
 
 
 class RailroadSwitchView(MapBaseView, ABC):

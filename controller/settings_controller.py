@@ -1,6 +1,7 @@
 from logging import getLogger
+from typing import final
 
-from controller import *
+from controller import AppBaseController
 from model.settings_model import SettingsModel
 from view.settings_view import SettingsView
 from ui.fade_animation.fade_in_animation.settings_fade_in_animation import SettingsFadeInAnimation

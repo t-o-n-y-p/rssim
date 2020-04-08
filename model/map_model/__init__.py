@@ -1,7 +1,9 @@
+from abc import ABC
 from random import choice, seed
 from logging import getLogger
+from typing import final
 
-from model import *
+from model import MapBaseModel, CAR_COLLECTION_UNLOCK_TRACK_LIST
 from ui import MAXIMUM_CAR_COLLECTIONS
 from database import USER_DB_CURSOR, CONFIG_DB_CURSOR, on_commit
 

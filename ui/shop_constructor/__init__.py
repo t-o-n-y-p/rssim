@@ -1,6 +1,11 @@
 from logging import getLogger
+from typing import final
 
-from ui import *
+from database import PRICE, UNLOCK_CONDITION_FROM_PREVIOUS_STAGE, LEVEL_REQUIRED, UNLOCK_CONDITION_FROM_LEVEL, \
+    EXP_BONUS, STORAGE_CAPACITY, HOURLY_PROFIT, UNLOCK_AVAILABLE, MINUTES_IN_ONE_HOUR, SECONDS_IN_ONE_MINUTE, \
+    CONSTRUCTION_TIME, SECONDS_IN_ONE_HOUR, UNDER_CONSTRUCTION, USER_DB_CURSOR, LOCKED
+from ui import get_inner_area_rect, get_bottom_bar_height, window_size_has_changed, Viewport
+
 from ui.button.build_shop_stage_button import BuildShopStageButton
 from ui.label.shop_stage_locked_label import ShopStageLockedLabel
 from ui.label.shop_stage_level_placeholder_label import ShopStageLevelPlaceholderLabel

@@ -1,6 +1,10 @@
+from abc import ABC
 from logging import getLogger
+from typing import final
 
-from view import *
+from database import STORAGE_CAPACITY, EXP_BONUS, HOURLY_PROFIT, USER_DB_CURSOR
+from ui import get_bottom_bar_height, get_top_bar_height, window_size_has_changed
+
 from ui.button.clear_shop_storage_button import ClearShopStorageButton
 from ui.rectangle_progress_bar.shop_storage_progress_bar import ShopStorageProgressBar
 from ui.shop_constructor import ShopStageCell
@@ -11,6 +15,8 @@ from ui.label.current_exp_bonus_value_label import CurrentExpBonusValueLabel
 from ui.shader_sprite.shop_constructor_view_shader_sprite import ShopConstructorViewShaderSprite
 from notifications.shop_storage_almost_full_notification import ShopStorageAlmostFullNotification
 from notifications.shop_storage_full_notification import ShopStorageFullNotification
+from view import shop_storage_notification_enabled, game_progress_notifications_available, MapBaseView, \
+    view_is_not_active, view_is_active
 
 
 class ShopConstructorView(MapBaseView, ABC):

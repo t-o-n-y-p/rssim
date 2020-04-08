@@ -1,8 +1,9 @@
 from abc import ABC, abstractmethod
+from typing import final
 
 from pyglet.gl import GL_QUADS
 
-from ui import *
+from ui import window_size_has_changed, GROUPS, BATCHES
 
 
 def shader_sprite_does_not_exist(fn):

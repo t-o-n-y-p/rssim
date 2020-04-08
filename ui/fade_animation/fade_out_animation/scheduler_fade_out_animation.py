@@ -1,6 +1,7 @@
 from logging import getLogger
+from typing import final
 
-from ui.fade_animation.fade_out_animation import *
+from ui.fade_animation.fade_out_animation import FadeOutAnimation
 
 
 @final
