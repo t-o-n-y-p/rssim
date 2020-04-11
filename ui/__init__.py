@@ -219,8 +219,10 @@ def get_bottom_bar_height(screen_resolution):
 def get_inner_area_rect(screen_resolution):
     bottom_bar_height = get_bottom_bar_height(screen_resolution)
     inner_area_size = (
-        (int(6.875 * bottom_bar_height) * 2 + bottom_bar_height // 4,
-        19 * bottom_bar_height // 4)
+        (
+            int(6.875 * bottom_bar_height) * 2 + bottom_bar_height // 4,
+            19 * bottom_bar_height // 4
+        )
     )
     inner_area_position = (
         (screen_resolution[0] - inner_area_size[0]) // 2,
