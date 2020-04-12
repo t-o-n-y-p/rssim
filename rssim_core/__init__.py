@@ -10,11 +10,12 @@ import pyglet
 from keyring import get_password
 from pyglet import gl
 
-from database import USER_DB_LOCATION, USER_DB_CURSOR, on_commit, CURRENT_VERSION
+from database import USER_DB_LOCATION, USER_DB_CURSOR, on_commit
 from exceptions import VideoAdapterNotSupportedException, MonitorNotSupportedException, HackingDetectedException, \
     UpdateIncompatibleException
 from ui import MIN_RESOLUTION_WIDTH, MIN_RESOLUTION_HEIGHT, WINDOW, BATCHES, MAP_CAMERA, MIDI_PLAYER
 from controller.app_controller import AppController
+from rssim import CURRENT_VERSION
 
 
 def video_adapter_is_supported(fn):
@@ -69,12 +70,12 @@ def player_progress_was_not_modified(fn):
 
 
 # --------------------- CONSTANTS ---------------------
-MIN_UPDATE_COMPATIBLE_VERSION: Final = (0, 11, 0)      # game cannot be updated from version earlier than this
-REQUIRED_TEXTURE_SIZE: Final = 8192                    # maximum texture resolution presented in the app
-LOG_LEVEL_OFF: Final = 30                              # integer log level high enough to cut off all logs
-LOG_LEVEL_INFO: Final = 20                             # integer log level which includes basic logs
-LOG_LEVEL_DEBUG: Final = 10                            # integer log level which includes all possible logs
-DATABASE_SHA512: Final = '40b974ba676865abc7e95f680b1d8cec820de32e4e4d9e53235863705a14cfce2640cd409cb3161157bcc2e6c840a887c0942d2b5434fc37388e43ca97d1c451'
+MIN_UPDATE_COMPATIBLE_VERSION: Final = CURRENT_VERSION      # game cannot be updated from version earlier than this
+REQUIRED_TEXTURE_SIZE: Final = 8192                         # maximum texture resolution presented in the app
+LOG_LEVEL_OFF: Final = 30                                   # integer log level high enough to cut off all logs
+LOG_LEVEL_INFO: Final = 20                                  # integer log level which includes basic logs
+LOG_LEVEL_DEBUG: Final = 10                                 # integer log level which includes all possible logs
+DATABASE_SHA512: Final = 'a45e4cd607c7f3aae397dec8d9dcf16f494c26ff29263a0c5a5f25684e9fbf331ac23e6a3ad657cab083a9ef4a3f3a78694b6fe1085bf4155b01f3aa0ed4a36f'
 MAXIMUM_MOUSE_MOTION_EVENTS_PER_FRAME: Final = 1
 MAXIMUM_MOUSE_DRAG_EVENTS_PER_FRAME: Final = 1
 MAXIMUM_MOUSE_SCROLL_EVENTS_PER_FRAME: Final = 1

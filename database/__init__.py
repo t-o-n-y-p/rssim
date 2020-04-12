@@ -32,8 +32,6 @@ if not path.exists(_user_db_full_path):
         )
 
 
-CURRENT_VERSION: Final = (0, 11, 0)                    # current app version
-
 # create database connections and cursors
 USER_DB_CONNECTION: Final = connect(path.join(USER_DB_LOCATION, 'user.db'))
 USER_DB_CURSOR: Final = USER_DB_CONNECTION.cursor()

@@ -3,14 +3,18 @@ from os import path, mkdir
 from datetime import datetime
 from traceback import print_tb
 from ctypes import windll
+from typing import Final
 
 from exceptions import VideoAdapterNotSupportedException, MonitorNotSupportedException, UpdateIncompatibleException, \
     HackingDetectedException
-from rssim_core import Launcher
-from ui import WINDOW
+
+CURRENT_VERSION: Final = (0, 11, 0)
 
 
 def main():
+    from rssim_core import Launcher
+    from ui import WINDOW
+
     try:
         Launcher().run()
     except (
