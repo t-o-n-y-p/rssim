@@ -8,7 +8,7 @@ from typing import Final
 from exceptions import VideoAdapterNotSupportedException, MonitorNotSupportedException, UpdateIncompatibleException, \
     HackingDetectedException
 
-CURRENT_VERSION: Final = (0, 11, 0)
+CURRENT_VERSION: Final = (0, 10, 5)
 
 
 def main():
