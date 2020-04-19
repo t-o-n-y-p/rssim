@@ -48,7 +48,7 @@ class SchedulerModel(MapBaseModel, ABC):
 
         USER_DB_CURSOR.execute('''SELECT entry_locked_state FROM map_progress WHERE map_id = ?''', (self.map_id, ))
         self.entry_locked_state = [int(t) for t in USER_DB_CURSOR.fetchone()[0].split(',')]
-        self.exit_locked_state = self.entry_locked_state
+        self.exit_locked_state = self.entry_locked_state.copy()
         for i in range(0, len(self.exit_locked_state), 2):
             self.exit_locked_state[i], self.exit_locked_state[i + 1] \
                 = self.exit_locked_state[i + 1], self.exit_locked_state[i]
