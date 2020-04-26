@@ -1,6 +1,6 @@
-pyglet==1.5.3
+pyglet==1.5.4
 pywin32==227
 pyshaders==1.4.1
 cx_Freeze==6.1
 keyring==19.2.0
-numpy==1.18.2
+numpy==1.18.3
