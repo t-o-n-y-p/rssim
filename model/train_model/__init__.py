@@ -142,7 +142,7 @@ class TrainModel(MapBaseModel, ABC):
                 self.speed_state = 'decelerate'
                 if k > TRAIN_MAXIMUM_SPEED[self.map_id] // 10:
                     self.speed_state_time = get_speed_state_time(
-                        self.stop_point - self.cars_position[0] + 1, self.map_id
+                        self.stop_point - self.cars_position[0] + 0.2, self.map_id
                     )
             # when train needs to stop at stop point and distance is more than braking distance,
             # update state to 'accelerate' if train is not at maximum speed already
