@@ -2,7 +2,7 @@ from logging import getLogger
 from typing import final
 
 from database import CONFIG_DB_CURSOR, USER_DB_CURSOR
-from ui import RED_SIGNAL_IMAGE, GREEN_SIGNAL_IMAGE, GREEN_SIGNAL, GROUPS, BATCHES
+from ui import RED_SIGNAL_IMAGE, GREEN_SIGNAL_IMAGE, GREEN_SIGNAL, GROUPS, BATCHES, WHITE_SIGNAL_IMAGE, WHITE_SIGNAL
 
 from ui.sprite import MapSprite
 
@@ -23,6 +23,8 @@ class SignalSprite(MapSprite):
         self.texture = RED_SIGNAL_IMAGE
         if self.state == GREEN_SIGNAL:
             self.texture = GREEN_SIGNAL_IMAGE
+        elif self.state == WHITE_SIGNAL:
+            self.texture = WHITE_SIGNAL_IMAGE
 
         CONFIG_DB_CURSOR.execute(
             '''SELECT x, y, rotation FROM signal_config WHERE track = ? AND base_route = ? AND map_id = ?''',
