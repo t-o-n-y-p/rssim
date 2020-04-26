@@ -43,5 +43,7 @@ class SignalSprite(MapSprite):
         self.state = state
         if self.state == GREEN_SIGNAL:
             self.on_update_texture(GREEN_SIGNAL_IMAGE)
+        elif self.state == WHITE_SIGNAL:
+            self.on_update_texture(WHITE_SIGNAL_IMAGE)
         else:
             self.on_update_texture(RED_SIGNAL_IMAGE)
