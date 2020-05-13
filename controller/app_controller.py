@@ -2,7 +2,7 @@ from logging import getLogger
 from typing import final
 
 from controller import AppBaseController
-from database import on_commit
+from database import on_commit, PASSENGER_MAP
 from ui import WINDOW
 from model.app_model import AppModel
 from view.app_view import AppView
@@ -139,6 +139,7 @@ class AppController(AppBaseController):
         self.main_menu_to_onboarding_transition_animation.on_activate()
 
     def on_close_onboarding(self):
+        self.game.on_unlock_map(PASSENGER_MAP)
         self.main_menu_to_onboarding_transition_animation.on_deactivate()
         self.onboarding_to_game_transition_animation.on_activate()
         self.onboarding.on_save_and_commit_onboarding_state()
