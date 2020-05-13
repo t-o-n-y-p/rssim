@@ -1,18 +1,21 @@
 from logging import getLogger
 from typing import final
 
-from ui import ORANGE_GREY_RGB, BATCHES, GROUPS, get_bottom_bar_height
-from ui.label import Label
+from ui import ORANGE_RGB, BATCHES, GROUPS, get_bottom_bar_height, YELLOW_RGB
+from ui.label import LocalizedLabel
 
 
 @final
-class ExpBonusPlaceholderLabel(Label):
+class ConstructionTimeBonusValuePercentLabel(LocalizedLabel):
     def __init__(self, parent_viewport):
-        super().__init__(logger=getLogger('root.exp_bonus_placeholder_label'), parent_viewport=parent_viewport)
-        self.text = '----'
+        super().__init__(
+            logger=getLogger('root.construction_time_bonus_value_percent_label'),
+            i18n_resources_key='bonus_value_string', parent_viewport=parent_viewport
+        )
+        self.arguments = (1.0, )
         self.font_name = 'Perfo'
         self.bold = True
-        self.base_color = ORANGE_GREY_RGB
+        self.base_color = YELLOW_RGB
         self.anchor_x = 'center'
         self.batch = BATCHES['ui_batch']
         self.group = GROUPS['button_text']
@@ -23,7 +26,7 @@ class ExpBonusPlaceholderLabel(Label):
             - 3 * get_bottom_bar_height(self.screen_resolution) // 16 \
             - (self.parent_viewport.x1 + 9 * get_bottom_bar_height(self.screen_resolution))
         return self.parent_viewport.x1 + 9 * get_bottom_bar_height(self.screen_resolution) \
-            + bonus_label_window_width // 7
+            + 6 * bonus_label_window_width // 7
 
     def get_y(self):
         return self.parent_viewport.y1 + get_bottom_bar_height(self.screen_resolution) // 2
@@ -35,4 +38,9 @@ class ExpBonusPlaceholderLabel(Label):
         return None
 
     def get_formatted_text(self):
-        return self.text
+        if self.arguments[0] < 1:
+            return self.text.format(
+                '{0:0>2}'.format(round(self.arguments[0] * 100) % 100), 0
+            )
+
+        return f'x{int(self.arguments[0])}'

@@ -12,6 +12,8 @@ from notifications.level_up_notification import LevelUpNotification
 from notifications.enough_money_track_notification import EnoughMoneyTrackNotification
 from notifications.enough_money_environment_notification import EnoughMoneyEnvironmentNotification
 from i18n import I18N_RESOURCES
+from ui.label.construction_time_bonus_placeholder_label import ConstructionTimeBonusPlaceholderLabel
+from ui.label.construction_time_bonus_value_percent_label import ConstructionTimeBonusValuePercentLabel
 from ui.label.exp_bonus_placeholder_label import ExpBonusPlaceholderLabel
 from ui.label.exp_bonus_value_percent_label import ExpBonusValuePercentLabel
 from ui.label.main_clock_label_24h import MainClockLabel24H
@@ -72,13 +74,21 @@ class GameView(GameBaseView):
         self.money_bonus_percent_label = MoneyBonusValuePercentLabel(parent_viewport=self.viewport)
         self.exp_bonus_placeholder_label = ExpBonusPlaceholderLabel(parent_viewport=self.viewport)
         self.money_bonus_placeholder_label = MoneyBonusPlaceholderLabel(parent_viewport=self.viewport)
+        self.construction_time_bonus_placeholder_label = ConstructionTimeBonusPlaceholderLabel(
+            parent_viewport=self.viewport
+        )
+        self.construction_time_bonus_percent_label = ConstructionTimeBonusValuePercentLabel(
+            parent_viewport=self.viewport
+        )
         self.on_window_resize_handlers.extend(
             [
                 *self.exp_progress_bar.on_window_resize_handlers, *self.money_progress_bar.on_window_resize_handlers,
                 self.main_clock_label_24h.on_window_resize, self.main_clock_label_12h.on_window_resize,
                 self.shader_sprite.on_window_resize, *self.time_speed_knob.on_window_resize_handlers,
                 self.exp_bonus_percent_label.on_window_resize, self.money_bonus_percent_label.on_window_resize,
-                self.exp_bonus_placeholder_label.on_window_resize, self.money_bonus_placeholder_label.on_window_resize
+                self.exp_bonus_placeholder_label.on_window_resize, self.money_bonus_placeholder_label.on_window_resize,
+                self.construction_time_bonus_placeholder_label.on_window_resize,
+                self.construction_time_bonus_percent_label.on_window_resize
             ]
         )
         self.on_append_window_handlers()
@@ -130,6 +140,7 @@ class GameView(GameBaseView):
 
         self.on_check_exp_bonus_value()
         self.on_check_money_bonus_value()
+        self.on_check_construction_time_bonus_value()
 
     @view_is_active
     def on_deactivate(self):
@@ -172,6 +183,8 @@ class GameView(GameBaseView):
         self.money_bonus_percent_label.on_update_opacity(self.opacity)
         self.exp_bonus_placeholder_label.on_update_opacity(self.opacity)
         self.money_bonus_placeholder_label.on_update_opacity(self.opacity)
+        self.construction_time_bonus_percent_label.on_update_opacity(self.opacity)
+        self.construction_time_bonus_placeholder_label.on_update_opacity(self.opacity)
 
     def on_window_activate(self):
         super().on_window_activate()
@@ -289,6 +302,18 @@ class GameView(GameBaseView):
             self.money_bonus_percent_label.delete()
             self.money_bonus_placeholder_label.create()
 
+    @view_is_active
+    def on_check_construction_time_bonus_value(self):
+        if self.construction_time_bonus_multiplier < 1.0:
+            self.construction_time_bonus_placeholder_label.delete()
+            self.construction_time_bonus_percent_label.on_update_args(
+                (round(self.construction_time_bonus_multiplier, 2), )
+            )
+            self.construction_time_bonus_percent_label.create()
+        else:
+            self.construction_time_bonus_percent_label.delete()
+            self.construction_time_bonus_placeholder_label.create()
+
     def on_activate_exp_bonus_code(self, value):
         super().on_activate_exp_bonus_code(value)
         self.on_check_exp_bonus_value()
@@ -304,3 +329,11 @@ class GameView(GameBaseView):
     def on_deactivate_money_bonus_code(self):
         super().on_deactivate_money_bonus_code()
         self.on_check_money_bonus_value()
+
+    def on_activate_construction_time_bonus_code(self, value):
+        super().on_activate_construction_time_bonus_code(value)
+        self.on_check_construction_time_bonus_value()
+
+    def on_deactivate_construction_time_bonus_code(self):
+        super().on_deactivate_construction_time_bonus_code()
+        self.on_check_construction_time_bonus_value()

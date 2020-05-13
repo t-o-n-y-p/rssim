@@ -21,10 +21,12 @@ class ExpBonusValuePercentLabel(LocalizedLabel):
         self.group = GROUPS['button_text']
 
     def get_x(self):
-        return self.parent_viewport.x2 - 6 * get_bottom_bar_height(self.screen_resolution) + 2 \
-               - 3 * get_bottom_bar_height(self.screen_resolution) // 16 \
-               - int(1.35 * get_bottom_bar_height(self.screen_resolution)) \
-               - int(0.675 * get_bottom_bar_height(self.screen_resolution))
+        bonus_label_window_width \
+            = self.parent_viewport.x2 - 6 * get_bottom_bar_height(self.screen_resolution) + 2 \
+            - 3 * get_bottom_bar_height(self.screen_resolution) // 16 \
+            - (self.parent_viewport.x1 + 9 * get_bottom_bar_height(self.screen_resolution))
+        return self.parent_viewport.x1 + 9 * get_bottom_bar_height(self.screen_resolution) \
+            + bonus_label_window_width // 7
 
     def get_y(self):
         return self.parent_viewport.y1 + get_bottom_bar_height(self.screen_resolution) // 2
