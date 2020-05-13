@@ -75,7 +75,7 @@ REQUIRED_TEXTURE_SIZE: Final = 8192                         # maximum texture re
 LOG_LEVEL_OFF: Final = 30                                   # integer log level high enough to cut off all logs
 LOG_LEVEL_INFO: Final = 20                                  # integer log level which includes basic logs
 LOG_LEVEL_DEBUG: Final = 10                                 # integer log level which includes all possible logs
-DATABASE_SHA512: Final = '688c1423b0140679f0acfa658fdae9099da95cc493ce295705de2fe48866112a7f521f3aa58a0869ea88cce7e9bfc4b87aa08ad874dab225fd5f3445c9283500'
+DATABASE_SHA512: Final = '3daf54dc77dbc2708f51b425cd42071c36035fe9a453a85759f3c3e5390c0a98a1eb5ddb7873bba56cfccc6b6b86369f5b3d497d5b91318efdbe01612fbdc617'
 MAXIMUM_MOUSE_MOTION_EVENTS_PER_FRAME: Final = 1
 MAXIMUM_MOUSE_DRAG_EVENTS_PER_FRAME: Final = 1
 MAXIMUM_MOUSE_SCROLL_EVENTS_PER_FRAME: Final = 1
@@ -102,9 +102,6 @@ class Launcher:
         self.on_check_for_updates()
         self.logger = getLogger('root')
         current_datetime = datetime.now()
-        if not path.exists('logs'):
-            mkdir('logs')
-
         logs_handler = FileHandler(
             'logs/logs_{0}_{1:0>2}-{2:0>2}-{3:0>2}-{4:0>6}.log'.format(
                 str(current_datetime.date()), current_datetime.time().hour, current_datetime.time().minute,
