@@ -10,7 +10,7 @@ from ui import get_mini_map_width, MAP_CAMERA, MAP_WIDTH, get_mini_map_height, M
 from ui.sprite.mini_map_sprite import MiniMapSprite
 from ui.sprite.mini_environment_sprite import MiniEnvironmentSprite
 from ui.shader_sprite.mini_map_view_shader_sprite import MiniMapViewShaderSprite
-from view import MapBaseView, view_is_not_active, view_is_active
+from view import MapBaseView, view_is_not_active
 
 
 class MiniMapView(MapBaseView, ABC):
@@ -36,11 +36,6 @@ class MiniMapView(MapBaseView, ABC):
         self.shader_sprite.create()
         self.mini_map_sprite.create()
         self.mini_environment_sprite.create()
-
-    @final
-    @view_is_active
-    def on_deactivate(self):
-        super().on_deactivate()
 
     @final
     def on_update_opacity(self, new_opacity):

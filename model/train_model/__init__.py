@@ -232,10 +232,8 @@ class TrainModel(MapBaseModel, ABC):
             if self.boarding_time <= 0:
                 self.state = 'boarding_complete'
                 self.view.state = self.state
-                self.controller.parent_controller.parent_controller.on_add_exp(self.exp * self.exp_bonus_multiplier)
-                self.controller.parent_controller.parent_controller.on_add_money(
-                    self.money * self.money_bonus_multiplier
-                )
+                self.controller.parent_controller.parent_controller.on_add_exp(self.exp)
+                self.controller.parent_controller.parent_controller.on_add_money(self.money)
 
     @abstractmethod
     def on_set_train_start_point(self, first_car_start_point):

@@ -6,7 +6,7 @@ from database import CONFIG_DB_CURSOR
 from ui.button.close_shop_details_button import CloseShopDetailsButton
 from ui.label.shop_title_label import ShopTitleLabel
 from ui.shader_sprite.shop_view_shader_sprite import ShopViewShaderSprite
-from view import MapBaseView, view_is_not_active, view_is_active
+from view import MapBaseView, view_is_not_active
 
 
 class ShopView(MapBaseView, ABC):
@@ -42,11 +42,6 @@ class ShopView(MapBaseView, ABC):
         super().on_activate()
         self.shader_sprite.create()
         self.title_label.create()
-
-    @final
-    @view_is_active
-    def on_deactivate(self):
-        super().on_deactivate()
 
     @final
     def on_update_current_locale(self, new_locale):

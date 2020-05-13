@@ -4,7 +4,7 @@ from typing import final
 
 from database import USER_DB_CURSOR
 from ui.sprite.signal_sprite import SignalSprite
-from view import MapBaseView, view_is_not_active, view_is_active
+from view import MapBaseView, view_is_not_active
 
 
 class SignalView(MapBaseView, ABC):
@@ -27,11 +27,6 @@ class SignalView(MapBaseView, ABC):
         super().on_activate()
         if not self.signal_sprite.is_located_outside_viewport() and not self.locked:
             self.signal_sprite.create()
-
-    @final
-    @view_is_active
-    def on_deactivate(self):
-        super().on_deactivate()
 
     @final
     def on_update(self):

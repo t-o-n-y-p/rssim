@@ -449,5 +449,9 @@
 	"voice_not_found_notification_description_string": {
 		"en": "error playing announcements has occurred",
 		"ru": "произошла ошибка проигрывания объявлений"
+	},
+	"bonus_value_string": {
+		"en": "x{1}.{0}",
+		"ru": "x{1},{0}"
 	}
 }

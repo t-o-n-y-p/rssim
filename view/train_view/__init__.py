@@ -5,7 +5,7 @@ from typing import final
 from database import USER_DB_CURSOR
 from ui.sprite.car_sprite import CarSprite
 from ui.sprite.boarding_lights_sprite import BoardingLightsSprite
-from view import MapBaseView, view_is_not_active, view_is_active
+from view import MapBaseView, view_is_not_active
 
 
 class TrainView(MapBaseView, ABC):
@@ -54,11 +54,6 @@ class TrainView(MapBaseView, ABC):
                 BoardingLightsSprite(self.map_id, self.train_id, parent_viewport=self.viewport)
             )
             self.boarding_light_sprites[i].on_update_texture(self.boarding_light_image[self.car_image_collection])
-
-    @final
-    @view_is_active
-    def on_deactivate(self):
-        super().on_deactivate()
 
     @final
     def on_update(self):

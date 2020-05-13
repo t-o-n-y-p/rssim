@@ -12,7 +12,8 @@ from controller.bonus_code_manager_controller import BonusCodeManagerController
 from controller.map_switcher_controller import MapSwitcherController
 from controller.map_controller.passenger_map_controller import PassengerMapController
 from controller.map_controller.freight_map_controller import FreightMapController
-from database import PASSENGER_MAP, FREIGHT_MAP, SECONDS_IN_ONE_HOUR
+from database import PASSENGER_MAP, FREIGHT_MAP, SECONDS_IN_ONE_HOUR, BONUS_VALUE, BONUS_CODE_MATRIX, CODE_TYPE, \
+    CONSTRUCTION_TIME_BONUS_CODE, MONEY_BONUS_CODE, EXP_BONUS_CODE
 
 
 @final
@@ -74,14 +75,12 @@ class GameController(GameBaseController):
 
     def on_activate_new_bonus_code(self, sha512_hash):
         self.bonus_code_manager.on_activate_new_bonus_code(sha512_hash)
-        if (bonus_code_type := self.bonus_code_manager.model.get_bonus_code_type(sha512_hash)) == 'exp_bonus':
-            self.on_activate_exp_bonus_code(self.bonus_code_manager.model.get_bonus_code_value(sha512_hash) - 1)
-        elif bonus_code_type == 'money_bonus':
-            self.on_activate_money_bonus_code(self.bonus_code_manager.model.get_bonus_code_value(sha512_hash) - 1)
-        elif bonus_code_type == 'construction_time_bonus':
-            self.on_activate_construction_time_bonus_code(
-                self.bonus_code_manager.model.get_bonus_code_value(sha512_hash) - 1
-            )
+        if (bonus_code_type := BONUS_CODE_MATRIX[sha512_hash][CODE_TYPE]) == EXP_BONUS_CODE:
+            self.on_activate_exp_bonus_code(BONUS_CODE_MATRIX[sha512_hash][BONUS_VALUE])
+        elif bonus_code_type == MONEY_BONUS_CODE:
+            self.on_activate_money_bonus_code(BONUS_CODE_MATRIX[sha512_hash][BONUS_VALUE])
+        elif bonus_code_type == CONSTRUCTION_TIME_BONUS_CODE:
+            self.on_activate_construction_time_bonus_code(BONUS_CODE_MATRIX[sha512_hash][BONUS_VALUE])
 
     def on_map_move_mode_available(self):
         self.maps[self.map_switcher.get_current_map_id()].on_map_move_mode_available()

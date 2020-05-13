@@ -12,8 +12,12 @@ from notifications.level_up_notification import LevelUpNotification
 from notifications.enough_money_track_notification import EnoughMoneyTrackNotification
 from notifications.enough_money_environment_notification import EnoughMoneyEnvironmentNotification
 from i18n import I18N_RESOURCES
+from ui.label.exp_bonus_placeholder_label import ExpBonusPlaceholderLabel
+from ui.label.exp_bonus_value_percent_label import ExpBonusValuePercentLabel
 from ui.label.main_clock_label_24h import MainClockLabel24H
 from ui.label.main_clock_label_12h import MainClockLabel12H
+from ui.label.money_bonus_placeholder_label import MoneyBonusPlaceholderLabel
+from ui.label.money_bonus_value_percent_label import MoneyBonusValuePercentLabel
 from ui.rectangle_progress_bar.exp_progress_bar import ExpProgressBar
 from ui.rectangle_progress_bar.money_progress_bar import MoneyProgressBar
 from ui.shader_sprite.game_view_shader_sprite import GameViewShaderSprite
@@ -64,16 +68,22 @@ class GameView(GameBaseView):
         self.money_percent = 0
         self.shader_sprite = GameViewShaderSprite(view=self)
         self.time_speed_knob = TimeSpeedKnob(on_value_update_action=on_time_speed_update, parent_viewport=self.viewport)
+        self.exp_bonus_percent_label = ExpBonusValuePercentLabel(parent_viewport=self.viewport)
+        self.money_bonus_percent_label = MoneyBonusValuePercentLabel(parent_viewport=self.viewport)
+        self.exp_bonus_placeholder_label = ExpBonusPlaceholderLabel(parent_viewport=self.viewport)
+        self.money_bonus_placeholder_label = MoneyBonusPlaceholderLabel(parent_viewport=self.viewport)
         self.on_window_resize_handlers.extend(
             [
                 *self.exp_progress_bar.on_window_resize_handlers, *self.money_progress_bar.on_window_resize_handlers,
                 self.main_clock_label_24h.on_window_resize, self.main_clock_label_12h.on_window_resize,
-                self.shader_sprite.on_window_resize, *self.time_speed_knob.on_window_resize_handlers
+                self.shader_sprite.on_window_resize, *self.time_speed_knob.on_window_resize_handlers,
+                self.exp_bonus_percent_label.on_window_resize, self.money_bonus_percent_label.on_window_resize,
+                self.exp_bonus_placeholder_label.on_window_resize, self.money_bonus_placeholder_label.on_window_resize
             ]
         )
         self.on_append_window_handlers()
-        USER_DB_CURSOR.execute('''SELECT exp, money_target FROM game_progress''')
-        self.exp, self.money_target = USER_DB_CURSOR.fetchone()
+        USER_DB_CURSOR.execute('''SELECT exp, money_target, exp_multiplier FROM game_progress''')
+        self.exp, self.money_target, self.exp_multiplier = USER_DB_CURSOR.fetchone()
         CONFIG_DB_CURSOR.execute(
             '''SELECT player_progress FROM player_progress_config WHERE level = ?''', (self.level, )
         )
@@ -118,6 +128,9 @@ class GameView(GameBaseView):
         self.money_progress_bar.on_update_progress_bar_state(self.money, self.money_target)
         self.time_speed_knob.on_activate()
 
+        self.on_check_exp_bonus_value()
+        self.on_check_money_bonus_value()
+
     @view_is_active
     def on_deactivate(self):
         super().on_deactivate()
@@ -135,6 +148,8 @@ class GameView(GameBaseView):
         self.main_clock_label_12h.on_update_current_locale(self.current_locale)
         self.exp_progress_bar.on_update_current_locale(self.current_locale)
         self.time_speed_knob.on_update_current_locale(self.current_locale)
+        self.exp_bonus_percent_label.on_update_current_locale(self.current_locale)
+        self.money_bonus_percent_label.on_update_current_locale(self.current_locale)
 
     def on_update_clock_state(self, clock_24h_enabled):
         super().on_update_clock_state(clock_24h_enabled)
@@ -153,6 +168,10 @@ class GameView(GameBaseView):
         self.main_clock_label_24h.on_update_opacity(self.opacity)
         self.main_clock_label_12h.on_update_opacity(self.opacity)
         self.time_speed_knob.on_update_opacity(self.opacity)
+        self.exp_bonus_percent_label.on_update_opacity(self.opacity)
+        self.money_bonus_percent_label.on_update_opacity(self.opacity)
+        self.exp_bonus_placeholder_label.on_update_opacity(self.opacity)
+        self.money_bonus_placeholder_label.on_update_opacity(self.opacity)
 
     def on_window_activate(self):
         super().on_window_activate()
@@ -216,6 +235,10 @@ class GameView(GameBaseView):
         self.money_target = money_target
         self.money_progress_bar.on_update_progress_bar_state(self.money, self.money_target)
 
+    def on_add_exp_bonus(self, value):
+        self.exp_multiplier += value
+        self.on_check_exp_bonus_value()
+
     @game_progress_notifications_available
     @level_up_notification_enabled
     def on_send_level_up_notification(self):
@@ -241,3 +264,43 @@ class GameView(GameBaseView):
     def on_send_voice_not_found_notification(self):
         self.voice_not_found_notification_needed = False
         self.malfunction_notifications.append(VoiceNotFoundNotification(self.current_locale))
+
+    @view_is_active
+    def on_check_exp_bonus_value(self):
+        if self.exp_bonus_multiplier * self.exp_multiplier > 1.0:
+            self.exp_bonus_placeholder_label.delete()
+            self.exp_bonus_percent_label.on_update_args(
+                (round(self.exp_bonus_multiplier, 2) * round(self.exp_multiplier, 4), )
+            )
+            self.exp_bonus_percent_label.create()
+        else:
+            self.exp_bonus_percent_label.delete()
+            self.exp_bonus_placeholder_label.create()
+
+    @view_is_active
+    def on_check_money_bonus_value(self):
+        if self.money_bonus_multiplier > 1.0:
+            self.money_bonus_placeholder_label.delete()
+            self.money_bonus_percent_label.on_update_args(
+                (round(self.money_bonus_multiplier, 2), )
+            )
+            self.money_bonus_percent_label.create()
+        else:
+            self.money_bonus_percent_label.delete()
+            self.money_bonus_placeholder_label.create()
+
+    def on_activate_exp_bonus_code(self, value):
+        super().on_activate_exp_bonus_code(value)
+        self.on_check_exp_bonus_value()
+
+    def on_deactivate_exp_bonus_code(self):
+        super().on_deactivate_exp_bonus_code()
+        self.on_check_exp_bonus_value()
+
+    def on_activate_money_bonus_code(self, value):
+        super().on_activate_money_bonus_code(value)
+        self.on_check_money_bonus_value()
+
+    def on_deactivate_money_bonus_code(self):
+        super().on_deactivate_money_bonus_code()
+        self.on_check_money_bonus_value()

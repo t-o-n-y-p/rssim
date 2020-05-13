@@ -307,7 +307,7 @@ class GameBaseModel(AppBaseModel, ABC):
         self.view.on_level_up()
 
     def on_add_money(self, money):
-        self.money += min(MONEY_LIMIT - self.money, money)
+        self.money += min(MONEY_LIMIT - self.money, money * self.money_bonus_multiplier)
         self.view.on_update_money(self.money)
 
     def on_deactivate_exp_bonus_code(self):
@@ -333,17 +333,17 @@ class GameBaseModel(AppBaseModel, ABC):
 
     @final
     def on_activate_exp_bonus_code(self, value):
-        self.exp_bonus_multiplier = round(1.0 + value, 2)
+        self.exp_bonus_multiplier = value
         self.view.on_activate_exp_bonus_code(value)
 
     @final
     def on_activate_money_bonus_code(self, value):
-        self.money_bonus_multiplier = round(1.0 + value, 2)
+        self.money_bonus_multiplier = value
         self.view.on_activate_money_bonus_code(value)
 
     @final
     def on_activate_construction_time_bonus_code(self, value):
-        self.construction_time_bonus_multiplier = round(1.0 + value, 2)
+        self.construction_time_bonus_multiplier = value
         self.view.on_activate_construction_time_bonus_code(value)
 
 

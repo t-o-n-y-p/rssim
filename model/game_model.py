@@ -44,7 +44,7 @@ class GameModel(GameBaseModel):
         self.view.on_send_level_up_notification()
 
     def on_add_money(self, money):
-        if self.money_target > 0 and self.money < self.money_target <= self.money + money:
+        if self.money_target > 0 and self.money < self.money_target <= self.money + money * self.money_bonus_multiplier:
             for m in self.controller.maps:
                 if m.constructor.model.money_target_activated:
                     if m.constructor.model.money_target_cell_position[0] == TRACKS:
@@ -60,7 +60,7 @@ class GameModel(GameBaseModel):
 
     @maximum_level_not_reached
     def on_add_exp(self, exp):
-        self.exp += exp * self.exp_multiplier
+        self.exp += exp * self.exp_multiplier * self.exp_bonus_multiplier
         while self.exp >= self.player_progress and self.level < MAXIMUM_LEVEL:
             self.controller.on_level_up()
 
@@ -71,4 +71,5 @@ class GameModel(GameBaseModel):
         self.view.on_update_money_target(self.money_target)
 
     def on_add_exp_bonus(self, value):
-        self.exp_multiplier = round(self.exp_multiplier + value, 4)
+        self.exp_multiplier += value
+        self.view.on_add_exp_bonus(value)

@@ -188,6 +188,10 @@ for _m in (PASSENGER_MAP, FREIGHT_MAP):
     USER_DB_CURSOR.execute('''SELECT train_id, expiration_time FROM train_numbers WHERE map_id = ?''', (_m, ))
     TRAIN_ID_POOL[_m] = {n[0]: n[1] for n in USER_DB_CURSOR.fetchall()}
 
+EXP_BONUS_CODE: Final = 'exp_bonus'
+MONEY_BONUS_CODE: Final = 'money_bonus'
+CONSTRUCTION_TIME_BONUS_CODE: Final = 'construction_time_bonus'
+
 
 def get_announcement_types_enabled(dt_multiplier):
     if round(dt_multiplier, 1) > 8.0:

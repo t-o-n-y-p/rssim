@@ -2,15 +2,17 @@ from logging import getLogger
 from typing import final
 
 from ui import ORANGE_RGB, BATCHES, GROUPS, get_bottom_bar_height
-from ui.label import Label
+from ui.label import LocalizedLabel
 
 
 @final
-class ExpBonusValuePercentLabel(Label):
+class ExpBonusValuePercentLabel(LocalizedLabel):
     def __init__(self, parent_viewport):
-        super().__init__(logger=getLogger('root.exp_bonus_value_percent_label'), parent_viewport=parent_viewport)
-        self.text = '+{0}%'
-        self.arguments = (0, )
+        super().__init__(
+            logger=getLogger('root.exp_bonus_value_percent_label'),
+            i18n_resources_key='bonus_value_string', parent_viewport=parent_viewport
+        )
+        self.arguments = (1.0, )
         self.font_name = 'Perfo'
         self.bold = True
         self.base_color = ORANGE_RGB
@@ -34,4 +36,15 @@ class ExpBonusValuePercentLabel(Label):
         return None
 
     def get_formatted_text(self):
-        return self.text.format(*self.arguments)
+        if 1 < self.arguments[0] < 10:
+            return self.text.format(
+                '{0:0>2}'.format(round(self.arguments[0] * 100) % 100),
+                round(self.arguments[0] * 100) // 100
+            )
+        elif self.arguments[0] < 100:
+            return self.text.format(
+                round(self.arguments[0] * 10) % 10,
+                round(self.arguments[0] * 10) // 10
+            )
+
+        return f'x{int(self.arguments[0])}'

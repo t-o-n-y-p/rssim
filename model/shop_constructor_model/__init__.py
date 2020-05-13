@@ -97,12 +97,12 @@ class ShopConstructorModel(MapBaseModel, ABC):
                     self.view.on_unlock_stage(stage)
                     if stage == 1:
                         self.controller.parent_controller.parent_controller.parent_controller.on_add_exp_bonus(
-                            round(self.shop_stages_state_matrix[stage][EXP_BONUS] / 100, 4)
+                            self.shop_stages_state_matrix[stage][EXP_BONUS] / 100
                         )
                     else:
                         self.controller.parent_controller.parent_controller.parent_controller.on_add_exp_bonus(
-                            round((self.shop_stages_state_matrix[stage][EXP_BONUS]
-                                   - self.shop_stages_state_matrix[stage - 1][EXP_BONUS]) / 100, 4)
+                            self.shop_stages_state_matrix[stage][EXP_BONUS] / 100
+                            - self.shop_stages_state_matrix[stage - 1][EXP_BONUS] / 100
                         )
 
                     if stage < 4:
@@ -145,8 +145,6 @@ class ShopConstructorModel(MapBaseModel, ABC):
 
     @final
     def on_clear_storage(self):
-        self.controller.parent_controller.parent_controller.parent_controller.on_add_money(
-            self.shop_storage_money * self.money_bonus_multiplier
-        )
+        self.controller.parent_controller.parent_controller.parent_controller.on_add_money(self.shop_storage_money)
         self.shop_storage_money = 0
         self.view.on_update_storage_money(0)

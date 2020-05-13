@@ -73,10 +73,6 @@ class MainMenuView(AppBaseView):
             self.enter_code_button.on_disable()
 
     @view_is_active
-    def on_deactivate(self):
-        super().on_deactivate()
-
-    @view_is_active
     def on_update(self):
         pass
 

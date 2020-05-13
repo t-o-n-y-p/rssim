@@ -111,11 +111,6 @@ class MapView(MapBaseView, ABC):
         MAP_CAMERA.zoom = self.zoom
 
     @final
-    @view_is_active
-    def on_deactivate(self):
-        super().on_deactivate()
-
-    @final
     def on_update(self):
         if self.is_mini_map_timer_activated and not self.map_move_mode \
                 and perf_counter() - self.mini_map_timer > MINI_MAP_FADE_OUT_TIMER:

@@ -229,6 +229,7 @@ class AppBaseView(ABC):
             self.bonus_expired_notification_enabled, self.shop_storage_notification_enabled,\
             self.voice_not_found_notification_enabled = USER_DB_CURSOR.fetchone()
 
+    @view_is_not_active
     def on_activate(self):
         self.is_activated = True
         self.on_append_view_handlers()
@@ -236,6 +237,7 @@ class AppBaseView(ABC):
             if b.to_activate_on_controller_init:
                 b.on_activate()
 
+    @view_is_active
     def on_deactivate(self):
         self.is_activated = False
         self.on_detach_view_handlers()
@@ -413,13 +415,13 @@ class GameBaseView(AppBaseView, ABC):
         self.money = money
 
     def on_activate_exp_bonus_code(self, value):
-        self.exp_bonus_multiplier = round(1.0 + value, 2)
+        self.exp_bonus_multiplier = value
 
     def on_deactivate_exp_bonus_code(self):
         self.exp_bonus_multiplier = 1.0
 
     def on_activate_money_bonus_code(self, value):
-        self.money_bonus_multiplier = round(1.0 + value, 2)
+        self.money_bonus_multiplier = value
 
     def on_deactivate_money_bonus_code(self):
         self.money_bonus_multiplier = 1.0
@@ -430,7 +432,7 @@ class GameBaseView(AppBaseView, ABC):
 
     @final
     def on_activate_construction_time_bonus_code(self, value):
-        self.construction_time_bonus_multiplier = round(1.0 + value, 2)
+        self.construction_time_bonus_multiplier = value
 
     @final
     def on_deactivate_construction_time_bonus_code(self):

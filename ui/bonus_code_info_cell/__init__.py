@@ -1,7 +1,7 @@
 from logging import getLogger
 from typing import final
 
-from database import USER_DB_CURSOR
+from database import USER_DB_CURSOR, CONSTRUCTION_TIME_BONUS_CODE, MONEY_BONUS_CODE, EXP_BONUS_CODE
 from ui import Viewport, window_size_has_changed, get_top_bar_height, get_bottom_bar_height
 from ui.label.bonus_title_label import BonusTitleLabel
 from ui.label.activations_title_label import ActivationsTitleLabel
@@ -79,13 +79,13 @@ class BonusCodeInfoCell:
         self.bonus_value = bonus_value
         self.activations_left = activations_left
         self.bonus_title_label.create()
-        if self.bonus_type == 'exp_bonus':
+        if self.bonus_type == EXP_BONUS_CODE:
             self.exp_bonus_value_label.on_update_args((round(self.bonus_value * 100), ))
             self.exp_bonus_value_label.create()
-        elif self.bonus_type == 'money_bonus':
+        elif self.bonus_type == MONEY_BONUS_CODE:
             self.money_bonus_value_label.on_update_args((round(self.bonus_value * 100), ))
             self.money_bonus_value_label.create()
-        elif self.bonus_type == 'construction_time_bonus':
+        elif self.bonus_type == CONSTRUCTION_TIME_BONUS_CODE:
             self.construction_time_bonus_value_label.on_update_args((round(self.bonus_value * 100), ))
             self.construction_time_bonus_value_label.create()
 

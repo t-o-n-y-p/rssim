@@ -5,7 +5,7 @@ from typing import final
 from database import CONFIG_DB_CURSOR
 from ui.label.shop_locked_label import ShopLockedLabel
 from ui.label.shop_level_placeholder_label import ShopLevelPlaceholderLabel
-from view import MapBaseView, view_is_not_active, view_is_active
+from view import MapBaseView, view_is_not_active
 
 
 class ShopPlaceholderView(MapBaseView, ABC):
@@ -35,11 +35,6 @@ class ShopPlaceholderView(MapBaseView, ABC):
         super().on_activate()
         self.lock_label.create()
         self.description_label.create()
-
-    @final
-    @view_is_active
-    def on_deactivate(self):
-        super().on_deactivate()
 
     @final
     def on_update_current_locale(self, new_locale):

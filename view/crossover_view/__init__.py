@@ -6,7 +6,7 @@ from database import USER_DB_CURSOR, CONFIG_DB_CURSOR
 from ui import SWITCHES_STRAIGHT, SWITCHES_DIVERGING
 
 from ui.sprite.crossover_sprite import CrossoverSprite
-from view import MapBaseView, view_is_not_active, view_is_active
+from view import MapBaseView, view_is_not_active
 
 
 class CrossoverView(MapBaseView, ABC):
@@ -57,11 +57,6 @@ class CrossoverView(MapBaseView, ABC):
         super().on_activate()
         if not self.sprite.is_located_outside_viewport() and not self.locked:
             self.sprite.create()
-
-    @final
-    @view_is_active
-    def on_deactivate(self):
-        super().on_deactivate()
 
     @final
     def on_update(self):
