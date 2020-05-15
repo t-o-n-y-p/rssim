@@ -161,6 +161,7 @@ class GameView(GameBaseView):
         self.time_speed_knob.on_update_current_locale(self.current_locale)
         self.exp_bonus_percent_label.on_update_current_locale(self.current_locale)
         self.money_bonus_percent_label.on_update_current_locale(self.current_locale)
+        self.construction_time_bonus_percent_label.on_update_current_locale(self.current_locale)
 
     def on_update_clock_state(self, clock_24h_enabled):
         super().on_update_clock_state(clock_24h_enabled)
