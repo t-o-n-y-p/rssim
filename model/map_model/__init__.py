@@ -19,7 +19,8 @@ class MapModel(MapBaseModel, ABC):
         USER_DB_CURSOR.execute(
             '''SELECT unlocked_car_collections FROM map_progress WHERE map_id = ?''', (self.map_id, )
         )
-        self.unlocked_car_collections = [int(c) for c in USER_DB_CURSOR.fetchone()[0].split(',')]
+        car_collections = USER_DB_CURSOR.fetchone()[0]
+        self.unlocked_car_collections = [int(c) for c in car_collections.split(',')] if len(car_collections) > 0 else []
         USER_DB_CURSOR.execute(
             '''SELECT last_known_base_offset FROM map_position_settings WHERE map_id = ?''', (self.map_id, )
         )

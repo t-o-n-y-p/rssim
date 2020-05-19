@@ -89,8 +89,8 @@ GROUPS: Final = {'environment': OrderedGroup(0),
 HAND_CURSOR: Final = WINDOW.get_system_mouse_cursor(WINDOW.CURSOR_HAND)
 DEFAULT_CURSOR: Final = WINDOW.get_system_mouse_cursor(WINDOW.CURSOR_DEFAULT)
 
-_car_collections_implemented = [12, 10]
-MAXIMUM_CAR_COLLECTIONS: Final = [12, 6]
+_car_collections_implemented = [20, 10]
+MAXIMUM_CAR_COLLECTIONS: Final = [20, 10]
 resource.path = ['font', 'img', 'img/textures.zip']
 resource.reindex()
 _atlas = resource.texture('atlas.dds')

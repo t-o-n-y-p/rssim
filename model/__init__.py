@@ -229,8 +229,8 @@ FREIGHT_HEAD_TAIL_CAR_LENGTH: Final = 251  # length of the head/tail freight car
 FREIGHT_MID_CAR_LENGTH: Final = 151  # length of the middle freight car in pixels
 # when any track from this list is unlocked, new car collection is added
 CAR_COLLECTION_UNLOCK_TRACK_LIST: Final = (
-    (6, 10, 14, 18, 21, 22, 26, 30),
-    (4, 8, 12, 16)
+    (1, 2, 3, 4, 6, 8, 10, 12, 14, 16, 18, 20, 21, 22, 23, 24, 26, 28, 30, 32),
+    (1, 2, 4, 6, 8, 12, 16, 20, 22, 24)
 )
 # threshold for shop storage notification (0 - empty, 1 - full)
 SHOP_STORAGE_ALMOST_FULL_THRESHOLD: Final = 0.9
