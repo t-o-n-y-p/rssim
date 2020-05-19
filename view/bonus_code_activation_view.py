@@ -108,11 +108,7 @@ class BonusCodeActivationView(AppBaseView):
                 self.controller.on_reset_bonus_code_abuse_counter()
                 self.activate_bonus_code_button.on_activate()
                 self.bonus_code_info_cell.on_activate()
-                self.bonus_code_info_cell.on_assign_data(
-                    BONUS_CODE_MATRIX[user_input_hash][CODE_TYPE],
-                    abs(BONUS_CODE_MATRIX[user_input_hash][BONUS_VALUE] - 1),
-                    BONUS_CODE_MATRIX[user_input_hash][ACTIVATIONS_LEFT]
-                )
+                self.bonus_code_info_cell.on_assign_data(user_input_hash)
             else:
                 self.activate_bonus_code_button.on_disable()
                 self.bonus_code_info_cell.on_deactivate(instant=True)

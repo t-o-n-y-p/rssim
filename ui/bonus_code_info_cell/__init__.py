@@ -1,13 +1,14 @@
 from logging import getLogger
 from typing import final
 
-from database import USER_DB_CURSOR, CONSTRUCTION_TIME_BONUS_CODE, MONEY_BONUS_CODE, EXP_BONUS_CODE
+from database import USER_DB_CURSOR, CONSTRUCTION_SPEED_BONUS_CODE, MONEY_BONUS_CODE, EXP_BONUS_CODE, \
+    ACTIVATIONS_LEFT, BONUS_CODE_MATRIX, BONUS_VALUE, CODE_TYPE
 from ui import Viewport, window_size_has_changed, get_top_bar_height, get_bottom_bar_height
 from ui.label.bonus_title_label import BonusTitleLabel
 from ui.label.activations_title_label import ActivationsTitleLabel
 from ui.label.bonus_info_cell_exp_bonus_value_label import BonusInfoCellExpBonusValueLabel
 from ui.label.bonus_info_cell_money_bonus_value_label import BonusInfoCellMoneyBonusValueLabel
-from ui.label.bonus_info_cell_construction_time_bonus_value_label import BonusInfoCellConstructionTimeBonusValueLabel
+from ui.label.bonus_info_cell_construction_speed_bonus_value_label import BonusInfoCellConstructionSpeedBonusValueLabel
 from ui.label.activations_value_label import ActivationsValueLabel
 
 
@@ -41,14 +42,14 @@ class BonusCodeInfoCell:
         self.bonus_title_label = BonusTitleLabel(parent_viewport=self.viewport)
         self.exp_bonus_value_label = BonusInfoCellExpBonusValueLabel(parent_viewport=self.viewport)
         self.money_bonus_value_label = BonusInfoCellMoneyBonusValueLabel(parent_viewport=self.viewport)
-        self.construction_time_bonus_value_label = BonusInfoCellConstructionTimeBonusValueLabel(
+        self.construction_speed_bonus_value_label = BonusInfoCellConstructionSpeedBonusValueLabel(
             parent_viewport=self.viewport
         )
         self.activations_title_label = ActivationsTitleLabel(parent_viewport=self.viewport)
         self.activations_value_label = ActivationsValueLabel(parent_viewport=self.viewport)
         self.on_window_resize_handlers = [
             self.on_window_resize, self.bonus_title_label.on_window_resize, self.exp_bonus_value_label.on_window_resize,
-            self.money_bonus_value_label.on_window_resize, self.construction_time_bonus_value_label.on_window_resize,
+            self.money_bonus_value_label.on_window_resize, self.construction_speed_bonus_value_label.on_window_resize,
             self.activations_title_label.on_window_resize, self.activations_value_label.on_window_resize
         ]
         self.screen_resolution = (0, 0)
@@ -69,15 +70,15 @@ class BonusCodeInfoCell:
             self.bonus_title_label.delete()
             self.exp_bonus_value_label.delete()
             self.money_bonus_value_label.delete()
-            self.construction_time_bonus_value_label.delete()
+            self.construction_speed_bonus_value_label.delete()
             self.activations_title_label.delete()
             self.activations_value_label.delete()
 
     @info_cell_is_active
-    def on_assign_data(self, bonus_type, bonus_value, activations_left):
-        self.bonus_type = bonus_type
-        self.bonus_value = bonus_value
-        self.activations_left = activations_left
+    def on_assign_data(self, user_input_hash):
+        self.bonus_type = BONUS_CODE_MATRIX[user_input_hash][CODE_TYPE]
+        self.bonus_value = BONUS_CODE_MATRIX[user_input_hash][BONUS_VALUE] - 1
+        self.activations_left = BONUS_CODE_MATRIX[user_input_hash][ACTIVATIONS_LEFT]
         self.bonus_title_label.create()
         if self.bonus_type == EXP_BONUS_CODE:
             self.exp_bonus_value_label.on_update_args((round(self.bonus_value * 100), ))
@@ -85,9 +86,9 @@ class BonusCodeInfoCell:
         elif self.bonus_type == MONEY_BONUS_CODE:
             self.money_bonus_value_label.on_update_args((round(self.bonus_value * 100), ))
             self.money_bonus_value_label.create()
-        elif self.bonus_type == CONSTRUCTION_TIME_BONUS_CODE:
-            self.construction_time_bonus_value_label.on_update_args((round(self.bonus_value * 100), ))
-            self.construction_time_bonus_value_label.create()
+        elif self.bonus_type == CONSTRUCTION_SPEED_BONUS_CODE:
+            self.construction_speed_bonus_value_label.on_update_args((round(self.bonus_value * 100),))
+            self.construction_speed_bonus_value_label.create()
 
         self.activations_title_label.create()
         self.activations_value_label.on_update_args((self.activations_left, ))
@@ -118,7 +119,7 @@ class BonusCodeInfoCell:
         self.bonus_title_label.on_update_current_locale(self.current_locale)
         self.exp_bonus_value_label.on_update_current_locale(self.current_locale)
         self.money_bonus_value_label.on_update_current_locale(self.current_locale)
-        self.construction_time_bonus_value_label.on_update_current_locale(self.current_locale)
+        self.construction_speed_bonus_value_label.on_update_current_locale(self.current_locale)
         self.activations_title_label.on_update_current_locale(self.current_locale)
 
     def on_update_opacity(self, new_opacity):
@@ -126,6 +127,6 @@ class BonusCodeInfoCell:
         self.bonus_title_label.on_update_opacity(self.opacity)
         self.exp_bonus_value_label.on_update_opacity(self.opacity)
         self.money_bonus_value_label.on_update_opacity(self.opacity)
-        self.construction_time_bonus_value_label.on_update_opacity(self.opacity)
+        self.construction_speed_bonus_value_label.on_update_opacity(self.opacity)
         self.activations_title_label.on_update_opacity(self.opacity)
         self.activations_value_label.on_update_opacity(self.opacity)

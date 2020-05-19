@@ -89,8 +89,9 @@ class ConstructorModel(MapBaseModel, ABC):
         for track in CONSTRUCTION_STATE_MATRIX[self.map_id][TRACKS]:
             if CONSTRUCTION_STATE_MATRIX[self.map_id][TRACKS][track][UNDER_CONSTRUCTION]:
                 CONSTRUCTION_STATE_MATRIX[self.map_id][TRACKS][track][CONSTRUCTION_TIME] \
-                    -= int(self.game_time_fraction + dt * self.dt_multiplier)
-                if CONSTRUCTION_STATE_MATRIX[self.map_id][TRACKS][track][CONSTRUCTION_TIME] <= 0:
+                    += dt * self.dt_multiplier * self.construction_speed_bonus_multiplier
+                if CONSTRUCTION_STATE_MATRIX[self.map_id][TRACKS][track][CONSTRUCTION_TIME] \
+                        >= CONSTRUCTION_STATE_MATRIX[self.map_id][TRACKS][track][MAX_CONSTRUCTION_TIME]:
                     unlocked_track = track
                     self.controller.parent_controller.on_unlock_track(track)
                 else:
@@ -104,8 +105,9 @@ class ConstructorModel(MapBaseModel, ABC):
         for tier in CONSTRUCTION_STATE_MATRIX[self.map_id][ENVIRONMENT]:
             if CONSTRUCTION_STATE_MATRIX[self.map_id][ENVIRONMENT][tier][UNDER_CONSTRUCTION]:
                 CONSTRUCTION_STATE_MATRIX[self.map_id][ENVIRONMENT][tier][CONSTRUCTION_TIME] \
-                    -= int(self.game_time_fraction + dt * self.dt_multiplier)
-                if CONSTRUCTION_STATE_MATRIX[self.map_id][ENVIRONMENT][tier][CONSTRUCTION_TIME] <= 0:
+                    += dt * self.dt_multiplier * self.construction_speed_bonus_multiplier
+                if CONSTRUCTION_STATE_MATRIX[self.map_id][ENVIRONMENT][tier][CONSTRUCTION_TIME] \
+                        >= CONSTRUCTION_STATE_MATRIX[self.map_id][ENVIRONMENT][tier][MAX_CONSTRUCTION_TIME]:
                     unlocked_tier = tier
                     CONSTRUCTION_STATE_MATRIX[self.map_id][ENVIRONMENT][tier][UNDER_CONSTRUCTION] = FALSE
                     CONSTRUCTION_STATE_MATRIX[self.map_id][ENVIRONMENT][tier][LOCKED] = FALSE
@@ -171,10 +173,6 @@ class ConstructorModel(MapBaseModel, ABC):
     def on_put_under_construction(self, construction_type, entity_number):
         CONSTRUCTION_STATE_MATRIX[self.map_id][construction_type][entity_number][UNLOCK_AVAILABLE] = FALSE
         CONSTRUCTION_STATE_MATRIX[self.map_id][construction_type][entity_number][UNDER_CONSTRUCTION] = TRUE
-        CONSTRUCTION_STATE_MATRIX[self.map_id][construction_type][entity_number][CONSTRUCTION_TIME] = int(
-            CONSTRUCTION_STATE_MATRIX[self.map_id][construction_type][entity_number][MAX_CONSTRUCTION_TIME]
-            * self.construction_time_bonus_multiplier
-        )
         self.view.on_update_construction_state(construction_type, entity_number)
         self.controller.parent_controller.parent_controller.on_pay_money(
             CONSTRUCTION_STATE_MATRIX[self.map_id][construction_type][entity_number][PRICE]

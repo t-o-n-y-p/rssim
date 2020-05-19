@@ -35,25 +35,13 @@
 		"en": "Available for {0:,} ¤",
 		"ru": "Доступно за {0:,} ¤"
 	},
-	"under_construction_hours_minutes_description_string": {
-		"en": "Under construction. {0}h {1}min remaining",
-		"ru": "Идет строительство. Осталось {0}ч {1}мин"
+	"under_construction_description_string": {
+		"en": "Under construction. {0}%...",
+		"ru": "Идет строительство. {0}%..."
 	},
 	"under_construction_shop_stage_description_string": {
-		"en": "Under construction. \n{0}h {1}min remaining",
-		"ru": "Идет строительство. \nОсталось {0}ч {1}мин"
-	},
-	"under_construction_days_description_string": {
-		"en": {
-			"one": "Under construction. {0:,} day remaining",
-			"other": "Under construction. {0:,} days remaining"
-		},
-		"ru": {
-			"one": "Идет строительство. Остался {0:,} день",
-			"few": "Идет строительство. Осталось {0:,} дня",
-			"many": "Идет строительство. Осталось {0:,} дней",
-			"other": "Идет строительство. Осталось {0:,} дня"
-		}
+		"en": "Under construction. \n{0}%...",
+		"ru": "Идет строительство. \n{0}%..."
 	},
 	"unlock_condition_from_level_description_string": {
 		"en": "Requires level {0}",
@@ -229,13 +217,13 @@
 		"en": "Money bonus time has expired.",
 		"ru": "Время действия бонуса к деньгам истекло."
 	},
-	"construction_time_bonus_expired_notification_caption_string": {
-		"en": "Construction time bonus turned off",
-		"ru": "Бонус к времени строительства выключен"
+	"construction_speed_bonus_expired_notification_caption_string": {
+		"en": "Construction speed bonus turned off",
+		"ru": "Бонус к скорости строительства выключен"
 	},
-	"construction_time_bonus_expired_notification_message_string": {
-		"en": "Construction time bonus time has expired.",
-		"ru": "Время действия бонуса к времени строительства истекло."
+	"construction_speed_bonus_expired_notification_message_string": {
+		"en": "Construction speed bonus time has expired.",
+		"ru": "Время действия бонуса к скорости строительства истекло."
 	},
 	"shop_storage_almost_full_notification_caption_string": {
 		"en": "Storage almost full",
@@ -381,9 +369,9 @@
 		"en": "Money +{0}%",
 		"ru": "Деньги +{0}%"
 	},
-	"construction_time_bonus_value_label_string": {
-		"en": "Construction time -{0}%",
-		"ru": "Время строительства -{0}%"
+	"construction_speed_bonus_value_label_string": {
+		"en": "Construction speed +{0}%",
+		"ru": "Скорость строительства +{0}%"
 	},
 	"activations_title_label_string": {
 		"en": "Activations left:",

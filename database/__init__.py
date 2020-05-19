@@ -190,7 +190,7 @@ for _m in (PASSENGER_MAP, FREIGHT_MAP):
 
 EXP_BONUS_CODE: Final = 'exp_bonus'
 MONEY_BONUS_CODE: Final = 'money_bonus'
-CONSTRUCTION_TIME_BONUS_CODE: Final = 'construction_time_bonus'
+CONSTRUCTION_SPEED_BONUS_CODE: Final = 'construction_speed_bonus'
 
 
 def get_announcement_types_enabled(dt_multiplier):

@@ -2,7 +2,7 @@ from typing import final
 
 from database import UNDER_CONSTRUCTION, CONSTRUCTION_TIME, SECONDS_IN_ONE_DAY, SECONDS_IN_ONE_MINUTE, \
     MINUTES_IN_ONE_HOUR, SECONDS_IN_ONE_HOUR, UNLOCK_AVAILABLE, UNLOCK_CONDITION_FROM_LEVEL, \
-    UNLOCK_CONDITION_FROM_ENVIRONMENT, UNLOCK_CONDITION_FROM_PREVIOUS_TRACK
+    UNLOCK_CONDITION_FROM_ENVIRONMENT, UNLOCK_CONDITION_FROM_PREVIOUS_TRACK, MAX_CONSTRUCTION_TIME
 from ui.constructor_cell import ConstructorCell
 from ui.label.track_cell_title_label import TrackCellTitleLabel
 from ui.label.previous_track_required_label import PreviousTrackRequiredLabel
@@ -37,47 +37,32 @@ class TrackCell(ConstructorCell):
             self.previous_entity_required_label.delete()
             self.environment_required_label.delete()
             self.unlock_available_label.delete()
-            if self.data[CONSTRUCTION_TIME] >= SECONDS_IN_ONE_DAY:
-                self.under_construction_days_label.on_update_args(
-                    (self.data[CONSTRUCTION_TIME] // SECONDS_IN_ONE_DAY, )
-                )
-                self.under_construction_days_label.create()
-                self.under_construction_hours_minutes_label.delete()
-            else:
-                self.under_construction_hours_minutes_label.on_update_args(
-                    (
-                        self.data[CONSTRUCTION_TIME] // SECONDS_IN_ONE_HOUR,
-                        (self.data[CONSTRUCTION_TIME] // SECONDS_IN_ONE_MINUTE) % MINUTES_IN_ONE_HOUR
-                    )
-                )
-                self.under_construction_hours_minutes_label.create()
-                self.under_construction_days_label.delete()
+            self.under_construction_description_label.on_update_args(
+                (int(self.data[CONSTRUCTION_TIME] / self.data[MAX_CONSTRUCTION_TIME] * 100), )
+            )
+            self.under_construction_description_label.create()
 
         elif self.data[UNLOCK_AVAILABLE]:
             self.level_required_label.delete()
             self.previous_entity_required_label.delete()
             self.environment_required_label.delete()
             self.unlock_available_label.create()
-            self.under_construction_days_label.delete()
-            self.under_construction_hours_minutes_label.delete()
+            self.under_construction_description_label.delete()
         elif not self.data[UNLOCK_CONDITION_FROM_LEVEL]:
             self.level_required_label.create()
             self.previous_entity_required_label.delete()
             self.environment_required_label.delete()
             self.unlock_available_label.delete()
-            self.under_construction_days_label.delete()
-            self.under_construction_hours_minutes_label.delete()
+            self.under_construction_description_label.delete()
         elif not self.data[UNLOCK_CONDITION_FROM_ENVIRONMENT]:
             self.level_required_label.delete()
             self.previous_entity_required_label.delete()
             self.environment_required_label.create()
             self.unlock_available_label.delete()
-            self.under_construction_days_label.delete()
-            self.under_construction_hours_minutes_label.delete()
+            self.under_construction_description_label.delete()
         elif not self.data[UNLOCK_CONDITION_FROM_PREVIOUS_TRACK]:
             self.level_required_label.delete()
             self.previous_entity_required_label.create()
             self.environment_required_label.delete()
             self.unlock_available_label.delete()
-            self.under_construction_days_label.delete()
-            self.under_construction_hours_minutes_label.delete()
+            self.under_construction_description_label.delete()

@@ -6,11 +6,11 @@ from ui.label import LocalizedLabel
 
 
 @final
-class BonusInfoCellConstructionTimeBonusValueLabel(LocalizedLabel):
+class BonusInfoCellConstructionSpeedBonusValueLabel(LocalizedLabel):
     def __init__(self, parent_viewport):
         super().__init__(
-            logger=getLogger('root.construction_time_bonus_value_label'),
-            i18n_resources_key='construction_time_bonus_value_label_string', parent_viewport=parent_viewport
+            logger=getLogger('root.construction_speed_bonus_value_label'),
+            i18n_resources_key='construction_speed_bonus_value_label_string', parent_viewport=parent_viewport
         )
         self.arguments = (0, )
         self.font_name = 'Arial'

@@ -2,7 +2,7 @@ from logging import getLogger
 from typing import final
 
 from database import BONUS_CODE_MATRIX, USER_DB_CURSOR, ACTIVATION_AVAILABLE, ACTIVATIONS_LEFT, IS_ACTIVATED, \
-    BONUS_TIME, CODE_TYPE, MAXIMUM_BONUS_TIME, TRUE, FALSE, CONSTRUCTION_TIME_BONUS_CODE, MONEY_BONUS_CODE, \
+    BONUS_TIME, CODE_TYPE, MAXIMUM_BONUS_TIME, TRUE, FALSE, CONSTRUCTION_SPEED_BONUS_CODE, MONEY_BONUS_CODE, \
     EXP_BONUS_CODE
 from model import GameBaseModel
 
@@ -33,8 +33,8 @@ class BonusCodeManagerModel(GameBaseModel):
                         self.controller.parent_controller.on_deactivate_exp_bonus_code()
                     elif BONUS_CODE_MATRIX[code][CODE_TYPE] == MONEY_BONUS_CODE:
                         self.controller.parent_controller.on_deactivate_money_bonus_code()
-                    elif BONUS_CODE_MATRIX[code][CODE_TYPE] == CONSTRUCTION_TIME_BONUS_CODE:
-                        self.controller.parent_controller.on_deactivate_construction_time_bonus_code()
+                    elif BONUS_CODE_MATRIX[code][CODE_TYPE] == CONSTRUCTION_SPEED_BONUS_CODE:
+                        self.controller.parent_controller.on_deactivate_construction_speed_bonus_code()
 
         super().on_update_time(dt)
 
@@ -46,9 +46,9 @@ class BonusCodeManagerModel(GameBaseModel):
         super().on_deactivate_money_bonus_code()
         self.view.on_send_money_bonus_expired_notification()
 
-    def on_deactivate_construction_time_bonus_code(self):
-        super().on_deactivate_construction_time_bonus_code()
-        self.view.on_send_construction_time_bonus_expired_notification()
+    def on_deactivate_construction_speed_bonus_code(self):
+        super().on_deactivate_construction_speed_bonus_code()
+        self.view.on_send_construction_speed_bonus_expired_notification()
 
     @staticmethod
     def on_activate_new_bonus_code(sha512_hash):

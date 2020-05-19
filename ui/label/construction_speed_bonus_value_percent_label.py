@@ -1,20 +1,21 @@
 from logging import getLogger
 from typing import final
 
-from ui import get_bottom_bar_height, GROUPS, BATCHES, YELLOW_GREY_RGB
-from ui.label import Label
+from ui import BATCHES, GROUPS, get_bottom_bar_height, YELLOW_RGB
+from ui.label import LocalizedLabel
 
 
 @final
-class ConstructionTimeBonusPlaceholderLabel(Label):
+class ConstructionSpeedBonusValuePercentLabel(LocalizedLabel):
     def __init__(self, parent_viewport):
         super().__init__(
-            logger=getLogger('root.construction_time_bonus_placeholder_label'), parent_viewport=parent_viewport
+            logger=getLogger('root.construction_speed_bonus_value_percent_label'),
+            i18n_resources_key='bonus_value_string', parent_viewport=parent_viewport
         )
-        self.text = '----'
+        self.arguments = (1.0, )
         self.font_name = 'Perfo'
         self.bold = True
-        self.base_color = YELLOW_GREY_RGB
+        self.base_color = YELLOW_RGB
         self.anchor_x = 'center'
         self.batch = BATCHES['ui_batch']
         self.group = GROUPS['button_text']
@@ -37,4 +38,15 @@ class ConstructionTimeBonusPlaceholderLabel(Label):
         return None
 
     def get_formatted_text(self):
-        return self.text
+        if 1 < self.arguments[0] < 10:
+            return self.text.format(
+                '{0:0>2}'.format(round(self.arguments[0] * 100) % 100),
+                round(self.arguments[0] * 100) // 100
+            )
+        elif self.arguments[0] < 100:
+            return self.text.format(
+                round(self.arguments[0] * 10) % 10,
+                round(self.arguments[0] * 10) // 10
+            )
+
+        return f'x{int(self.arguments[0])}'

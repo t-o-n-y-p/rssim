@@ -11,8 +11,7 @@ from ui.button.set_money_target_button import SetMoneyTargetButton
 from ui.button.reset_money_target_button import ResetMoneyTargetButton
 from ui.label.constructor_locked_label import ConstructorLockedLabel
 from ui.label.constructor_level_placeholder_label import ConstructorLevelPlaceholderLabel
-from ui.label.under_construction_days_label import UnderConstructionDaysLabel
-from ui.label.under_construction_hours_minutes_label import UnderConstructionHoursMinutesLabel
+from ui.label.under_construction_description_label import UnderConstructionDescriptionLabel
 
 
 def cell_is_active(fn):
@@ -81,8 +80,7 @@ class ConstructorCell(ABC):
         self.previous_entity_required_label = None
         self.environment_required_label = None
         self.unlock_available_label = None
-        self.under_construction_days_label = UnderConstructionDaysLabel(parent_viewport=self.viewport)
-        self.under_construction_hours_minutes_label = UnderConstructionHoursMinutesLabel(parent_viewport=self.viewport)
+        self.under_construction_description_label = UnderConstructionDescriptionLabel(parent_viewport=self.viewport)
         self.enable_money_target_button, self.disable_money_target_button = create_two_state_button(
             SetMoneyTargetButton(on_click_action=on_set_money_target, parent_viewport=self.viewport),
             ResetMoneyTargetButton(on_click_action=on_reset_money_target, parent_viewport=self.viewport)
@@ -95,8 +93,7 @@ class ConstructorCell(ABC):
         self.opacity = 0
         self.on_window_resize_handlers = [
             self.on_window_resize, self.locked_label.on_window_resize, self.level_required_label.on_window_resize,
-            self.under_construction_days_label.on_window_resize,
-            self.under_construction_hours_minutes_label.on_window_resize
+            self.under_construction_description_label.on_window_resize
         ]
 
     @final
@@ -114,8 +111,7 @@ class ConstructorCell(ABC):
                 self.environment_required_label.delete()
 
             self.unlock_available_label.delete()
-            self.under_construction_days_label.delete()
-            self.under_construction_hours_minutes_label.delete()
+            self.under_construction_description_label.delete()
             for b in self.buttons:
                 b.on_deactivate()
 
@@ -211,8 +207,7 @@ class ConstructorCell(ABC):
             self.environment_required_label.on_update_current_locale(self.current_locale)
 
         self.unlock_available_label.on_update_current_locale(self.current_locale)
-        self.under_construction_days_label.on_update_current_locale(self.current_locale)
-        self.under_construction_hours_minutes_label.on_update_current_locale(self.current_locale)
+        self.under_construction_description_label.on_update_current_locale(self.current_locale)
 
     @final
     def on_activate_money_target(self):
@@ -247,5 +242,4 @@ class ConstructorCell(ABC):
             self.environment_required_label.on_update_opacity(self.opacity)
 
         self.unlock_available_label.on_update_opacity(self.opacity)
-        self.under_construction_days_label.on_update_opacity(self.opacity)
-        self.under_construction_hours_minutes_label.on_update_opacity(self.opacity)
+        self.under_construction_description_label.on_update_opacity(self.opacity)

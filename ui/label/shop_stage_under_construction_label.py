@@ -12,7 +12,7 @@ class ShopStageUnderConstructionLabel(LocalizedLabel):
             logger=getLogger('root.shop_stage_under_construction_label'),
             i18n_resources_key='under_construction_shop_stage_description_string', parent_viewport=parent_viewport
         )
-        self.arguments = (0, 0)
+        self.arguments = (0, )
         self.font_name = 'Arial'
         self.base_color = YELLOW_RGB
         self.anchor_x = 'center'

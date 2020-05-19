@@ -1,20 +1,18 @@
 from logging import getLogger
 from typing import final
 
-from i18n import i18n_number_category
 from ui import get_bottom_bar_height, GROUPS, BATCHES, YELLOW_RGB
 from ui.label import LocalizedLabel
 
 
 @final
-class UnderConstructionDaysLabel(LocalizedLabel):
+class UnderConstructionDescriptionLabel(LocalizedLabel):
     def __init__(self, parent_viewport):
         super().__init__(
-            logger=getLogger('root.under_construction_days_label'),
-            i18n_resources_key='under_construction_days_description_string',
-            parent_viewport=parent_viewport
+            logger=getLogger('root.under_construction_description_label'),
+            i18n_resources_key='under_construction_description_string', parent_viewport=parent_viewport
         )
-        self.arguments = (0,)
+        self.arguments = (0, )
         self.font_name = 'Arial'
         self.base_color = YELLOW_RGB
         self.anchor_x = 'left'
@@ -34,5 +32,4 @@ class UnderConstructionDaysLabel(LocalizedLabel):
         return None
 
     def get_formatted_text(self):
-        return self.text[i18n_number_category(self.arguments[0], self.current_locale)].format(*self.arguments)\
-            .replace(',', ' ')
+        return self.text.format(*self.arguments)

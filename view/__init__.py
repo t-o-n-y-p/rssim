@@ -398,10 +398,10 @@ class GameBaseView(AppBaseView, ABC):
         self.game_time, self.game_time_fraction, self.dt_multiplier = USER_DB_CURSOR.fetchone()
         USER_DB_CURSOR.execute(
             '''SELECT level, money, exp_bonus_multiplier, money_bonus_multiplier,  
-            construction_time_bonus_multiplier FROM game_progress'''
+            construction_speed_bonus_multiplier FROM game_progress'''
         )
         self.level, self.money, self.exp_bonus_multiplier, self.money_bonus_multiplier, \
-            self.construction_time_bonus_multiplier = USER_DB_CURSOR.fetchone()
+            self.construction_speed_bonus_multiplier = USER_DB_CURSOR.fetchone()
 
     def on_update_time(self, dt):
         self.game_time_fraction += dt * self.dt_multiplier
@@ -426,11 +426,11 @@ class GameBaseView(AppBaseView, ABC):
     def on_deactivate_money_bonus_code(self):
         self.money_bonus_multiplier = 1.0
 
-    def on_activate_construction_time_bonus_code(self, value):
-        self.construction_time_bonus_multiplier = value
+    def on_activate_construction_speed_bonus_code(self, value):
+        self.construction_speed_bonus_multiplier = value
 
-    def on_deactivate_construction_time_bonus_code(self):
-        self.construction_time_bonus_multiplier = 1.0
+    def on_deactivate_construction_speed_bonus_code(self):
+        self.construction_speed_bonus_multiplier = 1.0
 
     @final
     def on_dt_multiplier_update(self, dt_multiplier):

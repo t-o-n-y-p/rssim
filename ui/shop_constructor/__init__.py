@@ -2,8 +2,8 @@ from logging import getLogger
 from typing import final
 
 from database import PRICE, UNLOCK_CONDITION_FROM_PREVIOUS_STAGE, LEVEL_REQUIRED, UNLOCK_CONDITION_FROM_LEVEL, \
-    EXP_BONUS, STORAGE_CAPACITY, HOURLY_PROFIT, UNLOCK_AVAILABLE, MINUTES_IN_ONE_HOUR, SECONDS_IN_ONE_MINUTE, \
-    CONSTRUCTION_TIME, SECONDS_IN_ONE_HOUR, UNDER_CONSTRUCTION, USER_DB_CURSOR, LOCKED
+    EXP_BONUS, STORAGE_CAPACITY, HOURLY_PROFIT, UNLOCK_AVAILABLE, CONSTRUCTION_TIME, UNDER_CONSTRUCTION, \
+    USER_DB_CURSOR, LOCKED, MAX_CONSTRUCTION_TIME
 from ui import get_inner_area_rect, get_bottom_bar_height, window_size_has_changed, Viewport
 
 from ui.button.build_shop_stage_button import BuildShopStageButton
@@ -96,10 +96,7 @@ class ShopStageCell:
             self.level_placeholder_label.delete()
             self.previous_stage_placeholder_label.delete()
             self.under_construction_label.on_update_args(
-                (
-                    self.data[CONSTRUCTION_TIME] // SECONDS_IN_ONE_HOUR,
-                    (self.data[CONSTRUCTION_TIME] // SECONDS_IN_ONE_MINUTE) % MINUTES_IN_ONE_HOUR
-                )
+                (int(self.data[CONSTRUCTION_TIME] / self.data[MAX_CONSTRUCTION_TIME] * 100), )
             )
             self.under_construction_label.create()
             self.hourly_profit_description_label.delete()

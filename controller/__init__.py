@@ -348,10 +348,10 @@ class GameBaseController(AppBaseController, ABC):
             controller.on_activate_money_bonus_code(value)
 
     @final
-    def on_activate_construction_time_bonus_code(self, value):
-        self.model.on_activate_construction_time_bonus_code(value)
+    def on_activate_construction_speed_bonus_code(self, value):
+        self.model.on_activate_construction_speed_bonus_code(value)
         for controller in self.child_controllers:
-            controller.on_activate_construction_time_bonus_code(value)
+            controller.on_activate_construction_speed_bonus_code(value)
 
     @final
     def on_deactivate_exp_bonus_code(self):
@@ -366,10 +366,10 @@ class GameBaseController(AppBaseController, ABC):
             controller.on_deactivate_money_bonus_code()
 
     @final
-    def on_deactivate_construction_time_bonus_code(self):
-        self.model.on_deactivate_construction_time_bonus_code()
+    def on_deactivate_construction_speed_bonus_code(self):
+        self.model.on_deactivate_construction_speed_bonus_code()
         for controller in self.child_controllers:
-            controller.on_deactivate_construction_time_bonus_code()
+            controller.on_deactivate_construction_speed_bonus_code()
 
 
 class MapBaseController(GameBaseController, ABC):

@@ -3,7 +3,7 @@ from typing import final
 
 from notifications.exp_bonus_expired_notification import ExpBonusExpiredNotification
 from notifications.money_bonus_expired_notification import MoneyBonusExpiredNotification
-from notifications.construction_time_bonus_expired_notification import ConstructionTimeBonusExpiredNotification
+from notifications.construction_time_bonus_expired_notification import ConstructionSpeedBonusExpiredNotification
 from view import bonus_expired_notification_enabled, game_progress_notifications_available, GameBaseView, \
     view_is_active
 
@@ -30,5 +30,5 @@ class BonusCodeManagerView(GameBaseView):
 
     @game_progress_notifications_available
     @bonus_expired_notification_enabled
-    def on_send_construction_time_bonus_expired_notification(self):
-        self.game_progress_notifications.append(ConstructionTimeBonusExpiredNotification(self.current_locale))
+    def on_send_construction_speed_bonus_expired_notification(self):
+        self.game_progress_notifications.append(ConstructionSpeedBonusExpiredNotification(self.current_locale))
