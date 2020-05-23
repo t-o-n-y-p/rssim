@@ -2,26 +2,63 @@ from abc import ABC, abstractmethod
 from typing import final
 
 from pyglet.text import Label as PygletLabel
+from pyglet.window.key import MOD_CTRL, BACKSPACE, V
+from win32clipboard import CloseClipboard, GetClipboardData, OpenClipboard
 
+from database import USER_DB_CURSOR
+from i18n import I18N_RESOURCES
 from ui import UIObject, WHITE_RGB, is_not_active, window_size_has_changed, GREY_RGB
 
 
-def arguments_have_changed(fn):
-    def _update_label_if_args_have_changed(*args, **kwargs):
-        if len(kwargs) > 0:
-            if args[0].arguments != kwargs['new_args']:
-                fn(*args, **kwargs)
-        else:
-            if args[0].arguments != args[1]:
-                fn(*args, **kwargs)
+def localizable_with_resource(i18n_key):
+    def _localizable_with_resource(f):
+        def _make_an_instance_localizable(*args, **kwargs):
+            def on_update_current_locale(new_locale):
+                args[0].current_locale = new_locale
+                if args[0].text_label:
+                    args[0].text_label.text = args[0].get_formatted_text()
 
-    return _update_label_if_args_have_changed
+            def get_formatted_text():
+                return I18N_RESOURCES[args[0].i18n_key][args[0].current_locale].format(*args[0].arguments)
+
+            f(*args, **kwargs)
+            USER_DB_CURSOR.execute('SELECT current_locale FROM i18n')
+            args[0].current_locale = USER_DB_CURSOR.fetchone()[0]
+            args[0].on_update_current_locale = on_update_current_locale
+            args[0].i18n_key = i18n_key
+            args[0].get_formatted_text = get_formatted_text
+
+        return _make_an_instance_localizable
+
+    return _localizable_with_resource
+
+
+def argument(name):
+    def _argument(f):
+        def _add_argument(*args, **kwargs):
+            def on_argument_update(value):
+                if value != args[0].arguments[args[0].__getattribute__(f'{name}_index')]:
+                    args[0].arguments[args[0].__getattribute__(f'{name}_index')] = value
+                    if args[0].text_label:
+                        args[0].text_label.text = args[0].get_formatted_text()
+
+            f(*args, **kwargs)
+            for a in [a for a in dir(args[0]) if a.endswith('_index')]:
+                args[0].__setattr__(a, args[0].__getattribute__(a) + 1)
+
+            args[0].__setattr__(f'{name}_index', 0)
+            args[0].__setattr__(f'on_{name}_update', on_argument_update)
+            args[0].arguments = [None] + args[0].arguments
+
+        return _add_argument
+
+    return _argument
 
 
 class LabelV2(UIObject, ABC):
     def __init__(self, logger, parent_viewport):
         super().__init__(logger, parent_viewport)
-        self.arguments = ()
+        self.arguments = []
         self.text_label = None
         self.font_name = 'Arial'
         self.bold = False
@@ -110,18 +147,11 @@ class LabelV2(UIObject, ABC):
         if self.text_label:
             self.text_label.color = (*self.base_color, self.opacity)
 
-    @final
-    @arguments_have_changed
-    def on_update_args(self, new_args):
-        self.arguments = new_args
-        if self.text_label:
-            self.text_label.text = self.get_formatted_text()
-
 
 class InteractiveLabelV2(UIObject, ABC):
     def __init__(self, logger, parent_viewport):
         super().__init__(logger, parent_viewport)
-        self.arguments = ()
+        self.arguments = []
         self.text_label = None
         self.placeholder_label = None
         self.font_name = 'Arial'
@@ -139,6 +169,8 @@ class InteractiveLabelV2(UIObject, ABC):
         self.batch = None
         self.group = None
         self.text_length_limit = 25
+        self.on_key_press_handlers = [self.on_key_press]
+        self.on_text_handlers = [self.on_text]
 
     @final
     def __len__(self):
@@ -217,8 +249,39 @@ class InteractiveLabelV2(UIObject, ABC):
             self.placeholder_label.end_update()
 
     @final
-    @arguments_have_changed
-    def on_update_args(self, new_args):
-        self.arguments = new_args
-        if self.text_label is not None:
-            self.text_label.text = self.get_formatted_text()
+    def on_text(self, text):
+        if not self.text_label:
+            self.placeholder_label.delete()
+            self.placeholder_label = None
+            self.text_label = PygletLabel(
+                text[:self.text_length_limit], font_name=self.font_name, bold=self.bold, font_size=self.font_size,
+                color=(*self.base_color, self.opacity), x=self.x, y=self.y, width=self.width,
+                anchor_x=self.anchor_x, anchor_y=self.anchor_y, align=self.align, multiline=self.multiline,
+                batch=self.batch, group=self.group
+            )
+        else:
+            self.text_label.text = (self.text_label.text + text)[:self.text_length_limit]
+
+    @final
+    def on_key_press(self, symbol, modifiers):
+        if symbol == BACKSPACE and self.text_label:
+            if len(self.text_label.text) > 0:
+                self.text_label.text = self.text_label.text[:-1]
+            else:
+                self.text_label.delete()
+                self.text_label = None
+                self.placeholder_label = PygletLabel(
+                    self.get_formatted_text(), font_name=self.font_name, bold=self.bold,
+                    font_size=self.font_size, color=(*self.placeholder_color, self.opacity), x=self.x, y=self.y,
+                    width=self.width, anchor_x=self.anchor_x, anchor_y=self.anchor_y, align=self.align,
+                    multiline=self.multiline, batch=self.batch, group=self.group
+                )
+
+        elif modifiers & MOD_CTRL and symbol == V:
+            OpenClipboard()
+            try:
+                self.on_text(GetClipboardData())
+            except TypeError:
+                pass
+
+            CloseClipboard()

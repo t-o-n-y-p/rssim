@@ -15,22 +15,22 @@ from ui.fade_animation_v2.fade_in_animation_v2 import FadeInAnimationV2
 from ui.fade_animation_v2.fade_out_animation_v2 import FadeOutAnimationV2
 
 
-def window_size_has_changed(fn):
-    def _update_sprites_if_window_size_has_changed(*args, **kwargs):
-        if args[1:] != args[0].screen_resolution:
-            fn(*args, **kwargs)
+def window_size_has_changed(f):
+    def _update_if_window_size_has_changed(*args, **kwargs):
+        if args[1:3] != args[0].screen_resolution:
+            f(*args, **kwargs)
 
-    return _update_sprites_if_window_size_has_changed
+    return _update_if_window_size_has_changed
 
 
-def localizable(fn):
+def localizable(f):
     def _make_an_instance_localizable(*args, **kwargs):
         def on_update_current_locale(new_locale):
             args[0].current_locale = new_locale
             for o in [o for o in args[0].ui_objects if hasattr(o, 'current_locale')]:
                 o.on_update_current_locale(new_locale)
 
-        fn(*args, **kwargs)
+        f(*args, **kwargs)
         USER_DB_CURSOR.execute('SELECT current_locale FROM i18n')
         args[0].current_locale = USER_DB_CURSOR.fetchone()[0]
         args[0].on_update_current_locale = on_update_current_locale
@@ -38,40 +38,18 @@ def localizable(fn):
     return _make_an_instance_localizable
 
 
-def localizable_with_resource(name):
-    def _localizable_with_resource(fn):
-        def _make_an_instance_localizable(*args, **kwargs):
-            def on_update_current_locale(new_locale):
-                args[0].current_locale = new_locale
-                if args[0].text_label:
-                    args[0].text_label.text = args[0].get_formatted_text()
-
-                for o in [o for o in args[0].ui_objects if hasattr(o, 'current_locale')]:
-                    o.on_update_current_locale(new_locale)
-
-            fn(*args, **kwargs)
-            USER_DB_CURSOR.execute('SELECT current_locale FROM i18n')
-            args[0].current_locale = USER_DB_CURSOR.fetchone()[0]
-            args[0].on_update_current_locale = on_update_current_locale
-            args[0].i18n_key = name
-
-        return _make_an_instance_localizable
-
-    return _localizable_with_resource
-
-
-def is_active(fn):
+def is_active(f):
     def _check_if_an_object_is_active(*args, **kwargs):
         if args[0].is_activated:
-            fn(*args, **kwargs)
+            f(*args, **kwargs)
 
     return _check_if_an_object_is_active
 
 
-def is_not_active(fn):
+def is_not_active(f):
     def _check_if_an_object_is_not_active(*args, **kwargs):
         if not args[0].is_activated:
-            fn(*args, **kwargs)
+            f(*args, **kwargs)
 
     return _check_if_an_object_is_not_active
 
@@ -334,7 +312,19 @@ class UIObject(ABC):
         self.screen_resolution = (0, 0)
         self.is_activated = False
         self.opacity = 0
-        self.on_window_resize_handlers = [self.on_window_resize, ]
+        self.on_mouse_press_handlers = []
+        self.on_mouse_release_handlers = []
+        self.on_mouse_motion_handlers = []
+        self.on_mouse_drag_handlers = []
+        self.on_mouse_leave_handlers = []
+        self.on_mouse_scroll_handlers = []
+        self.on_key_press_handlers = []
+        self.on_text_handlers = []
+        self.on_window_resize_handlers = [self.on_window_resize]
+        self.on_window_activate_handlers = []
+        self.on_window_show_handlers = []
+        self.on_window_deactivate_handlers = []
+        self.on_window_hide_handlers = []
         self.fade_in_animation = FadeInAnimationV2(self, self.logger.getChild('fade_in_animation'))
         self.fade_out_animation = FadeOutAnimationV2(self, self.logger.getChild('fade_out_animation'))
         self.ui_objects = []
