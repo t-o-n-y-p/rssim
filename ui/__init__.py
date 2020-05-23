@@ -1,3 +1,4 @@
+from abc import ABC
 from ctypes import windll
 from typing import Final, final
 
@@ -10,6 +11,8 @@ from camera.ui_camera import UICamera
 from database import CONFIG_DB_CURSOR, USER_DB_CURSOR, SECONDS_IN_ONE_HOUR
 from midi_player import MIDIPlayer
 from speaker import Speaker
+from ui.fade_animation_v2.fade_in_animation_v2 import FadeInAnimationV2
+from ui.fade_animation_v2.fade_out_animation_v2 import FadeOutAnimationV2
 
 
 def window_size_has_changed(fn):
@@ -18,6 +21,59 @@ def window_size_has_changed(fn):
             fn(*args, **kwargs)
 
     return _update_sprites_if_window_size_has_changed
+
+
+def localizable(fn):
+    def _make_an_instance_localizable(*args, **kwargs):
+        def on_update_current_locale(new_locale):
+            args[0].current_locale = new_locale
+            for o in [o for o in args[0].ui_objects if hasattr(o, 'current_locale')]:
+                o.on_update_current_locale(new_locale)
+
+        fn(*args, **kwargs)
+        USER_DB_CURSOR.execute('SELECT current_locale FROM i18n')
+        args[0].current_locale = USER_DB_CURSOR.fetchone()[0]
+        args[0].on_update_current_locale = on_update_current_locale
+
+    return _make_an_instance_localizable
+
+
+def localizable_with_resource(name):
+    def _localizable_with_resource(fn):
+        def _make_an_instance_localizable(*args, **kwargs):
+            def on_update_current_locale(new_locale):
+                args[0].current_locale = new_locale
+                if args[0].text_label:
+                    args[0].text_label.text = args[0].get_formatted_text()
+
+                for o in [o for o in args[0].ui_objects if hasattr(o, 'current_locale')]:
+                    o.on_update_current_locale(new_locale)
+
+            fn(*args, **kwargs)
+            USER_DB_CURSOR.execute('SELECT current_locale FROM i18n')
+            args[0].current_locale = USER_DB_CURSOR.fetchone()[0]
+            args[0].on_update_current_locale = on_update_current_locale
+            args[0].i18n_key = name
+
+        return _make_an_instance_localizable
+
+    return _localizable_with_resource
+
+
+def is_active(fn):
+    def _check_if_an_object_is_active(*args, **kwargs):
+        if args[0].is_activated:
+            fn(*args, **kwargs)
+
+    return _check_if_an_object_is_active
+
+
+def is_not_active(fn):
+    def _check_if_an_object_is_not_active(*args, **kwargs):
+        if not args[0].is_activated:
+            fn(*args, **kwargs)
+
+    return _check_if_an_object_is_not_active
 
 
 def _create_window():
@@ -268,3 +324,46 @@ class Viewport:
         self.y1 = 0
         self.x2 = 0
         self.y2 = 0
+
+
+class UIObject(ABC):
+    def __init__(self, logger, parent_viewport=None):
+        self.logger = logger
+        self.parent_viewport = parent_viewport
+        self.viewport = Viewport()
+        self.screen_resolution = (0, 0)
+        self.is_activated = False
+        self.opacity = 0
+        self.on_window_resize_handlers = [self.on_window_resize, ]
+        self.fade_in_animation = FadeInAnimationV2(self, self.logger.getChild('fade_in_animation'))
+        self.fade_out_animation = FadeOutAnimationV2(self, self.logger.getChild('fade_out_animation'))
+        self.ui_objects = []
+
+    @is_not_active
+    def on_activate(self):
+        self.is_activated = True
+
+    @is_active
+    def on_deactivate(self):
+        self.is_activated = False
+
+    def on_update_opacity(self, new_opacity):
+        self.opacity = new_opacity
+
+    @window_size_has_changed
+    def on_window_resize(self, width, height):
+        self.screen_resolution = width, height
+
+    @final
+    def on_fade_animation_update(self, dt):
+        self.fade_in_animation.on_update(dt)
+        self.fade_out_animation.on_update(dt)
+        for o in self.ui_objects:
+            o.on_fade_animation_update(dt)
+
+    @final
+    def on_update_fade_animation_state(self, new_state):
+        self.fade_in_animation.on_update_fade_animation_state(new_state)
+        self.fade_out_animation.on_update_fade_animation_state(new_state)
+        for o in self.ui_objects:
+            o.on_update_fade_animation_state(new_state)
