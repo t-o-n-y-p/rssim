@@ -6,10 +6,10 @@ from ui.label_v2 import LabelV2, localizable_with_resource
 
 
 @final
-class ActivationsTitleLabelV2(LabelV2):                                                                         # noqa
-    @localizable_with_resource('activations_title_label_string')
+class BonusTitleLabelV2(LabelV2):                                                                               # noqa
+    @localizable_with_resource('bonus_title_label_string')
     def __init__(self, parent_viewport):
-        super().__init__(logger=getLogger('root.activations_title_label'), parent_viewport=parent_viewport)
+        super().__init__(logger=getLogger('root.bonus_title_label'), parent_viewport=parent_viewport)
         self.font_name = 'Arial'
         self.base_color = WHITE_RGB
         self.anchor_x = 'left'
@@ -20,7 +20,7 @@ class ActivationsTitleLabelV2(LabelV2):                                         
         return self.parent_viewport.x1
 
     def get_y(self):
-        return self.parent_viewport.y1 + (self.parent_viewport.y2 - self.parent_viewport.y1) // 3
+        return self.parent_viewport.y1 + 2 * (self.parent_viewport.y2 - self.parent_viewport.y1) // 3
 
     def get_font_size(self):
         return get_bottom_bar_height(self.screen_resolution) // 5

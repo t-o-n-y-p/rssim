@@ -6,11 +6,12 @@ from ui.label_v2 import LabelV2, localizable_with_resource
 
 
 @final
-class AnnouncementsEnabledCheckboxDescriptionLabelV2(LabelV2):                                                  # noqa
-    @localizable_with_resource('announcements_enabled_description_string')
+class BonusExpiredNotificationCheckboxDescriptionLabelV2(LabelV2):                                              # noqa
+    @localizable_with_resource('bonus_expired_notification_description_string')
     def __init__(self, parent_viewport):
         super().__init__(
-            logger=getLogger('root.announcements_enabled_checkbox_description_label'), parent_viewport=parent_viewport
+            logger=getLogger('root.bonus_expired_notification_checkbox_description_label'),
+            parent_viewport=parent_viewport
         )
         self.font_name = 'Arial'
         self.base_color = WHITE_RGB
