@@ -25,6 +25,3 @@ class BonusCodeInteractiveLabelV2(InteractiveLabelV2):                          
 
     def get_font_size(self):
         return get_top_bar_height(self.screen_resolution)
-
-    def get_width(self):
-        return None

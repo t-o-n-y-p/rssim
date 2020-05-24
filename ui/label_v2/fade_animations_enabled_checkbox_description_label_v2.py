@@ -1,15 +1,18 @@
 from logging import getLogger
 from typing import final
 
-from ui import WHITE_RGB, GROUPS, BATCHES, get_bottom_bar_height, get_top_bar_height
+from ui import WHITE_RGB, BATCHES, GROUPS, get_bottom_bar_height, get_top_bar_height
 from ui.label_v2 import LabelV2, localizable_with_resource
 
 
 @final
-class Clock24HCheckboxDescriptionLabelV2(LabelV2):                                                              # noqa
-    @localizable_with_resource('clock_24h_enabled_description_string')
+class FadeAnimationsEnabledCheckboxDescriptionLabelV2(LabelV2):                                                 # noqa
+    @localizable_with_resource('fade_animations_enabled_description_string')
     def __init__(self, parent_viewport):
-        super().__init__(logger=getLogger('root.clock_24h_checkbox_description_label'), parent_viewport=parent_viewport)
+        super().__init__(
+            logger=getLogger('root.fade_animations_enabled_checkbox_description_label'),
+            parent_viewport=parent_viewport
+        )
         self.font_name = 'Arial'
         self.base_color = WHITE_RGB
         self.anchor_x = 'left'

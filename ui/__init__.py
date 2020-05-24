@@ -30,10 +30,18 @@ def localizable(f):
             for o in [o for o in args[0].ui_objects if hasattr(o, 'current_locale')]:
                 o.on_update_current_locale(new_locale)
 
+        def on_update_current_locale_label(new_locale):
+            args[0].current_locale = new_locale
+            if args[0].text_label:
+                args[0].text_label.text = args[0].get_formatted_text()
+
         f(*args, **kwargs)
         USER_DB_CURSOR.execute('SELECT current_locale FROM i18n')
         args[0].current_locale = USER_DB_CURSOR.fetchone()[0]
-        args[0].on_update_current_locale = on_update_current_locale
+        if hasattr(args[0], 'text_label'):
+            args[0].on_update_current_locale = on_update_current_locale_label
+        else:
+            args[0].on_update_current_locale = on_update_current_locale
 
     return _make_an_instance_localizable
 

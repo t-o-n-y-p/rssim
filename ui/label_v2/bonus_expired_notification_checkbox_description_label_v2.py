@@ -27,6 +27,3 @@ class BonusExpiredNotificationCheckboxDescriptionLabelV2(LabelV2):              
 
     def get_font_size(self):
         return get_bottom_bar_height(self.screen_resolution) // 5
-
-    def get_width(self):
-        return None

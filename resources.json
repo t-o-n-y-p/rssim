@@ -24,16 +24,16 @@
 		"ru": "Окружение: Этап {0}"
 	},
 	"unlock_available_track_description_string": {
-		"en": "Available for {0:,} ¤",
-		"ru": "Доступен за {0:,} ¤"
+		"en": "Available for {0} ¤",
+		"ru": "Доступен за {0} ¤"
 	},
 	"unlock_available_environment_description_string": {
-		"en": "Available for {0:,} ¤",
-		"ru": "Доступен за {0:,} ¤"
+		"en": "Available for {0} ¤",
+		"ru": "Доступен за {0} ¤"
 	},
 	"unlock_available_map_switcher_description_string": {
-		"en": "Available for {0:,} ¤",
-		"ru": "Доступно за {0:,} ¤"
+		"en": "Available for {0} ¤",
+		"ru": "Доступно за {0} ¤"
 	},
 	"under_construction_description_string": {
 		"en": "Under construction. {0}%...",
@@ -349,10 +349,6 @@
 		"en": "Capacity:",
 		"ru": "Емкость:"
 	},
-	"exp_bonus_value_string": {
-		"en": "{1:.0f}.{0:.0%}",
-		"ru": "{1:.0f},{0:.0%}"
-	},
 	"bonus_code_placeholder_string": {
 		"en": "Enter or paste your bonus code",
 		"ru": "Введите или вставьте ваш бонусный код"
@@ -380,10 +376,6 @@
 	"map_switcher_title_string": {
 		"en": "Select the map",
 		"ru": "Выберите карту"
-	},
-	"time_speed_value_string": {
-		"en": "x{1}.{0}",
-		"ru": "x{1},{0}"
 	},
 	"blank_announcement_sample_string": {
 		"en": "<voice required=\"Language=409\"><silence msec=\"10\"/></voice>",
@@ -438,7 +430,7 @@
 		"en": "error playing announcements has occurred",
 		"ru": "произошла ошибка проигрывания объявлений"
 	},
-	"bonus_value_string": {
+	"multiplier_value_string": {
 		"en": "x{1}.{0}",
 		"ru": "x{1},{0}"
 	}

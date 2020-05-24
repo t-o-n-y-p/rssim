@@ -1,13 +1,14 @@
 from abc import ABC, abstractmethod
+from math import log10
 from typing import final
 
 from pyglet.text import Label as PygletLabel
 from pyglet.window.key import MOD_CTRL, BACKSPACE, V
 from win32clipboard import CloseClipboard, GetClipboardData, OpenClipboard
 
-from database import USER_DB_CURSOR
+from database import USER_DB_CURSOR, MINUTES_IN_ONE_HOUR, SECONDS_IN_ONE_HOUR, HOURS_IN_ONE_DAY, SECONDS_IN_ONE_MINUTE
 from i18n import I18N_RESOURCES
-from ui import UIObject, WHITE_RGB, is_not_active, window_size_has_changed, GREY_RGB
+from ui import UIObject, WHITE_RGB, is_not_active, window_size_has_changed, GREY_RGB, localizable
 
 
 def localizable_with_resource(i18n_key):
@@ -21,12 +22,22 @@ def localizable_with_resource(i18n_key):
             def get_formatted_text():
                 return I18N_RESOURCES[args[0].i18n_key][args[0].current_locale].format(*args[0].arguments)
 
+            def get_complicated_formatted_text():
+                base_resource = I18N_RESOURCES[args[0].i18n_key][args[0].current_locale]
+                for k in args[0].resource_list_keys:
+                    base_resource = base_resource[k]
+
+                return base_resource.format(*args[0].arguments)
+
             f(*args, **kwargs)
             USER_DB_CURSOR.execute('SELECT current_locale FROM i18n')
             args[0].current_locale = USER_DB_CURSOR.fetchone()[0]
             args[0].on_update_current_locale = on_update_current_locale
             args[0].i18n_key = i18n_key
-            args[0].get_formatted_text = get_formatted_text
+            if len(args[0].resource_list_keys) > 0:
+                args[0].get_formatted_text = get_complicated_formatted_text
+            else:
+                args[0].get_formatted_text = get_formatted_text
 
         return _make_an_instance_localizable
 
@@ -42,13 +53,54 @@ def argument(name):
                     if args[0].text_label:
                         args[0].text_label.text = args[0].get_formatted_text()
 
+            def on_argument_update_24h_time(value):
+                if (value // SECONDS_IN_ONE_MINUTE) % MINUTES_IN_ONE_HOUR \
+                        != args[0].arguments[args[0].__getattribute__(f'{name}_index') + 1]:
+                    args[0].arguments[args[0].__getattribute__(f'{name}_index')] \
+                        = (value // SECONDS_IN_ONE_HOUR + 12) % HOURS_IN_ONE_DAY
+                    args[0].arguments[args[0].__getattribute__(f'{name}_index') + 1] \
+                        = (value // SECONDS_IN_ONE_MINUTE) % MINUTES_IN_ONE_HOUR
+                    if args[0].text_label:
+                        args[0].text_label.text = args[0].get_formatted_text()
+
+            def on_argument_update_12h_time(value):
+                if (value // SECONDS_IN_ONE_MINUTE) % MINUTES_IN_ONE_HOUR \
+                        != args[0].arguments[args[0].__getattribute__(f'{name}_index') + 1]:
+                    args[0].arguments[args[0].__getattribute__(f'{name}_index')] \
+                        = (value // SECONDS_IN_ONE_HOUR + 11) % 12 + 1
+                    args[0].arguments[args[0].__getattribute__(f'{name}_index') + 1] \
+                        = (value // SECONDS_IN_ONE_MINUTE) % MINUTES_IN_ONE_HOUR
+                    args[0].arguments[args[0].__getattribute__(f'{name}_index') + 2] \
+                        = I18N_RESOURCES['am_pm_string'][args[0].current_locale][
+                            ((value // SECONDS_IN_ONE_HOUR) // 12 + 1) % 2
+                        ]
+                    if args[0].text_label:
+                        args[0].text_label.text = args[0].get_formatted_text()
+
+            def on_argument_update_price(value):
+                if '{0:,}'.format(value).replace(',', ' ') \
+                        != args[0].arguments[args[0].__getattribute__(f'{name}_index')]:
+                    args[0].arguments[args[0].__getattribute__(f'{name}_index')] \
+                        = '{0:,}'.format(value).replace(',', ' ')
+                    if args[0].text_label:
+                        args[0].text_label.text = args[0].get_formatted_text()
+
             f(*args, **kwargs)
+            shift_value = 3 if name.find('12h') >= 0 else 2 if name.find('24h') >= 0 else 1
             for a in [a for a in dir(args[0]) if a.endswith('_index')]:
-                args[0].__setattr__(a, args[0].__getattribute__(a) + 1)
+                args[0].__setattr__(a, args[0].__getattribute__(a) + shift_value)
 
             args[0].__setattr__(f'{name}_index', 0)
-            args[0].__setattr__(f'on_{name}_update', on_argument_update)
-            args[0].arguments = [None] + args[0].arguments
+            if name.find('price') >= 0:
+                args[0].__setattr__(f'on_{name}_update', on_argument_update_price)
+            elif name.find('12h') >= 0:
+                args[0].__setattr__(f'on_{name}_update', on_argument_update_12h_time)
+            elif name.find('24h') >= 0:
+                args[0].__setattr__(f'on_{name}_update', on_argument_update_24h_time)
+            else:
+                args[0].__setattr__(f'on_{name}_update', on_argument_update)
+
+            args[0].arguments = [None for i in range(shift_value)] + args[0].arguments
 
         return _add_argument
 
@@ -56,9 +108,10 @@ def argument(name):
 
 
 class LabelV2(UIObject, ABC):
-    def __init__(self, logger, parent_viewport):
+    def __init__(self, logger, parent_viewport, *resource_list_keys):
         super().__init__(logger, parent_viewport)
         self.arguments = []
+        self.resource_list_keys = resource_list_keys
         self.text_label = None
         self.font_name = 'Arial'
         self.bold = False
@@ -86,9 +139,8 @@ class LabelV2(UIObject, ABC):
     def get_font_size(self):
         pass
 
-    @abstractmethod
     def get_width(self):
-        pass
+        return None
 
     @abstractmethod
     def get_formatted_text(self):
@@ -188,9 +240,8 @@ class InteractiveLabelV2(UIObject, ABC):
     def get_font_size(self):
         pass
 
-    @abstractmethod
     def get_width(self):
-        pass
+        return None
 
     @abstractmethod
     def get_formatted_text(self):
@@ -285,3 +336,31 @@ class InteractiveLabelV2(UIObject, ABC):
                 pass
 
             CloseClipboard()
+
+
+class MultiplierLabelV2(LabelV2, ABC):
+    @localizable
+    def __init__(self, logger, parent_viewport, precise_index):
+        super().__init__(logger, parent_viewport)
+        self.precise_index = precise_index
+        self.arguments = [0, 1]
+
+    @final
+    def on_multiplier_update(self, new_value):
+        if new_value >= 10 ** self.precise_index:
+            self.arguments = [None, int(new_value)]
+        else:
+            module = 10 ** (self.precise_index - int(log10(new_value)))
+            fractional_part_format = f'{{0:0>{self.precise_index - int(log10(new_value))}}}'
+            self.arguments = [
+                fractional_part_format.format(round(new_value * module) % module),
+                round(new_value * module) // module
+            ]
+
+        if self.text_label:
+            self.text_label.text = self.get_formatted_text()
+
+    @final
+    def get_formatted_text(self):
+        return f'x{int(self.arguments[1])}' if self.arguments[0] is None \
+            else I18N_RESOURCES['multiplier_value_string'][self.current_locale].format(*self.arguments)         # noqa
