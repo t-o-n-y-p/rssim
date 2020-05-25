@@ -340,18 +340,18 @@ class InteractiveLabelV2(UIObject, ABC):
 
 class MultiplierLabelV2(LabelV2, ABC):
     @localizable
-    def __init__(self, logger, parent_viewport, precise_index):
+    def __init__(self, logger, parent_viewport, max_precision):
         super().__init__(logger, parent_viewport)
-        self.precise_index = precise_index
+        self.max_precision = max_precision
         self.arguments = [0, 1]
 
     @final
     def on_multiplier_update(self, new_value):
-        if new_value >= 10 ** self.precise_index:
+        if new_value >= 10 ** self.max_precision:
             self.arguments = [None, int(new_value)]
         else:
-            module = 10 ** (self.precise_index - int(log10(new_value)))
-            fractional_part_format = f'{{0:0>{self.precise_index - int(log10(new_value))}}}'
+            module = 10 ** (self.max_precision - int(log10(new_value)))
+            fractional_part_format = f'{{0:0>{self.max_precision - int(log10(new_value))}}}'
             self.arguments = [
                 fractional_part_format.format(round(new_value * module) % module),
                 round(new_value * module) // module

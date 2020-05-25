@@ -10,7 +10,7 @@ class ConstructionSpeedBonusMultiplierLabelV2(MultiplierLabelV2):
     def __init__(self, parent_viewport):
         super().__init__(
             logger=getLogger('root.construction_speed_bonus_value_percent_label'), parent_viewport=parent_viewport,
-            precise_index=2
+            max_precision=2
         )
         self.font_name = 'Perfo'
         self.bold = True
