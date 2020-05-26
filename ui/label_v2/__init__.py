@@ -85,18 +85,34 @@ def argument(name):
                     if args[0].text_label:
                         args[0].text_label.text = args[0].get_formatted_text()
 
+            def on_argument_update_screen_resolution(value):
+                if list(value) != args[0].arguments[
+                            args[0].__getattribute__(f'{name}_index')
+                            :args[0].__getattribute__(f'{name}_index') + 2
+                        ]:
+                    args[0].arguments[
+                        args[0].__getattribute__(f'{name}_index')
+                        :args[0].__getattribute__(f'{name}_index') + 2
+                    ] = list(value)
+                    if args[0].text_label:
+                        args[0].text_label.text = args[0].get_formatted_text()
+
             f(*args, **kwargs)
-            shift_value = 3 if name.find('12h') >= 0 else 2 if name.find('24h') >= 0 else 1
+            shift_value = 3 if name.find('12h') >= 0 \
+                else 2 if name.find('24h') >= 0 or name.find('resolution') >= 0 \
+                else 1
             for a in [a for a in dir(args[0]) if a.endswith('_index')]:
                 args[0].__setattr__(a, args[0].__getattribute__(a) + shift_value)
 
             args[0].__setattr__(f'{name}_index', 0)
-            if name.find('price') >= 0:
+            if name.find('price') >= 0 or name.find('storage') >= 0:
                 args[0].__setattr__(f'on_{name}_update', on_argument_update_price)
             elif name.find('12h') >= 0:
                 args[0].__setattr__(f'on_{name}_update', on_argument_update_12h_time)
             elif name.find('24h') >= 0:
                 args[0].__setattr__(f'on_{name}_update', on_argument_update_24h_time)
+            elif name.find('resolution') >= 0:
+                args[0].__setattr__(f'on_{name}_update', on_argument_update_screen_resolution)
             else:
                 args[0].__setattr__(f'on_{name}_update', on_argument_update)
 
