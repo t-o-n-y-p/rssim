@@ -1,12 +1,13 @@
 from logging import getLogger
 from typing import final
 
-from ui import SCHEDULE_ROWS, get_inner_area_rect, get_bottom_bar_height, GROUPS, BATCHES, ORANGE_RGB
-from ui.label_v2 import LabelV2, localizable_with_resource
+from ui import SCHEDULE_ROWS, get_inner_area_rect, get_bottom_bar_height, GROUPS, BATCHES, ORANGE_RGB, \
+    localizable_with_resource
+from ui.label_v2 import LabelV2
 
 
 @final
-class ScheduleRightCaptionLabelV2(LabelV2):
+class ScheduleRightCaptionLabelV2(LabelV2):                                                                     # noqa
     @localizable_with_resource('schedule_caption_string')
     def __init__(self, parent_viewport):
         super().__init__(logger=getLogger('root.schedule_right_caption_label'), parent_viewport=parent_viewport)

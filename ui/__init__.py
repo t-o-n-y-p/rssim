@@ -9,6 +9,7 @@ from pyglet.graphics import Batch, OrderedGroup
 from camera.map_camera import MapCamera
 from camera.ui_camera import UICamera
 from database import CONFIG_DB_CURSOR, USER_DB_CURSOR, SECONDS_IN_ONE_HOUR
+from i18n import I18N_RESOURCES
 from midi_player import MIDIPlayer
 from speaker import Speaker
 from ui.fade_animation_v2.fade_in_animation_v2 import FadeInAnimationV2
@@ -44,6 +45,39 @@ def localizable(f):
             args[0].on_update_current_locale = on_update_current_locale
 
     return _make_an_instance_localizable
+
+
+def localizable_with_resource(i18n_key):
+    def _localizable_with_resource(f):
+        def _make_an_instance_localizable(*args, **kwargs):
+            def on_update_current_locale(new_locale):
+                args[0].current_locale = new_locale
+                if args[0].text_label:
+                    args[0].text_label.text = args[0].get_formatted_text()
+
+            def get_formatted_text():
+                return I18N_RESOURCES[args[0].i18n_key][args[0].current_locale].format(*args[0].arguments)
+
+            def get_complicated_formatted_text():
+                base_resource = I18N_RESOURCES[args[0].i18n_key][args[0].current_locale]
+                for k in args[0].resource_list_keys:
+                    base_resource = base_resource[k]
+
+                return base_resource.format(*args[0].arguments)
+
+            f(*args, **kwargs)
+            USER_DB_CURSOR.execute('SELECT current_locale FROM i18n')
+            args[0].current_locale = USER_DB_CURSOR.fetchone()[0]
+            args[0].on_update_current_locale = on_update_current_locale
+            args[0].i18n_key = i18n_key
+            if len(args[0].resource_list_keys) > 0:
+                args[0].get_formatted_text = get_complicated_formatted_text
+            else:
+                args[0].get_formatted_text = get_formatted_text
+
+        return _make_an_instance_localizable
+
+    return _localizable_with_resource
 
 
 def is_active(f):
@@ -130,6 +164,10 @@ GROUPS: Final = {'environment': OrderedGroup(0),
 # mouse cursor shapes
 HAND_CURSOR: Final = WINDOW.get_system_mouse_cursor(WINDOW.CURSOR_HAND)
 DEFAULT_CURSOR: Final = WINDOW.get_system_mouse_cursor(WINDOW.CURSOR_DEFAULT)
+# button states
+HOVER: Final = 'hover'
+PRESSED: Final = 'pressed'
+NORMAL: Final = 'normal'
 
 _car_collections_implemented = [20, 10]
 MAXIMUM_CAR_COLLECTIONS: Final = [20, 10]

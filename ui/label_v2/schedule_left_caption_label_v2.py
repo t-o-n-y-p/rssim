@@ -1,8 +1,9 @@
 from logging import getLogger
 from typing import final
 
-from ui import SCHEDULE_ROWS, get_inner_area_rect, get_bottom_bar_height, GROUPS, BATCHES, ORANGE_RGB
-from ui.label_v2 import LabelV2, localizable_with_resource
+from ui import SCHEDULE_ROWS, get_inner_area_rect, get_bottom_bar_height, GROUPS, BATCHES, ORANGE_RGB, \
+    localizable_with_resource
+from ui.label_v2 import LabelV2
 
 
 @final

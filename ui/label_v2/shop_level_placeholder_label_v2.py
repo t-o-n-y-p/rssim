@@ -1,8 +1,8 @@
 from logging import getLogger
 from typing import final
 
-from ui import get_bottom_bar_height, get_top_bar_height, GROUPS, BATCHES, GREY_RGB
-from ui.label_v2 import LabelV2, localizable_with_resource, argument
+from ui import get_bottom_bar_height, get_top_bar_height, GROUPS, BATCHES, GREY_RGB, localizable_with_resource
+from ui.label_v2 import LabelV2, argument
 
 
 @final

@@ -4,26 +4,26 @@ from typing import final, Final
 from database import USER_DB_CURSOR
 
 
-def fade_animation_is_active(fn):
+def fade_animation_is_active(f):
     def _handle_if_fade_animation_is_active(*args, **kwargs):
         if args[0].is_activated:
-            fn(*args, **kwargs)
+            f(*args, **kwargs)
 
     return _handle_if_fade_animation_is_active
 
 
-def fade_animation_is_not_active(fn):
+def fade_animation_is_not_active(f):
     def _handle_if_fade_animation_is_not_active(*args, **kwargs):
         if not args[0].is_activated:
-            fn(*args, **kwargs)
+            f(*args, **kwargs)
 
     return _handle_if_fade_animation_is_not_active
 
 
-def fade_animation_needed(fn):
+def fade_animation_needed(f):
     def _handle_if_object_view_is_visible(*args, **kwargs):
         if args[0].animation_object.opacity != args[0].end_opacity:
-            fn(*args, **kwargs)
+            f(*args, **kwargs)
 
     return _handle_if_object_view_is_visible
 

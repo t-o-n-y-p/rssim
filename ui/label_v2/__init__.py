@@ -6,42 +6,9 @@ from pyglet.text import Label as PygletLabel
 from pyglet.window.key import MOD_CTRL, BACKSPACE, V
 from win32clipboard import CloseClipboard, GetClipboardData, OpenClipboard
 
-from database import USER_DB_CURSOR, MINUTES_IN_ONE_HOUR, SECONDS_IN_ONE_HOUR, HOURS_IN_ONE_DAY, SECONDS_IN_ONE_MINUTE
+from database import MINUTES_IN_ONE_HOUR, SECONDS_IN_ONE_HOUR, HOURS_IN_ONE_DAY, SECONDS_IN_ONE_MINUTE
 from i18n import I18N_RESOURCES
-from ui import UIObject, WHITE_RGB, is_not_active, window_size_has_changed, GREY_RGB, localizable
-
-
-def localizable_with_resource(i18n_key):
-    def _localizable_with_resource(f):
-        def _make_an_instance_localizable(*args, **kwargs):
-            def on_update_current_locale(new_locale):
-                args[0].current_locale = new_locale
-                if args[0].text_label:
-                    args[0].text_label.text = args[0].get_formatted_text()
-
-            def get_formatted_text():
-                return I18N_RESOURCES[args[0].i18n_key][args[0].current_locale].format(*args[0].arguments)
-
-            def get_complicated_formatted_text():
-                base_resource = I18N_RESOURCES[args[0].i18n_key][args[0].current_locale]
-                for k in args[0].resource_list_keys:
-                    base_resource = base_resource[k]
-
-                return base_resource.format(*args[0].arguments)
-
-            f(*args, **kwargs)
-            USER_DB_CURSOR.execute('SELECT current_locale FROM i18n')
-            args[0].current_locale = USER_DB_CURSOR.fetchone()[0]
-            args[0].on_update_current_locale = on_update_current_locale
-            args[0].i18n_key = i18n_key
-            if len(args[0].resource_list_keys) > 0:
-                args[0].get_formatted_text = get_complicated_formatted_text
-            else:
-                args[0].get_formatted_text = get_formatted_text
-
-        return _make_an_instance_localizable
-
-    return _localizable_with_resource
+from ui import UIObject, WHITE_RGB, is_not_active, window_size_has_changed, GREY_RGB, localizable, is_active
 
 
 def argument(name):
@@ -131,11 +98,7 @@ class LabelV2(UIObject, ABC):
         self.text_label = None
         self.font_name = 'Arial'
         self.bold = False
-        self.font_size = 20
         self.base_color = WHITE_RGB
-        self.x = 0
-        self.y = 0
-        self.width = None
         self.anchor_x = 'center'
         self.anchor_y = 'center'
         self.align = 'left'
@@ -166,12 +129,13 @@ class LabelV2(UIObject, ABC):
     @is_not_active
     def on_activate(self):
         super().on_activate()
-        self.text_label = PygletLabel(
-            self.get_formatted_text(), font_name=self.font_name, bold=self.bold, font_size=self.font_size,
-            color=(*self.base_color, self.opacity), x=self.x, y=self.y, width=self.width,
-            anchor_x=self.anchor_x, anchor_y=self.anchor_y, align=self.align, multiline=self.multiline,
-            batch=self.batch, group=self.group
-        )
+        if not self.text_label:
+            self.text_label = PygletLabel(
+                self.get_formatted_text(), font_name=self.font_name, bold=self.bold, font_size=self.get_font_size(),
+                color=(*self.base_color, self.opacity), x=self.get_x(), y=self.get_y(), width=self.get_width(),
+                anchor_x=self.anchor_x, anchor_y=self.anchor_y, align=self.align, multiline=self.multiline,
+                batch=self.batch, group=self.group
+            )
 
     @final
     def on_update_opacity(self, new_opacity):
@@ -187,33 +151,21 @@ class LabelV2(UIObject, ABC):
     @window_size_has_changed
     def on_window_resize(self, width, height):
         super().on_window_resize(width, height)
-        self.x = self.get_x()
-        self.y = self.get_y()
-        self.font_size = self.get_font_size()
-        self.width = self.get_width()
         if self.text_label:
             self.text_label.begin_update()
-            self.text_label.x = self.x
-            self.text_label.y = self.y
-            self.text_label.font_size = self.font_size
-            self.text_label.width = self.width
+            self.text_label.x = self.get_x()
+            self.text_label.y = self.get_y()
+            self.text_label.font_size = self.get_font_size()
+            self.text_label.width = self.get_width()
             self.text_label.end_update()
 
     @final
+    @is_active
     def on_position_changed(self):
-        self.x = self.get_x()
-        self.y = self.get_y()
-        if self.text_label:
-            self.text_label.begin_update()
-            self.text_label.x = self.x
-            self.text_label.y = self.y
-            self.text_label.end_update()
-
-    @final
-    def on_change_base_color(self, new_base_color):
-        self.base_color = new_base_color
-        if self.text_label:
-            self.text_label.color = (*self.base_color, self.opacity)
+        self.text_label.begin_update()
+        self.text_label.x = self.get_x()
+        self.text_label.y = self.get_y()
+        self.text_label.end_update()
 
 
 class InteractiveLabelV2(UIObject, ABC):
@@ -224,12 +176,8 @@ class InteractiveLabelV2(UIObject, ABC):
         self.placeholder_label = None
         self.font_name = 'Arial'
         self.bold = False
-        self.font_size = 20
         self.base_color = WHITE_RGB
         self.placeholder_color = GREY_RGB
-        self.x = 0
-        self.y = 0
-        self.width = None
         self.anchor_x = 'center'
         self.anchor_y = 'center'
         self.align = 'left'
@@ -256,8 +204,8 @@ class InteractiveLabelV2(UIObject, ABC):
     def get_font_size(self):
         pass
 
-    def get_width(self):
-        return None
+    # def get_width(self):
+    #     return None
 
     @abstractmethod
     def get_formatted_text(self):
@@ -267,12 +215,14 @@ class InteractiveLabelV2(UIObject, ABC):
     @is_not_active
     def on_activate(self):
         super().on_activate()
-        self.placeholder_label = PygletLabel(
-            self.get_formatted_text(), font_name=self.font_name, bold=self.bold, font_size=self.font_size,
-            color=(*self.placeholder_color, self.opacity), x=self.x, y=self.y, width=self.width,
-            anchor_x=self.anchor_x, anchor_y=self.anchor_y, align=self.align, multiline=self.multiline,
-            batch=self.batch, group=self.group
-        )
+        if not self.placeholder_label:
+            self.placeholder_label = PygletLabel(
+                self.get_formatted_text(), font_name=self.font_name, bold=self.bold, font_size=self.get_font_size(),
+                color=(*self.placeholder_color, self.opacity), x=self.get_x(), y=self.get_y(),
+                # width=self.get_width(),
+                anchor_x=self.anchor_x, anchor_y=self.anchor_y, align=self.align, multiline=self.multiline,
+                batch=self.batch, group=self.group
+            )
 
     @final
     def on_update_opacity(self, new_opacity):
@@ -295,24 +245,20 @@ class InteractiveLabelV2(UIObject, ABC):
     @window_size_has_changed
     def on_window_resize(self, width, height):
         self.screen_resolution = width, height
-        self.x = self.get_x()
-        self.y = self.get_y()
-        self.font_size = self.get_font_size()
-        self.width = self.get_width()
         if self.text_label:
             self.text_label.begin_update()
-            self.text_label.x = self.x
-            self.text_label.y = self.y
-            self.text_label.font_size = self.font_size
-            self.text_label.width = self.width
+            self.text_label.x = self.get_x()
+            self.text_label.y = self.get_y()
+            self.text_label.font_size = self.get_font_size()
+            # self.text_label.width = self.get_width()
             self.text_label.end_update()
 
         if self.placeholder_label:
             self.placeholder_label.begin_update()
-            self.placeholder_label.x = self.x
-            self.placeholder_label.y = self.y
-            self.placeholder_label.font_size = self.font_size
-            self.placeholder_label.width = self.width
+            self.placeholder_label.x = self.get_x()
+            self.placeholder_label.y = self.get_y()
+            self.placeholder_label.font_size = self.get_font_size()
+            # self.placeholder_label.width = self.get_width()
             self.placeholder_label.end_update()
 
     @final
@@ -321,8 +267,8 @@ class InteractiveLabelV2(UIObject, ABC):
             self.placeholder_label.delete()
             self.placeholder_label = None
             self.text_label = PygletLabel(
-                text[:self.text_length_limit], font_name=self.font_name, bold=self.bold, font_size=self.font_size,
-                color=(*self.base_color, self.opacity), x=self.x, y=self.y, width=self.width,
+                text[:self.text_length_limit], font_name=self.font_name, bold=self.bold, font_size=self.get_font_size(),
+                color=(*self.base_color, self.opacity), x=self.get_x(), y=self.get_y(),  # width=self.get_width(),
                 anchor_x=self.anchor_x, anchor_y=self.anchor_y, align=self.align, multiline=self.multiline,
                 batch=self.batch, group=self.group
             )
@@ -338,9 +284,10 @@ class InteractiveLabelV2(UIObject, ABC):
                 self.text_label.delete()
                 self.text_label = None
                 self.placeholder_label = PygletLabel(
-                    self.get_formatted_text(), font_name=self.font_name, bold=self.bold,
-                    font_size=self.font_size, color=(*self.placeholder_color, self.opacity), x=self.x, y=self.y,
-                    width=self.width, anchor_x=self.anchor_x, anchor_y=self.anchor_y, align=self.align,
+                    self.get_formatted_text(), font_name=self.font_name, bold=self.bold, font_size=self.get_font_size(),
+                    color=(*self.placeholder_color, self.opacity), x=self.get_x(), y=self.get_y(),
+                    # width=self.get_width(),
+                    anchor_x=self.anchor_x, anchor_y=self.anchor_y, align=self.align,
                     multiline=self.multiline, batch=self.batch, group=self.group
                 )
 

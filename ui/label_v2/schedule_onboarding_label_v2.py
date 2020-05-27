@@ -1,12 +1,12 @@
 from logging import getLogger
 from typing import final
 
-from ui import get_bottom_bar_height, GROUPS, BATCHES, WHITE_RGB
-from ui.label_v2 import LabelV2, localizable_with_resource
+from ui import get_bottom_bar_height, GROUPS, BATCHES, WHITE_RGB, localizable_with_resource
+from ui.label_v2 import LabelV2
 
 
 @final
-class ScheduleOnboardingLabelV2(LabelV2):
+class ScheduleOnboardingLabelV2(LabelV2):                                                                       # noqa
     @localizable_with_resource('schedule_onboarding_page_string')
     def __init__(self, parent_viewport):
         super().__init__(logger=getLogger('root.schedule_onboarding_label'), parent_viewport=parent_viewport)
