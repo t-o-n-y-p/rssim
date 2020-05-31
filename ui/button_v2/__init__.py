@@ -6,7 +6,7 @@ from pyglet.text import Label
 from pyglet.window import mouse
 
 from ui import GROUPS, WHITE_RGB, GREY_RGB, WINDOW, HAND_CURSOR, DEFAULT_CURSOR, window_size_has_changed, BATCHES, \
-    UI_CAMERA, MAP_CAMERA, PRESSED, NORMAL, HOVER, UIObject, is_not_active, is_active
+    MAP_CAMERA, PRESSED, NORMAL, HOVER, UIObject, is_not_active, is_active
 
 
 def is_active_or_disabled(f):
@@ -27,13 +27,16 @@ def left_mouse_button(f):
 
 def cursor_is_over_the_button(f):
     def _handle_if_cursor_is_over_the_button(*args, **kwargs):
-        if args[1] in range(int((args[0].x * args[0].camera.zoom + 2) - args[0].camera.offset_x),
-                            int((args[0].x * args[0].camera.zoom + args[0].width - 2)
-                            - args[0].camera.offset_x)) \
-                and args[2] in range(int((args[0].y * args[0].camera.zoom + 2) - args[0].camera.offset_y),
-                                     int((args[0].y * args[0].camera.zoom + args[0].height - 2)
-                                         - args[0].camera.offset_y)):
-            f(*args, **kwargs)
+        if isinstance(args[0], MapButtonV2):
+            if args[1] in range(int((args[0].x * MAP_CAMERA.zoom + 2) - MAP_CAMERA.offset_x),
+                                int((args[0].x * MAP_CAMERA.zoom + args[0].width - 2) - MAP_CAMERA.offset_x)) \
+                    and args[2] in range(int((args[0].y * MAP_CAMERA.zoom + 2) - MAP_CAMERA.offset_y),
+                                         int((args[0].y * MAP_CAMERA.zoom + args[0].height - 2) - MAP_CAMERA.offset_y)):
+                f(*args, **kwargs)
+        else:
+            if args[1] in range(args[0].x + 2, args[0].x + args[0].width - 2) \
+                    and args[2] in range(args[0].y + 2, args[0].y + args[0].height - 2):
+                f(*args, **kwargs)
 
     return _handle_if_cursor_is_over_the_button
 
@@ -67,39 +70,17 @@ BUTTON_BACKGROUND_ALPHA: Final = {
 
 
 class ButtonV2(UIObject, ABC):
-    def __init__(self, logger, parent_viewport, batch, camera):
+    def __init__(self, logger, parent_viewport=None):
         super().__init__(logger, parent_viewport)
-        self.batch = batch
-        self.camera = camera
         self.state = NORMAL
-        self.transparent = True
-        self.invisible = False
-        self.paired_button = None
-        self.vertex_list = None
-        self.text_label = None
-        self.font_name = None
-        self.is_bold = False
-        self.on_click_action = None
-        self.on_hover_action = None
-        self.on_leave_action = None
-        self.disabled_state = False
         self.on_mouse_press_handlers = [self.on_mouse_press]
         self.on_mouse_release_handlers = [self.on_mouse_release]
         self.on_mouse_motion_handlers = [self.on_mouse_motion]
         self.on_mouse_leave_handlers = [self.on_mouse_leave]
-        self.arguments = []
         self.x = 0
         self.y = 0
         self.width = 0
         self.height = 0
-
-    @abstractmethod
-    def get_x(self):
-        pass
-
-    @abstractmethod
-    def get_y(self):
-        pass
 
     @abstractmethod
     def get_width(self):
@@ -107,6 +88,47 @@ class ButtonV2(UIObject, ABC):
 
     @abstractmethod
     def get_height(self):
+        pass
+
+    @abstractmethod
+    def on_mouse_motion(self, x, y, dx, dy):
+        pass
+
+    @abstractmethod
+    def on_mouse_press(self, x, y, button, modifiers):
+        pass
+
+    @abstractmethod
+    def on_mouse_release(self, x, y, button, modifiers):
+        pass
+
+    @abstractmethod
+    def on_mouse_leave(self, x, y):
+        pass
+
+
+class UIButtonV2(ButtonV2, ABC):
+    on_click_action: callable
+    font_name: str
+
+    def __init__(self, logger, parent_viewport):
+        super().__init__(logger, parent_viewport)
+        self.transparent = True
+        self.paired_button = None
+        self.vertex_list = None
+        self.text_label = None
+        self.is_bold = False
+        self.disabled_state = False
+        self.arguments = []
+        self.on_hover_action = None
+        self.on_leave_action = None
+
+    @abstractmethod
+    def get_x(self):
+        pass
+
+    @abstractmethod
+    def get_y(self):
         pass
 
     @abstractmethod
@@ -124,8 +146,8 @@ class ButtonV2(UIObject, ABC):
         self.disabled_state = False
         # gl.glEnable(gl.GL_BLEND)
         # gl.glBlendFunc(gl.GL_SRC_ALPHA, gl.GL_ONE_MINUS_SRC_ALPHA)
-        if not self.vertex_list and not self.invisible:
-            self.vertex_list = self.batch.add(
+        if not self.vertex_list:
+            self.vertex_list = BATCHES['ui_batch'].add(
                 20, gl.GL_QUADS, GROUPS['button_background'],
                 ('v2i', self._get_vertices()),
                 ('c4f', self._get_main_colors() + ((1.0, 0.0, 0.0, self.opacity / 255) * 16))
@@ -137,7 +159,7 @@ class ButtonV2(UIObject, ABC):
                     text, font_name=self.font_name, bold=self.is_bold,
                     font_size=self.get_font_size(), color=(*WHITE_RGB, self.opacity),
                     x=self.x + self.width // 2, y=self.y + self.height // 2,
-                    anchor_x='center', anchor_y='center', batch=self.batch, group=GROUPS['button_text']
+                    anchor_x='center', anchor_y='center', batch=BATCHES['ui_batch'], group=GROUPS['button_text']
                 )
         else:
             self.text_label.color = (*WHITE_RGB, self.opacity)
@@ -162,7 +184,7 @@ class ButtonV2(UIObject, ABC):
                     text, font_name=self.font_name, bold=self.is_bold,
                     font_size=self.get_font_size(), color=(*GREY_RGB, self.opacity),
                     x=self.x + self.width // 2, y=self.y + self.height // 2,
-                    anchor_x='center', anchor_y='center', batch=self.batch, group=GROUPS['button_text']
+                    anchor_x='center', anchor_y='center', batch=BATCHES['ui_batch'], group=GROUPS['button_text']
                 )
         else:
             self.text_label.color = (*GREY_RGB, self.opacity)
@@ -172,11 +194,8 @@ class ButtonV2(UIObject, ABC):
     def on_mouse_motion(self, x, y, dx, dy):
         # if cursor is on the button and button is not pressed, it means cursor was just moved over the button,
         # state and background color are changed to "hover" state
-        if x in range(int((self.x * self.camera.zoom + 2) - self.camera.offset_x),
-                      int((self.x * self.camera.zoom + self.width - 2) - self.camera.offset_x)) \
-                and y in range(int((self.y * self.camera.zoom + 2) - self.camera.offset_y),
-                               int((self.y * self.camera.zoom + self.height - 2) - self.camera.offset_y)):
-            if self.state != PRESSED:
+        if x in range(self.x + 2, self.x + self.width - 2) and y in range(self.y + 2, self.y + self.height - 2):
+            if self.state not in (PRESSED, HOVER):
                 self.state = HOVER
                 if self.vertex_list:
                     self.vertex_list.colors[:16] = self._get_main_colors()
@@ -282,11 +301,6 @@ class ButtonV2(UIObject, ABC):
             ) * 4
         )
 
-
-class UIButtonV2(ButtonV2, ABC):
-    def __init__(self, logger, parent_viewport):
-        super().__init__(logger, parent_viewport, batch=BATCHES['ui_batch'], camera=UI_CAMERA)
-
     @final
     @window_size_has_changed
     def on_window_resize(self, width, height):
@@ -321,14 +335,56 @@ class UIButtonV2(ButtonV2, ABC):
 
 
 class MapButtonV2(ButtonV2, ABC):
-    def __init__(self, map_id, logger, parent_viewport):
-        super().__init__(logger, parent_viewport, batch=BATCHES['main_batch'], camera=MAP_CAMERA)
-        self.map_id = map_id
-        self.invisible = True
+    on_click_action: callable
+    on_hover_action: callable
+    on_leave_action: callable
+
+    @final
+    @is_active
+    def on_mouse_motion(self, x, y, dx, dy):
+        # if cursor is on the button and button is not pressed, it means cursor was just moved over the button,
+        # state and background color are changed to "hover" state
+        if x in range(int((self.x * MAP_CAMERA.zoom + 2) - MAP_CAMERA.offset_x),
+                      int((self.x * MAP_CAMERA.zoom + self.width - 2) - MAP_CAMERA.offset_x)) \
+                and y in range(int((self.y * MAP_CAMERA.zoom + 2) - MAP_CAMERA.offset_y),
+                               int((self.y * MAP_CAMERA.zoom + self.height - 2) - MAP_CAMERA.offset_y)):
+            if self.state not in (PRESSED, HOVER):
+                self.state = HOVER
+                WINDOW.set_mouse_cursor(HAND_CURSOR)
+                self.on_hover_action()
+        # if cursor is not on the button and button is not normal, it means cursor has just left the button,
+        # state and background color are changed to "normal" state
+        else:
+            if self.state != NORMAL:
+                self.state = NORMAL
+                WINDOW.set_mouse_cursor(DEFAULT_CURSOR)
+                self.on_leave_action()
+
+    @final
+    @is_active
+    @cursor_is_over_the_button
+    @left_mouse_button
+    def on_mouse_press(self, x, y, button, modifiers):
+        self.state = PRESSED
+
+    @final
+    @is_active
+    @cursor_is_over_the_button
+    @button_is_pressed
+    @left_mouse_button
+    def on_mouse_release(self, x, y, button, modifiers):
+        self.state = HOVER
+        WINDOW.set_mouse_cursor(DEFAULT_CURSOR)
+        self.on_click_action(self)
+
+    @final
+    @is_active
+    def on_mouse_leave(self, x, y):
+        self.state = NORMAL
+        WINDOW.set_mouse_cursor(DEFAULT_CURSOR)
+        self.on_leave_action()
 
     @final
     def on_change_scale(self):
         self.width = self.get_width()
         self.height = self.get_height()
-        if self.text_label:
-            self.text_label.font_size = self.get_font_size()
