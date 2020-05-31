@@ -54,19 +54,19 @@ def create_two_state_button(first_button_object, second_button_object):
 
 # button background RGB color for non-transparent and transparent button
 BUTTON_BACKGROUND_RGB: Final = {
-    NORMAL: {False: (0.0, 0.0, 0.0), True: (0.0, 0.0, 0.0)},
-    HOVER: {False: (0.375, 0.0, 0.0), True: (0.5, 0.0, 0.0)},
-    PRESSED: {False: (0.5625, 0.0, 0.0), True: (0.75, 0.0, 0.0)}
+    NORMAL: ((0.0, 0.0, 0.0), (0.0, 0.0, 0.0)),
+    HOVER: ((0.375, 0.0, 0.0), (0.5, 0.0, 0.0)),
+    PRESSED: ((0.5625, 0.0, 0.0), (0.75, 0.0, 0.0))
 }
 # button background alpha for non-transparent and transparent button
 BUTTON_BACKGROUND_ALPHA: Final = {
-    NORMAL: {False: 1.0, True: 0.0},
-    HOVER: {False: 1.0, True: 0.75},
-    PRESSED: {False: 1.0, True: 0.75}
+    NORMAL: (1.0, 0.0),
+    HOVER: (1.0, 0.75),
+    PRESSED: (1.0, 0.75)
 }
 
 
-class Button(UIObject, ABC):
+class ButtonV2(UIObject, ABC):
     def __init__(self, logger, parent_viewport, batch, camera):
         super().__init__(logger, parent_viewport)
         self.batch = batch
@@ -87,6 +87,7 @@ class Button(UIObject, ABC):
         self.on_mouse_release_handlers = [self.on_mouse_release]
         self.on_mouse_motion_handlers = [self.on_mouse_motion]
         self.on_mouse_leave_handlers = [self.on_mouse_leave]
+        self.arguments = []
         self.x = 0
         self.y = 0
         self.width = 0
@@ -126,35 +127,8 @@ class Button(UIObject, ABC):
         if not self.vertex_list and not self.invisible:
             self.vertex_list = self.batch.add(
                 20, gl.GL_QUADS, GROUPS['button_background'],
-                (
-                    'v2i', (
-                        # inside
-                        self.x + 2, self.y + 2,
-                        self.x + self.width - 2, self.y + 2,
-                        self.x + self.width - 2, self.y + self.height - 2,
-                        self.x + 2, self.y + self.height - 2,
-                        # left border
-                        self.x, self.y, self.x + 2, self.y,
-                        self.x + 2, self.y + self.height, self.x, self.y + self.height,
-                        # right border
-                        self.x + self.width - 2, self.y, self.x + self.width, self.y,
-                        self.x + self.width, self.y + self.height, self.x + self.width - 2, self.y + self.height,
-                        # bottom border
-                        self.x + 2, self.y, self.x + self.width - 2, self.y,
-                        self.x + self.width - 2, self.y + 2, self.x + 2, self.y + 2,
-                        # top border
-                        self.x + 2, self.y + self.height - 2, self.x + self.width - 2, self.y + self.height - 2,
-                        self.x + self.width - 2, self.y + self.height, self.x + 2, self.y + self.height
-                    )
-                ),
-                (
-                    'c4f', (
-                        (
-                            *BUTTON_BACKGROUND_RGB[self.state][self.transparent],
-                            BUTTON_BACKGROUND_ALPHA[self.state][self.transparent] * float(self.opacity) / 255.0
-                        ) * 4 + (1.0, 0.0, 0.0, self.opacity / 255) * 16
-                    )
-                )
+                ('v2i', self._get_vertices()),
+                ('c4f', self._get_main_colors() + ((1.0, 0.0, 0.0, self.opacity / 255) * 16))
             )
 
         if not self.text_label:
@@ -205,12 +179,7 @@ class Button(UIObject, ABC):
             if self.state != PRESSED:
                 self.state = HOVER
                 if self.vertex_list:
-                    self.vertex_list.colors[:16] = (
-                        (
-                            *BUTTON_BACKGROUND_RGB[self.state][self.transparent],
-                            BUTTON_BACKGROUND_ALPHA[self.state][self.transparent] * float(self.opacity) / 255.0
-                        ) * 4
-                    )
+                    self.vertex_list.colors[:16] = self._get_main_colors()
 
                 WINDOW.set_mouse_cursor(HAND_CURSOR)
                 if self.on_hover_action:
@@ -221,12 +190,7 @@ class Button(UIObject, ABC):
             if self.state != NORMAL:
                 self.state = NORMAL
                 if self.vertex_list:
-                    self.vertex_list.colors[:16] = (
-                        (
-                            *BUTTON_BACKGROUND_RGB[self.state][self.transparent],
-                            BUTTON_BACKGROUND_ALPHA[self.state][self.transparent] * float(self.opacity) / 255.0
-                        ) * 4
-                    )
+                    self.vertex_list.colors[:16] = self._get_main_colors()
 
                 WINDOW.set_mouse_cursor(DEFAULT_CURSOR)
                 if self.on_leave_action:
@@ -239,12 +203,7 @@ class Button(UIObject, ABC):
     def on_mouse_press(self, x, y, button, modifiers):
         self.state = PRESSED
         if self.vertex_list:
-            self.vertex_list.colors[:16] = (
-                (
-                    *BUTTON_BACKGROUND_RGB[self.state][self.transparent],
-                    BUTTON_BACKGROUND_ALPHA[self.state][self.transparent] * float(self.opacity) / 255.0
-                ) * 4
-            )
+            self.vertex_list.colors[:16] = self._get_main_colors()
 
     @final
     @is_active
@@ -254,12 +213,7 @@ class Button(UIObject, ABC):
     def on_mouse_release(self, x, y, button, modifiers):
         self.state = HOVER
         if self.vertex_list:
-            self.vertex_list.colors[:16] = (
-                (
-                    *BUTTON_BACKGROUND_RGB[self.state][self.transparent],
-                    BUTTON_BACKGROUND_ALPHA[self.state][self.transparent] * float(self.opacity) / 255.0
-                ) * 4
-            )
+            self.vertex_list.colors[:16] = self._get_main_colors()
 
         WINDOW.set_mouse_cursor(DEFAULT_CURSOR)
         self.on_click_action(self)
@@ -269,12 +223,7 @@ class Button(UIObject, ABC):
     def on_mouse_leave(self, x, y):
         self.state = NORMAL
         if self.vertex_list:
-            self.vertex_list.colors[:16] = (
-                (
-                    *BUTTON_BACKGROUND_RGB[self.state][self.transparent],
-                    BUTTON_BACKGROUND_ALPHA[self.state][self.transparent] * float(self.opacity) / 255.0
-                ) * 4
-            )
+            self.vertex_list.colors[:16] = self._get_main_colors()
 
         WINDOW.set_mouse_cursor(DEFAULT_CURSOR)
         if self.on_leave_action:
@@ -295,12 +244,48 @@ class Button(UIObject, ABC):
         else:
             if self.vertex_list:
                 self.vertex_list.colors[3:16:4] = (
-                    (BUTTON_BACKGROUND_ALPHA[self.state][self.transparent] * float(self.opacity) / 255.0,) * 4
+                    (BUTTON_BACKGROUND_ALPHA[self.state][int(self.transparent)] * float(self.opacity) / 255.0,) * 4
                 )
-                self.vertex_list.colors[19::4] = (self.opacity / 255, ) * 16
+                self.vertex_list.colors[19::4] = ((self.opacity / 255, ) * 16)
 
             if self.text_label:
                 self.text_label.color = (*self.text_label.color[:3], self.opacity)
+
+    @final
+    def _get_vertices(self):
+        return (
+            # inside
+            self.x + 2, self.y + 2,
+            self.x + self.width - 2, self.y + 2,
+            self.x + self.width - 2, self.y + self.height - 2,
+            self.x + 2, self.y + self.height - 2,
+            # left border
+            self.x, self.y, self.x + 2, self.y,
+            self.x + 2, self.y + self.height, self.x, self.y + self.height,
+            # right border
+            self.x + self.width - 2, self.y, self.x + self.width, self.y,
+            self.x + self.width, self.y + self.height, self.x + self.width - 2, self.y + self.height,
+            # bottom border
+            self.x + 2, self.y, self.x + self.width - 2, self.y,
+            self.x + self.width - 2, self.y + 2, self.x + 2, self.y + 2,
+            # top border
+            self.x + 2, self.y + self.height - 2, self.x + self.width - 2, self.y + self.height - 2,
+            self.x + self.width - 2, self.y + self.height, self.x + 2, self.y + self.height
+        )
+
+    @final
+    def _get_main_colors(self):
+        return (
+            (
+                *BUTTON_BACKGROUND_RGB[self.state][int(self.transparent)],
+                BUTTON_BACKGROUND_ALPHA[self.state][int(self.transparent)] * float(self.opacity) / 255.0
+            ) * 4
+        )
+
+
+class UIButtonV2(ButtonV2, ABC):
+    def __init__(self, logger, parent_viewport):
+        super().__init__(logger, parent_viewport, batch=BATCHES['ui_batch'], camera=UI_CAMERA)
 
     @final
     @window_size_has_changed
@@ -311,29 +296,8 @@ class Button(UIObject, ABC):
         self.x = self.get_x()
         self.y = self.get_y()
         if self.vertex_list:
-            # move the button background to the new position
-            # 2 pixels are left for red button border,
-            # that's why background position starts from (button_position + 2)
-            self.vertex_list.vertices = (
-                # inside
-                self.x + 2, self.y + 2,
-                self.x + self.width - 2, self.y + 2,
-                self.x + self.width - 2, self.y + self.height - 2,
-                self.x + 2, self.y + self.height - 2,
-                # left border
-                self.x, self.y, self.x + 2, self.y,
-                self.x + 2, self.y + self.height, self.x, self.y + self.height,
-                # right border
-                self.x + self.width - 2, self.y, self.x + self.width, self.y,
-                self.x + self.width, self.y + self.height, self.x + self.width - 2, self.y + self.height,
-                # bottom border
-                self.x + 2, self.y, self.x + self.width - 2, self.y,
-                self.x + self.width - 2, self.y + 2, self.x + 2, self.y + 2,
-                # top border
-                self.x + 2, self.y + self.height - 2, self.x + self.width - 2, self.y + self.height - 2,
-                self.x + self.width - 2, self.y + self.height, self.x + 2, self.y + self.height
-            )
-        # move the text label to the center of the button
+            self.vertex_list.vertices = self._get_vertices()
+
         if self.text_label:
             self.text_label.begin_update()
             self.text_label.x = self.x + self.width // 2
@@ -347,29 +311,8 @@ class Button(UIObject, ABC):
         self.x = self.get_x()
         self.y = self.get_y()
         if self.vertex_list:
-            # move the button background to the new position
-            # 2 pixels are left for red button border,
-            # that's why background position starts from (button_position + 2)
-            self.vertex_list.vertices = (
-                # inside
-                self.x + 2, self.y + 2,
-                self.x + self.width - 2, self.y + 2,
-                self.x + self.width - 2, self.y + self.height - 2,
-                self.x + 2, self.y + self.height - 2,
-                # left border
-                self.x, self.y, self.x + 2, self.y,
-                self.x + 2, self.y + self.height, self.x, self.y + self.height,
-                # right border
-                self.x + self.width - 2, self.y, self.x + self.width, self.y,
-                self.x + self.width, self.y + self.height, self.x + self.width - 2, self.y + self.height,
-                # bottom border
-                self.x + 2, self.y, self.x + self.width - 2, self.y,
-                self.x + self.width - 2, self.y + 2, self.x + 2, self.y + 2,
-                # top border
-                self.x + 2, self.y + self.height - 2, self.x + self.width - 2, self.y + self.height - 2,
-                self.x + self.width - 2, self.y + self.height, self.x + 2, self.y + self.height
-            )
-        # move the text label to the center of the button
+            self.vertex_list.vertices = self._get_vertices()
+
         if self.text_label:
             self.text_label.begin_update()
             self.text_label.x = self.x + self.width // 2
@@ -377,12 +320,7 @@ class Button(UIObject, ABC):
             self.text_label.end_update()
 
 
-class UIButton(Button, ABC):
-    def __init__(self, logger, parent_viewport):
-        super().__init__(logger, parent_viewport, batch=BATCHES['ui_batch'], camera=UI_CAMERA)
-
-
-class MapButton(Button, ABC):
+class MapButtonV2(ButtonV2, ABC):
     def __init__(self, map_id, logger, parent_viewport):
         super().__init__(logger, parent_viewport, batch=BATCHES['main_batch'], camera=MAP_CAMERA)
         self.map_id = map_id
@@ -390,7 +328,7 @@ class MapButton(Button, ABC):
 
     @final
     def on_change_scale(self):
-        self.width = self.width()
+        self.width = self.get_width()
         self.height = self.get_height()
         if self.text_label:
             self.text_label.font_size = self.get_font_size()

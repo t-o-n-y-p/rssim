@@ -70,7 +70,7 @@ def localizable_with_resource(i18n_key):
             args[0].current_locale = USER_DB_CURSOR.fetchone()[0]
             args[0].on_update_current_locale = on_update_current_locale
             args[0].i18n_key = i18n_key
-            if len(args[0].resource_list_keys) > 0:
+            if hasattr(args[0], 'resource_list_keys') and len(args[0].resource_list_keys) > 0:
                 args[0].get_formatted_text = get_complicated_formatted_text
             else:
                 args[0].get_formatted_text = get_formatted_text
