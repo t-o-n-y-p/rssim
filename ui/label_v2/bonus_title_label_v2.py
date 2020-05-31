@@ -1,7 +1,7 @@
 from logging import getLogger
 from typing import final
 
-from ui import WHITE_RGB, BATCHES, GROUPS, get_bottom_bar_height, localizable_with_resource
+from ui import WHITE_RGB, get_bottom_bar_height, localizable_with_resource
 from ui.label_v2 import LabelV2
 
 
@@ -13,8 +13,6 @@ class BonusTitleLabelV2(LabelV2):                                               
         self.font_name = 'Arial'
         self.base_color = WHITE_RGB
         self.anchor_x = 'left'
-        self.batch = BATCHES['ui_batch']
-        self.group = GROUPS['button_text']
 
     def get_x(self):
         return self.parent_viewport.x1

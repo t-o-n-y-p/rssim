@@ -1,7 +1,7 @@
 from logging import getLogger
 from typing import final
 
-from ui import WHITE_RGB, BATCHES, GROUPS, get_bottom_bar_height, localizable_with_resource
+from ui import WHITE_RGB, get_bottom_bar_height, localizable_with_resource
 from ui.label_v2 import LabelV2, argument
 
 
@@ -15,8 +15,6 @@ class CurrentLevelLabelV2(LabelV2):                                             
         self.bold = True
         self.base_color = WHITE_RGB
         self.anchor_x = 'center'
-        self.batch = BATCHES['ui_batch']
-        self.group = GROUPS['button_text']
 
     def get_x(self):
         return self.parent_viewport.x1 + 15 * get_bottom_bar_height(self.screen_resolution) // 8

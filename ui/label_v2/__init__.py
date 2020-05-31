@@ -8,7 +8,7 @@ from win32clipboard import CloseClipboard, GetClipboardData, OpenClipboard
 
 from database import MINUTES_IN_ONE_HOUR, SECONDS_IN_ONE_HOUR, HOURS_IN_ONE_DAY, SECONDS_IN_ONE_MINUTE
 from i18n import I18N_RESOURCES
-from ui import UIObject, WHITE_RGB, is_not_active, window_size_has_changed, GREY_RGB, localizable, is_active
+from ui import UIObject, is_not_active, window_size_has_changed, localizable, is_active, BATCHES, GROUPS
 
 
 def argument(name):
@@ -91,20 +91,21 @@ def argument(name):
 
 
 class LabelV2(UIObject, ABC):
+    font_name: str
+    base_color: (int, int, int)
+
     def __init__(self, logger, parent_viewport, *resource_list_keys):
         super().__init__(logger, parent_viewport)
         self.arguments = []
         self.resource_list_keys = resource_list_keys
         self.text_label = None
-        self.font_name = 'Arial'
         self.bold = False
-        self.base_color = WHITE_RGB
         self.anchor_x = 'center'
         self.anchor_y = 'center'
         self.align = 'left'
         self.multiline = False
-        self.batch = None
-        self.group = None
+        self.batch = BATCHES['ui_batch']
+        self.group = GROUPS['button_text']
 
     @abstractmethod
     def get_x(self):
@@ -169,21 +170,22 @@ class LabelV2(UIObject, ABC):
 
 
 class InteractiveLabelV2(UIObject, ABC):
+    font_name: str
+    base_color: (int, int, int)
+    placeholder_color: (int, int, int)
+
     def __init__(self, logger, parent_viewport):
         super().__init__(logger, parent_viewport)
         self.arguments = []
         self.text_label = None
         self.placeholder_label = None
-        self.font_name = 'Arial'
         self.bold = False
-        self.base_color = WHITE_RGB
-        self.placeholder_color = GREY_RGB
         self.anchor_x = 'center'
         self.anchor_y = 'center'
         self.align = 'left'
         self.multiline = False
-        self.batch = None
-        self.group = None
+        self.batch = BATCHES['ui_batch']
+        self.group = GROUPS['button_text']
         self.text_length_limit = 25
         self.on_key_press_handlers = [self.on_key_press]
         self.on_text_handlers = [self.on_text]
@@ -204,9 +206,6 @@ class InteractiveLabelV2(UIObject, ABC):
     def get_font_size(self):
         pass
 
-    # def get_width(self):
-    #     return None
-
     @abstractmethod
     def get_formatted_text(self):
         pass
@@ -219,7 +218,6 @@ class InteractiveLabelV2(UIObject, ABC):
             self.placeholder_label = PygletLabel(
                 self.get_formatted_text(), font_name=self.font_name, bold=self.bold, font_size=self.get_font_size(),
                 color=(*self.placeholder_color, self.opacity), x=self.get_x(), y=self.get_y(),
-                # width=self.get_width(),
                 anchor_x=self.anchor_x, anchor_y=self.anchor_y, align=self.align, multiline=self.multiline,
                 batch=self.batch, group=self.group
             )
@@ -250,7 +248,6 @@ class InteractiveLabelV2(UIObject, ABC):
             self.text_label.x = self.get_x()
             self.text_label.y = self.get_y()
             self.text_label.font_size = self.get_font_size()
-            # self.text_label.width = self.get_width()
             self.text_label.end_update()
 
         if self.placeholder_label:
@@ -258,7 +255,6 @@ class InteractiveLabelV2(UIObject, ABC):
             self.placeholder_label.x = self.get_x()
             self.placeholder_label.y = self.get_y()
             self.placeholder_label.font_size = self.get_font_size()
-            # self.placeholder_label.width = self.get_width()
             self.placeholder_label.end_update()
 
     @final
@@ -268,7 +264,7 @@ class InteractiveLabelV2(UIObject, ABC):
             self.placeholder_label = None
             self.text_label = PygletLabel(
                 text[:self.text_length_limit], font_name=self.font_name, bold=self.bold, font_size=self.get_font_size(),
-                color=(*self.base_color, self.opacity), x=self.get_x(), y=self.get_y(),  # width=self.get_width(),
+                color=(*self.base_color, self.opacity), x=self.get_x(), y=self.get_y(),
                 anchor_x=self.anchor_x, anchor_y=self.anchor_y, align=self.align, multiline=self.multiline,
                 batch=self.batch, group=self.group
             )
@@ -286,7 +282,6 @@ class InteractiveLabelV2(UIObject, ABC):
                 self.placeholder_label = PygletLabel(
                     self.get_formatted_text(), font_name=self.font_name, bold=self.bold, font_size=self.get_font_size(),
                     color=(*self.placeholder_color, self.opacity), x=self.get_x(), y=self.get_y(),
-                    # width=self.get_width(),
                     anchor_x=self.anchor_x, anchor_y=self.anchor_y, align=self.align,
                     multiline=self.multiline, batch=self.batch, group=self.group
                 )

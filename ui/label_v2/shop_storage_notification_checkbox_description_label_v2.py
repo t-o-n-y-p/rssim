@@ -1,7 +1,7 @@
 from logging import getLogger
 from typing import final
 
-from ui import get_bottom_bar_height, get_top_bar_height, GROUPS, BATCHES, WHITE_RGB, localizable_with_resource
+from ui import get_bottom_bar_height, get_top_bar_height, WHITE_RGB, localizable_with_resource
 from ui.label_v2 import LabelV2
 
 
@@ -16,8 +16,6 @@ class ShopStorageNotificationCheckboxDescriptionLabelV2(LabelV2):               
         self.font_name = 'Arial'
         self.base_color = WHITE_RGB
         self.anchor_x = 'left'
-        self.batch = BATCHES['ui_batch']
-        self.group = GROUPS['button_text']
 
     def get_x(self):
         return self.parent_viewport.x1 + 2 * get_bottom_bar_height(self.screen_resolution)

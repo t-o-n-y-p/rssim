@@ -1,7 +1,7 @@
 from logging import getLogger
 from typing import final
 
-from ui import get_bottom_bar_height, GROUPS, BATCHES, WHITE_RGB, localizable_with_resource
+from ui import get_bottom_bar_height, WHITE_RGB, localizable_with_resource
 from ui.label_v2 import LabelV2
 
 
@@ -13,8 +13,6 @@ class SkipOnboardingLabelV2(LabelV2):                                           
         self.font_name = 'Arial'
         self.base_color = WHITE_RGB
         self.anchor_x = 'right'
-        self.batch = BATCHES['ui_batch']
-        self.group = GROUPS['button_text']
 
     def get_x(self):
         return self.parent_viewport.x2 - 5 * get_bottom_bar_height(self.screen_resolution) // 4

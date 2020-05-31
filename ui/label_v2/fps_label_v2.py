@@ -1,7 +1,7 @@
 from logging import getLogger
 from typing import final
 
-from ui import WHITE_RGB, BATCHES, GROUPS, get_top_bar_height
+from ui import WHITE_RGB, get_top_bar_height
 from ui.label_v2 import LabelV2, argument
 
 
@@ -13,8 +13,6 @@ class FPSLabelV2(LabelV2):
         self.font_name = 'Courier New'
         self.base_color = WHITE_RGB
         self.anchor_x = 'right'
-        self.batch = BATCHES['ui_batch']
-        self.group = GROUPS['button_text']
 
     def get_x(self):
         return self.parent_viewport.x2 - get_top_bar_height(self.screen_resolution) * 3 \

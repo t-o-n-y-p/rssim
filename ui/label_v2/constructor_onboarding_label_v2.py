@@ -1,7 +1,7 @@
 from logging import getLogger
 from typing import final
 
-from ui import WHITE_RGB, GROUPS, BATCHES, get_bottom_bar_height, localizable_with_resource
+from ui import WHITE_RGB, get_bottom_bar_height, localizable_with_resource
 from ui.label_v2 import LabelV2
 
 
@@ -15,8 +15,6 @@ class ConstructorOnboardingLabelV2(LabelV2):                                    
         self.anchor_x = 'center'
         self.align = 'center'
         self.multiline = True
-        self.batch = BATCHES['ui_batch']
-        self.group = GROUPS['button_text']
 
     def get_x(self):
         return self.parent_viewport.x2 - (self.parent_viewport.x2 - self.parent_viewport.x1) // 4

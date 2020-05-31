@@ -1,7 +1,7 @@
 from logging import getLogger
 from typing import final
 
-from ui import BATCHES, GROUPS, get_bottom_bar_height, get_top_bar_height, localizable_with_resource
+from ui import get_bottom_bar_height, get_top_bar_height, localizable_with_resource, WHITE_RGB, GREY_RGB
 from ui.label_v2 import InteractiveLabelV2
 
 
@@ -11,8 +11,8 @@ class BonusCodeInteractiveLabelV2(InteractiveLabelV2):                          
     def __init__(self, parent_viewport):
         super().__init__(logger=getLogger('root.bonus_code_interactive_label'), parent_viewport=parent_viewport)
         self.font_name = 'Arial'
-        self.batch = BATCHES['ui_batch']
-        self.group = GROUPS['button_text']
+        self.base_color = WHITE_RGB
+        self.placeholder_color = GREY_RGB
 
     def get_x(self):
         return (self.parent_viewport.x1 + self.parent_viewport.x2) // 2

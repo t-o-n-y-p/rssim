@@ -1,7 +1,7 @@
 from logging import getLogger
 from typing import final
 
-from ui import ORANGE_RGB, BATCHES, GROUPS, get_bottom_bar_height
+from ui import ORANGE_RGB, get_bottom_bar_height
 from ui.label_v2 import MultiplierLabelV2
 
 
@@ -15,8 +15,6 @@ class ExpBonusMultiplierLabelV2(MultiplierLabelV2):
         self.bold = True
         self.base_color = ORANGE_RGB
         self.anchor_x = 'center'
-        self.batch = BATCHES['ui_batch']
-        self.group = GROUPS['button_text']
 
     def get_x(self):
         bonus_label_window_width \

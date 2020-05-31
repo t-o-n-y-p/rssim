@@ -1,7 +1,7 @@
 from logging import getLogger
 from typing import final
 
-from ui import YELLOW_RGB, GROUPS, get_bottom_bar_height, BATCHES, localizable_with_resource
+from ui import YELLOW_RGB, get_bottom_bar_height, localizable_with_resource
 from ui.label_v2 import LabelV2, argument
 
 
@@ -14,8 +14,6 @@ class BonusInfoCellConstructionSpeedBonusValueLabelV2(LabelV2):                 
         self.font_name = 'Arial'
         self.base_color = YELLOW_RGB
         self.anchor_x = 'right'
-        self.batch = BATCHES['ui_batch']
-        self.group = GROUPS['button_text']
 
     def get_x(self):
         return self.parent_viewport.x2

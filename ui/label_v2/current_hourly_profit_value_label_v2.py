@@ -1,7 +1,7 @@
 from logging import getLogger
 from typing import final
 
-from ui import GREEN_RGB, BATCHES, GROUPS, get_bottom_bar_height
+from ui import GREEN_RGB, get_bottom_bar_height
 from ui.label_v2 import LabelV2, argument
 
 
@@ -13,8 +13,6 @@ class CurrentHourlyProfitValueLabelV2(LabelV2):
         self.font_name = 'Arial'
         self.base_color = GREEN_RGB
         self.anchor_x = 'left'
-        self.batch = BATCHES['ui_batch']
-        self.group = GROUPS['button_text']
 
     def get_x(self):
         return self.parent_viewport.x1 + get_bottom_bar_height(self.screen_resolution) // 8 + \

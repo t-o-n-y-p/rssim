@@ -1,8 +1,7 @@
 from logging import getLogger
 from typing import final
 
-from ui import SCHEDULE_ROWS, get_inner_area_rect, get_bottom_bar_height, GROUPS, BATCHES, ORANGE_RGB, \
-    localizable_with_resource
+from ui import SCHEDULE_ROWS, get_inner_area_rect, get_bottom_bar_height, ORANGE_RGB, localizable_with_resource
 from ui.label_v2 import LabelV2
 
 
@@ -15,8 +14,6 @@ class ScheduleRightCaptionLabelV2(LabelV2):                                     
         self.bold = True
         self.base_color = ORANGE_RGB
         self.anchor_x = 'center'
-        self.batch = BATCHES['ui_batch']
-        self.group = GROUPS['button_text']
 
     def get_x(self):
         return self.parent_viewport.x1 + get_inner_area_rect(self.screen_resolution)[0] \
