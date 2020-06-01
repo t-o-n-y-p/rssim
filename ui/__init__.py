@@ -102,15 +102,19 @@ def _create_window():
     monitor_resolution_config = (windll.user32.GetSystemMetrics(0), windll.user32.GetSystemMetrics(1))
     USER_DB_CURSOR.execute('SELECT fullscreen FROM graphics')
     if USER_DB_CURSOR.fetchone()[0] and monitor_resolution_config in screen_resolution_config:
-        window = Window(width=monitor_resolution_config[0], height=monitor_resolution_config[1],
-                        caption='Railway Station Simulator', style='borderless', fullscreen=False, vsync=False)
+        window = Window(
+            width=monitor_resolution_config[0], height=monitor_resolution_config[1],
+            caption='Railway Station Simulator', style='borderless', fullscreen=False, vsync=False
+        )
         window.set_fullscreen(True)
         return window
 
     USER_DB_CURSOR.execute('SELECT app_width, app_height FROM graphics')
     screen_resolution = USER_DB_CURSOR.fetchone()
-    return Window(width=screen_resolution[0], height=screen_resolution[1],
-                  caption='Railway Station Simulator', style='borderless', fullscreen=False, vsync=False)
+    return Window(
+        width=screen_resolution[0], height=screen_resolution[1],
+        caption='Railway Station Simulator', style='borderless', fullscreen=False, vsync=False
+    )
 
 
 # --------------------- CONSTANTS ---------------------
@@ -138,29 +142,32 @@ RED_GREY_RGB: Final = (112, 0, 0)
 WHITE_RGB: Final = (255, 255, 255)                     # white UI color
 GREY_RGB: Final = (112, 112, 112)                      # grey UI color
 SCHEDULE_ARRIVAL_TIME_THRESHOLD: Final = [SECONDS_IN_ONE_HOUR, SECONDS_IN_ONE_HOUR * 10]
-# main surface which harbors all the app
+
 WINDOW: Final = _create_window()
-# flip the surface so user knows game has launched and is loading now
 WINDOW.flip()
 # large portions of sprites which can be drawn together
-BATCHES: Final = {'main_batch': Batch(),
-                  'mini_map_batch': Batch(),
-                  'main_frame': Batch(),
-                  'ui_batch': Batch()}
+BATCHES: Final = {
+    'main_batch': Batch(),
+    'mini_map_batch': Batch(),
+    'main_frame': Batch(),
+    'ui_batch': Batch()
+}
 # groups are layers of OpenGL scene
-GROUPS: Final = {'environment': OrderedGroup(0),
-                 'main_map': OrderedGroup(1),
-                 'signal': OrderedGroup(2),
-                 'train': OrderedGroup(2),
-                 'environment_2': OrderedGroup(3),
-                 'twilight': OrderedGroup(4),
-                 'mini_environment': OrderedGroup(5),
-                 'mini_map': OrderedGroup(6),
-                 'mini_environment_2': OrderedGroup(7),
-                 'main_frame': OrderedGroup(8),
-                 'button_background': OrderedGroup(9),
-                 'exp_money_time': OrderedGroup(9),
-                 'button_text': OrderedGroup(10)}
+GROUPS: Final = {
+    'environment': OrderedGroup(0),
+    'main_map': OrderedGroup(1),
+    'signal': OrderedGroup(2),
+    'train': OrderedGroup(2),
+    'environment_2': OrderedGroup(3),
+    'twilight': OrderedGroup(4),
+    'mini_environment': OrderedGroup(5),
+    'mini_map': OrderedGroup(6),
+    'mini_environment_2': OrderedGroup(7),
+    'main_frame': OrderedGroup(8),
+    'button_background': OrderedGroup(9),
+    'exp_money_time': OrderedGroup(9),
+    'button_text': OrderedGroup(10)
+}
 # mouse cursor shapes
 HAND_CURSOR: Final = WINDOW.get_system_mouse_cursor(WINDOW.CURSOR_HAND)
 DEFAULT_CURSOR: Final = WINDOW.get_system_mouse_cursor(WINDOW.CURSOR_DEFAULT)
@@ -186,9 +193,10 @@ for i in range(_car_collections_implemented[0]):
 FREIGHT_CAR_HEAD_IMAGE: Final = []
 for i in range(_car_collections_implemented[1]):
     FREIGHT_CAR_HEAD_IMAGE.append([])
-    FREIGHT_CAR_HEAD_IMAGE[i].append(_atlas.get_region(6 * 251, 3072 + i * 94 + 3, 251, 41))
-    for j in range(1, 6):
-        FREIGHT_CAR_HEAD_IMAGE[i].append(_atlas.get_region(6 * 251, 3072 + i * 94 + 50, 251, 41))
+    for j in range(10):
+        FREIGHT_CAR_HEAD_IMAGE[i].append(_atlas.get_region(6 * 251, 3072 + i * 94 + 3 + 47 * (j % 2), 251, 41))
+
+CAR_HEAD_IMAGE: Final = [PASSENGER_CAR_HEAD_IMAGE, FREIGHT_CAR_HEAD_IMAGE]
 
 # anchor is set to the carriage middle point
 for i in range(len(PASSENGER_CAR_HEAD_IMAGE)):
@@ -197,7 +205,7 @@ for i in range(len(PASSENGER_CAR_HEAD_IMAGE)):
         PASSENGER_CAR_HEAD_IMAGE[i][j].anchor_y = PASSENGER_CAR_HEAD_IMAGE[i][j].height // 2
 
 for i in range(len(FREIGHT_CAR_HEAD_IMAGE)):
-    for j in range(6):
+    for j in range(10):
         FREIGHT_CAR_HEAD_IMAGE[i][j].anchor_x = FREIGHT_CAR_HEAD_IMAGE[i][j].width // 2
         FREIGHT_CAR_HEAD_IMAGE[i][j].anchor_y = FREIGHT_CAR_HEAD_IMAGE[i][j].height // 2
 
@@ -209,6 +217,8 @@ for i in range(_car_collections_implemented[0]):
 FREIGHT_CAR_MID_IMAGE: Final = []
 for i in range(_car_collections_implemented[1]):
     FREIGHT_CAR_MID_IMAGE.append(_atlas.get_region(6 * 251, 3072 + 20 * 47 + 3, 151, 41))
+
+CAR_MID_IMAGE: Final = [PASSENGER_CAR_MID_IMAGE, FREIGHT_CAR_MID_IMAGE]
 
 # anchor is set to the carriage middle point
 for i in range(len(PASSENGER_CAR_MID_IMAGE)):
@@ -229,9 +239,10 @@ for i in range(_car_collections_implemented[0]):
 FREIGHT_CAR_TAIL_IMAGE: Final = []
 for i in range(_car_collections_implemented[1]):
     FREIGHT_CAR_TAIL_IMAGE.append([])
-    FREIGHT_CAR_TAIL_IMAGE[i].append(_atlas.get_region(7 * 251, 3072 + i * 94 + 3, 251, 41))
-    for j in range(1, 6):
-        FREIGHT_CAR_TAIL_IMAGE[i].append(_atlas.get_region(7 * 251, 3072 + i * 94 + 50, 251, 41))
+    for j in range(10):
+        FREIGHT_CAR_TAIL_IMAGE[i].append(_atlas.get_region(7 * 251, 3072 + i * 94 + 3 + 47 * (j % 2), 251, 41))
+
+CAR_TAIL_IMAGE: Final = [PASSENGER_CAR_TAIL_IMAGE, FREIGHT_CAR_TAIL_IMAGE]
 
 # anchor is set to the carriage middle point
 for i in range(len(PASSENGER_CAR_TAIL_IMAGE)):
@@ -240,7 +251,7 @@ for i in range(len(PASSENGER_CAR_TAIL_IMAGE)):
         PASSENGER_CAR_TAIL_IMAGE[i][j].anchor_y = PASSENGER_CAR_TAIL_IMAGE[i][j].height // 2
 
 for i in range(len(FREIGHT_CAR_TAIL_IMAGE)):
-    for j in range(6):
+    for j in range(10):
         FREIGHT_CAR_TAIL_IMAGE[i][j].anchor_x = FREIGHT_CAR_TAIL_IMAGE[i][j].width // 2
         FREIGHT_CAR_TAIL_IMAGE[i][j].anchor_y = FREIGHT_CAR_TAIL_IMAGE[i][j].height // 2
 
@@ -252,6 +263,8 @@ for i in range(_car_collections_implemented[0]):
 FREIGHT_BOARDING_LIGHT_IMAGE: Final = []
 for i in range(_car_collections_implemented[1]):
     FREIGHT_BOARDING_LIGHT_IMAGE.append(_atlas.get_region(6 * 251, 3072 + 20 * 47 + 3, 151, 41))
+
+BOARDING_LIGHT_IMAGE: Final = [PASSENGER_BOARDING_LIGHT_IMAGE, FREIGHT_BOARDING_LIGHT_IMAGE]
 
 # anchor is set to the carriage middle point
 for i in range(len(PASSENGER_BOARDING_LIGHT_IMAGE)):
@@ -314,11 +327,12 @@ def get_inner_area_rect(screen_resolution):
     return *inner_area_position, *inner_area_size
 
 
-def get_mini_map_position(screen_resolution):
-    return (
-        screen_resolution[0] - get_mini_map_width(screen_resolution) - 8,
-        screen_resolution[1] - get_top_bar_height(screen_resolution) - 6 - get_mini_map_height(screen_resolution)
-    )
+def get_mini_map_x(screen_resolution):
+    return screen_resolution[0] - get_mini_map_width(screen_resolution) - 8
+
+
+def get_mini_map_y(screen_resolution):
+    return screen_resolution[1] - get_top_bar_height(screen_resolution) - 6 - get_mini_map_height(screen_resolution)
 
 
 def get_mini_map_width(screen_resolution):

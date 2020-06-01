@@ -17,40 +17,15 @@ def texture_has_changed(fn):
     return _update_texture_if_it_has_changed
 
 
-class MapSpriteV2(UIObject, ABC):
-    def __init__(self, map_id, logger, parent_viewport):
+class SpriteV2(UIObject, ABC):
+    def __init__(self, logger, parent_viewport):
         super().__init__(logger, parent_viewport)
-        self.map_id = map_id
         self.sprite = None
         self.texture = None
         self.batch = None
         self.group = None
         self.usage = 'dynamic'
         self.subpixel = True
-        self.rotation = 0
-        self.x = 0
-        self.y = 0
-
-    @final
-    @is_not_active
-    def on_activate(self):
-        super().on_activate()
-        if not self.sprite:
-            self.sprite = PygletSprite(
-                self.texture, x=self.x, y=self.y, batch=self.batch, group=self.group,
-                usage=self.usage, subpixel=self.subpixel
-            )
-
-        self.sprite.opacity = self.opacity
-        self.sprite.rotation = self.rotation
-
-    @final
-    def on_position_update(self, x, y, rotation):
-        self.x = x
-        self.y = y
-        self.rotation = rotation
-        if self.sprite:
-            self.sprite.update(x=self.x, y=self.y, rotation=self.rotation)
 
     @final
     def on_update_opacity(self, new_opacity):
@@ -69,6 +44,36 @@ class MapSpriteV2(UIObject, ABC):
         if self.sprite:
             self.sprite.image = self.texture
 
+
+class MapSpriteV2(SpriteV2, ABC):
+    def __init__(self, map_id, logger, parent_viewport):
+        super().__init__(logger, parent_viewport)
+        self.map_id = map_id
+        self.rotation = 0
+        self.x = 0
+        self.y = 0
+
+    @final
+    def on_update(self):
+        if not self.sprite and self.is_located_inside_viewport():
+            self.sprite = PygletSprite(
+                self.texture, x=self.x, y=self.y, batch=self.batch, group=self.group,
+                usage=self.usage, subpixel=self.subpixel
+            )
+            self.sprite.opacity = self.opacity
+            self.sprite.rotation = self.rotation
+        elif self.is_located_outside_viewport() and self.sprite:
+            self.sprite.delete()
+            self.sprite = None
+
+    @final
+    def on_position_update(self, x=0, y=0, rotation=0):
+        self.x = x
+        self.y = y
+        self.rotation = rotation
+        if self.sprite:
+            self.sprite.update(x=self.x, y=self.y, rotation=self.rotation)
+
     @final
     def is_located_outside_viewport(self):
         return self.x - self.texture.anchor_x \
@@ -84,17 +89,12 @@ class MapSpriteV2(UIObject, ABC):
                - (MAP_CAMERA.offset_y + self.parent_viewport.y1) / MAP_CAMERA.zoom \
                < -SPRITE_VIEWPORT_EDGE_OFFSET_LIMIT_Y
 
+    @final
+    def is_located_inside_viewport(self):
+        return not self.is_located_outside_viewport()
 
-class UISpriteV2(UIObject, ABC):
-    def __init__(self, logger, parent_viewport):
-        super().__init__(logger, parent_viewport)
-        self.sprite = None
-        self.texture = None
-        self.batch = None
-        self.group = None
-        self.usage = 'dynamic'
-        self.subpixel = True
 
+class UISpriteV2(SpriteV2, ABC):
     @abstractmethod
     def get_x(self):
         pass
