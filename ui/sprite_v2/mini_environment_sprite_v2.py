@@ -2,8 +2,7 @@ from logging import getLogger
 from typing import final
 
 from database import USER_DB_CURSOR
-from ui import get_map_environment_primary, MAP_WIDTH, get_mini_map_width, GROUPS, BATCHES, \
-    get_mini_map_x, get_mini_map_y
+from ui import get_map_environment_primary, MAP_WIDTH, GROUPS, BATCHES
 
 from ui.sprite_v2 import UISpriteV2
 
@@ -24,15 +23,14 @@ class MiniEnvironmentSpriteV2(UISpriteV2):
         self.usage = 'static'
 
     def get_x(self):
-        return get_mini_map_x(self.screen_resolution)
+        return self.parent_viewport.x1
 
     def get_y(self):
-        return get_mini_map_y(self.screen_resolution)
+        return self.parent_viewport.y1
 
     def get_scale(self):
-        return get_mini_map_width(self.screen_resolution) / MAP_WIDTH
+        return (self.parent_viewport.x2 - self.parent_viewport.x1) / MAP_WIDTH
 
     def on_unlock_environment(self, tier):
         self.unlocked_environment = tier
-        if self.texture:
-            self.on_update_texture(get_map_environment_primary(map_id=self.map_id, tiers=self.unlocked_environment))
+        self.on_update_texture(get_map_environment_primary(map_id=self.map_id, tiers=self.unlocked_environment))

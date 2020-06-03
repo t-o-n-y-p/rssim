@@ -129,5 +129,5 @@ class UISpriteV2(SpriteV2, ABC):
 
     @final
     @is_active
-    def on_position_changed(self):
+    def on_position_update(self):
         self.sprite.update(x=self.get_x(), y=self.get_y())

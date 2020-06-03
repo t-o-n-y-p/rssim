@@ -22,5 +22,4 @@ class MainEnvironmentSpriteV2(MapSpriteV2):
 
     def on_unlock_environment(self, tier):
         self.unlocked_environment = tier
-        if self.texture:
-            self.on_update_texture(get_map_environment_primary(map_id=self.map_id, tiers=self.unlocked_environment))
+        self.on_update_texture(get_map_environment_primary(map_id=self.map_id, tiers=self.unlocked_environment))
