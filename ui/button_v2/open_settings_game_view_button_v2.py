@@ -1,4 +1,3 @@
-from logging import getLogger
 from typing import final
 
 from ui import get_bottom_bar_height
@@ -7,11 +6,6 @@ from ui.button_v2 import UIButtonV2
 
 @final
 class OpenSettingsGameViewButtonV2(UIButtonV2):
-    def __init__(self, on_click_action, parent_viewport):
-        super().__init__(logger=getLogger('root.open_settings_game_view_button'), parent_viewport=parent_viewport)
-        self.font_name = 'Webdings'
-        self.on_click_action = on_click_action
-
     def get_x(self):
         return self.parent_viewport.x2 - get_bottom_bar_height(self.screen_resolution)
 

@@ -2,22 +2,7 @@ from abc import ABC, abstractmethod
 from typing import final, Final
 
 from database import USER_DB_CURSOR
-
-
-def fade_animation_is_active(f):
-    def _handle_if_fade_animation_is_active(*args, **kwargs):
-        if args[0].is_activated:
-            f(*args, **kwargs)
-
-    return _handle_if_fade_animation_is_active
-
-
-def fade_animation_is_not_active(f):
-    def _handle_if_fade_animation_is_not_active(*args, **kwargs):
-        if not args[0].is_activated:
-            f(*args, **kwargs)
-
-    return _handle_if_fade_animation_is_not_active
+from ui import is_active
 
 
 def fade_animation_needed(f):
@@ -56,7 +41,7 @@ class FadeAnimationV2(ABC):
         pass
 
     @final
-    @fade_animation_is_active
+    @is_active
     def on_update(self, dt):
         if not self.fade_animations_enabled:
             self.animation_object.on_update_opacity(self.end_opacity)

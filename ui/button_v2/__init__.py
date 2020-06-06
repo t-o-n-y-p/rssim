@@ -9,6 +9,74 @@ from ui import GROUPS, WHITE_RGB, GREY_RGB, WINDOW, HAND_CURSOR, DEFAULT_CURSOR,
     MAP_CAMERA, PRESSED, NORMAL, HOVER, UIObject, is_not_active, is_active
 
 
+def _create_single_button(cls, parent_object):
+    button_name_snake_case = ''.join('_' + c.lower() if c.isupper() else c for c in cls.__name__).lstrip('_')
+    on_click_action_method_name = 'on_click_action_' + button_name_snake_case
+    on_hover_action_method_name = 'on_hover_action_' + button_name_snake_case
+    on_leave_action_method_name = 'on_leave_action_' + button_name_snake_case
+    parent_object.__setattr__(
+        button_name_snake_case,
+        cls(
+            on_click_action=parent_object.__getattribute__(on_click_action_method_name),
+            on_hover_action=parent_object.__getattribute__(on_hover_action_method_name)
+            if hasattr(parent_object, on_hover_action_method_name) else None,
+            on_leave_action=parent_object.__getattribute__(on_leave_action_method_name)
+            if hasattr(parent_object, on_leave_action_method_name) else None,
+            logger=parent_object.logger.getChild(button_name_snake_case),
+            parent_viewport=parent_object.parent_viewport
+        )
+    )
+    button_object = parent_object.__getattribute__(button_name_snake_case)
+    parent_object.ui_objects.append(button_object)
+    parent_object.fade_out_animation.child_animations.append(button_object.fade_out_animation)
+    parent_object.on_mouse_press_handlers.extend(button_object.on_mouse_press_handlers)
+    parent_object.on_mouse_release_handlers.extend(button_object.on_mouse_release_handlers)
+    parent_object.on_mouse_motion_handlers.extend(button_object.on_mouse_motion_handlers)
+    parent_object.on_mouse_leave_handlers.extend(button_object.on_mouse_leave_handlers)
+    parent_object.on_window_resize_handlers.extend(button_object.on_window_resize_handlers)
+    return button_object
+
+
+def default_single_button(cls):
+    def _add_default_button(f):
+        def _add_default_button_to_an_object(*args, **kwargs):
+            f(*args, **kwargs)
+            if issubclass(cls, UIButtonV2):
+                button_object = _create_single_button(cls, args[0])
+                args[0].fade_in_animation.child_animations.append(button_object.fade_in_animation)
+
+        return _add_default_button_to_an_object
+
+    return _add_default_button
+
+
+def single_button(cls):
+    def _add_button(f):
+        def _add_button_to_an_object(*args, **kwargs):
+            f(*args, **kwargs)
+            if issubclass(cls, UIButtonV2):
+                _create_single_button(cls, args[0])
+
+        return _add_button_to_an_object
+
+    return _add_button
+
+
+def double_button(cls1, cls2):
+    def _add_default_double_button(f):
+        def _add_default_double_button_to_an_object(*args, **kwargs):
+            f(*args, **kwargs)
+            if issubclass(cls1, UIButtonV2) and issubclass(cls2, UIButtonV2):
+                button_object_1 = _create_single_button(cls1, args[0])
+                button_object_2 = _create_single_button(cls2, args[0])
+                button_object_1.paired_button = button_object_2
+                button_object_2.paired_button = button_object_1
+
+        return _add_default_double_button_to_an_object
+
+    return _add_default_double_button
+
+
 def is_active_or_disabled(f):
     def _handle_if_is_active_or_disabled(*args, **kwargs):
         if args[0].is_activated or args[0].disabled_state:
@@ -49,12 +117,6 @@ def button_is_pressed(f):
     return _handle_if_button_is_pressed
 
 
-def create_two_state_button(first_button_object, second_button_object):
-    first_button_object.paired_button = second_button_object
-    second_button_object.paired_button = first_button_object
-    return first_button_object, second_button_object
-
-
 # button background RGB color for non-transparent and transparent button
 BUTTON_BACKGROUND_RGB: Final = {
     NORMAL: ((0.0, 0.0, 0.0), (0.0, 0.0, 0.0)),
@@ -70,8 +132,11 @@ BUTTON_BACKGROUND_ALPHA: Final = {
 
 
 class ButtonV2(UIObject, ABC):
-    def __init__(self, logger, parent_viewport=None):
+    def __init__(self, on_click_action, on_hover_action, on_leave_action, logger, parent_viewport):
         super().__init__(logger, parent_viewport)
+        self.on_click_action = on_click_action
+        self.on_hover_action = on_hover_action
+        self.on_leave_action = on_leave_action
         self.state = NORMAL
         self.on_mouse_press_handlers = [self.on_mouse_press]
         self.on_mouse_release_handlers = [self.on_mouse_release]
@@ -108,20 +173,16 @@ class ButtonV2(UIObject, ABC):
 
 
 class UIButtonV2(ButtonV2, ABC):
-    on_click_action: callable
-    font_name: str
-
-    def __init__(self, logger, parent_viewport):
-        super().__init__(logger, parent_viewport)
+    def __init__(self, on_click_action, on_hover_action, on_leave_action, logger, parent_viewport):
+        super().__init__(on_click_action, on_hover_action, on_leave_action, logger, parent_viewport)
         self.transparent = True
         self.paired_button = None
         self.vertex_list = None
         self.text_label = None
+        self.font_name = 'Webdings'
         self.is_bold = False
         self.disabled_state = False
         self.arguments = []
-        self.on_hover_action = None
-        self.on_leave_action = None
 
     @abstractmethod
     def get_x(self):
@@ -335,10 +396,6 @@ class UIButtonV2(ButtonV2, ABC):
 
 
 class MapButtonV2(ButtonV2, ABC):
-    on_click_action: callable
-    on_hover_action: callable
-    on_leave_action: callable
-
     @final
     @is_active
     def on_mouse_motion(self, x, y, dx, dy):

@@ -1,4 +1,3 @@
-from logging import getLogger
 from typing import final
 
 from ui import get_bottom_bar_height, get_top_bar_height, localizable_with_resource
@@ -8,11 +7,10 @@ from ui.button_v2 import UIButtonV2
 @final
 class OpenSettingsMainMenuViewButtonV2(UIButtonV2):                                                             # noqa
     @localizable_with_resource('settings_label_string')
-    def __init__(self, on_click_action, parent_viewport):
-        super().__init__(logger=getLogger('root.open_settings_main_menu_view_button'), parent_viewport=parent_viewport)
+    def __init__(self, on_click_action, on_hover_action, on_leave_action, logger, parent_viewport):
+        super().__init__(on_click_action, on_hover_action, on_leave_action, logger, parent_viewport)
         self.font_name = 'Perfo'
         self.is_bold = True
-        self.on_click_action = on_click_action
 
     def get_x(self):
         return (self.parent_viewport.x1 + self.parent_viewport.x2) // 2 \

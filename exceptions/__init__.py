@@ -2,7 +2,7 @@ from typing import final
 
 
 @final
-class VideoAdapterNotSupportedException(Exception):
+class VideoAdapterNotSupportedError(Exception):
     def __init__(self):
         super().__init__()
         self.caption = 'Video Adapter Error'
@@ -10,7 +10,7 @@ class VideoAdapterNotSupportedException(Exception):
 
 
 @final
-class MonitorNotSupportedException(Exception):
+class MonitorNotSupportedError(Exception):
     def __init__(self):
         super().__init__()
         self.caption = 'Monitor Resolution Error'
@@ -18,7 +18,7 @@ class MonitorNotSupportedException(Exception):
 
 
 @final
-class UpdateIncompatibleException(Exception):
+class UpdateIncompatibleError(Exception):
     def __init__(self):
         super().__init__()
         self.caption = 'Update failed'
@@ -26,7 +26,7 @@ class UpdateIncompatibleException(Exception):
 
 
 @final
-class HackingDetectedException(Exception):
+class HackingDetectedError(Exception):
     def __init__(self):
         super().__init__()
         self.caption = 'Hacking detected'

@@ -11,8 +11,8 @@ from keyring import get_password
 from pyglet import gl
 
 from database import USER_DB_LOCATION, USER_DB_CURSOR, on_commit
-from exceptions import VideoAdapterNotSupportedException, MonitorNotSupportedException, HackingDetectedException, \
-    UpdateIncompatibleException
+from exceptions import VideoAdapterNotSupportedError, MonitorNotSupportedError, HackingDetectedError, \
+    UpdateIncompatibleError
 from ui import MIN_RESOLUTION_WIDTH, MIN_RESOLUTION_HEIGHT, WINDOW, BATCHES, MAP_CAMERA, MIDI_PLAYER
 from controller.app_controller import AppController
 from rssim import CURRENT_VERSION
@@ -24,7 +24,7 @@ def video_adapter_is_supported(fn):
         max_texture_size = c_long(0)
         gl.glGetIntegerv(gl.GL_MAX_TEXTURE_SIZE, max_texture_size)
         if max_texture_size.value < REQUIRED_TEXTURE_SIZE:
-            raise VideoAdapterNotSupportedException
+            raise VideoAdapterNotSupportedError
 
         fn(*args, **kwargs)
 
@@ -36,7 +36,7 @@ def monitor_is_supported(fn):
         # determine if screen resolution meets requirements, if not - raise specific exception
         if windll.user32.GetSystemMetrics(0) < MIN_RESOLUTION_WIDTH \
                 or windll.user32.GetSystemMetrics(1) < MIN_RESOLUTION_HEIGHT:
-            raise MonitorNotSupportedException
+            raise MonitorNotSupportedError
 
         fn(*args, **kwargs)
 
@@ -48,7 +48,7 @@ def game_config_was_not_modified(fn):
         with open('db/config.db', 'rb') as f1, open('db/default.db', 'rb') as f2:
             data = (f2.read() + f1.read())[::-1]
             if sha512(data[::3] + data[1::3] + data[2::3]).hexdigest() != DATABASE_SHA512:
-                raise HackingDetectedException
+                raise HackingDetectedError
 
             fn(*args, **kwargs)
 
@@ -62,7 +62,7 @@ def player_progress_was_not_modified(fn):
             if sha512(data[::3] + data[1::3] + data[2::3]).hexdigest() \
                     != get_password(sha512('user_db'.encode('utf-8')).hexdigest(),
                                     sha512('user_db'.encode('utf-8')).hexdigest()):
-                raise HackingDetectedException
+                raise HackingDetectedError
 
             fn(*args, **kwargs)
 
@@ -275,7 +275,7 @@ class Launcher:
         try:
             USER_DB_CURSOR.execute('SELECT * FROM version')
         except OperationalError:
-            raise UpdateIncompatibleException
+            raise UpdateIncompatibleError
 
         user_db_version = USER_DB_CURSOR.fetchone()
         logger.debug(f'user DB version: {user_db_version}')
@@ -284,7 +284,7 @@ class Launcher:
             logger.debug('user DB version is up to date')
         # update from versions < MIN_UPDATE_COMPATIBLE_VERSION is not supported
         elif user_db_version < MIN_UPDATE_COMPATIBLE_VERSION:
-            raise UpdateIncompatibleException
+            raise UpdateIncompatibleError
         else:
             logger.debug('upgrading database...')
             next_app_version = [*user_db_version[MAJOR:PATCH], user_db_version[PATCH] + 1]

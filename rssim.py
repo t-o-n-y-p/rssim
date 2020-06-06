@@ -5,8 +5,8 @@ from traceback import print_tb
 from ctypes import windll
 from typing import Final
 
-from exceptions import VideoAdapterNotSupportedException, MonitorNotSupportedException, UpdateIncompatibleException, \
-    HackingDetectedException
+from exceptions import VideoAdapterNotSupportedError, MonitorNotSupportedError, UpdateIncompatibleError, \
+    HackingDetectedError
 
 CURRENT_VERSION: Final = (0, 10, 5)
 
@@ -18,8 +18,8 @@ def main():
     try:
         Launcher().run()
     except (
-        VideoAdapterNotSupportedException, MonitorNotSupportedException,
-        UpdateIncompatibleException, HackingDetectedException
+            VideoAdapterNotSupportedError, MonitorNotSupportedError,
+            UpdateIncompatibleError, HackingDetectedError
     ) as e:
         WINDOW.close()
         windll.user32.MessageBoxW(None, e.text, e.caption, 0x1000)
