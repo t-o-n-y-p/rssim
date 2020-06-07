@@ -5,25 +5,8 @@ from typing import final
 from pyglet.gl import GL_POINTS
 from pyglet.window import mouse
 
-from database import USER_DB_CURSOR
-from ui import Viewport, BATCHES, GROUPS, WINDOW, HAND_CURSOR, DEFAULT_CURSOR, get_bottom_bar_height
-from ui.label import Label, LocalizedLabel
-
-
-def knob_is_active(fn):
-    def _handle_if_knob_is_activated(*args, **kwargs):
-        if args[0].is_activated:
-            fn(*args, **kwargs)
-
-    return _handle_if_knob_is_activated
-
-
-def knob_is_not_active(fn):
-    def _handle_if_knob_is_not_activated(*args, **kwargs):
-        if not args[0].is_activated:
-            fn(*args, **kwargs)
-
-    return _handle_if_knob_is_not_activated
+from ui import BATCHES, GROUPS, WINDOW, HAND_CURSOR, DEFAULT_CURSOR, get_bottom_bar_height, UIObject, \
+    is_not_active, is_active, HOVER, NORMAL
 
 
 def value_update_mode_enabled(fn):
@@ -53,42 +36,38 @@ def cursor_is_over_the_knob(fn):
 
 def next_knob_step_detected(fn):
     def _handle_if_next_knob_step_detected(*args, **kwargs):
-        if (args[2] - args[4] - args[0].initial_cursor_position[1]) // args[0].knob_sensitivity \
-                != (args[2] - args[0].initial_cursor_position[1]) // args[0].knob_sensitivity:
+        if (args[2] - args[4] - args[0].initial_cursor_y) // args[0].knob_sensitivity \
+                != (args[2] - args[0].initial_cursor_y) // args[0].knob_sensitivity:
             fn(*args, **kwargs)
 
     return _handle_if_next_knob_step_detected
 
 
-class Knob(ABC):
+class KnobV2(UIObject, ABC):
     main_color: (int, int, int)
     background_color: (int, int, int)
-    value_label: Label or LocalizedLabel
     start_value: float
     value_step: float
     maximum_steps: int
     current_step: int
 
-    def __init__(self, on_value_update_action, parent_viewport, logger):
+    def __init__(self, logger, parent_viewport, on_value_update_action):
+        super().__init__(logger, parent_viewport)
         self.on_value_update_action = on_value_update_action
-        self.parent_viewport = parent_viewport
-        self.logger = logger
-        self.viewport = Viewport()
-        self.is_activated = False
         self.knob_value_update_mode = False
         self.circle = None
         self.circle_vertices = []
         self.circle_colors = []
         self.circle_segments_per_step = None
-        self.on_window_resize_handlers = [self.on_window_resize, ]
-        self.screen_resolution = (0, 0)
-        self.opacity = 0
-        USER_DB_CURSOR.execute('SELECT current_locale FROM i18n')
-        self.current_locale = USER_DB_CURSOR.fetchone()[0]
         self.value_update_mode = False
-        self.state = 'normal'
-        self.initial_cursor_position = (0, 0)
+        self.state = NORMAL
+        self.initial_cursor_y = 0
         self.knob_sensitivity = 5
+        self.on_mouse_press_handlers = [self.on_mouse_press]
+        self.on_mouse_release_handlers = [self.on_mouse_release]
+        self.on_mouse_motion_handlers = [self.on_mouse_motion]
+        self.on_mouse_leave_handlers = [self.on_mouse_leave]
+        self.on_mouse_drag_handlers = [self.on_mouse_drag]
 
     @abstractmethod
     def current_value_formula(self):
@@ -98,34 +77,29 @@ class Knob(ABC):
     def on_init_state(self, value):
         pass
 
-    def on_update_current_locale(self, new_locale):
-        pass
-
-    @final
-    @knob_is_not_active
-    def on_activate(self):
-        self.is_activated = True
-        self.value_label.create()
-        self.circle = BATCHES['ui_batch'].add(
-            self.maximum_steps + 1, GL_POINTS, GROUPS['button_text'],
-            ('v2f', self.circle_vertices), ('c4B', self.circle_colors)
+    def on_mouse_drag(self, x, y, dx, dy, buttons, modifiers):
+        self.on_current_step_update(
+            self.current_step
+            + (y - self.initial_cursor_y) // self.knob_sensitivity
+            - (y - dy - self.initial_cursor_y) // self.knob_sensitivity
         )
+        self.on_value_update_action(self.current_value_formula())
 
     @final
-    @knob_is_active
-    def on_deactivate(self):
-        self.is_activated = False
-
-    @abstractmethod
-    def on_window_resize(self, width, height):
-        pass
+    @is_not_active
+    def on_activate(self):
+        super().on_activate()
+        if not self.circle:
+            self.circle = BATCHES['ui_batch'].add(
+                self.maximum_steps + 1, GL_POINTS, GROUPS['button_text'],
+                ('v2f', self.circle_vertices), ('c4B', self.circle_colors)
+            )
 
     @final
     def on_update_opacity(self, new_opacity):
-        self.opacity = new_opacity
-        self.value_label.on_update_opacity(self.opacity)
+        super().on_update_opacity(new_opacity)
         self.circle_colors[3::4] = (self.opacity, ) * (len(self.circle_colors) // 4)
-        if self.circle is not None:
+        if self.circle:
             if self.opacity > 0:
                 self.circle.colors = self.circle_colors
             else:
@@ -139,31 +113,31 @@ class Knob(ABC):
             *(*self.main_color, self.opacity) * (self.current_step + 1),
             *(*self.background_color, self.opacity) * (self.maximum_steps - self.current_step)
         ]
-        if self.circle is not None:
+        if self.circle:
             self.circle.colors = self.circle_colors
 
     @final
-    @knob_is_active
+    @is_active
     def on_mouse_motion(self, x, y, dx, dy):
         if x in range(self.viewport.x1, self.viewport.x2) and y in range(self.viewport.y1, self.viewport.y2):
-            if self.state != 'hover':
-                self.state = 'hover'
+            if self.state != HOVER:
+                self.state = HOVER
                 WINDOW.set_mouse_cursor(HAND_CURSOR)
 
-        elif self.state != 'normal':
-            self.state = 'normal'
+        elif self.state != NORMAL:
+            self.state = NORMAL
             WINDOW.set_mouse_cursor(DEFAULT_CURSOR)
 
     @final
-    @knob_is_active
+    @is_active
     @cursor_is_over_the_knob
     @left_mouse_button
     def on_mouse_press(self, x, y, button, modifiers):
         self.value_update_mode = True
-        self.initial_cursor_position = x, y
+        self.initial_cursor_y = y
 
     @final
-    @knob_is_active
+    @is_active
     @left_mouse_button
     @value_update_mode_enabled
     def on_mouse_release(self, x, y, button, modifiers):
@@ -171,22 +145,10 @@ class Knob(ABC):
         WINDOW.set_mouse_cursor(DEFAULT_CURSOR)
 
     @final
-    @knob_is_active
+    @is_active
     def on_mouse_leave(self, x, y):
-        self.state = 'normal'
+        self.state = NORMAL
         WINDOW.set_mouse_cursor(DEFAULT_CURSOR)
-
-    @final
-    @value_update_mode_enabled
-    @next_knob_step_detected
-    def on_mouse_drag(self, x, y, dx, dy, buttons, modifiers):
-        self.on_current_step_update(
-            self.current_step
-            + (y - self.initial_cursor_position[1]) // self.knob_sensitivity
-            - (y - dy - self.initial_cursor_position[1]) // self.knob_sensitivity
-        )
-        self.value_label.on_update_args((self.current_value_formula(), ))
-        self.on_value_update_action(self.current_value_formula())
 
     @final
     def on_circle_resize(self):
@@ -210,5 +172,5 @@ class Knob(ABC):
 
         self.circle_vertices.append(middle_point[0] + circle_radius * cos(radians(-30)))
         self.circle_vertices.append(middle_point[1] + circle_radius * sin(radians(-30)))
-        if self.circle is not None:
+        if self.circle:
             self.circle.vertices = self.circle_vertices
