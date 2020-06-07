@@ -1,5 +1,6 @@
 from abc import ABC
 from ctypes import windll
+from inspect import getfullargspec
 from typing import Final, final
 
 from pyglet import resource
@@ -14,6 +15,108 @@ from midi_player import MIDIPlayer
 from speaker import Speaker
 from ui.fade_animation_v2.fade_in_animation_v2 import FadeInAnimationV2
 from ui.fade_animation_v2.fade_out_animation_v2 import FadeOutAnimationV2
+
+
+def _create_button(cls, parent_object):
+    button_name_snake_case = ''.join('_' + c.lower() if c.isupper() else c for c in cls.__name__).lstrip('_')
+    on_click_action_method_name = 'on_click_action_' + button_name_snake_case
+    on_hover_action_method_name = 'on_hover_action_' + button_name_snake_case
+    on_leave_action_method_name = 'on_leave_action_' + button_name_snake_case
+    parent_object.__setattr__(
+        button_name_snake_case,
+        cls(
+            logger=parent_object.logger.getChild(button_name_snake_case),
+            parent_viewport=parent_object.parent_viewport,
+            on_click_action=parent_object.__getattribute__(on_click_action_method_name),
+            on_hover_action=parent_object.__getattribute__(on_hover_action_method_name)
+            if hasattr(parent_object, on_hover_action_method_name) else None,
+            on_leave_action=parent_object.__getattribute__(on_leave_action_method_name)
+            if hasattr(parent_object, on_leave_action_method_name) else None
+        )
+    )
+    button_object = parent_object.__getattribute__(button_name_snake_case)
+    parent_object.ui_objects.append(button_object)
+    parent_object.fade_out_animation.child_animations.append(button_object.fade_out_animation)
+    parent_object.on_mouse_press_handlers.extend(button_object.on_mouse_press_handlers)
+    parent_object.on_mouse_release_handlers.extend(button_object.on_mouse_release_handlers)
+    parent_object.on_mouse_motion_handlers.extend(button_object.on_mouse_motion_handlers)
+    parent_object.on_mouse_leave_handlers.extend(button_object.on_mouse_leave_handlers)
+    parent_object.on_window_resize_handlers.extend(button_object.on_window_resize_handlers)
+    return button_object
+
+
+def _create_object(cls, parent_object):
+    object_name_snake_case = ''.join('_' + c.lower() if c.isupper() else c for c in cls.__name__).lstrip('_')
+    cls_resource_keys = getfullargspec(cls).args[3:]
+    parent_object.__setattr__(
+        object_name_snake_case,
+        cls(
+            parent_object.logger.getChild(object_name_snake_case), parent_object.viewport,
+            *(parent_object.__getattribute__(a) for a in cls_resource_keys)
+        )
+    )
+    new_object = parent_object.__getattribute__(object_name_snake_case)
+    parent_object.ui_objects.append(new_object)
+    parent_object.fade_out_animation.child_animations.append(new_object.fade_out_animation)
+    parent_object.on_mouse_press_handlers.extend(new_object.on_mouse_press_handlers)
+    parent_object.on_mouse_release_handlers.extend(new_object.on_mouse_release_handlers)
+    parent_object.on_mouse_motion_handlers.extend(new_object.on_mouse_motion_handlers)
+    parent_object.on_mouse_drag_handlers.extend(new_object.on_mouse_drag_handlers)
+    parent_object.on_mouse_leave_handlers.extend(new_object.on_mouse_leave_handlers)
+    parent_object.on_mouse_scroll_handlers.extend(new_object.on_mouse_scroll_handlers)
+    parent_object.on_key_press_handlers.extend(new_object.on_key_press_handlers)
+    parent_object.on_text_handlers.extend(new_object.on_text_handlers)
+    parent_object.on_window_resize_handlers.extend(new_object.on_window_resize_handlers)
+    parent_object.on_window_activate_handlers.extend(new_object.on_window_activate_handlers)
+    parent_object.on_window_show_handlers.extend(new_object.on_window_show_handlers)
+    parent_object.on_window_deactivate_handlers.extend(new_object.on_window_deactivate_handlers)
+    parent_object.on_window_hide_handlers.extend(new_object.on_window_hide_handlers)
+    return new_object
+
+
+def default_object(cls):
+    def _default_object(f):
+        def _add_default_object(*args, **kwargs):
+            f(*args, **kwargs)
+            if cls.__name__.find('Button') > 0:
+                new_object = _create_button(cls, args[0])
+            else:
+                new_object = _create_object(cls, args[0])
+
+            args[0].fade_in_animation.child_animations.append(new_object.fade_in_animation)
+
+        return _add_default_object
+
+    return _default_object
+
+
+def optional_object(cls):
+    def _optional_object(f):
+        def _add_optional_object(*args, **kwargs):
+            f(*args, **kwargs)
+            if cls.__name__.find('Button') > 0:
+                _create_button(cls, args[0])
+            else:
+                _create_object(cls, args[0])
+
+        return _add_optional_object
+
+    return _optional_object
+
+
+def double_object(cls1, cls2):
+    def _double_object(f):
+        def _add_double_object(*args, **kwargs):
+            f(*args, **kwargs)
+            if cls1.__name__.find('Button') > 0 and cls2.__name__.find('Button') > 0:
+                new_object_1 = _create_button(cls1, args[0])
+                new_object_2 = _create_button(cls2, args[0])
+                new_object_1.paired_object = new_object_2
+                new_object_2.paired_object = new_object_1
+
+        return _add_double_object
+
+    return _double_object
 
 
 def window_size_has_changed(f):

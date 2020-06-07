@@ -11,11 +11,11 @@ def shop_buttons(f):
         CONFIG_DB_CURSOR.execute('''SELECT COUNT(*) FROM shops_config WHERE map_id = ?''', (args[0].map_id,))
         shop_buttons_list = [
             OpenShopDetailsButtonV2(
+                logger=args[0].logger.getChild(f'shop_id.{shop_id}.open_shop_details_button_v2'),
+                parent_viewport=args[0].viewport, map_id=args[0].map_id, shop_id=shop_id,
                 on_click_action=args[0].on_click_action_open_shop_details_button_v2,
                 on_hover_action=args[0].on_hover_action_open_shop_details_button_v2,
-                on_leave_action=args[0].on_leave_action_open_shop_details_button_v2,
-                logger=args[0].logger.getChild(f'shop_id.{shop_id}.open_shop_details_button_v2'),
-                parent_viewport=args[0].parent_viewport, map_id=args[0].map_id, shop_id=shop_id
+                on_leave_action=args[0].on_leave_action_open_shop_details_button_v2
             ) for shop_id in range(CONFIG_DB_CURSOR.fetchone()[0])
         ]
         args[0].__setattr__('shop_buttons', shop_buttons_list)
@@ -33,8 +33,8 @@ def shop_buttons(f):
 
 @final
 class OpenShopDetailsButtonV2(MapButtonV2):
-    def __init__(self, on_click_action, on_hover_action, on_leave_action, logger, parent_viewport, map_id, shop_id):
-        super().__init__(on_click_action, on_hover_action, on_leave_action, logger, parent_viewport)
+    def __init__(self, logger, parent_viewport, map_id, shop_id, on_click_action, on_hover_action, on_leave_action):
+        super().__init__(logger, parent_viewport, on_click_action, on_hover_action, on_leave_action)
         CONFIG_DB_CURSOR.execute(
             '''SELECT button_x, button_y FROM shops_config WHERE map_id = ? AND shop_id = ?''', (map_id, shop_id)
         )
