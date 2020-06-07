@@ -1,7 +1,7 @@
 from typing import final
 
 from database import CONFIG_DB_CURSOR
-from ui import SHOP_DETAILS_BUTTON_NORMAL_SIZE, MAP_CAMERA
+from ui import MAP_CAMERA
 from ui.button_v2 import MapButtonV2
 
 
@@ -14,7 +14,7 @@ def shop_buttons(f):
                 on_click_action=args[0].on_click_action_open_shop_details_button_v2,
                 on_hover_action=args[0].on_hover_action_open_shop_details_button_v2,
                 on_leave_action=args[0].on_leave_action_open_shop_details_button_v2,
-                logger=args[0].logger.getChild(f'open_shop_details_button_v2.{shop_id}'),
+                logger=args[0].logger.getChild(f'shop_id.{shop_id}.open_shop_details_button_v2'),
                 parent_viewport=args[0].parent_viewport, map_id=args[0].map_id, shop_id=shop_id
             ) for shop_id in range(CONFIG_DB_CURSOR.fetchone()[0])
         ]
@@ -41,7 +41,7 @@ class OpenShopDetailsButtonV2(MapButtonV2):
         self.x, self.y = CONFIG_DB_CURSOR.fetchone()
 
     def get_width(self):
-        return int(MAP_CAMERA.zoom * SHOP_DETAILS_BUTTON_NORMAL_SIZE[0])
+        return int(MAP_CAMERA.zoom * 250)
 
     def get_height(self):
-        return int(MAP_CAMERA.zoom * SHOP_DETAILS_BUTTON_NORMAL_SIZE[1])
+        return int(MAP_CAMERA.zoom * 40)

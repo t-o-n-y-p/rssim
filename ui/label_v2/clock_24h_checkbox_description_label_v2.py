@@ -1,4 +1,3 @@
-from logging import getLogger
 from typing import final
 
 from ui import WHITE_RGB, get_bottom_bar_height, get_top_bar_height, localizable_with_resource
@@ -8,8 +7,8 @@ from ui.label_v2 import LabelV2
 @final
 class Clock24HCheckboxDescriptionLabelV2(LabelV2):                                                              # noqa
     @localizable_with_resource('clock_24h_enabled_description_string')
-    def __init__(self, parent_viewport):
-        super().__init__(logger=getLogger('root.clock_24h_checkbox_description_label'), parent_viewport=parent_viewport)
+    def __init__(self, logger, parent_viewport):
+        super().__init__(logger, parent_viewport)
         self.font_name = 'Arial'
         self.base_color = WHITE_RGB
         self.anchor_x = 'left'

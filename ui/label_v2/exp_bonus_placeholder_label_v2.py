@@ -1,4 +1,3 @@
-from logging import getLogger
 from typing import final
 
 from ui import ORANGE_GREY_RGB, get_bottom_bar_height
@@ -7,8 +6,8 @@ from ui.label_v2 import LabelV2
 
 @final
 class ExpBonusPlaceholderLabelV2(LabelV2):
-    def __init__(self, parent_viewport):
-        super().__init__(logger=getLogger('root.exp_bonus_placeholder_label'), parent_viewport=parent_viewport)
+    def __init__(self, logger, parent_viewport):
+        super().__init__(logger, parent_viewport)
         self.font_name = 'Perfo'
         self.bold = True
         self.base_color = ORANGE_GREY_RGB

@@ -1,4 +1,3 @@
-from logging import getLogger
 from typing import final
 
 from ui import SCHEDULE_ROWS, get_inner_area_rect, WHITE_RGB, localizable_with_resource
@@ -11,8 +10,8 @@ class ScheduleRow24HMainLabelV2(LabelV2):                                       
     @argument('train_id')
     @argument('24h_time')
     @argument('cars')
-    def __init__(self, parent_viewport):
-        super().__init__(logger=getLogger('root.schedule_row_24h_main_label'), parent_viewport=parent_viewport)
+    def __init__(self, logger, parent_viewport):
+        super().__init__(logger, parent_viewport)
         self.font_name = 'Perfo'
         self.bold = True
         self.base_color = WHITE_RGB

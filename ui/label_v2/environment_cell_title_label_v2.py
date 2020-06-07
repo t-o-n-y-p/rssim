@@ -1,4 +1,3 @@
-from logging import getLogger
 from typing import final
 
 from ui import WHITE_RGB, get_bottom_bar_height, localizable_with_resource
@@ -9,8 +8,8 @@ from ui.label_v2 import LabelV2, argument
 class EnvironmentCellTitleLabelV2(LabelV2):                                                                     # noqa
     @localizable_with_resource('title_environment_string')
     @argument('tier')
-    def __init__(self, parent_viewport):
-        super().__init__(logger=getLogger('root.environment_cell_title_label'), parent_viewport=parent_viewport)
+    def __init__(self, logger, parent_viewport):
+        super().__init__(logger, parent_viewport)
         self.font_name = 'Arial'
         self.base_color = WHITE_RGB
         self.anchor_x = 'left'

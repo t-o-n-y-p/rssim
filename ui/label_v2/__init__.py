@@ -1,3 +1,4 @@
+from inspect import getfullargspec
 from abc import ABC, abstractmethod
 from math import log10
 from typing import final
@@ -9,6 +10,55 @@ from win32clipboard import CloseClipboard, GetClipboardData, OpenClipboard
 from database import MINUTES_IN_ONE_HOUR, SECONDS_IN_ONE_HOUR, HOURS_IN_ONE_DAY, SECONDS_IN_ONE_MINUTE
 from i18n import I18N_RESOURCES
 from ui import UIObject, is_not_active, window_size_has_changed, localizable, is_active, BATCHES, GROUPS
+
+
+def _create_label(cls, parent_object):
+    label_name_snake_case = ''.join('_' + c.lower() if c.isupper() else c for c in cls.__name__).lstrip('_')
+    cls_resource_keys = getfullargspec(cls).args[3:]
+    logger_name = label_name_snake_case
+    for k in cls_resource_keys:
+        logger_name += f'_{k}_{parent_object.__getattribute__(k)}'
+
+    parent_object.__setattr__(
+        label_name_snake_case,
+        cls(
+            parent_object.logger.getChild(logger_name), parent_object.parent_viewport,
+            *(parent_object.__getattribute__(a) for a in cls_resource_keys)
+        )
+    )
+    label_object = parent_object.__getattribute__(label_name_snake_case)
+    parent_object.ui_objects.append(label_object)
+    parent_object.fade_out_animation.child_animations.append(label_object.fade_out_animation)
+    if issubclass(cls, InteractiveLabelV2):
+        parent_object.on_key_press_handlers.extend(label_object.on_key_press_handlers)
+        parent_object.on_text_handlers.extend(label_object.on_text_handlers)
+
+    return label_object
+
+
+def default_label(cls):
+    def _default_label(f):
+        def _add_default_label(*args, **kwargs):
+            f(*args, **kwargs)
+            if issubclass(cls, (LabelV2, InteractiveLabelV2)):
+                label_object = _create_label(cls, args[0])
+                args[0].fade_in_animation.child_animations.append(label_object.fade_in_animation)
+
+        return _add_default_label
+
+    return _default_label
+
+
+def label(cls):
+    def _label(f):
+        def _add_label(*args, **kwargs):
+            f(*args, **kwargs)
+            if issubclass(cls, (LabelV2, InteractiveLabelV2)):
+                _create_label(cls, args[0])
+
+        return _add_label
+
+    return _label
 
 
 def argument(name):

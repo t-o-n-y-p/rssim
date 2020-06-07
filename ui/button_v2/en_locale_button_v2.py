@@ -5,7 +5,7 @@ from ui.button_v2 import UIButtonV2
 
 
 @final
-class ENLocaleButtonV2(UIButtonV2):
+class EnLocaleButtonV2(UIButtonV2):
     def get_x(self):
         return self.parent_viewport.x1
 

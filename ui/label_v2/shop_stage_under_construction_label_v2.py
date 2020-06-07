@@ -1,4 +1,3 @@
-from logging import getLogger
 from typing import final
 
 from ui import get_bottom_bar_height, YELLOW_RGB, localizable_with_resource
@@ -9,8 +8,8 @@ from ui.label_v2 import LabelV2, argument
 class ShopStageUnderConstructionLabelV2(LabelV2):                                                               # noqa
     @localizable_with_resource('under_construction_shop_stage_description_string')
     @argument('percentage')
-    def __init__(self, parent_viewport):
-        super().__init__(logger=getLogger('root.shop_stage_under_construction_label'), parent_viewport=parent_viewport)
+    def __init__(self, logger, parent_viewport):
+        super().__init__(logger, parent_viewport)
         self.font_name = 'Arial'
         self.base_color = YELLOW_RGB
         self.anchor_x = 'center'

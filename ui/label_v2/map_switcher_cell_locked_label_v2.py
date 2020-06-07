@@ -1,4 +1,3 @@
-from logging import getLogger
 from typing import final
 
 from ui import GREY_RGB, get_bottom_bar_height, get_top_bar_height
@@ -7,8 +6,8 @@ from ui.label_v2 import LabelV2
 
 @final
 class MapSwitcherCellLockedLabelV2(LabelV2):
-    def __init__(self, parent_viewport):
-        super().__init__(logger=getLogger('root.map_switcher_cell_locked_label'), parent_viewport=parent_viewport)
+    def __init__(self, logger, parent_viewport):
+        super().__init__(logger, parent_viewport)
         self.font_name = 'Webdings'
         self.base_color = GREY_RGB
         self.anchor_x = 'center'

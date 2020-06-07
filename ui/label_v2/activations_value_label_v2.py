@@ -1,4 +1,3 @@
-from logging import getLogger
 from typing import final
 
 from ui import WHITE_RGB, get_bottom_bar_height
@@ -8,8 +7,8 @@ from ui.label_v2 import LabelV2, argument
 @final
 class ActivationsValueLabelV2(LabelV2):
     @argument('activations_left')
-    def __init__(self, parent_viewport):
-        super().__init__(logger=getLogger('root.activations_value_label'), parent_viewport=parent_viewport)
+    def __init__(self, logger, parent_viewport):
+        super().__init__(logger, parent_viewport)
         self.font_name = 'Arial'
         self.bold = True
         self.base_color = WHITE_RGB

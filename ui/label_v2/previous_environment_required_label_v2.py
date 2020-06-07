@@ -1,4 +1,3 @@
-from logging import getLogger
 from typing import final
 
 from ui import get_bottom_bar_height, GREY_RGB, localizable_with_resource
@@ -9,8 +8,8 @@ from ui.label_v2 import LabelV2, argument
 class PreviousEnvironmentRequiredLabelV2(LabelV2):                                                              # noqa
     @localizable_with_resource('unlock_condition_from_previous_environment_environment_description_string')
     @argument('tier')
-    def __init__(self, parent_viewport):
-        super().__init__(logger=getLogger('root.previous_environment_required_label'), parent_viewport=parent_viewport)
+    def __init__(self, logger, parent_viewport):
+        super().__init__(logger, parent_viewport)
         self.font_name = 'Arial'
         self.base_color = GREY_RGB
         self.anchor_x = 'left'

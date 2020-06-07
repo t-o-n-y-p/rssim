@@ -1,4 +1,3 @@
-from logging import getLogger
 from typing import final
 
 from ui import get_bottom_bar_height, YELLOW_RGB
@@ -7,10 +6,8 @@ from ui.label_v2 import MultiplierLabelV2
 
 @final
 class TimeSpeedValueLabelV2(MultiplierLabelV2):
-    def __init__(self, parent_viewport):
-        super().__init__(
-            logger=getLogger('root.time_speed_value_label'), parent_viewport=parent_viewport, max_precision=1
-        )
+    def __init__(self, logger, parent_viewport):
+        super().__init__(logger, parent_viewport, max_precision=1)
         self.font_name = 'Arial'
         self.base_color = YELLOW_RGB
         self.anchor_x = 'center'

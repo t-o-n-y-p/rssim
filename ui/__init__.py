@@ -129,7 +129,6 @@ MIN_RESOLUTION_WIDTH: Final = 1280                     # minimum screen resoluti
 MIN_RESOLUTION_HEIGHT: Final = 720                     # minimum screen resolution height supported by the app UI
 SCHEDULE_ROWS: Final = 12                              # number of schedule rows on schedule screen
 SCHEDULE_COLUMNS: Final = 2                            # number of schedule columns on schedule screen
-SHOP_DETAILS_BUTTON_NORMAL_SIZE: Final = (250, 40)
 # colors
 YELLOW_RGB: Final = (255, 255, 96)                     # yellow UI color
 YELLOW_GREY_RGB: Final = (112, 112, 42)

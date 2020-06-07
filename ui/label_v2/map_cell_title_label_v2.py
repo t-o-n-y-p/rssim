@@ -1,4 +1,3 @@
-from logging import getLogger
 from typing import final
 
 from ui import WHITE_RGB, get_top_bar_height, get_bottom_bar_height, localizable_with_resource
@@ -8,8 +7,8 @@ from ui.label_v2 import LabelV2
 @final
 class MapCellTitleLabelV2(LabelV2):                                                                             # noqa
     @localizable_with_resource('map_title_string')
-    def __init__(self, map_id, parent_viewport):
-        super().__init__(getLogger(f'root.map_cell_title_label.{map_id}'), parent_viewport, map_id)
+    def __init__(self, logger, parent_viewport, map_id):
+        super().__init__(logger, parent_viewport, map_id)
         self.font_name = 'Arial'
         self.base_color = WHITE_RGB
         self.anchor_x = 'center'

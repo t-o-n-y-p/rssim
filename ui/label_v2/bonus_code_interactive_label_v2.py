@@ -1,4 +1,3 @@
-from logging import getLogger
 from typing import final
 
 from ui import get_bottom_bar_height, get_top_bar_height, localizable_with_resource, WHITE_RGB, GREY_RGB
@@ -8,8 +7,8 @@ from ui.label_v2 import InteractiveLabelV2
 @final
 class BonusCodeInteractiveLabelV2(InteractiveLabelV2):                                                          # noqa
     @localizable_with_resource('bonus_code_placeholder_string')
-    def __init__(self, parent_viewport):
-        super().__init__(logger=getLogger('root.bonus_code_interactive_label'), parent_viewport=parent_viewport)
+    def __init__(self, logger, parent_viewport):
+        super().__init__(logger, parent_viewport)
         self.font_name = 'Arial'
         self.base_color = WHITE_RGB
         self.placeholder_color = GREY_RGB

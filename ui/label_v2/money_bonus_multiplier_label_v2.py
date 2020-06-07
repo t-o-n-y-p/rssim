@@ -1,4 +1,3 @@
-from logging import getLogger
 from typing import final
 
 from ui import get_bottom_bar_height, GREEN_RGB
@@ -7,10 +6,8 @@ from ui.label_v2 import MultiplierLabelV2
 
 @final
 class MoneyBonusMultiplierLabelV2(MultiplierLabelV2):
-    def __init__(self, parent_viewport):
-        super().__init__(
-            logger=getLogger('root.money_bonus_value_percent_label'), parent_viewport=parent_viewport, max_precision=2
-        )
+    def __init__(self, logger, parent_viewport):
+        super().__init__(logger, parent_viewport, max_precision=2)
         self.font_name = 'Perfo'
         self.bold = True
         self.base_color = GREEN_RGB
