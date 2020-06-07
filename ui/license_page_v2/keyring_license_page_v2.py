@@ -1,15 +1,12 @@
-from logging import getLogger
 from typing import final
 
-from ui.license_page import LicensePage
+from ui.license_page_v2 import LicensePageV2
 
 
 @final
-class KeyringLicensePage(LicensePage):
-    def __init__(self, parent_viewport):
-        super().__init__(
-            logger=getLogger('root.app.license.view.keyring_license_page'), parent_viewport=parent_viewport
-        )
+class KeyringLicensePageV2(LicensePageV2):
+    def __init__(self, logger, parent_viewport):
+        super().__init__(logger, parent_viewport)
         self.license_text = '''keyring
 ================================================
 Copyright Jason R. Coombs

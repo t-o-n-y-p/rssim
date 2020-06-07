@@ -1,15 +1,12 @@
-from logging import getLogger
 from typing import final
 
-from ui.license_page import LicensePage
+from ui.license_page_v2 import LicensePageV2
 
 
 @final
-class PygletLicensePage(LicensePage):
-    def __init__(self, parent_viewport):
-        super().__init__(
-            logger=getLogger('root.app.license.view.pyglet_license_page'), parent_viewport=parent_viewport
-        )
+class PygletLicensePageV2(LicensePageV2):
+    def __init__(self, logger, parent_viewport):
+        super().__init__(logger, parent_viewport)
         self.license_text = '''pyglet
 ================================================
 Copyright (c) 2006-2008 Alex Holkner
