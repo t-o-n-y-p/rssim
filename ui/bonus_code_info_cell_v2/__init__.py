@@ -67,7 +67,7 @@ class BonusCodeInfoCellV2(UIObject):
 
     @window_size_has_changed
     def on_window_resize(self, width, height):
-        self.screen_resolution = width, height
+        super().on_window_resize(width, height)
         self.viewport.x1 = (self.parent_viewport.x1 + self.parent_viewport.x2) // 2 \
             - 5 * get_top_bar_height(self.screen_resolution)
         self.viewport.x2 = (self.parent_viewport.x1 + self.parent_viewport.x2) // 2 \

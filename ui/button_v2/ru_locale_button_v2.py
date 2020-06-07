@@ -5,7 +5,7 @@ from ui.button_v2 import UIButtonV2
 
 
 @final
-class RuLocaleButtonV2(UIButtonV2):
+class RULocaleButtonV2(UIButtonV2):
     def get_x(self):
         return self.parent_viewport.x1 + get_top_bar_height(self.screen_resolution) - 2
 

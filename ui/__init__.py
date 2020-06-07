@@ -17,8 +17,13 @@ from ui.fade_animation_v2.fade_in_animation_v2 import FadeInAnimationV2
 from ui.fade_animation_v2.fade_out_animation_v2 import FadeOutAnimationV2
 
 
+def _to_snake_case(string):
+    return ''.join('_' + c.lower() if c.isupper() else c for c in string).lstrip('_')\
+        .replace('f_p_s_', 'fps_').replace('r_u_', 'ru_').replace('e_n_', 'en_').replace('u_s_', 'us_')
+
+
 def _create_button(cls, parent_object):
-    button_name_snake_case = ''.join('_' + c.lower() if c.isupper() else c for c in cls.__name__).lstrip('_')
+    button_name_snake_case = _to_snake_case(cls.__name__)
     on_click_action_method_name = 'on_click_action_' + button_name_snake_case
     on_hover_action_method_name = 'on_hover_action_' + button_name_snake_case
     on_leave_action_method_name = 'on_leave_action_' + button_name_snake_case
@@ -45,8 +50,31 @@ def _create_button(cls, parent_object):
     return button_object
 
 
+def _create_knob(cls, parent_object):
+    knob_name_snake_case = _to_snake_case(cls.__name__)
+    on_value_update_action_method_name = 'on_value_update_action_' + knob_name_snake_case
+    parent_object.__setattr__(
+        knob_name_snake_case,
+        cls(
+            logger=parent_object.logger.getChild(knob_name_snake_case),
+            parent_viewport=parent_object.parent_viewport,
+            on_value_update_action=parent_object.__getattribute__(on_value_update_action_method_name)
+        )
+    )
+    knob_object = parent_object.__getattribute__(knob_name_snake_case)
+    parent_object.ui_objects.append(knob_object)
+    parent_object.fade_out_animation.child_animations.append(knob_object.fade_out_animation)
+    parent_object.on_mouse_press_handlers.extend(knob_object.on_mouse_press_handlers)
+    parent_object.on_mouse_release_handlers.extend(knob_object.on_mouse_release_handlers)
+    parent_object.on_mouse_motion_handlers.extend(knob_object.on_mouse_motion_handlers)
+    parent_object.on_mouse_leave_handlers.extend(knob_object.on_mouse_leave_handlers)
+    parent_object.on_mouse_drag_handlers.extend(knob_object.on_mouse_drag_handlers)
+    parent_object.on_window_resize_handlers.extend(knob_object.on_window_resize_handlers)
+    return knob_object
+
+
 def _create_object(cls, parent_object):
-    object_name_snake_case = ''.join('_' + c.lower() if c.isupper() else c for c in cls.__name__).lstrip('_')
+    object_name_snake_case = _to_snake_case(cls.__name__)
     cls_resource_keys = getfullargspec(cls).args[3:]
     parent_object.__setattr__(
         object_name_snake_case,
@@ -80,6 +108,8 @@ def default_object(cls):
             f(*args, **kwargs)
             if cls.__name__.find('Button') > 0:
                 new_object = _create_button(cls, args[0])
+            elif cls.__name__.find('Knob') > 0:
+                new_object = _create_knob(cls, args[0])
             else:
                 new_object = _create_object(cls, args[0])
 
@@ -96,6 +126,8 @@ def optional_object(cls):
             f(*args, **kwargs)
             if cls.__name__.find('Button') > 0:
                 _create_button(cls, args[0])
+            elif cls.__name__.find('Knob') > 0:
+                _create_knob(cls, args[0])
             else:
                 _create_object(cls, args[0])
 

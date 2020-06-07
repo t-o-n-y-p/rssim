@@ -18,7 +18,7 @@ class ConstructorPlaceholderContainerV2(UIObject, ABC):
     @final
     @window_size_has_changed
     def on_window_resize(self, width, height):
-        self.screen_resolution = width, height
+        super().on_window_resize(width, height)
         self.viewport.x1, self.viewport.x2 = self.bottom_parent_viewport.x1, self.bottom_parent_viewport.x2
         self.viewport.y1 = self.bottom_parent_viewport.y1
         self.viewport.y2 = self.top_parent_viewport.y2

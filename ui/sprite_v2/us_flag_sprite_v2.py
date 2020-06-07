@@ -5,7 +5,7 @@ from ui.sprite_v2 import UISpriteV2
 
 
 @final
-class UsFlagSpriteV2(UISpriteV2):
+class USFlagSpriteV2(UISpriteV2):
     def __init__(self, logger, parent_viewport):
         super().__init__(logger, parent_viewport)
         self.texture = FLAG_US

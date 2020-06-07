@@ -243,7 +243,7 @@ class UIButtonV2(ButtonV2, ABC):
 
     @final
     def on_update_opacity(self, new_opacity):
-        self.opacity = new_opacity
+        super().on_update_opacity(new_opacity)
         if self.opacity <= 0:
             if self.vertex_list:
                 self.vertex_list.delete()

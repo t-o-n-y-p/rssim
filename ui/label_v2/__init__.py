@@ -242,7 +242,7 @@ class InteractiveLabelV2(UIObject, ABC):
     @final
     @window_size_has_changed
     def on_window_resize(self, width, height):
-        self.screen_resolution = width, height
+        super().on_window_resize(width, height)
         if self.text_label:
             self.text_label.begin_update()
             self.text_label.x = self.get_x()
