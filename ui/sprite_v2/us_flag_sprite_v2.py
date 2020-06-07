@@ -1,4 +1,3 @@
-from logging import getLogger
 from typing import final
 
 from ui import get_top_bar_height, GROUPS, BATCHES, FLAG_US
@@ -6,9 +5,9 @@ from ui.sprite_v2 import UISpriteV2
 
 
 @final
-class USFlagSpriteV2(UISpriteV2):
-    def __init__(self, parent_viewport):
-        super().__init__(logger=getLogger('root.app.view.ru_flag_sprite'), parent_viewport=parent_viewport)
+class UsFlagSpriteV2(UISpriteV2):
+    def __init__(self, logger, parent_viewport):
+        super().__init__(logger, parent_viewport)
         self.texture = FLAG_US
         self.batch = BATCHES['ui_batch']
         self.group = GROUPS['button_text']

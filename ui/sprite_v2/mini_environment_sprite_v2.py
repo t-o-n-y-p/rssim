@@ -1,4 +1,3 @@
-from logging import getLogger
 from typing import final
 
 from database import USER_DB_CURSOR
@@ -9,11 +8,8 @@ from ui.sprite_v2 import UISpriteV2
 
 @final
 class MiniEnvironmentSpriteV2(UISpriteV2):
-    def __init__(self, map_id, parent_viewport):
-        super().__init__(
-            logger=getLogger(f'root.app.game.map.{map_id}.mini_environment_sprite'),
-            parent_viewport=parent_viewport
-        )
+    def __init__(self, logger, parent_viewport, map_id):
+        super().__init__(logger, parent_viewport)
         self.map_id = map_id
         USER_DB_CURSOR.execute('''SELECT unlocked_environment FROM map_progress WHERE map_id = ?''', (self.map_id, ))
         self.unlocked_environment = USER_DB_CURSOR.fetchone()[0]

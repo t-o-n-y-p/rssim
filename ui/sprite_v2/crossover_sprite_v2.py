@@ -1,4 +1,3 @@
-from logging import getLogger
 from typing import final
 
 from database import CONFIG_DB_CURSOR, USER_DB_CURSOR
@@ -9,12 +8,8 @@ from ui.sprite_v2 import MapSpriteV2
 
 @final
 class CrossoverSpriteV2(MapSpriteV2):
-    def __init__(self, map_id, track_param_1, track_param_2, crossover_type, parent_viewport):
-        super().__init__(
-            map_id=map_id, logger=getLogger(
-                f'root.app.game.map.{map_id}.crossover.{track_param_1}.{track_param_2}.{crossover_type}.crossover_sprite'
-            ), parent_viewport=parent_viewport
-        )
+    def __init__(self, logger, parent_viewport, map_id, track_param_1, track_param_2, crossover_type):
+        super().__init__(logger, parent_viewport, map_id)
         CONFIG_DB_CURSOR.execute(
             '''SELECT offset_x, offset_y FROM crossovers_config
             WHERE track_param_1 = ? AND track_param_2 = ? AND crossover_type = ? AND map_id = ?''',

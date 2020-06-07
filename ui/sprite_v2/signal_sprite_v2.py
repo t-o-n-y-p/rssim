@@ -1,4 +1,3 @@
-from logging import getLogger
 from typing import final
 
 from database import CONFIG_DB_CURSOR, USER_DB_CURSOR
@@ -9,11 +8,8 @@ from ui.sprite_v2 import MapSpriteV2
 
 @final
 class SignalSpriteV2(MapSpriteV2):
-    def __init__(self, map_id, track, base_route, parent_viewport):
-        super().__init__(
-            map_id, logger=getLogger(f'root.app.game.map.{map_id}.signal.{track}.{base_route}.sprite'),
-            parent_viewport=parent_viewport
-        )
+    def __init__(self, logger, parent_viewport, map_id, track, base_route):
+        super().__init__(logger, parent_viewport, map_id)
         CONFIG_DB_CURSOR.execute(
             '''SELECT x, y, rotation FROM signal_config WHERE track = ? AND base_route = ? AND map_id = ?''',
             (track, base_route, self.map_id)

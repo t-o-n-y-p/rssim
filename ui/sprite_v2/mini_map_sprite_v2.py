@@ -1,18 +1,15 @@
-from logging import getLogger
 from typing import final
 
 from database import CONFIG_DB_CURSOR, USER_DB_CURSOR
-from ui import get_map_tracks, MAP_WIDTH, get_mini_map_width, GROUPS, BATCHES, get_mini_map_y, get_mini_map_x
+from ui import get_map_tracks, MAP_WIDTH, GROUPS, BATCHES
 
 from ui.sprite_v2 import UISpriteV2
 
 
 @final
 class MiniMapSpriteV2(UISpriteV2):
-    def __init__(self, map_id, parent_viewport):
-        super().__init__(
-            logger=getLogger(f'root.app.game.map.{map_id}.mini_map_sprite'), parent_viewport=parent_viewport
-        )
+    def __init__(self, logger, parent_viewport, map_id):
+        super().__init__(logger, parent_viewport)
         self.map_id = map_id
         USER_DB_CURSOR.execute('''SELECT unlocked_tracks FROM map_progress WHERE map_id = ?''', (self.map_id, ))
         self.unlocked_tracks = USER_DB_CURSOR.fetchone()[0]

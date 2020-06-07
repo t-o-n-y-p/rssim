@@ -15,20 +15,17 @@ from ui import UIObject, is_not_active, window_size_has_changed, localizable, is
 def _create_label(cls, parent_object):
     label_name_snake_case = ''.join('_' + c.lower() if c.isupper() else c for c in cls.__name__).lstrip('_')
     cls_resource_keys = getfullargspec(cls).args[3:]
-    logger_name = label_name_snake_case
-    for k in cls_resource_keys:
-        logger_name += f'_{k}_{parent_object.__getattribute__(k)}'
-
     parent_object.__setattr__(
         label_name_snake_case,
         cls(
-            parent_object.logger.getChild(logger_name), parent_object.parent_viewport,
+            parent_object.logger.getChild(label_name_snake_case), parent_object.parent_viewport,
             *(parent_object.__getattribute__(a) for a in cls_resource_keys)
         )
     )
     label_object = parent_object.__getattribute__(label_name_snake_case)
     parent_object.ui_objects.append(label_object)
     parent_object.fade_out_animation.child_animations.append(label_object.fade_out_animation)
+    parent_object.on_window_resize_handlers.extend(label_object.on_window_resize_handlers)
     if issubclass(cls, InteractiveLabelV2):
         parent_object.on_key_press_handlers.extend(label_object.on_key_press_handlers)
         parent_object.on_text_handlers.extend(label_object.on_text_handlers)

@@ -1,4 +1,5 @@
 from abc import ABC, abstractmethod
+from inspect import getfullargspec
 from typing import final, Final
 
 from pyglet.sprite import Sprite as PygletSprite
@@ -9,10 +10,52 @@ SPRITE_VIEWPORT_EDGE_OFFSET_LIMIT_X: Final = 150
 SPRITE_VIEWPORT_EDGE_OFFSET_LIMIT_Y: Final = 100
 
 
-def texture_has_changed(fn):
+def _create_sprite(cls, parent_object):
+    sprite_name_snake_case = ''.join('_' + c.lower() if c.isupper() else c for c in cls.__name__).lstrip('_')
+    cls_resource_keys = getfullargspec(cls).args[3:]
+    parent_object.__setattr__(
+        sprite_name_snake_case,
+        cls(
+            parent_object.logger.getChild(sprite_name_snake_case), parent_object.parent_viewport,
+            *(parent_object.__getattribute__(a) for a in cls_resource_keys)
+        )
+    )
+    sprite_object = parent_object.__getattribute__(sprite_name_snake_case)
+    parent_object.ui_objects.append(sprite_object)
+    parent_object.fade_out_animation.child_animations.append(sprite_object.fade_out_animation)
+    parent_object.on_window_resize_handlers.extend(sprite_object.on_window_resize_handlers)
+    return sprite_object
+
+
+def default_sprite(cls):
+    def _default_sprite(f):
+        def _add_default_sprite(*args, **kwargs):
+            f(*args, **kwargs)
+            if issubclass(cls, (UISpriteV2, MapSpriteV2)):
+                sprite_object = _create_sprite(cls, args[0])
+                args[0].fade_in_animation.child_animations.append(sprite_object.fade_in_animation)
+
+        return _add_default_sprite
+
+    return _default_sprite
+
+
+def sprite(cls):
+    def _sprite(f):
+        def _add_sprite(*args, **kwargs):
+            f(*args, **kwargs)
+            if issubclass(cls, (UISpriteV2, MapSpriteV2)):
+                _create_sprite(cls, args[0])
+
+        return _add_sprite
+
+    return _sprite
+
+
+def texture_has_changed(f):
     def _update_texture_if_it_has_changed(*args, **kwargs):
         if args[0].texture != args[1]:
-            fn(*args, **kwargs)
+            f(*args, **kwargs)
 
     return _update_texture_if_it_has_changed
 
@@ -46,7 +89,7 @@ class SpriteV2(UIObject, ABC):
 
 
 class MapSpriteV2(SpriteV2, ABC):
-    def __init__(self, map_id, logger, parent_viewport):
+    def __init__(self, logger, parent_viewport, map_id):
         super().__init__(logger, parent_viewport)
         self.map_id = map_id
         self.rotation = 0
