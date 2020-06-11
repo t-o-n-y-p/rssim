@@ -41,6 +41,7 @@ def _create_button(cls, parent_object):
     )
     button_object = parent_object.__getattribute__(button_name_snake_case)
     parent_object.ui_objects.append(button_object)
+    parent_object.buttons.append(button_object)
     parent_object.fade_out_animation.child_animations.append(button_object.fade_out_animation)
     parent_object.on_mouse_press_handlers.extend(button_object.on_mouse_press_handlers)
     parent_object.on_mouse_release_handlers.extend(button_object.on_mouse_release_handlers)
@@ -85,6 +86,7 @@ def _create_object(cls, parent_object):
     )
     new_object = parent_object.__getattribute__(object_name_snake_case)
     parent_object.ui_objects.append(new_object)
+    parent_object.buttons.extend(new_object.buttons)
     parent_object.fade_out_animation.child_animations.append(new_object.fade_out_animation)
     parent_object.on_mouse_press_handlers.extend(new_object.on_mouse_press_handlers)
     parent_object.on_mouse_release_handlers.extend(new_object.on_mouse_release_handlers)
@@ -522,6 +524,7 @@ class UIObject(ABC):
         self.fade_in_animation = FadeInAnimationV2(self, self.logger.getChild('fade_in_animation'))
         self.fade_out_animation = FadeOutAnimationV2(self, self.logger.getChild('fade_out_animation'))
         self.ui_objects = []
+        self.buttons = []
 
     @is_not_active
     def on_activate(self):

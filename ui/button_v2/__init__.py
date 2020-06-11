@@ -1,7 +1,6 @@
 from abc import ABC, abstractmethod
 from typing import Final, final
 
-from pyglet import gl
 from pyglet.text import Label
 from pyglet.window import mouse
 
@@ -91,17 +90,30 @@ class ButtonV2(UIObject, ABC):
     def on_mouse_motion(self, x, y, dx, dy):
         pass
 
-    @abstractmethod
+    @final
+    @is_active
+    @cursor_is_over_the_button
+    @left_mouse_button
     def on_mouse_press(self, x, y, button, modifiers):
-        pass
+        self.state = PRESSED
 
-    @abstractmethod
+    @final
+    @is_active
+    @cursor_is_over_the_button
+    @button_is_pressed
+    @left_mouse_button
     def on_mouse_release(self, x, y, button, modifiers):
-        pass
+        self.state = HOVER
+        WINDOW.set_mouse_cursor(DEFAULT_CURSOR)
+        self.on_click_action(self)
 
-    @abstractmethod
+    @final
+    @is_active
     def on_mouse_leave(self, x, y):
-        pass
+        self.state = NORMAL
+        WINDOW.set_mouse_cursor(DEFAULT_CURSOR)
+        if self.on_leave_action:
+            self.on_leave_action()
 
 
 class UIButtonV2(ButtonV2, ABC):
@@ -109,7 +121,6 @@ class UIButtonV2(ButtonV2, ABC):
         super().__init__(logger, parent_viewport, on_click_action, on_hover_action, on_leave_action)
         self.transparent = True
         self.paired_button = None
-        self.vertex_list = None
         self.text_label = None
         self.font_name = 'Webdings'
         self.is_bold = False
@@ -139,13 +150,6 @@ class UIButtonV2(ButtonV2, ABC):
         self.disabled_state = False
         # gl.glEnable(gl.GL_BLEND)
         # gl.glBlendFunc(gl.GL_SRC_ALPHA, gl.GL_ONE_MINUS_SRC_ALPHA)
-        if not self.vertex_list:
-            self.vertex_list = BATCHES['ui_batch'].add(
-                20, gl.GL_QUADS, GROUPS['button_background'],
-                ('v2i', self._get_vertices()),
-                ('c4f', self._get_main_colors() + ((1.0, 0.0, 0.0, self.opacity / 255) * 16))
-            )
-
         if not self.text_label:
             if (text := self.get_formatted_text()) not in (None, ''):
                 self.text_label = Label(
@@ -160,17 +164,13 @@ class UIButtonV2(ButtonV2, ABC):
     @final
     @is_active_or_disabled
     def on_deactivate(self):
-        self.is_activated = False
+        super().on_deactivate()
         self.disabled_state = False
 
     @final
     def on_disable(self):
         self.on_deactivate()
         self.disabled_state = True
-        if self.vertex_list:
-            self.vertex_list.delete()
-            self.vertex_list = None
-
         if not self.text_label:
             if (text := self.get_formatted_text()) not in (None, ''):
                 self.text_label = Label(
@@ -190,9 +190,6 @@ class UIButtonV2(ButtonV2, ABC):
         if x in range(self.x + 2, self.x + self.width - 2) and y in range(self.y + 2, self.y + self.height - 2):
             if self.state not in (PRESSED, HOVER):
                 self.state = HOVER
-                if self.vertex_list:
-                    self.vertex_list.colors[:16] = self._get_main_colors()
-
                 WINDOW.set_mouse_cursor(HAND_CURSOR)
                 if self.on_hover_action:
                     self.on_hover_action()
@@ -201,98 +198,21 @@ class UIButtonV2(ButtonV2, ABC):
         else:
             if self.state != NORMAL:
                 self.state = NORMAL
-                if self.vertex_list:
-                    self.vertex_list.colors[:16] = self._get_main_colors()
-
                 WINDOW.set_mouse_cursor(DEFAULT_CURSOR)
                 if self.on_leave_action:
                     self.on_leave_action()
 
     @final
-    @is_active
-    @cursor_is_over_the_button
-    @left_mouse_button
-    def on_mouse_press(self, x, y, button, modifiers):
-        self.state = PRESSED
-        if self.vertex_list:
-            self.vertex_list.colors[:16] = self._get_main_colors()
-
-    @final
-    @is_active
-    @cursor_is_over_the_button
-    @button_is_pressed
-    @left_mouse_button
-    def on_mouse_release(self, x, y, button, modifiers):
-        self.state = HOVER
-        if self.vertex_list:
-            self.vertex_list.colors[:16] = self._get_main_colors()
-
-        WINDOW.set_mouse_cursor(DEFAULT_CURSOR)
-        self.on_click_action(self)
-
-    @final
-    @is_active
-    def on_mouse_leave(self, x, y):
-        self.state = NORMAL
-        if self.vertex_list:
-            self.vertex_list.colors[:16] = self._get_main_colors()
-
-        WINDOW.set_mouse_cursor(DEFAULT_CURSOR)
-        if self.on_leave_action:
-            self.on_leave_action()
-
-    @final
     def on_update_opacity(self, new_opacity):
         super().on_update_opacity(new_opacity)
         if self.opacity <= 0:
-            if self.vertex_list:
-                self.vertex_list.delete()
-                self.vertex_list = None
-
             if self.text_label:
                 self.text_label.delete()
                 self.text_label = None
 
         else:
-            if self.vertex_list:
-                self.vertex_list.colors[3:16:4] = (
-                    (BUTTON_BACKGROUND_ALPHA[self.state][int(self.transparent)] * float(self.opacity) / 255.0,) * 4
-                )
-                self.vertex_list.colors[19::4] = ((self.opacity / 255, ) * 16)
-
             if self.text_label:
                 self.text_label.color = (*self.text_label.color[:3], self.opacity)
-
-    @final
-    def _get_vertices(self):
-        return (
-            # inside
-            self.x + 2, self.y + 2,
-            self.x + self.width - 2, self.y + 2,
-            self.x + self.width - 2, self.y + self.height - 2,
-            self.x + 2, self.y + self.height - 2,
-            # left border
-            self.x, self.y, self.x + 2, self.y,
-            self.x + 2, self.y + self.height, self.x, self.y + self.height,
-            # right border
-            self.x + self.width - 2, self.y, self.x + self.width, self.y,
-            self.x + self.width, self.y + self.height, self.x + self.width - 2, self.y + self.height,
-            # bottom border
-            self.x + 2, self.y, self.x + self.width - 2, self.y,
-            self.x + self.width - 2, self.y + 2, self.x + 2, self.y + 2,
-            # top border
-            self.x + 2, self.y + self.height - 2, self.x + self.width - 2, self.y + self.height - 2,
-            self.x + self.width - 2, self.y + self.height, self.x + 2, self.y + self.height
-        )
-
-    @final
-    def _get_main_colors(self):
-        return (
-            (
-                *BUTTON_BACKGROUND_RGB[self.state][int(self.transparent)],
-                BUTTON_BACKGROUND_ALPHA[self.state][int(self.transparent)] * float(self.opacity) / 255.0
-            ) * 4
-        )
 
     @final
     @window_size_has_changed
@@ -302,9 +222,6 @@ class UIButtonV2(ButtonV2, ABC):
         self.height = self.get_height()
         self.x = self.get_x()
         self.y = self.get_y()
-        if self.vertex_list:
-            self.vertex_list.vertices = self._get_vertices()
-
         if self.text_label:
             self.text_label.begin_update()
             self.text_label.x = self.x + self.width // 2
@@ -317,14 +234,16 @@ class UIButtonV2(ButtonV2, ABC):
     def on_position_changed(self):
         self.x = self.get_x()
         self.y = self.get_y()
-        if self.vertex_list:
-            self.vertex_list.vertices = self._get_vertices()
-
         if self.text_label:
             self.text_label.begin_update()
             self.text_label.x = self.x + self.width // 2
             self.text_label.y = self.y + self.height // 2
             self.text_label.end_update()
+
+    @final
+    def on_switch_buttons(self):
+        self.fade_out_animation.on_activate()
+        self.paired_button.fade_in_animation.on_activate()
 
 
 class MapButtonV2(ButtonV2, ABC):
@@ -348,30 +267,6 @@ class MapButtonV2(ButtonV2, ABC):
                 self.state = NORMAL
                 WINDOW.set_mouse_cursor(DEFAULT_CURSOR)
                 self.on_leave_action()
-
-    @final
-    @is_active
-    @cursor_is_over_the_button
-    @left_mouse_button
-    def on_mouse_press(self, x, y, button, modifiers):
-        self.state = PRESSED
-
-    @final
-    @is_active
-    @cursor_is_over_the_button
-    @button_is_pressed
-    @left_mouse_button
-    def on_mouse_release(self, x, y, button, modifiers):
-        self.state = HOVER
-        WINDOW.set_mouse_cursor(DEFAULT_CURSOR)
-        self.on_click_action(self)
-
-    @final
-    @is_active
-    def on_mouse_leave(self, x, y):
-        self.state = NORMAL
-        WINDOW.set_mouse_cursor(DEFAULT_CURSOR)
-        self.on_leave_action()
 
     @final
     def on_change_scale(self):
