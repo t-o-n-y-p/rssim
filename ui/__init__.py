@@ -19,7 +19,8 @@ from ui.fade_animation_v2.fade_out_animation_v2 import FadeOutAnimationV2
 
 def _to_snake_case(string):
     return ''.join('_' + c.lower() if c.isupper() else c for c in string).lstrip('_')\
-        .replace('f_p_s_', 'fps_').replace('r_u_', 'ru_').replace('e_n_', 'en_').replace('u_s_', 'us_')
+        .replace('f_p_s_', 'fps_').replace('r_u_', 'ru_').replace('e_n_', 'en_').replace('u_s_', 'us_')\
+        .replace('12_h_', '_12h_').replace('24_h_', '_24h_')
 
 
 def _create_button(cls, parent_object):

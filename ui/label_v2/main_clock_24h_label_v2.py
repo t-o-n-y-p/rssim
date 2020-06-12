@@ -5,7 +5,7 @@ from ui.label_v2 import LabelV2, argument
 
 
 @final
-class MainClockLabel24HV2(LabelV2):                                                                             # noqa
+class MainClock24HLabelV2(LabelV2):                                                                             # noqa
     @localizable_with_resource('24h_main_clock_string')
     @argument('24h_time')
     def __init__(self, logger, parent_viewport):

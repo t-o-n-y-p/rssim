@@ -1,14 +1,16 @@
 from typing import final
 
 from ui import SCHEDULE_ROWS, get_inner_area_rect, WHITE_RGB, localizable_with_resource
-from ui.label_v2 import LabelV2
+from ui.label_v2 import LabelV2, resource_list_key
 
 
 @final
 class ScheduleRowArrivalLabelV2(LabelV2):                                                                       # noqa
     @localizable_with_resource('departed_from_string')
-    def __init__(self, logger, parent_viewport, map_id, direction):
-        super().__init__(logger, parent_viewport, map_id, direction)
+    @resource_list_key('map_id')
+    @resource_list_key('direction')
+    def __init__(self, logger, parent_viewport):
+        super().__init__(logger, parent_viewport)
         self.font_name = 'Perfo'
         self.bold = True
         self.base_color = WHITE_RGB

@@ -17,7 +17,7 @@ def argument(name):
             def on_argument_update(value):
                 if value != args[0].arguments[args[0].__getattribute__(f'{name}_index')]:
                     args[0].arguments[args[0].__getattribute__(f'{name}_index')] = value
-                    if args[0].text_label:
+                    if args[0].text_label and not args[0].undergoing_text_update:
                         args[0].text_label.text = args[0].get_formatted_text()
 
             def on_argument_update_24h_time(value):
@@ -27,7 +27,7 @@ def argument(name):
                         = (value // SECONDS_IN_ONE_HOUR + 12) % HOURS_IN_ONE_DAY
                     args[0].arguments[args[0].__getattribute__(f'{name}_index') + 1] \
                         = (value // SECONDS_IN_ONE_MINUTE) % MINUTES_IN_ONE_HOUR
-                    if args[0].text_label:
+                    if args[0].text_label and not args[0].undergoing_text_update:
                         args[0].text_label.text = args[0].get_formatted_text()
 
             def on_argument_update_12h_time(value):
@@ -41,7 +41,7 @@ def argument(name):
                         = I18N_RESOURCES['am_pm_string'][args[0].current_locale][
                             ((value // SECONDS_IN_ONE_HOUR) // 12 + 1) % 2
                         ]
-                    if args[0].text_label:
+                    if args[0].text_label and not args[0].undergoing_text_update:
                         args[0].text_label.text = args[0].get_formatted_text()
 
             def on_argument_update_price(value):
@@ -49,7 +49,7 @@ def argument(name):
                         != args[0].arguments[args[0].__getattribute__(f'{name}_index')]:
                     args[0].arguments[args[0].__getattribute__(f'{name}_index')] \
                         = '{0:,}'.format(value).replace(',', ' ')
-                    if args[0].text_label:
+                    if args[0].text_label and not args[0].undergoing_text_update:
                         args[0].text_label.text = args[0].get_formatted_text()
 
             def on_argument_update_screen_resolution(value):
@@ -61,7 +61,7 @@ def argument(name):
                         args[0].__getattribute__(f'{name}_index')
                         :args[0].__getattribute__(f'{name}_index') + 2
                     ] = list(value)
-                    if args[0].text_label:
+                    if args[0].text_label and not args[0].undergoing_text_update:
                         args[0].text_label.text = args[0].get_formatted_text()
 
             f(*args, **kwargs)
@@ -90,14 +90,36 @@ def argument(name):
     return _argument
 
 
+def resource_list_key(key):
+    def _resource_list_key(f):
+        def _add_resource_list_key(*args, **kwargs):
+            def on_resource_key_update(value):
+                if value != args[0].resource_list_keys[args[0].__getattribute__(f'{key}_resource_key')]:
+                    args[0].resource_list_keys[args[0].__getattribute__(f'{key}_resource_key')] = value
+                    if args[0].text_label and not args[0].undergoing_text_update:
+                        args[0].text_label.text = args[0].get_formatted_text()
+
+            f(*args, **kwargs)
+            for k in [k for k in dir(args[0]) if k.endswith('_resource_key')]:
+                args[0].__setattr__(k, args[0].__getattribute__(k) + 1)
+
+            args[0].__setattr__(f'{key}_resource_key', 0)
+            args[0].__setattr__(f'on_{key}_update', on_resource_key_update)
+            args[0].resource_list_keys = [None] + args[0].resource_list_keys
+
+        return _add_resource_list_key
+
+    return _resource_list_key
+
+
 class LabelV2(UIObject, ABC):
     font_name: str
     base_color: (int, int, int)
 
-    def __init__(self, logger, parent_viewport, *resource_list_keys):
+    def __init__(self, logger, parent_viewport):
         super().__init__(logger, parent_viewport)
         self.arguments = []
-        self.resource_list_keys = resource_list_keys
+        self.resource_list_keys = []
         self.text_label = None
         self.bold = False
         self.anchor_x = 'center'
@@ -106,6 +128,7 @@ class LabelV2(UIObject, ABC):
         self.multiline = False
         self.batch = BATCHES['ui_batch']
         self.group = GROUPS['button_text']
+        self.undergoing_text_update = False
 
     @abstractmethod
     def get_x(self):
@@ -167,6 +190,16 @@ class LabelV2(UIObject, ABC):
         self.text_label.x = self.get_x()
         self.text_label.y = self.get_y()
         self.text_label.end_update()
+
+    @final
+    def begin_update(self):
+        self.undergoing_text_update = True
+
+    @final
+    def end_update(self):
+        self.undergoing_text_update = False
+        if self.text_label:
+            self.text_label.text = self.get_formatted_text()
 
 
 class InteractiveLabelV2(UIObject, ABC):
