@@ -105,7 +105,7 @@ class ButtonV2(UIObject, ABC):
     def on_mouse_release(self, x, y, button, modifiers):
         self.state = HOVER
         WINDOW.set_mouse_cursor(DEFAULT_CURSOR)
-        self.on_click_action(self)
+        self.on_click_action()
 
     @final
     @is_active

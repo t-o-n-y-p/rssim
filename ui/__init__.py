@@ -115,6 +115,8 @@ def default_object(cls):
                 new_object = _create_knob(cls, args[0])
             else:
                 new_object = _create_object(cls, args[0])
+                if cls.__name__.find('Page') > 0 and args[0].__class__.__name__.find('PageControl') > 0:
+                    args[0].pages = [new_object] + args[0].pages
 
             args[0].fade_in_animation.child_animations.append(new_object.fade_in_animation)
 
@@ -132,7 +134,9 @@ def optional_object(cls):
             elif cls.__name__.find('Knob') > 0:
                 _create_knob(cls, args[0])
             else:
-                _create_object(cls, args[0])
+                new_object = _create_object(cls, args[0])
+                if cls.__name__.find('Page') > 0 and args[0].__class__.__name__.find('PageControl') > 0:
+                    args[0].pages = [new_object] + args[0].pages
 
         return _add_optional_object
 
