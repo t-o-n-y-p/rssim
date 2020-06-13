@@ -8,8 +8,8 @@ from ui.label_v2.master_volume_value_label_v2 import MasterVolumeValueLabelV2
 @final
 class MasterVolumeKnobV2(KnobV2):
     @default_object(MasterVolumeValueLabelV2)
-    def __init__(self, logger, parent_viewport, on_value_update_action):
-        super().__init__(logger, parent_viewport, on_value_update_action)
+    def __init__(self, logger, parent_viewport):
+        super().__init__(logger, parent_viewport)
         self.main_color = RED_RGB
         self.background_color = RED_GREY_RGB
         self.start_value = 0

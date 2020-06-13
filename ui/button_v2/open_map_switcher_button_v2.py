@@ -6,8 +6,8 @@ from ui.button_v2 import UIButtonV2
 
 @final
 class OpenMapSwitcherButtonV2(UIButtonV2):
-    def __init__(self, on_click_action, on_hover_action, on_leave_action, logger, parent_viewport):
-        super().__init__(on_click_action, on_hover_action, on_leave_action, logger, parent_viewport)
+    def __init__(self, logger, parent_viewport):
+        super().__init__(logger, parent_viewport)
         self.transparent = False
 
     def get_x(self):

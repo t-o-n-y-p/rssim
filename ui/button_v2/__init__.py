@@ -63,11 +63,8 @@ BUTTON_BACKGROUND_ALPHA: Final = {
 
 
 class ButtonV2(UIObject, ABC):
-    def __init__(self, logger, parent_viewport, on_click_action, on_hover_action, on_leave_action):
+    def __init__(self, logger, parent_viewport):
         super().__init__(logger, parent_viewport)
-        self.on_click_action = on_click_action
-        self.on_hover_action = on_hover_action
-        self.on_leave_action = on_leave_action
         self.state = NORMAL
         self.on_mouse_press_handlers = [self.on_mouse_press]
         self.on_mouse_release_handlers = [self.on_mouse_release]
@@ -84,6 +81,18 @@ class ButtonV2(UIObject, ABC):
 
     @abstractmethod
     def get_height(self):
+        pass
+
+    @staticmethod
+    def on_click():
+        pass
+
+    @staticmethod
+    def on_hover():
+        pass
+
+    @staticmethod
+    def on_leave():
         pass
 
     @abstractmethod
@@ -105,20 +114,19 @@ class ButtonV2(UIObject, ABC):
     def on_mouse_release(self, x, y, button, modifiers):
         self.state = HOVER
         WINDOW.set_mouse_cursor(DEFAULT_CURSOR)
-        self.on_click_action()
+        self.on_click()
 
     @final
     @is_active
     def on_mouse_leave(self, x, y):
         self.state = NORMAL
         WINDOW.set_mouse_cursor(DEFAULT_CURSOR)
-        if self.on_leave_action:
-            self.on_leave_action()
+        self.on_leave()
 
 
 class UIButtonV2(ButtonV2, ABC):
-    def __init__(self, logger, parent_viewport, on_click_action, on_hover_action, on_leave_action):
-        super().__init__(logger, parent_viewport, on_click_action, on_hover_action, on_leave_action)
+    def __init__(self, logger, parent_viewport):
+        super().__init__(logger, parent_viewport)
         self.transparent = True
         self.paired_button = None
         self.text_label = None
@@ -191,16 +199,14 @@ class UIButtonV2(ButtonV2, ABC):
             if self.state not in (PRESSED, HOVER):
                 self.state = HOVER
                 WINDOW.set_mouse_cursor(HAND_CURSOR)
-                if self.on_hover_action:
-                    self.on_hover_action()
+                self.on_hover()
         # if cursor is not on the button and button is not normal, it means cursor has just left the button,
         # state and background color are changed to "normal" state
         else:
             if self.state != NORMAL:
                 self.state = NORMAL
                 WINDOW.set_mouse_cursor(DEFAULT_CURSOR)
-                if self.on_leave_action:
-                    self.on_leave_action()
+                self.on_leave()
 
     @final
     def on_update_opacity(self, new_opacity):
@@ -259,14 +265,14 @@ class MapButtonV2(ButtonV2, ABC):
             if self.state not in (PRESSED, HOVER):
                 self.state = HOVER
                 WINDOW.set_mouse_cursor(HAND_CURSOR)
-                self.on_hover_action()
+                self.on_hover()
         # if cursor is not on the button and button is not normal, it means cursor has just left the button,
         # state and background color are changed to "normal" state
         else:
             if self.state != NORMAL:
                 self.state = NORMAL
                 WINDOW.set_mouse_cursor(DEFAULT_CURSOR)
-                self.on_leave_action()
+                self.on_leave()
 
     @final
     def on_change_scale(self):

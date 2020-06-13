@@ -28,19 +28,31 @@ def _create_button(cls, parent_object):
     on_click_action_method_name = 'on_click_action_' + button_name_snake_case
     on_hover_action_method_name = 'on_hover_action_' + button_name_snake_case
     on_leave_action_method_name = 'on_leave_action_' + button_name_snake_case
+
+    def on_click():
+        parent_object.__getattribute__(on_click_action_method_name)()
+
+    def on_hover():
+        parent_object.__getattribute__(on_hover_action_method_name)()
+
+    def on_leave():
+        parent_object.__getattribute__(on_leave_action_method_name)()
+
     parent_object.__setattr__(
         button_name_snake_case,
         cls(
             logger=parent_object.logger.getChild(button_name_snake_case),
-            parent_viewport=parent_object.parent_viewport,
-            on_click_action=parent_object.__getattribute__(on_click_action_method_name),
-            on_hover_action=parent_object.__getattribute__(on_hover_action_method_name)
-            if hasattr(parent_object, on_hover_action_method_name) else None,
-            on_leave_action=parent_object.__getattribute__(on_leave_action_method_name)
-            if hasattr(parent_object, on_leave_action_method_name) else None
+            parent_viewport=parent_object.parent_viewport
         )
     )
     button_object = parent_object.__getattribute__(button_name_snake_case)
+    button_object.__setattr__('on_click', on_click)
+    if hasattr(parent_object, on_hover_action_method_name):
+        button_object.__setattr__('on_hover', on_hover)
+
+    if hasattr(parent_object, on_leave_action_method_name):
+        button_object.__setattr__('on_leave', on_leave)
+
     parent_object.ui_objects.append(button_object)
     parent_object.buttons.append(button_object)
     parent_object.fade_out_animation.child_animations.append(button_object.fade_out_animation)
@@ -59,11 +71,15 @@ def _create_knob(cls, parent_object):
         knob_name_snake_case,
         cls(
             logger=parent_object.logger.getChild(knob_name_snake_case),
-            parent_viewport=parent_object.parent_viewport,
-            on_value_update_action=parent_object.__getattribute__(on_value_update_action_method_name)
+            parent_viewport=parent_object.parent_viewport
         )
     )
     knob_object = parent_object.__getattribute__(knob_name_snake_case)
+
+    def on_value_update():
+        parent_object.__getattribute__(on_value_update_action_method_name)(knob_object.current_value_formula())
+
+    knob_object.__setattr__('on_value_update', on_value_update)
     parent_object.ui_objects.append(knob_object)
     parent_object.fade_out_animation.child_animations.append(knob_object.fade_out_animation)
     parent_object.on_mouse_press_handlers.extend(knob_object.on_mouse_press_handlers)

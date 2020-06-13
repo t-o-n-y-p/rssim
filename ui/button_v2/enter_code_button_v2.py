@@ -7,8 +7,8 @@ from ui.button_v2 import UIButtonV2
 @final
 class EnterCodeButtonV2(UIButtonV2):                                                                            # noqa
     @localizable_with_resource('enter_code_label_string')
-    def __init__(self, on_click_action, on_hover_action, on_leave_action, logger, parent_viewport):
-        super().__init__(on_click_action, on_hover_action, on_leave_action, logger, parent_viewport)
+    def __init__(self, logger, parent_viewport):
+        super().__init__(logger, parent_viewport)
         self.font_name = 'Perfo'
         self.is_bold = True
 

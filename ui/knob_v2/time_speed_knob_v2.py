@@ -10,8 +10,8 @@ from ui.label_v2.time_speed_value_label_v2 import TimeSpeedValueLabelV2
 class TimeSpeedKnobV2(KnobV2):
     @localizable
     @default_object(TimeSpeedValueLabelV2)
-    def __init__(self, logger, parent_viewport, on_value_update_action):
-        super().__init__(logger, parent_viewport, on_value_update_action)
+    def __init__(self, logger, parent_viewport):
+        super().__init__(logger, parent_viewport)
         self.main_color = YELLOW_RGB
         self.background_color = YELLOW_GREY_RGB
         self.start_value = 1.0

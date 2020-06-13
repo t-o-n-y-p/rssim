@@ -51,9 +51,8 @@ class KnobV2(UIObject, ABC):
     maximum_steps: int
     current_step: int
 
-    def __init__(self, logger, parent_viewport, on_value_update_action):
+    def __init__(self, logger, parent_viewport):
         super().__init__(logger, parent_viewport)
-        self.on_value_update_action = on_value_update_action
         self.knob_value_update_mode = False
         self.circle = None
         self.circle_vertices = []
@@ -77,13 +76,17 @@ class KnobV2(UIObject, ABC):
     def on_init_state(self, value):
         pass
 
+    @staticmethod
+    def on_value_update():
+        pass
+
     def on_mouse_drag(self, x, y, dx, dy, buttons, modifiers):
         self.on_current_step_update(
             self.current_step
             + (y - self.initial_cursor_y) // self.knob_sensitivity
             - (y - dy - self.initial_cursor_y) // self.knob_sensitivity
         )
-        self.on_value_update_action(self.current_value_formula())
+        self.on_value_update()
 
     @final
     @is_not_active
