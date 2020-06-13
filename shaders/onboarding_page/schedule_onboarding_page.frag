@@ -67,17 +67,9 @@ bool is_app_window_frame(int margin_x, int margin_y, int bottom_bar_height, int 
 }
 
 bool is_highlighted(int margin_x, int margin_y, int bottom_bar_height, int top_bar_height) {
-    return (
-        (
-            margin_x >= 2 && margin_x <= page_viewport_size[0] - 3
-            && margin_y >= bottom_bar_height + 1 && margin_y <= page_viewport_size[1] - top_bar_height - 1
-        )
-    ) && !(
-        margin_x >= page_viewport_size[0] / 2 - top_bar_height
-        && margin_x <= page_viewport_size[0] / 2 - top_bar_height + bottom_bar_height
-        && margin_y >= page_viewport_size[1] - 3 * top_bar_height / 2 - bottom_bar_height
-        && margin_y <= page_viewport_size[1] - 3 * top_bar_height / 2
-    );
+    return margin_x >= page_viewport_size[0] - 6 * bottom_bar_height + 3
+        && margin_x <= page_viewport_size[0] - 5 * bottom_bar_height - 1
+        && margin_y >= 2 && margin_y <= bottom_bar_height - 2;
 }
 
 void main() {
