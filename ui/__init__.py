@@ -449,35 +449,22 @@ def get_bottom_bar_height(screen_resolution):
     return int(72 / 1280 * screen_resolution[0])
 
 
-def get_inner_area_rect(screen_resolution):
-    bottom_bar_height = get_bottom_bar_height(screen_resolution)
-    inner_area_size = (
-        (
-            int(6.875 * bottom_bar_height) * 2 + bottom_bar_height // 4,
-            19 * bottom_bar_height // 4
-        )
-    )
-    inner_area_position = (
-        (screen_resolution[0] - inner_area_size[0]) // 2,
-        (screen_resolution[1] - inner_area_size[1] - 3 * bottom_bar_height // 2) // 2 + bottom_bar_height
-    )
-    return *inner_area_position, *inner_area_size
+def get_inner_area_viewport(screen_resolution):
+    width = 14 * get_bottom_bar_height(screen_resolution)
+    height = 4 * get_bottom_bar_height(screen_resolution) + get_bottom_bar_height(screen_resolution) // 4 * 3
+    x1 = (screen_resolution[0] - width) // 2
+    y1 = (
+        screen_resolution[1] - height - get_bottom_bar_height(screen_resolution) - get_top_bar_height(screen_resolution)
+    ) // 2 + get_bottom_bar_height(screen_resolution)
+    return Viewport(x1, y1, x1 + width, y1 + height)
 
 
-def get_mini_map_x(screen_resolution):
-    return screen_resolution[0] - get_mini_map_width(screen_resolution) - 8
-
-
-def get_mini_map_y(screen_resolution):
-    return screen_resolution[1] - get_top_bar_height(screen_resolution) - 6 - get_mini_map_height(screen_resolution)
-
-
-def get_mini_map_width(screen_resolution):
-    return screen_resolution[0] // 4
-
-
-def get_mini_map_height(screen_resolution):
-    return round(get_mini_map_width(screen_resolution) / 2)
+def get_mini_map_viewport(screen_resolution):
+    width = screen_resolution[0] // 4
+    height = round(width / 2)
+    x1 = screen_resolution[0] - width - 8
+    y1 = screen_resolution[1] - get_top_bar_height(screen_resolution) - 6 - height
+    return Viewport(x1, y1, x1 + width, y1 + height)
 
 
 def get_map_tracks(map_id, tracks):
@@ -490,15 +477,6 @@ def get_map_environment_primary(map_id, tiers):
 
 def get_map_environment_secondary(map_id, tracks, tiers):
     return resource.texture(f'secondary_m{map_id}t{tracks}e{tiers}.dds')
-
-
-@final
-class Viewport:
-    def __init__(self):
-        self.x1 = 0
-        self.y1 = 0
-        self.x2 = 0
-        self.y2 = 0
 
 
 class UIObject(ABC):
@@ -555,3 +533,32 @@ class UIObject(ABC):
         self.fade_out_animation.on_update_fade_animation_state(new_state)
         for o in self.ui_objects:
             o.on_update_fade_animation_state(new_state)
+
+
+@final
+class Viewport:
+    def __init__(self, x1=0, y1=0, x2=0, y2=0):
+        self.x1 = x1
+        self.y1 = y1
+        self.x2 = x2
+        self.y2 = y2
+
+    @property
+    def width(self):
+        return self.x2 - self.x1
+
+    @property
+    def height(self):
+        return self.y2 - self.y1
+
+    @property
+    def mid_x(self):
+        return (self.x1 + self.x2) // 2
+
+    @property
+    def mid_y(self):
+        return (self.y1 + self.y2) // 2
+
+    @property
+    def rectangle(self):
+        return self.x1, self.y1, self.x2, self.y1, self.x2, self.y2, self.x1, self.y2

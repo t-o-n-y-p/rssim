@@ -1,21 +1,19 @@
-from logging import getLogger
 from typing import final
 
 from pyglet.image import load
 
-from ui import get_bottom_bar_height
-from ui.rectangle_progress_bar import RectangleProgressBar
-from ui.label.shop_storage_label import ShopStorageLabel
+from ui import get_bottom_bar_height, default_object
+from ui.label_v2.shop_storage_label_v2 import ShopStorageLabelV2
+from ui.rectangle_progress_bar_v2 import RectangleProgressBarV2
 
 
 @final
-class ShopStorageProgressBar(RectangleProgressBar):
-    def __init__(self, parent_viewport):
-        super().__init__(logger=getLogger('root.shop_storage_progress_bar'), parent_viewport=parent_viewport)
+class ShopStorageProgressBarV2(RectangleProgressBarV2):
+    @default_object(ShopStorageLabelV2)
+    def __init__(self, logger, parent_viewport):
+        super().__init__(logger, parent_viewport)
         self.inactive_image = load('img/game_progress_bars/progress_bar_inactive.png')
         self.active_image = load('img/game_progress_bars/progress_bar_money_active.png')
-        self.text_label = ShopStorageLabel(parent_viewport=self.viewport)
-        self.on_window_resize_handlers.append(self.text_label.on_window_resize)
 
     def get_position(self):
         return (
@@ -27,3 +25,6 @@ class ShopStorageProgressBar(RectangleProgressBar):
 
     def get_scale(self):
         return get_bottom_bar_height(self.screen_resolution) / 80 * (4/3)
+
+    def on_storage_money_update(self, storage_money):
+        self.shop_storage_label_v2.on_storage_money_update(storage_money)                                       # noqa

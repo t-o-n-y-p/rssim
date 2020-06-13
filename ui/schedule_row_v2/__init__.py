@@ -1,7 +1,7 @@
 from typing import final
 
 from database import USER_DB_CURSOR, CARS, ARRIVAL_TIME, TRAIN_ID, DIRECTION
-from ui import SCHEDULE_ROWS, get_inner_area_rect, get_bottom_bar_height, window_size_has_changed, UIObject, \
+from ui import SCHEDULE_ROWS, get_bottom_bar_height, window_size_has_changed, UIObject, \
     is_active, optional_object, localizable, SCHEDULE_COLUMNS
 from ui.label_v2.schedule_row_12h_main_label_v2 import ScheduleRow12HMainLabelV2
 from ui.label_v2.schedule_row_24h_main_label_v2 import ScheduleRow24HMainLabelV2
@@ -66,16 +66,15 @@ class ScheduleRowV2(UIObject):
     @window_size_has_changed
     def on_window_resize(self, width, height):
         super().on_window_resize(width, height)
-        self.viewport.x1 = self.parent_viewport.x1 + get_inner_area_rect(self.screen_resolution)[0] + (
-            int(6.875 * get_bottom_bar_height(self.screen_resolution))
-            + get_bottom_bar_height(self.screen_resolution) // 4
+        self.viewport.x1 = self.parent_viewport.x1 + (
+            7 * get_bottom_bar_height(self.screen_resolution) + get_bottom_bar_height(self.screen_resolution) // 8
         ) * self.column
-        self.viewport.x2 = self.viewport.x1 + int(6.875 * get_bottom_bar_height(self.screen_resolution))
-        self.viewport.y2 \
-            = self.parent_viewport.y1 + get_inner_area_rect(self.screen_resolution)[1] \
-            + get_inner_area_rect(self.screen_resolution)[3] \
-            - (get_inner_area_rect(self.screen_resolution)[3] // (SCHEDULE_ROWS + 1)) * (self.row + 1)
-        self.viewport.y1 = self.viewport.y2 - get_inner_area_rect(self.screen_resolution)[3] // (SCHEDULE_ROWS + 1)
+        self.viewport.x2 = self.viewport.x1 + 7 * get_bottom_bar_height(self.screen_resolution) \
+            - get_bottom_bar_height(self.screen_resolution) // 8
+        self.viewport.y2 = self.parent_viewport.y2 - int(
+            self.parent_viewport.height / (SCHEDULE_ROWS + 1) * (self.row + 1)
+        )
+        self.viewport.y1 = self.viewport.y2 - self.parent_viewport.height // (SCHEDULE_ROWS + 1)
 
     @is_active
     def on_update_main_sprite_args(self):

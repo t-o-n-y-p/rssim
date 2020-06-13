@@ -8,8 +8,8 @@ from ui.label_v2.no_more_environment_available_label_v2 import NoMoreEnvironment
 @final
 class EnvironmentPlaceholderContainerV2(ConstructorPlaceholderContainerV2):
     @default_object(NoMoreEnvironmentAvailableLabelV2)
-    def __init__(self, logger, parent_viewport, bottom_parent_viewport, top_parent_viewport):
-        super().__init__(logger, parent_viewport, bottom_parent_viewport, top_parent_viewport)
+    def __init__(self, logger, parent_viewport, environment_bottom_parent_viewport, environment_top_parent_viewport):
+        super().__init__(logger, parent_viewport, environment_bottom_parent_viewport, environment_top_parent_viewport)
 
     def on_update_top_parent_viewport(self, top_parent_viewport):
         super().on_update_top_parent_viewport(top_parent_viewport)
